@@ -35,7 +35,10 @@ export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
+export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
 export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
+/** Gates named view changes to ZDS UI */
+export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -235,9 +238,6 @@ export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 
-/** Toast id for the changes requested banner */
-export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
-
 /** Toast id for Zookeeper bulk file writes */
 export const ZOOKEEPER_FILE_WRITE_TOAST_ID = 'zookeeper-file-write-toast'
 
@@ -367,7 +367,9 @@ export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
   token: string // authentication token from signing in. Can be empty string
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 /**
@@ -377,7 +379,9 @@ export type EnvironmentConfiguration = {
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -387,12 +391,13 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 // It's so ugh that `uuid` package doesn't export this.
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
-export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
-/** URL query param key we watch for prompt input
+export const LOCAL_STORAGE_ZOOKEEPER_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for Zookeeper prompt input
  *  we should never set this search param from the app,
  *  only read and delete.
  */
-export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
+export const SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'zookeeper-prompt'
+export const LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Number of engine connection retries within a cycle before the application stops automatically trying

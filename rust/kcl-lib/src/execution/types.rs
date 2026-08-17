@@ -516,6 +516,8 @@ pub enum PrimitiveType {
     Axis3d,
     ImportedGeometry,
     Function,
+    CameraView,
+    NamedView,
 }
 
 impl PrimitiveType {
@@ -545,6 +547,8 @@ impl PrimitiveType {
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
             PrimitiveType::TaggedEdge => "tagged edges".to_owned(),
             PrimitiveType::TaggedFace => "tagged faces".to_owned(),
+            PrimitiveType::CameraView => "camera views".to_owned(),
+            PrimitiveType::NamedView => "named views".to_owned(),
         }
     }
 
@@ -589,6 +593,8 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function => write!(f, "fn"),
+            PrimitiveType::CameraView => write!(f, "CameraView"),
+            PrimitiveType::NamedView => write!(f, "NamedView"),
         }
     }
 }
@@ -1494,6 +1500,14 @@ impl KclValue {
                 KclValue::GdtAnnotation { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::CameraView => match self {
+                KclValue::CameraView { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::NamedView => match self {
+                KclValue::NamedView { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Segment => match self {
                 KclValue::Segment { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1890,6 +1904,8 @@ impl KclValue {
                 Some(RuntimeType::Object(properties, *constrainable))
             }
             KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
+            KclValue::CameraView { .. } => Some(RuntimeType::Primitive(PrimitiveType::CameraView)),
+            KclValue::NamedView { .. } => Some(RuntimeType::Primitive(PrimitiveType::NamedView)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
@@ -1978,7 +1994,9 @@ mod test {
                 object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
-            KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
+            KclValue::TagDeclarator(crate::parsing::ast::types::BoxNode::new(
+                crate::parsing::ast::types::TagDeclarator::new("foo"),
+            )),
             KclValue::Plane {
                 value: Box::new(
                     Plane::from_plane_data_skipping_engine(crate::std::sketch::PlaneData::XY, exec_state).unwrap(),

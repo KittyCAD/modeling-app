@@ -1044,6 +1044,8 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
           library,
           requestedProjectName,
           requestedProjectTitle,
+          initialKclFile,
+          initialProject,
         }) => {
           const wasmInstancePromise = getWasmPromise()
           if (wasmInstancePromise instanceof Error) {
@@ -1056,7 +1058,10 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
             requestedProjectName,
             requestedProjectTitle,
             wasmInstancePromise,
+            initialKclFile,
+            initialProject,
           })
+          refreshLocalCloudProjectEntries()
 
           if (cloudSyncStatus.value.enabled) {
             await ctx.services
@@ -1295,8 +1300,9 @@ export const cloudSyncPlugin = createZdsPlugin({
   ],
   defaultSetting: 'off',
   // On web, cloud sync is the project storage layer rather than an optional
-  // feature, so its toggle is hidden there (and forced active by the app
-  // runtime). Mirrors createZdsPlugin's default activation setting otherwise.
+  // feature, so its toggle is hidden there and plugin activation policy keeps it
+  // enabled for eligible users. Mirrors createZdsPlugin's default activation
+  // setting otherwise.
   activationSetting: {
     category: 'plugins',
     settingName: CLOUD_SYNC_PLUGIN_ID,
@@ -1307,6 +1313,12 @@ export const cloudSyncPlugin = createZdsPlugin({
     // surface (settings panel, command bar, plugins list) for users without
     // the flag instead of special-casing the plugin id per surface.
     hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+    featurePolicy: {
+      feature: OPFS_CLOUD_FEATURE_FLAG,
+      defaultEnabled: true,
+      forceEnabledOnPlatform: 'web',
+      disableWithoutFeature: true,
+    },
     userToml: {
       sectionKey: 'plugins',
       tomlKey: CLOUD_SYNC_PLUGIN_ID,

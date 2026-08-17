@@ -27,6 +27,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::csg::CsgAlgorithm;
 use crate::std::fillet::EdgeReference;
+use crate::std::fillet::default_edge_cut_version;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
@@ -49,7 +50,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             })
         })
         .transpose()?
-        .unwrap_or_default();
+        .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()));
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 

@@ -211,9 +211,9 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.setDefaultProjectFolderName
           data: { requestedDefaultProjectFolderName: string }
         }
-      // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
+      // TODO: Move this generateZookeeper to another machine in the future and make a whole machine out of it.
       | {
-          type: SystemIOMachineEvents.generateTextToCAD
+          type: SystemIOMachineEvents.generateZookeeper
           data: {
             requestedPrompt: string
             requestedProjectName: string
@@ -462,9 +462,9 @@ export const systemIOMachine = setup({
         return event.output
       },
     }),
-    [SystemIOMachineActions.setRequestedTextToCadGeneration]: assign({
-      requestedTextToCadGeneration: ({ event }) => {
-        assertEvent(event, SystemIOMachineEvents.generateTextToCAD)
+    [SystemIOMachineActions.setRequestedZookeeperGeneration]: assign({
+      requestedZookeeperGeneration: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.generateZookeeper)
         return event.data
       },
     }),
@@ -868,7 +868,7 @@ export const systemIOMachine = setup({
     },
     canReadWriteProjectDirectory: { value: true, error: undefined },
     clearURLParams: { value: false },
-    requestedTextToCadGeneration: {
+    requestedZookeeperGeneration: {
       requestedPrompt: '',
       requestedProjectName: NO_PROJECT_DIRECTORY,
       isProjectNew: true,
@@ -931,8 +931,8 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.importFileFromURL]: {
           target: SystemIOMachineStates.importFileFromURL,
         },
-        [SystemIOMachineEvents.generateTextToCAD]: {
-          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        [SystemIOMachineEvents.generateZookeeper]: {
+          actions: [SystemIOMachineActions.setRequestedZookeeperGeneration],
         },
         [SystemIOMachineEvents.deleteKCLFile]: {
           target: SystemIOMachineStates.deletingKCLFile,
@@ -1042,8 +1042,8 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.importFileFromURL]: {
           target: SystemIOMachineStates.importFileFromURL,
         },
-        [SystemIOMachineEvents.generateTextToCAD]: {
-          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        [SystemIOMachineEvents.generateZookeeper]: {
+          actions: [SystemIOMachineActions.setRequestedZookeeperGeneration],
         },
         [SystemIOMachineEvents.deleteKCLFile]: {
           target: SystemIOMachineStates.deletingKCLFile,
@@ -1418,8 +1418,8 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.importFileFromURL]: {
           actions: [SystemIOMachineActions.deferSystemIOEvent],
         },
-        [SystemIOMachineEvents.generateTextToCAD]: {
-          actions: [SystemIOMachineActions.setRequestedTextToCadGeneration],
+        [SystemIOMachineEvents.generateZookeeper]: {
+          actions: [SystemIOMachineActions.setRequestedZookeeperGeneration],
         },
         [SystemIOMachineEvents.deleteKCLFile]: {
           actions: [SystemIOMachineActions.deferSystemIOEvent],

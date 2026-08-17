@@ -664,6 +664,32 @@ s1 = sketch(on = YZ) {
   line1.end.at[1] == 7
 """
 
+warning_sketch_code = """
+@settings(defaultLengthUnit = mm)
+
+warningSketch = sketch(on = XY) {
+  horizontalLine = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  verticalLine = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  coincident([horizontalLine.end, verticalLine.start])
+  horizontal(horizontalLine)
+  vertical(verticalLine)
+  angle([horizontalLine, verticalLine]) == 90deg
+}
+"""
+
+error_sketch_code = """
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+errorSketch = sketch(on = XY) {
+  bottom = line(start = [var 0, var 0], end = [var 10, var 0])
+  right = line(start = [var 10, var 0], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var 0, var 10])
+  left = line(start = [var 0, var 10], end = [var 0, var 0])
+}
+errorRegion = region(point = [5, 5], sketch = errorSketch)
+errorSolid = extrude(sketches = errorRegion, length = 10)
+"""
+
 
 @requires_engine
 @pytest.mark.asyncio
@@ -709,6 +735,45 @@ async def test_sketch_constraint_status_mixed():
     assert report.kcl_error is None
 
 
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_includes_execution_warnings():
+    report = await execute_with_retries(
+        kcl.get_sketch_constraint_status_code, warning_sketch_code
+    )
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert len(report.warnings) == 1
+    assert "Instead of constraining to 90deg" in report.warnings[0]
+    assert "constraint to Perpendicular" in report.warnings[0]
+    assert len(report.execution_errors) == 0
+    assert len(report.execution_fatals) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_includes_non_fatal_execution_errors():
+    report = await execute_with_retries(
+        kcl.get_sketch_constraint_status_code, error_sketch_code
+    )
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 0
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 0
+    assert len(report.errors) == 0
+    assert len(report.warnings) == 0
+    assert len(report.execution_errors) == 1
+    assert "expects an unlabeled first argument" in report.execution_errors[0]
+    assert len(report.execution_fatals) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_parse_error_returns_report():
     report = await kcl.get_sketch_constraint_status_code(parse_error_sketch_code)
@@ -717,6 +782,9 @@ async def test_sketch_constraint_status_parse_error_returns_report():
     assert len(report.under_constrained) == 0
     assert len(report.over_constrained) == 0
     assert len(report.errors) == 0
+    assert len(report.warnings) == 0
+    assert len(report.execution_errors) == 0
+    assert len(report.execution_fatals) == 0
     assert report.is_complete is False
     assert report.kcl_error is not None
     assert report.kcl_error.phase == "parse"

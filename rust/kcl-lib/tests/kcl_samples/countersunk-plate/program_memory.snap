@@ -213,6 +213,20 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 3686,
+            "end": 3707,
+            "moduleId": 0,
+            "start": 3686,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 4060,
             "end": 4068,
             "moduleId": 0,
@@ -448,6 +462,36 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.710722256302829
             ],
             "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3686,
+              "end": 3707,
+              "moduleId": 0,
+              "start": 3686,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
             "units": "in"
           }
         ],
@@ -771,6 +815,36 @@ description: Variables in memory after executing countersunk-plate.kcl
             1.710722256302829
           ],
           "type": "Arc",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.00000000000000000005512464898470455,
+            0.00000000000000000001890106011052112
+          ],
+          "from": [
+            1.270887087750827,
+            -0.7967722448656341
+          ],
+          "radius": 1.5,
+          "tag": {
+            "commentStart": 3686,
+            "end": 3707,
+            "moduleId": 0,
+            "start": 3686,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "to": [
+            1.270887087750827,
+            -0.7967722448656341
+          ],
+          "type": "Circle",
           "units": "in"
         }
       ],
@@ -2825,6 +2899,20 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 3686,
+            "end": 3707,
+            "moduleId": 0,
+            "start": 3686,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 4060,
             "end": 4068,
             "moduleId": 0,
@@ -3060,6 +3148,36 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.710722256302829
             ],
             "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3686,
+              "end": 3707,
+              "moduleId": 0,
+              "start": 3686,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
             "units": "in"
           }
         ],
@@ -3287,6 +3405,20 @@ description: Variables in memory after executing countersunk-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 3686,
+            "end": 3707,
+            "moduleId": 0,
+            "start": 3686,
+            "type": "TagDeclarator",
+            "value": "centerClearanceCircle"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 4060,
             "end": 4068,
             "moduleId": 0,
@@ -3522,6 +3654,36 @@ description: Variables in memory after executing countersunk-plate.kcl
               1.710722256302829
             ],
             "type": "Arc",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.00000000000000000005512464898470455,
+              0.00000000000000000001890106011052112
+            ],
+            "from": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "radius": 1.5,
+            "tag": {
+              "commentStart": 3686,
+              "end": 3707,
+              "moduleId": 0,
+              "start": 3686,
+              "type": "TagDeclarator",
+              "value": "centerClearanceCircle"
+            },
+            "to": [
+              1.270887087750827,
+              -0.7967722448656341
+            ],
+            "type": "Circle",
             "units": "in"
           }
         ],

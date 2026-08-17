@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
   ProjectLibrary,
+  ProjectLibraryInitialProject,
   ProjectLibrarySetting,
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
@@ -140,6 +141,13 @@ export interface ProjectLibraryCreateProjectInput {
   library: ProjectLibrary
   requestedProjectName: string
   requestedProjectTitle: string
+  /** Optional KCL file to write before publishing the new project. */
+  initialKclFile?: {
+    fileName: string
+    code: string
+  }
+  /** Optional complete project to write before publishing it. */
+  initialProject?: ProjectLibraryInitialProject
 }
 
 export interface ProjectLibraryProjectInput {

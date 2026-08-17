@@ -182,7 +182,7 @@ const SignIn = () => {
           VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
           VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
           VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
-          VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+          VITE_ZOOKEEPER_WEBSOCKET_URL: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
         },
       },
     })
@@ -548,7 +548,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to={withSiteBaseURL('/docs/zoo-design-studio/text-to-cad')}
+                  to={withSiteBaseURL('/docs/zoo-design-studio/zookeeper')}
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',

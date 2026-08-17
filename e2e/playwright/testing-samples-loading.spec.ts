@@ -143,7 +143,24 @@ test.describe('Testing loading external models', { tag: '@desktop' }, () => {
 })
 
 test.describe('Query parameter command', { tag: '@web' }, () => {
-  test('should add sample to demo project', async ({
+  test('applies the ttc layout without opening the command palette', async ({
+    page,
+    cmdBar,
+  }) => {
+    await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const layout = window.app.layout.get()
+          return 'sizes' in layout ? layout.sizes : []
+        })
+      )
+      .toEqual([0, 50, 50])
+    await cmdBar.expectState({ stage: 'commandBarClosed' })
+  })
+
+  test('creates a current sample in the default project library', async ({
     page,
     toolbar,
     editor,
@@ -157,5 +174,6 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })
+    await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/)
   })
 })

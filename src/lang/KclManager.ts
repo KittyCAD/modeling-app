@@ -173,6 +173,10 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  type UserFeaturesSettleService,
+  waitForUserFeaturesSettled,
+} from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -296,6 +300,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  userFeatures: UserFeaturesSettleService
   keymap?: KeymapService
 }
 
@@ -431,6 +436,7 @@ export class ZDSProject {
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
+      userFeatures: this.app.userFeatures,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -1046,7 +1052,7 @@ export class KclManager extends File {
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload it.
         if (
-          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
           this.zookeeperHistoryRecordingInProgress
         ) {
           return
@@ -1115,7 +1121,7 @@ export class KclManager extends File {
     diskCode: string
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
    * its file writes land, so file watchers must not reload the active editor
@@ -2670,6 +2676,11 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    // Runtime feature flags (e.g. the KCL executor selection) come from user
+    // features fetched over the network after login; the first execution must
+    // not race that fetch, or it runs with the flags' defaults. Settled
+    // features make this await instant.
+    await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
     this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 

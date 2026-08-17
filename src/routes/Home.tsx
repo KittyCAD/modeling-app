@@ -14,7 +14,6 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import {
   type ProjectStatus,
@@ -80,6 +79,7 @@ import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
+  reportOnboardingStartFailure,
 } from '@src/routes/Onboarding/utils'
 import type { HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
@@ -99,20 +99,11 @@ const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 const Home = () => {
   useSignals()
   const app = useApp()
-  const {
-    auth,
-    billing,
-    commands,
-    settings,
-    systemIOActor,
-    registry,
-    userFeatures,
-  } = app
+  const { auth, billing, commands, settings, registry, userFeatures } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
-  const executingPath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
 
   useEffect(() => {
     if (!keymap) {
@@ -137,8 +128,8 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
-  const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
@@ -418,14 +409,11 @@ const Home = () => {
                 <ActionButton
                   Element="button"
                   onClick={() => {
-                    acceptOnboarding({
+                    void acceptOnboarding({
+                      app,
                       onboardingStatus,
                       navigate,
-                      kclManager,
-                      systemIOActor,
-                      settingsActor,
-                      executingPath,
-                    })
+                    }).catch(reportOnboardingStartFailure)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
                   iconStart={{

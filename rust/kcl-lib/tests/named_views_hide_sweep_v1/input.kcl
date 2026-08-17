@@ -1,0 +1,20 @@
+// Classic pipeline (V1) test, kept deliberately: the V1 sweep() function
+// hides its trajectory sketch internally, which the V2 form does not do
+// (see named_views_hide_sweep). The rendered snapshot must show ONLY the
+// anchor box -- the swept tube must be gone.
+path001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, 15])
+
+tubeHidden = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 3)
+  |> sweep(path = path001)
+
+boxVisible = startSketchOn(XY)
+  |> startProfile(at = [20, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> close()
+  |> extrude(length = 10)
+
+hide(tubeHidden)
