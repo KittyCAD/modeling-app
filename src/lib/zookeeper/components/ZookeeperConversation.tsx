@@ -863,7 +863,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           )}
           {props.isLoadingAttachments ? (
             <div className="border-t b-4 px-4 py-2 bg-chalkboard-10 dark:bg-chalkboard-90 text-xs text-chalkboard-70 dark:text-chalkboard-30">
-              Progressively loading attachments into context...
+              Loading attachments...
             </div>
           ) : null}
           <div className="border-t b-4">

@@ -374,9 +374,7 @@ describe('ZookeeperConversation', () => {
       />
     )
 
-    expect(
-      screen.getByText('Progressively loading attachments into context...')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Loading attachments...')).toBeInTheDocument()
   })
 
   test('omits mode while server mode metadata is unavailable', () => {
