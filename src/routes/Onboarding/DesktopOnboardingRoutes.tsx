@@ -13,7 +13,7 @@ import {
   legacyDesktopOnboardingPathAliases,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import { PATHS, joinRouterPaths, webSafePathSplit } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -28,7 +28,11 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import { type RouteObject, useSearchParams } from 'react-router-dom'
+import {
+  type RouteObject,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -60,12 +64,44 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
-function Welcome() {
+function getProjectNameFromFileRoute(pathname: string) {
+  const fileRoutePrefix = `${PATHS.FILE}/`
+  if (!pathname.startsWith(fileRoutePrefix)) {
+    return undefined
+  }
+
+  const fileRoute = pathname.slice(fileRoutePrefix.length)
+  const onboardingIndex = fileRoute.indexOf(PATHS.ONBOARDING)
+  const encodedFilePath =
+    onboardingIndex === -1 ? fileRoute : fileRoute.slice(0, onboardingIndex)
+
+  try {
+    const pathSegments = webSafePathSplit(
+      decodeURIComponent(encodedFilePath).replaceAll('\\', '/')
+    ).filter(Boolean)
+    return pathSegments.at(-2)
+  } catch {
+    return undefined
+  }
+}
+
+function useOnboardingProjectIO() {
   useSignals()
-  const app = useApp()
-  const { systemIOActor, registry } = app
+  const location = useLocation()
+  const { registry, systemIOActor } = useApp()
   const currentProjectName = registry.get(projectSession).project.value
     ?.name
+  return {
+    projectName:
+      getProjectNameFromFileRoute(location.pathname) ??
+      currentProjectName ??
+      ONBOARDING_PROJECT_NAME,
+    systemIOActor,
+  }
+}
+
+function Welcome() {
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop'
 
   // Ensure panes are closed
@@ -77,7 +113,7 @@ function Welcome() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: currentProjectName || ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -85,7 +121,7 @@ function Welcome() {
         ),
       },
     })
-  }, [systemIOActor, currentProjectName])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -105,7 +141,7 @@ function Welcome() {
 }
 
 function Scene() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
 
   // Ensure panes are closed
@@ -117,11 +153,11 @@ function Scene() {
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileNameWithExtension: 'blank.kcl',
         files: [
           {
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedFileName: 'blank.kcl',
             requestedCode: '',
           },
@@ -133,7 +169,7 @@ function Scene() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -244,7 +280,7 @@ function ZookeeperPrompt() {
 }
 
 function FeatureTreePane() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
   const generatedFileName = 'main.kcl'
@@ -260,7 +296,7 @@ function FeatureTreePane() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: generatedFileName,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -268,7 +304,7 @@ function FeatureTreePane() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -378,7 +414,7 @@ function OtherPanes() {
 }
 
 function PromptToEdit() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Highlight the zookeeper button if it's present
@@ -390,7 +426,7 @@ function PromptToEdit() {
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
@@ -398,7 +434,7 @@ function PromptToEdit() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -495,7 +531,7 @@ function PromptToEditPrompt() {
 }
 
 function PromptToEditResult() {
-  const { systemIOActor } = useApp()
+  const { projectName, systemIOActor } = useOnboardingProjectIO()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
 
@@ -507,11 +543,11 @@ function PromptToEditResult() {
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedProjectName: projectName,
         files: [
           {
             requestedFileName: 'main.kcl',
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedProjectName: projectName,
             requestedCode: modifiedColdPlate,
           },
         ],
@@ -522,7 +558,7 @@ function PromptToEditResult() {
         ),
       },
     })
-  }, [systemIOActor])
+  }, [systemIOActor, projectName])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
