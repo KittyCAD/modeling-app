@@ -898,7 +898,10 @@ extrude001 = extrude(profile001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [seg01, capEnd001] },
+          axis = {
+            sideFaces = [seg01, capEnd001],
+            endFaces = [seg02, seg03]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1243,7 +1246,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,capEnd001]}], radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -2004,7 +2007,7 @@ box = extrude(profile, length = 30)`
           currentArgKey: 'x',
           currentArgValue: '5',
           headerArguments: {
-            Objects: '1 path',
+            Objects: '1 sweep',
             X: '5',
           },
           highlightedHeaderArg: 'x',

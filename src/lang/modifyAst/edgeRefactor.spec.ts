@@ -557,7 +557,7 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        capEnd001,
+        body.faces.capEnd001,
         baseRegion.tags.edge1
       ]
     }

@@ -277,7 +277,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('fillet(')
       expect(newCode).toContain('radius = 1')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/edges = \[\s*{/)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -410,8 +410,8 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('radius001 = 2')
-      expect(newCode).toContain('fillet001 = fillet(extrude001')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/fillet001 = fillet\(\s*extrude001/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode).toContain('radius = radius001')
       expect(newCode).not.toContain('getCommonEdge')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -484,8 +484,8 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       expect(newCode).toContain(
         'fillet001 = fillet(extrude001, tags = edge001, radius = 1)'
       )
-      expect(newCode).toContain('fillet002 = fillet(extrude001')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/fillet002 = fillet\(\s*extrude001/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode.indexOf('fillet001')).toBeLessThan(
         newCode.indexOf('fillet002')
       )
@@ -564,8 +564,8 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       expect(newCode).toContain(
         'fillet001 = fillet(extrude001, tags = edge001, radius = 1)'
       )
-      expect(newCode).toContain('fillet002 = fillet(extrude001')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/fillet002 = fillet\(\s*extrude001/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode.indexOf('fillet001')).toBeLessThan(
         newCode.indexOf('fillet002')
       )
@@ -622,7 +622,7 @@ extrude001 = extrude(profile001, length = 5)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain('fillet(')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode.includes('tagEnd') || newCode.includes('tagStart')).toBe(
         true
       )
@@ -702,9 +702,9 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('fillet001 = fillet(extrude001')
-      expect(newCode).toContain('fillet002 = fillet(extrude002')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/fillet001 = fillet\(\s*extrude001/)
+      expect(newCode).toMatch(/fillet002 = fillet\(\s*extrude002/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
@@ -851,7 +851,7 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('chamfer(')
       expect(newCode).toContain('length = 1')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/edges = \[\s*{/)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -922,8 +922,8 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       expect(newCode).toContain(
         'chamfer001 = chamfer(extrude001, tags = edge001, length = 1)'
       )
-      expect(newCode).toContain('chamfer002 = chamfer(extrude001')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/chamfer002 = chamfer\(\s*extrude001/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode.indexOf('chamfer001')).toBeLessThan(
         newCode.indexOf('chamfer002')
       )
@@ -980,7 +980,7 @@ extrude001 = extrude(profile001, length = 5)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain('chamfer(')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/edges = \[\s*{/)
       expect(newCode.includes('tagEnd') || newCode.includes('tagStart')).toBe(
         true
       )
@@ -1060,9 +1060,9 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('chamfer001 = chamfer(extrude001')
-      expect(newCode).toContain('chamfer002 = chamfer(extrude002')
-      expect(newCode).toContain('edges = [{')
+      expect(newCode).toMatch(/chamfer001 = chamfer\(\s*extrude001/)
+      expect(newCode).toMatch(/chamfer002 = chamfer\(\s*extrude002/)
+      expect(newCode).toMatch(/edges = \[\s*{/)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
