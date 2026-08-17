@@ -69,10 +69,10 @@ pub enum PlaneName {
     NegYz,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Default, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
 /// API-owned point data used by artifact payloads so the wire model does not
 /// depend on kcl-lib's execution geometry types.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Default, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 pub struct ArtifactPoint3d {
     pub x: f64,
     pub y: f64,
@@ -80,11 +80,11 @@ pub struct ArtifactPoint3d {
     pub units: Option<UnitLength>,
 }
 
+/// API-owned plane data used by artifacts. It mirrors kcl-lib's evaluated
+/// plane JSON shape while keeping kcl-api independent of execution internals.
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-/// API-owned plane data used by artifacts. It mirrors kcl-lib's evaluated
-/// plane JSON shape while keeping kcl-api independent of execution internals.
 pub struct ArtifactPlaneInfo {
     pub origin: ArtifactPoint3d,
     pub x_axis: ArtifactPoint3d,
@@ -92,22 +92,22 @@ pub struct ArtifactPlaneInfo {
     pub z_axis: ArtifactPoint3d,
 }
 
+/// API-owned sweep method equivalent to the engine extrusion method, avoiding
+/// a kcl-api dependency on kittycad-modeling-cmds.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "snake_case")]
-/// API-owned sweep method equivalent to the engine extrusion method, avoiding
-/// a kcl-api dependency on kittycad-modeling-cmds.
 pub enum ArtifactSweepMethod {
     New,
     Merge,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 /// API-owned camera orientation used by named-view artifacts, equivalent to
 /// the KCL enum `std::view::Orientation`. Keeping it here means the wire model
 /// does not depend on kcl-lib's execution types.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub enum ArtifactOrientation {
     Front,
     Back,
@@ -118,33 +118,33 @@ pub enum ArtifactOrientation {
     Isometric,
 }
 
+/// API-owned camera projection used by named-view artifacts, equivalent to the
+/// KCL enum `std::view::Projection`. See [`ArtifactOrientation`].
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-/// API-owned camera projection used by named-view artifacts, equivalent to the
-/// KCL enum `std::view::Projection`. See [`ArtifactOrientation`].
 pub enum ArtifactProjection {
     Orthographic,
     Perspective,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 /// API-owned visibility baseline used by named-view artifacts, equivalent to
 /// the KCL enum `std::view::Visibility`. `Show` means every object is visible
 /// except those the view's hide list names; `Hide` means the reverse.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub enum ArtifactVisibility {
     Show,
     Hide,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(tag = "type", rename_all = "camelCase")]
 /// Where a named view's camera looks from: one variant per KCL constructor
 /// function, so a stored view can never carry both a curated orientation and a
 /// custom direction.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum ArtifactCameraLook {
     /// A curated orientation, from `view::oriented`.
     Oriented { orientation: ArtifactOrientation },
@@ -157,9 +157,6 @@ pub enum ArtifactCameraLook {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 /// API-owned camera intent used by named-view artifacts. It mirrors kcl-lib's
 /// `CameraView` JSON shape while keeping kcl-api independent of execution
 /// internals, as [`ArtifactPlaneInfo`] does for planes.
@@ -167,6 +164,9 @@ pub enum ArtifactCameraLook {
 /// The values are intent, not a snapshot of engine camera state: an absent
 /// field is resolved by whichever consumer activates the view. Every length is
 /// in millimeters, converted when the view was constructed.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct ArtifactCameraView {
     pub look: ArtifactCameraLook,
     /// The point the camera looks at, in millimeters. Absent means: center on
@@ -568,9 +568,6 @@ pub struct GdtAnnotationArtifact {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 /// A named view declared in KCL by `view::named`: a display name, camera intent
 /// and the objects the view shows or hides.
 ///
@@ -579,6 +576,9 @@ pub struct GdtAnnotationArtifact {
 /// named by ARTIFACT id, so a consumer resolves each one through the artifact
 /// graph; an extruded solid's engine id differs from its artifact id, and the
 /// translation belongs to whoever applies the view.
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct NamedViewArtifact {
     pub id: ArtifactId,
     /// The display name the author gave the view. Required, and unique among

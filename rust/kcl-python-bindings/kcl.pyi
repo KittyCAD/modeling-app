@@ -601,6 +601,24 @@ class SketchConstraintReport:
     @property
     def errors(self) -> builtins.list[SketchConstraintStatus]: ...
     @property
+    def warnings(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution warnings collected while computing
+        the constraint report.
+        """
+    @property
+    def execution_errors(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution errors collected while computing the
+        constraint report.
+        """
+    @property
+    def execution_fatals(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered fatal KCL execution issues collected while computing the
+        constraint report.
+        """
+    @property
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
