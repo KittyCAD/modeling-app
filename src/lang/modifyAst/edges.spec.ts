@@ -281,6 +281,77 @@ extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('qualifies an original body cap after the body is cloned', async () => {
+      const code = `@settings(kclVersion = 2.0)
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [20, 0])
+  right = line(start = [20, 0], end = [20, 12])
+  top = line(start = [20, 12], end = [0, 12])
+  left = line(start = [0, 12], end = [0, 0])
+}
+region001 = region(point = [10, 6], sketch = sketch001)
+body001 = extrude(region001, length = 8, tagEnd = $endCap)
+body002 = clone(body001) |> translate(x = 30)
+hide(sketch001)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const originalSweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep' && !artifact.sourceSweepId
+      )
+      expect(originalSweep).toBeDefined()
+      if (!originalSweep || originalSweep.type !== 'sweep') return
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === originalSweep.id &&
+          artifact.subType === 'end'
+      )
+      const wall = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'wall' && artifact.sweepId === originalSweep.id
+      )
+      expect(endCap).toBeDefined()
+      expect(wall).toBeDefined()
+      if (!endCap || endCap.type !== 'cap' || !wall || wall.type !== 'wall')
+        return
+      const segment = artifactGraph.get(wall.segId)
+      expect(segment).toBeDefined()
+      if (!segment || segment.type !== 'segment') return
+      const codeRefs = getCodeRefsByArtifactId(segment.id, artifactGraph)
+      expect(codeRefs?.length).toBeGreaterThan(0)
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: [endCap.id, wall.id],
+              },
+              codeRef: codeRefs![0],
+            },
+          ],
+          otherSelections: [],
+        },
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('body001.faces.endCap')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should resolve face API edges before inserting a new radius variable', async () => {
       const codeWithTags = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])

@@ -811,6 +811,16 @@ export function createEdgeRefObjectExpression(
     faceArtifact: Artifact
   ): Expr => {
     if (
+      owningBodyExpr != null &&
+      expr.type === 'Name' &&
+      faceArtifact.type === 'cap'
+    ) {
+      return createMemberExpression(
+        createMemberExpression(structuredClone(owningBodyExpr), 'faces'),
+        expr.name?.name ?? ''
+      )
+    }
+    if (
       effectiveTagsBaseExpr != null &&
       expr.type === 'Name' &&
       faceArtifact.type !== 'cap'
@@ -2762,6 +2772,28 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
 
     // Process each body
     for (const [bodyKey, bodyData] of bodyToV2Selections.entries()) {
+      const solids: Selections = {
+        graphSelections: [
+          {
+            entityRef: artifactToEntityRef('sweep', bodyData.sweepArtifact.id),
+            codeRef: bodyData.sweepArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      }
+      const vars = getVariableExprsFromSelection(
+        solids,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance,
+        nodeToEdit,
+        { lastChildLookup: true }
+      )
+      if (err(vars)) return vars
+      if (vars.exprs.length !== 1) {
+        return new Error('Could not resolve the selected body')
+      }
+
       const bodyEdgeRefs: Expr[] = []
 
       // Create edgeRefs from V2 selections
@@ -2771,7 +2803,11 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
           payload,
           wasmInstance,
           modifiedAst,
-          artifactGraph
+          artifactGraph,
+          undefined,
+          undefined,
+          undefined,
+          vars.exprs[0]
         )
         if (err(result)) {
           console.warn('Failed to create edgeRef expression:', result)
@@ -2783,27 +2819,6 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       }
 
       if (bodyEdgeRefs.length === 0) continue
-
-      // Build solids expression
-      const solids: Selections = {
-        graphSelections: [
-          {
-            entityRef: artifactToEntityRef('sweep', bodyData.sweepArtifact.id),
-            codeRef: bodyData.sweepArtifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      }
-
-      const vars = getVariableExprsFromSelection(
-        solids,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        nodeToEdit,
-        { lastChildLookup: true }
-      )
-      if (err(vars)) return vars
 
       const solidsExpr = createVariableExpressionsArray(vars.exprs)
       const edgeRefsExpr = createArrayExpression(bodyEdgeRefs)
