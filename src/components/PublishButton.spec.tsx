@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const mockState = vi.hoisted(() => ({
@@ -50,27 +50,32 @@ describe('PublishButton', () => {
     mockState.useProjectStatus.mockReturnValue(null)
   })
 
-  test('shows the Aquarium status in the Publish button', () => {
-    mockState.useProjectStatus.mockReturnValue({
-      publicationStatus: 'published',
-    })
+  test.each([
+    ['pending_review', 'Pending Review', 'eyeOpen'],
+    ['published', 'Published', 'checkmark'],
+    ['rejected', 'Rejected', 'close'],
+  ] as const)(
+    'replaces Publish with the neutral %s status',
+    (publicationStatus, label, icon) => {
+      mockState.useProjectStatus.mockReturnValue({ publicationStatus })
 
-    render(<PublishButton app={createApp()} />)
+      render(<PublishButton app={createApp()} />)
 
-    const publishButton = screen.getByTestId('publish-button')
-    expect(
-      within(publishButton).getByTestId('publish-aquarium-status-badge')
-    ).toHaveTextContent('Published')
-    expect(publishButton).toHaveAccessibleName(
-      'Publish Aquarium status: Published'
-    )
-    expect(mockState.useProjectStatus).toHaveBeenCalledWith(
-      'remote-123',
-      'token-123'
-    )
-  })
+      const publishButton = screen.getByTestId('publish-button')
+      expect(publishButton).toHaveAccessibleName(label)
+      expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
+        'data-icon',
+        icon
+      )
+      expect(publishButton).not.toHaveClass('bg-warn-10/60')
+      expect(mockState.useProjectStatus).toHaveBeenCalledWith(
+        'remote-123',
+        'token-123'
+      )
+    }
+  )
 
-  test('keeps review feedback out of the compact button status', () => {
+  test('highlights changes requested without putting feedback in the button', () => {
     mockState.useProjectStatus.mockReturnValue({
       publicationStatus: 'changes_requested',
       feedback: 'Add another view.',
@@ -78,22 +83,26 @@ describe('PublishButton', () => {
 
     render(<PublishButton app={createApp()} />)
 
-    expect(
-      screen.getByTestId('publish-aquarium-status-badge')
-    ).toHaveTextContent('Changes requested')
-    expect(screen.getByTestId('publish-button')).toHaveAccessibleName(
-      'Publish Aquarium status: Changes requested'
+    const publishButton = screen.getByTestId('publish-button')
+    expect(publishButton).toHaveAccessibleName('Changes requested')
+    expect(publishButton).toHaveClass('bg-warn-10/60')
+    expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
+      'data-icon',
+      'triangleExclamation'
     )
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
-  test('hides non-publication Aquarium statuses in Publish', () => {
+  test('uses the default Publish action for non-publication statuses', () => {
     mockState.useProjectStatus.mockReturnValue({ publicationStatus: 'draft' })
 
     render(<PublishButton app={createApp()} />)
 
-    expect(
-      screen.queryByTestId('publish-aquarium-status-badge')
-    ).not.toBeInTheDocument()
+    const publishButton = screen.getByTestId('publish-button')
+    expect(publishButton).toHaveAccessibleName('Publish')
+    expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
+      'data-icon',
+      'share'
+    )
   })
 })

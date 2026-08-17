@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { AquariumStatusBadge } from '@src/components/AquariumStatusBadge'
-import { CustomIcon } from '@src/components/CustomIcon'
+import { getAquariumStatusBadge } from '@src/components/AquariumStatusBadge'
+import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
 import {
   type ProjectStatus,
@@ -90,6 +90,7 @@ function PublishPopoverContent({
     submittedProjectStatus.projectId === project?.cloudProjectId
       ? submittedProjectStatus.status
       : fetchedProjectStatus
+  const buttonPresentation = getPublishButtonPresentation(projectStatus)
   const keymap = app.registry.optional(keymapService)
   const markdownEditor = app.registry.optional(markdownEditorService)
   const markdownEditorKeymap = useMemo(
@@ -192,18 +193,21 @@ function PublishPopoverContent({
       <Popover.Button
         type="button"
         disabled={buttonDisabled}
-        className="relative inline-flex min-w-max items-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 py-0 pl-0.5 pr-1.5 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70"
+        className={`relative inline-flex min-w-max items-center gap-1 rounded-md border py-0 pl-0.5 pr-1.5 transition-colors focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70 ${
+          buttonPresentation.highlight
+            ? 'border-warn-70 bg-warn-10/60 text-warn-90 hover:bg-warn-20 dark:border-warn-60 dark:bg-warn-80/30 dark:text-warn-10 dark:hover:bg-warn-80/50'
+            : 'border-chalkboard-30 bg-chalkboard-10/80 text-chalkboard-100 hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100'
+        }`}
         data-testid="publish-button"
       >
-        <CustomIcon name="share" className="h-5 w-5" />
-        <span className="flex-1">Publish</span>
-        {projectStatus && (
-          <AquariumStatusBadge
-            projectStatus={projectStatus}
-            className="ml-0.5 inline-flex shrink-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset"
-            dataTestId="publish-aquarium-status-badge"
-          />
-        )}
+        <CustomIcon
+          name={buttonPresentation.icon}
+          className="h-5 w-5"
+          aria-hidden="true"
+          data-testid="publish-button-icon"
+          data-icon={buttonPresentation.icon}
+        />
+        <span className="flex-1">{buttonPresentation.label}</span>
       </Popover.Button>
       {open && (
         <PublishDialog
@@ -220,4 +224,36 @@ function PublishPopoverContent({
       )}
     </>
   )
+}
+
+const aquariumStatusIcons = {
+  private: 'share',
+  draft: 'share',
+  pending_review: 'eyeOpen',
+  published: 'checkmark',
+  rejected: 'close',
+  deleted: 'share',
+  changes_requested: 'triangleExclamation',
+} satisfies Record<ProjectStatus['publicationStatus'], CustomIconName>
+
+function getPublishButtonPresentation(projectStatus: ProjectStatus | null): {
+  label: string
+  icon: CustomIconName
+  highlight: boolean
+} {
+  const aquariumStatus = getAquariumStatusBadge(projectStatus)
+
+  if (!projectStatus || !aquariumStatus) {
+    return {
+      label: 'Publish',
+      icon: 'share',
+      highlight: false,
+    }
+  }
+
+  return {
+    label: aquariumStatus.label,
+    icon: aquariumStatusIcons[projectStatus.publicationStatus],
+    highlight: projectStatus.publicationStatus === 'changes_requested',
+  }
 }
