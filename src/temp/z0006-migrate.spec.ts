@@ -87,7 +87,6 @@ describe('temporary Z0006 sample migration runner', () => {
           migrateRawKclFile({
             file,
             kclManager,
-            engineCommandManager: engine,
             wasmInstance: instance,
           }),
           fileTimeoutMs,

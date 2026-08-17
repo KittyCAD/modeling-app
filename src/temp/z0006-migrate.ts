@@ -10,7 +10,6 @@ import { readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
@@ -34,16 +33,12 @@ export type MigrationResult =
 export async function migrateRawKclFile({
   file,
   kclManager,
-  engineCommandManager,
   wasmInstance,
 }: {
   file: string
   kclManager: Awaited<
     ReturnType<typeof buildTheWorldAndConnectToEngine>
   >['kclManager']
-  engineCommandManager: Awaited<
-    ReturnType<typeof buildTheWorldAndConnectToEngine>
-  >['engineCommandManager']
   wasmInstance: Awaited<
     ReturnType<typeof buildTheWorldAndConnectToEngine>
   >['instance']
@@ -100,13 +95,9 @@ export async function migrateRawKclFile({
   }
 
   const execState = kclManager.execState
-  const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
-    edgeRefactorMetadata: execState.edgeRefactorMetadata ?? [],
-    engineCommandManager,
-  })
   const refactored = refactorZ0006Unified(
     ast,
-    hydratedEdgeRefactorMetadata,
+    execState.edgeRefactorMetadata ?? [],
     execState.directTagFilletMetadata ?? [],
     execState.artifactGraph,
     wasmInstance
