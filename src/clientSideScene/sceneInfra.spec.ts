@@ -3,11 +3,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 
-function makeSceneInfraForCallbacksTest() {
+function makeSceneInfraForCallbacksTest(sendSceneCommand = vi.fn()) {
   return new SceneInfra(
     {
       streamDimensions: { width: 1, height: 1 },
-      sendSceneCommand: vi.fn(),
+      sendSceneCommand,
       subscribeTo: vi.fn(),
       subscribeToUnreliable: vi.fn(),
     } as any,
@@ -113,10 +113,8 @@ describe('SceneInfra camera-owned mouse gestures', () => {
   })
 
   it('does not turn an unmodified sketch drag into a camera drag when modifiers are pressed', () => {
-    const sceneInfra = makeSceneInfraForCallbacksTest()
-    const sendSceneCommand = vi.mocked(
-      sceneInfra.camControls.engineCommandManager.sendSceneCommand
-    )
+    const sendSceneCommand = vi.fn()
+    const sceneInfra = makeSceneInfraForCallbacksTest(sendSceneCommand)
     sceneInfra.camControls.interactionGuards =
       cameraMouseDragGuards['Trackpad Friendly']
 
@@ -138,10 +136,8 @@ describe('SceneInfra camera-owned mouse gestures', () => {
   })
 
   it('keeps the camera interaction chosen on pointer down until pointer up', () => {
-    const sceneInfra = makeSceneInfraForCallbacksTest()
-    const sendSceneCommand = vi.mocked(
-      sceneInfra.camControls.engineCommandManager.sendSceneCommand
-    )
+    const sendSceneCommand = vi.fn()
+    const sceneInfra = makeSceneInfraForCallbacksTest(sendSceneCommand)
     const canvas = sceneInfra.camControls.domElement
     canvas.setPointerCapture = vi.fn()
     canvas.releasePointerCapture = vi.fn()
@@ -176,8 +172,8 @@ describe('SceneInfra camera-owned mouse gestures', () => {
       })
     )
 
-    const cameraCommands = sendSceneCommand.mock.calls.map(
-      ([command]) => command.cmd
+    const cameraCommands = sendSceneCommand.mock.calls.map(([command]) =>
+      command.type === 'modeling_cmd_req' ? command.cmd : null
     )
     expect(cameraCommands).toEqual(
       expect.arrayContaining([
