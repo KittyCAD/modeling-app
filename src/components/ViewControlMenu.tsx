@@ -33,7 +33,6 @@ export function useViewControlMenuItems() {
   )
 
   const settingsValues = settings.useSettings()
-  const shouldLockView = false
 
   const sketching = modelingState.matches('Sketch')
   const snapToGrid = settingsValues.modeling.snapToGrid.current
@@ -62,7 +61,6 @@ export function useViewControlMenuItems() {
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
-          disabled={shouldLockView}
         >
           {axisSemantic} view
         </ContextMenuItem>
@@ -76,7 +74,6 @@ export function useViewControlMenuItems() {
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
-        disabled={shouldLockView}
         hotkey="mod+alt+x"
       >
         Reset view
@@ -85,7 +82,6 @@ export function useViewControlMenuItems() {
         onClick={() => {
           modelingSend({ type: 'Center camera on selection' })
         }}
-        disabled={shouldLockView}
         hotkey={`mod+alt+c`}
       >
         Center view on selection
@@ -179,7 +175,6 @@ export function useViewControlMenuItems() {
         : []),
     ],
     [
-      shouldLockView,
       planeOrFaceId,
       firstValidSelection,
       modelingSend,

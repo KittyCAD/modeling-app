@@ -30,7 +30,6 @@ export default function AxisGizmo() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
-  const disableOrbitRef = useRef(false)
   const isPointerOverRef = useRef(false)
   const isHoverRefreshPausedRef = useRef(false)
 
@@ -68,21 +67,16 @@ export default function AxisGizmo() {
       renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
     }
     const doRayCast = (mouse: Vector2) => {
-      // If orbits are disabled, skip click logic
-      if (!disableOrbitRef.current) {
-        updateRayCaster(
-          raycasterObjects,
-          raycaster,
-          mouse,
-          camera,
-          raycasterIntersect,
-          renderer,
-          scene,
-          gizmoAxisPairs
-        )
-      } else {
-        resetRayCast()
-      }
+      updateRayCaster(
+        raycasterObjects,
+        raycaster,
+        mouse,
+        camera,
+        raycasterIntersect,
+        renderer,
+        scene,
+        gizmoAxisPairs
+      )
     }
     const updateHoverAtMouse = (mouse: Vector2) => {
       if (isHoverRefreshPausedRef.current) {
@@ -126,7 +120,6 @@ export default function AxisGizmo() {
     const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      disableOrbitRef,
       isPointerOverRef,
       updateHoverAtMouse,
       resetRayCast,
@@ -173,7 +166,7 @@ export default function AxisGizmo() {
     <div
       ref={wrapperRef}
       aria-label="View orientation gizmo"
-      data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
+      data-testid="gizmo"
       className="relative grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
     >
       <canvas ref={canvasRef} />
@@ -444,7 +437,6 @@ const quaternionsEqual = (
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection | null>,
-  disableOrbitRef: MutableRefObject<boolean>,
   isPointerOverRef: MutableRefObject<boolean>,
   updateHoverAtMouse: (mouse: Vector2) => void,
   resetRayCast: () => void,
@@ -466,8 +458,7 @@ const initializeMouseEvents = (
   }
 
   const handleClick = () => {
-    // If orbits are disabled, skip click logic
-    if (disableOrbitRef.current || !raycasterIntersect.current) {
+    if (!raycasterIntersect.current) {
       return
     }
     const axisName = raycasterIntersect.current.object.name as AxisNames

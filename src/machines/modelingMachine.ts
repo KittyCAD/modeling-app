@@ -2233,8 +2233,16 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        const camControls = kclManager.sceneInfra.camControls
+        const previousInteractionState = {
+          enablePan: camControls.enablePan,
+          enableRotate: camControls.enableRotate,
+          enableZoom: camControls.enableZoom,
+        }
+        camControls.enablePan = false
+        camControls.enableRotate = false
+        camControls.enableZoom = false
         try {
-          const camControls = kclManager.sceneInfra.camControls
           camControls.syncDirection = 'clientToEngine'
           if (camControls.configuredCameraOrbit === 'spherical') {
             await camControls.tweenToSphericalOrbitOrientation()
@@ -2273,11 +2281,11 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = true
-          camControls.enableRotate = true
+          camControls.enablePan = previousInteractionState.enablePan
+          camControls.enableRotate = previousInteractionState.enableRotate
+          camControls.enableZoom = previousInteractionState.enableZoom
           camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()

@@ -61,20 +61,32 @@ export default function Gizmo() {
 
     const camControls = kclManager.sceneInfra.camControls
     const shouldFade = !isReducedMotion()
-    setIsAnimatingToSketch(true)
-    if (shouldFade) {
-      camControls.setEngineCameraAnimationInProgress(true)
-      await new Promise((resolve) =>
-        setTimeout(resolve, CLIENT_SCENE_FADE_DURATION_MS)
-      )
+    const previousInteractionState = {
+      enablePan: camControls.enablePan,
+      enableRotate: camControls.enableRotate,
+      enableZoom: camControls.enableZoom,
     }
+    setIsAnimatingToSketch(true)
+    camControls.enablePan = false
+    camControls.enableRotate = false
+    camControls.enableZoom = false
 
     try {
+      if (shouldFade) {
+        camControls.setEngineCameraAnimationInProgress(true)
+        await new Promise((resolve) =>
+          setTimeout(resolve, CLIENT_SCENE_FADE_DURATION_MS)
+        )
+      }
+
       await letEngineAnimateAndSyncCamAfter(
         kclManager.engineCommandManager,
         targetId
       )
     } finally {
+      camControls.enablePan = previousInteractionState.enablePan
+      camControls.enableRotate = previousInteractionState.enableRotate
+      camControls.enableZoom = previousInteractionState.enableZoom
       if (shouldFade) camControls.setEngineCameraAnimationInProgress(false)
       const isNowNormalToSketch = getIsNormalToSketch()
       setIsNormalToSketch(isNowNormalToSketch)
