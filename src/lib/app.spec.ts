@@ -198,7 +198,7 @@ function createRuntimeFlagsWasmInstance() {
 
 function expectedRuntimeFlags(
   useNewLexerParser: 'On' | 'Off',
-  useCekExecutor: 'On' | 'Off' = 'Off'
+  useCekExecutor: 'On' | 'Off'
 ) {
   return JSON.stringify({
     use_cek_executor: useCekExecutor,
@@ -330,7 +330,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off')
+        expectedRuntimeFlags('Off', 'Off')
       )
     } finally {
       app.dispose()
@@ -354,7 +354,7 @@ describe('project system', () => {
       userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags('On', 'Off')
       )
     } finally {
       app.dispose()
@@ -404,7 +404,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags('On', 'Off')
       )
     } finally {
       app.dispose()
