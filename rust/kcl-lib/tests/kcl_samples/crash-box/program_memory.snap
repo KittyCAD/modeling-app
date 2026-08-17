@@ -67,6 +67,39 @@ description: Variables in memory after executing crash-box.kcl
       }
     }
   },
+  "__sketch_65_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 64,
+      "origin": {
+        "x": -210.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
   "beamCutoutDepth": {
     "type": "Number",
     "value": 300.0,
@@ -3968,7 +4001,14 @@ description: Variables in memory after executing crash-box.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 5510,
+                "end": 5518,
+                "moduleId": 0,
+                "start": 5510,
+                "type": "TagDeclarator",
+                "value": "leftHole"
+              },
               "type": "extrudeArc"
             }
           ],
@@ -3992,7 +4032,14 @@ description: Variables in memory after executing crash-box.kcl
                   -150.0
                 ],
                 "radius": 16.0,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5510,
+                  "end": 5518,
+                  "moduleId": 0,
+                  "start": 5510,
+                  "type": "TagDeclarator",
+                  "value": "leftHole"
+                },
                 "to": [
                   -84.0,
                   -150.0
@@ -4048,8 +4095,19 @@ description: Variables in memory after executing crash-box.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "leftHole": {
+                "type": "TagIdentifier",
+                "value": "leftHole"
+              },
+              "rightHole": {
+                "type": "TagIdentifier",
+                "value": "rightHole"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4069,7 +4127,14 @@ description: Variables in memory after executing crash-box.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [],
-              "tag": null,
+              "tag": {
+                "commentStart": 5714,
+                "end": 5723,
+                "moduleId": 0,
+                "start": 5714,
+                "type": "TagDeclarator",
+                "value": "rightHole"
+              },
               "type": "extrudeArc"
             }
           ],
@@ -4093,7 +4158,14 @@ description: Variables in memory after executing crash-box.kcl
                   -150.0
                 ],
                 "radius": 16.0,
-                "tag": null,
+                "tag": {
+                  "commentStart": 5714,
+                  "end": 5723,
+                  "moduleId": 0,
+                  "start": 5714,
+                  "type": "TagDeclarator",
+                  "value": "rightHole"
+                },
                 "to": [
                   116.0,
                   -150.0
@@ -4106,7 +4178,7 @@ description: Variables in memory after executing crash-box.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 65,
+              "objectId": 64,
               "origin": {
                 "x": -210.0,
                 "y": 0.0,
@@ -4135,11 +4207,11 @@ description: Variables in memory after executing crash-box.kcl
             },
             "start": {
               "from": [
-                116.0,
+                -84.0,
                 -150.0
               ],
               "to": [
-                116.0,
+                -84.0,
                 -150.0
               ],
               "units": "mm",
@@ -4149,8 +4221,19 @@ description: Variables in memory after executing crash-box.kcl
                 "sourceRange": []
               }
             },
+            "tags": {
+              "leftHole": {
+                "type": "TagIdentifier",
+                "value": "leftHole"
+              },
+              "rightHole": {
+                "type": "TagIdentifier",
+                "value": "rightHole"
+              }
+            },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
+            "originSketchId": "[uuid]",
             "units": "mm"
           },
           "startCapId": "[uuid]",
@@ -4161,10 +4244,447 @@ description: Variables in memory after executing crash-box.kcl
       }
     ]
   },
+  "holePlane": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 64,
+      "origin": {
+        "x": -210.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      }
+    }
+  },
+  "holeSketch": {
+    "type": "Object",
+    "value": {
+      "leftHole": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 68,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": -84.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -100.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": -84.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -150.0,
+                          "units": "None"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Number",
+                          "value": -100.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -150.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 66,
+                    "center_object_id": 67,
+                    "start_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 64,
+                  "origin": {
+                    "x": -210.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "leftHole"
+                }
+              }
+            }
+          }
+        }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    -100.0,
+                    -150.0
+                  ],
+                  "from": [
+                    -84.0,
+                    -150.0
+                  ],
+                  "radius": 16.0,
+                  "tag": {
+                    "commentStart": 5510,
+                    "end": 5518,
+                    "moduleId": 0,
+                    "start": 5510,
+                    "type": "TagDeclarator",
+                    "value": "leftHole"
+                  },
+                  "to": [
+                    -84.0,
+                    -150.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -84.0,
+                    -150.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    116.0,
+                    -150.0
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "ccw": true,
+                  "center": [
+                    100.0,
+                    -150.0
+                  ],
+                  "from": [
+                    116.0,
+                    -150.0
+                  ],
+                  "radius": 16.0,
+                  "tag": {
+                    "commentStart": 5714,
+                    "end": 5723,
+                    "moduleId": 0,
+                    "start": 5714,
+                    "type": "TagDeclarator",
+                    "value": "rightHole"
+                  },
+                  "to": [
+                    116.0,
+                    -150.0
+                  ],
+                  "type": "Circle",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 64,
+                "origin": {
+                  "x": -210.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -84.0,
+                  -150.0
+                ],
+                "to": [
+                  -84.0,
+                  -150.0
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "leftHole": {
+                  "type": "TagIdentifier",
+                  "value": "leftHole"
+                },
+                "rightHole": {
+                  "type": "TagIdentifier",
+                  "value": "rightHole"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "no"
+            }
+          }
+        },
+        "constrainable": false
+      },
+      "rightHole": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "id": "[uuid]",
+                "objectId": 71,
+                "kind": {
+                  "circle": {
+                    "start": [
+                      {
+                        "n": 116.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 100.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 116.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -150.0,
+                          "units": "None"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Number",
+                          "value": 100.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": -150.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 69,
+                    "center_object_id": 70,
+                    "start_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
+                  }
+                },
+                "surface": {
+                  "artifactId": "[uuid]",
+                  "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 64,
+                  "origin": {
+                    "x": -210.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": "mm"
+                  },
+                  "type": "plane",
+                  "xAxis": {
+                    "x": 0.0,
+                    "y": 1.0,
+                    "z": 0.0,
+                    "units": null
+                  },
+                  "yAxis": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0,
+                    "units": null
+                  },
+                  "zAxis": {
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "units": null
+                  }
+                },
+                "sketchId": "[uuid]",
+                "tag": {
+                  "type": "TagIdentifier",
+                  "value": "rightHole"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "constrainable": false
+  },
   "leftEdge": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "leftEdge"
+  },
+  "leftHole": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "leftHole"
   },
   "leftHoleProfile": {
     "type": "Sketch",
@@ -4187,7 +4707,14 @@ description: Variables in memory after executing crash-box.kcl
             -150.0
           ],
           "radius": 16.0,
-          "tag": null,
+          "tag": {
+            "commentStart": 5510,
+            "end": 5518,
+            "moduleId": 0,
+            "start": 5510,
+            "type": "TagDeclarator",
+            "value": "leftHole"
+          },
           "to": [
             -84.0,
             -150.0
@@ -4243,8 +4770,19 @@ description: Variables in memory after executing crash-box.kcl
           "sourceRange": []
         }
       },
+      "tags": {
+        "leftHole": {
+          "type": "TagIdentifier",
+          "value": "leftHole"
+        },
+        "rightHole": {
+          "type": "TagIdentifier",
+          "value": "rightHole"
+        }
+      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -4280,6 +4818,11 @@ description: Variables in memory after executing crash-box.kcl
     "type": "TagIdentifier",
     "value": "rightEdge"
   },
+  "rightHole": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "rightHole"
+  },
   "rightHoleProfile": {
     "type": "Sketch",
     "value": {
@@ -4301,7 +4844,14 @@ description: Variables in memory after executing crash-box.kcl
             -150.0
           ],
           "radius": 16.0,
-          "tag": null,
+          "tag": {
+            "commentStart": 5714,
+            "end": 5723,
+            "moduleId": 0,
+            "start": 5714,
+            "type": "TagDeclarator",
+            "value": "rightHole"
+          },
           "to": [
             116.0,
             -150.0
@@ -4314,7 +4864,7 @@ description: Variables in memory after executing crash-box.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "Custom",
-        "objectId": 65,
+        "objectId": 64,
         "origin": {
           "x": -210.0,
           "y": 0.0,
@@ -4343,11 +4893,11 @@ description: Variables in memory after executing crash-box.kcl
       },
       "start": {
         "from": [
-          116.0,
+          -84.0,
           -150.0
         ],
         "to": [
-          116.0,
+          -84.0,
           -150.0
         ],
         "units": "mm",
@@ -4357,8 +4907,19 @@ description: Variables in memory after executing crash-box.kcl
           "sourceRange": []
         }
       },
+      "tags": {
+        "leftHole": {
+          "type": "TagIdentifier",
+          "value": "leftHole"
+        },
+        "rightHole": {
+          "type": "TagIdentifier",
+          "value": "rightHole"
+        }
+      },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },

@@ -274,6 +274,11 @@ description: Artifact commands clone_a_mirror3d.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {

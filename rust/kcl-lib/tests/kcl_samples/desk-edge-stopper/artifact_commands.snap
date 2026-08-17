@@ -533,6 +533,11 @@ description: Artifact commands desk-edge-stopper.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -600,6 +605,11 @@ description: Artifact commands desk-edge-stopper.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {

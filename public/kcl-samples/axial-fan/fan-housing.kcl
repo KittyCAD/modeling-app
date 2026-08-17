@@ -201,7 +201,7 @@ sketch003 = sketch(on = XY) {
   coincident([line6.end, line4.start])
   equalLength([line5, line6])
   verticalDistance([line5.start, line5.end]) == 6
-  angle([line3, line2]) == 60
+  angleDimension(lines = [line3, line2], sector = 4, labelPosition = [7.16mm, 24.34mm]) == 120deg
   horizontalDistance([line1.start, arc4.center]) == 0.02mm
   coincident([arc4.center, line4])
 }

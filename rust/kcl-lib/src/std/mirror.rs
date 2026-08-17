@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
@@ -84,7 +83,7 @@ async fn inner_mirror_3d(
                 .map(|arg| arg.source_range)
                 .unwrap_or(args.source_range);
             crate::std::edge::record_refactor_meta_for_consumed_edge(exec_state, edge_id, source_range, &args).await;
-            crate::std::edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await;
+            crate::std::edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await?;
             MirrorAcross::Edge { id: edge_id }
         }
         MirrorAcross3d::EdgeSpecifier(specifier) => MirrorAcross::EdgeReference {
@@ -147,11 +146,12 @@ async fn inner_mirror_3d(
         .into_iter()
         .zip(mirror_info.entity_face_edge_ids.iter())
     {
-        let mut old_geometry = GeometryWithImportedGeometry::Solid(mirrored_body.clone());
+        let old_id = mirrored_body.id;
+        let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
-        mirrored_body.artifact_id = ArtifactId::new(info.object_id);
+        mirrored_body.become_new_body(info.object_id, info.object_id.into());
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
-        fix_tags_and_references(&mut new_geometry, &mut old_geometry, exec_state, &args)
+        fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await
             .map_err(|e| {
                 KclError::new_internal(KclErrorDetails::new(

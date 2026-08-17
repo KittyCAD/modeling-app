@@ -1,15 +1,115 @@
 import {
   type Artifact,
   type ResolvedGraphSelection,
+  coerceSelectionsToBody,
   getArtifactFromRange,
   getBodiesFromArtifactGraph,
+  getCommonFacesForEdge,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
+
+const codeRef = {
+  range: [0, 0, 0] as [number, number, number],
+  pathToNode: [],
+  nodePath: { steps: [] },
+}
+
+function createSourceSegmentGraph(suffix = ''): {
+  artifactGraph: ArtifactGraph
+  sourceSegment: Extract<Artifact, { type: 'segment' }>
+} {
+  const artifactGraph: ArtifactGraph = new Map()
+  const idSuffix = suffix ? `-${suffix}` : ''
+  const sourceSegment: Extract<Artifact, { type: 'segment' }> = {
+    type: 'segment',
+    id: `source-segment${idSuffix}`,
+    pathId: `source-path${idSuffix}`,
+    codeRef,
+  }
+  artifactGraph.set(sourceSegment.id, sourceSegment)
+  artifactGraph.set(sourceSegment.pathId, {
+    type: 'path',
+    subType: 'sketch',
+    id: sourceSegment.pathId,
+    codeRef,
+    planeId: 'plane-1',
+    segIds: [sourceSegment.id],
+    trajectorySweepId: null,
+    consumed: true,
+  })
+  return { artifactGraph, sourceSegment }
+}
+
+function addMappedRegion(
+  artifactGraph: ArtifactGraph,
+  sourceSegment: Extract<Artifact, { type: 'segment' }>,
+  suffix: string,
+  withFaces = false,
+  targetSuffix = suffix
+) {
+  const generatedSegmentId = `generated-segment-${suffix}`
+  const regionPathId = `region-path-${suffix}`
+  const sweepId = `sweep-${targetSuffix}`
+  const surfaceIds = withFaces
+    ? [`wall-${targetSuffix}`, `cap-${targetSuffix}`]
+    : []
+
+  artifactGraph.set(generatedSegmentId, {
+    ...sourceSegment,
+    id: generatedSegmentId,
+    pathId: regionPathId,
+    originalSegId: sourceSegment.id,
+    surfaceId: withFaces ? `wall-${targetSuffix}` : undefined,
+  })
+  artifactGraph.set(regionPathId, {
+    type: 'path',
+    subType: 'region',
+    id: regionPathId,
+    codeRef,
+    planeId: withFaces ? `cap-${targetSuffix}` : 'plane-1',
+    segIds: [generatedSegmentId],
+    sweepId,
+    trajectorySweepId: null,
+    consumed: true,
+  })
+  artifactGraph.set(sweepId, {
+    type: 'sweep',
+    id: sweepId,
+    codeRef,
+    pathId: regionPathId,
+    subType: 'extrusion',
+    surfaceIds,
+    method: 'merge',
+    trajectoryId: null,
+    consumed: false,
+  })
+
+  if (withFaces) {
+    artifactGraph.set(`wall-${targetSuffix}`, {
+      type: 'wall',
+      id: `wall-${targetSuffix}`,
+      segId: generatedSegmentId,
+      sweepId,
+      pathIds: [],
+      cmdId: `cmd-${targetSuffix}`,
+      faceCodeRef: codeRef,
+    })
+    artifactGraph.set(`cap-${targetSuffix}`, {
+      type: 'cap',
+      id: `cap-${targetSuffix}`,
+      subType: 'end',
+      sweepId,
+      pathIds: [],
+      cmdId: `cmd-${targetSuffix}`,
+      faceCodeRef: codeRef,
+    })
+  }
+}
 
 describe('getSweepArtifactFromSelection', () => {
   it('should return sweep from edgeCut -> segment selection', () => {
@@ -92,9 +192,103 @@ describe('getSweepArtifactFromSelection', () => {
     }
   })
 
-  // sweepEdge was removed from the artifact graph / selectionsV2; edgeCut now resolves via
-  // segment or via entityRef (edge). A test for edge selection → sweep could use an edge
-  // entityRef payload instead of the legacy edgeCut -> sweepEdge chain.
+  it('should return the sweep mapped from an original auto-hole segment', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, '1')
+
+    const result = getSweepArtifactFromSelection(
+      {
+        artifact: sourceSegment,
+        codeRef: { range: [0, 0, 0], pathToNode: [] },
+      },
+      artifactGraph
+    )
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.id).toBe('sweep-1')
+    }
+  })
+
+  it('rejects an original segment mapped into multiple sweeps', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    for (const suffix of ['1', '2']) {
+      addMappedRegion(artifactGraph, sourceSegment, suffix)
+    }
+
+    const result = getSweepArtifactFromSelection(
+      {
+        artifact: sourceSegment,
+        codeRef: { range: [0, 0, 0], pathToNode: [] },
+      },
+      artifactGraph
+    )
+
+    expect(result).toEqual(
+      new Error('Segment maps to more than one swept region')
+    )
+  })
+
+  it('resolves two original hole segments independently', () => {
+    const left = createSourceSegmentGraph('left')
+    const right = createSourceSegmentGraph('right')
+    for (const artifact of right.artifactGraph.values()) {
+      left.artifactGraph.set(artifact.id, artifact)
+    }
+    addMappedRegion(left.artifactGraph, left.sourceSegment, 'left')
+    addMappedRegion(left.artifactGraph, right.sourceSegment, 'right')
+
+    for (const [sourceSegment, expectedSweepId] of [
+      [left.sourceSegment, 'sweep-left'],
+      [right.sourceSegment, 'sweep-right'],
+    ] as const) {
+      const result = getSweepArtifactFromSelection(
+        {
+          artifact: sourceSegment,
+          codeRef: { range: [0, 0, 0], pathToNode: [] },
+        },
+        left.artifactGraph
+      )
+
+      expect(result).not.toBeInstanceOf(Error)
+      if (!(result instanceof Error)) {
+        expect(result.id).toBe(expectedSweepId)
+      }
+    }
+  })
+})
+
+describe('getCommonFacesForEdge', () => {
+  it('uses faces from a generated region segment mapped from the selected source segment', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, '1', true)
+
+    const result = getCommonFacesForEdge(sourceSegment, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.map(({ id }) => id).sort()).toEqual(['cap-1', 'wall-1'])
+    }
+
+    addMappedRegion(artifactGraph, sourceSegment, '2', true)
+
+    expect(getCommonFacesForEdge(sourceSegment, artifactGraph)).toEqual(
+      new Error('Segment maps to more than one set of common faces')
+    )
+  })
+
+  it('accepts multiple generated segments resolving to the same faces', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, '1', true)
+    addMappedRegion(artifactGraph, sourceSegment, '2', true, '1')
+
+    const result = getCommonFacesForEdge(sourceSegment, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.map(({ id }) => id).sort()).toEqual(['cap-1', 'wall-1'])
+    }
+  })
 })
 
 describe('getSketchBlockForArtifact', () => {
@@ -222,6 +416,117 @@ describe('getArtifactFromRange', () => {
     artifactGraph.set(sketchBlock.id, sketchBlock)
 
     expect(getArtifactFromRange(range, artifactGraph)).toEqual(sketchBlock)
+  })
+})
+
+describe('coerceSelectionsToBody', () => {
+  it('preserves the identity of pattern body selections', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-1',
+          patternIndex: 1,
+        },
+        {
+          artifact: pattern,
+          codeRef: pattern.codeRef,
+          engineEntityId: 'copy-body-2',
+          patternIndex: 2,
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toEqual(selections.graphSelections)
+    }
+  })
+
+  it('coerces an edgeCut selection to its parent path', () => {
+    const path: Artifact = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    }
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const segment: Artifact = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+    const edgeCut: Artifact = {
+      type: 'edgeCut',
+      id: 'edge-cut-1',
+      consumedEdgeId: 'segment-1',
+      subType: 'chamfer',
+      edgeIds: [],
+      codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
+    }
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set(path.id, path)
+    artifactGraph.set(sweep.id, sweep)
+    artifactGraph.set(segment.id, segment)
+    artifactGraph.set(edgeCut.id, edgeCut)
+    const selections: Selections = {
+      graphSelections: [
+        {
+          artifact: edgeCut,
+          codeRef: { range: [90, 95, 0], pathToNode: [] },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections[0].artifact?.id).toBe('path-1')
+    }
   })
 })
 

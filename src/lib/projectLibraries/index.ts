@@ -40,6 +40,14 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   order?: number
 }
 
+export interface ProjectLibraryInitialProject {
+  files: readonly {
+    requestedFileName: string
+    requestedData: Uint8Array<ArrayBuffer>
+  }[]
+  entrypointFilePath: string
+}
+
 export type SerializedProjectLibrarySetting = Omit<
   ProjectLibrarySetting,
   'path'
@@ -97,7 +105,7 @@ export function getDefaultDirectoryProjectLibraryPath(
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
 
-function normalizeLibraryPath(path: string) {
+export function normalizeLibraryPath(path: string) {
   return path.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 

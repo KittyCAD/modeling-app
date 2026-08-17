@@ -818,7 +818,13 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = { sideFaces = [region001.tags.line3, capEnd001] },
+          axis = {
+            sideFaces = [region001.tags.line3, capEnd001],
+            endFaces = [
+              region001.tags.line1,
+              region001.tags.line2
+            ]
+          },
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -2930,7 +2936,11 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [capEnd001, region001.tags.line1],
+    endFaces = [
+      region001.tags.line3,
+      region001.tags.line2
+    ]
   },
   bodyType = SURFACE,
 )`
@@ -3136,6 +3146,7 @@ box = extrude(region001, length = 30)`
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            X: '5',
           },
           highlightedHeaderArg: 'objects',
           stage: 'arguments',
@@ -3146,8 +3157,23 @@ box = extrude(region001, length = 30)`
       })
 
       await test.step('Complete command flow', async () => {
-        await test.step('Progress to review since object is already selected', async () => {
+        await test.step('Progress to the prepopulated x argument', async () => {
           await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'x',
+            currentArgValue: '5',
+            headerArguments: {
+              Objects: '1 region',
+              X: '5',
+            },
+            highlightedHeaderArg: 'x',
+            commandName: 'Translate',
+          })
+        })
+
+        await test.step('Clear the default x translation', async () => {
+          await cmdBar.clearNonRequiredButton.click()
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -3164,7 +3190,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'x',
-            currentArgValue: '0',
+            currentArgValue: '5',
             headerArguments: {
               Objects: '1 region',
               X: '',
@@ -3235,13 +3261,24 @@ box = extrude(region001, length = 30)`
       currentArgValue: '',
       headerArguments: {
         Objects: '',
+        X: '5',
       },
       highlightedHeaderArg: 'objects',
       stage: 'arguments',
     })
     await expect(page.getByText('1 helix selected')).toBeVisible()
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('x')
+    await cmdBar.expectState({
+      commandName: 'Translate',
+      currentArgKey: 'x',
+      currentArgValue: '5',
+      headerArguments: {
+        Objects: '1 helix',
+        X: '5',
+      },
+      highlightedHeaderArg: 'x',
+      stage: 'arguments',
+    })
     await page.keyboard.insertText('20')
     await cmdBar.progressCmdBar()
     await cmdBar.submit()

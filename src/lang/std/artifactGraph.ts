@@ -27,6 +27,7 @@ import type {
   SweepArtifact,
   WallArtifact,
 } from '@src/lang/wasm'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 /** Legacy shape for sweep-edge-like artifact (sweepEdge removed from artifact graph). */
 type SweepEdgeLike = { segId: string; sweepId?: string }
 /**
@@ -147,6 +148,41 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
     return new Error(`Expected ${types.join(',')} but got ${artifact?.type}`)
   }
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+function getMappedRegionSegments(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }>[] {
+  return [...artifactGraph.values()].filter(
+    (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+      artifact.type === 'segment' && artifact.originalSegId === segment.id
+  )
+}
+
+function getSweepFromMappedRegionSegment(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let mappedSweep: Extract<Artifact, { type: 'sweep' }> | null = null
+
+  for (const mappedSegment of getMappedRegionSegments(segment, artifactGraph)) {
+    const path = artifactGraph.get(mappedSegment.pathId)
+    if (path?.type !== 'path' || !path.sweepId) {
+      continue
+    }
+
+    const sweep = artifactGraph.get(path.sweepId)
+    if (sweep?.type !== 'sweep') {
+      continue
+    }
+    if (mappedSweep && mappedSweep.id !== sweep.id) {
+      return new Error('Segment maps to more than one swept region')
+    }
+    mappedSweep = sweep
+  }
+
+  return mappedSweep ?? new Error('No swept region segment found')
 }
 
 export function getPatternArtifactForCopyId(
@@ -438,58 +474,65 @@ export function getCommonFacesForEdge(
   artifact: SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const commonFaces = (artifact.commonSurfaceIds ?? [])
-    .map((id) =>
-      getArtifactOfTypes({ key: id, types: ['wall', 'cap'] }, artifactGraph)
+  const candidates =
+    'pathId' in artifact
+      ? [artifact, ...getMappedRegionSegments(artifact, artifactGraph)]
+      : [artifact]
+
+  let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
+
+  for (const candidate of candidates) {
+    if (!candidate.surfaceId) continue
+    const wall = getArtifactOfTypes(
+      { key: candidate.surfaceId, types: ['wall'] },
+      artifactGraph
     )
-    .filter(
-      (candidate): candidate is Extract<Artifact, { type: 'wall' | 'cap' }> =>
-        !err(candidate)
+    if (err(wall)) continue
+
+    const path = getArtifactOfTypes(
+      { key: candidate.pathId, types: ['path'] },
+      artifactGraph
     )
-  if (commonFaces.length >= 2) return commonFaces
+    if (err(path)) continue
 
-  const wall = getArtifactOfTypes(
-    { key: artifact.surfaceId ?? '', types: ['wall'] },
-    artifactGraph
-  )
-  if (err(wall)) return wall
+    const sketchPlaneFace = getArtifactOfTypes(
+      { key: path.planeId, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    const cap = !err(sketchPlaneFace)
+      ? sketchPlaneFace
+      : ([...artifactGraph.values()].find(
+          (face): face is Extract<Artifact, { type: 'cap' }> =>
+            face.type === 'cap' &&
+            face.sweepId === path.sweepId &&
+            face.subType === 'start'
+        ) ??
+        [...artifactGraph.values()].find(
+          (face): face is Extract<Artifact, { type: 'cap' }> =>
+            face.type === 'cap' && face.sweepId === path.sweepId
+        ))
+    if (!cap || cap.id === wall.id) continue
 
-  const path = getArtifactOfTypes(
-    { key: artifact.pathId, types: ['path'] },
-    artifactGraph
-  )
-  if (err(path)) return path
-
-  const sketchPlaneFace = getArtifactOfTypes(
-    { key: path.planeId, types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  if (!err(sketchPlaneFace) && sketchPlaneFace.id !== wall.id) {
-    return [wall, sketchPlaneFace]
+    const candidateFaces = [wall, cap]
+    const commonFaceIds = new Set(commonFaces?.map(({ id }) => id))
+    if (
+      commonFaces &&
+      (commonFaces.length !== candidateFaces.length ||
+        candidateFaces.some(({ id }) => !commonFaceIds.has(id)))
+    ) {
+      return new Error('Segment maps to more than one set of common faces')
+    }
+    commonFaces = candidateFaces
   }
 
-  const startCap = [...artifactGraph.values()].find(
-    (candidate): candidate is Extract<Artifact, { type: 'cap' }> =>
-      candidate.type === 'cap' &&
-      candidate.sweepId === path.sweepId &&
-      candidate.subType === 'start'
-  )
-  if (startCap) return [wall, startCap]
-
-  const anyCap = [...artifactGraph.values()].find(
-    (candidate): candidate is Extract<Artifact, { type: 'cap' }> =>
-      candidate.type === 'cap' && candidate.sweepId === path.sweepId
-  )
-  if (anyCap) return [wall, anyCap]
-
-  return new Error('No common face found')
+  return commonFaces ?? new Error('No common face found')
 }
 
 export function getSweepArtifactFromSelection(
   selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  let sweepArtifact: Artifact | null = null
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let sweepArtifact: Extract<Artifact, { type: 'sweep' }> | null = null
   if (selection.artifact?.type === 'segment') {
     const pathId = selection.artifact.pathId
     if (pathId == null || pathId === '') {
@@ -523,6 +566,17 @@ export function getSweepArtifactFromSelection(
           if (!err(sweep)) {
             sweepArtifact = sweep
           }
+        }
+      }
+      if (!sweepArtifact) {
+        const mappedSweep = getSweepFromMappedRegionSegment(
+          selection.artifact,
+          artifactGraph
+        )
+        if (!err(mappedSweep)) {
+          sweepArtifact = mappedSweep
+        } else if (mappedSweep.message !== 'No swept region segment found') {
+          return mappedSweep
         }
       }
       if (!sweepArtifact) {
@@ -1064,6 +1118,19 @@ export function getOriginalSegmentArtifact(
   return originalSegment?.type === 'segment' ? originalSegment : segment
 }
 
+export function getSourceSegmentArtifact(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | undefined {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return undefined
+
+  if (!segment.sourceSegmentId) return segment
+
+  const sourceSegment = artifactGraph.get(segment.sourceSegmentId)
+  return sourceSegment?.type === 'segment' ? sourceSegment : segment
+}
+
 export function getSketchBlockForArtifact(
   artifact: Artifact | undefined,
   artifactGraph: ArtifactGraph
@@ -1092,6 +1159,87 @@ export function getSketchBlockForArtifact(
   }
 
   return undefined
+}
+
+/** Coerce face and edge selections to the body inputs expected by body commands. */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Selection[] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selection of selections.graphSelections) {
+    if (!selection.artifact) {
+      if (
+        selection.codeRef &&
+        selection.codeRef.range[1] - selection.codeRef.range[0] !== 0
+      ) {
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
+      selection.artifact.type === 'path'
+    ) {
+      const bodyId = selection.engineEntityId ?? selection.artifact.id
+      if (!seenBodyIds.has(bodyId)) {
+        seenBodyIds.add(bodyId)
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    if (!selection.codeRef) {
+      return new Error(
+        `Unable to find source range for selected artifact: ${selection.artifact.type}`
+      )
+    }
+    const maybeSweep = getSweepArtifactFromSelection(
+      { artifact: selection.artifact, codeRef: selection.codeRef },
+      artifactGraph
+    )
+    if (err(maybeSweep)) {
+      return new Error(
+        `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+      )
+    }
+
+    const maybePath = maybeSweep.pathId
+      ? getArtifactOfTypes(
+          { key: maybeSweep.pathId, types: ['path'] },
+          artifactGraph
+        )
+      : new Error('Sweep has no path')
+    if (!err(maybePath)) {
+      if (!seenBodyIds.has(maybePath.id)) {
+        seenBodyIds.add(maybePath.id)
+        bodySelections.push({
+          artifact: maybePath,
+          codeRef: maybePath.codeRef,
+        })
+      }
+      continue
+    }
+
+    const sweep = getArtifactOfTypes(
+      { key: maybeSweep.id, types: ['sweep'] },
+      artifactGraph
+    )
+    if (!err(sweep) && !seenBodyIds.has(sweep.id)) {
+      seenBodyIds.add(sweep.id)
+      bodySelections.push({ artifact: sweep, codeRef: maybeSweep.codeRef })
+    }
+  }
+
+  return {
+    graphSelections: bodySelections,
+    otherSelections: selections.otherSelections,
+  }
 }
 
 /**

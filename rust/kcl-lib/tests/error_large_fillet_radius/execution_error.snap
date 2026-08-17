@@ -7,9 +7,10 @@ KCL Engine error
   × engine: The Zoo engine cannot handle this 3D subtraction yet.  Please
   │ report this as an issue
   │ Edge cut failed
-    ╭─[21:13]
- 20 │ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
- 21 │ fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 13)
+    ╭─[22:13]
+ 21 │ edgeForSurface = extrude001.sketch.tags.line2
+ 22 │ fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 13)
     ·             ────────────────────────────────────────────────┬───────────────────────────────────────────────
     ·                                                             ╰── tests/error_large_fillet_radius/input.kcl
+ 23 │ surface001 = extrude(
     ╰────

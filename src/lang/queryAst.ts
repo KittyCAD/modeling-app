@@ -69,7 +69,6 @@ import {
   subVec,
 } from '@src/lib/utils2d'
 
-import type { EntityReference } from '@kittycad/lib'
 import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -80,6 +79,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
   EnginePrimitiveSelection,
+  EntityReference,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -1224,6 +1224,8 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
       return entityRef.solid2d_id
     case 'solid3d':
       return entityRef.solid3d_id
+    case 'helix':
+      return entityRef.helix_id
     case 'solid2d_edge':
       return entityRef.edge_id
     case 'segment':
@@ -1253,6 +1255,8 @@ function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
       return b.type === 'solid2d' && a.solid2d_id === b.solid2d_id
     case 'solid3d':
       return b.type === 'solid3d' && a.solid3d_id === b.solid3d_id
+    case 'helix':
+      return b.type === 'helix' && a.helix_id === b.helix_id
     case 'solid2d_edge':
       return b.type === 'solid2d_edge' && a.edge_id === b.edge_id
     case 'edge':
@@ -1382,6 +1386,9 @@ type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
   preferDirectSegment?: boolean
+  // Editing an operation must retain its original path variables instead of
+  // resolving those paths to indexed outputs of that same operation.
+  preservePathInput?: boolean
 }
 
 // Go from a selection to a list of KCL expressions that
@@ -1399,23 +1406,20 @@ export function getVariableExprsFromSelection(
     lastChildLookup = false,
     artifactTypeFilter,
     preferDirectSegment = false,
+    preservePathInput = false,
   } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
-    const patternCopyExpr = getPatternCopyExprFromSelection(
-      s,
-      ast,
-      wasmInstance
-    )
-    if (patternCopyExpr) {
-      const key = splitOutputExprKey(patternCopyExpr)
+    const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
+    if (patternExpr) {
+      const key = splitOutputExprKey(patternExpr)
       if (pushedNames[key]) {
         continue
       }
-      exprs.push(patternCopyExpr)
+      exprs.push(patternExpr)
       pushedNames[key] = true
       continue
     }
@@ -1426,7 +1430,8 @@ export function getVariableExprsFromSelection(
       ast,
       wasmInstance,
       artifactGraph,
-      artifactTypeFilter
+      artifactTypeFilter,
+      preservePathInput
     )
     if (splitOutputExpr) {
       const key = splitOutputExprKey(splitOutputExpr)
@@ -1701,6 +1706,7 @@ export function artifactToEntityRef(
     return { type: 'solid2d', solid2d_id: artifactId }
   if (artifactType === 'sweep' || artifactType === 'compositeSolid')
     return { type: 'solid3d', solid3d_id: artifactId }
+  if (artifactType === 'helix') return { type: 'helix', helix_id: artifactId }
   if (artifactType === 'segment')
     return pathId != null
       ? { type: 'segment', path_id: pathId, segment_id: artifactId }
@@ -1715,7 +1721,7 @@ export function artifactToEntityRef(
   return undefined
 }
 
-function getPatternCopyExprFromSelection(
+function getPatternExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
@@ -1729,8 +1735,8 @@ function getPatternCopyExprFromSelection(
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : -1)
-  if (patternIndex < 0) {
+      : undefined)
+  if (patternIndex !== undefined && patternIndex < 0) {
     return null
   }
 
@@ -1747,6 +1753,9 @@ function getPatternCopyExprFromSelection(
       wasmInstance
     )
     if (patternVariableName) {
+      if (patternIndex === undefined) {
+        return createLocalName(patternVariableName)
+      }
       return createMemberExpression(
         patternVariableName,
         createLiteral(patternIndex, wasmInstance),
@@ -1764,13 +1773,17 @@ function getSplitOutputExprFromSelection(
   ast: Node<Program>,
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph,
-  artifactTypeFilter?: Array<Artifact['type']>
+  artifactTypeFilter?: Array<Artifact['type']>,
+  preservePathInput = false
 ): Expr | null {
   if (
     artifactTypeFilter &&
     !artifactTypeFilter.includes('compositeSolid') &&
     !artifactTypeFilter.includes('sweep')
   ) {
+    return null
+  }
+  if (preservePathInput && resolvedSelection?.artifact?.type === 'path') {
     return null
   }
   type SplitOutputArtifact = Artifact & {
@@ -2989,6 +3002,7 @@ export function getSketchSegmentNameFromSourceSurface(
     if (!err(pathArtifact) && pathArtifact.type === 'path') {
       const matchingSegmentIndex = pathArtifact.segIds.findIndex(
         (segmentId) =>
+          segmentId === selectedSegment.sourceSegmentId ||
           segmentId === selectedSegment.originalSegId ||
           segmentId === selectedSegment.id
       )

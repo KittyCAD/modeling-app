@@ -1,4 +1,10 @@
-import { classHighlighter, highlightTree } from '@lezer/highlight'
+import type { Highlighter } from '@lezer/highlight'
+import {
+  classHighlighter,
+  highlightTree,
+  tagHighlighter,
+  tags,
+} from '@lezer/highlight'
 import { describe, expect, it } from 'vitest'
 
 import { KclLanguage } from '../src/index'
@@ -28,12 +34,17 @@ function nthTokenOffset(doc: string, token: string, occurrence = 0) {
   return match!.index!
 }
 
-function highlightClassesForToken(doc: string, token: string, occurrence = 0) {
+function highlightClassesForToken(
+  doc: string,
+  token: string,
+  occurrence = 0,
+  highlighter: Highlighter = classHighlighter
+) {
   const tree = KclLanguage.parser.parse(doc)
   const offset = nthTokenOffset(doc, token, occurrence)
   let classes: string | null = null
 
-  highlightTree(tree, classHighlighter, (from, to, style) => {
+  highlightTree(tree, highlighter, (from, to, style) => {
     if (from <= offset && offset + token.length <= to) {
       classes = style
     }
@@ -49,5 +60,49 @@ describe('highlighting', () => {
 
     expect(line1Classes).toBe('tok-variableName tok-definition')
     expect(line2Classes).toBe(line1Classes)
+  })
+
+  const enumDeclaration = `@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+`
+
+  // `classHighlighter` emits classes for only three `variableName` modifiers --
+  // local, definition and special -- so it cannot see the `constant` modifier a
+  // variant carries. This highlighter names the exact tag instead, so the test
+  // checks the choice rather than what the default class list happens to expose.
+  const variantHighlighter = tagHighlighter([
+    { tag: tags.constant(tags.variableName), class: 'enum-variant' },
+    { tag: tags.variableName, class: 'plain-variable' },
+    { tag: tags.typeName, class: 'type-name' },
+  ])
+
+  it('highlights an enum variant as a value, not as a type', () => {
+    // A variant is a value: `Color::Red` appears where values appear. Tagging it
+    // as a modified `variableName` also keeps it visible, because the editor
+    // theme styles `variableName` and has no rule for `typeName` at all.
+    for (const variant of ['Red', 'Green']) {
+      expect(
+        highlightClassesForToken(
+          enumDeclaration,
+          variant,
+          0,
+          variantHighlighter
+        )
+      ).toBe('enum-variant')
+    }
+  })
+
+  it('distinguishes a variant from an ordinary variable', () => {
+    const doc = `${enumDeclaration}shade = Color::Red\n`
+
+    expect(
+      highlightClassesForToken(doc, 'shade', 0, variantHighlighter)
+    ).not.toBe('enum-variant')
+  })
+
+  it('highlights the type keyword like the other declaration keywords', () => {
+    expect(highlightClassesForToken(enumDeclaration, 'type')).toBe(
+      highlightClassesForToken('myFn = fn() { return 1 }', 'fn')
+    )
   })
 })

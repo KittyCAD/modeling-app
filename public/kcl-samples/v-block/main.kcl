@@ -16,11 +16,8 @@ vWidth = vDepth * tan(vAngle / 2) * 2
 slotHeight = 0.375
 slotDepth = 0.375
 
-// Create a sketch for the vBlock profile on the YZ plane
-vBlockProfileSketch = startSketchOn(offsetPlane(YZ, offset = -vBlockLength / 2))
-
 // Define the profile of the vBlock
-vBlockProfile = sketch(on = vBlockProfileSketch) {
+vBlockProfile = sketch(on = offsetPlane(YZ, offset = -vBlockLength / 2)) {
   line1 = line(start = [var -1.5in, var 0in], end = [var -1.5in, var 1in])
   line2 = line(start = [var -1.5in, var 1in], end = [var -1.13in, var 1in])
   coincident([line1.end, line2.start])
@@ -75,8 +72,13 @@ vBlock = extrude(region001, length = vBlockLength)
 sideHoleDistance = vBlockWidth / 3
 sideHoleHeight = vBlockHeight / 2
 sideHoleRadiuse = 1 / 4
-sideHoleSketch = startSketchOn(vBlock, face = END)
-sideHoleProfile = circle(sideHoleSketch, center = [-sideHoleDistance / 2, sideHoleHeight], radius = sideHoleRadiuse)
+sideHoleSketch = sketch(on = faceOf(vBlock, face = END)) {
+  circle1 = circle(start = [var -0.25in, var 1.19in], center = [var -0.5in, var 1.19in])
+  horizontalDistance([ORIGIN, circle1.center]) == -sideHoleDistance / 2
+  verticalDistance([ORIGIN, circle1.center]) == sideHoleHeight
+  radius(circle1) == sideHoleRadiuse
+}
+sideHoleProfile = region(segments = [sideHoleSketch.circle1])
   |> patternLinear2d(
        %,
        instances = 2,

@@ -133,6 +133,13 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
+    // The command-palette scope changes the shortcut from "open" to "close".
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(cmdSearchBar).not.toBeVisible()
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(cmdSearchBar).toBeVisible()
+    await expect(cmdSearchBar).toBeFocused()
+
     await test.step(`Pressing backspace in the command selection step does not dismiss`, async () => {
       await page.keyboard.press('Backspace')
       await expect(cmdSearchBar).toBeVisible()

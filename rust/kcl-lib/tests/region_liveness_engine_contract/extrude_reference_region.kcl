@@ -1,0 +1,18 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+referenceSketch = sketch(on = offsetPlane(XY, offset = 20mm)) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedReference = region(segments = [referenceSketch.c])
+
+firstProfileSketch = sketch(on = XY) {
+  c = circle(start = [var -5mm, var 0mm], center = [var -7mm, var 0mm])
+}
+secondProfileSketch = sketch(on = XY) {
+  c = circle(start = [var 9mm, var 0mm], center = [var 7mm, var 0mm])
+}
+firstProfile = region(segments = [firstProfileSketch.c])
+secondProfile = region(segments = [secondProfileSketch.c])
+
+first = extrude(firstProfile, to = sharedReference)
+second = extrude(secondProfile, to = sharedReference)

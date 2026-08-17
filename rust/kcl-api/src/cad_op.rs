@@ -186,6 +186,9 @@ pub enum OpKclValue {
     GdtAnnotation {
         artifact_id: ArtifactId,
     },
+    /// A camera view argument. Fieldless because a camera registers no
+    /// artifact: the marker only separates a passed camera from an omitted one.
+    CameraView {},
     Plane {
         artifact_id: ArtifactId,
     },

@@ -97,6 +97,10 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+
+  get apiCallId(): string | undefined {
+    return this.connection?.apiCallId
+  }
   private readonly systemDeps: ConnectionSystemDeps
 
   streamDimensions = {

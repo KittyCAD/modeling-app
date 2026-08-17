@@ -3,7 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
@@ -23,7 +23,6 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
@@ -77,7 +76,7 @@ export function OpenedProject() {
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -100,14 +99,6 @@ export function OpenedProject() {
   const projectPath = project?.path || null
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  useEffect(() => {
-    setCloudSyncProjectScope(projectPath ?? undefined)
-
-    return () => {
-      setCloudSyncProjectScope(undefined)
-    }
-  }, [projectPath])
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
@@ -140,11 +131,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
-    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(
@@ -255,12 +248,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
+            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
-            systemIOActor,
-            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -278,9 +269,6 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
-    kclManager,
-    systemIOActor,
-    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

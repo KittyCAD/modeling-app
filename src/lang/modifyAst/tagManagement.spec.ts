@@ -149,7 +149,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
           getCommonEdge(faces = [seg01, capEnd001])
         ],
       )`
-
   describe('modifyAstWithTagsForSelection', () => {
     // ----------------------------------------
     // 2D Entities
@@ -204,6 +203,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tagStart = $capStart001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
     }, 5_000)
+
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
       const { ast, artifactGraph } = await executeCode(

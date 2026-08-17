@@ -2196,7 +2196,7 @@ body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getOppositeEdge(e1)])
 "#;
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
-    let (exec_state, _ctx, _env, _img, _step) = execute_and_snapshot_ast(program, None, false).await.unwrap();
+    let (exec_state, _ctx, _env, _img, _step) = execute_and_snapshot_ast(program, None, false, None).await.unwrap();
     assert_eq!(
         exec_state.edge_refactor_metadata().len(),
         1,

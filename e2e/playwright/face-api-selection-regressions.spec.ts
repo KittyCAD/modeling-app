@@ -56,6 +56,16 @@ cutBody = subtract(baseBody, tools = toolBody)
 hide(baseSketch)
 hide(toolSketch)`
 
+const standaloneHelixCode = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+helix001 = helix(
+  axis = Z,
+  radius = 5,
+  length = 20,
+  revolutions = 5,
+  angleStart = 0,
+)`
+
 test.describe('Face API selection regressions', { tag: '@web' }, () => {
   test('2.9 fillets a generated Chamfer boundary edge', async ({
     context,
@@ -221,5 +231,34 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
 
     await editor.expectEditor.toContain('sideFaces = [')
     await editor.expectEditor.toContain('method = NEW')
+  })
+
+  test('selects a standalone helix from the viewport', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+    tronApp,
+  }) => {
+    if (tronApp) await tronApp.cleanProjectDir()
+    await context.addInitScript((code) => {
+      localStorage.setItem('persistCode', code)
+    }, standaloneHelixCode)
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', standaloneHelixCode)
+    )
+    await editor.closePane()
+    await scene.moveCameraTo({ x: 24, y: -24, z: 18 }, { x: 0, y: 0, z: 10 })
+
+    const [clickHelix] = scene.makeMouseHelpers(0.5875, 0.5883, {
+      format: 'ratio',
+    })
+    await clickHelix()
+    await expect(page.getByTestId('selection-status')).toContainText('1 helix')
   })
 })

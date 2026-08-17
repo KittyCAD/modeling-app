@@ -3,7 +3,7 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-import Axis3d from "std::types"
+import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sketch, Solid from "std::types"
 
 /// Mirror a sketch.
 ///

@@ -8,6 +8,7 @@ import {
   readOpfsTextFiles,
   routeCloudProjects,
   seedCloudSyncState,
+  zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import { setup } from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
@@ -35,6 +36,84 @@ async function expectCloudSyncHomeReady(page: Page) {
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
 }
+
+test(
+  'creates a fresh blank Personal Cloud project for every Zookeeper deep link',
+  { tag: ['@web'] },
+  async ({ context, page }, testInfo) => {
+    const createdProjects: CloudProject[] = [
+      {
+        id: '12945000-0000-4000-8000-000000000001',
+        title: 'demo-project',
+        revision: 'demo-project-rev-1',
+        files: {},
+      },
+      {
+        id: '12945000-0000-4000-8000-000000000002',
+        title: 'demo-project-1',
+        revision: 'demo-project-1-rev-1',
+        files: {},
+      },
+    ]
+    let createIndex = 0
+    const remoteProjects: CloudProject[] = []
+    const { calls: apiCalls } = await routeCloudProjects(context, {
+      remoteProjects,
+      createProject: () => {
+        const project = createdProjects[createIndex++]
+        if (!project) {
+          throw new Error('Unexpected extra demo project creation.')
+        }
+        remoteProjects.push(project)
+        return project
+      },
+    })
+    const prompt = 'Design a spur gear'
+    const deepLink =
+      `/?cmd=set-layout&groupId=application&layoutId=zookeeper` +
+      `&ttc-prompt=${encodeURIComponent(prompt)}`
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+
+    for (const [index, projectName] of [
+      'demo-project',
+      'demo-project-1',
+    ].entries()) {
+      await page.goto(deepLink)
+
+      await expectProjectFileRoute(page)
+      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`))
+      await expect
+        .poll(() =>
+          page.evaluate(() => {
+            const layout = window.app.layout.get()
+            return 'sizes' in layout ? layout.sizes : []
+          })
+        )
+        .toEqual([0, 50, 50])
+      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
+      await expect(
+        page.getByTestId('ml-ephant-conversation-input')
+      ).toHaveValue(prompt)
+      await expect
+        .poll(() => new URL(page.url()).searchParams.has('cmd'))
+        .toBe(false)
+      await expect
+        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'))
+        .toBe(false)
+      await expect.poll(() => apiCalls.creates.length).toBe(index + 1)
+      await expect
+        .poll(() =>
+          opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`)
+        )
+        .toBe(true)
+      const files = await readOpfsTextFiles(page, {
+        main: `${PROJECT_DIR}/${projectName}/main.kcl`,
+      })
+      expect(files.main.trim()).toBe('@settings(kclVersion = 2.0)')
+    }
+  }
+)
 
 test(
   'streams remote-only projects into an empty local list and materializes opened clones',
@@ -154,6 +233,113 @@ test(
     expect(apiCalls.remoteListResponses).toBe(
       remoteListResponsesAfterMaterialization
     )
+  }
+)
+
+test(
+  'opens a shared project in Personal Cloud when no project is already open',
+  { tag: ['@web'] },
+  async ({ context, page }, testInfo) => {
+    const publicProjectId = 'aquarium-shared-project'
+    const publicProjectTitle = '!!!'
+    const publicProjectDirectoryName = 'shared-project'
+    const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
+    const publicProjectFiles = {
+      'main.kcl': 'aquariumShared = 1\n',
+      'project.toml': [
+        '[settings.meta]',
+        `id = "${publicProjectSettingsId}"`,
+        '',
+      ].join('\n'),
+    }
+    const personalCloudProject: CloudProject = {
+      id: 'personal-cloud-copy',
+      title: publicProjectTitle,
+      revision: 'personal-cloud-copy-rev-1',
+      files: publicProjectFiles,
+    }
+    const publicProjectArchive = await zipProject(publicProjectFiles)
+    let publicProjectDownloads = 0
+    await context.route(
+      `**/projects/public/${publicProjectId}**`,
+      async (route) => {
+        const url = new URL(route.request().url())
+        if (url.pathname.endsWith('/download')) {
+          publicProjectDownloads += 1
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/zip',
+            headers: {
+              'content-disposition': 'attachment; filename="...zip"',
+            },
+            body: publicProjectArchive,
+          })
+          return
+        }
+
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            categories: [],
+            description: '',
+            id: publicProjectId,
+            like_count: 0,
+            owner: { username: 'aquarium' },
+            published_at: '2026-08-12T00:00:00Z',
+            title: publicProjectTitle,
+          }),
+        })
+      }
+    )
+    const { calls: apiCalls } = await routeCloudProjects(context, {
+      remoteProjects: [personalCloudProject],
+      listedProjects: [],
+      createProject: () => personalCloudProject,
+    })
+
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await page.goto(`/?project-id=${publicProjectId}&ask-open-desktop=true`)
+    await page.getByTestId('continue-to-web-app-button').click()
+
+    await expectProjectFileRoute(page)
+    expect(publicProjectDownloads).toBe(1)
+    await expect
+      .poll(() => apiCalls.creates.length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBe(1)
+    await expect
+      .poll(() =>
+        opfsPathExists(
+          page,
+          `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`
+        )
+      )
+      .toBe(true)
+    await expect
+      .poll(async () => {
+        const files = await readOpfsTextFiles(page, {
+          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+        })
+        return files.projectToml
+      })
+      .toContain('project_id = "personal-cloud-copy"')
+
+    const files = await readOpfsTextFiles(page, {
+      main: `${PROJECT_DIR}/${publicProjectDirectoryName}/main.kcl`,
+      projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+    })
+    expect(files.main).toContain('aquariumShared = 1')
+    const clonedProjectSettingsId = files.projectToml.match(
+      /\[settings\.meta\]\s*\nid = "([^"]+)"/
+    )?.[1]
+    expect(clonedProjectSettingsId).toBeDefined()
+    expect(clonedProjectSettingsId).not.toBe(publicProjectSettingsId)
+    await expect(
+      page.getByText('Unable to determine the project directory.')
+    ).toHaveCount(0)
+    await expectProjectFileRoute(page)
   }
 )
 

@@ -422,4 +422,68 @@ describe('coerceSelectionsToBody', () => {
       })
     }
   })
+
+  it('should coerce a topology-backed graph face without dropping another body', () => {
+    const sweepOne: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [50, 120, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    }
+    const sweepTwo: Artifact = {
+      ...sweepOne,
+      id: 'sweep-2',
+      pathId: 'path-2',
+      codeRef: {
+        range: [150, 220, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [sweepOne.id, sweepOne],
+      [sweepTwo.id, sweepTwo],
+    ])
+    const selections: Selections = {
+      graphSelections: [
+        {
+          entityRef: { type: 'solid3d', solid3d_id: sweepOne.id },
+          codeRef: sweepOne.codeRef,
+        },
+        {
+          entityRef: { type: 'face', face_id: 'shell-inner-face' },
+          engineEntityId: 'shell-inner-face',
+          engineTopologyFallback: {
+            parentId: sweepTwo.id,
+            primitiveIndex: 4,
+          },
+        },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.otherSelections).toHaveLength(0)
+      expect(result.graphSelections).toHaveLength(2)
+      expect(
+        result.graphSelections.map((selection) => selection.entityRef)
+      ).toEqual([
+        { type: 'solid3d', solid3d_id: 'sweep-1' },
+        { type: 'solid3d', solid3d_id: 'sweep-2' },
+      ])
+    }
+  })
 })
