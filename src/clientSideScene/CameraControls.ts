@@ -113,6 +113,7 @@ export class CameraControls {
   domElement: HTMLCanvasElement
   isDragging: boolean
   wasDragging: boolean
+  activeDragInteraction: CameraDragInteractionType | null = null
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -342,6 +343,7 @@ export class CameraControls {
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('pointercancel', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
@@ -465,15 +467,23 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
+    const interaction = this.getInteractionType(event)
+    if (interaction === 'none') {
+      // A non-camera gesture (for example, sketch area select) must not become
+      // a camera gesture if its modifiers change while the pointer is down.
+      this.activeDragInteraction = null
+      this.isDragging = false
+      return
+    }
+
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    this.activeDragInteraction = interaction
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     this.worldDownPosition = this.screenToWorld(event).clone()
     this.cameraDown = this.camera.clone()
-    let interaction = this.getInteractionType(event)
-    if (interaction === 'none') return
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
@@ -505,8 +515,8 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') {
+      const interaction = this.activeDragInteraction
+      if (!interaction) {
         return
       }
 
@@ -592,12 +602,17 @@ export class CameraControls {
   }
 
   onMouseUpInner = (event: PointerEvent) => {
+    const interaction = this.activeDragInteraction
+    if (!interaction) {
+      this.isDragging = false
+      return
+    }
+
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
+    this.activeDragInteraction = null
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
         clientY: event.clientY,

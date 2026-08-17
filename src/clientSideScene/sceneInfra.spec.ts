@@ -111,4 +111,107 @@ describe('SceneInfra camera-owned mouse gestures', () => {
     expect(sceneInfra.selected).toBeNull()
     expect(sceneInfra.areaSelect).toBeNull()
   })
+
+  it('does not turn an unmodified sketch drag into a camera drag when modifiers are pressed', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const sendSceneCommand = vi.mocked(
+      sceneInfra.camControls.engineCommandManager.sendSceneCommand
+    )
+    sceneInfra.camControls.interactionGuards =
+      cameraMouseDragGuards['Trackpad Friendly']
+
+    sceneInfra.camControls.onMouseDown(
+      new PointerEvent('pointerdown', { button: 0, buttons: 1, pointerId: 1 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', {
+        altKey: true,
+        shiftKey: true,
+        button: 0,
+        buttons: 1,
+        pointerId: 1,
+      })
+    )
+
+    expect(sendSceneCommand).not.toHaveBeenCalled()
+    expect(sceneInfra.camControls.isDragging).toBe(false)
+  })
+
+  it('keeps the camera interaction chosen on pointer down until pointer up', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const sendSceneCommand = vi.mocked(
+      sceneInfra.camControls.engineCommandManager.sendSceneCommand
+    )
+    const canvas = sceneInfra.camControls.domElement
+    canvas.setPointerCapture = vi.fn()
+    canvas.releasePointerCapture = vi.fn()
+    sceneInfra.camControls.interactionGuards =
+      cameraMouseDragGuards['Trackpad Friendly']
+
+    sceneInfra.camControls.onMouseDown(
+      new PointerEvent('pointerdown', {
+        altKey: true,
+        shiftKey: true,
+        button: 0,
+        buttons: 1,
+        pointerId: 1,
+      })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', {
+        button: 0,
+        buttons: 1,
+        clientX: 10,
+        clientY: 10,
+        pointerId: 1,
+      })
+    )
+    sceneInfra.camControls.onMouseUp(
+      new PointerEvent('pointerup', {
+        button: 0,
+        buttons: 0,
+        clientX: 10,
+        clientY: 10,
+        pointerId: 1,
+      })
+    )
+
+    const cameraCommands = sendSceneCommand.mock.calls.map(
+      ([command]) => command.cmd
+    )
+    expect(cameraCommands).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'camera_drag_start',
+          interaction: 'pan',
+        }),
+        expect.objectContaining({
+          type: 'camera_drag_move',
+          interaction: 'pan',
+        }),
+        expect.objectContaining({
+          type: 'camera_drag_end',
+          interaction: 'pan',
+        }),
+      ])
+    )
+    expect(sceneInfra.camControls.isDragging).toBe(false)
+    expect(sceneInfra.camControls.activeDragInteraction).toBeNull()
+
+    sendSceneCommand.mockClear()
+    sceneInfra.camControls.onMouseDown(
+      new PointerEvent('pointerdown', { button: 0, buttons: 1, pointerId: 2 })
+    )
+    sceneInfra.camControls.onMouseMove(
+      new PointerEvent('pointermove', {
+        button: 0,
+        buttons: 1,
+        clientX: 20,
+        clientY: 20,
+        pointerId: 2,
+      })
+    )
+
+    expect(sendSceneCommand).not.toHaveBeenCalled()
+  })
 })
