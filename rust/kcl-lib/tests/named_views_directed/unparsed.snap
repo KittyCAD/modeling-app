@@ -1,0 +1,22 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_directed.kcl
+---
+// Pins the two call shapes of view::directed and the value each produces:
+// only the direction, with the up defaulting to [0, 0, 1], every omission
+// staying absent in the value, and the projection defaulting to
+// orthographic; and every optional argument fixed. Both stored vectors are
+// normalized, so the [0, 1, -2] direction appears as unit-length components
+// in the program memory snapshot. The ops snapshot additionally pins that
+// each call emits a feature tree operation recording its arguments.
+@settings(experimentalFeatures = allow)
+
+minimal = view::directed([0, 1, -2])
+
+full = view::directed(
+  [-1, -1, -0.3],
+  up = [0, 0, 1],
+  target = [0, 0, 10],
+  distance = 200,
+  projection = view::Projection::Perspective,
+)

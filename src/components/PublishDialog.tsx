@@ -8,6 +8,7 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
@@ -89,9 +90,12 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const response = await fetch(withAPIBaseURL('/projects/categories'), {
-        signal,
-      })
+      const response = await fetchWithSessionExpiration(
+        withAPIBaseURL('/projects/categories'),
+        {
+          signal,
+        }
+      )
 
       if (!response.ok) {
         setCategories([])

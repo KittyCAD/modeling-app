@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_sketch.kcl
+---
+// Pins that a solved sketch is engine-addressable by the id hide() sends.
+// The rendered snapshot must show exactly ONE circle: the one centered at
+// x = 20.
+sketchVisible = sketch(on = XY) {
+  circle1 = circle(start = [var 23, var 0], center = [var 20, var 0])
+}
+
+sketchHidden = sketch(on = XY) {
+  circle1 = circle(start = [var 3, var 0], center = [var 0, var 0])
+}
+
+hide(sketchHidden)

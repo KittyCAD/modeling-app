@@ -48,62 +48,64 @@ flowchart LR
   24["SweepEdge Adjacent"]
   25["SweepEdge Opposite"]
   26["SweepEdge Adjacent"]
-  27["EdgeCut Fillet<br>[860, 956, 0]"]
-    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  28["SketchBlock<br>[65, 690, 0]"]
+  27["EdgeCut Fillet<br>[906, 1002, 0]"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  28["Sweep Extrusion<br>[1016, 1096, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  29["SketchBlock<br>[65, 690, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  29["SketchBlockConstraint Coincident<br>[393, 429, 0]"]
+  30["SketchBlockConstraint Coincident<br>[393, 429, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
-  30["SketchBlockConstraint Coincident<br>[432, 468, 0]"]
+  31["SketchBlockConstraint Coincident<br>[432, 468, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, ExpressionStatementExpr]
-  31["SketchBlockConstraint Coincident<br>[471, 507, 0]"]
+  32["SketchBlockConstraint Coincident<br>[471, 507, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
-  32["SketchBlockConstraint Coincident<br>[510, 546, 0]"]
+  33["SketchBlockConstraint Coincident<br>[510, 546, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  33["SketchBlockConstraint Parallel<br>[549, 573, 0]"]
+  34["SketchBlockConstraint Parallel<br>[549, 573, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, ExpressionStatementExpr]
-  34["SketchBlockConstraint Parallel<br>[576, 600, 0]"]
+  35["SketchBlockConstraint Parallel<br>[576, 600, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 9 }, ExpressionStatementExpr]
-  35["SketchBlockConstraint Perpendicular<br>[603, 632, 0]"]
+  36["SketchBlockConstraint Perpendicular<br>[603, 632, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 10 }, ExpressionStatementExpr]
-  36["SketchBlockConstraint Horizontal<br>[635, 652, 0]"]
+  37["SketchBlockConstraint Horizontal<br>[635, 652, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 11 }, ExpressionStatementExpr]
-  37["SketchBlockConstraint Horizontal<br>[655, 688, 0]"]
+  38["SketchBlockConstraint Horizontal<br>[655, 688, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 12 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 7
-  1 <--x 28
+  1 <--x 29
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
   2 <--x 7
-  28 --- 2
+  29 --- 2
   3 <--x 8
   4 <--x 9
   5 <--x 10
   6 <--x 11
-  7 <--x 8
-  7 <--x 9
-  7 <--x 10
-  7 <--x 11
+  7 --- 8
+  7 --- 9
+  7 --- 10
+  7 --- 11
   7 ---- 12
   8 --- 16
   8 x--> 17
   8 --- 25
   8 --- 26
-  9 --- 13
+  9 --- 15
   9 x--> 17
-  9 --- 19
-  9 --- 20
-  10 --- 14
+  9 --- 23
+  9 --- 24
+  10 --- 13
   10 x--> 17
-  10 --- 21
-  10 --- 22
-  11 --- 15
+  10 --- 19
+  10 --- 20
+  11 --- 14
   11 x--> 17
-  11 --- 23
-  11 --- 24
+  11 --- 21
+  11 --- 22
   12 --- 13
   12 --- 14
   12 --- 15
@@ -127,6 +129,7 @@ flowchart LR
   15 --- 23
   15 --- 24
   26 <--x 15
+  15 <--x 28
   20 <--x 16
   16 --- 25
   16 --- 26

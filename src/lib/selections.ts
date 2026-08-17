@@ -13,7 +13,7 @@ import { Mesh } from 'three'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
-import type { EntityReference } from '@kittycad/lib'
+import type { EntityReference as SdkEntityReference } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -97,6 +97,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
 } from '@src/lib/constants'
+import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr } from '@src/lib/trap'
@@ -118,6 +119,7 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type {
   EngineTopologyFallback,
   Selection,
@@ -413,6 +415,7 @@ export type SelectionReference = {
   label: string
   code: string
   graphSelection?: Selection
+  defaultPlaneSelection?: DefaultPlaneSelection
   enginePrimitiveSelection?: EnginePrimitiveSelection
 }
 
@@ -784,10 +787,7 @@ function createDirectTaggedFaceReferenceExpr(
   if (err(sourceSurfaceArtifact)) {
     return null
   }
-  const sourceSurface = sourceSurfaceArtifact as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
+  const sourceSurface = sourceSurfaceArtifact
 
   return getDirectTagExprFromSourceSurface({
     sourceSurfaceArtifact: sourceSurface,
@@ -827,10 +827,7 @@ function createDirectTaggedEdgeReferenceExpr(
   if (err(sourceSurfaceArtifact)) {
     return null
   }
-  const sourceSurface = sourceSurfaceArtifact as Extract<
-    Artifact,
-    { type: 'sweep' }
-  >
+  const sourceSurface = sourceSurfaceArtifact
 
   const tagExpr = getDirectTagExprFromSourceSurface({
     sourceSurfaceArtifact: sourceSurface,
@@ -1054,6 +1051,7 @@ function createExpressionReferences({
 
 export async function getSelectionReferences({
   graphSelections,
+  defaultPlaneSelections,
   enginePrimitives,
   artifactGraph,
   engineCommandManager,
@@ -1061,13 +1059,24 @@ export async function getSelectionReferences({
   wasmInstance,
 }: {
   graphSelections: Selection[]
+  defaultPlaneSelections: DefaultPlaneSelection[]
   enginePrimitives: EnginePrimitiveSelection[]
   artifactGraph: ArtifactGraph
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   wasmInstance: ModuleType
 }): Promise<SelectionReference[]> {
-  const references: SelectionReference[] = []
+  const references: SelectionReference[] = defaultPlaneSelections.map(
+    (selection) => {
+      const planeName = defaultPlaneNameToKcl(selection.name)
+      return {
+        id: `plane:${selection.id}`,
+        label: `${planeName} Plane`,
+        code: planeName,
+        defaultPlaneSelection: selection,
+      }
+    }
+  )
   const primitiveSelections: ReferenceablePrimitiveSelection[] = []
   const graphSelectionByEntityId = new Map<string, Selection>(
     graphSelections.flatMap((selection): [string, Selection][] => {
@@ -1212,11 +1221,19 @@ function isSameEnginePrimitiveSelection(
   return left.entityId === right.entityId
 }
 
+function isSameDefaultPlaneSelection(
+  left: DefaultPlaneSelection,
+  right: DefaultPlaneSelection
+) {
+  return left.id === right.id
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
   const graphSelectionToRemove = reference.graphSelection
+  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
   const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
 
   return {
@@ -1226,18 +1243,28 @@ export function removeReferenceFromSelections(
             !isSameGraphSelection(selection, graphSelectionToRemove)
         )
       : selections.graphSelections,
-    otherSelections: enginePrimitiveSelectionToRemove
-      ? selections.otherSelections.filter(
-          (selection) =>
-            !(
-              isEnginePrimitiveSelection(selection) &&
-              isSameEnginePrimitiveSelection(
-                selection,
-                enginePrimitiveSelectionToRemove
-              )
-            )
+    otherSelections: selections.otherSelections.filter((selection) => {
+      if (
+        defaultPlaneSelectionToRemove &&
+        isDefaultPlaneSelection(selection) &&
+        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
+      ) {
+        return false
+      }
+
+      if (
+        enginePrimitiveSelectionToRemove &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          enginePrimitiveSelectionToRemove
         )
-      : selections.otherSelections,
+      ) {
+        return false
+      }
+
+      return true
+    }),
   }
 }
 
@@ -1285,6 +1312,12 @@ export function normalizeEntityReference(
     const solid3d_id = raw.solid3d_id ?? raw.solid3dId
     if (typeof solid3d_id !== 'string') return null
     return { type: 'solid3d', solid3d_id }
+  }
+
+  if (type === 'helix') {
+    const helix_id = raw.helix_id ?? raw.helixId
+    if (typeof helix_id !== 'string') return null
+    return { type: 'helix', helix_id }
   }
 
   if (type === 'solid2d_edge' || type === 'solid2dEdge') {
@@ -1522,7 +1555,7 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   let entityRef = normalizeEntityReference(reference)
   if (!entityRef) {
-    // Engine may return ref types not yet in EntityReference (e.g. helix); extract id for artifact lookup
+    // Extract IDs from engine reference types that do not map to selectable artifacts directly.
     const ref = reference as Record<string, unknown>
     const refType = String(ref?.type).toLowerCase()
     let entityIdFromRef: string | undefined
@@ -1532,23 +1565,18 @@ export async function getEventForQueryEntityTypeWithPoint(
     } else if (refType === 'segment') {
       const segmentId = ref.segment_id ?? ref.segmentId
       if (typeof segmentId === 'string') entityIdFromRef = segmentId
-    } else if (refType === 'helix') {
-      const helixId = ref.helix_id ?? ref.helixId ?? ref.id
-      if (typeof helixId === 'string') entityIdFromRef = helixId
     }
     if (entityIdFromRef) {
       const artifact = getArtifactOfTypes(
         {
           key: entityIdFromRef,
-          types: ['path', 'solid2d', 'segment', 'helix'],
+          types: ['path', 'solid2d', 'segment'],
         },
         artifactGraph
       )
       if (!err(artifact)) {
         if (artifact.type === 'path')
           entityRef = { type: 'solid2d', solid2d_id: artifact.id }
-        else if (artifact.type === 'helix')
-          entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
       }
     }
     if (!entityRef) {
@@ -1613,6 +1641,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     entityId = entityRef.solid2d_id
   } else if (entityRef.type === 'solid3d') {
     entityId = entityRef.solid3d_id
+  } else if (entityRef.type === 'helix') {
+    entityId = entityRef.helix_id
   } else if (entityRef.type === 'solid2d_edge') {
     // For Solid2D edges, the edge_id is the curve UUID
     // We'll use it to find the segment later in getCodeRefsFromEntityReference
@@ -1670,14 +1700,14 @@ export async function getEventForQueryEntityTypeWithPoint(
       data: {
         selectionType: 'defaultPlaneSelection',
         selection: {
-          name: foundDefaultPlane[0] as DefaultPlaneStr,
+          name: defaultPlaneNameToKcl(foundDefaultPlane[0] as PlaneName),
           id: entityId!,
         },
       },
     }
   }
 
-  const _artifactByEventId = clickEntityId
+  const artifactByEventId = clickEntityId
     ? (artifactGraph.get(clickEntityId) ??
       getPatternArtifactForCopyId(clickEntityId, artifactGraph))
     : undefined
@@ -1733,7 +1763,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 
   if (
-    !_artifactByEventId &&
+    !artifactByEventId &&
     clickEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
@@ -1768,11 +1798,14 @@ export async function getEventForQueryEntityTypeWithPoint(
       codeRefs = refs
     }
   } else if (entityId) {
-    const _artifact =
+    const artifact =
       artifactGraph.get(entityId) ??
       getPatternArtifactForCopyId(entityId, artifactGraph)
-    if (_artifact) {
-      const refs = getCodeRefsByArtifactId(entityId, artifactGraph)
+    if (artifact) {
+      const refs =
+        artifact.type === 'pattern'
+          ? [artifact.codeRef]
+          : getCodeRefsByArtifactId(entityId, artifactGraph)
       codeRefs = refs || undefined
     }
   }
@@ -1780,9 +1813,22 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Prefer engine primitive index for solid edge picks when the API supports it.
   // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
   // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
+  const patternArtifact = entityId
+    ? getPatternArtifactForCopyId(entityId, artifactGraph)
+    : undefined
+  const patternCopyIndex =
+    patternArtifact?.type === 'pattern' && entityId
+      ? patternArtifact.copyIds.indexOf(entityId) + 1
+      : 0
   const selection: Selection = {
     entityRef,
     codeRef: codeRefs?.[0],
+    ...(patternArtifact && patternCopyIndex > 0
+      ? {
+          artifact: patternArtifact,
+          patternIndex: patternCopyIndex,
+        }
+      : {}),
     ...(clickEntityId ? { engineEntityId: clickEntityId } : {}),
     ...(engineTopologyFallbackResolved
       ? { engineTopologyFallback: engineTopologyFallbackResolved }
@@ -2272,7 +2318,8 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        entities: entityReferences,
+        // Remove this cast once @kittycad/lib includes the Helix schema variant.
+        entities: entityReferences as SdkEntityReference[],
       },
       cmd_id: uuidv4(),
     },
@@ -2427,14 +2474,10 @@ export function getSelectionCountByType(
     ).artifact
 
     if (v2Selection.entityRef) {
-      // solid2d_edge first: may be helix or segment curve.
-      if (v2Selection.entityRef.type === 'solid2d_edge') {
-        const artifact = getArtifactById(v2Selection.entityRef.edge_id)
-        if (artifact?.type === 'helix') {
-          incrementOrInitializeSelectionType('helix')
-        } else {
-          incrementOrInitializeSelectionType('segment')
-        }
+      if (v2Selection.entityRef.type === 'helix') {
+        incrementOrInitializeSelectionType('helix')
+      } else if (v2Selection.entityRef.type === 'solid2d_edge') {
+        incrementOrInitializeSelectionType('segment')
       } else if (
         v2Selection.entityRef.type === 'edge' ||
         v2Selection.entityRef.type === 'segment'
@@ -2889,8 +2932,6 @@ export async function tryEnterSketchOnDoubleClickFromScene(
   if (!entityRef) {
     if (artifact.type === 'path')
       entityRef = { type: 'solid2d', solid2d_id: artifact.id }
-    else if (artifact.type === 'helix')
-      entityRef = { type: 'solid2d_edge', edge_id: artifact.id }
   }
   if (!entityRef) return
 
@@ -3537,7 +3578,10 @@ export function getCodeRefsFromEntityReference(
 ): Array<{ range: SourceRange }> | null {
   const codeRefs: Array<{ range: SourceRange }> = []
 
-  if (entityRef.type === 'segment' && entityRef.segment_id) {
+  if (entityRef.type === 'helix' && entityRef.helix_id) {
+    const refs = getCodeRefsByArtifactId(entityRef.helix_id, artifactGraph)
+    if (refs?.length) codeRefs.push({ range: refs[0].range })
+  } else if (entityRef.type === 'segment' && entityRef.segment_id) {
     const segmentRefs = getCodeRefsByArtifactId(
       entityRef.segment_id,
       artifactGraph
@@ -3616,12 +3660,6 @@ export function getCodeRefsFromEntityReference(
       }
     }
   } else if (entityRef.type === 'solid2d_edge' && entityRef.edge_id) {
-    // edge_id may be a helix artifact (we represent helix as solid2d_edge for engine 1:1)
-    const edgeArtifact = artifactGraph.get(entityRef.edge_id)
-    if (edgeArtifact?.type === 'helix') {
-      const refs = getCodeRefsByArtifactId(entityRef.edge_id, artifactGraph)
-      if (refs?.length) codeRefs.push({ range: refs[0].range })
-    }
     // Solid2D edge ids normally map directly to segment artifacts. Prefer the
     // exact segment before falling back to broader path/profile ranges.
     const segmentArtifact = artifactGraph.get(entityRef.edge_id)

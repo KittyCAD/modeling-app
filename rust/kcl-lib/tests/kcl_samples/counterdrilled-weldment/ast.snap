@@ -12236,27 +12236,6 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -12354,27 +12333,6 @@ description: Result of parsing counterdrilled-weldment.kcl
                   "start": 0,
                   "type": "Name",
                   "type": "Name"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
                 }
               }
             ],

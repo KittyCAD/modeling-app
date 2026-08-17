@@ -9,6 +9,7 @@ import { useSingletons } from '@src/lib/boot'
 import {
   type SelectionReference,
   getSelectionReferences,
+  isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
   removeReferenceFromSelections,
 } from '@src/lib/selections'
@@ -44,6 +45,9 @@ export function SelectionReferencesPopover() {
 
     getSelectionReferences({
       graphSelections: selectionRanges.graphSelections,
+      defaultPlaneSelections: selectionRanges.otherSelections.filter(
+        isDefaultPlaneSelection
+      ),
       enginePrimitives: selectionRanges.otherSelections.filter(
         isEnginePrimitiveSelection
       ),

@@ -9,6 +9,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type { CommandSelectionType } from '@src/lib/commandTypes'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -33,6 +34,26 @@ export function coerceSelectionsToBody(
   const seenBodyIds = new Set<string>()
 
   for (const selV2 of selections.graphSelections) {
+    const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
+    if (topologyFallback) {
+      const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+        topologyFallback.parentId,
+        artifactGraph
+      )
+      if (
+        bodySelection?.artifact &&
+        bodySelection.codeRef &&
+        !seenBodyIds.has(bodySelection.artifact.id)
+      ) {
+        seenBodyIds.add(bodySelection.artifact.id)
+        bodySelections.push({
+          artifact: bodySelection.artifact,
+          codeRef: bodySelection.codeRef,
+        })
+        continue
+      }
+    }
+
     const resolvedSelection = resolveToCodeRef(selV2, artifactGraph)
     const selection = resolvedSelection
       ? !resolvedSelection.artifact && resolvedSelection.codeRef.range

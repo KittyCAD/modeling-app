@@ -270,77 +270,6 @@ description: Result of parsing bench-for-kids.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "seatSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "startSketchOn",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "XZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// Flat face of the cylinder sits one radius below the seat."
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "seatProfile",
             "start": 0,
             "type": "Identifier"
@@ -366,7 +295,7 @@ description: Result of parsing bench-for-kids.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "seatSketch",
+                    "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2018,6 +1947,9 @@ description: Result of parsing bench-for-kids.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Flat face of the cylinder sits one radius below the seat."
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -8043,7 +7975,19 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "6": [
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "8": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8079,7 +8023,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "11": [
+        "13": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8091,7 +8035,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "14": [
+        "16": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8103,7 +8047,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "17": [
+        "18": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8139,7 +8083,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "21": [
+        "25": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8147,7 +8091,9 @@ description: Result of parsing bench-for-kids.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "newLine"
+              "type": "inlineComment",
+              "value": "defined for completeness, currently unused",
+              "style": "line"
             }
           }
         ],
@@ -8159,9 +8105,7 @@ description: Result of parsing bench-for-kids.kcl
             "start": 0,
             "type": "NonCodeNode",
             "value": {
-              "type": "inlineComment",
-              "value": "defined for completeness, currently unused",
-              "style": "line"
+              "type": "newLine"
             }
           }
         ],
@@ -8177,7 +8121,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "28": [
+        "29": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8189,7 +8133,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "30": [
+        "32": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8202,18 +8146,6 @@ description: Result of parsing bench-for-kids.kcl
           }
         ],
         "33": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "34": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8247,7 +8179,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "39": [
+        "38": [
           {
             "commentStart": 0,
             "end": 0,
@@ -8259,7 +8191,7 @@ description: Result of parsing bench-for-kids.kcl
             }
           }
         ],
-        "40": [
+        "39": [
           {
             "commentStart": 0,
             "end": 0,

@@ -6,7 +6,35 @@ import type { NodePath } from "./NodePath";
 import type { PlaneName } from "./PlaneName";
 import type { SourceRange } from "./SourceRange";
 
-export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "sweepEdge" } & SweepEdge | { "type": "edgeCut" } & EdgeCut | { "type": "edgeCutEdge" } & EdgeCutEdge | { "type": "helix" } & Helix | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "pattern" } & Pattern;
+export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "sweepEdge" } & SweepEdge | { "type": "edgeCut" } & EdgeCut | { "type": "edgeCutEdge" } & EdgeCutEdge | { "type": "helix" } & Helix | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "namedView" } & NamedViewArtifact | { "type": "pattern" } & Pattern;
+
+/**
+ * Where a named view's camera looks from: one variant per KCL constructor
+ * function, so a stored view can never carry both a curated orientation and a
+ * custom direction.
+ */
+export type ArtifactCameraLook = { "type": "oriented", orientation: ArtifactOrientation, } | { "type": "directed", direction: ArtifactPoint3d, up: ArtifactPoint3d, };
+
+/**
+ * API-owned camera intent used by named-view artifacts. It mirrors kcl-lib's
+ * `CameraView` JSON shape while keeping kcl-api independent of execution
+ * internals, as [`ArtifactPlaneInfo`] does for planes.
+ *
+ * The values are intent, not a snapshot of engine camera state: an absent
+ * field is resolved by whichever consumer activates the view. Every length is
+ * in millimeters, converted when the view was constructed.
+ */
+export type ArtifactCameraView = { look: ArtifactCameraLook, 
+/**
+ * The point the camera looks at, in millimeters. Absent means: center on
+ * the bounds of the model at activation.
+ */
+target: ArtifactPoint3d | null, 
+/**
+ * The distance from the camera to the target, in millimeters. Absent
+ * means: fit the model at activation.
+ */
+distance: number | null, projection: ArtifactProjection, };
 
 /**
  * A command that may create or update artifacts on the TS side.  Because
@@ -40,6 +68,13 @@ omitFromGraph?: boolean, };
 export type ArtifactGraph = { map: { [key in ArtifactId]: Artifact }, itemCount: number, };
 
 /**
+ * API-owned camera orientation used by named-view artifacts, equivalent to
+ * the KCL enum `std::view::Orientation`. Keeping it here means the wire model
+ * does not depend on kcl-lib's execution types.
+ */
+export type ArtifactOrientation = "front" | "back" | "left" | "right" | "top" | "bottom" | "isometric";
+
+/**
  * API-owned plane data used by artifacts. It mirrors kcl-lib's evaluated
  * plane JSON shape while keeping kcl-api independent of execution internals.
  */
@@ -52,10 +87,23 @@ export type ArtifactPlaneInfo = { origin: ArtifactPoint3d, xAxis: ArtifactPoint3
 export type ArtifactPoint3d = { x: number, y: number, z: number, units: UnitLength | null, };
 
 /**
+ * API-owned camera projection used by named-view artifacts, equivalent to the
+ * KCL enum `std::view::Projection`. See [`ArtifactOrientation`].
+ */
+export type ArtifactProjection = "orthographic" | "perspective";
+
+/**
  * API-owned sweep method equivalent to the engine extrusion method, avoiding
  * a kcl-api dependency on kittycad-modeling-cmds.
  */
 export type ArtifactSweepMethod = "new" | "merge";
+
+/**
+ * API-owned visibility baseline used by named-view artifacts, equivalent to
+ * the KCL enum `std::view::Visibility`. `Show` means every object is visible
+ * except those the view's hide list names; `Hide` means the reverse.
+ */
+export type ArtifactVisibility = "show" | "hide";
 
 export type Cap = { id: ArtifactId, subType: CapSubType, edgeCutEdgeIds: Array<ArtifactId>, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
 /**
@@ -124,6 +172,38 @@ trajectorySweepId: ArtifactId | null,
  * Whether this artifact has been used in a subsequent operation
  */
 consumed: boolean, };
+
+/**
+ * A named view declared in KCL by `view::named`: a display name, camera intent
+ * and the objects the view shows or hides.
+ *
+ * The view is data for a consumer to activate later, so this artifact holds no
+ * engine geometry and its creation sends no engine command. The objects are
+ * named by ARTIFACT id, so a consumer resolves each one through the artifact
+ * graph; an extruded solid's engine id differs from its artifact id, and the
+ * translation belongs to whoever applies the view.
+ */
+export type NamedViewArtifact = { id: ArtifactId, 
+/**
+ * The display name the author gave the view. Required, and unique among
+ * the views declared by the same module.
+ */
+name: string, camera: ArtifactCameraView, 
+/**
+ * Whether objects start visible or hidden, which decides which of the two
+ * lists below can act.
+ */
+baseline: ArtifactVisibility, 
+/**
+ * Artifacts the view shows. Meaningful under a `Hide` baseline, where they
+ * are the only visible objects.
+ */
+showIds: Array<ArtifactId>, 
+/**
+ * Artifacts the view hides. Meaningful under a `Show` baseline, where they
+ * are the only hidden objects.
+ */
+hideIds: Array<ArtifactId>, codeRef: CodeRef, };
 
 export type Path = { id: ArtifactId, subType: PathSubType, planeId: ArtifactId, segIds: Array<ArtifactId>, 
 /**
@@ -200,6 +280,11 @@ export type PrimitiveFace = { id: ArtifactId, solidId: ArtifactId, codeRef: Code
 
 export type Segment = { id: ArtifactId, pathId: ArtifactId, 
 /**
+ * The original segment this segment was cloned from, if any. For clones
+ * of clones, this continues to point to the originating segment.
+ */
+sourceSegmentId?: ArtifactId | null, 
+/**
  * If this artifact is a segment in a region, the segment in the original
  * sketch that this was derived from.
  */
@@ -251,6 +336,11 @@ export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef:
  * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
  */
 export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
+/**
+ * The original sweep this body was cloned from, if any. For clones of
+ * clones, this continues to point to the originating sweep.
+ */
+sourceSweepId?: ArtifactId | null, 
 /**
  * ID of trajectory path for sweep, if any
  * Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which

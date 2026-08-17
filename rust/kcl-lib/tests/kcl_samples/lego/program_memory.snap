@@ -470,10 +470,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -501,10 +501,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -586,10 +586,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -617,10 +617,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -702,10 +702,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -733,10 +733,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -818,10 +818,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -849,10 +849,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -934,10 +934,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -965,10 +965,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -1050,10 +1050,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2505,
-                "end": 2514,
+                "commentStart": 2491,
+                "end": 2500,
                 "moduleId": 0,
-                "start": 2505,
+                "start": 2491,
                 "type": "TagDeclarator",
                 "value": "pegCircle"
               },
@@ -1081,10 +1081,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 2505,
-                  "end": 2514,
+                  "commentStart": 2491,
+                  "end": 2500,
                   "moduleId": 0,
-                  "start": 2505,
+                  "start": 2491,
                   "type": "TagDeclarator",
                   "value": "pegCircle"
                 },
@@ -1178,10 +1178,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 2505,
-            "end": 2514,
+            "commentStart": 2491,
+            "end": 2500,
             "moduleId": 0,
-            "start": 2505,
+            "start": 2491,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1258,10 +1258,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2505,
-            "end": 2514,
+            "commentStart": 2491,
+            "end": 2500,
             "moduleId": 0,
-            "start": 2505,
+            "start": 2491,
             "type": "TagDeclarator",
             "value": "pegCircle"
           },
@@ -1289,10 +1289,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 2505,
-              "end": 2514,
+              "commentStart": 2491,
+              "end": 2500,
               "moduleId": 0,
-              "start": 2505,
+              "start": 2491,
               "type": "TagDeclarator",
               "value": "pegCircle"
             },
@@ -1390,10 +1390,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 2505,
-                    "end": 2514,
+                    "commentStart": 2491,
+                    "end": 2500,
                     "moduleId": 0,
-                    "start": 2505,
+                    "start": 2491,
                     "type": "TagDeclarator",
                     "value": "pegCircle"
                   },
@@ -1928,10 +1928,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 1784,
-            "end": 1789,
+            "commentStart": 1777,
+            "end": 1782,
             "moduleId": 0,
-            "start": 1784,
+            "start": 1777,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1952,10 +1952,10 @@ description: Variables in memory after executing lego.kcl
             -10.4
           ],
           "tag": {
-            "commentStart": 1866,
-            "end": 1871,
+            "commentStart": 1859,
+            "end": 1864,
             "moduleId": 0,
-            "start": 1866,
+            "start": 1859,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1976,10 +1976,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 1985,
-            "end": 1990,
+            "commentStart": 1978,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1985,
+            "start": 1978,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2000,10 +2000,10 @@ description: Variables in memory after executing lego.kcl
             10.4
           ],
           "tag": {
-            "commentStart": 2104,
-            "end": 2109,
+            "commentStart": 2097,
+            "end": 2102,
             "moduleId": 0,
-            "start": 2104,
+            "start": 2097,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2092,10 +2092,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1784,
-            "end": 1789,
+            "commentStart": 1777,
+            "end": 1782,
             "moduleId": 0,
-            "start": 1784,
+            "start": 1777,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2106,10 +2106,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1866,
-            "end": 1871,
+            "commentStart": 1859,
+            "end": 1864,
             "moduleId": 0,
-            "start": 1866,
+            "start": 1859,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2120,10 +2120,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1985,
-            "end": 1990,
+            "commentStart": 1978,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1985,
+            "start": 1978,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2134,10 +2134,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2104,
-            "end": 2109,
+            "commentStart": 2097,
+            "end": 2102,
             "moduleId": 0,
-            "start": 2104,
+            "start": 2097,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2159,10 +2159,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 1784,
-              "end": 1789,
+              "commentStart": 1777,
+              "end": 1782,
               "moduleId": 0,
-              "start": 1784,
+              "start": 1777,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2183,10 +2183,10 @@ description: Variables in memory after executing lego.kcl
               -10.4
             ],
             "tag": {
-              "commentStart": 1866,
-              "end": 1871,
+              "commentStart": 1859,
+              "end": 1864,
               "moduleId": 0,
-              "start": 1866,
+              "start": 1859,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2207,10 +2207,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 1985,
-              "end": 1990,
+              "commentStart": 1978,
+              "end": 1983,
               "moduleId": 0,
-              "start": 1985,
+              "start": 1978,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2231,10 +2231,10 @@ description: Variables in memory after executing lego.kcl
               10.4
             ],
             "tag": {
-              "commentStart": 2104,
-              "end": 2109,
+              "commentStart": 2097,
+              "end": 2102,
               "moduleId": 0,
-              "start": 2104,
+              "start": 2097,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3460,10 +3460,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 1784,
-                    "end": 1789,
+                    "commentStart": 1777,
+                    "end": 1782,
                     "moduleId": 0,
-                    "start": 1784,
+                    "start": 1777,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3484,10 +3484,10 @@ description: Variables in memory after executing lego.kcl
                     -10.4
                   ],
                   "tag": {
-                    "commentStart": 1866,
-                    "end": 1871,
+                    "commentStart": 1859,
+                    "end": 1864,
                     "moduleId": 0,
-                    "start": 1866,
+                    "start": 1859,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3508,10 +3508,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 1985,
-                    "end": 1990,
+                    "commentStart": 1978,
+                    "end": 1983,
                     "moduleId": 0,
-                    "start": 1985,
+                    "start": 1978,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3532,10 +3532,10 @@ description: Variables in memory after executing lego.kcl
                     10.4
                   ],
                   "tag": {
-                    "commentStart": 2104,
-                    "end": 2109,
+                    "commentStart": 2097,
+                    "end": 2102,
                     "moduleId": 0,
-                    "start": 2104,
+                    "start": 2097,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3683,10 +3683,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3474,
-                "end": 3484,
+                "commentStart": 3453,
+                "end": 3463,
                 "moduleId": 0,
-                "start": 3474,
+                "start": 3453,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3714,10 +3714,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3474,
-                  "end": 3484,
+                  "commentStart": 3453,
+                  "end": 3463,
                   "moduleId": 0,
-                  "start": 3474,
+                  "start": 3453,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3799,10 +3799,10 @@ description: Variables in memory after executing lego.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3474,
-                "end": 3484,
+                "commentStart": 3453,
+                "end": 3463,
                 "moduleId": 0,
-                "start": 3474,
+                "start": 3453,
                 "type": "TagDeclarator",
                 "value": "tubeCircle"
               },
@@ -3830,10 +3830,10 @@ description: Variables in memory after executing lego.kcl
                 ],
                 "radius": 2.4,
                 "tag": {
-                  "commentStart": 3474,
-                  "end": 3484,
+                  "commentStart": 3453,
+                  "end": 3463,
                   "moduleId": 0,
-                  "start": 3474,
+                  "start": 3453,
                   "type": "TagDeclarator",
                   "value": "tubeCircle"
                 },
@@ -3927,10 +3927,10 @@ description: Variables in memory after executing lego.kcl
           ],
           "radius": 2.4,
           "tag": {
-            "commentStart": 3474,
-            "end": 3484,
+            "commentStart": 3453,
+            "end": 3463,
             "moduleId": 0,
-            "start": 3474,
+            "start": 3453,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -4007,10 +4007,10 @@ description: Variables in memory after executing lego.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3484,
+            "commentStart": 3453,
+            "end": 3463,
             "moduleId": 0,
-            "start": 3474,
+            "start": 3453,
             "type": "TagDeclarator",
             "value": "tubeCircle"
           },
@@ -4038,10 +4038,10 @@ description: Variables in memory after executing lego.kcl
             ],
             "radius": 2.4,
             "tag": {
-              "commentStart": 3474,
-              "end": 3484,
+              "commentStart": 3453,
+              "end": 3463,
               "moduleId": 0,
-              "start": 3474,
+              "start": 3453,
               "type": "TagDeclarator",
               "value": "tubeCircle"
             },
@@ -4139,10 +4139,10 @@ description: Variables in memory after executing lego.kcl
                   ],
                   "radius": 2.4,
                   "tag": {
-                    "commentStart": 3474,
-                    "end": 3484,
+                    "commentStart": 3453,
+                    "end": 3463,
                     "moduleId": 0,
-                    "start": 3474,
+                    "start": 3453,
                     "type": "TagDeclarator",
                     "value": "tubeCircle"
                   },

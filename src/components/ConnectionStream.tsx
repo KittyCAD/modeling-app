@@ -1,4 +1,3 @@
-import type { EntityReference } from '@kittycad/lib'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
@@ -30,6 +29,7 @@ import {
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import { getAllOperations } from '@src/lang/wasm'
+import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { EngineDebugger } from '@src/lib/debugger'
@@ -289,11 +289,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             if (!entityRef) {
               if (artifact.type === 'path') {
                 entityRef = { type: 'solid2d', solid2d_id: String(artifact.id) }
-              } else if (artifact.type === 'helix') {
-                entityRef = {
-                  type: 'solid2d_edge',
-                  edge_id: String(artifact.id),
-                }
               }
             }
             if (!entityRef) return

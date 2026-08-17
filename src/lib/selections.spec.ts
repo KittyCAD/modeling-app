@@ -21,9 +21,11 @@ import {
   getStableOffsetPlaneData,
   handleSelectionBatch,
   normalizeEntityReference,
+  removeReferenceFromSelections,
 } from '@src/lib/selections'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
+import type { DefaultPlaneSelection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1416,6 +1418,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph: ___artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1460,6 +1463,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1548,6 +1552,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: regionRightCodeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph,
       engineCommandManager: createPrimitiveEngineConnectionManager({
@@ -1591,6 +1596,7 @@ cube = extrude(cubeRegion, length = 10)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1615,6 +1621,43 @@ cube = extrude(cubeRegion, length = 10)
     expect(
       references.find((reference) => reference.label === 'Edge')?.code
     ).toBe('seg01')
+  })
+
+  test('includes selected default planes and lets them be removed', async () => {
+    const defaultPlaneSelection = {
+      id: 'default-plane-xy',
+      name: 'xy',
+    } as unknown as DefaultPlaneSelection
+    const references = await getSelectionReferences({
+      graphSelections: [],
+      defaultPlaneSelections: [defaultPlaneSelection],
+      enginePrimitives: [],
+      artifactGraph: new Map(),
+      engineCommandManager: null as never,
+      kclManager: null as never,
+      wasmInstance: null as never,
+    })
+
+    expect(references).toEqual([
+      {
+        id: 'plane:default-plane-xy',
+        label: 'XY Plane',
+        code: 'XY',
+        defaultPlaneSelection,
+      },
+    ])
+    expect(
+      removeReferenceFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [defaultPlaneSelection, 'x-axis'],
+        },
+        references[0]
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: ['x-axis'],
+    })
   })
 })
 
@@ -2000,6 +2043,105 @@ describe('mixed entity-reference selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test('preserves the clicked pattern copy identity in viewport selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `body001 = 0
+bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
+    const ast = assertParse(code, instance)
+    const patternRange = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ] as SourceRange
+    const codeRef = {
+      range: patternRange,
+      pathToNode: getNodePathFromSourceRange(ast, patternRange),
+      nodePath: { steps: [] },
+    }
+    const patternArtifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: [],
+      codeRef,
+    } as unknown as Artifact
+    const artifactGraph: ArtifactGraph = new Map([
+      [patternArtifact.id, patternArtifact],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async () => ({
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'empty' } },
+        },
+      })),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'copy-face-1',
+          reference: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          artifact: patternArtifact,
+          codeRef,
+          engineEntityId: 'copy-face-1',
+          entityRef: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+          patternIndex: 1,
+        },
+      },
+    })
+  })
+
+  test('normalizes standalone helix entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'helix',
+        helix_id: 'helix-1',
+      })
+    ).toEqual({
+      type: 'helix',
+      helix_id: 'helix-1',
+    })
+  })
+
+  test('labels a standalone 3D curve using its helix artifact', () => {
+    const selection: Selections = {
+      graphSelections: [{ entityRef: { type: 'helix', helix_id: 'helix-1' } }],
+      otherSelections: [],
+    }
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          type: 'helix',
+          id: 'helix-1',
+          codeRef: { range: [0, 1, 0] },
+        },
+      ],
+    ]) as ArtifactGraph
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
   test('normalizes region entity references', () => {
     expect(
       normalizeEntityReference({
@@ -2287,29 +2429,6 @@ describe('getSelectionTypeDisplayText', () => {
     expect(
       getSelectionTypeDisplayText({} as any, selection, artifactGraph)
     ).toBe('1 sweep')
-  })
-
-  test('resolves solid2d edge refs to helix artifacts before display', () => {
-    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const artifactGraph = new Map([
-      [
-        'helix-1',
-        {
-          id: 'helix-1',
-          type: 'helix',
-        } as unknown as Artifact,
-      ],
-    ])
-    const selection: Selections = {
-      graphSelections: [
-        { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },
-      ],
-      otherSelections: [],
-    }
-
-    expect(
-      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
-    ).toBe('1 helix')
   })
 
   test('coalesces edge-like selections under edge', () => {

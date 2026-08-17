@@ -182,16 +182,14 @@ pub(crate) async fn record_refactor_meta_for_direct_edge(
     edge_id: Uuid,
     source_range: SourceRange,
     args: &Args,
-) {
-    if !args.ctx.no_engine_commands().await
-        && exec_state
-            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), true)
-            .await
-            .is_err()
-    {
-        return;
+) -> Result<(), KclError> {
+    if !args.ctx.no_engine_commands().await {
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), false)
+            .await?;
     }
-    let Ok(meta) = get_refactor_meta_for_edge(
+
+    if let Ok(meta) = get_refactor_meta_for_edge(
         exec_state,
         edge_id,
         args,
@@ -199,10 +197,11 @@ pub(crate) async fn record_refactor_meta_for_direct_edge(
         EdgeRefactorStdlibFn::DirectEdgeTag,
     )
     .await
-    else {
-        return;
-    };
-    exec_state.record_edge_refactor_meta(meta);
+    {
+        exec_state.record_edge_refactor_meta(meta);
+    }
+
+    Ok(())
 }
 
 pub(crate) async fn record_refactor_meta_for_direct_tag(
@@ -210,17 +209,14 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
     tag: &TagIdentifier,
     source_range: SourceRange,
     args: &Args,
-) {
+) -> Result<(), KclError> {
     let Some(tag_info) = tag.get_cur_info() else {
-        return;
+        return Ok(());
     };
-    if !args.ctx.no_engine_commands().await
-        && exec_state
-            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), true)
-            .await
-            .is_err()
-    {
-        return;
+    if !args.ctx.no_engine_commands().await {
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), false)
+            .await?;
     }
     if args.ctx.no_engine_commands().await {
         let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
@@ -231,7 +227,7 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
             source_range,
             stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
         });
-        return;
+        return Ok(());
     }
 
     let response = exec_state
@@ -249,7 +245,7 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
         modeling_response: OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info),
     }) = response
     else {
-        return;
+        return Ok(());
     };
     let Some(edge_info) = info
         .edges
@@ -257,10 +253,10 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
         .filter_map(|edge| edge.original_info.as_ref())
         .find(|edge| edge.edge_id == tag_info.id)
     else {
-        return;
+        return Ok(());
     };
     let [first, second] = edge_info.faces.as_slice() else {
-        return;
+        return Ok(());
     };
     exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
         edge_id: tag_info.id,
@@ -269,6 +265,7 @@ pub(crate) async fn record_refactor_meta_for_direct_tag(
         source_range,
         stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
     });
+    Ok(())
 }
 
 fn record_pending_edge_refactor_meta(

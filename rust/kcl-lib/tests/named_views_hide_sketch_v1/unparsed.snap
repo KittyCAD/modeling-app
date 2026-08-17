@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_sketch_v1.kcl
+---
+// Classic pipeline (V1) test, kept deliberately: pins that an unextruded
+// pipeline sketch is engine-addressable by the id hide() sends, like a
+// solved V2 block is (see named_views_hide_sketch). The rendered snapshot
+// must show exactly ONE square profile.
+sketchVisible = startSketchOn(XY)
+  |> startProfile(at = [20, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+sketchHidden = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+hide(sketchHidden)

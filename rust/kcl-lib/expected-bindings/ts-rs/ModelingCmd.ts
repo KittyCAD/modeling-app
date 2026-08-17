@@ -3806,7 +3806,16 @@ coords: System,
  *
  * Defaults to `false` but is implicitly `true` when importing into the engine.
  */
-split_closed_faces: boolean, };
+split_closed_faces: boolean, 
+/**
+ * What representation should be used for this file after it's imported?
+ */
+target_representation: StepImportTargetRepresentation, };
+
+/**
+ * After importing, how should this model's data be represented?
+ */
+export type StepImportTargetRepresentation = "mesh" | "brep";
 
 /**
  * Describes the presentation style of the EXPRESS exchange format.

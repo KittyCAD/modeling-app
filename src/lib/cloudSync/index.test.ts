@@ -5,20 +5,20 @@ import {
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
   getCloudSyncProjectModifiedTime,
-  getCloudSyncProjectRoot,
+  getCloudSyncProjectRootInDirectories,
+  getCloudSyncProjectRootInDirectory,
   getCloudSyncProjectSyncPreflightAction,
   getCloudSyncRemoteArchiveReconciliationAction,
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
-  shouldAutoEnrollCloudLibraryProject,
   type OutboxEntry,
   type ProjectArchiveFile,
   type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
+  shouldAutoEnrollCloudLibraryProject,
 } from '@src/lib/cloudSync'
 import {
-  DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH,
   getCloudProjectLibraryMaterializationDirectoryPath,
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
@@ -33,9 +33,19 @@ import {
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import { describe, expect, it } from 'vitest'
+import fsZds from '@src/lib/fs-zds'
+import {
+  CLOUD_PROJECT_LIBRARY_TYPE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+} from '@src/lib/projectLibraries'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const encoder = new TextEncoder()
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
   return {
@@ -51,12 +61,6 @@ function readProjectFile(files: ProjectArchiveFile[], relativePath: string) {
 }
 
 describe('cloudSync sync helpers', () => {
-  it('uses the web project directory as the default cloud project directory fallback', () => {
-    expect(DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH).toBe(
-      `/documents/${PROJECT_FOLDER}`
-    )
-  })
-
   it('uses a configured cloud library path as its materialization directory', async () => {
     await expect(
       getCloudProjectLibraryMaterializationDirectoryPath({
@@ -66,40 +70,98 @@ describe('cloudSync sync helpers', () => {
     ).resolves.toBe('/team-cloud')
   })
 
-  it('identifies project roots beneath the personal Zoo cloud directory', () => {
+  it('resolves the legacy personal cloud library path to the app-managed materialization directory', async () => {
+    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/documents')
+    vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
+      parts.reduce((targetPath, part) => `${targetPath}/${part}`)
+    )
+
+    await expect(
+      getCloudProjectLibraryMaterializationDirectoryPath({
+        path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+      })
+    ).resolves.toBe(`/documents/${PROJECT_FOLDER}`)
+
+    expect(fsZds.getPath).toHaveBeenCalledTimes(1)
+    expect(fsZds.getPath).toHaveBeenCalledWith('documents')
+  })
+
+  it('rejects non-cloud libraries as cloud materialization sources', async () => {
+    await expect(
+      getCloudProjectLibraryMaterializationDirectoryPath({
+        path: '/projects',
+        type: 'directory',
+      })
+    ).rejects.toThrow('Expected a cloud project library.')
+  })
+
+  it('identifies the owning project root beneath a cloud library root', () => {
     expect(
-      getCloudSyncProjectRoot(
-        '/Users/frank/Library/CloudStorage/Zoo/personal/bracket/main.kcl'
+      getCloudSyncProjectRootInDirectory(
+        '/cloud/personal/bracket/main.kcl',
+        '/cloud/personal'
       )
-    ).toBe('/Users/frank/Library/CloudStorage/Zoo/personal/bracket')
+    ).toBe('/cloud/personal/bracket')
 
     expect(
-      getCloudSyncProjectRoot('/Users/frank/Library/CloudStorage/Zoo/personal')
+      getCloudSyncProjectRootInDirectory(
+        '/cloud/personal/bracket/nested/part.kcl',
+        '/cloud/personal'
+      )
+    ).toBe('/cloud/personal/bracket')
+
+    expect(
+      getCloudSyncProjectRootInDirectory(
+        '/cloud/personal/bracket/',
+        '/cloud/personal'
+      )
+    ).toBe('/cloud/personal/bracket')
+  })
+
+  it('does not infer project roots outside the owning cloud library root', () => {
+    expect(
+      getCloudSyncProjectRootInDirectory('/cloud/personal', '/cloud/personal')
+    ).toBeUndefined()
+
+    expect(
+      getCloudSyncProjectRootInDirectory(
+        '/cloud/personal-archive/bracket/main.kcl',
+        '/cloud/personal'
+      )
+    ).toBeUndefined()
+
+    expect(
+      getCloudSyncProjectRootInDirectory(
+        '/documents/zoo-design-studio-projects/bracket/main.kcl',
+        '/cloud/personal'
+      )
     ).toBeUndefined()
   })
 
-  it('identifies project roots beneath the OPFS project directory', () => {
+  it('normalizes path separators before finding the cloud-library project root', () => {
     expect(
-      getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}/bracket/main.kcl`)
-    ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
-
-    expect(
-      getCloudSyncProjectRoot(
-        `/documents/${PROJECT_FOLDER}/bracket/nested/part.kcl`
+      getCloudSyncProjectRootInDirectory(
+        '\\cloud\\personal\\bracket\\main.kcl',
+        '\\cloud\\personal\\'
       )
-    ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
-
-    expect(
-      getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}`)
-    ).toBeUndefined()
+    ).toBe('/cloud/personal/bracket')
   })
 
-  it('normalizes Windows separators when identifying project roots', () => {
+  it('uses the most specific owning cloud library root when multiple roots match', () => {
     expect(
-      getCloudSyncProjectRoot(
-        `\\documents\\${PROJECT_FOLDER}\\bracket\\main.kcl`
-      )
-    ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
+      getCloudSyncProjectRootInDirectories('/cloud/team/bracket/main.kcl', [
+        '/cloud',
+        '/cloud/team',
+      ])
+    ).toBe('/cloud/team/bracket')
+
+    expect(
+      getCloudSyncProjectRootInDirectories('/cloud/personal/bracket/main.kcl', [
+        '/cloud/team',
+        '/cloud/personal',
+      ])
+    ).toBe('/cloud/personal/bracket')
   })
 
   it('compares manifests by path, size, and content hash without depending on object key order', () => {
@@ -652,7 +714,13 @@ describe('cloudSync sync helpers', () => {
       pendingCount: 2,
     })
 
-    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+    expect(
+      getCloudSyncScopePlan(entries, {
+        projectPath: '/projects/current',
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+      })
+    ).toEqual({
       shouldSyncRemoteIndex: false,
       projectPaths: ['/projects/current'],
       pendingCount: 1,
@@ -687,7 +755,13 @@ describe('cloudSync sync helpers', () => {
       pendingCount: 2,
     })
 
-    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+    expect(
+      getCloudSyncScopePlan(entries, {
+        projectPath: '/projects/current',
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+      })
+    ).toEqual({
       shouldSyncRemoteIndex: false,
       projectPaths: ['/projects/current'],
       pendingCount: 1,
@@ -695,9 +769,48 @@ describe('cloudSync sync helpers', () => {
   })
 
   it('keeps syncing the open project even when it has no queued local edits', () => {
-    expect(getCloudSyncScopePlan([], '/projects/current')).toEqual({
+    expect(
+      getCloudSyncScopePlan([], {
+        projectPath: '/projects/current',
+        libraryPath: '/projects',
+        libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+      })
+    ).toEqual({
       shouldSyncRemoteIndex: false,
       projectPaths: ['/projects/current'],
+      pendingCount: 0,
+    })
+  })
+
+  it('suppresses sync work for opened projects outside cloud libraries', () => {
+    const entries: OutboxEntry[] = [
+      {
+        projectPath: '/projects/other',
+        kind: 'upsert',
+        targetPath: '/projects/other/main.kcl',
+        createdAt: '2026-06-12T00:00:00.000Z',
+      },
+    ]
+
+    expect(
+      getCloudSyncScopePlan(entries, {
+        projectPath: '/external/random',
+        libraryPath: '/external',
+        libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+      })
+    ).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: [],
+      pendingCount: 0,
+    })
+
+    expect(
+      getCloudSyncScopePlan(entries, {
+        projectPath: '/external/random',
+      })
+    ).toEqual({
+      shouldSyncRemoteIndex: false,
+      projectPaths: [],
       pendingCount: 0,
     })
   })

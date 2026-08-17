@@ -309,7 +309,13 @@ pub(crate) async fn create_segments_in_engine(
                 .await?;
                 outer_sketch = Some(sketch);
             }
-            SegmentKind::Arc { start, end, center, .. } => {
+            SegmentKind::Arc {
+                start,
+                end,
+                center,
+                direction,
+                ..
+            } => {
                 let (start, start_ty) = untype_point(start.clone());
                 let Some(start_unit) = start_ty.as_length() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -340,17 +346,19 @@ pub(crate) async fn create_segments_in_engine(
                 let start_radians =
                     libm::atan2(start_in_center_unit[1] - center[1], start_in_center_unit[0] - center[0]);
                 let mut end_radians = libm::atan2(end_in_center_unit[1] - center[1], end_in_center_unit[0] - center[0]);
-                match traversal {
-                    SegmentTraversal::Forward => {
-                        if end_radians <= start_radians {
-                            end_radians += std::f64::consts::TAU;
-                        }
+                // Forward traversal follows the arc's declared sweep
+                // direction; reverse traversal covers the same points the
+                // opposite way.
+                let traverses_ccw = match traversal {
+                    SegmentTraversal::Forward => !direction.is_clockwise(),
+                    SegmentTraversal::Reverse => direction.is_clockwise(),
+                };
+                if traverses_ccw {
+                    if end_radians <= start_radians {
+                        end_radians += std::f64::consts::TAU;
                     }
-                    SegmentTraversal::Reverse => {
-                        if end_radians >= start_radians {
-                            end_radians -= std::f64::consts::TAU;
-                        }
-                    }
+                } else if end_radians >= start_radians {
+                    end_radians -= std::f64::consts::TAU;
                 }
                 let radius_in_center_unit = distance(center, start_in_center_unit);
                 let sketch = relative_arc(
@@ -515,14 +523,20 @@ mod tests {
     use super::sample_control_point_spline_points;
     use crate::ExecState;
     use crate::ExecutorContext;
+    use crate::execution::Path;
     use crate::execution::Plane;
     use crate::execution::Segment;
     use crate::execution::SegmentKind;
     use crate::execution::SketchSurface;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
+    use crate::front::ArcCtor;
+    use crate::front::ArcDirection;
     use crate::front::ControlPointSplineCtor;
+    use crate::front::Expr;
+    use crate::front::Number;
     use crate::front::ObjectId;
+    use crate::front::Point2d;
     use crate::std::args::TyF64;
     use crate::std::sketch::PlaneData;
 
@@ -534,6 +548,93 @@ mod tests {
         assert!(sampled_points.len() > controls.len());
         assert_eq!(sampled_points.first(), Some(&controls[0]));
         assert_eq!(sampled_points.last(), Some(&controls[controls.len() - 1]));
+    }
+
+    fn test_arc_segment(sketch_id: uuid::Uuid, surface: SketchSurface, direction: ArcDirection) -> Segment {
+        let mm = |v: f64| TyF64::new(v, NumericType::length(UnitLength::Millimeters));
+        let expr_point = |x: f64, y: f64| Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        };
+        Segment {
+            id: uuid::Uuid::new_v4(),
+            object_id: ObjectId(100),
+            kind: SegmentKind::Arc {
+                start: [mm(5.0), mm(0.0)],
+                end: [mm(-5.0), mm(0.0)],
+                center: [mm(0.0), mm(0.0)],
+                ctor: Box::new(ArcCtor {
+                    start: expr_point(5.0, 0.0),
+                    end: expr_point(-5.0, 0.0),
+                    center: expr_point(0.0, 0.0),
+                    direction: Some(direction),
+                    construction: None,
+                }),
+                start_object_id: ObjectId(101),
+                end_object_id: ObjectId(102),
+                center_object_id: ObjectId(103),
+                start_freedom: None,
+                end_freedom: None,
+                center_freedom: None,
+                direction,
+                construction: false,
+            },
+            surface,
+            sketch_id,
+            sketch: None,
+            tag: None,
+            node_path: None,
+            meta: vec![],
+        }
+    }
+
+    async fn lower_arc_to_path(direction: ArcDirection) -> Path {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let sketch_id = exec_state.next_uuid();
+        let plane = Plane::from_plane_data_skipping_engine(PlaneData::XY, &mut exec_state).unwrap();
+        let sketch_surface = SketchSurface::Plane(Box::new(plane));
+        let mut segments = vec![test_arc_segment(sketch_id, sketch_surface.clone(), direction)];
+
+        let sketch = create_segments_in_engine(
+            &sketch_surface,
+            sketch_id,
+            &mut segments,
+            &IndexMap::new(),
+            &ctx,
+            &mut exec_state,
+            SourceRange::default(),
+        )
+        .await
+        .unwrap()
+        .expect("expected sketch output");
+
+        ctx.close().await;
+
+        assert_eq!(sketch.paths.len(), 1, "expected exactly one path");
+        sketch.paths.into_iter().next().unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn arc_lowering_sweeps_counterclockwise_by_default() {
+        let path = lower_arc_to_path(ArcDirection::Ccw).await;
+        let Path::Arc { base, ccw, .. } = path else {
+            panic!("expected an arc path, got {path:?}");
+        };
+        assert!(ccw, "counterclockwise arc should sweep counterclockwise");
+        assert_eq!(base.from, [5.0, 0.0]);
+        assert!((base.to[0] - -5.0).abs() < 1e-9 && base.to[1].abs() < 1e-9);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn arc_lowering_sweeps_clockwise_when_direction_is_cw() {
+        let path = lower_arc_to_path(ArcDirection::Cw).await;
+        let Path::Arc { base, ccw, .. } = path else {
+            panic!("expected an arc path, got {path:?}");
+        };
+        assert!(!ccw, "clockwise arc should sweep clockwise");
+        assert_eq!(base.from, [5.0, 0.0]);
+        assert!((base.to[0] - -5.0).abs() < 1e-9 && base.to[1].abs() < 1e-9);
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -3,8 +3,7 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
-import { getAngleDiff } from '@src/lib/utils'
-import { lerp2d } from '@src/lib/utils2d'
+import { getAngleDiff, lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
 import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'

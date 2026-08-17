@@ -5,6 +5,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
+pub(crate) use artifact::EntityCloneInfo;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -43,6 +44,7 @@ pub use memory::EnvironmentRef;
 #[cfg(test)]
 pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
+pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
@@ -52,8 +54,11 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedRegionInfo;
+pub(crate) use state::ConsumedRegionOperation;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
@@ -62,10 +67,12 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
+pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::PendingEdgeRefactorMeta;
+pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
@@ -151,6 +158,8 @@ pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
 mod geometry;
+#[cfg(test)]
+mod hide_id_contract_kcl_test_pins;
 mod id_generator;
 mod import;
 mod import_graph;
@@ -158,8 +167,10 @@ pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
+mod named_views;
 mod sketch_solve;
 mod sketch_transpiler;
+mod solver_arc;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -2185,6 +2196,13 @@ pub(crate) struct ExecTestResults {
 impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
+    }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
     }
 }
 
@@ -4785,6 +4803,105 @@ type Color { | Red | Green | Red }
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
     }
 
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
+            settings: ExecutorSettings {
+                project_directory: Some(project_dir),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
+        ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn backtrace_reports_fully_qualified_fn_names() {
+        // An error inside a function called by a qualified name records the
+        // full path (m::f), not just the final segment (f), in the
+        // structured backtrace's unwind locations.
+        let main = "import \"m.kcl\" as m\nx = m::f()\n";
+        let modules = [("m.kcl", "export fn f() {\n  return undefinedVariable\n}\n")];
+        let err = execute_with_modules(main, &modules).await.unwrap_err();
+        let fn_names: Vec<_> = err.backtrace().into_iter().filter_map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, vec!["m::f".to_owned()]);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_name_clash_with_module() {
         // One rule reached four ways: by declaring the enum second, by importing
@@ -4870,6 +4987,177 @@ type Color { | Red | Green | Red }
             };
             assert_eq!(value.qualified_name(), "Color::Red", "case: {case}");
         }
+    }
+
+    // The next five tests pin lexical resolution of signature types: a type
+    // name written in a function signature resolves in the scope where the
+    // declaration executes, never in the caller's scope. Before
+    // definition-time resolution, signature types were looked up at each call
+    // in the caller's environment, so a std or user module whose exported
+    // types a caller had not imported under their bare names was uncallable.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_declaring_module() {
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        // The caller can reach `colors::Color` but never binds the bare name
+        // `Color`, so resolving the signature in the caller's scope would fail.
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_under_import_alias() {
+        // An import alias renames the caller's binding for the module. The
+        // declaring module's scope is unaffected, so the signature must
+        // resolve identically under any alias.
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_ignore_caller_scope() {
+        // `broken.kcl` names a type it does not define. The caller defines
+        // that name, which caller-scope resolution would have used. The
+        // declaration must fail when the module loads, without consulting the
+        // caller's binding.
+        let broken = (
+            "broken.kcl",
+            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+
+        let err = execute_with_modules(main, &[broken]).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Missing"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_reject_forward_reference() {
+        // Resolution happens when the declaration executes, so a type declared
+        // later in the file is not visible. The function is never called; the
+        // error must surface at the declaration itself.
+        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+
+        let err = parse_execute(main).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Later"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_enclosing_scope() {
+        // The declaring scope is the closure's scope, not merely the declaring
+        // module: the anonymous function's signature must see the alias in the
+        // enclosing function body. Caller-scope resolution would use the
+        // module-level `Width = string` and fail to coerce `42`.
+        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+
+        let result = parse_execute(main).await.unwrap();
+        let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold a number");
+        };
+        assert_eq!(value, 42.0);
+    }
+
+    // Pins that numeric types in signatures are settings-independent, so
+    // definition-time resolution changed nothing for them: in type
+    // annotations, bare `number` maps to `Any` before the settings-reading
+    // path, and every explicit suffix maps to a settings-free type. A literal
+    // argument therefore takes its unit from the CALLER's module defaults;
+    // the declaring module's defaults (`in` here) must never leak in. If a
+    // future change makes a signature's number type depend on module default
+    // units, the declaring-module scope of definition-time resolution starts
+    // to matter and this pin fails.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_number_types_ignore_module_default_units() {
+        let units_in = (
+            "units_in.kcl",
+            "@settings(defaultLengthUnit = in)\nexport fn passThrough(@x: number(Length)) {\n  return x\n}\n",
+        );
+        // The caller's default length unit is mm (the test default), so the
+        // unitless literal is 42 mm by the time it reaches the parameter.
+        let main = "import \"units_in.kcl\"\na = units_in::passThrough(42)\nb = units_in::passThrough(42mm)\nc = units_in::passThrough(42in)\n";
+
+        let result = execute_with_modules(main, &[units_in]).await.unwrap();
+        for (name, expected_ty) in [
+            // The unitless literal keeps its `Default` type, and that type
+            // records the CALLER's module settings. Declaring-module leakage
+            // would show here as `len: Inches`.
+            //
+            // That the coercion to `number(Length)` leaves the type as
+            // `Default` rather than concretizing it to `Known(Millimeters)`
+            // is pre-existing coercion behavior which this test observes but
+            // does not endorse. If coercion later concretizes, update the
+            // expected type; the pin here is the settings provenance.
+            (
+                "a",
+                kcl_api::NumericType::Default {
+                    len: kcl_api::UnitLength::Millimeters,
+                    angle: kcl_api::UnitAngle::Degrees,
+                },
+            ),
+            (
+                "b",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Millimeters)),
+            ),
+            (
+                "c",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Inches)),
+            ),
+        ] {
+            let KclValue::Number { value, ty, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            else {
+                panic!("`{name}` should hold a number");
+            };
+            assert_eq!(value, 42.0, "`{name}` should keep its magnitude");
+            assert_eq!(ty, expected_ty, "`{name}` should keep the caller-side unit context");
+        }
+    }
+
+    // Pins the sharpest shadowing case, from a hand-written example during
+    // review: BOTH scopes define the same type name with different meanings,
+    // so the test observes which one the signature uses, not merely whether a
+    // name is present. `m1.kcl`'s `A` is `string` and is NOT exported; the
+    // caller's own `A` is `number(mm)`. The signature must use m1's `A`, so
+    // passing `2mm` is a type error. Caller-scope resolution would have used
+    // the caller's `A` and accepted the call.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
+        let m1 = (
+            "m1.kcl",
+            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+        );
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+
+        let err = execute_with_modules(main, &[m1]).await.unwrap_err();
+        assert_eq!(
+            err.message(),
+            "The input argument of `test` requires a value with type `A`, but found a number (mm) (with type `number(mm)`)."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

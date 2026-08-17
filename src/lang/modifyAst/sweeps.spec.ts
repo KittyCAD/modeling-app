@@ -11,7 +11,10 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
-import { resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  resolveToCodeRef,
+  retrieveSelectionsFromOpArg,
+} from '@src/lang/queryAst'
 import {
   type ArtifactGraph,
   type Name,
@@ -299,6 +302,58 @@ extrude002 = extrude(seg01, length = 3)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should edit an extrude call with multiple region profiles', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [-3mm, 0mm], center = [-5mm, 0mm])
+  circle2 = circle(start = [7mm, 0mm], center = [5mm, 0mm])
+}
+profile001 = region(segments = [sketch001.circle1])
+profile002 = region(segments = [sketch001.circle2])
+extrude001 = extrude([profile001, profile002], length = 5)`
+      const ast = assertParse(code, instanceInThisFile)
+      if (err(ast)) throw ast
+      const { artifactGraph, operations } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const extrudeOperation = getAllOperations(operations).find(
+        (operation) =>
+          operation.type === 'StdLibCall' && operation.name === 'extrude'
+      )
+      if (
+        !extrudeOperation ||
+        extrudeOperation.type !== 'StdLibCall' ||
+        !extrudeOperation.unlabeledArg
+      ) {
+        throw new Error('Extrude operation not found')
+      }
+      const sketches = retrieveSelectionsFromOpArg(
+        extrudeOperation.unlabeledArg,
+        artifactGraph
+      )
+      if (err(sketches)) throw sketches
+      const length = await getKclCommandValue(
+        '6',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        nodeToEdit: createPathToNodeForLastVariable(ast),
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        'extrude001 = extrude([profile001, profile002], length = 6)'
+      )
+    })
+
     it('should add an extrude call from a sketch region selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
         triangleRegion,
@@ -583,6 +638,39 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with a segment direction', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        triangleRegion,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      if (!segment) {
+        throw new Error('segment artifact not found')
+      }
+      const direction = createSelectionFromArtifacts([segment], artifactGraph)
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        direction,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${triangleRegion}\nextrude001 = extrude(s, length = 1, direction = s.line1)`
+      )
+    })
+
     it('should add an extrude call with bidirectional length and twist angle', async () => {
       const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -623,6 +711,37 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
   bidirectionalLength = 20,
   twistAngle = 30,
 )`)
+    })
+
+    it('should add an extrude call with draft angle', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const draftAngle = await getKclCommandValue(
+        '45deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        draftAngle,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)`
+      )
     })
 
     it('should edit an extrude call from symmetric true to false and new length', async () => {

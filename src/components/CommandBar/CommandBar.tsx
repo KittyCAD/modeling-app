@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
-import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -13,11 +12,14 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { keymapService } from '@src/registry/contracts/keymap'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd, project } = useApp()
+  const { commands: cmd, project, registry } = useApp()
+  const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
+  const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
     context: {
       selectedCommand,
@@ -52,19 +54,19 @@ export const CommandBar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
+  useEffect(() => {
+    if (!keymap || !isCommandBarOpen) {
+      return
+    }
+
+    keymap.applyScope('cmd-palette-open')
+
+    return () => {
+      keymap.removeScope('cmd-palette-open')
+    }
+  }, [isCommandBarOpen, keymap])
+
   // Hook up keyboard shortcuts
-  useHotkeyWrapper(
-    [COMMAND_PALETTE_HOTKEY],
-    () => {
-      if (commandBarState.context.commands.length === 0) return
-      if (commandBarState.matches('Closed')) {
-        cmd.send({ type: 'Open' })
-      } else {
-        cmd.send({ type: 'Close' })
-      }
-    },
-    project?.executingEditor.value ?? undefined
-  )
   useHotkeyWrapper(
     ['esc'],
     () => cmd.send({ type: 'Close' }),

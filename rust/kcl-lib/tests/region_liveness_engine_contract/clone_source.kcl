@@ -1,0 +1,11 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profileSketch = sketch(on = XY) {
+  c = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+sharedRegion = region(segments = [profileSketch.c])
+
+// The Rust contract test verifies that sharedRegion is the Region-shaped KCL
+// value created by this engine CreateRegion command, then sends one raw
+// EntityClone command against it. Keeping clone out of this KCL ensures the
+// source Region is untouched before the command under test.

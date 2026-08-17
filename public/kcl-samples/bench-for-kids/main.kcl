@@ -17,8 +17,7 @@ benchSeatRadius = benchWidth / 2
 benchSeatElevation = seatHeight - benchSeatRadius
 
 // Flat face of the cylinder sits one radius below the seat.
-seatSketch = startSketchOn(XZ)
-seatProfile = sketch(on = seatSketch) {
+seatProfile = sketch(on = XZ) {
   arc1 = arc(start = [var 20cm, var 15cm], end = [var -20cm, var 15cm], center = [var 0cm, var 15cm])
   line1 = line(start = [var 20cm, var 15cm], end = [var -20cm, var 15cm])
   horizontal(line1)

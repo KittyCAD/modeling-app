@@ -325,6 +325,57 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should preserve mixed tagged and primitive face selections', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const taggedFaces = getWalls(artifactGraph, 1)
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
+      )
+      expect(sweep).toBeDefined()
+      if (!sweep) return
+
+      const faces: Selections = {
+        graphSelections: [
+          ...taggedFaces.graphSelections,
+          {
+            entityRef: {
+              type: 'face',
+              face_id: 'shell-inner-face-id',
+            },
+            engineEntityId: 'shell-inner-face-id',
+            engineTopologyFallback: {
+              parentId: sweep.id,
+              primitiveIndex: 2,
+            },
+          },
+        ],
+        otherSelections: [],
+      }
+      const thickness = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('face001 = faceId(extrude001, index = 2)')
+      expect(newCode).toContain(
+        'shell001 = shell(extrude001, faces = [seg01, face001], thickness = 1)'
+      )
+    })
+
     it('should edit a shell call on box for 2 walls to a new thickness', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${boxWithTwoTags}
