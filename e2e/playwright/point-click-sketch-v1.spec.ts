@@ -1246,7 +1246,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[seg01,extrude001.faces.capEnd001]}], radius=5`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1516,7 +1516,9 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
       })
 
       await test.step('Load standalone fillets using new edge syntax', async () => {
-        await editor.replaceCode('', standaloneFilletCode)
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', standaloneFilletCode)
+        )
         await scene.settled(cmdBar)
         await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
         await editor.expectEditor.toContain(
