@@ -379,6 +379,26 @@ describe('waitForUserFeaturesSettled', () => {
     expect(settled).toHaveBeenCalledTimes(1)
   })
 
+  it('resolves and unsubscribes when aborted', async () => {
+    const fake = createFakeSource(snapshotIn(UserFeaturesState.Idle))
+    const controller = new AbortController()
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(
+      fake.source,
+      USER_FEATURES_SETTLE_TIMEOUT_MS,
+      controller.signal
+    ).then(settled)
+
+    await flushMicrotasks()
+    expect(fake.listenerCount()).toBe(1)
+    expect(settled).not.toHaveBeenCalled()
+
+    controller.abort()
+    await flushMicrotasks()
+    expect(fake.listenerCount()).toBe(0)
+    expect(settled).toHaveBeenCalledTimes(1)
+  })
+
   it('resolves at the timeout when the source never settles', async () => {
     vi.useFakeTimers()
     const fake = createFakeSource(snapshotIn(UserFeaturesState.Idle))

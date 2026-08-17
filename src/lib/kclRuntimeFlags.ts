@@ -47,20 +47,27 @@ export function kclRuntimeFlagsEqual(
   a: KclRuntimeFlags,
   b: KclRuntimeFlags
 ): boolean {
+  const aKeys = Object.keys(a) as (keyof KclRuntimeFlags)[]
+  const bKeys = Object.keys(b)
   return (
-    a.use_cek_executor === b.use_cek_executor &&
-    a.use_new_lexer_parser === b.use_new_lexer_parser
+    aKeys.length === bKeys.length &&
+    aKeys.every(
+      (key) => Object.prototype.hasOwnProperty.call(b, key) && a[key] === b[key]
+    )
   )
 }
 
 /**
- * Resolves with the flags once the user-features fetch settles (or after the
- * settle timeout), so consumers installing flags into a fresh wasm instance
- * don't race the fetch and start with the flags' defaults.
+ * Resolves with the current flags when one condition is met:
+ *
+ * - The user-features fetch settles.
+ * - The settlement timeout elapses.
+ * - The optional abort signal is aborted.
  */
 export async function waitForSettledKclRuntimeFlags(
-  userFeatures: SettleableRuntimeFlagUserFeatures
+  userFeatures: SettleableRuntimeFlagUserFeatures,
+  signal?: AbortSignal
 ): Promise<KclRuntimeFlags> {
-  await waitForUserFeaturesSettled(userFeatures.actor)
+  await waitForUserFeaturesSettled(userFeatures.actor, undefined, signal)
   return kclRuntimeFlagsFromUserFeatures(userFeatures)
 }

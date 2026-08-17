@@ -5,6 +5,12 @@ import {
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
+import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
+import type { LspService } from '@src/lang/lsp/registry/contract'
+import type { KclLspEditor } from '@src/lang/lsp/types'
+import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
+import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
+import { LspWorker } from '@src/lang/lsp/workerTypes'
 import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
@@ -15,12 +21,6 @@ import {
 import type { FileEntry } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
-import type { LspService } from '@src/lang/lsp/registry/contract'
-import type { KclLspEditor } from '@src/lang/lsp/types'
-import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
-import { LspWorker } from '@src/lang/lsp/workerTypes'
-import KclLspWorker from '@src/lang/lsp/worker.ts?worker'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import type * as LSP from 'vscode-languageserver-protocol'
@@ -32,13 +32,16 @@ type LspRuntime = {
   worker: globalThis.Worker
   client: LanguageServerClient
   ready: boolean
-  /** The flags the worker was initialized with; null until Init is posted. */
-  kclRuntimeFlags: KclRuntimeFlags | null
+  kclRuntimeFlags: KclRuntimeFlags
+}
+
+type PendingLspStartup = {
+  token: string
+  abortController: AbortController
 }
 
 type ProjectSnapshot = {
   project: { name: string | null; path: string | null } | null
-  file: FileEntry | null
 }
 
 type FileSnapshot = {
@@ -64,6 +67,7 @@ export function createLspService({
   let userFeaturesSubscription: Subscription | undefined
   let kclManager: KclLspEditor | null = null
   let runtime: LspRuntime | null = null
+  let pendingStartup: PendingLspStartup | undefined
   let disposeCodeMirrorAttachment: (() => void) | undefined
   let currentProjectSnapshot: ProjectSnapshot | null = null
   let currentFileSnapshot: FileSnapshot | null = null
@@ -99,7 +103,7 @@ export function createLspService({
       currentFileSnapshot = null
     },
     onProjectOpen: (project, file) => {
-      currentProjectSnapshot = { project, file }
+      currentProjectSnapshot = { project }
       currentFileSnapshot = {
         filePath: file?.path || null,
         projectPath: project?.path || null,
@@ -130,6 +134,9 @@ export function createLspService({
           },
         })
       })
+      if (currentFileSnapshot?.filePath === filePath) {
+        currentFileSnapshot = null
+      }
     },
     onFileCreate: (file) => {
       const documentUri = filePathToUri(file.path)
@@ -206,6 +213,10 @@ export function createLspService({
       return
     }
 
+    if (pendingStartup?.token === token) {
+      return
+    }
+
     stopRuntime()
     startRuntime(token)
   }
@@ -217,7 +228,7 @@ export function createLspService({
    * at construction time, inside lsp_run_kcl.
    */
   function runtimeFlagsChanged() {
-    if (!runtime?.kclRuntimeFlags || !userFeatures) {
+    if (!runtime || !userFeatures) {
       return false
     }
 
@@ -234,6 +245,28 @@ export function createLspService({
   }
 
   function startRuntime(token: string) {
+    const abortController = new AbortController()
+    const nextStartup = { token, abortController }
+    pendingStartup = nextStartup
+    const features = ensureUserFeaturesSubscription()
+
+    void (async () => {
+      await waitForSettledKclRuntimeFlags(features, abortController.signal)
+      if (pendingStartup !== nextStartup || abortController.signal.aborted) {
+        return
+      }
+
+      pendingStartup = undefined
+      createRuntime(token, kclRuntimeFlagsFromUserFeatures(features))
+    })().catch((error) => {
+      if (pendingStartup === nextStartup) {
+        pendingStartup = undefined
+      }
+      reportRejection(error)
+    })
+  }
+
+  function createRuntime(token: string, kclRuntimeFlags: KclRuntimeFlags) {
     const lspWorker = new KclLspWorker({ name: LspWorker.Kcl })
     const fromServer = FromServer.create()
     if (err(fromServer)) {
@@ -260,7 +293,7 @@ export function createLspService({
         },
       }),
       ready: false,
-      kclRuntimeFlags: null,
+      kclRuntimeFlags,
     }
 
     lspWorker.onmessage = (event) => {
@@ -268,35 +301,23 @@ export function createLspService({
     }
 
     runtime = nextRuntime
+    const initEvent: KclWorkerOptions = {
+      wasmUrl: wasmUrl(),
+      token,
+      apiBaseUrl: withAPIBaseURL(''),
+      kclRuntimeFlags,
+    }
 
-    const features = ensureUserFeaturesSubscription()
-    void (async () => {
-      // Don't Init until the user-features fetch settles: the flags shipped
-      // here decide the worker's KCL executor and lexer. Client requests are
-      // queued in the meantime, so the LSP just starts a moment later.
-      const kclRuntimeFlags = await waitForSettledKclRuntimeFlags(features)
-      if (runtime !== nextRuntime) {
-        // The runtime was stopped or replaced while waiting.
-        return
-      }
-
-      nextRuntime.kclRuntimeFlags = kclRuntimeFlags
-      const initEvent: KclWorkerOptions = {
-        wasmUrl: wasmUrl(),
-        token,
-        apiBaseUrl: withAPIBaseURL(''),
-        kclRuntimeFlags,
-      }
-
-      lspWorker.postMessage({
-        worker: LspWorker.Kcl,
-        eventType: LspWorkerEventType.Init,
-        eventData: initEvent,
-      })
-    })().catch(reportRejection)
+    lspWorker.postMessage({
+      worker: LspWorker.Kcl,
+      eventType: LspWorkerEventType.Init,
+      eventData: initEvent,
+    })
   }
 
   function stopRuntime() {
+    pendingStartup?.abortController.abort()
+    pendingStartup = undefined
     detachCodeMirror()
     runtime?.client.close()
     runtime?.worker.terminate()
@@ -322,11 +343,7 @@ export function createLspService({
 
   function replayCurrentProjectState() {
     if (currentProjectSnapshot) {
-      notifyProjectOpen(
-        currentProjectSnapshot.project,
-        currentProjectSnapshot.file
-      )
-      return
+      notifyProjectOpen(currentProjectSnapshot.project, null)
     }
 
     if (currentFileSnapshot) {

@@ -98,16 +98,18 @@ export function userFeaturesSnapshotSettled(
 }
 
 /**
- * Resolves once the user-features fetch settles (see
- * [userFeaturesSnapshotSettled]), or after `timeoutMs` as a backstop so a
- * hung fetch can never block callers indefinitely. Resolves immediately if
- * already settled. Never rejects.
+ * Resolves without rejecting when one condition is met:
+ *
+ * - The user-features fetch settles (see [userFeaturesSnapshotSettled]).
+ * - `timeoutMs` elapses.
+ * - The optional abort signal is aborted.
  */
 export function waitForUserFeaturesSettled(
   source: UserFeaturesSettleSource,
-  timeoutMs: number = USER_FEATURES_SETTLE_TIMEOUT_MS
+  timeoutMs: number = USER_FEATURES_SETTLE_TIMEOUT_MS,
+  signal?: AbortSignal
 ): Promise<void> {
-  if (userFeaturesSnapshotSettled(source.getSnapshot())) {
+  if (signal?.aborted || userFeaturesSnapshotSettled(source.getSnapshot())) {
     return Promise.resolve()
   }
 
@@ -123,8 +125,15 @@ export function waitForUserFeaturesSettled(
       if (timeoutId !== undefined) {
         clearTimeout(timeoutId)
       }
+      signal?.removeEventListener('abort', finish)
       subscription?.unsubscribe()
       resolve()
+    }
+
+    signal?.addEventListener('abort', finish, { once: true })
+    if (signal?.aborted) {
+      finish()
+      return
     }
 
     subscription = source.subscribe((snapshot) => {

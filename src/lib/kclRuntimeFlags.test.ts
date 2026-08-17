@@ -11,8 +11,8 @@ import {
   waitForSettledKclRuntimeFlags,
 } from '@src/lib/kclRuntimeFlags'
 import {
-  UserFeaturesState,
   type UserFeaturesSettleSnapshot,
+  UserFeaturesState,
 } from '@src/machines/userFeaturesMachine'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -86,6 +86,29 @@ describe('kclRuntimeFlagsEqual', () => {
     ).toBe(false)
     expect(
       kclRuntimeFlagsEqual(flags, { ...flags, use_new_lexer_parser: 'On' })
+    ).toBe(false)
+  })
+
+  it('compares fields added to the runtime payload', () => {
+    type ExtendedKclRuntimeFlags = KclRuntimeFlags & {
+      future_flag: 'Off' | 'On'
+    }
+    const flags: ExtendedKclRuntimeFlags = {
+      use_cek_executor: 'On',
+      use_new_lexer_parser: 'Off',
+      future_flag: 'On',
+    }
+    const differentFutureFlag: ExtendedKclRuntimeFlags = {
+      ...flags,
+      future_flag: 'Off',
+    }
+
+    expect(kclRuntimeFlagsEqual(flags, differentFutureFlag)).toBe(false)
+    expect(
+      kclRuntimeFlagsEqual(flags, {
+        use_cek_executor: 'On',
+        use_new_lexer_parser: 'Off',
+      })
     ).toBe(false)
   })
 })
