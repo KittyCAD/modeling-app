@@ -701,6 +701,7 @@ fn might_be_legacy_sketch(value: &KclValue) -> bool {
         KclValue::TagDeclarator(_) => false,
         KclValue::GdtAnnotation { .. } => false,
         KclValue::CameraView { .. } => false,
+        KclValue::NamedView { .. } => false,
         KclValue::Plane { .. } => false,
         KclValue::Face { .. } => false,
         KclValue::BoundedEdge { .. } => false,

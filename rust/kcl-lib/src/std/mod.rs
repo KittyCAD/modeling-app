@@ -911,6 +911,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::view::directed(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::view::directed"),
         ),
+        ("view", "named") => (
+            |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::named"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
