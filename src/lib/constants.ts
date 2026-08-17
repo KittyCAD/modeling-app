@@ -36,6 +36,8 @@ export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
 export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
+/** Gates named view changes to ZDS UI */
+export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
