@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -1007,7 +1008,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1079,7 +1080,7 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1093,7 +1094,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1114,7 +1115,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
@@ -1128,7 +1129,7 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -2184,7 +2185,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_env()).await
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
@@ -2249,6 +2250,18 @@ impl ExecTestResults {
     /// returned as an error, so this is the only place a test can see them.
     pub(crate) fn issues(&self) -> &[CompilationIssue] {
         self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 
@@ -2373,7 +2386,7 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -4899,7 +4912,7 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&ctx);

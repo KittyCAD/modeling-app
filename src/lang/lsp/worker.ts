@@ -9,6 +9,7 @@ import type * as jsrpc from 'json-rpc-2.0'
 import init, {
   LspServerConfig,
   lsp_run_kcl,
+  set_kcl_runtime_flags,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
@@ -49,10 +50,14 @@ onmessage = (event: MessageEvent) => {
 
   switch (lspEvent.eventType) {
     case LspWorkerEventType.Init: {
-      const { wasmUrl, token, apiBaseUrl } = lspEvent.eventData
+      const { wasmUrl, token, apiBaseUrl, kclRuntimeFlags } = lspEvent.eventData
       initialise(wasmUrl)
         .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
+          // Install the runtime flags before starting the server: lsp_run_kcl
+          // constructs the LSP's ExecutorContext, which resolves the KCL
+          // executor from these flags at construction time.
+          set_kcl_runtime_flags(JSON.stringify(kclRuntimeFlags))
           const config = new LspServerConfig(
             intoServer,
             fromServer,

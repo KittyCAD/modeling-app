@@ -6874,6 +6874,7 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
+    use crate::execution::machine::ExecutorKind;
     use crate::execution::parse_execute;
 
     fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
@@ -7476,7 +7477,7 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
