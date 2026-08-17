@@ -332,6 +332,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-fillet-0",
     "std-solid-fillet-1",
     "std-solid-fillet-2",
+    "std-solid-fillet-3",
+    "std-solid-fillet-4",
     "std-solid-hollow-0",
     "std-solid-hollow-1",
     "std-solid-patternTransform-0",
@@ -452,4 +454,6 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gear-herringbone-0",
     "std-gear-spur-0",
     "std-gear-ring-0",
+    "std-view-oriented-0",
+    "std-view-directed-0",
 ];

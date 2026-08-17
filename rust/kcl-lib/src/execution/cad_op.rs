@@ -110,6 +110,10 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Helix { value } => OpKclValue::Helix {
             value: Box::new(OpHelix::new(value.artifact_id)),
         },
+        // Operations record only call arguments, and no function takes a
+        // CameraView argument yet. A dedicated representation arrives with
+        // the first function that does (`view::named`).
+        KclValue::CameraView { .. } => OpKclValue::KclNone {},
         KclValue::ImportedGeometry(imported_geometry) => OpKclValue::ImportedGeometry {
             artifact_id: ArtifactId::new(imported_geometry.id),
         },

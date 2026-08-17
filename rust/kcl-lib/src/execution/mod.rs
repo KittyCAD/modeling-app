@@ -44,6 +44,7 @@ pub use memory::EnvironmentRef;
 #[cfg(test)]
 pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
+pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
@@ -66,7 +67,7 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
 pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
@@ -166,6 +167,7 @@ pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
+mod named_views;
 mod sketch_solve;
 mod sketch_transpiler;
 mod solver_arc;
@@ -2194,6 +2196,13 @@ pub(crate) struct ExecTestResults {
 impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
+    }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
     }
 }
 
@@ -4792,6 +4801,105 @@ type Color { | Red | Green | Red }
         }
 
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
+            settings: ExecutorSettings {
+                project_directory: Some(project_dir),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
+        ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn backtrace_reports_fully_qualified_fn_names() {
+        // An error inside a function called by a qualified name records the
+        // full path (m::f), not just the final segment (f), in the
+        // structured backtrace's unwind locations.
+        let main = "import \"m.kcl\" as m\nx = m::f()\n";
+        let modules = [("m.kcl", "export fn f() {\n  return undefinedVariable\n}\n")];
+        let err = execute_with_modules(main, &modules).await.unwrap_err();
+        let fn_names: Vec<_> = err.backtrace().into_iter().filter_map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, vec!["m::f".to_owned()]);
     }
 
     #[tokio::test(flavor = "multi_thread")]

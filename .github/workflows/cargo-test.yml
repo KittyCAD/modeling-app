@@ -22,7 +22,7 @@ jobs:
     name: Build test artifacts
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v2.2.0
+      - uses: runs-on/action@v2.3.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -148,6 +148,15 @@ jobs:
         run: |
           cd rust
           cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
+      - name: Check TypeScript-facing bindings against expected
+        shell: bash
+        run: |
+          ./scripts/generate-bindings.sh
+          ./scripts/update-expected-bindings.sh
+          git add -A -- rust/kcl-lib/expected-bindings/
+          git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
+            || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
+                     'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
       - name: Upload archive to workflow
         uses: actions/upload-artifact@v7
         with:
@@ -163,7 +172,7 @@ jobs:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
     steps:
-      - uses: runs-on/action@v2.2.0
+      - uses: runs-on/action@v2.3.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:

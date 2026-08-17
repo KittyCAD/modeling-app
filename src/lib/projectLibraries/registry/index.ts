@@ -636,7 +636,13 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
 
   const operations: ProjectLibraryTypeOperations = {
     createProject: {
-      run: async ({ library, requestedProjectName, requestedProjectTitle }) => {
+      run: async ({
+        library,
+        requestedProjectName,
+        requestedProjectTitle,
+        initialKclFile,
+        initialProject,
+      }) => {
         const wasmInstancePromise = getWasmPromise()
         if (wasmInstancePromise instanceof Error) {
           return Promise.reject(wasmInstancePromise)
@@ -647,6 +653,8 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           requestedProjectName,
           requestedProjectTitle,
           wasmInstancePromise,
+          initialKclFile,
+          initialProject,
         })
         refreshLocalProjectRealizations(library)
 
