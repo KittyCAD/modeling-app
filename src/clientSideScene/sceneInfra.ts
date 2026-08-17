@@ -811,7 +811,7 @@ export class SceneInfra {
       event.button !== 0 ||
       // If camControls claims the event for some interaction,
       // we ignore this event for sketch interaction.
-      // Eg. option + left drag in "Trackball friendly" navigation mode.
+      // Eg. option + left drag in "Trackpad Friendly" navigation mode.
       this.camControls.getInteractionType(event) !== 'none'
     ) {
       return
