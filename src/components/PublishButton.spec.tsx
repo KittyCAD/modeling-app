@@ -86,6 +86,7 @@ describe('PublishButton', () => {
     const publishButton = screen.getByTestId('publish-button')
     expect(publishButton).toHaveAccessibleName('Changes requested')
     expect(publishButton).toHaveClass('bg-warn-10/60')
+    expect(publishButton).toHaveClass('border-warn-80')
     expect(screen.getByTestId('publish-button-icon')).toHaveAttribute(
       'data-icon',
       'triangleExclamation'
