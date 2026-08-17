@@ -1607,7 +1607,7 @@ mod test {
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
-                executor_kind: crate::execution::machine::ExecutorKind::from_env(),
+                executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
@@ -2418,7 +2418,7 @@ plane = startSketchOn(XY)
             settings: Default::default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: crate::execution::machine::ExecutorKind::from_env(),
+            executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
