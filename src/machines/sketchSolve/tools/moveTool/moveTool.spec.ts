@@ -539,13 +539,13 @@ describe('createOnDragStartCallback', () => {
     expect(beginDragSession).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
-      expect.objectContaining({ x: 10, y: 20 })
+      expect.objectContaining({ x: 0, y: 0 })
     )
     // Verify it's a clone (new object)
     const callArg = setLastSuccessfulDragFromPoint.mock.calls[0][0]
     expect(callArg).not.toBe(intersectionPoint.twoD)
-    expect(callArg.x).toBe(10)
-    expect(callArg.y).toBe(20)
+    expect(callArg.x).toBe(0)
+    expect(callArg.y).toBe(0)
     expect(setLastGoodPreview).toHaveBeenCalledWith(null)
     expect(setDragStartOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'baseline' },

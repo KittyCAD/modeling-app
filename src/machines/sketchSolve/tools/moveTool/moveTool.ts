@@ -1069,11 +1069,9 @@ export function createOnDragStartCallback({
     const circleOwner = isPointSegment(draggedPoint)
       ? getCircleOwner(draggedPoint, objects)
       : null
-    setCircleCenterDragOwnerId(
+    const isCircleCenterDrag =
       circleOwner?.kind.segment.center === draggedEntityId
-        ? circleOwner.id
-        : null
-    )
+    setCircleCenterDragOwnerId(isCircleCenterDrag ? circleOwner.id : null)
     const draggedConstraintLabelId = getConstraintLabelId(
       draggedEntityId,
       currentSketchOutcome?.sceneGraphDelta
@@ -1081,7 +1079,14 @@ export function createOnDragStartCallback({
     if (draggedConstraintLabelId !== null) {
       onUpdateHoveredId(draggedConstraintLabelId)
     }
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setLastSuccessfulDragFromPoint(
+      isCircleCenterDrag && isPointSegment(draggedPoint)
+        ? new Vector2(
+            draggedPoint.kind.segment.position.x.value,
+            draggedPoint.kind.segment.position.y.value
+          )
+        : intersectionPoint.twoD.clone()
+    )
     setLastGoodPreview(null)
     setDragStartOutcome(currentSketchOutcome)
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
