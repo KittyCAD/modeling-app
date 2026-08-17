@@ -653,6 +653,30 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
     assert_eq!(blend_sweep.method, ArtifactSweepMethod::New);
     assert!(!blend_sweep.consumed);
+
+    let Some(Artifact::Sweep(source_sweep)) = artifacts.get_mut(&source_surface_one_id) else {
+        panic!("Expected the first source surface to be a sweep");
+    };
+    source_sweep.path_id = None;
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    let Artifact::Sweep(blend_sweep) = &updated[0] else {
+        panic!("Expected SurfaceBlend to create a sweep artifact, got: {updated:?}");
+    };
+
+    // Edge-sourced surface extrusions have no path; do not substitute a surface ID as path lineage.
+    assert_eq!(blend_sweep.path_id, None);
 }
 
 #[test]

@@ -1774,7 +1774,7 @@ fn artifacts_to_update(
                 internal_error!(range, "SurfaceBlend command has no surfaces: id={id:?}, cmd={cmd:?}");
             };
             let first_surface_id = ArtifactId::new(first_surface_ref.object_id);
-            let path_id = surface_id_to_path_id(first_surface_id).unwrap_or(first_surface_id);
+            let path_id = surface_id_to_path_id(first_surface_id);
             let trajectory_id = surface_blend_cmd
                 .surfaces
                 .get(1)
@@ -1783,7 +1783,7 @@ fn artifacts_to_update(
             let return_arr = vec![Artifact::Sweep(Sweep {
                 id,
                 sub_type: SweepSubType::Blend,
-                path_id: Some(path_id),
+                path_id,
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
