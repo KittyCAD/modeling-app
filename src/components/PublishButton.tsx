@@ -1,7 +1,12 @@
 import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { AquariumStatusBadge } from '@src/components/AquariumStatusBadge'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
+import {
+  type ProjectStatus,
+  useProjectStatus,
+} from '@src/hooks/useProjectStatus'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import {
@@ -66,6 +71,11 @@ function PublishPopoverContent({
   const authState = auth.useAuthState()
   const token = auth.useToken()
   const user = auth.useUser()
+  const fetchedProjectStatus = useProjectStatus(project?.cloudProjectId, token)
+  const [submittedProjectStatus, setSubmittedProjectStatus] = useState<{
+    projectId: string | undefined
+    status: ProjectStatus
+  } | null>(null)
   const [publicationDetails, setPublicationDetails] =
     useState<CurrentProjectPublicationDetails | null>(null)
   const [isLoadingPublicationDetails, setIsLoadingPublicationDetails] =
@@ -75,6 +85,11 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
+  const projectStatus =
+    submittedProjectStatus &&
+    submittedProjectStatus.projectId === project?.cloudProjectId
+      ? submittedProjectStatus.status
+      : fetchedProjectStatus
   const keymap = app.registry.optional(keymapService)
   const markdownEditor = app.registry.optional(markdownEditorService)
   const markdownEditorKeymap = useMemo(
@@ -154,9 +169,22 @@ function PublishPopoverContent({
 
       const details = await fetchPublicationDetails()
       setPublicationDetails(details)
+      if (details) {
+        setSubmittedProjectStatus({
+          projectId: project?.cloudProjectId,
+          status: {
+            publicationStatus: details.publicationStatus,
+            feedback:
+              details.publicationStatus ===
+              fetchedProjectStatus?.publicationStatus
+                ? fetchedProjectStatus.feedback
+                : undefined,
+          },
+        })
+      }
       return true
     },
-    [fetchPublicationDetails, kclManager, project, token]
+    [fetchPublicationDetails, fetchedProjectStatus, kclManager, project, token]
   )
 
   return (
@@ -169,6 +197,13 @@ function PublishPopoverContent({
       >
         <CustomIcon name="share" className="h-5 w-5" />
         <span className="flex-1">Publish</span>
+        {projectStatus && (
+          <AquariumStatusBadge
+            projectStatus={projectStatus}
+            className="ml-0.5 inline-flex shrink-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset"
+            dataTestId="publish-aquarium-status-badge"
+          />
+        )}
       </Popover.Button>
       {open && (
         <PublishDialog
@@ -180,6 +215,7 @@ function PublishPopoverContent({
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
           markdownEditorKeymap={markdownEditorKeymap}
+          projectStatus={projectStatus}
         />
       )}
     </>
