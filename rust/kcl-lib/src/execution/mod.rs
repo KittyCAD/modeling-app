@@ -4903,6 +4903,43 @@ x = arr[m]
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_name_executes_as_operand() {
+        // A whole-module import used as a binary or unary operand executes
+        // the module and operates on its final-expression value, exactly like
+        // using the name in expression position (x = m).
+        let main = r#"import "m.kcl" as m
+sum = m + m
+neg = -m
+"#;
+        let result = execute_with_modules(main, &[("m.kcl", "42\n")]).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "sum").as_f64(),
+            Some(84.0)
+        );
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "neg").as_f64(),
+            Some(-42.0)
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_without_return_as_operand_errors() {
+        // Matches expression-position behavior: the module still executes,
+        // the missing-return fallback produces a KclNone, and the binary
+        // operation then rejects it. (A trailing declaration would count as
+        // the module's return value, so the module body must be empty.)
+        let main = "import \"m.kcl\" as m
+x = m + 1
+";
+        let err = execute_with_modules(main, &[("m.kcl", "")]).await.unwrap_err();
+        assert!(
+            err.message().contains("Expected a number, but found none"),
+            "expected the operand to be the module's missing-return KclNone, got: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn enum_rejects_name_clash_with_module() {
         // One rule reached four ways: by declaring the enum second, by importing
         // the module second, and by importing the enum itself either by name or
