@@ -41,6 +41,10 @@ vi.mock('@src/lang/lsp/codeMirror', () => ({
   attachKclLspToCodeMirror: mocks.attachKclLspToCodeMirror,
 }))
 
+vi.mock('@src/lang/wasmUtils', () => ({
+  wasmUrl: () => '/kcl.wasm',
+}))
+
 vi.mock('@src/lang/lsp/worker.ts?worker', () => ({
   default: class {
     onmessage: ((event: MessageEvent) => void) | null = null
