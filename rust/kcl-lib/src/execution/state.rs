@@ -75,6 +75,13 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
+    /// The deepest machine-executor call depth reached by executions sharing
+    /// this state: the root module, its callbacks, and module bodies executed
+    /// inline on it. Imported modules pre-executed in parallel run on cloned
+    /// state whose counter is dropped, so their depths are not aggregated
+    /// here. Used to survey real-world depth against the runaway guard's
+    /// limit; see `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
+    pub(crate) machine_depth_high_water: usize,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -280,6 +287,9 @@ pub(super) struct ModuleState {
     /// recursive function calls. In general, this doesn't match `stack`'s size
     /// since it's conservative in reclaiming frames between executions.
     pub(super) call_stack_size: usize,
+    /// Live call depth of the machine executor within this module, for its
+    /// runaway-recursion guard. The machine's analog of `call_stack_size`.
+    pub(crate) machine_call_depth: usize,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -668,10 +678,14 @@ impl ExecState {
     pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
         // If you change this, make sure to test in WebAssembly in the app since
         // that's the limiting factor.
-        if self.mod_local.call_stack_size >= 50 {
-            return Err(KclError::MaxCallStack {
-                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
-            });
+        const LIMIT: usize = 50;
+        if self.mod_local.call_stack_size >= LIMIT {
+            return Err(KclError::new_max_call_stack(KclErrorDetails::new(
+                format!(
+                    "Call depth limit ({LIMIT}) exceeded. This usually means a function is recursing without a base case."
+                ),
+                vec![range],
+            )));
         }
         self.mod_local.call_stack_size += 1;
         Ok(())
@@ -688,6 +702,16 @@ impl ExecState {
         }
         self.mod_local.call_stack_size -= 1;
         Ok(())
+    }
+
+    /// The deepest machine-executor call depth reached in this execution.
+    /// The machine maintains the counter in all builds; today only the test
+    /// harnesses' depth survey reads it.
+    // Unused outside test builds, but kept available so release diagnostics
+    // can read the counter the machine already maintains.
+    #[allow(dead_code)]
+    pub(crate) fn machine_depth_high_water(&self) -> usize {
+        self.global.machine_depth_high_water
     }
 
     /// Returns true if we're executing in sketch mode for the current module.
@@ -1348,6 +1372,7 @@ impl FromStr for KclVersion {
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
+            machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
@@ -1526,6 +1551,7 @@ impl ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,
+            machine_call_depth: 0,
             pipe_value: Default::default(),
             being_declared: Default::default(),
             sketch_block: Default::default(),

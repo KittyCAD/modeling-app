@@ -44,6 +44,7 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::KclNone;
@@ -142,7 +143,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
+    TagDeclarator(BoxNode<TagDeclarator>),
     GdtAnnotation {
         value: Box<GdtAnnotation>,
     },
@@ -246,7 +247,7 @@ pub struct FunctionSource {
     pub include_in_feature_tree: bool,
     pub std_props: Option<StdFnProps>,
     pub body: FunctionBody,
-    pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+    pub ast: BoxNode<FunctionExpression>,
 }
 
 pub struct KclFunctionSourceParams {
@@ -256,12 +257,7 @@ pub struct KclFunctionSourceParams {
 }
 
 impl FunctionSource {
-    pub fn rust(
-        func: crate::std::StdFn,
-        ast: Box<Node<FunctionExpression>>,
-        props: StdFnProps,
-        attrs: FnAttrs,
-    ) -> Self {
+    pub fn rust(func: crate::std::StdFn, ast: BoxNode<FunctionExpression>, props: StdFnProps, attrs: FnAttrs) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
 
         FunctionSource {
@@ -280,7 +276,7 @@ impl FunctionSource {
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+    pub fn kcl(ast: BoxNode<FunctionExpression>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
         let KclFunctionSourceParams {
             std_props,
             experimental,
