@@ -491,6 +491,8 @@ export fn perpendicular(
 
 /// Constrain lines to meet at a given angle.
 ///
+/// Deprecated as of KCL 2.0. Use `angleDimension` for new angle constraints.
+///
 /// The angle is measured counterclockwise from the first line to the second
 /// line, modulo 180 degrees, so the order of the lines matters:
 /// `angle([a, b]) == 30deg` is equivalent to `angle([b, a]) == 150deg`.
@@ -510,12 +512,56 @@ export fn perpendicular(
 ///
 /// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
 /// ```
-@(impl = std_rust_constraint, feature_tree = true)
+@(impl = std_rust_constraint, feature_tree = true, deprecated_since = "2.0")
 export fn angle(
   /// The two line segments whose relative angle should match the value set
   /// with `==`, measured counterclockwise from the first line to the second,
   /// modulo 180 degrees. The order of the lines matters.
   @input: [Segment; 2],
+  /// The desired position of the constraint label.
+  labelPosition?: Point2d,
+) {}
+
+/// Constrain the angle in the selected sector between two lines.
+///
+/// ```kcl,sketchSolve
+/// normalProfile = sketch(on = XY) {
+///   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+///   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+///   line3 = line(start = [var 2mm, var 3.464mm], end = [var 4mm, var 0mm])
+///   coincident([line1.start, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.end])
+///   angleDimension(lines = [line1, line2], sector = 1, inverse = false) == 60deg
+/// }
+///
+/// inverseProfile = sketch(on = XY) {
+///   line1 = line(start = [var 7mm, var 0mm], end = [var 11mm, var 0mm])
+///   line2 = line(start = [var 7mm, var 0mm], end = [var 9mm, var 3.464mm])
+///   line3 = line(start = [var 9mm, var 3.464mm], end = [var 11mm, var 0mm])
+///   coincident([line1.start, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line1.end])
+///   angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 300deg
+/// }
+///
+/// normalSolid = extrude(region(point = [2mm, 1mm], sketch = normalProfile), length = 2)
+/// inverseSolid = extrude(region(point = [9mm, 1mm], sketch = inverseProfile), length = 2)
+/// ```
+@(impl = std_rust_constraint, feature_tree = true)
+export fn angleDimension(
+  /// The ordered pair of line segments whose selected angle sector should match the value set with `==`.
+  /// A line's positive direction runs from its start point to its end point; its negative direction is the reverse.
+  lines: [Segment; 2],
+  /// Which counterclockwise sweep about the line intersection to constrain:
+  /// `1`, first line's positive direction to the second line's positive direction;
+  /// `2`, second positive to first negative; `3`, first negative to second negative; or `4`, second negative to first positive.
+  sector: number(Count),
+  /// Use the counterclockwise sweep from the selected sector's end direction to its start direction.
+  /// For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.
+  inverse?: bool = false,
+  /// The desired position of the constraint label.
+  labelPosition?: Point2d,
 ) {}
 
 /// Constrain two segments to be tangent.

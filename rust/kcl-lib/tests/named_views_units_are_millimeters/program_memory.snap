@@ -1,0 +1,84 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_units_are_millimeters.kcl
+---
+{
+  "direction": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "directed",
+        "direction": {
+          "x": 0.7071067811865475,
+          "y": 0.7071067811865475,
+          "z": 0.0,
+          "units": null
+        },
+        "up": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        }
+      },
+      "target": null,
+      "distance": {
+        "n": 1000.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "projection": "Orthographic"
+    }
+  },
+  "inches": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "oriented",
+        "orientation": "Front"
+      },
+      "target": {
+        "x": 25.4,
+        "y": 50.8,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "distance": {
+        "n": 50.8,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "projection": "Orthographic"
+    }
+  },
+  "mixed": {
+    "type": "CameraView",
+    "value": {
+      "look": {
+        "type": "oriented",
+        "orientation": "Top"
+      },
+      "target": {
+        "x": 25.4,
+        "y": 25.4,
+        "z": 25.4,
+        "units": "mm"
+      },
+      "distance": {
+        "n": 100.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "projection": "Orthographic"
+    }
+  }
+}

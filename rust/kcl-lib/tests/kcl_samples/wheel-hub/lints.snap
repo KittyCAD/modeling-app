@@ -13,8 +13,8 @@ description: Lints wheel-hub.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      9384,
-      9543,
+      9448,
+      9607,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints wheel-hub.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      9557,
-      9705,
+      9621,
+      9769,
       0
     ],
     "overridden": false,

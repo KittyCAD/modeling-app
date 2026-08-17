@@ -1029,6 +1029,8 @@ pub(crate) async fn after_surface_creation(
     Ok(Solid {
         id: body_id,
         value_id: body_id,
+        topology_id: body_id,
+        pattern_source_artifact_id: None,
         artifact_id: extrude_cmd_id,
         value: new_value,
         faces: Default::default(),
@@ -1319,6 +1321,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let meta = sketch.meta.clone();
     let units = sketch.units;
     let id = sketch.id;
+    let topology_id = sketch.original_id;
     let creator = match being_extruded {
         BeingExtruded::Sketch | BeingExtruded::SketchSegments => SolidCreator::Sketch(sketch),
         BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
@@ -1339,6 +1342,8 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut solid = Solid {
         id,
         value_id: extrude_cmd_id.into(),
+        topology_id,
+        pattern_source_artifact_id: None,
         artifact_id: extrude_cmd_id,
         value: new_value,
         faces: Default::default(),

@@ -1,7 +1,7 @@
 import type {
   SourceRange as ApiSourceRange,
   SourceRangePrompt,
-  TextToCadMultiFileIterationBody,
+  TextToCadMultiFileIterationBody as ZookeeperMultiFileIterationBody,
 } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
@@ -30,7 +30,7 @@ type KclFileMetaMap = {
 }
 
 export interface ZookeeperUserPromptRequest {
-  body: TextToCadMultiFileIterationBody
+  body: ZookeeperMultiFileIterationBody
   files: KittyCadLibFile[]
   activeFile?: string
 }
@@ -339,6 +339,7 @@ export const zookeeperArtifactSelectionPromptHandlers = {
   edgeCutEdge: selectedArtifactSourceRangePrompt,
   helix: selectedArtifactSourceRangePrompt,
   gdtAnnotation: selectedArtifactSourceRangePrompt,
+  namedView: selectedArtifactSourceRangePrompt,
   pattern: selectedArtifactSourceRangePrompt,
 } satisfies Record<Artifact['type'], ArtifactSelectionPromptHandler>
 
@@ -482,6 +483,7 @@ async function buildSelectionReferencePrompt({
 
   const references = await getSelectionReferences({
     graphSelections: selections.graphSelections,
+    defaultPlaneSelections: [],
     enginePrimitives,
     artifactGraph,
     engineCommandManager,

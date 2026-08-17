@@ -238,7 +238,7 @@ impl Node<CallExpressionKw> {
                 //
                 // TODO: Use the name that the function was defined
                 // with, not the identifier it was used with.
-                e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
+                e.add_unwind_location(Some(fn_name.to_string()), callsite)
             })?;
 
         let result = return_value.ok_or_else(move || {
@@ -317,7 +317,7 @@ impl FunctionSource {
                     None => format!("{subject} is deprecated, see the docs for a recommended replacement"),
                 })
             } else if let Some(since) = &self.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(match migration_help(self) {
                     Some(help) => format!("{subject} is deprecated as of KCL {since}. {help}"),
@@ -377,7 +377,7 @@ impl FunctionSource {
             } else if param.deprecated {
                 Some("is deprecated, see the docs for a recommended replacement".to_owned())
             } else if let Some(since) = &param.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(format!(
                     "is deprecated as of KCL {since}. See the docs for a recommended replacement."
@@ -596,6 +596,7 @@ fn might_be_legacy_sketch(value: &KclValue) -> bool {
         KclValue::TagIdentifier(_) => false,
         KclValue::TagDeclarator(_) => false,
         KclValue::GdtAnnotation { .. } => false,
+        KclValue::CameraView { .. } => false,
         KclValue::Plane { .. } => false,
         KclValue::Face { .. } => false,
         KclValue::BoundedEdge { .. } => false,
@@ -898,6 +899,27 @@ pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) 
     )
 }
 
+/// Fetch the definition-time resolution of a type written in a function
+/// signature.
+///
+/// [`FunctionSource::resolve_signature_types`] runs whenever a function
+/// declaration executes, so a written type without a stored resolution is a
+/// bug in KCL, not in the user's program.
+fn resolved_signature_type<'a>(
+    resolved: Option<&'a RuntimeType>,
+    written: &Type,
+    source_range: SourceRange,
+) -> Result<&'a RuntimeType, KclError> {
+    resolved.ok_or_else(|| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!(
+                "The type `{written}` in this function's signature was not resolved when the function was declared. This is a bug in KCL and not in your code, please report this to Zoo."
+            ),
+            vec![source_range],
+        ))
+    })
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionSource,
@@ -981,13 +1003,10 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                // Suppress warnings about types because they should only be
-                // warned about once for the function definition.
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
-                    .map_err(|e| KclError::new_semantic(e.into()))?;
+                let rty = resolved_signature_type(fn_def.resolved_input_ty.as_ref(), ty, arg.source_range)?;
                 arg.value = arg
                     .value
-                    .coerce(&rty, CoercionMode::implicit(), exec_state)
+                    .coerce(rty, CoercionMode::implicit(), exec_state)
                     .map_err(|_| {
                         KclError::new_argument(KclErrorDetails::new(
                             format!(
@@ -1079,19 +1098,16 @@ fn type_check_params_kw(
                 deprecated_since: _,
                 default_value: def,
                 ty,
+                resolved_ty,
             }) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        // Suppress warnings about types because they should
-                        // only be warned about once for the function
-                        // definition.
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
-                            .map_err(|e| KclError::new_semantic(e.into()))?;
+                        let rty = resolved_signature_type(resolved_ty.as_ref(), ty, arg.source_range)?;
                         arg.value = arg
                                 .value
                                 .coerce(
-                                    &rty,
+                                    rty,
                                     CoercionMode::implicit(),
                                     exec_state,
                                 )
@@ -1231,10 +1247,11 @@ fn coerce_result_type(
         return Ok(result);
     };
 
-    // Suppress warnings about types because they should only be warned
-    // about once for the function definition.
-    let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
-        .map_err(|e| KclError::new_semantic(e.into()))?;
+    let ty = resolved_signature_type(
+        fn_def.resolved_return_ty.as_ref(),
+        &ret_ty.inner,
+        ret_ty.as_source_range(),
+    )?;
 
     // `never` describes the absence of normal completion, so either successful
     // result shape violates the function's declared contract.
@@ -1254,7 +1271,7 @@ fn coerce_result_type(
         return Ok(None);
     };
 
-    let val = val.coerce(&ty, CoercionMode::implicit(), exec_state).map_err(|_| {
+    let val = val.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "This function requires its result to be {}",
@@ -2257,6 +2274,7 @@ x = f(1, oldArg = 2)
         let warnings = deprecation_warnings(&result);
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
         assert!(
             warnings[0].message.contains("`f(oldArg)` is deprecated"),
             "found {}",
@@ -2311,6 +2329,36 @@ plane = startSketchOn(XY)
             warnings[0].message
         );
         assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecation_version_override_does_not_change_program_version() {
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 1.0)
+plane = startSketchOn(XY)
+"#,
+        )
+        .unwrap();
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: crate::engine::EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+        exec_state.set_deprecation_version_override(Some("2.0"));
+
+        exec_ctxt.run(&program, &mut exec_state).await.unwrap();
+
+        assert_eq!(exec_state.mod_local.settings.kcl_version, crate::KclVersion::V1);
+        let warnings = exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.tag == crate::errors::Tag::Deprecated)
+            .collect::<Vec<_>>();
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]

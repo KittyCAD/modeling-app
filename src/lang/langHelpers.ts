@@ -1,6 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
@@ -141,6 +142,7 @@ export async function lintAst({
   rustContext,
   edgeRefactorMetadata,
   directTagFilletMetadata,
+  legacyAngleRefactorMetadata,
   artifactGraph,
 }: {
   ast: Node<Program>
@@ -149,6 +151,7 @@ export async function lintAst({
   rustContext?: RustContext
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
+  legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
@@ -205,6 +208,7 @@ export async function lintAst({
           shouldShowZ0005,
           edgeRefactorMetadata,
           directTagFilletMetadata,
+          legacyAngleRefactorMetadata,
           artifactGraph,
           z0006RefactorCache,
         })

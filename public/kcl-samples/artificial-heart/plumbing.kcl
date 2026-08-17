@@ -17,7 +17,7 @@ sketch002 = sketch(on = XZ) {
   coincident([line3.start, line1.start])
   horizontal([line3.end, ORIGIN])
   horizontal(line3)
-  angle([line1, line3]) == 45
+  angleDimension(lines = [line1, line3], sector = 1) == 45
   distance([line1.start, line1.end]) == 1.65in
   radius(arc1) == 3.2 / 2
   circle1 = circle(start = [var 1.18in, var 0.93in], center = [var 0in, var 0in], construction = true)

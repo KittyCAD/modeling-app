@@ -23,12 +23,12 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
-  type MlEphantManagerContext,
-  type MlEphantManagerEvents,
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
-  mlEphantManagerMachine,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+  type ZookeeperManagerContext,
+  type ZookeeperManagerEvents,
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+  zookeeperManagerMachine,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
@@ -50,10 +50,10 @@ class TestSocket extends EventTarget {
   close = vi.fn()
 }
 
-type TestWebSocket = Pick<MlEphantManagerContext, 'ws'>['ws'] & TestSocket
+type TestWebSocket = Pick<ZookeeperManagerContext, 'ws'>['ws'] & TestSocket
 type SetupActorInput = {
-  event: Extract<MlEphantManagerEvents, { type: MlEphantManagerStates.Setup }>
-  context: MlEphantManagerContext
+  event: Extract<ZookeeperManagerEvents, { type: ZookeeperManagerStates.Setup }>
+  context: ZookeeperManagerContext
 }
 
 describe('Zookeeper prompt selections from modelingMachine', () => {
@@ -131,10 +131,10 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
   }) {
     const ws: TestWebSocket = new TestSocket() as TestWebSocket
     const conversation: Conversation = { exchanges: [] }
-    const machine = mlEphantManagerMachine.provide({
+    const machine = zookeeperManagerMachine.provide({
       actors: {
-        [MlEphantManagerStates.Setup]: fromPromise<
-          Partial<MlEphantManagerContext>,
+        [ZookeeperManagerStates.Setup]: fromPromise<
+          Partial<ZookeeperManagerContext>,
           SetupActorInput
         >(async () => ({
           ws,
@@ -155,25 +155,25 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     ]
 
     actor.send({
-      type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
       refParentSend: () => {},
     })
 
     await waitFor(actor, (state) =>
-      state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      state.matches(ZookeeperManagerStates.WaitForContinueCheck)
     )
 
     actor.send({
-      type: MlEphantManagerStates.ContinueCheck,
+      type: ZookeeperManagerStates.ContinueCheck,
       projectName: project.name,
       projectFiles,
       activeFile: 'main.kcl',
     })
 
-    await waitFor(actor, (state) => state.matches(MlEphantManagerStates.Ready))
+    await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
 
     actor.send({
-      type: MlEphantManagerTransitions.MessageSend,
+      type: ZookeeperManagerTransitions.MessageSend,
       projectForPromptOutput: project,
       prompt: 'change the selected values',
       applicationProjectDirectory: '/projects',

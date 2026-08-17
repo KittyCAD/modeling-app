@@ -35,6 +35,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`types`](/docs/kcl-std/modules/std-types)
 * [`units::units`](/docs/kcl-std/modules/std-units)
 * [`vector::vector`](/docs/kcl-std/modules/std-vector)
+* [`view::view`](/docs/kcl-std/modules/std-view)
 
 ## Functions and constants
 

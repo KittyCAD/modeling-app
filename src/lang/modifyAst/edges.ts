@@ -23,6 +23,7 @@ import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrude
 import {
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
+  resolveEdgeSelectionContext,
 } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
@@ -614,58 +615,41 @@ function buildEdgeExpr(
       'Blend only supports segment, edgeCut, and enginePrimitiveEdge selections.'
     )
   }
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    resolved,
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return sourceSurfaceArtifact
-  }
-
-  const sourceSurfaceVars = getVariableExprsFromSelection(
-    {
-      graphSelections: [
-        {
-          entityRef: artifactToEntityRef('sweep', sourceSurfaceArtifact.id),
-          codeRef: sourceSurfaceArtifact.codeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    artifactGraph,
+  const edgeContext = resolveEdgeSelectionContext(
     ast,
+    resolved,
+    artifactGraph,
     wasmInstance,
     undefined,
-    { lastChildLookup: false }
+    false
   )
-  if (err(sourceSurfaceVars)) return sourceSurfaceVars
-  if (sourceSurfaceVars.exprs.length !== 1) {
-    return new Error('Expected exactly one source surface for each blend edge.')
-  }
-  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+  if (err(edgeContext)) return edgeContext
+  const sourceSurfaceArtifact = edgeContext.sourceSweep
+  const sourceSurfaceExpr = edgeContext.selectedBodyExpr
 
   // Region-based sketch-solve surface case: building region###.tags.line#.
   const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
     wasmInstance
   )
-  if (regionSketchTagExpr) {
+  if (regionSketchTagExpr && !edgeContext.isClone) {
+    const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
     return {
       modifiedAst: ast,
       edgeExpr: createCallExpressionStdLibKw(
         'getBoundedEdge',
         structuredClone(sourceSurfaceExpr),
-        [createLabeledArg('edge', regionSketchTagExpr)]
+        [createLabeledArg('edge', edgeExpr)]
       ),
     }
   }
 
   // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression.
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
@@ -694,7 +678,8 @@ function buildEdgeExpr(
     ast,
     resolved,
     artifactGraph,
-    wasmInstance
+    wasmInstance,
+    { edgeContext }
   )
   if (err(regularTagResult)) return regularTagResult
   if (regularTagResult.exprs.length === 0) {
@@ -3198,7 +3183,9 @@ export function groupSelectionsByBodyAndAddTags(
     const firstResolved = bodySelections.graphSelections[0]
       ? resolveToCodeRef(bodySelections.graphSelections[0], artifactGraph)
       : null
-    let sweepResult: ReturnType<typeof getSweepArtifactFromSelection>
+    let sweepResult:
+      | Extract<Artifact, { type: 'sweep' | 'compositeSolid' }>
+      | Error
     if (firstResolved) {
       const trySweep = getSweepArtifactFromSelection(
         firstResolved,
@@ -3213,7 +3200,7 @@ export function groupSelectionsByBodyAndAddTags(
           if (primitiveBody.artifact.type === 'sweep') {
             sweepResult = primitiveBody.artifact
           } else if (primitiveBody.artifact.type === 'compositeSolid') {
-            sweepResult = primitiveBody.artifact as unknown as SweepArtifact
+            sweepResult = primitiveBody.artifact
           } else {
             sweepResult = getSweepArtifactFromSelection(
               primitiveBody,
@@ -3231,7 +3218,7 @@ export function groupSelectionsByBodyAndAddTags(
       if (primitiveBody.artifact.type === 'sweep') {
         sweepResult = primitiveBody.artifact
       } else if (primitiveBody.artifact.type === 'compositeSolid') {
-        sweepResult = primitiveBody.artifact as unknown as SweepArtifact
+        sweepResult = primitiveBody.artifact
       } else {
         sweepResult = getSweepArtifactFromSelection(
           primitiveBody,

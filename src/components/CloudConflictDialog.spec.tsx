@@ -1,6 +1,11 @@
-import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
+import {
+  CloudConflictDialog,
+  CloudSyncErrorDialogHost,
+  openCloudSyncErrorDialog,
+} from '@src/components/CloudConflictDialog'
 import {
   loadCloudSyncProjectConflictInspection,
+  retryCloudSync,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
 import { Themes } from '@src/lib/theme'
@@ -106,6 +111,7 @@ vi.mock('@src/lib/cloudSync', async () => {
     loadCloudSyncProjectConflictInspection: vi
       .fn()
       .mockResolvedValue(cloudConflictDialogSpecMocks.inspection),
+    retryCloudSync: vi.fn(),
     resolveCloudSyncProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
 })
@@ -192,6 +198,41 @@ describe('CloudConflictDialog', () => {
 
     expect(loadCloudSyncProjectConflictInspection).toHaveBeenCalledWith(
       '/projects/local'
+    )
+  })
+
+  test('shows cloud sync error details with one retry action', async () => {
+    openCloudSyncErrorDialog({
+      title: 'Cloud sync failed',
+      message: 'Cloud sync cannot upload local changes.',
+      projectName: 'Demo project',
+      occurredAt: '2026-07-17T12:00:00.000Z',
+    })
+
+    render(<CloudSyncErrorDialogHost />)
+
+    expect(screen.getByTestId('cloud-sync-error-dialog')).toHaveTextContent(
+      'Cloud sync failed'
+    )
+    expect(screen.getByText(/Demo project/)).toBeInTheDocument()
+    expect(screen.getByText(/Last reported/)).toBeInTheDocument()
+    expect(
+      screen.getByText('Cloud sync cannot upload local changes.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Close')).not.toBeInTheDocument()
+
+    const retryButton = screen.getByTestId('cloud-sync-error-retry-button')
+    expect(
+      retryButton.querySelector('svg[aria-label="refresh"]')
+    ).not.toBeNull()
+
+    fireEvent.click(retryButton)
+
+    expect(retryCloudSync).toHaveBeenCalledTimes(1)
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('cloud-sync-error-dialog')
+      ).not.toBeInTheDocument()
     )
   })
 })

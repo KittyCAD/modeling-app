@@ -13,6 +13,7 @@ things in a more tutorial fashion. See also our documentation of the [standard l
 * [Arithmetic and logic](/docs/kcl-lang/arithmetic)
 * [Values and types](/docs/kcl-lang/types)
 * [Numeric types and units](/docs/kcl-lang/numeric)
+* [Sketch blocks and constraints](/docs/kcl-lang/sketches)
 * [Functions](/docs/kcl-lang/functions)
 * [Arrays and ranges](/docs/kcl-lang/arrays)
 * [Enums](/docs/kcl-lang/enums)

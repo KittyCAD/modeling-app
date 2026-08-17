@@ -36,6 +36,7 @@ pub mod surfaces;
 pub mod sweep;
 pub mod transform;
 pub mod utils;
+pub mod view;
 
 use anyhow::Result;
 pub use args::Args;
@@ -825,6 +826,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::angle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::angle"),
         ),
+        ("solver", "angleDimension") => (
+            |e, a| Box::pin(crate::std::constraints::angle_dimension(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::angleDimension"),
+        ),
         ("solver", "tangent") => (
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::tangent"),
@@ -873,6 +878,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::joinSurfaces"),
         ),
+        ("view", "oriented") => (
+            |e, a| Box::pin(crate::std::view::oriented(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::oriented"),
+        ),
+        ("view", "directed") => (
+            |e, a| Box::pin(crate::std::view::directed(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::directed"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
@@ -900,6 +913,8 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
             PrimitiveType::BoundedEdge,
             StdFnProps::default("std::types::BoundedEdge"),
         ),
+        ("view", "CameraView") => (PrimitiveType::CameraView, StdFnProps::default("std::view::CameraView")),
+        ("view", "NamedView") => (PrimitiveType::NamedView, StdFnProps::default("std::view::NamedView")),
         _ => unreachable!(),
     }
 }

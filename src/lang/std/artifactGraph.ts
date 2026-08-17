@@ -150,6 +150,41 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   return artifact as Extract<Artifact, { type: T[number] }>
 }
 
+function getMappedRegionSegments(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }>[] {
+  return [...artifactGraph.values()].filter(
+    (artifact): artifact is Extract<Artifact, { type: 'segment' }> =>
+      artifact.type === 'segment' && artifact.originalSegId === segment.id
+  )
+}
+
+function getSweepFromMappedRegionSegment(
+  segment: SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let mappedSweep: Extract<Artifact, { type: 'sweep' }> | null = null
+
+  for (const mappedSegment of getMappedRegionSegments(segment, artifactGraph)) {
+    const path = artifactGraph.get(mappedSegment.pathId)
+    if (path?.type !== 'path' || !path.sweepId) {
+      continue
+    }
+
+    const sweep = artifactGraph.get(path.sweepId)
+    if (sweep?.type !== 'sweep') {
+      continue
+    }
+    if (mappedSweep && mappedSweep.id !== sweep.id) {
+      return new Error('Segment maps to more than one swept region')
+    }
+    mappedSweep = sweep
+  }
+
+  return mappedSweep ?? new Error('No swept region segment found')
+}
+
 export function getPatternArtifactForCopyId(
   id: ArtifactId,
   artifactGraph: ArtifactGraph
@@ -474,20 +509,45 @@ export function getCommonFacesForEdge(
   artifact: SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const faces = getArtifactsOfTypes(
-    { keys: artifact.commonSurfaceIds ?? [], types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  if (err(faces)) return faces
-  if (faces.size === 0) return new Error('No common face found')
-  return [...faces.values()]
+  const candidates =
+    'pathId' in artifact
+      ? [artifact, ...getMappedRegionSegments(artifact, artifactGraph)]
+      : [artifact]
+
+  let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
+
+  for (const candidate of candidates) {
+    const faces = getArtifactsOfTypes(
+      { keys: candidate.commonSurfaceIds, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    if (err(faces)) {
+      return faces
+    }
+    if (faces.size === 0) {
+      continue
+    }
+
+    const candidateFaces = [...faces.values()]
+    const commonFaceIds = new Set(commonFaces?.map(({ id }) => id))
+    if (
+      commonFaces &&
+      (commonFaces.length !== candidateFaces.length ||
+        candidateFaces.some(({ id }) => !commonFaceIds.has(id)))
+    ) {
+      return new Error('Segment maps to more than one set of common faces')
+    }
+    commonFaces = candidateFaces
+  }
+
+  return commonFaces ?? new Error('No common face found')
 }
 
 export function getSweepArtifactFromSelection(
   selection: ResolvedGraphSelection,
   artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  let sweepArtifact: Artifact | null = null
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  let sweepArtifact: Extract<Artifact, { type: 'sweep' }> | null = null
   if (selection.artifact?.type === 'segment') {
     const pathId = selection.artifact.pathId
     if (pathId == null || pathId === '') {
@@ -521,6 +581,17 @@ export function getSweepArtifactFromSelection(
           if (!err(sweep)) {
             sweepArtifact = sweep
           }
+        }
+      }
+      if (!sweepArtifact) {
+        const mappedSweep = getSweepFromMappedRegionSegment(
+          selection.artifact,
+          artifactGraph
+        )
+        if (!err(mappedSweep)) {
+          sweepArtifact = mappedSweep
+        } else if (mappedSweep.message !== 'No swept region segment found') {
+          return mappedSweep
         }
       }
       if (!sweepArtifact) {
@@ -1082,6 +1153,19 @@ export function getOriginalSegmentArtifact(
 
   const originalSegment = artifactGraph.get(segment.originalSegId)
   return originalSegment?.type === 'segment' ? originalSegment : segment
+}
+
+export function getSourceSegmentArtifact(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | undefined {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return undefined
+
+  if (!segment.sourceSegmentId) return segment
+
+  const sourceSegment = artifactGraph.get(segment.sourceSegmentId)
+  return sourceSegment?.type === 'segment' ? sourceSegment : segment
 }
 
 export function getSketchBlockForArtifact(
