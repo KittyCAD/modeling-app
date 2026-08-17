@@ -276,6 +276,30 @@ describe('project system', () => {
     }
   })
 
+  it('does not reapply the camera projection while sketch solve mode is active', () => {
+    const app = createAppForTest()
+    const cameraProjectionSetter = vi.spyOn(
+      app.singletons.kclManager.sceneInfra.camControls,
+      'engineCameraProjection',
+      'set'
+    )
+
+    try {
+      app.project = {} as NonNullable<typeof app.project>
+      app.singletons.kclManager.modelingState = {
+        matches: (state: string) => state === 'sketchSolveMode',
+      } as unknown as NonNullable<KclManager['modelingState']>
+
+      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+
+      expect(cameraProjectionSetter).not.toHaveBeenCalled()
+    } finally {
+      cameraProjectionSetter.mockRestore()
+      app.project = undefined
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 
