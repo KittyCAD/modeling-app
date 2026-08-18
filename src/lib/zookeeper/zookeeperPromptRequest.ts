@@ -4,7 +4,12 @@ import type {
   TextToCadMultiFileIterationBody as ZookeeperMultiFileIterationBody,
 } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
-import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getOriginalSegmentArtifact,
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
@@ -61,7 +66,10 @@ type SourceRangePromptDraft = {
 }
 
 type ArtifactSelectionPromptHandlerArgs = {
-  selection: Selection & { artifact: Artifact }
+  selection: Selection & {
+    artifact: Artifact
+    codeRef: NonNullable<Selection['codeRef']>
+  }
   artifactGraph: ArtifactGraph
 }
 
@@ -149,6 +157,149 @@ function selectedArtifactSourceRangePrompt({
   ]
 }
 
+function faceArtifactDescription(artifact: Artifact | undefined): string {
+  if (!artifact) return 'unmapped face'
+
+  if (artifact.type === 'wall') {
+    return 'wall artifact produced from a swept sketch segment'
+  }
+  if (artifact.type === 'cap') {
+    return `${artifact.subType} cap artifact produced by a sweep`
+  }
+  if (artifact.type === 'edgeCut') {
+    return 'face artifact produced by an edge treatment'
+  }
+
+  return `${artifact.type} artifact`
+}
+
+function faceArtifactKind(artifact: Artifact): string {
+  if (artifact.type === 'wall') return 'wall face'
+  if (artifact.type === 'cap') return `${artifact.subType} cap face`
+  if (artifact.type === 'edgeCut') return 'edge-treatment face'
+  return `${artifact.type} face`
+}
+
+function formatFaceArtifactList(
+  faceIds: string[],
+  artifactGraph: ArtifactGraph
+): string {
+  return faceIds
+    .map(
+      (faceId, index) =>
+        `    ${index + 1}. ${faceArtifactDescription(artifactGraph.get(faceId))}`
+    )
+    .join('\n')
+}
+
+function entityReferenceSelectionPrompt(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): string | null {
+  const entityRef = selection.entityRef
+  if (!entityRef) return null
+
+  if (entityRef.type === 'edge') {
+    const faceIds = [...entityRef.side_faces, ...(entityRef.end_faces ?? [])]
+    if (!faceIds.some((faceId) => artifactGraph.has(faceId))) return null
+
+    const lines = [
+      'The user selected an edge using the Face API. Its reference is composed of these face artifacts:',
+      '  sideFaces:',
+      formatFaceArtifactList(entityRef.side_faces, artifactGraph),
+    ]
+    if (entityRef.end_faces?.length) {
+      lines.push(
+        '  endFaces:',
+        formatFaceArtifactList(entityRef.end_faces, artifactGraph)
+      )
+    }
+    if (entityRef.index !== undefined) {
+      lines.push(`  index: ${entityRef.index}`)
+    }
+    lines.push(
+      'This is the complete Face API reference returned for the selected edge. Fields not shown are not part of this reference. The associated source ranges explain how each face artifact maps to KCL.'
+    )
+    return lines.join('\n')
+  }
+
+  if (entityRef.type === 'vertex') {
+    if (!entityRef.side_faces.some((faceId) => artifactGraph.has(faceId))) {
+      return null
+    }
+    return [
+      'The user selected a vertex using the Face API. Its reference is composed of these side-face artifacts:',
+      formatFaceArtifactList(entityRef.side_faces, artifactGraph),
+      ...(entityRef.index === undefined ? [] : [`  index: ${entityRef.index}`]),
+      'This is the complete Face API reference returned for the selected vertex. Fields not shown are not part of this reference. The associated source ranges explain how each face artifact maps to KCL.',
+    ].join('\n')
+  }
+
+  if (entityRef.type === 'face') {
+    if (!artifactGraph.has(entityRef.face_id)) return null
+    return `The user selected a face using the Face API. It resolves to a ${faceArtifactDescription(
+      artifactGraph.get(entityRef.face_id)
+    )}. The associated source range explains how this face should be tagged.`
+  }
+
+  return null
+}
+
+function isFaceApiTopologySelection(selection: Selection): boolean {
+  return (
+    selection.entityRef?.type === 'face' ||
+    selection.entityRef?.type === 'edge' ||
+    selection.entityRef?.type === 'vertex'
+  )
+}
+
+function faceArtifactsFromEntityReference(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): Array<{ artifact: Artifact; slots: string[] }> {
+  const entityRef = selection.entityRef
+  if (!entityRef) return []
+
+  const faceSlots: Array<[string, string]> =
+    entityRef.type === 'face'
+      ? [['face', entityRef.face_id]]
+      : entityRef.type === 'edge'
+        ? [
+            ...entityRef.side_faces.map((faceId, index): [string, string] => [
+              `sideFaces[${index}]`,
+              faceId,
+            ]),
+            ...(entityRef.end_faces ?? []).map(
+              (faceId, index): [string, string] => [
+                `endFaces[${index}]`,
+                faceId,
+              ]
+            ),
+          ]
+        : entityRef.type === 'vertex'
+          ? entityRef.side_faces.map((faceId, index): [string, string] => [
+              `sideFaces[${index}]`,
+              faceId,
+            ])
+          : []
+
+  const artifactsById = new Map<
+    string,
+    { artifact: Artifact; slots: string[] }
+  >()
+  for (const [slot, faceId] of faceSlots) {
+    const artifact = artifactGraph.get(faceId)
+    if (!artifact) continue
+    const existing = artifactsById.get(artifact.id)
+    if (existing) {
+      existing.slots.push(slot)
+    } else {
+      artifactsById.set(artifact.id, { artifact, slots: [slot] })
+    }
+  }
+  return [...artifactsById.values()]
+}
+
 function capSourceRangePrompt({
   selection,
   artifactGraph,
@@ -157,20 +308,17 @@ function capSourceRangePrompt({
   if (artifact.type !== 'cap')
     return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
 
-  const prompts: SourceRangePromptDraft[] = [
-    {
-      prompt: `The user's main selection is the end cap of a general sweep (that is an extrusion, revolve, sweep, or loft).
-The source range most likely refers to the sketch block or region that produced the swept profile.
-If you need to operate on this cap, for example sketching on the face, use the special string ${
-        artifact.subType === 'end' ? 'END' : 'START'
-      }, for example \`sketch(on = faceOf(someSweepVariable, face = ${
-        artifact.subType === 'end' ? 'END' : 'START'
-      })) { ... }\`
-When they made this selection they may have intended this surface directly or meant something more general like the sweep body.
-See later source ranges for more context.`,
-      range: selection.codeRef.range,
-    },
-  ]
+  const prompts: SourceRangePromptDraft[] = []
+
+  if (!artifact.sweepId) {
+    return [
+      {
+        prompt:
+          'This region supplies the profile used to create the selected cap face.',
+        range: selection.codeRef.range,
+      },
+    ]
+  }
 
   const sweep = getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
@@ -178,11 +326,21 @@ See later source ranges for more context.`,
   )
   if (!isErr(sweep)) {
     prompts.push({
-      prompt: `This is the sweep's source range from the user's main selection of the end cap.`,
+      prompt: `This sweep operation created the selected ${
+        artifact.subType
+      } cap. Add or use \`tag${
+        artifact.subType === 'end' ? 'End' : 'Start'
+      }\` on this operation to refer to the cap in KCL. For sketching on it, use that tag with \`faceOf\`, for example \`sketch(on = faceOf(someSweepVariable, face = capTag)) { ... }\`.`,
       range: sweep.codeRef.range,
       required: false,
     })
   }
+
+  prompts.push({
+    prompt:
+      'This region supplies the profile swept by that operation. Unlike a wall face, the selected cap does not originate from one specific sketch segment.',
+    range: selection.codeRef.range,
+  })
 
   return prompts
 }
@@ -195,14 +353,7 @@ function wallSourceRangePrompt({
   if (artifact.type !== 'wall')
     return selectedArtifactSourceRangePrompt({ selection, artifactGraph })
 
-  const prompts: SourceRangePromptDraft[] = [
-    {
-      prompt: `The user's main selection is the wall of a general sweep (that is an extrusion, revolve, sweep, or loft).
-The source range though is for the original segment before it was swept. You can add a tag to that segment in order to refer to this wall, for example \`sketch(on = faceOf(someSweepVariable, face = someRegion.tags.segmentTag)) { ... }\`
-But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
-      range: selection.codeRef.range,
-    },
-  ]
+  const prompts: SourceRangePromptDraft[] = []
 
   const sweep = getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
@@ -210,13 +361,50 @@ But it's also worth bearing in mind that the user may have intended to select th
   )
   if (!isErr(sweep)) {
     prompts.push({
-      prompt: `This is the sweep's source range from the user's main selection of the wall.`,
+      prompt:
+        'The selected wall belongs to the sweep created by this operation.',
       range: sweep.codeRef.range,
       required: false,
     })
   }
 
+  prompts.push({
+    prompt:
+      'This region supplies the profile swept by that operation. The selected wall maps through this region to one of its source sketch segments.',
+    range: selection.codeRef.range,
+  })
+
+  const sourceSegment = getOriginalSegmentArtifact(
+    artifact.segId,
+    artifactGraph
+  )
+  if (
+    sourceSegment &&
+    (sourceSegment.codeRef.range[0] !== selection.codeRef.range[0] ||
+      sourceSegment.codeRef.range[1] !== selection.codeRef.range[1] ||
+      sourceSegment.codeRef.range[2] !== selection.codeRef.range[2])
+  ) {
+    prompts.push({
+      prompt:
+        'The selected wall originates from this specific sketch segment. Add or use a tag on this segment to refer to the wall, for example `sketch(on = faceOf(someSweepVariable, face = someRegion.tags.segmentTag)) { ... }`.',
+      range: sourceSegment.codeRef.range,
+      required: false,
+    })
+  }
+
   return prompts
+}
+
+function edgeCutSourceRangePrompt({
+  selection,
+}: ArtifactSelectionPromptHandlerArgs): SourceRangePromptDraft[] {
+  return [
+    {
+      prompt:
+        'This edge-treatment operation created the selected face; the user selected the generated face, not the chamfer or fillet operation itself. Preserve the existing operation. Its `tag` argument, when present, names this generated face and is the KCL reference to use for the face in a later edge reference.',
+      range: selection.codeRef.range,
+    },
+  ]
 }
 
 function sweepEdgeSourceRangePrompt({
@@ -243,6 +431,10 @@ See later source ranges for more context. about the sweep`,
       range: selection.codeRef.range,
     },
   ]
+
+  if (!artifact.sweepId) {
+    return prompts
+  }
 
   const sweep = getArtifactOfTypes(
     { key: artifact.sweepId, types: ['sweep'] },
@@ -324,7 +516,7 @@ export const zookeeperArtifactSelectionPromptHandlers = {
   wall: wallSourceRangePrompt,
   cap: capSourceRangePrompt,
   sweepEdge: sweepEdgeSourceRangePrompt,
-  edgeCut: selectedArtifactSourceRangePrompt,
+  edgeCut: edgeCutSourceRangePrompt,
   edgeCutEdge: selectedArtifactSourceRangePrompt,
   helix: selectedArtifactSourceRangePrompt,
   gdtAnnotation: selectedArtifactSourceRangePrompt,
@@ -371,9 +563,45 @@ export function buildZookeeperSourceRangePromptsForSelection({
   artifactGraph: ArtifactGraph
   kclFilesMap: KclFileMetaMap
 }): SourceRangePrompt[] {
+  const faceArtifacts = faceArtifactsFromEntityReference(
+    selection,
+    artifactGraph
+  )
+  if (faceArtifacts.length > 0) {
+    return faceArtifacts.flatMap(({ artifact, slots }) => {
+      const codeRef =
+        artifact.type === 'wall'
+          ? getWallCodeRef(artifact, artifactGraph)
+          : artifact.type === 'cap'
+            ? getCapCodeRef(artifact, artifactGraph)
+            : 'codeRef' in artifact
+              ? artifact.codeRef
+              : new Error('Face artifact has no source range')
+      if (isErr(codeRef)) return []
+
+      const artifactPrompts = buildZookeeperSourceRangePromptsForSelection({
+        selection: { artifact, codeRef },
+        artifactGraph,
+        kclFilesMap,
+      })
+      const group =
+        slots.length === 1 && slots[0] === 'face'
+          ? `the selected ${faceArtifactKind(artifact)}`
+          : `${slots.join(' and ')}: ${faceArtifactKind(artifact)}`
+      return artifactPrompts.map((prompt, index) => ({
+        ...prompt,
+        prompt: `Face selection group ${group} (step ${index + 1} of ${
+          artifactPrompts.length
+        }).\n${prompt.prompt}`,
+      }))
+    })
+  }
+
+  if (!selection.codeRef) return []
+
   const promptDrafts: SourceRangePromptDraft[] = selection.artifact
     ? zookeeperArtifactSelectionPromptHandlers[selection.artifact.type]({
-        selection: selection as Selection & { artifact: Artifact },
+        selection: selection as ArtifactSelectionPromptHandlerArgs['selection'],
         artifactGraph,
       })
     : [
@@ -456,7 +684,7 @@ async function buildSelectionReferencePrompt({
     isReferenceableEnginePrimitiveSelection
   )
   const hasReferenceableGraphSelections = selections.graphSelections.some(
-    (selection) => selection.artifact?.id
+    (selection) => selection.artifact?.id || selection.entityRef
   )
 
   if (
@@ -467,7 +695,9 @@ async function buildSelectionReferencePrompt({
   }
 
   const references = await getSelectionReferences({
-    graphSelections: selections.graphSelections,
+    graphSelections: selections.graphSelections.filter(
+      (selection) => !isFaceApiTopologySelection(selection)
+    ),
     defaultPlaneSelections: [],
     enginePrimitives,
     artifactGraph,
@@ -489,7 +719,18 @@ async function buildSelectionReferencePrompt({
     )
   }
 
-  return formatSelectionReferencePrompt(references)
+  const entityReferencePrompts = selections.graphSelections
+    .map((selection) =>
+      entityReferenceSelectionPrompt(selection, artifactGraph)
+    )
+    .filter((selection): selection is string => selection !== null)
+  const generatedReferencePrompt = formatSelectionReferencePrompt(references)
+
+  if (entityReferencePrompts.length === 0) return generatedReferencePrompt
+  return [
+    ...entityReferencePrompts,
+    ...(generatedReferencePrompt ? [generatedReferencePrompt] : []),
+  ].join('\n\n')
 }
 
 export async function constructZookeeperUserPromptRequest({

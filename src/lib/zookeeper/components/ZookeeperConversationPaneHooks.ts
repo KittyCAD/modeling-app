@@ -107,7 +107,7 @@ export const useWatchForNewFileRequestsFromZookeeper = (
       // Clear selections since new model
       engineCommandManager.modelingSend({
         type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+        data: { selection: {}, selectionType: 'singleCodeCursor' },
       })
     })
 

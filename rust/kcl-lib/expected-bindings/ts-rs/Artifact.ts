@@ -150,7 +150,7 @@ patternIds?: Array<ArtifactId>, };
 
 export type CompositeSolidSubType = "intersect" | "subtract" | "split" | "union";
 
-export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, consumedEdgeId: ArtifactId, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
+export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
 
@@ -335,7 +335,7 @@ export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef:
 /**
  * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
  */
-export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId: ArtifactId, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
+export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
 /**
  * The original sweep this body was cloned from, if any. For clones of
  * clones, this continues to point to the originating sweep.

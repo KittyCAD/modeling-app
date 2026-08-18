@@ -217,14 +217,15 @@ const EngineSceneScreenshotStatusBarItem = () =>
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
   const selectionStatusBarItem = computed(() => {
-    const selectionStatusLabel = executionService.value?.selectionStatusLabel
+    const selectionStatusLabel =
+      executionService.value?.selectionStatusLabel.value
     return nullableStatusBarItem(
-      selectionStatusLabel
+      selectionStatusLabel !== undefined
         ? {
             id: 'selection',
             component: () =>
               createElement(EngineSceneSelectionStatusBarItem, {
-                label: selectionStatusLabel.value,
+                label: selectionStatusLabel,
               }),
             order: 10,
             scopes: ['file'],

@@ -106,57 +106,46 @@ pub(crate) async fn get_refactor_meta_for_edge(
     stdlib_fn: EdgeRefactorStdlibFn,
 ) -> Result<EdgeRefactorMeta, KclError> {
     if args.ctx.no_engine_commands().await {
-        let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
         return Ok(EdgeRefactorMeta {
             edge_id,
-            face_ids,
+            face_ids: [exec_state.next_uuid(), exec_state.next_uuid()],
             end_face_ids: Vec::new(),
             source_range,
             stdlib_fn,
         });
     }
 
-    let query_entity_type = serde_json::from_value::<mcmd::QueryEntityType>(serde_json::json!({
+    let query = serde_json::from_value::<mcmd::QueryEntityType>(serde_json::json!({
         "entity_id": edge_id,
     }))
-    .map_err(|err| {
+    .map_err(|error| {
         KclError::new_engine(KclErrorDetails::new(
-            format!("Failed to construct QueryEntityType command for edge refactor metadata: {err}"),
+            format!("Failed to construct QueryEntityType for edge metadata: {error}"),
             vec![args.source_range],
         ))
     })?;
-
-    let resp = exec_state
-        .send_untracked_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(query_entity_type),
-        )
+    let response = exec_state
+        .send_untracked_modeling_cmd(ModelingCmdMeta::from_args(exec_state, args), ModelingCmd::from(query))
         .await?;
-
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::QueryEntityType(info),
-    } = &resp
+    } = &response
     else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("QueryEntityType response was not as expected: {resp:?}"),
+            format!("QueryEntityType response was not as expected: {response:?}"),
             vec![args.source_range],
         )));
     };
-
     let kcmc::shared::EntityReference::Edge { inner, .. } = &info.reference else {
         return Err(KclError::new_engine(KclErrorDetails::new(
-            format!(
-                "QueryEntityType returned a non-edge reference for edge {edge_id}: {:?}",
-                info.reference
-            ),
+            format!("QueryEntityType returned a non-edge reference for edge {edge_id}"),
             vec![args.source_range],
         )));
     };
-
-    let [a, b] = inner.side_faces.as_slice() else {
+    let [first, second] = inner.side_faces.as_slice() else {
         return Err(KclError::new_engine(KclErrorDetails::new(
             format!(
-                "QueryEntityType returned {} side face(s) for edge {edge_id}, expected exactly 2",
+                "QueryEntityType returned {} side faces for edge {edge_id}, expected exactly 2",
                 inner.side_faces.len()
             ),
             vec![args.source_range],
@@ -165,7 +154,7 @@ pub(crate) async fn get_refactor_meta_for_edge(
 
     Ok(EdgeRefactorMeta {
         edge_id,
-        face_ids: [*a, *b],
+        face_ids: [*first, *second],
         end_face_ids: inner.end_faces.clone(),
         source_range,
         stdlib_fn,
@@ -186,6 +175,97 @@ pub(crate) async fn record_refactor_meta_for_consumed_edge(
         return;
     };
     exec_state.record_edge_refactor_meta(meta);
+}
+
+pub(crate) async fn record_refactor_meta_for_direct_edge(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    source_range: SourceRange,
+    args: &Args,
+) -> Result<(), KclError> {
+    if !args.ctx.no_engine_commands().await {
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), false)
+            .await?;
+    }
+
+    if let Ok(meta) = get_refactor_meta_for_edge(
+        exec_state,
+        edge_id,
+        args,
+        source_range,
+        EdgeRefactorStdlibFn::DirectEdgeTag,
+    )
+    .await
+    {
+        exec_state.record_edge_refactor_meta(meta);
+    }
+
+    Ok(())
+}
+
+pub(crate) async fn record_refactor_meta_for_direct_tag(
+    exec_state: &mut ExecState,
+    tag: &TagIdentifier,
+    source_range: SourceRange,
+    args: &Args,
+) -> Result<(), KclError> {
+    let Some(tag_info) = tag.get_cur_info() else {
+        return Ok(());
+    };
+    if !args.ctx.no_engine_commands().await {
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, args), false)
+            .await?;
+    }
+    if args.ctx.no_engine_commands().await {
+        let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
+        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id: tag_info.id,
+            face_ids,
+            end_face_ids: Vec::new(),
+            source_range,
+            stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
+        });
+        return Ok(());
+    }
+
+    let response = exec_state
+        .send_untracked_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::Solid3dGetAdjacencyInfo::builder()
+                    .object_id(tag_info.geometry.id())
+                    .edge_id(tag_info.id)
+                    .build(),
+            ),
+        )
+        .await;
+    let Ok(OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info),
+    }) = response
+    else {
+        return Ok(());
+    };
+    let Some(edge_info) = info
+        .edges
+        .iter()
+        .filter_map(|edge| edge.original_info.as_ref())
+        .find(|edge| edge.edge_id == tag_info.id)
+    else {
+        return Ok(());
+    };
+    let [first, second] = edge_info.faces.as_slice() else {
+        return Ok(());
+    };
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id: tag_info.id,
+        face_ids: [*first, *second],
+        end_face_ids: Vec::new(),
+        source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::DirectEdgeTag,
+    });
+    Ok(())
 }
 
 fn record_pending_edge_refactor_meta(
@@ -267,7 +347,19 @@ async fn inner_get_opposite_edge(
 
     let edge_id = opposite_edge.edge;
 
-    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
+    if let Ok(meta) = get_refactor_meta_for_edge(
+        exec_state,
+        edge_id,
+        &args,
+        args.source_range,
+        EdgeRefactorStdlibFn::GetOppositeEdge,
+    )
+    .await
+    {
+        exec_state.record_edge_refactor_meta(meta);
+    } else {
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
+    }
     Ok(edge_id)
 }
 
@@ -327,7 +419,19 @@ async fn inner_get_next_adjacent_edge(
         ))
     })?;
 
-    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
+    if let Ok(meta) = get_refactor_meta_for_edge(
+        exec_state,
+        edge_id,
+        &args,
+        args.source_range,
+        EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+    )
+    .await
+    {
+        exec_state.record_edge_refactor_meta(meta);
+    } else {
+        record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
+    }
     Ok(edge_id)
 }
 
@@ -386,12 +490,24 @@ async fn inner_get_previous_adjacent_edge(
         ))
     })?;
 
-    record_pending_edge_refactor_meta(
+    if let Ok(meta) = get_refactor_meta_for_edge(
         exec_state,
         edge_id,
-        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
         &args,
-    );
+        args.source_range,
+        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+    )
+    .await
+    {
+        exec_state.record_edge_refactor_meta(meta);
+    } else {
+        record_pending_edge_refactor_meta(
+            exec_state,
+            edge_id,
+            EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+            &args,
+        );
+    }
     Ok(edge_id)
 }
 
@@ -501,13 +617,22 @@ async fn inner_get_common_edge(
         ))
     })?;
 
-    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+    let meta = get_refactor_meta_for_edge(
+        exec_state,
+        edge_id,
+        &args,
+        args.source_range,
+        EdgeRefactorStdlibFn::GetCommonEdge,
+    )
+    .await
+    .unwrap_or(EdgeRefactorMeta {
         edge_id,
         face_ids: [first_face_id, second_face_id],
         end_face_ids: Vec::new(),
         source_range: args.source_range,
         stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
     });
+    exec_state.record_edge_refactor_meta(meta);
     Ok(edge_id)
 }
 

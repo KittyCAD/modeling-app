@@ -249,6 +249,35 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     expect(userPayload?.source_ranges).toStrictEqual([])
   })
 
+  it('omits source ranges for an engine selection without a KCL mapping', async () => {
+    const code = 'width = 5\n'
+    const modelingSelections = setupModelingSelection({
+      code,
+      selection: {
+        selectionType: 'completeSelection',
+        selection: {
+          otherSelections: [],
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'face',
+                face_id: '00000000-0000-0000-0000-000000000001',
+              },
+            },
+          ],
+        },
+      },
+    })
+
+    const sentPayloads = await sendZookeeperMessage({
+      code,
+      selections: modelingSelections,
+    })
+    const userPayload = sentPayloads.find((payload) => payload.type === 'user')
+
+    expect(userPayload?.source_ranges).toStrictEqual([])
+  })
+
   it('includes the single current graph selection in the Zookeeper user payload', async () => {
     const code = 'width = 5\nheight = 10\n'
     const widthRange = selectedIdentifierRange(code, 'width')
@@ -271,7 +300,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     })
 
     expect(
-      modelingSelections.graphSelections.map(({ codeRef }) => codeRef.range)
+      modelingSelections.graphSelections.map(({ codeRef }) => codeRef?.range)
     ).toStrictEqual([widthRange])
 
     const sentPayloads = await sendZookeeperMessage({
@@ -321,7 +350,7 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
     })
 
     expect(
-      modelingSelections.graphSelections.map(({ codeRef }) => codeRef.range)
+      modelingSelections.graphSelections.map(({ codeRef }) => codeRef?.range)
     ).toStrictEqual([widthRange, heightRange])
 
     const sentPayloads = await sendZookeeperMessage({

@@ -209,6 +209,15 @@ description: Artifact commands face_api_fillet_edge_refs_variant_4.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,

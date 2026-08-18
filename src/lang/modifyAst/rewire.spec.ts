@@ -48,6 +48,27 @@ const getVariableInitializer = (ast: Node<Program>, variableName: string) => {
 }
 
 describe('rewireAfterDelete', () => {
+  it('rewires references inside functions to the deleted feature parent', () => {
+    const beforeDeleteAst = parseProgram(`extrude001 = 1
+moved001 = translate(extrude001, x = 10mm)
+fn useMoved() {
+  copy = moved001
+  return copy
+}`)
+
+    const afterDeleteAst = parseProgram(`extrude001 = 1
+fn useMoved() {
+  copy = moved001
+  return copy
+}`)
+
+    const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+    const code = recast(rewiredAst, getInstance())
+
+    expect(code).toContain('copy = extrude001')
+    expect(code).not.toContain('copy = moved001')
+  })
+
   it('rewires downstream references to deleted feature parent', () => {
     const beforeDeleteAst = parseProgram(`sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 6.91)

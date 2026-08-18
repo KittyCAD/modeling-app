@@ -2,8 +2,6 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing face_api_fillet_chamfer_tags_and_edge_refs.kcl
 ---
-@settings(experimentalFeatures = allow)
-
 // Simulation test: fillet and chamfer with both tags and edgeRefs.
 // Verifies that when both are provided, it's an error.
 

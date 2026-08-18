@@ -83,7 +83,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await waitFor(async () => {
         expect(mockModelingSend).toHaveBeenCalledWith({
           type: 'Set selection',
-          data: { selectionType: 'singleCodeCursor' },
+          data: { selectionType: 'singleCodeCursor', selection: {} },
         })
       })
     })
@@ -227,7 +227,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await waitFor(() => {
         expect(mockModelingSend).toHaveBeenCalledWith({
           type: 'Set selection',
-          data: { selectionType: 'singleCodeCursor' },
+          data: { selectionType: 'singleCodeCursor', selection: {} },
         })
       })
 

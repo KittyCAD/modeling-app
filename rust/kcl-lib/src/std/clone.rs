@@ -913,7 +913,7 @@ clonedCopy = clone(patternCopy)
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
             Some(Artifact::Sweep(sweep))
-                if sweep.path_id == cloned_copy.id.into()
+                if sweep.path_id == Some(cloned_copy.id.into())
         ));
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.id.into()),

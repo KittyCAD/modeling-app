@@ -13,13 +13,20 @@ import {
 } from '@src/lang/create'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { sourceRangeContains } from '@src/lang/sourceRange'
+import type { CodeRef } from '@src/lang/std/artifactGraph'
 import {
+  type ResolvedGraphSelection,
   codeRefFromRange,
+  getArtifactFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
+  getCommonFacesForEdge,
+  getEdgeCutConsumedEdgeId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getSegmentForEdgeCut,
+  getSweepEdgeCodeRef,
+  getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -28,9 +35,10 @@ import {
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
 import type { ToolTip } from '@src/lang/toolTips'
-import { topLevelRange } from '@src/lang/util'
+import { findKwArg, topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
+  Artifact,
   ArtifactGraph,
   BinaryExpression,
   CallExpressionKw,
@@ -61,7 +69,7 @@ import {
   subVec,
 } from '@src/lib/utils2d'
 
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
@@ -71,6 +79,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
   EnginePrimitiveSelection,
+  EntityReference,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -672,19 +681,18 @@ export function isLinesParallelAndConstrained(
 ):
   | {
       isParallelAndConstrained: boolean
-      selection: Selection | null
+      selection: ResolvedGraphSelection | null
     }
   | Error {
   try {
+    const primaryRange = primaryLine?.codeRef?.range
+    const secondaryRange = secondaryLine?.codeRef?.range
+    if (primaryRange == null || secondaryRange == null) {
+      return { isParallelAndConstrained: false, selection: null }
+    }
     const EPSILON = deg2Rad(0.005)
-    const primaryPath = getNodePathFromSourceRange(
-      ast,
-      primaryLine?.codeRef?.range
-    )
-    const secondaryPath = getNodePathFromSourceRange(
-      ast,
-      secondaryLine?.codeRef?.range
-    )
+    const primaryPath = getNodePathFromSourceRange(ast, primaryRange)
+    const secondaryPath = getNodePathFromSourceRange(ast, secondaryRange)
     const _secondaryNode = getNodeFromPath<CallExpressionKw>(
       ast,
       secondaryPath,
@@ -704,10 +712,7 @@ export function isLinesParallelAndConstrained(
     const varName = (varDec as VariableDeclaration)?.declaration.id?.name
     const sg = sketchFromKclValue(memVars[varName], varName)
     if (err(sg)) return sg
-    const _primarySegment = getSketchSegmentFromSourceRange(
-      sg,
-      primaryLine?.codeRef?.range
-    )
+    const _primarySegment = getSketchSegmentFromSourceRange(sg, primaryRange)
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
@@ -723,10 +728,7 @@ export function isLinesParallelAndConstrained(
     const sg2 = sketchFromKclValue(memVars[varName2], varName2)
     if (err(sg2)) return sg2
 
-    const _segment = getSketchSegmentFromSourceRange(
-      sg2,
-      secondaryLine?.codeRef?.range
-    )
+    const _segment = getSketchSegmentFromSourceRange(sg2, secondaryRange)
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const isParallel = areVectorsParallel(
@@ -747,7 +749,7 @@ export function isLinesParallelAndConstrained(
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
-      secondaryLine?.codeRef.range,
+      secondaryRange,
       ast,
       wasmInstance
     )
@@ -770,11 +772,12 @@ export function isLinesParallelAndConstrained(
     const isParallelAndConstrained =
       isParallel && isConstrained && !!prevSourceRange
 
+    const artifact = artifactGraph.get(prevSegment.__geoMeta.id)
     return {
       isParallelAndConstrained,
       selection: {
         codeRef: codeRefFromRange(prevSourceRange, ast),
-        artifact: artifactGraph.get(prevSegment.__geoMeta.id),
+        ...(artifact != null && { artifact }),
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -786,11 +789,19 @@ export function isLinesParallelAndConstrained(
   }
 }
 
-export function artifactIsPlaneWithPaths(selectionRanges: Selections) {
+export function artifactIsPlaneWithPaths(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+) {
+  if (selectionRanges.graphSelections.length === 0) return false
+  const first = selectionRanges.graphSelections[0]
+  const resolved = resolveToCodeRef(first, artifactGraph)
+  if (!resolved?.artifact) return false
+  const artifact = resolved.artifact
   return (
-    selectionRanges.graphSelections.length &&
-    selectionRanges.graphSelections[0].artifact?.type === 'plane' &&
-    selectionRanges.graphSelections[0].artifact.pathIds.length
+    artifact.type === 'plane' &&
+    'pathIds' in artifact &&
+    artifact.pathIds.length > 0
   )
 }
 
@@ -800,7 +811,9 @@ export function isSingleCursorInPipe(
 ) {
   if (selectionRanges.graphSelections.length !== 1) return false
   const selection = selectionRanges.graphSelections[0]
-  const pathToNode = getNodePathFromSourceRange(ast, selection?.codeRef?.range)
+  const codeRef = selection?.codeRef
+  const range = codeRef?.range ?? [0, 0, 0]
+  const pathToNode = getNodePathFromSourceRange(ast, range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
   if (!nodeTypes.includes('VariableDeclaration')) return false
@@ -888,9 +901,11 @@ export function hasSketchPipeBeenExtruded(
   ast: Program,
   wasmInstance: ModuleType
 ) {
+  const pathToNode = selection.codeRef?.pathToNode
+  if (pathToNode == null) return false
   const _node = getNodeFromPath<Node<PipeExpression>>(
     ast,
-    selection.codeRef.pathToNode,
+    pathToNode,
     wasmInstance,
     'PipeExpression'
   )
@@ -899,7 +914,7 @@ export function hasSketchPipeBeenExtruded(
   if (pipeExpression.type !== 'PipeExpression') return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    selection.codeRef.pathToNode,
+    pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )
@@ -1198,6 +1213,115 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
+/** Get artifact id from EntityReference for lookup in artifact graph */
+function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
+  switch (entityRef.type) {
+    case 'plane':
+      return entityRef.plane_id
+    case 'face':
+      return entityRef.face_id
+    case 'solid2d':
+      return entityRef.solid2d_id
+    case 'solid3d':
+      return entityRef.solid3d_id
+    case 'helix':
+      return entityRef.helix_id
+    case 'solid2d_edge':
+      return entityRef.edge_id
+    case 'segment':
+      return entityRef.segment_id
+    case 'region':
+      return entityRef.region_id
+    case 'edge':
+      return entityRef.side_faces?.[0]
+    default:
+      return undefined
+  }
+}
+
+/**
+ * Compare two EntityReferences (e.g. for shift+multi-select).
+ * We want to verify if the engine has sent the same entity reference payload, i.e. the user
+ * is trying to deselect something by clicking it a second time.
+ */
+function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
+  if (a.type !== b.type) return false
+  switch (a.type) {
+    case 'plane':
+      return b.type === 'plane' && a.plane_id === b.plane_id
+    case 'face':
+      return b.type === 'face' && a.face_id === b.face_id
+    case 'solid2d':
+      return b.type === 'solid2d' && a.solid2d_id === b.solid2d_id
+    case 'solid3d':
+      return b.type === 'solid3d' && a.solid3d_id === b.solid3d_id
+    case 'helix':
+      return b.type === 'helix' && a.helix_id === b.helix_id
+    case 'solid2d_edge':
+      return b.type === 'solid2d_edge' && a.edge_id === b.edge_id
+    case 'edge':
+      if (b.type !== 'edge') return false
+      return (
+        JSON.stringify([...(a.side_faces || [])].sort()) ===
+          JSON.stringify([...(b.side_faces || [])].sort()) &&
+        JSON.stringify([...(a.end_faces || [])].sort()) ===
+          JSON.stringify([...(b.end_faces || [])].sort()) &&
+        a.index === b.index
+      )
+    case 'vertex':
+      if (b.type !== 'vertex') return false
+      return (
+        JSON.stringify([...(a.side_faces || [])].sort()) ===
+          JSON.stringify([...(b.side_faces || [])].sort()) &&
+        a.index === b.index
+      )
+    case 'segment':
+      return (
+        b.type === 'segment' &&
+        a.path_id === b.path_id &&
+        a.segment_id === b.segment_id
+      )
+    case 'region':
+      return b.type === 'region' && a.region_id === b.region_id
+    default:
+      return false
+  }
+}
+
+/** Compare two entityReferences (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
+export function selectionV2Equals(a: Selection, b: Selection): boolean {
+  if (a.entityRef && b.entityRef)
+    return entityRefEquals(a.entityRef, b.entityRef)
+  const aRange = a.codeRef?.range
+  const bRange = b.codeRef?.range
+  if (aRange && bRange) return JSON.stringify(aRange) === JSON.stringify(bRange)
+  return false
+}
+
+/** Resolve entityRef to codeRef and optional artifact for use in getVariableExprsFromSelection */
+export function resolveToCodeRef(
+  s: Selection,
+  artifactGraph: ArtifactGraph | undefined
+): { codeRef: CodeRef; artifact?: Artifact } | null {
+  const codeRef =
+    s.codeRef ??
+    (s.entityRef && artifactGraph
+      ? getCodeRefsByArtifactId(
+          entityRefToArtifactId(s.entityRef) ?? '',
+          artifactGraph
+        )?.[0]
+      : undefined)
+  if (!codeRef) return null
+  const artifact = s.artifact
+    ? s.artifact
+    : s.entityRef && artifactGraph
+      ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+      : codeRef.range && artifactGraph
+        ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
+        : undefined
+  return { codeRef, artifact }
+}
+
 export function getVariableNameFromNodePath(
   pathToNode: PathToNode,
   program: Program,
@@ -1261,6 +1385,10 @@ export function getVariableNameFromNodePath(
 type GetVariableExprsOptions = {
   lastChildLookup?: boolean
   artifactTypeFilter?: Array<Artifact['type']>
+  preferDirectSegment?: boolean
+  // Editing an operation must retain its original path variables instead of
+  // resolving those paths to indexed outputs of that same operation.
+  preservePathInput?: boolean
 }
 
 // Go from a selection to a list of KCL expressions that
@@ -1274,14 +1402,20 @@ export function getVariableExprsFromSelection(
   nodeToEdit?: PathToNode,
   options: GetVariableExprsOptions = {}
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
-  const { lastChildLookup = false, artifactTypeFilter } = options
+  const {
+    lastChildLookup = false,
+    artifactTypeFilter,
+    preferDirectSegment = false,
+    preservePathInput = false,
+  } = options
   let pathIfPipe: PathToNode | undefined
   let exprs: Expr[] = []
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
+    const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
     if (patternExpr) {
-      const key = outputExprKey(patternExpr)
+      const key = splitOutputExprKey(patternExpr)
       if (pushedNames[key]) {
         continue
       }
@@ -1290,43 +1424,36 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    const compositeSolidOutputExpr = getCompositeSolidOutputExprFromSelection(
+    const splitOutputExpr = getSplitOutputExprFromSelection(
+      resolvedForSegment,
       s,
       ast,
       wasmInstance,
-      artifactTypeFilter
-    )
-    if (compositeSolidOutputExpr) {
-      const key = outputExprKey(compositeSolidOutputExpr)
-      if (pushedNames[key]) {
-        continue
-      }
-      exprs.push(compositeSolidOutputExpr)
-      pushedNames[key] = true
-      continue
-    }
-
-    const sweepOutputExpr = getSweepOutputExprFromSelection(
-      s,
       artifactGraph,
-      ast,
-      wasmInstance,
-      nodeToEdit
+      artifactTypeFilter,
+      preservePathInput
     )
-    if (sweepOutputExpr) {
-      const key = outputExprKey(sweepOutputExpr)
+    if (splitOutputExpr) {
+      const key = splitOutputExprKey(splitOutputExpr)
       if (pushedNames[key]) {
         continue
       }
-      exprs.push(sweepOutputExpr)
+      exprs.push(splitOutputExpr)
       pushedNames[key] = true
       continue
     }
 
-    if (s.artifact?.type === 'edgeCut') {
+    const selectedEdgeCut =
+      s.artifact?.type === 'edgeCut'
+        ? s.artifact
+        : resolvedForSegment?.artifact?.type === 'edgeCut'
+          ? resolvedForSegment.artifact
+          : null
+    const edgeCutCodeRef = s.codeRef ?? resolvedForSegment?.codeRef
+    if (selectedEdgeCut && edgeCutCodeRef) {
       const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'VariableDeclaration',
         false,
@@ -1337,9 +1464,7 @@ export function getVariableExprsFromSelection(
         edgeCutVariable.node.type === 'VariableDeclaration'
       ) {
         const name = edgeCutVariable.node.declaration.id.name
-        if (pushedNames[name]) {
-          continue
-        }
+        if (pushedNames[name]) continue
         exprs.push(createLocalName(name))
         pushedNames[name] = true
         continue
@@ -1347,7 +1472,7 @@ export function getVariableExprsFromSelection(
 
       const edgeCutCall = getNodeFromPath<CallExpressionKw>(
         ast,
-        s.codeRef.pathToNode,
+        edgeCutCodeRef.pathToNode,
         wasmInstance,
         'CallExpressionKw',
         false,
@@ -1355,18 +1480,27 @@ export function getVariableExprsFromSelection(
       )
       if (!err(edgeCutCall) && edgeCutCall.node.unlabeled) {
         const input = structuredClone(edgeCutCall.node.unlabeled)
-        const key = outputExprKey(input)
-        if (pushedNames[key]) {
-          continue
-        }
+        const key = splitOutputExprKey(input)
+        if (pushedNames[key]) continue
         exprs.push(input)
         pushedNames[key] = true
         continue
       }
     }
 
-    if (s.artifact?.type === 'segment') {
-      const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
+    const directArtifact =
+      preferDirectSegment && s.entityRef != null
+        ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+        : undefined
+    const segmentArtifact =
+      directArtifact?.type === 'segment'
+        ? directArtifact
+        : resolvedForSegment?.artifact?.type === 'segment'
+          ? resolvedForSegment.artifact
+          : null
+    if (segmentArtifact) {
+      const sketchSegmentId =
+        segmentArtifact.originalSegId ?? segmentArtifact.id
       const sketchName = getSketchVariableNameForSegment(
         ast,
         sketchSegmentId,
@@ -1389,6 +1523,33 @@ export function getVariableExprsFromSelection(
       }
     }
 
+    const resolved = resolveToCodeRef(s, artifactGraph)
+    if (!resolved) continue
+    const { codeRef, artifact } = resolved
+
+    // Cap/wall/edgeCut code refs point at sketch geometry; solids (shell, fillet, hole, …)
+    // must use the parent sweep/composite variable (e.g. extrude001), not sketch001.
+    let pathToNodeForVariable = codeRef.pathToNode
+    let artifactForLastChildLookup = artifact
+    if (
+      artifact &&
+      (artifact.type === 'cap' ||
+        artifact.type === 'wall' ||
+        artifact.type === 'edgeCut')
+    ) {
+      const sweep = getSweepFromSuspectedSweepSurface(
+        artifact.id,
+        artifactGraph
+      )
+      if (!err(sweep) && sweep.codeRef) {
+        pathToNodeForVariable = sweep.codeRef.pathToNode
+        const sweepArtifact = artifactGraph.get(sweep.id)
+        if (sweepArtifact?.type === 'sweep') {
+          artifactForLastChildLookup = sweepArtifact
+        }
+      }
+    }
+
     let variable:
       | {
           node: VariableDeclaration
@@ -1396,18 +1557,21 @@ export function getVariableExprsFromSelection(
           deepPath: PathToNode
         }
       | undefined
-
-    if (lastChildLookup && s.artifact) {
+    if (lastChildLookup && artifactForLastChildLookup) {
       const children = findAllChildrenAndOrderByPlaceInCode(
-        s.artifact,
+        artifactForLastChildLookup,
         artifactGraph
       )
 
       if (
-        artifactTypeFilter?.includes(s.artifact.type) &&
-        'consumed' in s.artifact &&
-        !s.artifact.consumed &&
-        !hasLaterMatchingArtifact(children, s.artifact, artifactTypeFilter)
+        artifactTypeFilter?.includes(artifactForLastChildLookup.type) &&
+        'consumed' in artifactForLastChildLookup &&
+        !artifactForLastChildLookup.consumed &&
+        !hasLaterMatchingArtifact(
+          children,
+          artifactForLastChildLookup,
+          artifactTypeFilter
+        )
       ) {
         // Use a selected, unconsumed body directly only when the ordered
         // traversal does not reveal a later matching body derived from it.
@@ -1415,7 +1579,7 @@ export function getVariableExprsFromSelection(
         // like shell can still resolve a parent sweep to a downstream sweep.
         const directLookup = getNodeFromPath<VariableDeclaration>(
           ast,
-          s.codeRef.pathToNode,
+          pathToNodeForVariable,
           wasmInstance,
           'VariableDeclaration'
         )
@@ -1437,10 +1601,12 @@ export function getVariableExprsFromSelection(
         }
         variable = lastChildVariable.variableDeclaration
       }
-    } else {
+    }
+
+    if (!variable) {
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
-        s.codeRef.pathToNode,
+        pathToNodeForVariable,
         wasmInstance,
         'VariableDeclaration'
       )
@@ -1489,7 +1655,7 @@ export function getVariableExprsFromSelection(
     // import case
     const importNodeAndAlias = findImportNodeAndAlias(
       ast,
-      s.codeRef.pathToNode,
+      pathToNodeForVariable,
       wasmInstance
     )
     if (importNodeAndAlias) {
@@ -1498,9 +1664,9 @@ export function getVariableExprsFromSelection(
     }
 
     // No variable case
-    if (s.codeRef.pathToNode.length > 0) {
+    if (pathToNodeForVariable.length > 0) {
       exprs.push(createPipeSubstitution())
-      pathIfPipe = s.codeRef.pathToNode
+      pathIfPipe = pathToNodeForVariable
       continue
     }
 
@@ -1508,6 +1674,36 @@ export function getVariableExprsFromSelection(
   }
 
   return { exprs, pathIfPipe }
+}
+
+/** Build EntityReference from artifact type and id when the type maps to an entity ref.
+ * For segment, pass pathId as third argument so the ref includes path_id and segment_id.
+ * Not every artifact maps 1:1 to an engine/entity selection shape, so unsupported
+ * artifact types intentionally return undefined and are handled by higher-level callers.
+ */
+export function artifactToEntityRef(
+  artifactType: Artifact['type'],
+  artifactId: string,
+  pathId?: string
+): EntityReference | undefined {
+  if (artifactType === 'plane') return { type: 'plane', plane_id: artifactId }
+  if (artifactType === 'solid2d')
+    return { type: 'solid2d', solid2d_id: artifactId }
+  if (artifactType === 'sweep' || artifactType === 'compositeSolid')
+    return { type: 'solid3d', solid3d_id: artifactId }
+  if (artifactType === 'helix') return { type: 'helix', helix_id: artifactId }
+  if (artifactType === 'segment')
+    return pathId != null
+      ? { type: 'segment', path_id: pathId, segment_id: artifactId }
+      : undefined
+  if (artifactType === 'startSketchOnFace')
+    return { type: 'face', face_id: artifactId }
+  // Wall and cap are faces from the engine's perspective; map to face entity ref.
+  if (artifactType === 'wall' || artifactType === 'cap')
+    return { type: 'face', face_id: artifactId }
+  if (artifactType === 'edgeCut')
+    return { type: 'solid2d_edge', edge_id: artifactId }
+  return undefined
 }
 
 function getPatternExprFromSelection(
@@ -1532,8 +1728,8 @@ function getPatternExprFromSelection(
   const pathCandidates = [
     getNodePathFromSourceRange(ast, artifact.codeRef.range),
     artifact.codeRef.pathToNode,
-    selection.codeRef.pathToNode,
-  ]
+    selection.codeRef?.pathToNode,
+  ].filter((path): path is PathToNode => Boolean(path))
 
   for (const pathToNode of pathCandidates) {
     const patternVariableName = getVariableNameFromNodePath(
@@ -1556,103 +1752,80 @@ function getPatternExprFromSelection(
   return null
 }
 
-function getSweepOutputExprFromSelection(
+function getSplitOutputExprFromSelection(
+  resolvedSelection: ReturnType<typeof resolveToCodeRef> | undefined,
   selection: Selection,
-  artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   wasmInstance: ModuleType,
-  nodeToEdit?: PathToNode
+  artifactGraph: ArtifactGraph,
+  artifactTypeFilter?: Array<Artifact['type']>,
+  preservePathInput = false
 ): Expr | null {
-  const selectionArtifact = selection.artifact
-  let artifact: (Artifact & { type: 'sweep' }) | undefined
-  if (selectionArtifact?.type === 'sweep') {
-    artifact = selectionArtifact
-  } else if (selectionArtifact?.type === 'path' && selectionArtifact.sweepId) {
-    const maybeSweep = artifactGraph.get(selectionArtifact.sweepId)
-    if (maybeSweep?.type === 'sweep') {
-      artifact = maybeSweep
-    }
-  }
-
-  if (!artifact) {
-    return null
-  }
-
   if (
-    nodeToEdit &&
-    [
-      getNodePathFromSourceRange(ast, artifact.codeRef.range),
-      artifact.codeRef.pathToNode,
-    ].some(
-      (pathToNode) =>
-        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
-    )
+    artifactTypeFilter &&
+    !artifactTypeFilter.includes('compositeSolid') &&
+    !artifactTypeFilter.includes('sweep')
   ) {
     return null
   }
-
-  const siblingSweeps = [...artifactGraph.values()].filter(
-    (candidate): candidate is Artifact & { type: 'sweep' } =>
-      candidate.type === 'sweep' &&
-      sourceRangeContains(candidate.codeRef.range, artifact.codeRef.range) &&
-      sourceRangeContains(artifact.codeRef.range, candidate.codeRef.range)
-  )
-  if (siblingSweeps.length <= 1) {
+  if (preservePathInput && resolvedSelection?.artifact?.type === 'path') {
     return null
   }
-
-  const outputIndex = siblingSweeps.findIndex(
-    (sibling) => sibling.id === artifact.id
-  )
-  if (outputIndex < 0) {
-    return null
+  type SplitOutputArtifact = Artifact & {
+    subType?: string
+    outputIndex?: number | null
+    pathId?: string | null
   }
-
-  const pathCandidates = [
-    getNodePathFromSourceRange(ast, artifact.codeRef.range),
-    artifact.codeRef.pathToNode,
-    selection.codeRef.pathToNode,
-  ]
-
-  for (const pathToNode of pathCandidates) {
-    const sweepVariableName = getVariableNameFromNodePath(
-      pathToNode,
+  const artifact: SplitOutputArtifact | null =
+    resolvedSelection?.artifact?.type === 'compositeSolid' ||
+    resolvedSelection?.artifact?.type === 'sweep'
+      ? resolvedSelection.artifact
+      : resolvedSelection?.artifact?.type === 'path'
+        ? getExtrudeOutputSweepForPath(
+            resolvedSelection.artifact,
+            artifactGraph
+          )
+        : null
+  if (resolvedSelection?.artifact?.type === 'path') {
+    const inputExpr = getMultiOutputExtrudeInputExprFromPath(
+      resolvedSelection.artifact,
       ast,
       wasmInstance
     )
-    if (sweepVariableName) {
-      return createMemberExpression(
-        sweepVariableName,
-        createLiteral(outputIndex, wasmInstance),
-        true
-      )
+    if (inputExpr) {
+      return inputExpr
     }
   }
+  const inferredOutputIndex =
+    artifact?.type === 'sweep' && artifact.subType === 'extrusion'
+      ? getMultiRegionExtrudeOutputIndex(
+          artifact,
+          ast,
+          wasmInstance,
+          artifactGraph
+        )
+      : null
+  const outputIndex = artifact?.outputIndex ?? inferredOutputIndex
 
-  return null
-}
-
-function getCompositeSolidOutputExprFromSelection(
-  selection: Selection,
-  ast: Node<Program>,
-  wasmInstance: ModuleType,
-  artifactTypeFilter?: Array<Artifact['type']>
-): Expr | null {
-  if (artifactTypeFilter && !artifactTypeFilter.includes('compositeSolid')) {
+  if (
+    outputIndex == null ||
+    (artifact?.subType?.toLowerCase() !== 'split' &&
+      inferredOutputIndex == null)
+  ) {
     return null
   }
-  const artifact = selection.artifact
-  if (
-    artifact?.type !== 'compositeSolid' ||
-    artifact.outputIndex === null ||
-    artifact.outputIndex === undefined
-  ) {
+
+  const codeRef =
+    artifact && 'codeRef' in artifact
+      ? artifact.codeRef
+      : (resolvedSelection?.codeRef ?? selection.codeRef)
+  if (!codeRef) {
     return null
   }
 
   const directLookup = getNodeFromPath<VariableDeclaration>(
     ast,
-    selection.codeRef.pathToNode,
+    codeRef.pathToNode,
     wasmInstance,
     'VariableDeclaration'
   )
@@ -1662,12 +1835,147 @@ function getCompositeSolidOutputExprFromSelection(
 
   return createMemberExpression(
     directLookup.node.declaration.id.name,
-    createLiteral(artifact.outputIndex, wasmInstance),
+    createLiteral(outputIndex, wasmInstance),
     true
   )
 }
 
-function outputExprKey(expr: Expr): string {
+function getMultiOutputExtrudeInputExprFromPath(
+  artifact: Artifact,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (artifact.type !== 'path' || !('codeRef' in artifact)) {
+    return null
+  }
+
+  const inputName = getVariableNameFromNodePath(
+    artifact.codeRef.pathToNode,
+    ast,
+    wasmInstance
+  )
+  if (!inputName) {
+    return null
+  }
+
+  for (const statement of ast.body) {
+    if (
+      statement.type !== 'VariableDeclaration' ||
+      statement.declaration.init.type !== 'CallExpressionKw'
+    ) {
+      continue
+    }
+
+    const call = statement.declaration.init
+    if (
+      call.callee.type !== 'Name' ||
+      call.callee.name.name !== 'extrude' ||
+      call.unlabeled?.type !== 'ArrayExpression'
+    ) {
+      continue
+    }
+
+    for (const [index, element] of call.unlabeled.elements.entries()) {
+      if (element.type === 'Name' && element.name.name === inputName) {
+        return createMemberExpression(
+          statement.declaration.id.name,
+          createLiteral(index, wasmInstance),
+          true
+        )
+      }
+    }
+  }
+
+  return null
+}
+
+function getMultiRegionExtrudeOutputIndex(
+  artifact: Artifact & { pathId?: string | null },
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  artifactGraph: ArtifactGraph
+): number | null {
+  if (!artifact.pathId || !('codeRef' in artifact) || !artifact.codeRef) {
+    return null
+  }
+
+  const extrudeDecl = getNodeFromPath<VariableDeclaration>(
+    ast,
+    artifact.codeRef.pathToNode,
+    wasmInstance,
+    'VariableDeclaration'
+  )
+  if (
+    err(extrudeDecl) ||
+    extrudeDecl.node.type !== 'VariableDeclaration' ||
+    extrudeDecl.node.declaration.init.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const extrudeCall = extrudeDecl.node.declaration.init
+  if (
+    extrudeCall.callee.type !== 'Name' ||
+    extrudeCall.callee.name.name !== 'extrude' ||
+    extrudeCall.unlabeled?.type !== 'ArrayExpression'
+  ) {
+    return null
+  }
+
+  const regionArtifact = artifactGraph.get(artifact.pathId)
+  if (
+    !regionArtifact ||
+    !('codeRef' in regionArtifact) ||
+    !regionArtifact.codeRef
+  ) {
+    return null
+  }
+  const regionName = getVariableNameFromNodePath(
+    regionArtifact.codeRef.pathToNode,
+    ast,
+    wasmInstance
+  )
+  if (!regionName) {
+    return null
+  }
+
+  for (const [index, element] of extrudeCall.unlabeled.elements.entries()) {
+    if (element.type !== 'Name') {
+      continue
+    }
+
+    if (regionName === element.name.name) {
+      return index
+    }
+  }
+
+  return null
+}
+
+function getExtrudeOutputSweepForPath(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): (Artifact & { pathId?: string; outputIndex?: number | null }) | null {
+  if (artifact.type !== 'path' || artifact.subType !== 'region') {
+    return null
+  }
+
+  const sweep = [...artifactGraph.values()].find(
+    (
+      candidate
+    ): candidate is Artifact & {
+      pathId?: string
+      outputIndex?: number | null
+    } =>
+      candidate.type === 'sweep' &&
+      candidate.subType === 'extrusion' &&
+      candidate.pathId === artifact.id
+  )
+
+  return sweep ?? null
+}
+
+function splitOutputExprKey(expr: Expr): string {
   if (
     expr.type === 'MemberExpression' &&
     expr.object.type === 'Name' &&
@@ -1801,7 +2109,12 @@ export function retrieveSelectionsFromOpArg(
       }
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    const codeRefs =
+      artifact.type === 'sweepEdge'
+        ? [getSweepEdgeCodeRef(artifact, artifactGraph)].filter(
+            (codeRef): codeRef is CodeRef => !err(codeRef)
+          )
+        : getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }
@@ -1817,17 +2130,28 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    graphSelections.push({
-      artifact,
-      codeRef: codeRefs[0],
-    })
+    const codeRef = codeRefs[0]
+    const resolvedArtifactId = artifact.id
+    const pathId =
+      artifact.type === 'segment'
+        ? (artifact as SegmentArtifact).pathId
+        : undefined
+    const entityRef = artifactToEntityRef(
+      artifact.type,
+      resolvedArtifactId,
+      pathId
+    )
+    graphSelections.push({ artifact, entityRef, codeRef })
   }
 
   if (graphSelections.length === 0) {
     return error
   }
 
-  return { graphSelections, otherSelections: [] }
+  return {
+    graphSelections: graphSelections,
+    otherSelections: [],
+  }
 }
 
 export function findOperationArtifact(
@@ -1835,42 +2159,160 @@ export function findOperationArtifact(
   artifactGraph: ArtifactGraph
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
-  const artifact = artifactGraph
+  const opRange = operation.sourceRange
+  const byNodePathAndRange = artifactGraph
     .values()
     .toArray()
-    .find(
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      const crWithNodePath = cr as { nodePath?: unknown } | null
+      return (
+        cr != null &&
+        JSON.stringify(crWithNodePath?.nodePath) === nodePath &&
+        cr.range?.every((v, i) => v === opRange[i])
+      )
+    })
+  if (byNodePathAndRange) return byNodePathAndRange
+  if (operation.name === 'fillet' || operation.name === 'chamfer') {
+    const matchingEdgeCuts = artifactGraph
+      .values()
+      .toArray()
+      .filter((a): a is Artifact & { type: 'edgeCut' } => {
+        if (a.type !== 'edgeCut') return false
+        const cr = getFaceCodeRef(a)
+        return (
+          cr != null &&
+          cr.range != null &&
+          opRange != null &&
+          cr.range.length >= 2 &&
+          opRange.length >= 2 &&
+          cr.range[0] === opRange[0] &&
+          cr.range[1] === opRange[1]
+        )
+      })
+    if (matchingEdgeCuts.length === 0) {
+      // no change from before
+    } else {
+      // When multiple edgeCuts match (e.g. two fillets with same codeRef range), prefer the one
+      // whose segment touches the start cap so editing the second fillet (start-cap edge) gets the right artifact.
+      const withStartCap = matchingEdgeCuts.find((edgeCut) => {
+        const edgeIds = (edgeCut as { edge_ids?: string[] }).edge_ids
+        const segId = edgeIds?.length
+          ? edgeIds[0]
+          : (edgeCut as { consumedEdgeId?: string }).consumedEdgeId
+        if (!segId) return false
+        const seg = getArtifactOfTypes(
+          { key: segId, types: ['segment'] },
+          artifactGraph
+        )
+        if (err(seg)) return false
+        const segWithFaces = seg as { commonSurfaceIds?: string[] }
+        if (!segWithFaces.commonSurfaceIds?.length) return false
+        const commonFaces = getCommonFacesForEdge(seg, artifactGraph)
+        if (err(commonFaces)) return false
+        return commonFaces.some(
+          (f) =>
+            f.type === 'cap' &&
+            (f as { subType?: string }).subType?.toLowerCase() === 'start'
+        )
+      })
+      if (withStartCap) return withStartCap
+      return matchingEdgeCuts[0]
+    }
+  }
+  if (operation.name !== 'startSketchOn') return undefined
+  const byRangeExact = artifactGraph
+    .values()
+    .toArray()
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      return (
+        cr != null &&
+        cr.range != null &&
+        opRange != null &&
+        cr.range.length >= 2 &&
+        opRange.length >= 2 &&
+        cr.range[0] === opRange[0] &&
+        cr.range[1] === opRange[1]
+      )
+    })
+  if (byRangeExact) return byRangeExact
+  const opStart = opRange?.[0] ?? -1
+  const opEnd = opRange?.[1] ?? -1
+  const byRangeContainment = artifactGraph
+    .values()
+    .toArray()
+    .find((a) => {
+      const cr = getFaceCodeRef(a)
+      if (!cr?.range || cr.range.length < 2 || opStart < 0 || opEnd < 0)
+        return false
+      const [r0, r1] = cr.range
+      return (r0 >= opStart && r1 <= opEnd) || (opStart >= r0 && opEnd <= r1)
+    })
+  if (byRangeContainment) return byRangeContainment
+  const candidates = artifactGraph
+    .values()
+    .toArray()
+    .filter(
       (a) =>
-        'codeRef' in a &&
-        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
-        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+        (a.type === 'startSketchOnFace' || a.type === 'sketchBlock') &&
+        getFaceCodeRef(a)?.range != null &&
+        getFaceCodeRef(a)!.range.length >= 2
     )
-  return artifact
+    .map((a) => ({ artifact: a, cr: getFaceCodeRef(a)! }))
+    .filter(({ cr }) => cr.range[0] >= 0)
+  if (candidates.length === 0) return undefined
+  const nearest = candidates.reduce((best, cur) => {
+    const curStart = cur.cr.range[0]
+    const bestStart = best.cr.range[0]
+    const curDist = Math.abs(curStart - opStart)
+    const bestDist = Math.abs(bestStart - opStart)
+    return curDist < bestDist ? cur : best
+  })
+  return nearest.artifact
 }
 
-export function findOperationForArtifact(input: {
-  artifact: Artifact | undefined
+export function findOperationForArtifact({
+  artifact,
+  operations,
+}: {
+  artifact: Artifact
   operations: Operation[]
 }): Operation | undefined {
-  if (!input.artifact || !('codeRef' in input.artifact)) {
+  const codeRef = getFaceCodeRef(artifact)
+  const artifactRange = codeRef?.range
+  if (!artifactRange) {
     return undefined
   }
-  const { artifact } = input
 
-  return input.operations.find((operation) => {
+  return operations.find((operation) => {
     if (!('sourceRange' in operation)) {
       return false
     }
+
+    const stdlibEntrySourceRange =
+      operation.type === 'StdLibCall'
+        ? operation.stdlibEntrySourceRange
+        : undefined
+
     return (
-      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
-      (operation.type === 'StdLibCall' &&
-        operation.stdlibEntrySourceRange !== undefined &&
-        operation.stdlibEntrySourceRange !== null &&
-        sourceRangeContains(
-          operation.stdlibEntrySourceRange,
-          artifact.codeRef.range
-        ))
+      rangeContains(
+        stdlibEntrySourceRange ?? operation.sourceRange,
+        artifactRange
+      ) || rangeContains(operation.sourceRange, artifactRange)
     )
   })
+}
+
+function rangeContains(
+  container: SourceRange,
+  contained: SourceRange
+): boolean {
+  return (
+    container[2] === contained[2] &&
+    container[0] <= contained[0] &&
+    container[1] >= contained[1]
+  )
 }
 
 export function findOperationPlaneArtifact(
@@ -1920,11 +2362,10 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   }
 
   const planeSelection = selectionRanges.graphSelections.find(
-    (selection) => selection.artifact?.type === 'plane'
+    (s) => s.entityRef?.type === 'plane'
   )
-  if (planeSelection) {
-    // Found an offset plane in the selection
-    return planeSelection.artifact?.id || null
+  if (planeSelection?.entityRef?.type === 'plane') {
+    return planeSelection.entityRef.plane_id
   }
 
   return null
@@ -1950,18 +2391,25 @@ export function getSelectedSketchTarget(
     return primitiveFace.entityId
   }
 
-  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  // Prefer the face API reference, while retaining artifact fallback selections.
   const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const entityType = selection.entityRef?.type
     const artifactType = selection.artifact?.type || ''
     return (
+      entityType === 'plane' ||
+      entityType === 'face' ||
       ['plane', 'wall', 'cap'].includes(artifactType) ||
       (selection.artifact?.type === 'edgeCut' &&
         selection.artifact?.subType === 'chamfer')
     )
   })
-  if (planeSelection) {
-    return planeSelection.artifact?.id || null
+  if (planeSelection?.entityRef) {
+    if (planeSelection.entityRef.type === 'plane')
+      return planeSelection.entityRef.plane_id
+    if (planeSelection.entityRef.type === 'face')
+      return planeSelection.entityRef.face_id
   }
+  if (planeSelection?.artifact) return planeSelection.artifact.id
 
   return null
 }
@@ -1993,12 +2441,12 @@ export function getSelectedPlaneAsNode(
   }
 
   const offsetPlane = selection.graphSelections.find(
-    (sel) => sel.artifact?.type === 'plane'
+    (s) => s.entityRef?.type === 'plane'
   )
-  if (offsetPlane?.artifact?.type === 'plane') {
-    const artifactId = offsetPlane.artifact.id
+  if (offsetPlane?.entityRef?.type === 'plane') {
+    const planeId = offsetPlane.entityRef.plane_id
     const variableName = Object.entries(variables).find(([_, value]) => {
-      return value?.type === 'Plane' && value.value?.artifactId === artifactId
+      return value?.type === 'Plane' && value.value?.artifactId === planeId
     })
     const offsetPlaneName = variableName?.[0]
     return offsetPlaneName ? createLocalName(offsetPlaneName) : undefined
@@ -2295,6 +2743,55 @@ export function getLastVariable(
   return null
 }
 
+export function getOwningSweepForEdgeCut(
+  edgeCut: Extract<Artifact, { type: 'edgeCut' }>,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Extract<Artifact, { type: 'sweep' }> | Error {
+  const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    edgeCut.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  const inputName =
+    !err(edgeCutCall) && edgeCutCall.node.unlabeled?.type === 'Name'
+      ? edgeCutCall.node.unlabeled.name.name
+      : null
+  if (!inputName) {
+    return new Error('Edge-cut operation does not have a named input')
+  }
+
+  for (const candidate of artifactGraph.values()) {
+    if (candidate.type !== 'sweep') continue
+    const vars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: candidate,
+            codeRef: candidate.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      wasmInstance
+    )
+    if (
+      !err(vars) &&
+      vars.exprs.length === 1 &&
+      vars.exprs[0].type === 'Name' &&
+      vars.exprs[0].name.name === inputName
+    ) {
+      return candidate
+    }
+  }
+
+  return new Error(`No sweep found for edge-cut input ${inputName}`)
+}
+
 export function getEdgeCutMeta(
   artifact: Artifact,
   ast: Node<Program>,
@@ -2307,38 +2804,63 @@ export function getEdgeCutMeta(
   } | null = null
   if (
     artifact?.type === 'edgeCut' &&
-    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+    ((artifact as { subType?: string }).subType === 'chamfer' ||
+      (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const consumedArtifact = getArtifactOfTypes(
-      {
-        key: artifact.consumedEdgeId,
-        types: ['segment', 'sweepEdge'],
-      },
-      artifactGraph
-    )
-    console.log('consumedArtifact', consumedArtifact)
-    if (err(consumedArtifact)) return null
-    if (consumedArtifact.type === 'segment') {
-      edgeCutInfo = {
-        type: 'base',
-        segment: consumedArtifact,
-      }
-    } else {
-      const segment = getArtifactOfTypes(
-        { key: consumedArtifact.segId, types: ['segment'] },
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
+    if (consumedEdgeId == null || consumedEdgeId === '') return null
+    const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
+    let consumedArtifact: SegmentArtifact | null =
+      rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
+
+    if (!consumedArtifact) {
+      const segmentViaWallOrCap = getSegmentForEdgeCut(
+        consumedEdgeId,
         artifactGraph
       )
-      if (err(segment)) return null
-      edgeCutInfo = {
-        type: consumedArtifact.subType,
-        segment,
+      if (!segmentViaWallOrCap) {
+        // Segment not in graph (e.g. keyed by artifact id). Derive tag from chamfer/fillet call.
+        const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+          ast,
+          artifact.codeRef?.pathToNode ?? [],
+          wasmInstance,
+          ['CallExpressionKw']
+        )
+        if (err(edgeCutCall) || edgeCutCall.node.type !== 'CallExpressionKw')
+          return null
+        const tagsArg = findKwArg('tags', edgeCutCall.node)
+        if (
+          !tagsArg ||
+          tagsArg.type !== 'ArrayExpression' ||
+          !tagsArg.elements?.length
+        )
+          return null
+        const first = tagsArg.elements[0]
+        const tagName =
+          first?.type === 'Name'
+            ? first.name.name
+            : first?.type === 'CallExpressionKw' &&
+                first.unlabeled?.type === 'Name'
+              ? first.unlabeled.name.name
+              : null
+        if (!tagName) return null
+        return {
+          type: 'edgeCut',
+          subType: 'base',
+          tagName,
+        }
       }
+      consumedArtifact = segmentViaWallOrCap
+    }
+    edgeCutInfo = {
+      type: 'base',
+      segment: consumedArtifact,
     }
   }
   if (!edgeCutInfo) return null
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
-    edgeCutInfo?.segment.codeRef.pathToNode || [],
+    edgeCutInfo.segment.codeRef.pathToNode || [],
     wasmInstance,
     ['CallExpressionKw']
   )
@@ -2393,19 +2915,6 @@ export function getSketchSegmentName(
   }
 
   return null
-}
-
-export function createSketchTagMemberExpression(
-  sourceSurfaceExpr: Expr,
-  segmentName: string
-): Expr {
-  return createMemberExpression(
-    createMemberExpression(
-      createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-      'tags'
-    ),
-    segmentName
-  )
 }
 
 export function getSketchSegmentNameFromSourceSurface(
@@ -2471,6 +2980,9 @@ export function getSketchSegmentNameFromSourceSurface(
   }
 
   if (selectedSegment) {
+    if (!sourceSurfaceArtifact.pathId) {
+      return null
+    }
     const pathArtifact = getArtifactOfTypes(
       { key: sourceSurfaceArtifact.pathId, types: ['path'] },
       artifactGraph

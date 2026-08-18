@@ -65,16 +65,30 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: '',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+    await cmdBar.selectOption({ name: 'Solid' }).click()
+    await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
     })
     await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
+      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH}, bodyType = SOLID)`
     )
   })
 
@@ -115,6 +129,13 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(cmdSearchBar).not.toBeVisible()
 
     // Now try the same, but with the keyboard shortcut, check focus
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(cmdSearchBar).toBeVisible()
+    await expect(cmdSearchBar).toBeFocused()
+
+    // The command-palette scope changes the shortcut from "open" to "close".
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(cmdSearchBar).not.toBeVisible()
     await page.keyboard.press('ControlOrMeta+K')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
@@ -287,19 +308,42 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     // Review step and argument hotkeys
     await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: '',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
+    await cmdBar.selectOption({ name: 'Solid' }).click()
+    await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
     })
     await page.keyboard.press('Meta+Backspace')
 
-    // Assert we're back on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    // Assert we're back on the body type step.
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'bodyType',
+      currentArgValue: '',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+        BodyType: 'SOLID',
+      },
+      highlightedHeaderArg: 'bodyType',
+    })
 
     await cmdBar.progressCmdBar()
 
@@ -310,6 +354,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
     })
     await cmdBar.clickOptionalArgument('bidirectionalLength')
@@ -321,6 +366,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
         BidirectionalLength: '',
       },
       highlightedHeaderArg: 'bidirectionalLength',
@@ -333,6 +379,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
         BidirectionalLength: '10',
       },
     })
@@ -347,6 +394,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
         BidirectionalLength: '10',
       },
       highlightedHeaderArg: 'bidirectionalLength',
@@ -358,13 +406,14 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
+        BodyType: 'SOLID',
       },
     })
 
     await cmdBar.progressCmdBar()
     await scene.settled()
     await editor.expectEditor.toContain(
-      'extrude001 = extrude(sketch001, length = length001)'
+      'extrude001 = extrude(sketch001, length = length001, bodyType = SOLID)'
     )
   })
 
