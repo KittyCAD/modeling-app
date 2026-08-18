@@ -7,7 +7,9 @@ import {
   getDefaultCloudProjectLibrarySetting,
   getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
+  getProjectLibraryDetailsDescription,
   getProjectLibraryIdFromSetting,
+  getProjectLibraryLocationLabel,
   getProjectLibrarySummaryDescription,
   getProjectLibrarySummaryTooltip,
   LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
@@ -199,12 +201,22 @@ describe('project library settings', () => {
     expect(getProjectLibrarySummaryTooltip(cloudLibrary)).toContain(
       'Technical source: zoo://personal'
     )
+    expect(getProjectLibraryDetailsDescription(cloudLibrary)).toBe(
+      'Projects in this library sync to your Zoo account. Storage type and model-training controls depend on your plan.'
+    )
+    expect(getProjectLibraryLocationLabel(cloudLibrary)).toBe(
+      'Technical source'
+    )
     expect(getProjectLibrarySummaryDescription(directoryLibrary)).toBe(
       'Projects in this library are saved only on this computer'
     )
     expect(getProjectLibrarySummaryTooltip(directoryLibrary)).toContain(
       'Folder: /projects'
     )
+    expect(getProjectLibraryDetailsDescription(directoryLibrary)).toBe(
+      'Projects in this library are saved only on this computer.'
+    )
+    expect(getProjectLibraryLocationLabel(directoryLibrary)).toBe('Folder')
   })
 
   test('treats the first directory library as the default local project target', () => {

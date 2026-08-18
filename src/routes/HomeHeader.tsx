@@ -5,6 +5,8 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import {
   formatProjectLibraryPathForDisplay,
+  getProjectLibraryDetailsDescription,
+  getProjectLibraryLocationLabel,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
@@ -43,6 +45,9 @@ export function HomeHeader({
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const libraryDetailsDescription = library
+    ? getProjectLibraryDetailsDescription(library)
+    : undefined
 
   return (
     <section {...rest}>
@@ -131,7 +136,9 @@ export function HomeHeader({
       </div>
       {library ? (
         <p className="my-4 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Loaded from{' '}
+          {libraryDetailsDescription
+            ? `${libraryDetailsDescription} ${getProjectLibraryLocationLabel(library)}: `
+            : 'Loaded from '}
           <Link
             data-testid="project-directory-settings-link"
             to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}

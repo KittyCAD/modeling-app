@@ -102,6 +102,25 @@ describe('HomeHeader', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows details copy with the linked library path', () => {
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+    })
+
+    expect(
+      screen.getByText(/Projects in this library sync to your Zoo account/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Storage type and model-training controls depend on your plan/
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Technical source:/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'zoo://personal' })
+    ).toHaveAttribute('href', '/home/settings?tab=user#libraries')
+  })
+
   it('shows the selected library type icon and caret back link', () => {
     renderHomeHeader({
       showFreeCloudProjectTrainingDisclosure: false,
