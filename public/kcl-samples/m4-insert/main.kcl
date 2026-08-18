@@ -2,7 +2,7 @@
 // Simplified M4 heat-set threaded insert with stepped outer retention features, a tapered lead-in section, and a plain inner bore for envelope and fit modeling.
 // Categories: Fasteners
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 insertBodyMaxDiameter = 6.3
 insertGuideDiameter = 3.11
@@ -73,7 +73,10 @@ insertProfileSketch = sketch(on = XY) {
   angleDimension(lines = [midWall, taperFlank], sector = 1, labelPosition = [-2.83mm, -6.02mm]) == taperAngle
 }
 
-insertProfileRegion = region(point = [-3.1475mm, -1.14mm], sketch = insertProfileSketch)
+insertProfileRegion = region(segments = [
+  insertProfileSketch.outerTopWall,
+  insertProfileSketch.topShoulder
+])
 insertBody = revolve(insertProfileRegion, angle = 360deg, axis = Y)
 simpleInsert = appearance(
   insertBody,

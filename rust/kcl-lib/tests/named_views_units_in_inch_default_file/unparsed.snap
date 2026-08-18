@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_units_in_inch_default_file.kcl
+---
+// Pins millimeter storage for the case most likely to mislead a consumer: a
+// file whose default length unit is not millimeters, where the author writes
+// bare numbers. Here `distance = 500` means 500 inches, and the view stores
+// 12700 millimeters.
+//
+// Before lengths were canonicalized, this stored the number 500 tagged as a
+// file-default length. A consumer that read the number and assumed
+// millimeters would have placed the camera 25.4 times too close, and nothing
+// in the value would have looked wrong.
+@settings(experimentalFeatures = allow, defaultLengthUnit = inch)
+
+view = view::oriented(view::Orientation::Front, target = [1, 0, 0], distance = 500)

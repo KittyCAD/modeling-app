@@ -79,7 +79,7 @@ baseSketch = sketch(on = YZ) {
   radius(arc4) == bendRadius
   radius(arc3) == bendRadius
 }
-region004 = region(point = [-5.5725mm, 0.0025mm], sketch = baseSketch)
+region004 = region(segments = [baseSketch.line1, baseSketch.arc1])
 baseExtrusion = extrude(region004, length = width, symmetric = true)
 
 // Sketch the hole positions

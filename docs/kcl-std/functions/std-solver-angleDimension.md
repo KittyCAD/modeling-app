@@ -51,8 +51,20 @@ inverseProfile = sketch(on = XY) {
   angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 300deg
 }
 
-normalSolid = extrude(region(point = [2mm, 1mm], sketch = normalProfile), length = 2)
-inverseSolid = extrude(region(point = [9mm, 1mm], sketch = inverseProfile), length = 2)
+normalSolid = extrude(
+  region(segments = [
+    normalProfile.line1,
+    normalProfile.line2
+  ]),
+  length = 2,
+)
+inverseSolid = extrude(
+  region(segments = [
+    inverseProfile.line1,
+    inverseProfile.line2
+  ]),
+  length = 2,
+)
 
 ```
 

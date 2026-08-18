@@ -10,6 +10,9 @@ use crate::parsing::ast::types::ImportSelector;
 
 /// Find all defined names in the given code block. This ignores names defined
 /// by glob imports.
+// TODO: Should we include function parameter names when the block is a
+// function body? They are not among the block's body items, so names
+// generated from this set can collide with parameters.
 pub(crate) fn find_defined_names<B: CodeBlock>(block: &B) -> HashSet<String> {
     let mut defined_names = HashSet::new();
     for item in block.body() {

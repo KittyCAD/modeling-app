@@ -220,7 +220,7 @@ function ZookeeperPrompt() {
   // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
     searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -444,7 +444,7 @@ function PromptToEditPrompt() {
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
     searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -643,10 +643,10 @@ function OnboardingConclusion() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Time to start building</h1>
         <p className="my-4">
-          We appreciate you downloading Zoo Design Studio and taking the time to
-          walk through the basics. To navigate back home to create your own
-          project, click the Zoo button in the top left. To learn more detailed
-          and advanced techniques,{' '}
+          We appreciate you taking the time to walk through the basics. Select
+          Finish to return home, where you can keep working with the tutorial
+          project or create a project of your own. To learn more detailed and
+          advanced techniques,{' '}
           <a
             onClick={openExternalBrowserIfDesktop(withSiteBaseURL('/docs'))}
             href={`${withSiteBaseURL('/docs')}`}

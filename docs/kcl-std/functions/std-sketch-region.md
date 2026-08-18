@@ -131,7 +131,7 @@ s = sketch(on = XY) {
   coincident([line1.start, arc1.end])
 }
 
-r = region(point = s.arc1.center)
+r = region(segments = [s.line1, s.arc1])
 extrude(r, length = 2)
 
 ```

@@ -130,7 +130,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [4mm, 3mm], sketch = blockProfile), length = 6mm, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 6mm, tagEnd = $top)
 drilledBlock = hole::hole(
   block,
   face = top,

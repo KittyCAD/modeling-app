@@ -35,7 +35,10 @@ export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
+export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
 export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
+/** Gates named view changes to ZDS UI */
+export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -234,9 +237,6 @@ export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
-
-/** Toast id for the changes requested banner */
-export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
 
 /** Toast id for Zookeeper bulk file writes */
 export const ZOOKEEPER_FILE_WRITE_TOAST_ID = 'zookeeper-file-write-toast'
