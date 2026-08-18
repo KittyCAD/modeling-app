@@ -2370,6 +2370,52 @@ mod tests {
         assert!(!artifact.code_ref.node_path.is_empty());
     }
 
+    #[tokio::test]
+    async fn mock_import_preserves_inner_error() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_import_error").unwrap();
+        tokio::fs::write(
+            tmpdir.path().join("broken.kcl"),
+            "export brokenValue = missingName + 1\n",
+        )
+        .await
+        .unwrap();
+
+        let program = crate::Program::parse_no_errs("import brokenValue from \"broken.kcl\"\n\nbrokenValue\n").unwrap();
+        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            ..Default::default()
+        }))
+        .await;
+
+        let error = ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        ctx.close().await;
+
+        let KclError::UndefinedValue { details, name } = &error.error else {
+            panic!("expected UndefinedValue, got {:#?}", error.error);
+        };
+        assert_eq!(name.as_deref(), Some("missingName"));
+        assert_eq!(details.message, "`missingName` is not defined");
+        assert_eq!(details.source_ranges.len(), 1);
+
+        let inner_range = details.source_ranges[0];
+        assert_ne!(inner_range.module_id(), ModuleId::default());
+        assert!(
+            error.source_files[&inner_range.module_id()]
+                .path
+                .to_string()
+                .ends_with("broken.kcl")
+        );
+    }
+
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {

@@ -1839,16 +1839,10 @@ impl ExecutorContext {
                     // error that just needs to be retried.
                     err.override_source_ranges(vec![source_range])
                 }
-                _ => {
-                    // TODO would be great to have line/column for the underlying error here
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "Error loading imported file ({path}). Open it to view more details.\n  {}",
-                            err.message()
-                        ),
-                        vec![source_range],
-                    ))
-                }
+                // The module loaded successfully, so preserve execution errors
+                // exactly as they occurred inside it. Rewrapping them here loses
+                // the error kind, structured fields, and imported-file location.
+                _ => err,
             }
         })
     }
