@@ -133,7 +133,7 @@ export function isCloudSyncConflictRevisionChangedError(error: unknown) {
 }
 
 const SYNC_DEBOUNCE_MS = 2500
-const SYNC_RETRY_MS = 30_000
+const SYNC_RETRY_MS = 10_000
 const SYNC_RETRY_MAX_MS = 5 * 60 * 1000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =

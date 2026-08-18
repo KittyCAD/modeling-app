@@ -844,9 +844,9 @@ describe('cloudSync sync helpers', () => {
   })
 
   it('backs off sync retries exponentially and respects longer retry-after delays', () => {
-    expect(getCloudSyncRetryDelayMs({ attempt: 0 })).toBe(30_000)
-    expect(getCloudSyncRetryDelayMs({ attempt: 1 })).toBe(60_000)
-    expect(getCloudSyncRetryDelayMs({ attempt: 2 })).toBe(120_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 0 })).toBe(10_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 1 })).toBe(20_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 2 })).toBe(40_000)
     expect(getCloudSyncRetryDelayMs({ attempt: 10 })).toBe(5 * 60 * 1000)
     expect(
       getCloudSyncRetryDelayMs({
