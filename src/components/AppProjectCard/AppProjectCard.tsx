@@ -475,7 +475,7 @@ function AppProjectCard({
               data-testid="project-card-context-move-to-library"
               onClick={() => onMoveToLibrary?.(project)}
             >
-              Move to library
+              Move to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [
