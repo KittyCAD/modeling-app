@@ -121,7 +121,7 @@ describe('getSweepArtifactFromSelection', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
     // Create path -> sweep -> segment -> edgeCut chain
-    const path: Artifact = {
+    const path = {
       type: 'path',
       subType: 'sketch',
       id: 'path-1',
@@ -131,7 +131,7 @@ describe('getSweepArtifactFromSelection', () => {
       sweepId: 'sweep-1',
       trajectorySweepId: null,
       consumed: true,
-    }
+    } satisfies Extract<Artifact, { type: 'path' }>
 
     const sweep: Artifact = {
       type: 'sweep',
@@ -324,7 +324,7 @@ describe('getSketchBlockForArtifact', () => {
       trajectorySweepId: null,
       consumed: false,
       sketchBlockId: 'sketch-block-1',
-    } as unknown as Artifact
+    } satisfies Extract<Artifact, { type: 'path' }>
 
     const segment: Artifact = {
       type: 'segment',

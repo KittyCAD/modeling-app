@@ -9,8 +9,10 @@ layout: manual
 
 A camera viewpoint, stored as intent: what the camera looks at and from which direction, not a snapshot of engine camera state.
 
-Values of this type are opaque; [`oriented`](/docs/kcl-std/functions/std-view-oriented)
-and [`directed`](/docs/kcl-std/functions/std-view-directed) produce them.
+Values of this type are opaque. Call
+[`view::oriented()`](/docs/kcl-std/functions/std-view-oriented) or
+[`view::directed()`](/docs/kcl-std/functions/std-view-directed) to produce
+one.
 
 
 

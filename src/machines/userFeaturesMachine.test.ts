@@ -3,13 +3,18 @@ import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   USER_FEATURES_POLL_INTERVAL_MS,
   USER_FEATURES_RETRY_INTERVAL_MS,
+  USER_FEATURES_SETTLE_TIMEOUT_MS,
   UserFeaturesActor,
+  type UserFeaturesSettleSnapshot,
+  type UserFeaturesSettleSource,
   UserFeaturesState,
   UserFeaturesTransition,
   userFeaturesContextHas,
   userFeaturesMachine,
+  userFeaturesSnapshotSettled,
+  waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 const mockState = vi.hoisted(() => ({
@@ -265,5 +270,160 @@ describe('userFeaturesMachine', () => {
       actor.stop()
       vi.useRealTimers()
     }
+  })
+})
+
+function snapshotIn(
+  state: UserFeaturesState,
+  fetchedAt?: Date
+): UserFeaturesSettleSnapshot {
+  return {
+    matches: (candidate) => candidate === state,
+    context: { fetchedAt },
+  }
+}
+
+function createFakeSource(initial: UserFeaturesSettleSnapshot) {
+  let snapshot = initial
+  const listeners = new Set<(snapshot: UserFeaturesSettleSnapshot) => void>()
+  const source: UserFeaturesSettleSource = {
+    getSnapshot: () => snapshot,
+    subscribe: (listener) => {
+      listeners.add(listener)
+      return { unsubscribe: () => listeners.delete(listener) }
+    },
+  }
+  return {
+    source,
+    update: (next: UserFeaturesSettleSnapshot) => {
+      snapshot = next
+      for (const listener of listeners) {
+        listener(next)
+      }
+    },
+    listenerCount: () => listeners.size,
+  }
+}
+
+const flushMicrotasks = () => Promise.resolve()
+
+describe('userFeaturesSnapshotSettled', () => {
+  it('treats Ready and Failed as settled', () => {
+    expect(
+      userFeaturesSnapshotSettled(snapshotIn(UserFeaturesState.Ready))
+    ).toBe(true)
+    expect(
+      userFeaturesSnapshotSettled(snapshotIn(UserFeaturesState.Failed))
+    ).toBe(true)
+  })
+
+  it('treats Idle and a first Loading as unsettled', () => {
+    expect(
+      userFeaturesSnapshotSettled(snapshotIn(UserFeaturesState.Idle))
+    ).toBe(false)
+    expect(
+      userFeaturesSnapshotSettled(snapshotIn(UserFeaturesState.Loading))
+    ).toBe(false)
+  })
+
+  it('treats a poll refresh (Loading after a previous load) as settled', () => {
+    expect(
+      userFeaturesSnapshotSettled(
+        snapshotIn(UserFeaturesState.Loading, new Date())
+      )
+    ).toBe(true)
+  })
+})
+
+describe('waitForUserFeaturesSettled', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('resolves immediately without subscribing when already settled', async () => {
+    const ready = createFakeSource(snapshotIn(UserFeaturesState.Ready))
+    await waitForUserFeaturesSettled(ready.source)
+    expect(ready.listenerCount()).toBe(0)
+
+    const failed = createFakeSource(snapshotIn(UserFeaturesState.Failed))
+    await waitForUserFeaturesSettled(failed.source)
+    expect(failed.listenerCount()).toBe(0)
+  })
+
+  it('waits for an unsettled source, then resolves and unsubscribes', async () => {
+    const fake = createFakeSource(snapshotIn(UserFeaturesState.Loading))
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(fake.source).then(settled)
+
+    await flushMicrotasks()
+    expect(settled).not.toHaveBeenCalled()
+    expect(fake.listenerCount()).toBe(1)
+
+    fake.update(snapshotIn(UserFeaturesState.Ready))
+    await flushMicrotasks()
+    expect(settled).toHaveBeenCalledTimes(1)
+    expect(fake.listenerCount()).toBe(0)
+  })
+
+  it('ignores snapshots that are still unsettled', async () => {
+    const fake = createFakeSource(snapshotIn(UserFeaturesState.Idle))
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(fake.source).then(settled)
+
+    fake.update(snapshotIn(UserFeaturesState.Loading))
+    await flushMicrotasks()
+    expect(settled).not.toHaveBeenCalled()
+
+    fake.update(snapshotIn(UserFeaturesState.Failed))
+    await flushMicrotasks()
+    expect(settled).toHaveBeenCalledTimes(1)
+  })
+
+  it('resolves and unsubscribes when aborted', async () => {
+    const fake = createFakeSource(snapshotIn(UserFeaturesState.Idle))
+    const controller = new AbortController()
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(
+      fake.source,
+      USER_FEATURES_SETTLE_TIMEOUT_MS,
+      controller.signal
+    ).then(settled)
+
+    await flushMicrotasks()
+    expect(fake.listenerCount()).toBe(1)
+    expect(settled).not.toHaveBeenCalled()
+
+    controller.abort()
+    await flushMicrotasks()
+    expect(fake.listenerCount()).toBe(0)
+    expect(settled).toHaveBeenCalledTimes(1)
+  })
+
+  it('resolves at the timeout when the source never settles', async () => {
+    vi.useFakeTimers()
+    const fake = createFakeSource(snapshotIn(UserFeaturesState.Idle))
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(fake.source).then(settled)
+
+    await vi.advanceTimersByTimeAsync(USER_FEATURES_SETTLE_TIMEOUT_MS - 1)
+    expect(settled).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(settled).toHaveBeenCalledTimes(1)
+    expect(fake.listenerCount()).toBe(0)
+  })
+
+  it('accepts a real machine actor and resolves at the timeout when idle', async () => {
+    vi.useFakeTimers()
+    const actor = createActor(userFeaturesMachine).start()
+    const settled = vi.fn()
+    void waitForUserFeaturesSettled(actor, 50).then(settled)
+
+    await vi.advanceTimersByTimeAsync(49)
+    expect(settled).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1)
+    expect(settled).toHaveBeenCalledTimes(1)
+    actor.stop()
   })
 })

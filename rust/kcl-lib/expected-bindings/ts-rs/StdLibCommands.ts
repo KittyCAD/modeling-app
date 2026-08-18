@@ -9170,6 +9170,59 @@ export default {
       }
     ]
   },
+  "view::named": {
+    "name": "named",
+    "preferredName": "view::named",
+    "qualName": "std::view::named",
+    "moduleName": "view",
+    "returnType": "NamedView",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "The name of the view, as a reader should see it. Required, unique within the file, and compared exactly.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "camera",
+        "ty": "CameraView",
+        "docs": "The camera the view activates. Call `view::oriented()` or `view::directed()` to build one.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "baseline",
+        "ty": "Visibility",
+        "docs": "The default visibility of every object the program creates: visible under `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to override that default for individual objects.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "except",
+        "ty": "[Solid | Sketch | GdtAnnotation; 1+]",
+        "docs": "The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
   "view::oriented": {
     "name": "oriented",
     "preferredName": "view::oriented",

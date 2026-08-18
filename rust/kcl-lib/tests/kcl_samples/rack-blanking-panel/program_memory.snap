@@ -3092,10 +3092,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4662,
-                "end": 4669,
+                "commentStart": 4658,
+                "end": 4665,
                 "moduleId": 0,
-                "start": 4662,
+                "start": 4658,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -3123,10 +3123,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000001925,
                 "tag": {
-                  "commentStart": 4662,
-                  "end": 4669,
+                  "commentStart": 4658,
+                  "end": 4665,
                   "moduleId": 0,
-                  "start": 4662,
+                  "start": 4658,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -3218,10 +3218,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4662,
-                "end": 4669,
+                "commentStart": 4658,
+                "end": 4665,
                 "moduleId": 0,
-                "start": 4662,
+                "start": 4658,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -3249,10 +3249,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000001925,
                 "tag": {
-                  "commentStart": 4662,
-                  "end": 4669,
+                  "commentStart": 4658,
+                  "end": 4665,
                   "moduleId": 0,
-                  "start": 4662,
+                  "start": 4658,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -3344,10 +3344,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4532,
-                "end": 4539,
+                "commentStart": 4528,
+                "end": 4535,
                 "moduleId": 0,
-                "start": 4532,
+                "start": 4528,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3375,10 +3375,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000002136,
                 "tag": {
-                  "commentStart": 4532,
-                  "end": 4539,
+                  "commentStart": 4528,
+                  "end": 4535,
                   "moduleId": 0,
-                  "start": 4532,
+                  "start": 4528,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -3470,10 +3470,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4532,
-                "end": 4539,
+                "commentStart": 4528,
+                "end": 4535,
                 "moduleId": 0,
-                "start": 4532,
+                "start": 4528,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3501,10 +3501,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000002136,
                 "tag": {
-                  "commentStart": 4532,
-                  "end": 4539,
+                  "commentStart": 4528,
+                  "end": 4535,
                   "moduleId": 0,
-                  "start": 4532,
+                  "start": 4528,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4365,10 +4365,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09375000000002136,
                   "tag": {
-                    "commentStart": 4532,
-                    "end": 4539,
+                    "commentStart": 4528,
+                    "end": 4535,
                     "moduleId": 0,
-                    "start": 4532,
+                    "start": 4528,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4412,10 +4412,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09375000000001925,
                   "tag": {
-                    "commentStart": 4662,
-                    "end": 4669,
+                    "commentStart": 4658,
+                    "end": 4665,
                     "moduleId": 0,
-                    "start": 4662,
+                    "start": 4658,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -5120,10 +5120,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09375000000001925,
           "tag": {
-            "commentStart": 4662,
-            "end": 4669,
+            "commentStart": 4658,
+            "end": 4665,
             "moduleId": 0,
-            "start": 4662,
+            "start": 4658,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -5220,10 +5220,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09375000000002136,
           "tag": {
-            "commentStart": 4532,
-            "end": 4539,
+            "commentStart": 4528,
+            "end": 4535,
             "moduleId": 0,
-            "start": 4532,
+            "start": 4528,
             "type": "TagDeclarator",
             "value": "circle1"
           },
