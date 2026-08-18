@@ -15,7 +15,7 @@
 // for game assets, placeholder art, or visual-scripting demos.
 
 // Set units and version
-@settings(defaultLengthUnit = m, kclVersion = 1.0)
+@settings(defaultLengthUnit = m, kclVersion = 2.0)
 
 // Chassis dimensions
 chassisLength = 3.5 // total vehicle length
@@ -297,8 +297,8 @@ wheelSketch = sketch(on = XZ) {
   diameter(circle2) == wheelInnerDiameter
   diameter(circle1) == wheelDiameter
 }
-wheelProfile = region(point = [0, 0.1], sketch = wheelSketch)
-diskProfile = region(point = [0, wheelDiameter / 2], sketch = wheelSketch)
+wheelProfile = region(segments = [wheelSketch.circle1])
+diskProfile = region(segments = [wheelSketch.circle2])
 wheelTireBody = extrude(wheelProfile, length = -wheelWidth)
   |> appearance(%, color = "#141414")
 diskBody = extrude(diskProfile, length = -wheelWidth)
