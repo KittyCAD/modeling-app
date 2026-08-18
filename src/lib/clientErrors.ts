@@ -27,6 +27,7 @@ export enum ClientErrorCode {
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',
   EngineDisconnect = 'engine_disconnect',
+  LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UserFeaturesFetchError = 'user_features_fetch_error',

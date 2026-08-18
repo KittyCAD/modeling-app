@@ -99,7 +99,7 @@ sketch002 = sketch(on = XY) {
   parallel([line6, line5])
   equalLength([line6, line5])
 }
-region007 = region(point = [0mm, -0in], sketch = sketch002)
+region007 = region(segments = [sketch002.line1, sketch002.line2])
 extrude001 = extrude(region007, length = -1in)
   |> appearance(color = "#ffffff")
 fillet001 = fillet(

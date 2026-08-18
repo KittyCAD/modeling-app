@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Automotive, Aerospace
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 outsideDiameter = 1.625
@@ -28,7 +28,7 @@ insideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2)) 
 }
 
 // Extrude the inside bearing piece
-insideWallRegion = region(point = [12mm, 0mm], sketch = insideWallSketch)
+insideWallRegion = region(segments = [insideWallSketch.circle1])
 insideWall = extrude(insideWallRegion, length = overallThickness)
 
 // Create the sketch of one of the balls
@@ -44,7 +44,7 @@ ballsSketch = sketch(on = XY) {
 }
 
 // Revolve the ball to make a sphere and pattern around the inside wall
-ballRegion = region(point = [-0mm, 3mm], sketch = ballsSketch)
+ballRegion = region(segments = [ballsSketch.arc1, ballsSketch.line1])
 ballBody = revolve(ballRegion, angle = 360deg, axis = X)
 hide(ballsSketch)
 ballTranslated = translate(ballBody, x = shaftDia / 2 + wallThickness + sphereDia / 2)
@@ -129,5 +129,5 @@ outsideWallSketch = sketch(on = offsetPlane(XY, offset = -overallThickness / 2))
   distance([circle2.center, circle2.start]) == shaftDia / 2 + wallThickness + sphereDia
 }
 
-outsideRegion = region(point = [20.6mm, 0mm], sketch = outsideWallSketch)
+outsideRegion = region(segments = [outsideWallSketch.circle1])
 outsideWall = extrude(outsideRegion, length = overallThickness)

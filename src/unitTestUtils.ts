@@ -22,6 +22,10 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  UserFeaturesState,
+  type UserFeaturesSettleService,
+} from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { createActor } from 'xstate'
@@ -54,6 +58,22 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
   )
   if (angle && lengthLike) {
     return createArrayExpression([angle, lengthLike])
+  }
+}
+
+/**
+ * A user-features service whose fetch has already settled, so gated code
+ * (e.g. `KclManager.executeCode`) proceeds immediately in tests.
+ */
+export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
+  return {
+    actor: {
+      getSnapshot: () => ({
+        matches: (state) => state === UserFeaturesState.Ready,
+        context: { fetchedAt: new Date() },
+      }),
+      subscribe: () => ({ unsubscribe: () => {} }),
+    },
   }
 }
 
@@ -95,6 +115,7 @@ export async function buildTheWorldAndConnectToEngine() {
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
+    userFeatures: createSettledUserFeaturesForTest(),
     projectPath: signal('some-project'),
   })
 
@@ -166,7 +187,10 @@ export async function buildTheWorldNode() {
 }
 
 // Initialize all the singletons and the WASM blob but do not connect to the engine
-export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
+export async function buildTheWorldAndNoEngineConnection(
+  mockWasm = false,
+  userFeatures: UserFeaturesSettleService = createSettledUserFeaturesForTest()
+) {
   const instancePromise = mockWasm
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
@@ -202,6 +226,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
+    userFeatures,
     projectPath: signal('some-project'),
   })
 
