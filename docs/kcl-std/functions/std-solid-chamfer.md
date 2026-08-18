@@ -211,15 +211,17 @@ chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(ta
 // Chamfer the top circular edge of an extruded 8 mm shaft.
 // These two shafts show equivalent edge-selection approaches:
 // `getOppositeEdge` and a tagged end face with `getCommonEdge`.
-shaftSketch = sketch(on = XY) {
+leftShaftSketch = sketch(on = XY) {
   leftCircle = circle(start = [var -8mm, var 0mm], center = [var -12mm, var 0mm])
-  rightCircle = circle(start = [var 16mm, var 0mm], center = [var 12mm, var 0mm])
   radius(leftCircle) == 4mm
+}
+rightShaftSketch = sketch(on = XY) {
+  rightCircle = circle(start = [var 16mm, var 0mm], center = [var 12mm, var 0mm])
   radius(rightCircle) == 4mm
 }
 
-leftRegion = region(segments = [shaftSketch.leftCircle])
-rightRegion = region(segments = [shaftSketch.rightCircle])
+leftRegion = region(segments = [leftShaftSketch.leftCircle])
+rightRegion = region(segments = [rightShaftSketch.rightCircle])
 
 leftShaft = extrude(leftRegion, length = 20mm)
   |> chamfer(
