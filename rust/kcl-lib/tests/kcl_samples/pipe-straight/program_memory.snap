@@ -123,10 +123,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -154,10 +154,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -245,10 +245,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -276,10 +276,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -367,10 +367,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -398,10 +398,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -489,10 +489,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -520,10 +520,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -611,10 +611,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -642,10 +642,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -733,10 +733,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -764,10 +764,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -855,10 +855,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -886,10 +886,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -977,10 +977,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1008,10 +1008,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1099,10 +1099,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1130,10 +1130,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1221,10 +1221,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1252,10 +1252,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1343,10 +1343,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1374,10 +1374,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1465,10 +1465,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1496,10 +1496,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1587,10 +1587,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1618,10 +1618,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1709,10 +1709,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1740,10 +1740,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1831,10 +1831,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1862,10 +1862,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1953,10 +1953,10 @@ description: Variables in memory after executing pipe-straight.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1974,
-                "end": 1981,
+                "commentStart": 1892,
+                "end": 1899,
                 "moduleId": 0,
-                "start": 1974,
+                "start": 1892,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1984,10 +1984,10 @@ description: Variables in memory after executing pipe-straight.kcl
                 ],
                 "radius": 6.000000000048771,
                 "tag": {
-                  "commentStart": 1974,
-                  "end": 1981,
+                  "commentStart": 1892,
+                  "end": 1899,
                   "moduleId": 0,
-                  "start": 1974,
+                  "start": 1892,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -2077,10 +2077,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1974,
-            "end": 1981,
+            "commentStart": 1892,
+            "end": 1899,
             "moduleId": 0,
-            "start": 1974,
+            "start": 1892,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2108,10 +2108,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 6.000000000048771,
             "tag": {
-              "commentStart": 1974,
-              "end": 1981,
+              "commentStart": 1892,
+              "end": 1899,
               "moduleId": 0,
-              "start": 1974,
+              "start": 1892,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2474,10 +2474,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 6.000000000048771,
                   "tag": {
-                    "commentStart": 1974,
-                    "end": 1981,
+                    "commentStart": 1892,
+                    "end": 1899,
                     "moduleId": 0,
-                    "start": 1974,
+                    "start": 1892,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2576,10 +2576,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 6.000000000048771,
           "tag": {
-            "commentStart": 1974,
-            "end": 1981,
+            "commentStart": 1892,
+            "end": 1899,
             "moduleId": 0,
-            "start": 1974,
+            "start": 1892,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2667,10 +2667,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1289,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1289,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
           },
@@ -2681,10 +2681,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1490,
-            "end": 1507,
+            "commentStart": 1432,
+            "end": 1449,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "flangeInnerCircle"
           },
@@ -2712,10 +2712,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1289,
+              "end": 1306,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1289,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -2742,10 +2742,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 1490,
-              "end": 1507,
+              "commentStart": 1432,
+              "end": 1449,
               "moduleId": 0,
-              "start": 1490,
+              "start": 1432,
               "type": "TagDeclarator",
               "value": "flangeInnerCircle"
             },
@@ -2837,10 +2837,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1289,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1289,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
           },
@@ -2851,10 +2851,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1490,
-            "end": 1507,
+            "commentStart": 1432,
+            "end": 1449,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "flangeInnerCircle"
           },
@@ -2882,10 +2882,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1289,
+              "end": 1306,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1289,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -2912,10 +2912,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 1490,
-              "end": 1507,
+              "commentStart": 1432,
+              "end": 1449,
               "moduleId": 0,
-              "start": 1490,
+              "start": 1432,
               "type": "TagDeclarator",
               "value": "flangeInnerCircle"
             },
@@ -3045,10 +3045,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 65.0,
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1289,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1289,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
           },
@@ -3075,10 +3075,10 @@ description: Variables in memory after executing pipe-straight.kcl
           ],
           "radius": 35.0,
           "tag": {
-            "commentStart": 1490,
-            "end": 1507,
+            "commentStart": 1432,
+            "end": 1449,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "flangeInnerCircle"
           },
@@ -3421,10 +3421,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 65.0,
                   "tag": {
-                    "commentStart": 1347,
-                    "end": 1364,
+                    "commentStart": 1289,
+                    "end": 1306,
                     "moduleId": 0,
-                    "start": 1347,
+                    "start": 1289,
                     "type": "TagDeclarator",
                     "value": "flangeOuterCircle"
                   },
@@ -3468,10 +3468,10 @@ description: Variables in memory after executing pipe-straight.kcl
                   ],
                   "radius": 35.0,
                   "tag": {
-                    "commentStart": 1490,
-                    "end": 1507,
+                    "commentStart": 1432,
+                    "end": 1449,
                     "moduleId": 0,
-                    "start": 1490,
+                    "start": 1432,
                     "type": "TagDeclarator",
                     "value": "flangeInnerCircle"
                   },
@@ -3589,10 +3589,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1289,
+              "end": 1306,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1289,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -3619,10 +3619,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 1490,
-              "end": 1507,
+              "commentStart": 1432,
+              "end": 1449,
               "moduleId": 0,
-              "start": 1490,
+              "start": 1432,
               "type": "TagDeclarator",
               "value": "flangeInnerCircle"
             },
@@ -4459,10 +4459,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1347,
-            "end": 1364,
+            "commentStart": 1289,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1347,
+            "start": 1289,
             "type": "TagDeclarator",
             "value": "flangeOuterCircle"
           },
@@ -4473,10 +4473,10 @@ description: Variables in memory after executing pipe-straight.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1490,
-            "end": 1507,
+            "commentStart": 1432,
+            "end": 1449,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1432,
             "type": "TagDeclarator",
             "value": "flangeInnerCircle"
           },
@@ -4504,10 +4504,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 65.0,
             "tag": {
-              "commentStart": 1347,
-              "end": 1364,
+              "commentStart": 1289,
+              "end": 1306,
               "moduleId": 0,
-              "start": 1347,
+              "start": 1289,
               "type": "TagDeclarator",
               "value": "flangeOuterCircle"
             },
@@ -4534,10 +4534,10 @@ description: Variables in memory after executing pipe-straight.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 1490,
-              "end": 1507,
+              "commentStart": 1432,
+              "end": 1449,
               "moduleId": 0,
-              "start": 1490,
+              "start": 1432,
               "type": "TagDeclarator",
               "value": "flangeInnerCircle"
             },

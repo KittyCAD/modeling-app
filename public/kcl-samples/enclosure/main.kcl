@@ -3,7 +3,7 @@
 // Categories: Computer Hardware, Maker
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 length = 175
@@ -43,7 +43,7 @@ baseBody = extrude(baseRegion, length = height)
            baseRegion.tags.line2
          ]),
          getCommonEdge(faces = [
-           baseRegion.tags.line1,
+           baseRegion.tags.line2,
            baseRegion.tags.line3
          ]),
          getCommonEdge(faces = [
@@ -52,7 +52,7 @@ baseBody = extrude(baseRegion, length = height)
          ]),
          getCommonEdge(faces = [
            baseRegion.tags.line4,
-           baseRegion.tags.line2
+           baseRegion.tags.line1
          ])
        ],
      )
@@ -96,7 +96,7 @@ pillarSketch = sketch(on = pillarPlane) {
   distance([innerGuide.start, innerGuide.end]) == holeDia
 }
 
-pillarRegion = region(point = [0mm, holeDia + wallThickness / 2], sketch = pillarSketch)
+pillarRegion = region(segments = [pillarSketch.outerCircle])
 pillarFrontLeft = extrude(pillarRegion, length = pillarHeight)
 hide(pillarSketch)
 
@@ -242,7 +242,7 @@ lidSketch = sketch(on = lidPlane) {
   ])
 }
 
-lidRegion = region(point = [width / 2, length / 2], sketch = lidSketch)
+lidRegion = region(segments = [lidSketch.line1, lidSketch.line2])
 lidPlate = extrude(lidRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
@@ -252,7 +252,7 @@ lidPlate = extrude(lidRegion, length = wallThickness)
            lidRegion.tags.line2
          ]),
          getCommonEdge(faces = [
-           lidRegion.tags.line1,
+           lidRegion.tags.line2,
            lidRegion.tags.line3
          ]),
          getCommonEdge(faces = [
@@ -261,7 +261,7 @@ lidPlate = extrude(lidRegion, length = wallThickness)
          ]),
          getCommonEdge(faces = [
            lidRegion.tags.line4,
-           lidRegion.tags.line2
+           lidRegion.tags.line1
          ])
        ],
      )
@@ -403,7 +403,7 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
 }
 
-lidLipRegion = region(point = [lidOffsetX + width / 2, length / 2], sketch = lidLipSketch)
+lidLipRegion = region(segments = [lidLipSketch.line1, lidLipSketch.line2])
 lidLip = extrude(lidLipRegion, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,
@@ -413,7 +413,7 @@ lidLip = extrude(lidLipRegion, length = wallThickness)
            lidLipRegion.tags.line2
          ]),
          getCommonEdge(faces = [
-           lidLipRegion.tags.line1,
+           lidLipRegion.tags.line2,
            lidLipRegion.tags.line3
          ]),
          getCommonEdge(faces = [
@@ -422,7 +422,7 @@ lidLip = extrude(lidLipRegion, length = wallThickness)
          ]),
          getCommonEdge(faces = [
            lidLipRegion.tags.line4,
-           lidLipRegion.tags.line2
+           lidLipRegion.tags.line1
          ])
        ],
      )

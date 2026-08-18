@@ -75,15 +75,15 @@ flowchart LR
       %% [ProgramBodyItem { index: 35 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path66 [Path]
-    66["Path Region<br>[8368, 8480, 0]<br>Consumed: true"]
+    66["Path Region<br>[8368, 8424, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    67["Segment<br>[8368, 8480, 0]"]
+    67["Segment<br>[8368, 8424, 0]"]
       %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    68["Segment<br>[8368, 8480, 0]"]
+    68["Segment<br>[8368, 8424, 0]"]
       %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    69["Segment<br>[8368, 8480, 0]"]
+    69["Segment<br>[8368, 8424, 0]"]
       %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    70["Segment<br>[8368, 8480, 0]"]
+    70["Segment<br>[8368, 8424, 0]"]
       %% [ProgramBodyItem { index: 36 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[726, 2046, 0]"]
@@ -144,7 +144,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   60["Plane<br>[6382, 8321, 0]"]
     %% [ProgramBodyItem { index: 35 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  71["Sweep Extrusion<br>[8496, 8559, 0]<br>Consumed: true"]
+  71["Sweep Extrusion<br>[8440, 8503, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 37 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   72[Wall]
     %% face_code_ref=Missing NodePath
@@ -166,7 +166,7 @@ flowchart LR
   83["SweepEdge Adjacent"]
   84["SweepEdge Opposite"]
   85["SweepEdge Adjacent"]
-  86["CompositeSolid Subtract<br>[8645, 8707, 0]<br>Consumed: false"]
+  86["CompositeSolid Subtract<br>[8589, 8651, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 39 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   87["SketchBlock<br>[726, 2046, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -487,14 +487,14 @@ flowchart LR
   71 --- 85
   72 --- 78
   72 --- 79
-  81 <--x 72
+  85 <--x 72
+  79 <--x 73
   73 --- 80
   73 --- 81
-  83 <--x 73
+  81 <--x 74
   74 --- 82
   74 --- 83
-  85 <--x 74
-  79 <--x 75
+  83 <--x 75
   75 --- 84
   75 --- 85
   78 <--x 77
