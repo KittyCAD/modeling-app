@@ -790,6 +790,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
+            showSuccessToast?: boolean
           }
         }) => {
           try {
@@ -840,6 +841,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               fileName: input.requestedFileNameWithExtension || '',
               subRoute: input.requestedSubRoute || '',
               shouldNavigate,
+              showSuccessToast: input.showSuccessToast,
               // Zookeeper streams cumulative edit patches, so one edit triggers
               // several of these bulk writes back-to-back. Sharing a toast id
               // collapses the otherwise-identical success toasts into one.

@@ -352,6 +352,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
     expect(firstRequest.files).toEqual([
       expect.objectContaining({ requestedFileName: 'main.kcl' }),
     ])
+    expect(firstRequest.showSuccessToast).toBe(false)
     firstRequest.onFileSystemSuccess()
     firstRequest.onSuccess()
 
@@ -361,6 +362,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
     expect(secondRequest.files).toEqual([
       expect.objectContaining({ requestedFileName: 'side.kcl' }),
     ])
+    expect(secondRequest.showSuccessToast).toBe(false)
     secondRequest.onFileSystemSuccess()
     secondRequest.onSuccess()
 

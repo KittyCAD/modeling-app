@@ -267,6 +267,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     requestedProjectName: payload.requestedProjectName,
                     requestedFileNameWithExtension:
                       payload.requestedFileNameWithExtension ?? '',
+                    showSuccessToast: !shouldRecordZookeeperHistory,
                     onFileSystemError: () => {
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
@@ -547,14 +548,10 @@ function useZookeeperEditPatchHistory({
       pendingZookeeperHistoryByExchange.current.delete(exchangeId)
       if (!pending.fileWriteFailed) {
         const count = pending.patch.changed_files.length
-        // SystemIO emits its per-write toast after the success callback.
-        // Queue this aggregate toast so it remains the final message.
-        setTimeout(() => {
-          toast.success(
-            `Successfully updated ${count} ${count === 1 ? 'file' : 'files'}`,
-            { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
-          )
-        }, 0)
+        toast.success(
+          `Successfully updated ${count} ${count === 1 ? 'file' : 'files'}`,
+          { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
+        )
       }
       try {
         recordZookeeperHistory({
