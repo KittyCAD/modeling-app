@@ -592,39 +592,19 @@ describe('KclManager diagnostics', () => {
     watchSpy.mockRestore()
   })
 
-  it('seeds blank main.kcl with the current KCL version', async () => {
-    const { kclManager } = createKclManagerTestHarness('')
-    const path = '/tmp/project/main.kcl'
-    const readSpy = vi
-      .spyOn(File.ioImplementations, 'read')
-      .mockResolvedValue('')
-    const writeSpy = vi
-      .spyOn(File.ioImplementations, 'write')
-      .mockResolvedValue(undefined)
-    const watchSpy = vi
-      .spyOn(File.ioImplementations, 'watch')
-      .mockImplementation(() => {})
-
-    await KclManager.fromFile(
-      new File(path, 101),
-      (kclManager as any).systemDeps,
-      kclManager
-    )
-
-    expect(writeSpy).toHaveBeenCalledWith(path, DEFAULT_BLANK_MAIN_KCL_CONTENTS)
-    expect(kclManager.code).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
-
-    readSpy.mockRestore()
-    writeSpy.mockRestore()
-    watchSpy.mockRestore()
-  })
-
   it('seeds the default KCL version when the user clears main.kcl', async () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
-    kclManager.path = '/tmp/project/main.kcl'
     await kclManager.wasmInstancePromise
-
     vi.useFakeTimers()
+
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/project/main.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('x = 1')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+
     kclManager.editorView.dispatch({
       changes: {
         from: 0,
@@ -638,14 +618,59 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(kclManager.code).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+    // The cleared file must never reach disk, only the seeded contents.
+    expect(writeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+    expect(writeSpy).toHaveBeenCalledWith(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+  })
+
+  it('keeps typing after a clear instead of seeding main.kcl', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    await kclManager.wasmInstancePromise
+    vi.useFakeTimers()
+
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/project/main.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('x = 1')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+
+    kclManager.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: kclManager.editorView.state.doc.length,
+        insert: '',
+      },
+    })
+    await vi.advanceTimersByTimeAsync(500)
+    kclManager.editorView.dispatch({
+      changes: { from: 0, to: 0, insert: 'y = 2' },
+    })
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.code).toBe('y = 2')
+    expect(writeSpy).toHaveBeenCalledWith('y = 2')
   })
 
   it('does not seed KCL version when clearing a non-main file', async () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
-    kclManager.path = '/tmp/project/other.kcl'
     await kclManager.wasmInstancePromise
-
     vi.useFakeTimers()
+
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/project/other.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('x = 1')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+
     kclManager.editorView.dispatch({
       changes: {
         from: 0,
@@ -657,6 +682,7 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(kclManager.code).toBe('')
+    expect(writeSpy).toHaveBeenCalledWith('')
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {

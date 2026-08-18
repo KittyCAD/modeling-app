@@ -1109,9 +1109,6 @@ export class KclManager extends File {
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
-  private timeoutSeedDefaultKclVersion:
-    | ReturnType<typeof setTimeout>
-    | undefined = undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -1544,59 +1541,6 @@ export class KclManager extends File {
       this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
     }
   })
-
-  /**
-   * When the user clears `main.kcl`, wait briefly and then write the default
-   * KCL version if the editor is still empty.
-   */
-  private seedDefaultKclVersionListener = EditorView.updateListener.of(
-    (update) => {
-      if (!update.docChanged) return
-      const isProgrammaticUpdate = update.transactions.some((tr) =>
-        Boolean(tr.annotation(updateOutsideEditorEvent.type))
-      )
-      if (isProgrammaticUpdate) {
-        return
-      }
-
-      this.scheduleSeedDefaultKclVersion(update.state.doc.toString())
-    }
-  )
-
-  private scheduleSeedDefaultKclVersion(code: string) {
-    clearTimeout(this.timeoutSeedDefaultKclVersion)
-    this.timeoutSeedDefaultKclVersion = undefined
-    if (!isMainKclPath(this.path) || code.trim() !== '') {
-      return
-    }
-
-    this.timeoutSeedDefaultKclVersion = setTimeout(() => {
-      this.applySeedDefaultKclVersion()
-    }, 1_000)
-  }
-
-  private applySeedDefaultKclVersion() {
-    this.timeoutSeedDefaultKclVersion = undefined
-    if (!isMainKclPath(this.path) || this._wasmInstance === null) {
-      return
-    }
-
-    const currentCode = this.code
-    const seeded = ensureDefaultKclVersionOnBlankMain(
-      this.path,
-      currentCode,
-      this._wasmInstance
-    )
-    if (err(seeded) || seeded === currentCode) {
-      return
-    }
-
-    this.updateCodeEditor(seeded, {
-      shouldExecute: true,
-      shouldWriteToDisk: true,
-    })
-    notifyDefaultKclVersionSeeded()
-  }
 
   /**
    * code mirror extension that clears modeling selection state when the document is empty
@@ -2112,7 +2056,6 @@ export class KclManager extends File {
       this.sketchModeDirectEditHistoryExtension,
       this.syntheticHistoryCommitExtension,
       this.sketchCheckpointHistoryExtension,
-      this.seedDefaultKclVersionListener,
       this.clearSelectionsOnEmptyDoc,
     ]
   }
@@ -2235,7 +2178,6 @@ export class KclManager extends File {
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
-        this._wasmInstance = wasmInstance
         this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
@@ -2260,7 +2202,6 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
-    clearTimeout(this.timeoutSeedDefaultKclVersion)
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
@@ -3816,6 +3757,10 @@ export class KclManager extends File {
       return
     }
 
+    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+      return
+    }
+
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
@@ -3895,6 +3840,43 @@ export class KclManager extends File {
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }
+  }
+
+  /**
+   * When the user clears `main.kcl`, seed the editor with the default KCL
+   * version to prevent them from implicitly falling back to a legacy version.
+   */
+  private async seedDefaultKclVersionOnBlankMain(
+    requestedDocumentVersion: number
+  ): Promise<boolean> {
+    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+      return false
+    }
+
+    const wasmInstance = await this.wasmInstancePromise
+    if (typeof wasmInstance === 'string') {
+      return false
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return false
+    }
+
+    const currentCode = this.code
+    const seeded = ensureDefaultKclVersionOnBlankMain(
+      this.path,
+      currentCode,
+      wasmInstance
+    )
+    if (err(seeded) || seeded === currentCode) {
+      return false
+    }
+
+    this.updateCodeEditor(seeded, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    notifyDefaultKclVersionSeeded()
+    return true
   }
 
   async updateEditorWithAstAndWriteToFile(
