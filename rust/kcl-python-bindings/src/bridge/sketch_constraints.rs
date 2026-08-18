@@ -29,6 +29,10 @@ impl From<kcl_lib::ConstraintKind> for ConstraintKind {
 #[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct SketchConstraintStatus {
+    /// Name of the variable the sketch was assigned to. Empty when the sketch
+    /// has no enclosing variable declaration, and shared between entries when
+    /// two sketches resolve to the same declaration. The report carries no
+    /// other sketch identifier.
     #[pyo3(get)]
     pub name: String,
     #[pyo3(get)]
