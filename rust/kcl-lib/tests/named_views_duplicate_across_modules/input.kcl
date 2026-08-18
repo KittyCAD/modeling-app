@@ -1,0 +1,21 @@
+// Pins that view names are unique per DECLARING module rather than per program.
+// This file and the module it imports each declare a view named "Front", and
+// both are accepted: a rule that compared names alone, without the module that
+// declared them, would reject this program.
+//
+// The unit tests in execution::named_views pin the rule against module ids
+// supplied directly. This test is what pins the wiring that supplies them, so a
+// registration reading the wrong module id fails here rather than reaching an
+// author. Importing the view value also has to leave the imported view
+// registered to its own module, not re-registered to this one.
+@settings(experimentalFeatures = allow)
+
+import panelFront from "panel.kcl"
+
+localFront = view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Back),
+  baseline = view::Visibility::Show,
+)
+
+importedFront = panelFront

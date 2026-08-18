@@ -1,12 +1,24 @@
 import {
+  DUPLICATE_PROJECT_TEMPORARY_PREFIX,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import {
   createNewProjectDirectory,
+  getProjectInfo,
   isPathNotFoundError,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
+import {
+  prepareProjectTomlForDuplication,
+  setProjectDefaultFileInProjectTomlContents,
+} from '@src/lib/projectTomlMetadata'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { v4 } from 'uuid'
 
 export interface MoveProjectIntoLocalDirectoryResult {
   localProjectPath: string
@@ -35,12 +47,23 @@ function projectEntriesFromNames(
   }))
 }
 
+async function rejectProjectImport(
+  temporaryProjectPath: string,
+  error: unknown
+): Promise<never> {
+  await fsZds
+    .rm(temporaryProjectPath, { recursive: true })
+    .catch(() => undefined)
+  return Promise.reject(error)
+}
+
 export async function createProjectInLocalDirectory({
   projectDirectoryPath,
   requestedProjectName,
   requestedProjectTitle,
   wasmInstancePromise,
   initialKclFile,
+  initialProject,
 }: {
   projectDirectoryPath: string
   requestedProjectName: string
@@ -50,6 +73,7 @@ export async function createProjectInLocalDirectory({
     fileName: string
     code: string
   }
+  initialProject?: ProjectLibraryInitialProject
 }): Promise<Project> {
   const existingProjectNames =
     await getProjectDirectoryEntryNames(projectDirectoryPath)
@@ -63,6 +87,17 @@ export async function createProjectInLocalDirectory({
     uniqueProjectDirectoryName: uniqueProjectName,
   })
 
+  if (initialProject) {
+    return createProjectFromFilesInLocalDirectory({
+      projectDirectoryPath,
+      requestedProjectName,
+      projectName: uniqueProjectName,
+      projectTitle: uniqueProjectTitle,
+      initialProject,
+      wasmInstancePromise,
+    })
+  }
+
   return createNewProjectDirectory(
     uniqueProjectName,
     await wasmInstancePromise,
@@ -72,6 +107,107 @@ export async function createProjectInLocalDirectory({
     projectDirectoryPath,
     uniqueProjectTitle
   )
+}
+
+async function createProjectFromFilesInLocalDirectory({
+  projectDirectoryPath,
+  requestedProjectName,
+  projectName,
+  projectTitle,
+  initialProject,
+  wasmInstancePromise,
+}: {
+  projectDirectoryPath: string
+  requestedProjectName: string
+  projectName: string
+  projectTitle: string
+  initialProject: ProjectLibraryInitialProject
+  wasmInstancePromise: Promise<ModuleType> | ModuleType
+}): Promise<Project> {
+  const temporaryProjectPath = fsZds.join(
+    projectDirectoryPath,
+    `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${v4()}`
+  )
+  const projectPath = fsZds.join(projectDirectoryPath, projectName)
+  const relativeProjectPath = fsZds.relative(
+    fsZds.resolve(projectDirectoryPath),
+    fsZds.resolve(projectPath)
+  )
+  if (
+    !relativeProjectPath ||
+    relativeProjectPath === '..' ||
+    relativeProjectPath.startsWith(`..${fsZds.sep}`) ||
+    relativeProjectPath.includes(fsZds.sep) ||
+    relativeProjectPath === fsZds.resolve(relativeProjectPath)
+  ) {
+    return Promise.reject(
+      new Error(
+        `The shared project contained an invalid project directory name: "${requestedProjectName}".`
+      )
+    )
+  }
+
+  await fsZds.mkdir(temporaryProjectPath, { recursive: true })
+  try {
+    for (const file of initialProject.files) {
+      if (file.requestedFileName === PROJECT_SETTINGS_FILE_NAME) {
+        continue
+      }
+
+      const targetPath = fsZds.resolve(
+        temporaryProjectPath,
+        file.requestedFileName
+      )
+      const relativeTargetPath = fsZds.relative(
+        temporaryProjectPath,
+        targetPath
+      )
+      if (
+        !relativeTargetPath ||
+        relativeTargetPath === '..' ||
+        relativeTargetPath.startsWith(`..${fsZds.sep}`) ||
+        relativeTargetPath === fsZds.resolve(relativeTargetPath)
+      ) {
+        return rejectProjectImport(
+          temporaryProjectPath,
+          new Error(
+            `The shared project contained an invalid file path: "${file.requestedFileName}".`
+          )
+        )
+      }
+
+      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+      await fsZds.writeFile(targetPath, file.requestedData)
+    }
+
+    const sourceProjectToml = initialProject.files.find(
+      (file) => file.requestedFileName === PROJECT_SETTINGS_FILE_NAME
+    )
+    const projectTomlWithEntrypoint =
+      setProjectDefaultFileInProjectTomlContents(
+        sourceProjectToml
+          ? new TextDecoder().decode(sourceProjectToml.requestedData)
+          : '',
+        initialProject.entrypointFilePath
+      )
+    const projectToml = prepareProjectTomlForDuplication(
+      projectTomlWithEntrypoint,
+      projectTitle,
+      v4()
+    )
+    if (isErr(projectToml)) {
+      return rejectProjectImport(temporaryProjectPath, projectToml)
+    }
+    await fsZds.writeFile(
+      fsZds.join(temporaryProjectPath, PROJECT_SETTINGS_FILE_NAME),
+      new TextEncoder().encode(projectToml)
+    )
+    await fsZds.rename(temporaryProjectPath, projectPath)
+  } catch (error) {
+    return rejectProjectImport(temporaryProjectPath, error)
+  }
+
+  return getProjectInfo(projectPath, await wasmInstancePromise)
 }
 
 function getMovedDefaultFile({

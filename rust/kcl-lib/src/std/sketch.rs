@@ -2967,9 +2967,10 @@ async fn inner_region(
 ) -> Result<KclValue, KclError> {
     let region_id = exec_state.next_uuid();
     let kcl_version = exec_state.kcl_version();
-    let region_version = match kcl_version {
-        KclVersion::V1 => RegionVersion::V0,
-        KclVersion::V2 => RegionVersion::V1,
+    let region_version = if kcl_version <= KclVersion::V1 {
+        RegionVersion::V0
+    } else {
+        RegionVersion::V1
     };
 
     let (sketch_or_segment, region_mapping) = match (point, segments) {

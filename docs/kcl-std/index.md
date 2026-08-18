@@ -224,6 +224,7 @@ layout: manual
   * [`vector::sub`](/docs/kcl-std/functions/std-vector-sub)
 * [**std::view**](/docs/kcl-std/modules/std-view) Experimental
   * [`view::directed`](/docs/kcl-std/functions/std-view-directed) Experimental
+  * [`view::named`](/docs/kcl-std/functions/std-view-named) Experimental
   * [`view::oriented`](/docs/kcl-std/functions/std-view-oriented) Experimental
 
 ### Constants
