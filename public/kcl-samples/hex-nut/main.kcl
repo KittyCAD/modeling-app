@@ -3,7 +3,7 @@
 // Categories: Fasteners
 
 // Set Units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters (5/16" - 24 thread size)
 wallToWallLength = 0.5
@@ -58,7 +58,7 @@ nutSketch = sketch(on = XZ) {
   horizontalDistance([line7.start, line7.end]) == holeDiameter
 }
 
-sketchRegion = region(point = [holeDiameter * 0.75, 0], sketch = nutSketch)
+sketchRegion = region(segments = [nutSketch.line1, nutSketch.line2], direction = CW)
 
 // Create a hex nut
 hexNut = extrude(sketchRegion, length = thickness)

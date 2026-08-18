@@ -79,7 +79,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -352,7 +352,7 @@ export fn fillet(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = baseProfile), length = 3mm, tagEnd = $top)
+/// block = extrude(region(segments = [baseProfile.edge1, baseProfile.edge2]), length = 3mm, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -569,7 +569,7 @@ export fn chamfer(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [3mm, 2mm], sketch = boxProfile), length = 4mm)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm)
 /// openBox = shell(box, faces = [END], thickness = 0.5mm)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1913,7 +1913,7 @@ export fn isSurface(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [2mm, 2mm], sketch = boxProfile), length = 4mm, tagEnd = $top)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm, tagEnd = $top)
 /// openBox = deleteFace(box, faces = [top])
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1991,9 +1991,9 @@ export fn deleteFace(
 ///   coincident([line8.end, line5.start])
 /// }
 ///
-/// region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+/// region001 = region(segments = [sketch002.line5, sketch002.line6])
 /// extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
-/// region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+/// region002 = region(segments = [sketch001.line1, sketch001.line2])
 /// extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
 ///
 /// myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])

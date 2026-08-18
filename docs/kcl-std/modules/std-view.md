@@ -10,16 +10,16 @@ layout: manual
 Named views: cameras and visibility sets defined in KCL. 
 
 A named view pairs a camera with a set of visible objects, so consumers
-such as the modeling app and STEP export can reproduce it. This version of
-the module provides the enums and opaque types named views are built from
-and the camera constructors `oriented` and `directed`; the view
-constructor arrives in a later version.
+such as the modeling app and STEP export can reproduce it. Build a camera by
+calling `view::oriented()` or `view::directed()`, then name a view by calling
+`view::named()`.
 
 
 
 ## Functions and constants
 
 * [`view::directed`](/docs/kcl-std/functions/std-view-directed)
+* [`view::named`](/docs/kcl-std/functions/std-view-named)
 * [`view::oriented`](/docs/kcl-std/functions/std-view-oriented)
 
 ## Types

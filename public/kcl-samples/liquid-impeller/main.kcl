@@ -3,7 +3,7 @@
 // Categories: Aerospace, Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 impellerDiameter = 4
@@ -45,7 +45,7 @@ sketch001 = sketch(on = XY) {
   distance([line2.start, line2.end]) == mountDiameter * 0.65
 }
 hide(sketch001)
-region001 = region(point = [0in, 0in], sketch = sketch001)
+region001 = region(segments = [sketch001.circle1, sketch001.line1], intersectionIndex = 0)
 mountingHole = extrude(region001, length = plateHeight * 4, bidirectionalLength = plateHeight)
 
 // Revolve the base plate of the impeller
@@ -88,7 +88,7 @@ sketch003 = sketch(on = offsetPlane(XY, offset = plateHeight)) {
   radius(arc4) == 0.07in
 }
 hide(sketch003)
-region003 = region(point = [1.4539455in, -0.4978292in], sketch = sketch003)
+region003 = region(segments = [sketch003.arc1, sketch003.arc2])
 vane = extrude(region003, length = vaneHeight)
   // Pattern the vane around the Z axis
   |> patternCircular3d(
