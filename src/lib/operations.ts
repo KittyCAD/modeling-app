@@ -3776,9 +3776,6 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: true,
     supportsTransform: true,
   },
-  // A view declares a camera and a visibility set; it is not geometry, so it
-  // supports no appearance or transform. There is no modeling command to edit
-  // one either, so it has no `prepareToEdit`.
   'view::named': {
     label: 'Named View',
     icon: 'namedView',

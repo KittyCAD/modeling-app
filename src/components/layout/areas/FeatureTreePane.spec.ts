@@ -321,13 +321,7 @@ describe('FeatureTreePane', () => {
     })
 
     describe('named view name extraction', () => {
-      // The argument shape is transcribed from real executor output: the
-      // `ops.snap` record of the simulation test `named_views_baseline_show`
-      // records the name as
-      // `"unlabeledArg": { "value": { "type": "String", "value": "Plate in
-      // context" } }`, with `camera` and `baseline` as labeled arguments. Unlike
-      // `gdt::datum` above, which records `"unlabeledArg": null` and carries its
-      // name in `labeledArgs`, the name here is the unlabeled first argument.
+      // Argument shape transcribed from the named_views_baseline_show ops.snap.
       function createNamedViewOperation(
         name: OpKclValue,
         nameSourceRange: [number, number, number]
@@ -383,11 +377,6 @@ describe('FeatureTreePane', () => {
         expect(valueDetail?.display).toBe('"Plate in context"')
       })
 
-      // A name need not be a literal: KCL concatenates strings with `+`, and a
-      // function that declares a view can take the name as a parameter. The
-      // recorded value is then the resolved name while the source text is the
-      // expression that produced it, and the row must show the resolved name,
-      // since that is what identifies the view.
       it('uses the recorded value, not the source text, for a computed name', () => {
         const mockCode = 'view::named("Front " + suffix, camera = camera001)'
         const mockOperation = createNamedViewOperation(
@@ -404,10 +393,7 @@ describe('FeatureTreePane', () => {
         expect(valueDetail?.display).toBe('"Front " + suffix')
       })
 
-      // The signature types the name as a string, so this shape is unreachable
-      // from KCL today. The guard is here so that a signature change produces no
-      // value detail rather than a wrong one.
-      it('returns no value detail when the unlabeled argument is not a string', () => {
+      it('returns no value detail for a non-string name, which the signature cannot yet produce', () => {
         const mockCode = 'view::named(true, camera = camera001)'
         const mockOperation = createNamedViewOperation(
           { type: 'Bool', value: true },
