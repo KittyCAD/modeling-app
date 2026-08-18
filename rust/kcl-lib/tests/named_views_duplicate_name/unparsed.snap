@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_duplicate_name.kcl
+---
+// Pins the rendered diagnostic for the one name rule whose message repeats the
+// value it rejects. The source range locates the second declaration; the first
+// is outside it, which is why the message names the view rather than relying on
+// the range alone. The unit tests in execution::named_views cover the rule
+// itself; this covers what the author is shown.
+@settings(experimentalFeatures = allow)
+
+front = view::named("Front", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show)
+
+alsoFront = view::named("Front", camera = view::oriented(view::Orientation::Back), baseline = view::Visibility::Show)

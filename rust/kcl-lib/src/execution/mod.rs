@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -153,7 +154,7 @@ mod artifact;
 pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
-mod exec_ast;
+pub(crate) mod exec_ast;
 pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
@@ -165,6 +166,7 @@ mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
+pub(crate) mod machine;
 mod memory;
 mod modeling;
 mod named_views;
@@ -386,7 +388,18 @@ pub enum ConstraintKind {
 /// distinguish this from a genuinely constrained sketch.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SketchConstraintStatus {
-    /// The variable name of the sketch (e.g., "sketch001").
+    /// Name of the variable the sketch was assigned to, for example
+    /// "sketch001". This is the nearest enclosing declaration at the point the
+    /// sketch was created, which is not always the sketch's own name:
+    /// - Empty for a sketch written as an expression statement, because there
+    ///   is no enclosing declaration.
+    /// - The outer variable's name for a sketch passed straight into another
+    ///   call, as in `part = extrude(sketch(on = XY) { ... }, length = 10)`.
+    /// - The same name for two sketches, when a function body declares the
+    ///   sketch and is called more than once.
+    ///
+    /// The report carries no other sketch identifier, so a caller cannot tell
+    /// apart two entries that share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -828,6 +841,13 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
+    /// Which executor evaluates KCL. Crate-internal: set before the first
+    /// run and immutable during execution (run methods take &self). Cloned
+    /// contexts (fresh roots, Args) inherit the same executor.
+    pub(crate) executor_kind: machine::ExecutorKind,
+    /// Call-depth limit for the machine executor's runaway-recursion guard.
+    /// Crate-internal policy, not user configuration.
+    pub(crate) machine_call_depth_limit: usize,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -838,6 +858,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
             .field("execution_callbacks", &self.execution_callbacks)
+            .field("executor_kind", &self.executor_kind)
+            .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
 }
@@ -997,6 +1019,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1008,6 +1032,10 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
+            // Imported modules execute on this cloned context; keep them on
+            // the executor selected for the run instead of the default.
+            executor_kind: self.executor_kind,
+            machine_call_depth_limit: self.machine_call_depth_limit,
         }
     }
 
@@ -1063,6 +1091,8 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1075,6 +1105,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1094,6 +1126,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
 
@@ -1106,6 +1140,8 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -2159,9 +2195,18 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    let program = crate::Program::parse_no_errs(code)?;
+    // Differential testing: unit tests run under both executors.
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+}
 
-    let exec_ctxt = ExecutorContext {
+/// A mock-engine executor context for tests that need to inspect the context
+/// (e.g. the engine's batch queue) even when execution fails.
+#[cfg(test)]
+pub(crate) fn new_mock_executor_context(
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> ExecutorContext {
+    ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
@@ -2171,7 +2216,20 @@ pub(crate) async fn parse_execute_with_project_dir(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-    };
+        executor_kind,
+        machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+    }
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_executor_kind(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> Result<ExecTestResults, KclError> {
+    let program = crate::Program::parse_no_errs(code)?;
+
+    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
@@ -2203,6 +2261,18 @@ impl ExecTestResults {
     /// returned as an error, so this is the only place a test can see them.
     pub(crate) fn issues(&self) -> &[CompilationIssue] {
         self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 
@@ -2254,6 +2324,18 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[test]
+    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
+        // Imported modules execute on a context created by
+        // clone_with_fresh_execution_batch. They must stay on the executor
+        // selected for the run instead of silently reverting to the default.
+        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+        ctx.machine_call_depth_limit = 123;
+        let cloned = ctx.clone_with_fresh_execution_batch();
+        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
+        assert_eq!(cloned.machine_call_depth_limit, 123);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -2315,6 +2397,8 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -3956,7 +4040,13 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+        // The recursive executor's native-stack cap and the machine
+        // executor's call-depth guard report differently.
+        let msg = err.to_string();
+        assert!(
+            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
+            "actual: {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4694,6 +4784,84 @@ s2 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_reports_sketch_names() {
+        // One file holding a fully constrained, an under-constrained, and an
+        // over-constrained sketch. Every entry carries the name of the
+        // variable its sketch was assigned to, so a caller can say which
+        // sketch needs correcting.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.fully_constrained[0].name, "fixedSketch");
+        assert_eq!(report.under_constrained[0].name, "looseSketch");
+        assert_eq!(report.over_constrained[0].name, "conflictSketch");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_name_empty_without_declaration() {
+        // A sketch written as an expression statement has no enclosing
+        // variable declaration, so there is no name to report. This pins the
+        // documented limitation of SketchConstraintStatus::name.
+        let kcl = r#"
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.under_constrained[0].name, "");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_names_repeat_across_calls() {
+        // Both sketches come from the same declaration inside the function
+        // body, so both entries carry that declaration's name and the report
+        // cannot tell them apart. This pins the documented limitation of
+        // SketchConstraintStatus::name.
+        let kcl = r#"
+fn makeSketch() {
+  inner = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return inner
+}
+
+first = makeSketch()
+second = makeSketch()
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 2);
+        assert_eq!(report.under_constrained[0].name, "inner");
+        assert_eq!(report.under_constrained[1].name, "inner");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_enum_declaration_is_experimental() {
         // Without opting in, executing a program with an enum declaration
         // fails at the parsing stage with the experimental diagnostic.
@@ -4801,6 +4969,144 @@ type Color { | Red | Green | Red }
         }
 
         parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
+            settings: ExecutorSettings {
+                project_directory: Some(project_dir),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
+        ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn backtrace_reports_fully_qualified_fn_names() {
+        // An error inside a function called by a qualified name records the
+        // full path (m::f), not just the final segment (f), in the
+        // structured backtrace's unwind locations.
+        let main = "import \"m.kcl\" as m\nx = m::f()\n";
+        let modules = [("m.kcl", "export fn f() {\n  return undefinedVariable\n}\n")];
+        let err = execute_with_modules(main, &modules).await.unwrap_err();
+        let fn_names: Vec<_> = err.backtrace().into_iter().filter_map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, vec!["m::f".to_owned()]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_name_executes_as_operand() {
+        // A whole-module import used as a binary or unary operand executes
+        // the module and operates on its final-expression value, exactly like
+        // using the name in expression position (x = m).
+        let main = r#"import "m.kcl" as m
+sum = m + m
+neg = -m
+"#;
+        let result = execute_with_modules(main, &[("m.kcl", "42\n")]).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "sum").as_f64(),
+            Some(84.0)
+        );
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "neg").as_f64(),
+            Some(-42.0)
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_without_return_as_operand_errors() {
+        // Matches expression-position behavior: the module still executes,
+        // the missing-return fallback produces a KclNone, and the binary
+        // operation then rejects it. (A trailing declaration would count as
+        // the module's return value, so the module body must be empty.)
+        let main = "import \"m.kcl\" as m
+x = m + 1
+";
+        let err = execute_with_modules(main, &[("m.kcl", "")]).await.unwrap_err();
+        assert!(
+            err.message().contains("Expected a number, but found none"),
+            "expected the operand to be the module's missing-return KclNone, got: {}",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
