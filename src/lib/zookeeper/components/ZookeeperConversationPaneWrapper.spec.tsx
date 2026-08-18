@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => {
     }
   )
   const toastSuccess = vi.fn()
+  const filesOnDisk = new Map([['/workspace/demo/main.kcl', 'initial code']])
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -38,6 +39,7 @@ const mocks = vi.hoisted(() => {
   }
 
   return {
+    filesOnDisk,
     kclManager,
     toastSuccess,
     zookeeperSubscribe,
@@ -113,7 +115,10 @@ vi.mock('@src/lib/fs-zds', () => ({
       parts
         .reduce((left, right) => (left ? `${left}/${right}` : right), '')
         .replaceAll(/\/+/g, '/'),
-    readFile: vi.fn(async () => 'current disk code'),
+    readFile: vi.fn(async (path: string) => {
+      const contents = mocks.filesOnDisk.get(path)
+      return contents === undefined ? Promise.reject('ENOENT') : contents
+    }),
     relative: (from: string, to: string) =>
       to.startsWith(`${from}/`) ? to.slice(from.length + 1) : to,
     sep: '/',
@@ -167,29 +172,33 @@ vi.mock('react-hot-toast', () => ({
 }))
 
 function patchBackedZookeeperEdit(code: string, path = 'main.kcl') {
+  return patchBackedZookeeperFiles({ [path]: code })
+}
+
+function patchBackedZookeeperFiles(outputs: Record<string, string>) {
   return {
     type: 'edit_kcl_code',
     status_code: 201,
     project_name: 'demo',
-    outputs: {
-      [path]: code,
-    },
+    outputs,
     zookeeper_edit_patch: {
       run_id: 'run-1',
-      changed_files: [
-        {
-          path,
-          status: 'created',
-          contents: code,
-        },
-      ],
+      changed_files: Object.entries(outputs).map(([path, contents]) => ({
+        path,
+        status: 'created',
+        contents,
+      })),
     },
   }
 }
 
 function emitZookeeperFileRequest(code: string, path = 'main.kcl') {
+  emitZookeeperFileRequestOutput(patchBackedZookeeperEdit(code, path))
+}
+
+function emitZookeeperFileRequestOutput(toolOutput: unknown) {
   mocks.watchCallback?.({
-    toolOutput: patchBackedZookeeperEdit(code, path),
+    toolOutput,
     projectNameCurrentlyOpened: 'demo',
     fileFocusedOnInEditor: {
       name: 'main.kcl',
@@ -219,7 +228,10 @@ function renderWrapper() {
   mocks.systemIOSend.mockClear()
   mocks.kclManager.updateCodeEditor.mockClear()
   mocks.kclManager.path = '/workspace/demo/main.kcl'
+  mocks.kclManager.code = 'initial code'
   mocks.toastSuccess.mockClear()
+  mocks.filesOnDisk.clear()
+  mocks.filesOnDisk.set('/workspace/demo/main.kcl', 'initial code')
   mocks.zookeeperSubscribers.length = 0
   mocks.watchCallback = undefined
   render(
@@ -338,33 +350,32 @@ describe('ZookeeperConversationPaneWrapper', () => {
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
   })
 
-  test('reports one success toast for the effective files changed across a streamed edit', async () => {
+  test('reports only the effective file changes from a cumulative patch', async () => {
     renderWrapper()
 
-    emitZookeeperFileRequest('main = 2')
+    const outputs = {
+      'main.kcl': 'import cube from "cube.kcl"',
+      'cube.kcl': 'cube = true',
+      'unchanged-1.kcl': 'unchanged 1',
+      'unchanged-2.kcl': 'unchanged 2',
+      'unchanged-3.kcl': 'unchanged 3',
+    }
+    for (const [path, contents] of Object.entries(outputs).slice(2)) {
+      mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
+    }
+    emitZookeeperFileRequestOutput(patchBackedZookeeperFiles(outputs))
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
-
-    emitZookeeperFileRequest('side = true', 'side.kcl')
     emitEndOfStream()
     expect(mocks.toastSuccess).not.toHaveBeenCalled()
 
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstRequest.files).toEqual([
-      expect.objectContaining({ requestedFileName: 'main.kcl' }),
-    ])
-    expect(firstRequest.showSuccessToast).toBe(false)
-    firstRequest.onFileSystemSuccess()
-    firstRequest.onSuccess()
-
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
-
-    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
-    expect(secondRequest.files).toEqual([
-      expect.objectContaining({ requestedFileName: 'side.kcl' }),
-    ])
-    expect(secondRequest.showSuccessToast).toBe(false)
-    secondRequest.onFileSystemSuccess()
-    secondRequest.onSuccess()
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    expect(request.files).toHaveLength(5)
+    expect(request.showSuccessToast).toBe(false)
+    for (const [path, contents] of Object.entries(outputs)) {
+      mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
+    }
+    request.onFileSystemSuccess()
+    request.onSuccess()
 
     await waitFor(() =>
       expect(mocks.toastSuccess).toHaveBeenCalledWith(

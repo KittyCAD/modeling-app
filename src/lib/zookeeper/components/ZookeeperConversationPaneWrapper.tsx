@@ -546,12 +546,19 @@ function useZookeeperEditPatchHistory({
       }
 
       pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+      const snapshotFiles = getReadyZookeeperSnapshotFiles(pending)
       if (!pending.fileWriteFailed) {
-        const count = pending.patch.changed_files.length
-        toast.success(
-          `Successfully updated ${count} ${count === 1 ? 'file' : 'files'}`,
-          { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
-        )
+        const count = snapshotFiles.length
+          ? snapshotFiles.filter(
+              (file) => file.previousContent !== file.nextContent
+            ).length
+          : pending.patch.changed_files.length
+        if (count > 0) {
+          toast.success(
+            `Successfully updated ${count} ${count === 1 ? 'file' : 'files'}`,
+            { id: ZOOKEEPER_FILE_WRITE_TOAST_ID }
+          )
+        }
       }
       try {
         recordZookeeperHistory({
@@ -563,7 +570,7 @@ function useZookeeperEditPatchHistory({
           currentFileRequestedCode: pending.currentFileRequestedCode,
           patch: pending.patch,
           projectPath: pending.projectPath,
-          snapshotFiles: getReadyZookeeperSnapshotFiles(pending),
+          snapshotFiles,
         })
       } finally {
         if (pendingZookeeperHistoryByExchange.current.size === 0) {
