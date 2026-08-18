@@ -7087,64 +7087,15 @@ description: Operations executed wheel-hub.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 2.1,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "centerBoreCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerBoreRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -10295,84 +10246,19 @@ description: Operations executed wheel-hub.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -57.15,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "boltHeadCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "boltHeadRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line5": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line6": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }

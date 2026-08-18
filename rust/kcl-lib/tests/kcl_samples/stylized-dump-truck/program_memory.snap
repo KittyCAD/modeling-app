@@ -305,10 +305,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7304,
-            "end": 7309,
+            "commentStart": 7322,
+            "end": 7327,
             "moduleId": 0,
-            "start": 7304,
+            "start": 7322,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -319,10 +319,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7381,
-            "end": 7386,
+            "commentStart": 7399,
+            "end": 7404,
             "moduleId": 0,
-            "start": 7381,
+            "start": 7399,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -333,10 +333,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7459,
-            "end": 7464,
+            "commentStart": 7477,
+            "end": 7482,
             "moduleId": 0,
-            "start": 7459,
+            "start": 7477,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -347,10 +347,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7538,
-            "end": 7543,
+            "commentStart": 7556,
+            "end": 7561,
             "moduleId": 0,
-            "start": 7538,
+            "start": 7556,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -372,10 +372,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7304,
-              "end": 7309,
+              "commentStart": 7322,
+              "end": 7327,
               "moduleId": 0,
-              "start": 7304,
+              "start": 7322,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -396,10 +396,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7381,
-              "end": 7386,
+              "commentStart": 7399,
+              "end": 7404,
               "moduleId": 0,
-              "start": 7381,
+              "start": 7399,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -420,10 +420,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 7459,
-              "end": 7464,
+              "commentStart": 7477,
+              "end": 7482,
               "moduleId": 0,
-              "start": 7459,
+              "start": 7477,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -444,10 +444,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7538,
-              "end": 7543,
+              "commentStart": 7556,
+              "end": 7561,
               "moduleId": 0,
-              "start": 7538,
+              "start": 7556,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1064,10 +1064,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7304,
-                    "end": 7309,
+                    "commentStart": 7322,
+                    "end": 7327,
                     "moduleId": 0,
-                    "start": 7304,
+                    "start": 7322,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1088,10 +1088,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7381,
-                    "end": 7386,
+                    "commentStart": 7399,
+                    "end": 7404,
                     "moduleId": 0,
-                    "start": 7381,
+                    "start": 7399,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1112,10 +1112,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 7459,
-                    "end": 7464,
+                    "commentStart": 7477,
+                    "end": 7482,
                     "moduleId": 0,
-                    "start": 7459,
+                    "start": 7477,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1136,10 +1136,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7538,
-                    "end": 7543,
+                    "commentStart": 7556,
+                    "end": 7561,
                     "moduleId": 0,
-                    "start": 7538,
+                    "start": 7556,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1244,10 +1244,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7304,
-            "end": 7309,
+            "commentStart": 7322,
+            "end": 7327,
             "moduleId": 0,
-            "start": 7304,
+            "start": 7322,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1268,10 +1268,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7381,
-            "end": 7386,
+            "commentStart": 7399,
+            "end": 7404,
             "moduleId": 0,
-            "start": 7381,
+            "start": 7399,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1292,10 +1292,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 7459,
-            "end": 7464,
+            "commentStart": 7477,
+            "end": 7482,
             "moduleId": 0,
-            "start": 7459,
+            "start": 7477,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1316,10 +1316,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7538,
-            "end": 7543,
+            "commentStart": 7556,
+            "end": 7561,
             "moduleId": 0,
-            "start": 7538,
+            "start": 7556,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1414,10 +1414,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6206,
-            "end": 6211,
+            "commentStart": 6224,
+            "end": 6229,
             "moduleId": 0,
-            "start": 6206,
+            "start": 6224,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1428,10 +1428,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6271,
-            "end": 6276,
+            "commentStart": 6289,
+            "end": 6294,
             "moduleId": 0,
-            "start": 6271,
+            "start": 6289,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1442,10 +1442,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6336,
-            "end": 6341,
+            "commentStart": 6354,
+            "end": 6359,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6354,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1456,10 +1456,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6401,
-            "end": 6406,
+            "commentStart": 6419,
+            "end": 6424,
             "moduleId": 0,
-            "start": 6401,
+            "start": 6419,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1481,10 +1481,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7499999963999996
             ],
             "tag": {
-              "commentStart": 6206,
-              "end": 6211,
+              "commentStart": 6224,
+              "end": 6229,
               "moduleId": 0,
-              "start": 6206,
+              "start": 6224,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1505,10 +1505,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7499999941499995
             ],
             "tag": {
-              "commentStart": 6271,
-              "end": 6276,
+              "commentStart": 6289,
+              "end": 6294,
               "moduleId": 0,
-              "start": 6271,
+              "start": 6289,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1529,10 +1529,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6336,
-              "end": 6341,
+              "commentStart": 6354,
+              "end": 6359,
               "moduleId": 0,
-              "start": 6336,
+              "start": 6354,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1553,10 +1553,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.1499999957999996
             ],
             "tag": {
-              "commentStart": 6401,
-              "end": 6406,
+              "commentStart": 6419,
+              "end": 6424,
               "moduleId": 0,
-              "start": 6401,
+              "start": 6419,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2173,10 +2173,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.7499999963999996
                   ],
                   "tag": {
-                    "commentStart": 6206,
-                    "end": 6211,
+                    "commentStart": 6224,
+                    "end": 6229,
                     "moduleId": 0,
-                    "start": 6206,
+                    "start": 6224,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2214,10 +2214,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.7499999941499995
                   ],
                   "tag": {
-                    "commentStart": 6271,
-                    "end": 6276,
+                    "commentStart": 6289,
+                    "end": 6294,
                     "moduleId": 0,
-                    "start": 6271,
+                    "start": 6289,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2255,10 +2255,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6336,
-                    "end": 6341,
+                    "commentStart": 6354,
+                    "end": 6359,
                     "moduleId": 0,
-                    "start": 6336,
+                    "start": 6354,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2296,10 +2296,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.1499999957999996
                   ],
                   "tag": {
-                    "commentStart": 6401,
-                    "end": 6406,
+                    "commentStart": 6419,
+                    "end": 6424,
                     "moduleId": 0,
-                    "start": 6401,
+                    "start": 6419,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2404,10 +2404,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.7499999963999996
           ],
           "tag": {
-            "commentStart": 6206,
-            "end": 6211,
+            "commentStart": 6224,
+            "end": 6229,
             "moduleId": 0,
-            "start": 6206,
+            "start": 6224,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2428,10 +2428,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.7499999941499995
           ],
           "tag": {
-            "commentStart": 6271,
-            "end": 6276,
+            "commentStart": 6289,
+            "end": 6294,
             "moduleId": 0,
-            "start": 6271,
+            "start": 6289,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2452,10 +2452,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6336,
-            "end": 6341,
+            "commentStart": 6354,
+            "end": 6359,
             "moduleId": 0,
-            "start": 6336,
+            "start": 6354,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2476,10 +2476,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.1499999957999996
           ],
           "tag": {
-            "commentStart": 6401,
-            "end": 6406,
+            "commentStart": 6419,
+            "end": 6424,
             "moduleId": 0,
-            "start": 6401,
+            "start": 6419,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2597,10 +2597,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.3500000000000106
           ],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2621,10 +2621,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.8046633388240976
           ],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2645,10 +2645,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.8046633388241028
           ],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2669,10 +2669,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.3500000000000027
           ],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2693,10 +2693,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             -0.10466333882410354
           ],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2717,10 +2717,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             -0.10466333882409189
           ],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2823,10 +2823,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2837,10 +2837,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2851,10 +2851,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2865,10 +2865,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2879,10 +2879,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2893,10 +2893,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2918,10 +2918,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3678,
-              "end": 3683,
+              "commentStart": 3696,
+              "end": 3701,
               "moduleId": 0,
-              "start": 3678,
+              "start": 3696,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2942,10 +2942,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3755,
-              "end": 3760,
+              "commentStart": 3773,
+              "end": 3778,
               "moduleId": 0,
-              "start": 3755,
+              "start": 3773,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2966,10 +2966,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3871,
-              "end": 3876,
+              "commentStart": 3889,
+              "end": 3894,
               "moduleId": 0,
-              "start": 3871,
+              "start": 3889,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2990,10 +2990,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4027,
-              "end": 4032,
+              "commentStart": 4045,
+              "end": 4050,
               "moduleId": 0,
-              "start": 4027,
+              "start": 4045,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3014,10 +3014,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3038,10 +3038,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4261,
-              "end": 4266,
+              "commentStart": 4279,
+              "end": 4284,
               "moduleId": 0,
-              "start": 4261,
+              "start": 4279,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -3149,10 +3149,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11325,
-            "end": 11332,
+            "commentStart": 11343,
+            "end": 11350,
             "moduleId": 0,
-            "start": 11325,
+            "start": 11343,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3180,10 +3180,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 11325,
-              "end": 11332,
+              "commentStart": 11343,
+              "end": 11350,
               "moduleId": 0,
-              "start": 11325,
+              "start": 11343,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3285,10 +3285,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 11325,
-            "end": 11332,
+            "commentStart": 11343,
+            "end": 11350,
             "moduleId": 0,
-            "start": 11325,
+            "start": 11343,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3375,10 +3375,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8457,
-            "end": 8462,
+            "commentStart": 8475,
+            "end": 8480,
             "moduleId": 0,
-            "start": 8457,
+            "start": 8475,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3389,10 +3389,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8536,
-            "end": 8541,
+            "commentStart": 8554,
+            "end": 8559,
             "moduleId": 0,
-            "start": 8536,
+            "start": 8554,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3403,10 +3403,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8615,
-            "end": 8620,
+            "commentStart": 8633,
+            "end": 8638,
             "moduleId": 0,
-            "start": 8615,
+            "start": 8633,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3417,10 +3417,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8694,
-            "end": 8699,
+            "commentStart": 8712,
+            "end": 8717,
             "moduleId": 0,
-            "start": 8694,
+            "start": 8712,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3431,10 +3431,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8772,
-            "end": 8777,
+            "commentStart": 8790,
+            "end": 8795,
             "moduleId": 0,
-            "start": 8772,
+            "start": 8790,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3445,10 +3445,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8849,
-            "end": 8854,
+            "commentStart": 8867,
+            "end": 8872,
             "moduleId": 0,
-            "start": 8849,
+            "start": 8867,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3470,10 +3470,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 8457,
-              "end": 8462,
+              "commentStart": 8475,
+              "end": 8480,
               "moduleId": 0,
-              "start": 8457,
+              "start": 8475,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3494,10 +3494,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 8536,
-              "end": 8541,
+              "commentStart": 8554,
+              "end": 8559,
               "moduleId": 0,
-              "start": 8536,
+              "start": 8554,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3518,10 +3518,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 8615,
-              "end": 8620,
+              "commentStart": 8633,
+              "end": 8638,
               "moduleId": 0,
-              "start": 8615,
+              "start": 8633,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3542,10 +3542,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.48
             ],
             "tag": {
-              "commentStart": 8694,
-              "end": 8699,
+              "commentStart": 8712,
+              "end": 8717,
               "moduleId": 0,
-              "start": 8694,
+              "start": 8712,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3566,10 +3566,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.48
             ],
             "tag": {
-              "commentStart": 8772,
-              "end": 8777,
+              "commentStart": 8790,
+              "end": 8795,
               "moduleId": 0,
-              "start": 8772,
+              "start": 8790,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3590,10 +3590,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 8849,
-              "end": 8854,
+              "commentStart": 8867,
+              "end": 8872,
               "moduleId": 0,
-              "start": 8849,
+              "start": 8867,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4440,10 +4440,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 8457,
-                    "end": 8462,
+                    "commentStart": 8475,
+                    "end": 8480,
                     "moduleId": 0,
-                    "start": 8457,
+                    "start": 8475,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4464,10 +4464,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 8536,
-                    "end": 8541,
+                    "commentStart": 8554,
+                    "end": 8559,
                     "moduleId": 0,
-                    "start": 8536,
+                    "start": 8554,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4488,10 +4488,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 8615,
-                    "end": 8620,
+                    "commentStart": 8633,
+                    "end": 8638,
                     "moduleId": 0,
-                    "start": 8615,
+                    "start": 8633,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4512,10 +4512,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.48
                   ],
                   "tag": {
-                    "commentStart": 8694,
-                    "end": 8699,
+                    "commentStart": 8712,
+                    "end": 8717,
                     "moduleId": 0,
-                    "start": 8694,
+                    "start": 8712,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4536,10 +4536,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.48
                   ],
                   "tag": {
-                    "commentStart": 8772,
-                    "end": 8777,
+                    "commentStart": 8790,
+                    "end": 8795,
                     "moduleId": 0,
-                    "start": 8772,
+                    "start": 8790,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -4560,10 +4560,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 8849,
-                    "end": 8854,
+                    "commentStart": 8867,
+                    "end": 8872,
                     "moduleId": 0,
-                    "start": 8849,
+                    "start": 8867,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -4676,10 +4676,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 8457,
-            "end": 8462,
+            "commentStart": 8475,
+            "end": 8480,
             "moduleId": 0,
-            "start": 8457,
+            "start": 8475,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4700,10 +4700,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 8536,
-            "end": 8541,
+            "commentStart": 8554,
+            "end": 8559,
             "moduleId": 0,
-            "start": 8536,
+            "start": 8554,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4724,10 +4724,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 8615,
-            "end": 8620,
+            "commentStart": 8633,
+            "end": 8638,
             "moduleId": 0,
-            "start": 8615,
+            "start": 8633,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4748,10 +4748,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.48
           ],
           "tag": {
-            "commentStart": 8694,
-            "end": 8699,
+            "commentStart": 8712,
+            "end": 8717,
             "moduleId": 0,
-            "start": 8694,
+            "start": 8712,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4772,10 +4772,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.48
           ],
           "tag": {
-            "commentStart": 8772,
-            "end": 8777,
+            "commentStart": 8790,
+            "end": 8795,
             "moduleId": 0,
-            "start": 8772,
+            "start": 8790,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4796,10 +4796,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 8849,
-            "end": 8854,
+            "commentStart": 8867,
+            "end": 8872,
             "moduleId": 0,
-            "start": 8849,
+            "start": 8867,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -4902,10 +4902,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2480,
-            "end": 2485,
+            "commentStart": 2498,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2480,
+            "start": 2498,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4916,10 +4916,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2545,
-            "end": 2550,
+            "commentStart": 2563,
+            "end": 2568,
             "moduleId": 0,
-            "start": 2545,
+            "start": 2563,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4930,10 +4930,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2610,
-            "end": 2615,
+            "commentStart": 2628,
+            "end": 2633,
             "moduleId": 0,
-            "start": 2610,
+            "start": 2628,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4944,10 +4944,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2675,
-            "end": 2680,
+            "commentStart": 2693,
+            "end": 2698,
             "moduleId": 0,
-            "start": 2675,
+            "start": 2693,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4969,10 +4969,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2480,
-              "end": 2485,
+              "commentStart": 2498,
+              "end": 2503,
               "moduleId": 0,
-              "start": 2480,
+              "start": 2498,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4993,10 +4993,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2545,
-              "end": 2550,
+              "commentStart": 2563,
+              "end": 2568,
               "moduleId": 0,
-              "start": 2545,
+              "start": 2563,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5017,10 +5017,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2610,
-              "end": 2615,
+              "commentStart": 2628,
+              "end": 2633,
               "moduleId": 0,
-              "start": 2610,
+              "start": 2628,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5041,10 +5041,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2675,
-              "end": 2680,
+              "commentStart": 2693,
+              "end": 2698,
               "moduleId": 0,
-              "start": 2675,
+              "start": 2693,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5661,10 +5661,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.3999999993999999
                   ],
                   "tag": {
-                    "commentStart": 2480,
-                    "end": 2485,
+                    "commentStart": 2498,
+                    "end": 2503,
                     "moduleId": 0,
-                    "start": 2480,
+                    "start": 2498,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5702,10 +5702,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.3999999981999999
                   ],
                   "tag": {
-                    "commentStart": 2545,
-                    "end": 2550,
+                    "commentStart": 2563,
+                    "end": 2568,
                     "moduleId": 0,
-                    "start": 2545,
+                    "start": 2563,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5743,10 +5743,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.7500000016500001
                   ],
                   "tag": {
-                    "commentStart": 2610,
-                    "end": 2615,
+                    "commentStart": 2628,
+                    "end": 2633,
                     "moduleId": 0,
-                    "start": 2610,
+                    "start": 2628,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5784,10 +5784,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.7500000004
                   ],
                   "tag": {
-                    "commentStart": 2675,
-                    "end": 2680,
+                    "commentStart": 2693,
+                    "end": 2698,
                     "moduleId": 0,
-                    "start": 2675,
+                    "start": 2693,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5892,10 +5892,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.3999999993999999
           ],
           "tag": {
-            "commentStart": 2480,
-            "end": 2485,
+            "commentStart": 2498,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2480,
+            "start": 2498,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5916,10 +5916,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.3999999981999999
           ],
           "tag": {
-            "commentStart": 2545,
-            "end": 2550,
+            "commentStart": 2563,
+            "end": 2568,
             "moduleId": 0,
-            "start": 2545,
+            "start": 2563,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5940,10 +5940,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.7500000016500001
           ],
           "tag": {
-            "commentStart": 2610,
-            "end": 2615,
+            "commentStart": 2628,
+            "end": 2633,
             "moduleId": 0,
-            "start": 2610,
+            "start": 2628,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5964,10 +5964,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             0.7500000004
           ],
           "tag": {
-            "commentStart": 2675,
-            "end": 2680,
+            "commentStart": 2693,
+            "end": 2698,
             "moduleId": 0,
-            "start": 2675,
+            "start": 2693,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6071,10 +6071,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2480,
-            "end": 2485,
+            "commentStart": 2498,
+            "end": 2503,
             "moduleId": 0,
-            "start": 2480,
+            "start": 2498,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6085,10 +6085,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2545,
-            "end": 2550,
+            "commentStart": 2563,
+            "end": 2568,
             "moduleId": 0,
-            "start": 2545,
+            "start": 2563,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6099,10 +6099,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2610,
-            "end": 2615,
+            "commentStart": 2628,
+            "end": 2633,
             "moduleId": 0,
-            "start": 2610,
+            "start": 2628,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6113,10 +6113,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2675,
-            "end": 2680,
+            "commentStart": 2693,
+            "end": 2698,
             "moduleId": 0,
-            "start": 2675,
+            "start": 2693,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6138,10 +6138,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2480,
-              "end": 2485,
+              "commentStart": 2498,
+              "end": 2503,
               "moduleId": 0,
-              "start": 2480,
+              "start": 2498,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6162,10 +6162,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2545,
-              "end": 2550,
+              "commentStart": 2563,
+              "end": 2568,
               "moduleId": 0,
-              "start": 2545,
+              "start": 2563,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6186,10 +6186,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2610,
-              "end": 2615,
+              "commentStart": 2628,
+              "end": 2633,
               "moduleId": 0,
-              "start": 2610,
+              "start": 2628,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6210,10 +6210,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2675,
-              "end": 2680,
+              "commentStart": 2693,
+              "end": 2698,
               "moduleId": 0,
-              "start": 2675,
+              "start": 2693,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6313,10 +6313,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6327,10 +6327,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6341,10 +6341,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6355,10 +6355,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6369,10 +6369,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6383,10 +6383,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6408,10 +6408,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3678,
-              "end": 3683,
+              "commentStart": 3696,
+              "end": 3701,
               "moduleId": 0,
-              "start": 3678,
+              "start": 3696,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6432,10 +6432,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3755,
-              "end": 3760,
+              "commentStart": 3773,
+              "end": 3778,
               "moduleId": 0,
-              "start": 3755,
+              "start": 3773,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6456,10 +6456,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3871,
-              "end": 3876,
+              "commentStart": 3889,
+              "end": 3894,
               "moduleId": 0,
-              "start": 3871,
+              "start": 3889,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6480,10 +6480,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4027,
-              "end": 4032,
+              "commentStart": 4045,
+              "end": 4050,
               "moduleId": 0,
-              "start": 4027,
+              "start": 4045,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6504,10 +6504,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -6528,10 +6528,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4261,
-              "end": 4266,
+              "commentStart": 4279,
+              "end": 4284,
               "moduleId": 0,
-              "start": 4261,
+              "start": 4279,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6639,10 +6639,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6653,10 +6653,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6667,10 +6667,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6681,10 +6681,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6695,10 +6695,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6709,10 +6709,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6734,10 +6734,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3678,
-              "end": 3683,
+              "commentStart": 3696,
+              "end": 3701,
               "moduleId": 0,
-              "start": 3678,
+              "start": 3696,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6758,10 +6758,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3755,
-              "end": 3760,
+              "commentStart": 3773,
+              "end": 3778,
               "moduleId": 0,
-              "start": 3755,
+              "start": 3773,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6782,10 +6782,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3871,
-              "end": 3876,
+              "commentStart": 3889,
+              "end": 3894,
               "moduleId": 0,
-              "start": 3871,
+              "start": 3889,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6806,10 +6806,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4027,
-              "end": 4032,
+              "commentStart": 4045,
+              "end": 4050,
               "moduleId": 0,
-              "start": 4027,
+              "start": 4045,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6830,10 +6830,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -6854,10 +6854,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4261,
-              "end": 4266,
+              "commentStart": 4279,
+              "end": 4284,
               "moduleId": 0,
-              "start": 4261,
+              "start": 4279,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6977,10 +6977,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 13496,
-                "end": 13503,
+                "commentStart": 13488,
+                "end": 13495,
                 "moduleId": 0,
-                "start": 13496,
+                "start": 13488,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7008,10 +7008,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 13496,
-                  "end": 13503,
+                  "commentStart": 13488,
+                  "end": 13495,
                   "moduleId": 0,
-                  "start": 13496,
+                  "start": 13488,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7115,10 +7115,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.1599999993650001,
                 "tag": {
-                  "commentStart": 13496,
-                  "end": 13503,
+                  "commentStart": 13488,
+                  "end": 13495,
                   "moduleId": 0,
-                  "start": 13496,
+                  "start": 13488,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7272,10 +7272,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 13496,
-                "end": 13503,
+                "commentStart": 13488,
+                "end": 13495,
                 "moduleId": 0,
-                "start": 13496,
+                "start": 13488,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7368,10 +7368,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               ],
               "radius": 0.1599999993650001,
               "tag": {
-                "commentStart": 13496,
-                "end": 13503,
+                "commentStart": 13488,
+                "end": 13495,
                 "moduleId": 0,
-                "start": 13496,
+                "start": 13488,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7601,10 +7601,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   ],
                   "radius": 0.1599999993650001,
                   "tag": {
-                    "commentStart": 13496,
-                    "end": 13503,
+                    "commentStart": 13488,
+                    "end": 13495,
                     "moduleId": 0,
-                    "start": 13496,
+                    "start": 13488,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7732,10 +7732,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7746,10 +7746,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7760,10 +7760,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7774,10 +7774,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7788,10 +7788,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7802,10 +7802,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -7827,10 +7827,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3678,
-              "end": 3683,
+              "commentStart": 3696,
+              "end": 3701,
               "moduleId": 0,
-              "start": 3678,
+              "start": 3696,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7851,10 +7851,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3755,
-              "end": 3760,
+              "commentStart": 3773,
+              "end": 3778,
               "moduleId": 0,
-              "start": 3755,
+              "start": 3773,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7875,10 +7875,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3871,
-              "end": 3876,
+              "commentStart": 3889,
+              "end": 3894,
               "moduleId": 0,
-              "start": 3871,
+              "start": 3889,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7899,10 +7899,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4027,
-              "end": 4032,
+              "commentStart": 4045,
+              "end": 4050,
               "moduleId": 0,
-              "start": 4027,
+              "start": 4045,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7923,10 +7923,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -7947,10 +7947,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4261,
-              "end": 4266,
+              "commentStart": 4279,
+              "end": 4284,
               "moduleId": 0,
-              "start": 4261,
+              "start": 4279,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8058,10 +8058,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3678,
-            "end": 3683,
+            "commentStart": 3696,
+            "end": 3701,
             "moduleId": 0,
-            "start": 3678,
+            "start": 3696,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8072,10 +8072,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3755,
-            "end": 3760,
+            "commentStart": 3773,
+            "end": 3778,
             "moduleId": 0,
-            "start": 3755,
+            "start": 3773,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8086,10 +8086,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3871,
-            "end": 3876,
+            "commentStart": 3889,
+            "end": 3894,
             "moduleId": 0,
-            "start": 3871,
+            "start": 3889,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8100,10 +8100,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4027,
-            "end": 4032,
+            "commentStart": 4045,
+            "end": 4050,
             "moduleId": 0,
-            "start": 4027,
+            "start": 4045,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8114,10 +8114,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8128,10 +8128,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4261,
-            "end": 4266,
+            "commentStart": 4279,
+            "end": 4284,
             "moduleId": 0,
-            "start": 4261,
+            "start": 4279,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8153,10 +8153,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3678,
-              "end": 3683,
+              "commentStart": 3696,
+              "end": 3701,
               "moduleId": 0,
-              "start": 3678,
+              "start": 3696,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8177,10 +8177,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3755,
-              "end": 3760,
+              "commentStart": 3773,
+              "end": 3778,
               "moduleId": 0,
-              "start": 3755,
+              "start": 3773,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8201,10 +8201,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 3871,
-              "end": 3876,
+              "commentStart": 3889,
+              "end": 3894,
               "moduleId": 0,
-              "start": 3871,
+              "start": 3889,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8225,10 +8225,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4027,
-              "end": 4032,
+              "commentStart": 4045,
+              "end": 4050,
               "moduleId": 0,
-              "start": 4027,
+              "start": 4045,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -8249,10 +8249,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8273,10 +8273,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4261,
-              "end": 4266,
+              "commentStart": 4279,
+              "end": 4284,
               "moduleId": 0,
-              "start": 4261,
+              "start": 4279,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8384,10 +8384,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10065,
-            "end": 10070,
+            "commentStart": 10083,
+            "end": 10088,
             "moduleId": 0,
-            "start": 10065,
+            "start": 10083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8398,10 +8398,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10142,
-            "end": 10147,
+            "commentStart": 10160,
+            "end": 10165,
             "moduleId": 0,
-            "start": 10142,
+            "start": 10160,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8412,10 +8412,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10220,
-            "end": 10225,
+            "commentStart": 10238,
+            "end": 10243,
             "moduleId": 0,
-            "start": 10220,
+            "start": 10238,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8426,10 +8426,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10299,
-            "end": 10304,
+            "commentStart": 10317,
+            "end": 10322,
             "moduleId": 0,
-            "start": 10299,
+            "start": 10317,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8451,10 +8451,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 10065,
-              "end": 10070,
+              "commentStart": 10083,
+              "end": 10088,
               "moduleId": 0,
-              "start": 10065,
+              "start": 10083,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8475,10 +8475,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 10142,
-              "end": 10147,
+              "commentStart": 10160,
+              "end": 10165,
               "moduleId": 0,
-              "start": 10142,
+              "start": 10160,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8499,10 +8499,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 10220,
-              "end": 10225,
+              "commentStart": 10238,
+              "end": 10243,
               "moduleId": 0,
-              "start": 10220,
+              "start": 10238,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8523,10 +8523,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               2.15
             ],
             "tag": {
-              "commentStart": 10299,
-              "end": 10304,
+              "commentStart": 10317,
+              "end": 10322,
               "moduleId": 0,
-              "start": 10299,
+              "start": 10317,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -9134,10 +9134,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 10065,
-                    "end": 10070,
+                    "commentStart": 10083,
+                    "end": 10088,
                     "moduleId": 0,
-                    "start": 10065,
+                    "start": 10083,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -9158,10 +9158,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 10142,
-                    "end": 10147,
+                    "commentStart": 10160,
+                    "end": 10165,
                     "moduleId": 0,
-                    "start": 10142,
+                    "start": 10160,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -9182,10 +9182,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 10220,
-                    "end": 10225,
+                    "commentStart": 10238,
+                    "end": 10243,
                     "moduleId": 0,
-                    "start": 10220,
+                    "start": 10238,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -9206,10 +9206,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     2.15
                   ],
                   "tag": {
-                    "commentStart": 10299,
-                    "end": 10304,
+                    "commentStart": 10317,
+                    "end": 10322,
                     "moduleId": 0,
-                    "start": 10299,
+                    "start": 10317,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -9314,10 +9314,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 10065,
-            "end": 10070,
+            "commentStart": 10083,
+            "end": 10088,
             "moduleId": 0,
-            "start": 10065,
+            "start": 10083,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9338,10 +9338,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 10142,
-            "end": 10147,
+            "commentStart": 10160,
+            "end": 10165,
             "moduleId": 0,
-            "start": 10142,
+            "start": 10160,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9362,10 +9362,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 10220,
-            "end": 10225,
+            "commentStart": 10238,
+            "end": 10243,
             "moduleId": 0,
-            "start": 10220,
+            "start": 10238,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9386,10 +9386,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             2.15
           ],
           "tag": {
-            "commentStart": 10299,
-            "end": 10304,
+            "commentStart": 10317,
+            "end": 10322,
             "moduleId": 0,
-            "start": 10299,
+            "start": 10317,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9487,10 +9487,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14370,
-                "end": 14375,
+                "commentStart": 14362,
+                "end": 14367,
                 "moduleId": 0,
-                "start": 14370,
+                "start": 14362,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -9501,10 +9501,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14435,
-                "end": 14440,
+                "commentStart": 14427,
+                "end": 14432,
                 "moduleId": 0,
-                "start": 14435,
+                "start": 14427,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -9515,10 +9515,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14500,
-                "end": 14505,
+                "commentStart": 14492,
+                "end": 14497,
                 "moduleId": 0,
-                "start": 14500,
+                "start": 14492,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -9529,10 +9529,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 14565,
-                "end": 14570,
+                "commentStart": 14557,
+                "end": 14562,
                 "moduleId": 0,
-                "start": 14565,
+                "start": 14557,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9554,10 +9554,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 14370,
-                  "end": 14375,
+                  "commentStart": 14362,
+                  "end": 14367,
                   "moduleId": 0,
-                  "start": 14370,
+                  "start": 14362,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9578,10 +9578,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 14435,
-                  "end": 14440,
+                  "commentStart": 14427,
+                  "end": 14432,
                   "moduleId": 0,
-                  "start": 14435,
+                  "start": 14427,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9602,10 +9602,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 14500,
-                  "end": 14505,
+                  "commentStart": 14492,
+                  "end": 14497,
                   "moduleId": 0,
-                  "start": 14500,
+                  "start": 14492,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9626,10 +9626,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 14565,
-                  "end": 14570,
+                  "commentStart": 14557,
+                  "end": 14562,
                   "moduleId": 0,
-                  "start": 14565,
+                  "start": 14557,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9739,10 +9739,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   0.8299999963999997
                 ],
                 "tag": {
-                  "commentStart": 14370,
-                  "end": 14375,
+                  "commentStart": 14362,
+                  "end": 14367,
                   "moduleId": 0,
-                  "start": 14370,
+                  "start": 14362,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9763,10 +9763,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   0.8299999939099995
                 ],
                 "tag": {
-                  "commentStart": 14435,
-                  "end": 14440,
+                  "commentStart": 14427,
+                  "end": 14432,
                   "moduleId": 0,
-                  "start": 14435,
+                  "start": 14427,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9787,10 +9787,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   1.0699999957699997
                 ],
                 "tag": {
-                  "commentStart": 14500,
-                  "end": 14505,
+                  "commentStart": 14492,
+                  "end": 14497,
                   "moduleId": 0,
-                  "start": 14500,
+                  "start": 14492,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9811,10 +9811,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   1.0699999961199997
                 ],
                 "tag": {
-                  "commentStart": 14565,
-                  "end": 14570,
+                  "commentStart": 14557,
+                  "end": 14562,
                   "moduleId": 0,
-                  "start": 14565,
+                  "start": 14557,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9992,10 +9992,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 14370,
-                "end": 14375,
+                "commentStart": 14362,
+                "end": 14367,
                 "moduleId": 0,
-                "start": 14370,
+                "start": 14362,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -10016,10 +10016,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 14435,
-                "end": 14440,
+                "commentStart": 14427,
+                "end": 14432,
                 "moduleId": 0,
-                "start": 14435,
+                "start": 14427,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -10040,10 +10040,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 14500,
-                "end": 14505,
+                "commentStart": 14492,
+                "end": 14497,
                 "moduleId": 0,
-                "start": 14500,
+                "start": 14492,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -10064,10 +10064,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 14565,
-                "end": 14570,
+                "commentStart": 14557,
+                "end": 14562,
                 "moduleId": 0,
-                "start": 14565,
+                "start": 14557,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -10166,10 +10166,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 0.8299999963999997
               ],
               "tag": {
-                "commentStart": 14370,
-                "end": 14375,
+                "commentStart": 14362,
+                "end": 14367,
                 "moduleId": 0,
-                "start": 14370,
+                "start": 14362,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -10190,10 +10190,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 0.8299999939099995
               ],
               "tag": {
-                "commentStart": 14435,
-                "end": 14440,
+                "commentStart": 14427,
+                "end": 14432,
                 "moduleId": 0,
-                "start": 14435,
+                "start": 14427,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -10214,10 +10214,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 1.0699999957699997
               ],
               "tag": {
-                "commentStart": 14500,
-                "end": 14505,
+                "commentStart": 14492,
+                "end": 14497,
                 "moduleId": 0,
-                "start": 14500,
+                "start": 14492,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -10238,10 +10238,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 1.0699999961199997
               ],
               "tag": {
-                "commentStart": 14565,
-                "end": 14570,
+                "commentStart": 14557,
+                "end": 14562,
                 "moduleId": 0,
-                "start": 14565,
+                "start": 14557,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -10837,10 +10837,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.8299999963999997
                   ],
                   "tag": {
-                    "commentStart": 14370,
-                    "end": 14375,
+                    "commentStart": 14362,
+                    "end": 14367,
                     "moduleId": 0,
-                    "start": 14370,
+                    "start": 14362,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10878,10 +10878,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.8299999939099995
                   ],
                   "tag": {
-                    "commentStart": 14435,
-                    "end": 14440,
+                    "commentStart": 14427,
+                    "end": 14432,
                     "moduleId": 0,
-                    "start": 14435,
+                    "start": 14427,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -10919,10 +10919,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.0699999957699997
                   ],
                   "tag": {
-                    "commentStart": 14500,
-                    "end": 14505,
+                    "commentStart": 14492,
+                    "end": 14497,
                     "moduleId": 0,
-                    "start": 14500,
+                    "start": 14492,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10960,10 +10960,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     1.0699999961199997
                   ],
                   "tag": {
-                    "commentStart": 14565,
-                    "end": 14570,
+                    "commentStart": 14557,
+                    "end": 14562,
                     "moduleId": 0,
-                    "start": 14565,
+                    "start": 14557,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -12054,10 +12054,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.3500000000000106
                   ],
                   "tag": {
-                    "commentStart": 3678,
-                    "end": 3683,
+                    "commentStart": 3696,
+                    "end": 3701,
                     "moduleId": 0,
-                    "start": 3678,
+                    "start": 3696,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -12078,10 +12078,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.8046633388240976
                   ],
                   "tag": {
-                    "commentStart": 3755,
-                    "end": 3760,
+                    "commentStart": 3773,
+                    "end": 3778,
                     "moduleId": 0,
-                    "start": 3755,
+                    "start": 3773,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -12102,10 +12102,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.8046633388241028
                   ],
                   "tag": {
-                    "commentStart": 3871,
-                    "end": 3876,
+                    "commentStart": 3889,
+                    "end": 3894,
                     "moduleId": 0,
-                    "start": 3871,
+                    "start": 3889,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -12126,10 +12126,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     0.3500000000000027
                   ],
                   "tag": {
-                    "commentStart": 4027,
-                    "end": 4032,
+                    "commentStart": 4045,
+                    "end": 4050,
                     "moduleId": 0,
-                    "start": 4027,
+                    "start": 4045,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -12150,10 +12150,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     -0.10466333882410354
                   ],
                   "tag": {
-                    "commentStart": 4143,
-                    "end": 4148,
+                    "commentStart": 4161,
+                    "end": 4166,
                     "moduleId": 0,
-                    "start": 4143,
+                    "start": 4161,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -12174,10 +12174,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                     -0.10466333882409189
                   ],
                   "tag": {
-                    "commentStart": 4261,
-                    "end": 4266,
+                    "commentStart": 4279,
+                    "end": 4284,
                     "moduleId": 0,
-                    "start": 4261,
+                    "start": 4279,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -12298,10 +12298,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11240,
-                "end": 11247,
+                "commentStart": 11258,
+                "end": 11265,
                 "moduleId": 0,
-                "start": 11240,
+                "start": 11258,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -12312,10 +12312,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12343,10 +12343,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11240,
-                  "end": 11247,
+                  "commentStart": 11258,
+                  "end": 11265,
                   "moduleId": 0,
-                  "start": 11240,
+                  "start": 11258,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12373,10 +12373,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12468,10 +12468,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12499,10 +12499,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12599,10 +12599,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11240,
-                "end": 11247,
+                "commentStart": 11258,
+                "end": 11265,
                 "moduleId": 0,
-                "start": 11240,
+                "start": 11258,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -12613,10 +12613,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12644,10 +12644,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11240,
-                  "end": 11247,
+                  "commentStart": 11258,
+                  "end": 11265,
                   "moduleId": 0,
-                  "start": 11240,
+                  "start": 11258,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -12674,10 +12674,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12769,10 +12769,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12800,10 +12800,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12907,10 +12907,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           ],
           "radius": 0.34999999997,
           "tag": {
-            "commentStart": 11240,
-            "end": 11247,
+            "commentStart": 11258,
+            "end": 11265,
             "moduleId": 0,
-            "start": 11240,
+            "start": 11258,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12937,10 +12937,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 11325,
-            "end": 11332,
+            "commentStart": 11343,
+            "end": 11350,
             "moduleId": 0,
-            "start": 11325,
+            "start": 11343,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -13030,10 +13030,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11240,
-                "end": 11247,
+                "commentStart": 11258,
+                "end": 11265,
                 "moduleId": 0,
-                "start": 11240,
+                "start": 11258,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -13044,10 +13044,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13075,10 +13075,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11240,
-                  "end": 11247,
+                  "commentStart": 11258,
+                  "end": 11265,
                   "moduleId": 0,
-                  "start": 11240,
+                  "start": 11258,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13105,10 +13105,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13200,10 +13200,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13231,10 +13231,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13331,10 +13331,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11240,
-                "end": 11247,
+                "commentStart": 11258,
+                "end": 11265,
                 "moduleId": 0,
-                "start": 11240,
+                "start": 11258,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -13345,10 +13345,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13376,10 +13376,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 11240,
-                  "end": 11247,
+                  "commentStart": 11258,
+                  "end": 11265,
                   "moduleId": 0,
-                  "start": 11240,
+                  "start": 11258,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -13406,10 +13406,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -13501,10 +13501,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11325,
-                "end": 11332,
+                "commentStart": 11343,
+                "end": 11350,
                 "moduleId": 0,
-                "start": 11325,
+                "start": 11343,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -13532,10 +13532,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 11325,
-                  "end": 11332,
+                  "commentStart": 11343,
+                  "end": 11350,
                   "moduleId": 0,
-                  "start": 11325,
+                  "start": 11343,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -14006,10 +14006,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   ],
                   "radius": 0.34999999997,
                   "tag": {
-                    "commentStart": 11240,
-                    "end": 11247,
+                    "commentStart": 11258,
+                    "end": 11265,
                     "moduleId": 0,
-                    "start": 11240,
+                    "start": 11258,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -14053,10 +14053,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                   ],
                   "radius": 0.175000000005,
                   "tag": {
-                    "commentStart": 11325,
-                    "end": 11332,
+                    "commentStart": 11343,
+                    "end": 11350,
                     "moduleId": 0,
-                    "start": 11325,
+                    "start": 11343,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -14149,10 +14149,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11240,
-            "end": 11247,
+            "commentStart": 11258,
+            "end": 11265,
             "moduleId": 0,
-            "start": 11240,
+            "start": 11258,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -14163,10 +14163,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11325,
-            "end": 11332,
+            "commentStart": 11343,
+            "end": 11350,
             "moduleId": 0,
-            "start": 11325,
+            "start": 11343,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -14194,10 +14194,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "radius": 0.34999999997,
             "tag": {
-              "commentStart": 11240,
-              "end": 11247,
+              "commentStart": 11258,
+              "end": 11265,
               "moduleId": 0,
-              "start": 11240,
+              "start": 11258,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -14224,10 +14224,10 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 11325,
-              "end": 11332,
+              "commentStart": 11343,
+              "end": 11350,
               "moduleId": 0,
-              "start": 11325,
+              "start": 11343,
               "type": "TagDeclarator",
               "value": "circle2"
             },
