@@ -2135,34 +2135,12 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    let diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
+    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
-    let initialCode =
+    const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
         ? normalizeLineEndings(recoverySnapshot.code)
         : diskCode
-
-    if (providedCode === undefined && isMainKclPath(file.path)) {
-      try {
-        const wasmInstance = await systemDeps.wasmInstancePromise
-        const seeded = ensureDefaultKclVersionOnBlankMain(
-          file.path,
-          initialCode,
-          wasmInstance
-        )
-        if (!err(seeded) && seeded !== initialCode) {
-          initialCode = seeded
-          await file.write(initialCode)
-          diskCode = initialCode
-          notifyDefaultKclVersionSeeded()
-        }
-      } catch (error) {
-        console.error(
-          'Failed to write default KCL version settings to blank main.kcl',
-          error
-        )
-      }
-    }
 
     if (!providedEditor) {
       const editor = new KclManager(file.path, initialCode, systemDeps, file.id)
