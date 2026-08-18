@@ -292,6 +292,10 @@ impl CompilationIssue {
     pub fn is_fatal(&self) -> bool {
         self.inner.severity.is_fatal()
     }
+
+    pub fn message(&self) -> &str {
+        &self.inner.message
+    }
 }
 
 /// Returned from execution functions.
@@ -315,6 +319,14 @@ impl ExecOutcome {
     /// the source code and filename captured at execution time.
     fn report(&self, issue: &CompilationIssue) -> String {
         kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
+    }
+
+    fn report_all(&self) -> Vec<String> {
+        let mut out = Vec::with_capacity(self.issues.len());
+        for issue in self.issues.iter() {
+            out.push(self.report(issue));
+        }
+        out
     }
 }
 
@@ -575,23 +587,15 @@ async fn execute_code(code: String) -> PyResult<ExecOutcome> {
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn mock_execute_code(code: String) -> PyResult<bool> {
-    spawn_py(async move {
-        execute_impl(KclInput::Code(code), true).await?;
-        Ok(true)
-    })
-    .await
+async fn mock_execute_code(code: String) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), true).await }).await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn mock_execute(path: String) -> PyResult<bool> {
-    spawn_py(async move {
-        execute_impl(KclInput::Path(path), true).await?;
-        Ok(true)
-    })
-    .await
+async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.

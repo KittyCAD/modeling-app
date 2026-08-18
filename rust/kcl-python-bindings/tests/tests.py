@@ -16,9 +16,7 @@ kcl_dir = os.path.join(
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 
-engine_error_file = os.path.join(
-    tests_dir, "error_large_fillet_radius", "input.kcl"
-)
+engine_error_file = os.path.join(tests_dir, "error_large_fillet_radius", "input.kcl")
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
@@ -160,10 +158,27 @@ async def test_kcl_mock_execute_with_exception():
 
 
 @pytest.mark.asyncio
+async def test_kcl_mock_execute_with_warnings():
+    # Read from a file.
+    outcome = await kcl.mock_execute(
+        os.path.join(files_dir, "experimentalfeatures.kcl")
+    )
+
+    # Check the outcome contained the expected issues
+    issues = outcome.issues()
+    assert len(issues) == 1
+    issue = issues[0]
+    assert (
+        issue.message()
+        == "Use of `conic` is experimental and may change or be removed."
+    )
+
+
+@pytest.mark.asyncio
 async def test_kcl_mock_execute_with_engine_exception_should_pass():
     # Read from a file.
-    result = await kcl.mock_execute(engine_error_file)
-    assert result is True
+    issues = await kcl.mock_execute(engine_error_file)
+    assert issues == []
 
 
 @requires_engine
@@ -181,8 +196,8 @@ async def test_kcl_execute_with_engine_exception_should_fail():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute():
     # Read from a file.
-    result = await kcl.mock_execute(lego_file)
-    assert result is True
+    issues = await kcl.mock_execute(lego_file)
+    assert issues == []
 
 
 @pytest.mark.asyncio
@@ -192,8 +207,8 @@ async def test_kcl_mock_execute_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        result = await kcl.mock_execute_code(code)
-        assert result is True
+        issues = await kcl.mock_execute_code(code)
+        assert issues == []
 
 
 @requires_engine
