@@ -601,6 +601,24 @@ class SketchConstraintReport:
     @property
     def errors(self) -> builtins.list[SketchConstraintStatus]: ...
     @property
+    def warnings(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution warnings collected while computing
+        the constraint report.
+        """
+    @property
+    def execution_errors(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution errors collected while computing the
+        constraint report.
+        """
+    @property
+    def execution_fatals(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered fatal KCL execution issues collected while computing the
+        constraint report.
+        """
+    @property
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
@@ -611,7 +629,13 @@ class SketchConstraintStatus:
     Per-sketch summary of constraint freedom analysis.
     """
     @property
-    def name(self) -> builtins.str: ...
+    def name(self) -> builtins.str:
+        r"""
+        Name of the variable the sketch was assigned to. Empty when the sketch
+        has no enclosing variable declaration, and shared between entries when
+        two sketches resolve to the same declaration. The report carries no
+        other sketch identifier.
+        """
     @property
     def status(self) -> zooConstraintKind: ...
     @property

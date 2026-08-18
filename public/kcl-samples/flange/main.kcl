@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 mountingHoleDia = .625
@@ -135,7 +135,7 @@ baseProfile = sketch(on = XY) {
 ]) == mountingHoleRadius
 }
 
-baseRegion = region(point = [baseRadius / 2, 0in], sketch = baseProfile)
+baseRegion = region(segments = [baseProfile.outerCircle])
 hiddenBaseProfile = hide(baseProfile)
 flangeBase = extrude(baseRegion, length = baseThickness)
 

@@ -3,7 +3,7 @@
 // Categories: Construction, Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 pipeOuterDiameter = 2.375
@@ -20,13 +20,7 @@ pipeSection = sketch(on = XZ) {
   coincident([circle1.center, ORIGIN])
 }
 
-ringRegion = region(
-  point = [
-    (pipeInnerDiameter + pipeThickness) / 2,
-    0
-  ],
-  sketch = pipeSection,
-)
+ringRegion = region(segments = [pipeSection.circle1])
 pipeBody = extrude(ringRegion, length = -pipeLength, symmetric = true)
   |> appearance(color = "#a24ed0")
 hide(pipeSection)

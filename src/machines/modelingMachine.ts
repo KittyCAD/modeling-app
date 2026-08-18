@@ -218,6 +218,7 @@ import {
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
 } from '@src/lib/constants'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import { toPlaneName } from '@src/lib/planes'
@@ -1546,6 +1547,14 @@ export const modelingMachine = setup({
       kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
         shouldAddToHistory: false,
         shouldWriteToDisk: false,
+      })
+    },
+    'report legacy sketch mode': ({ context }) => {
+      if (context.store.useSketchSolveMode?.current !== true) return
+
+      void reportClientError({
+        code: ClientErrorCode.LegacySketchMode,
+        message: 'Legacy sketch mode entered',
       })
     },
     'reset client scene mouse handlers': ({ context }) => {
@@ -8272,7 +8281,11 @@ export const modelingMachine = setup({
         },
       },
 
-      entry: ['add axis n grid', 'clientToEngine cam sync direction'],
+      entry: [
+        'add axis n grid',
+        'clientToEngine cam sync direction',
+        'report legacy sketch mode',
+      ],
     },
 
     'Sketch no face': {

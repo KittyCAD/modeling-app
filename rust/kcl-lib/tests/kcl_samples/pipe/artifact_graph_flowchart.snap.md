@@ -9,16 +9,16 @@ flowchart LR
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path5 [Path]
-    5["Path Region<br>[677, 778, 0]<br>Consumed: true"]
+    5["Path Region<br>[677, 717, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[677, 778, 0]"]
+    6["Segment<br>[677, 717, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[677, 778, 0]"]
+    7["Segment<br>[677, 717, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[318, 662, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  8["Sweep Extrusion<br>[790, 849, 0]<br>Consumed: false"]
+  8["Sweep Extrusion<br>[729, 788, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   9[Wall]
     %% face_code_ref=Missing NodePath

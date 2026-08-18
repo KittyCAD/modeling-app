@@ -141,7 +141,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
 
 tabProfile = startSketchOn(block, face = top)
   |> startProfile(at = [1mm, 1mm])
