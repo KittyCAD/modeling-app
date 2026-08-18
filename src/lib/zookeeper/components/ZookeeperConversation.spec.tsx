@@ -187,6 +187,49 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
   })
 
+  test('shows billing recovery without offering to clear the chat', () => {
+    const billingError =
+      'This request is not included in your current plan, and your account has no API credits available. Enable pay as you go or update your plan in your account: https://dev.zoo.dev/account/billing'
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        connectionError={billingError}
+        connectionFailed={true}
+        canClearChat={true}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={true}
+        contexts={[]}
+        disabled={true}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveClass('border-ml-green', 'bg-ml-green/10')
+    expect(alert).toHaveTextContent("You're out of Zookeeper credits.")
+    expect(alert).toHaveTextContent('Enable pay as you go')
+    expect(
+      screen.queryByRole('button', { name: 'Clear chat' })
+    ).not.toBeInTheDocument()
+    const billingLink = screen.getByRole('link', { name: 'Upgrade' })
+    expect(billingLink).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account/billing')
+    )
+    expect(
+      billingLink.querySelector('svg[aria-label="link"]')
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+  })
+
   test('shows setup progress while loading a conversation', () => {
     render(
       <ZookeeperConversation

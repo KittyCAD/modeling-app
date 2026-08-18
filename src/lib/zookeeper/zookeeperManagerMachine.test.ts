@@ -115,6 +115,9 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
+const billingError =
+  'This request is not included in your current plan, and your account has no API credits available. Enable pay as you go or update your plan in your account: https://dev.zoo.dev/account/billing'
+
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
     const first = createZookeeperCorrelation('engine-api-call-id')
@@ -379,6 +382,112 @@ describe('zookeeperManagerMachine', () => {
         setupFailed: false,
         conversationId: 'conversation-id',
       })
+
+      actor.stop()
+    })
+
+    it('surfaces a billing error after retrying setup', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      for (
+        let attempt = 0;
+        attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
+        attempt += 1
+      ) {
+        await vi.waitFor(() => {
+          expect(ControllableSetupWebSocket.instances).toHaveLength(attempt + 1)
+        })
+        const socket = ControllableSetupWebSocket.instances[attempt]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({ error: { detail: billingError } })
+      }
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(ControllableSetupWebSocket.instances).toHaveLength(
+        NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS
+      )
+      expect(actor.getSnapshot().context.closeReason).toBe(billingError)
+      for (const socket of ControllableSetupWebSocket.instances) {
+        expect(socket.close).toHaveBeenCalledOnce()
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        message: billingError,
+      })
+
+      actor.stop()
+    })
+
+    it('turns a billing response on an active connection into a recoverable close', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      socket.receive({ error: { detail: billingError } })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(actor.getSnapshot().context).toMatchObject({
+        abruptlyClosed: true,
+        setupFailed: false,
+        closeReason: billingError,
+        conversation: { exchanges: [] },
+        conversationId: 'conversation-id',
+      })
+      expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
     })
