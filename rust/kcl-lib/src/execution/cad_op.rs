@@ -110,10 +110,15 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Helix { value } => OpKclValue::Helix {
             value: Box::new(OpHelix::new(value.artifact_id)),
         },
-        // Operations record only call arguments, and no function takes a
-        // CameraView argument yet. A dedicated representation arrives with
-        // the first function that does (`view::named`).
-        KclValue::CameraView { .. } => OpKclValue::KclNone {},
+        // The marker carries no camera data: the view's artifact holds that,
+        // authoritatively. What it does carry is the distinction between a
+        // camera that was passed and an optional argument that was omitted,
+        // which `KclNone` would erase.
+        KclValue::CameraView { .. } => OpKclValue::CameraView {},
+        // No standard library function takes a NamedView argument, so a view
+        // reaches here only as an argument to a user-defined function. Adding
+        // a dedicated representation later is additive.
+        KclValue::NamedView { .. } => OpKclValue::KclNone {},
         KclValue::ImportedGeometry(imported_geometry) => OpKclValue::ImportedGeometry {
             artifact_id: ArtifactId::new(imported_geometry.id),
         },
