@@ -4,6 +4,7 @@ import {
   getCloudSyncInitialLocalProjectSyncAction,
   getCloudSyncKnownLocalRemoteIndexAction,
   getCloudSyncMissingRemoteProjectAction,
+  getCloudSyncProjectApiThrottleDelayMs,
   getCloudSyncProjectModifiedTime,
   getCloudSyncProjectRootInDirectories,
   getCloudSyncProjectRootInDirectory,
@@ -19,6 +20,7 @@ import {
   projectManifestsEqual,
   shouldAutoEnrollCloudLibraryProject,
   shouldScheduleCloudSyncPendingWork,
+  shouldThrottleCloudSyncProjectApiRequests,
 } from '@src/lib/cloudSync'
 import {
   getCloudProjectLibraryMaterializationDirectoryPath,
@@ -854,6 +856,60 @@ describe('cloudSync sync helpers', () => {
         retryAfterMs: 45_000,
       })
     ).toBe(45_000)
+  })
+
+  it('throttles full-sync project API requests with bounded jitter', () => {
+    expect(
+      getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: 0,
+        jitterRatio: 0,
+      })
+    ).toBe(250)
+    expect(
+      getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: 0,
+        jitterRatio: 1,
+      })
+    ).toBe(500)
+    expect(
+      getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: 100,
+        jitterRatio: 0.5,
+      })
+    ).toBe(275)
+    expect(
+      getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: 500,
+        jitterRatio: 0.5,
+      })
+    ).toBe(0)
+    expect(
+      getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: 0,
+        jitterRatio: Number.NaN,
+      })
+    ).toBe(250)
+  })
+
+  it('throttles project API requests only for multi-project full syncs', () => {
+    expect(
+      shouldThrottleCloudSyncProjectApiRequests({
+        hasSyncScope: false,
+        projectCount: 2,
+      })
+    ).toBe(true)
+    expect(
+      shouldThrottleCloudSyncProjectApiRequests({
+        hasSyncScope: false,
+        projectCount: 1,
+      })
+    ).toBe(false)
+    expect(
+      shouldThrottleCloudSyncProjectApiRequests({
+        hasSyncScope: true,
+        projectCount: 2,
+      })
+    ).toBe(false)
   })
 
   it('does not schedule normal pending-work debounce after a retry is scheduled', () => {
