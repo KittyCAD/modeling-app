@@ -1671,7 +1671,8 @@ const DefaultPlanes = ({
 }
 
 /**
- * Helper function to get value detail for operations (both datum and variable declarations)
+ * Helper function to get value detail for operations (variable declarations,
+ * datums, and named views)
  * @param operation - The operation to extract value detail from
  * @param code - The source code string to extract values from
  * @returns Value detail object with display string and calculated value, or undefined if no value
@@ -1706,6 +1707,19 @@ export function getFeatureTreeValueDetail(
           display: datumName,
           calculated: stringValue,
         }
+      }
+    }
+  }
+
+  // Show the view name from the unlabeled first argument
+  if (operation.type === 'StdLibCall' && operation.name === 'view::named') {
+    const nameArg = operation.unlabeledArg
+    if (nameArg?.value.type === 'String') {
+      return {
+        display: code.slice(
+          ...nameArg.sourceRange.map((r) => toUtf16(r, code))
+        ),
+        calculated: nameArg.value,
       }
     }
   }
