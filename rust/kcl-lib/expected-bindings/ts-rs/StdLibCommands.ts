@@ -6082,6 +6082,39 @@ export default {
       }
     ]
   },
+  "planarSurface": {
+    "name": "planarSurface",
+    "preferredName": "planarSurface",
+    "qualName": "std::sketch::planarSurface",
+    "moduleName": "sketch",
+    "returnType": "Solid",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "curves",
+        "ty": "Sketch | [TaggedEdge; 1+] | [Edge; 1+] | [Segment; 1+]",
+        "docs": "Which closed 2D region of space should be filled in to make a planar surface.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "tolerance",
+        "ty": "number(Length)",
+        "docs": "Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
   "planeOf": {
     "name": "planeOf",
     "preferredName": "planeOf",
