@@ -639,6 +639,31 @@ s2 = sketch(on = XZ) {
 }
 """
 
+named_sketches_all_statuses_code = """
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"""
+
 execution_error_after_sketch_code = """
 @settings(experimentalFeatures = allow)
 
@@ -733,6 +758,28 @@ async def test_sketch_constraint_status_mixed():
     assert len(report.errors) == 0
     assert report.is_complete is True
     assert report.kcl_error is None
+    assert report.fully_constrained[0].name == "s1"
+    assert report.under_constrained[0].name == "s2"
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_reports_names():
+    # One file holding a fully constrained, an under-constrained, and an
+    # over-constrained sketch. Every entry carries the name of the variable its
+    # sketch was assigned to, so a caller can say which sketch needs
+    # correcting.
+    report = await execute_with_retries(
+        kcl.get_sketch_constraint_status_code, named_sketches_all_statuses_code
+    )
+    assert report.total_sketches() == 3
+    assert len(report.errors) == 0
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 1
+    assert report.fully_constrained[0].name == "fixedSketch"
+    assert report.under_constrained[0].name == "looseSketch"
+    assert report.over_constrained[0].name == "conflictSketch"
 
 
 @requires_engine

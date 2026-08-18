@@ -2,7 +2,7 @@
 // Vented rotor with a bell and rear friction disc.
 
 // Set units and version
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -112,7 +112,7 @@ rearDiscSketch = sketch(on = rearDiscPlane) {
   diameter(circle2) == rotorDiameter - (2 * hFrictionSurface)
 }
 
-rearDiscRegion = region(point = [4.5in, 0.1in], sketch = rearDiscSketch)
+rearDiscRegion = region(segments = [rearDiscSketch.circle1])
 rearDisc = extrude(rearDiscRegion, length = -tDiscHalf, method = NEW)
   |> appearance(color = rotorColor, metalness = 70, roughness = 30)
 hide([rearDiscSketch])

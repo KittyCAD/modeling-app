@@ -23,15 +23,16 @@ solver::equalRadius(@input: [Segment; 2+])
 ### Examples
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 sketch1 = sketch(on = XY) {
   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])
   circle2 = circle(start = [var 10mm, var 0mm], center = [var 6mm, var 0mm])
   equalRadius([circle1, circle2])
-  tangent([circle1, circle2])
 }
 
-solid1 = extrude(region(point = sketch1.circle1.center, sketch = sketch1), length = 2)
-solid2 = extrude(region(point = sketch1.circle2.center, sketch = sketch1), length = 2)
+solid1 = extrude(region(segments = [sketch1.circle1]), length = 2)
+solid2 = extrude(region(segments = [sketch1.circle2]), length = 2)
 
 ```
 

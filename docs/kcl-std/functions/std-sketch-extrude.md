@@ -514,9 +514,9 @@ sketch001 = sketch(on = XY) {
 }
 
 // Three triangular regions
-region001 = region(point = [-3.9529799mm, 1.7335272mm], sketch = sketch001)
-region002 = region(point = [1.1371714mm, 1.758761mm], sketch = sketch001)
-region003 = region(point = [-1.5426816mm, 1.7040645mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+region002 = region(segments = [sketch001.line4, sketch001.line5])
+region003 = region(segments = [sketch001.line7, sketch001.line8])
 hidden001 = hide(sketch001)
 
 // Extrude the regions, with a positive draft, negative draft, and no draft at all.
@@ -583,7 +583,7 @@ profile = sketch(on = XY) {
   vertical(edge4)
 }
 
-solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 5)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 5)
 
 ```
 
@@ -669,7 +669,7 @@ sketch001 = sketch(on = XY) {
   coincident([arc3.end, arc2.start])
 }
 hidden001 = hide(sketch001)
-region001 = region(point = [-2.8386997mm, 4.2713868mm], sketch = sketch001)
+region001 = region(segments = [sketch001.arc2, sketch001.arc1])
 extrude001 = extrude(region001, length = 5, direction = [-1, 0, 1])
 sketch002 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 3.96mm], end = [var 0mm, var 0mm])
@@ -734,7 +734,7 @@ sketch001 = sketch(on = XY) {
   line1 = line(start = [var -6.36mm, var -3.01mm], end = [var 3.61mm, var 6.24mm])
 }
 hidden001 = hide(sketch001)
-region001 = region(point = [1.6952577mm, -0.9901244mm], sketch = sketch001)
+region001 = region(segments = [sketch001.circle1])
 extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
 sketch002 = sketch(on = XY) {
   line1 = line(start = [var -9.26mm, var 4.04mm], end = [var -3.48mm, var 5.98mm])

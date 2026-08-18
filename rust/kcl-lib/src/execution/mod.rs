@@ -6,6 +6,7 @@ use std::sync::Arc;
 use anyhow::Result;
 pub use artifact::ArtifactCommand;
 pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
 pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
@@ -387,7 +388,18 @@ pub enum ConstraintKind {
 /// distinguish this from a genuinely constrained sketch.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SketchConstraintStatus {
-    /// The variable name of the sketch (e.g., "sketch001").
+    /// Name of the variable the sketch was assigned to, for example
+    /// "sketch001". This is the nearest enclosing declaration at the point the
+    /// sketch was created, which is not always the sketch's own name:
+    /// - Empty for a sketch written as an expression statement, because there
+    ///   is no enclosing declaration.
+    /// - The outer variable's name for a sketch passed straight into another
+    ///   call, as in `part = extrude(sketch(on = XY) { ... }, length = 10)`.
+    /// - The same name for two sketches, when a function body declares the
+    ///   sketch and is called more than once.
+    ///
+    /// The report carries no other sketch identifier, so a caller cannot tell
+    /// apart two entries that share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -1007,7 +1019,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1079,7 +1091,7 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1093,7 +1105,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -1114,7 +1126,7 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
@@ -1128,7 +1140,7 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
@@ -2184,7 +2196,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     // Differential testing: unit tests run under both executors.
-    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::from_env()).await
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
 }
 
 /// A mock-engine executor context for tests that need to inspect the context
@@ -2249,6 +2261,18 @@ impl ExecTestResults {
     /// returned as an error, so this is the only place a test can see them.
     pub(crate) fn issues(&self) -> &[CompilationIssue] {
         self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 
@@ -2373,7 +2397,7 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
@@ -4760,6 +4784,84 @@ s2 = sketch(on = XZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_reports_sketch_names() {
+        // One file holding a fully constrained, an under-constrained, and an
+        // over-constrained sketch. Every entry carries the name of the
+        // variable its sketch was assigned to, so a caller can say which
+        // sketch needs correcting.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.fully_constrained[0].name, "fixedSketch");
+        assert_eq!(report.under_constrained[0].name, "looseSketch");
+        assert_eq!(report.over_constrained[0].name, "conflictSketch");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_name_empty_without_declaration() {
+        // A sketch written as an expression statement has no enclosing
+        // variable declaration, so there is no name to report. This pins the
+        // documented limitation of SketchConstraintStatus::name.
+        let kcl = r#"
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.under_constrained[0].name, "");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_names_repeat_across_calls() {
+        // Both sketches come from the same declaration inside the function
+        // body, so both entries carry that declaration's name and the report
+        // cannot tell them apart. This pins the documented limitation of
+        // SketchConstraintStatus::name.
+        let kcl = r#"
+fn makeSketch() {
+  inner = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return inner
+}
+
+first = makeSketch()
+second = makeSketch()
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 2);
+        assert_eq!(report.under_constrained[0].name, "inner");
+        assert_eq!(report.under_constrained[1].name, "inner");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_enum_declaration_is_experimental() {
         // Without opting in, executing a program with an enum declaration
         // fails at the parsing stage with the experimental diagnostic.
@@ -4899,7 +5001,7 @@ type Color { | Red | Green | Red }
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: machine::ExecutorKind::from_env(),
+            executor_kind: machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&ctx);

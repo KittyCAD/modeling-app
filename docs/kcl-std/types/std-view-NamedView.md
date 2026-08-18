@@ -9,8 +9,8 @@ layout: manual
 
 A named view: a camera paired with the set of objects it shows or hides.
 
-Values of this type are opaque. The constructor function that produces
-them arrives in a later version of this module.
+Values of this type are opaque. Call
+[`view::named()`](/docs/kcl-std/functions/std-view-named) to produce one.
 
 
 

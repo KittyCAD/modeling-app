@@ -266,8 +266,8 @@ upperProfile = sketch(on = offsetPlane(XY, offset = 8mm)) {
   coincident([edge8.end, edge5.start])
 }
 
-lowerRegion = region(point = [2mm, 2mm], sketch = lowerProfile)
-upperRegion = region(point = [3mm, 1.8mm], sketch = upperProfile)
+lowerRegion = region(segments = [lowerProfile.edge1, lowerProfile.edge2])
+upperRegion = region(segments = [upperProfile.edge5, upperProfile.edge6])
 
 lofted = loft([lowerRegion, upperRegion])
 
@@ -309,8 +309,8 @@ circleSketch0 = sketch(on = offsetPlane(XY, offset = 2)) {
   circle1 = circle(start = [var 2.28mm, var 2.99mm], center = [var 1.98mm, var 2.03mm])
 }
 
-squareRegion = region(point = [2mm, 2mm], sketch = squareSketch)
-circleRegion = region(point = [2mm, 2mm], sketch = circleSketch0)
+squareRegion = region(segments = [squareSketch.line1, squareSketch.line4])
+circleRegion = region(segments = [circleSketch0.circle1])
 
 shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 

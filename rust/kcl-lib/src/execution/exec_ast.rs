@@ -2650,6 +2650,22 @@ impl Node<SketchBlock> {
             };
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            // Label the sketch with the name of the variable whose right-hand
+            // side is being evaluated. This function runs before the sketch
+            // body executes, so for `mySketch = sketch(on = XY) { ... }`,
+            // `being_declared` still holds `mySketch` rather than a name
+            // declared inside the body.
+            //
+            // The label is the nearest enclosing declaration, which is not
+            // always the sketch's own name:
+            // - `part = extrude(sketch(on = XY) { ... }, length = 10)` labels
+            //   the sketch `part`.
+            // - A sketch constructed inside a function body and returned takes
+            //   the name of the declaration in progress at the call site, so
+            //   two calls to that function can produce the same label.
+            // - A sketch written as an expression statement has no declaration
+            //   in progress, so its label is the empty string.
+            let label = exec_state.mod_local.being_declared.clone().unwrap_or_default();
             // Create the sketch scene object and replace its placeholder.
             let sketch_scene_object = Object {
                 id: sketch_id,
@@ -2659,7 +2675,7 @@ impl Node<SketchBlock> {
                     segments: Default::default(),
                     constraints: Default::default(),
                 }),
-                label: Default::default(),
+                label,
                 comments: Default::default(),
                 artifact_id,
                 source: SourceRef::new(self.into(), self.node_path.clone()),
@@ -6874,6 +6890,7 @@ mod test {
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
+    use crate::execution::machine::ExecutorKind;
     use crate::execution::parse_execute;
 
     fn assert_angle_degrees(actual: ezpz::datatypes::Angle, expected: f64) {
@@ -7476,7 +7493,7 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
-            executor_kind: Default::default(),
+            executor_kind: ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);

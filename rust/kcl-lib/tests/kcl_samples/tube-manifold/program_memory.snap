@@ -1492,10 +1492,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6470,
-            "end": 6483,
+            "commentStart": 6443,
+            "end": 6456,
             "moduleId": 0,
-            "start": 6470,
+            "start": 6443,
             "type": "TagDeclarator",
             "value": "bodyCutCircle"
           },
@@ -1523,10 +1523,10 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "radius": 2.9,
             "tag": {
-              "commentStart": 6470,
-              "end": 6483,
+              "commentStart": 6443,
+              "end": 6456,
               "moduleId": 0,
-              "start": 6470,
+              "start": 6443,
               "type": "TagDeclarator",
               "value": "bodyCutCircle"
             },
@@ -1629,10 +1629,10 @@ description: Variables in memory after executing tube-manifold.kcl
           ],
           "radius": 2.9,
           "tag": {
-            "commentStart": 6470,
-            "end": 6483,
+            "commentStart": 6443,
+            "end": 6456,
             "moduleId": 0,
-            "start": 6470,
+            "start": 6443,
             "type": "TagDeclarator",
             "value": "bodyCutCircle"
           },
@@ -1972,10 +1972,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   ],
                   "radius": 2.9,
                   "tag": {
-                    "commentStart": 6470,
-                    "end": 6483,
+                    "commentStart": 6443,
+                    "end": 6456,
                     "moduleId": 0,
-                    "start": 6470,
+                    "start": 6443,
                     "type": "TagDeclarator",
                     "value": "bodyCutCircle"
                   },
@@ -5000,10 +5000,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7341,
-            "end": 7347,
+            "commentStart": 7314,
+            "end": 7320,
             "moduleId": 0,
-            "start": 7341,
+            "start": 7314,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -5014,10 +5014,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7490,
-            "end": 7497,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7490,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "beadArc"
           },
@@ -5028,10 +5028,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7599,
-            "end": 7608,
+            "commentStart": 7572,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7599,
+            "start": 7572,
             "type": "TagDeclarator",
             "value": "lowerWall"
           },
@@ -5042,10 +5042,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7678,
-            "end": 7686,
+            "commentStart": 7651,
+            "end": 7659,
             "moduleId": 0,
-            "start": 7678,
+            "start": 7651,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -5056,10 +5056,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7752,
-            "end": 7762,
+            "commentStart": 7725,
+            "end": 7735,
             "moduleId": 0,
-            "start": 7752,
+            "start": 7725,
             "type": "TagDeclarator",
             "value": "centerAxis"
           },
@@ -5081,10 +5081,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7341,
-              "end": 7347,
+              "commentStart": 7314,
+              "end": 7320,
               "moduleId": 0,
-              "start": 7341,
+              "start": 7314,
               "type": "TagDeclarator",
               "value": "topCap"
             },
@@ -5105,10 +5105,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7413,
-              "end": 7422,
+              "commentStart": 7386,
+              "end": 7395,
               "moduleId": 0,
-              "start": 7413,
+              "start": 7386,
               "type": "TagDeclarator",
               "value": "upperWall"
             },
@@ -5135,10 +5135,10 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "radius": 0.20000000000000018,
             "tag": {
-              "commentStart": 7490,
-              "end": 7497,
+              "commentStart": 7463,
+              "end": 7470,
               "moduleId": 0,
-              "start": 7490,
+              "start": 7463,
               "type": "TagDeclarator",
               "value": "beadArc"
             },
@@ -5159,10 +5159,10 @@ description: Variables in memory after executing tube-manifold.kcl
               4.6
             ],
             "tag": {
-              "commentStart": 7599,
-              "end": 7608,
+              "commentStart": 7572,
+              "end": 7581,
               "moduleId": 0,
-              "start": 7599,
+              "start": 7572,
               "type": "TagDeclarator",
               "value": "lowerWall"
             },
@@ -5183,10 +5183,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7678,
-              "end": 7686,
+              "commentStart": 7651,
+              "end": 7659,
               "moduleId": 0,
-              "start": 7678,
+              "start": 7651,
               "type": "TagDeclarator",
               "value": "baseLine"
             },
@@ -5207,10 +5207,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7752,
-              "end": 7762,
+              "commentStart": 7725,
+              "end": 7735,
               "moduleId": 0,
-              "start": 7752,
+              "start": 7725,
               "type": "TagDeclarator",
               "value": "centerAxis"
             },
@@ -6559,10 +6559,10 @@ description: Variables in memory after executing tube-manifold.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 7341,
-                    "end": 7347,
+                    "commentStart": 7314,
+                    "end": 7320,
                     "moduleId": 0,
-                    "start": 7341,
+                    "start": 7314,
                     "type": "TagDeclarator",
                     "value": "topCap"
                   },
@@ -6583,10 +6583,10 @@ description: Variables in memory after executing tube-manifold.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 7413,
-                    "end": 7422,
+                    "commentStart": 7386,
+                    "end": 7395,
                     "moduleId": 0,
-                    "start": 7413,
+                    "start": 7386,
                     "type": "TagDeclarator",
                     "value": "upperWall"
                   },
@@ -6613,10 +6613,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   ],
                   "radius": 0.20000000000000018,
                   "tag": {
-                    "commentStart": 7490,
-                    "end": 7497,
+                    "commentStart": 7463,
+                    "end": 7470,
                     "moduleId": 0,
-                    "start": 7490,
+                    "start": 7463,
                     "type": "TagDeclarator",
                     "value": "beadArc"
                   },
@@ -6637,10 +6637,10 @@ description: Variables in memory after executing tube-manifold.kcl
                     4.6
                   ],
                   "tag": {
-                    "commentStart": 7599,
-                    "end": 7608,
+                    "commentStart": 7572,
+                    "end": 7581,
                     "moduleId": 0,
-                    "start": 7599,
+                    "start": 7572,
                     "type": "TagDeclarator",
                     "value": "lowerWall"
                   },
@@ -6661,10 +6661,10 @@ description: Variables in memory after executing tube-manifold.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7678,
-                    "end": 7686,
+                    "commentStart": 7651,
+                    "end": 7659,
                     "moduleId": 0,
-                    "start": 7678,
+                    "start": 7651,
                     "type": "TagDeclarator",
                     "value": "baseLine"
                   },
@@ -6685,10 +6685,10 @@ description: Variables in memory after executing tube-manifold.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7752,
-                    "end": 7762,
+                    "commentStart": 7725,
+                    "end": 7735,
                     "moduleId": 0,
-                    "start": 7752,
+                    "start": 7725,
                     "type": "TagDeclarator",
                     "value": "centerAxis"
                   },
@@ -7041,10 +7041,10 @@ description: Variables in memory after executing tube-manifold.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 7341,
-            "end": 7347,
+            "commentStart": 7314,
+            "end": 7320,
             "moduleId": 0,
-            "start": 7341,
+            "start": 7314,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -7065,10 +7065,10 @@ description: Variables in memory after executing tube-manifold.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 7413,
-            "end": 7422,
+            "commentStart": 7386,
+            "end": 7395,
             "moduleId": 0,
-            "start": 7413,
+            "start": 7386,
             "type": "TagDeclarator",
             "value": "upperWall"
           },
@@ -7095,10 +7095,10 @@ description: Variables in memory after executing tube-manifold.kcl
           ],
           "radius": 0.20000000000000018,
           "tag": {
-            "commentStart": 7490,
-            "end": 7497,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7490,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "beadArc"
           },
@@ -7119,10 +7119,10 @@ description: Variables in memory after executing tube-manifold.kcl
             4.6
           ],
           "tag": {
-            "commentStart": 7599,
-            "end": 7608,
+            "commentStart": 7572,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7599,
+            "start": 7572,
             "type": "TagDeclarator",
             "value": "lowerWall"
           },
@@ -7143,10 +7143,10 @@ description: Variables in memory after executing tube-manifold.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7678,
-            "end": 7686,
+            "commentStart": 7651,
+            "end": 7659,
             "moduleId": 0,
-            "start": 7678,
+            "start": 7651,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -7167,10 +7167,10 @@ description: Variables in memory after executing tube-manifold.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7752,
-            "end": 7762,
+            "commentStart": 7725,
+            "end": 7735,
             "moduleId": 0,
-            "start": 7752,
+            "start": 7725,
             "type": "TagDeclarator",
             "value": "centerAxis"
           },
@@ -7273,10 +7273,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7341,
-            "end": 7347,
+            "commentStart": 7314,
+            "end": 7320,
             "moduleId": 0,
-            "start": 7341,
+            "start": 7314,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -7287,10 +7287,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7490,
-            "end": 7497,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7490,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "beadArc"
           },
@@ -7301,10 +7301,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7599,
-            "end": 7608,
+            "commentStart": 7572,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7599,
+            "start": 7572,
             "type": "TagDeclarator",
             "value": "lowerWall"
           },
@@ -7315,10 +7315,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7678,
-            "end": 7686,
+            "commentStart": 7651,
+            "end": 7659,
             "moduleId": 0,
-            "start": 7678,
+            "start": 7651,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -7329,10 +7329,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7752,
-            "end": 7762,
+            "commentStart": 7725,
+            "end": 7735,
             "moduleId": 0,
-            "start": 7752,
+            "start": 7725,
             "type": "TagDeclarator",
             "value": "centerAxis"
           },
@@ -7354,10 +7354,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7341,
-              "end": 7347,
+              "commentStart": 7314,
+              "end": 7320,
               "moduleId": 0,
-              "start": 7341,
+              "start": 7314,
               "type": "TagDeclarator",
               "value": "topCap"
             },
@@ -7378,10 +7378,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7413,
-              "end": 7422,
+              "commentStart": 7386,
+              "end": 7395,
               "moduleId": 0,
-              "start": 7413,
+              "start": 7386,
               "type": "TagDeclarator",
               "value": "upperWall"
             },
@@ -7408,10 +7408,10 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "radius": 0.20000000000000018,
             "tag": {
-              "commentStart": 7490,
-              "end": 7497,
+              "commentStart": 7463,
+              "end": 7470,
               "moduleId": 0,
-              "start": 7490,
+              "start": 7463,
               "type": "TagDeclarator",
               "value": "beadArc"
             },
@@ -7432,10 +7432,10 @@ description: Variables in memory after executing tube-manifold.kcl
               4.6
             ],
             "tag": {
-              "commentStart": 7599,
-              "end": 7608,
+              "commentStart": 7572,
+              "end": 7581,
               "moduleId": 0,
-              "start": 7599,
+              "start": 7572,
               "type": "TagDeclarator",
               "value": "lowerWall"
             },
@@ -7456,10 +7456,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7678,
-              "end": 7686,
+              "commentStart": 7651,
+              "end": 7659,
               "moduleId": 0,
-              "start": 7678,
+              "start": 7651,
               "type": "TagDeclarator",
               "value": "baseLine"
             },
@@ -7480,10 +7480,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7752,
-              "end": 7762,
+              "commentStart": 7725,
+              "end": 7735,
               "moduleId": 0,
-              "start": 7752,
+              "start": 7725,
               "type": "TagDeclarator",
               "value": "centerAxis"
             },
@@ -7600,10 +7600,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7341,
-            "end": 7347,
+            "commentStart": 7314,
+            "end": 7320,
             "moduleId": 0,
-            "start": 7341,
+            "start": 7314,
             "type": "TagDeclarator",
             "value": "topCap"
           },
@@ -7614,10 +7614,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7490,
-            "end": 7497,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7490,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "beadArc"
           },
@@ -7628,10 +7628,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7599,
-            "end": 7608,
+            "commentStart": 7572,
+            "end": 7581,
             "moduleId": 0,
-            "start": 7599,
+            "start": 7572,
             "type": "TagDeclarator",
             "value": "lowerWall"
           },
@@ -7642,10 +7642,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7678,
-            "end": 7686,
+            "commentStart": 7651,
+            "end": 7659,
             "moduleId": 0,
-            "start": 7678,
+            "start": 7651,
             "type": "TagDeclarator",
             "value": "baseLine"
           },
@@ -7656,10 +7656,10 @@ description: Variables in memory after executing tube-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7752,
-            "end": 7762,
+            "commentStart": 7725,
+            "end": 7735,
             "moduleId": 0,
-            "start": 7752,
+            "start": 7725,
             "type": "TagDeclarator",
             "value": "centerAxis"
           },
@@ -7681,10 +7681,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7341,
-              "end": 7347,
+              "commentStart": 7314,
+              "end": 7320,
               "moduleId": 0,
-              "start": 7341,
+              "start": 7314,
               "type": "TagDeclarator",
               "value": "topCap"
             },
@@ -7705,10 +7705,10 @@ description: Variables in memory after executing tube-manifold.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 7413,
-              "end": 7422,
+              "commentStart": 7386,
+              "end": 7395,
               "moduleId": 0,
-              "start": 7413,
+              "start": 7386,
               "type": "TagDeclarator",
               "value": "upperWall"
             },
@@ -7735,10 +7735,10 @@ description: Variables in memory after executing tube-manifold.kcl
             ],
             "radius": 0.20000000000000018,
             "tag": {
-              "commentStart": 7490,
-              "end": 7497,
+              "commentStart": 7463,
+              "end": 7470,
               "moduleId": 0,
-              "start": 7490,
+              "start": 7463,
               "type": "TagDeclarator",
               "value": "beadArc"
             },
@@ -7759,10 +7759,10 @@ description: Variables in memory after executing tube-manifold.kcl
               4.6
             ],
             "tag": {
-              "commentStart": 7599,
-              "end": 7608,
+              "commentStart": 7572,
+              "end": 7581,
               "moduleId": 0,
-              "start": 7599,
+              "start": 7572,
               "type": "TagDeclarator",
               "value": "lowerWall"
             },
@@ -7783,10 +7783,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7678,
-              "end": 7686,
+              "commentStart": 7651,
+              "end": 7659,
               "moduleId": 0,
-              "start": 7678,
+              "start": 7651,
               "type": "TagDeclarator",
               "value": "baseLine"
             },
@@ -7807,10 +7807,10 @@ description: Variables in memory after executing tube-manifold.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7752,
-              "end": 7762,
+              "commentStart": 7725,
+              "end": 7735,
               "moduleId": 0,
-              "start": 7752,
+              "start": 7725,
               "type": "TagDeclarator",
               "value": "centerAxis"
             },
@@ -7921,10 +7921,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7341,
-                "end": 7347,
+                "commentStart": 7314,
+                "end": 7320,
                 "moduleId": 0,
-                "start": 7341,
+                "start": 7314,
                 "type": "TagDeclarator",
                 "value": "topCap"
               },
@@ -7935,10 +7935,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7490,
-                "end": 7497,
+                "commentStart": 7463,
+                "end": 7470,
                 "moduleId": 0,
-                "start": 7490,
+                "start": 7463,
                 "type": "TagDeclarator",
                 "value": "beadArc"
               },
@@ -7949,10 +7949,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7599,
-                "end": 7608,
+                "commentStart": 7572,
+                "end": 7581,
                 "moduleId": 0,
-                "start": 7599,
+                "start": 7572,
                 "type": "TagDeclarator",
                 "value": "lowerWall"
               },
@@ -7963,10 +7963,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7678,
-                "end": 7686,
+                "commentStart": 7651,
+                "end": 7659,
                 "moduleId": 0,
-                "start": 7678,
+                "start": 7651,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -7977,10 +7977,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7752,
-                "end": 7762,
+                "commentStart": 7725,
+                "end": 7735,
                 "moduleId": 0,
-                "start": 7752,
+                "start": 7725,
                 "type": "TagDeclarator",
                 "value": "centerAxis"
               },
@@ -8002,10 +8002,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7341,
-                  "end": 7347,
+                  "commentStart": 7314,
+                  "end": 7320,
                   "moduleId": 0,
-                  "start": 7341,
+                  "start": 7314,
                   "type": "TagDeclarator",
                   "value": "topCap"
                 },
@@ -8026,10 +8026,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7413,
-                  "end": 7422,
+                  "commentStart": 7386,
+                  "end": 7395,
                   "moduleId": 0,
-                  "start": 7413,
+                  "start": 7386,
                   "type": "TagDeclarator",
                   "value": "upperWall"
                 },
@@ -8056,10 +8056,10 @@ description: Variables in memory after executing tube-manifold.kcl
                 ],
                 "radius": 0.20000000000000018,
                 "tag": {
-                  "commentStart": 7490,
-                  "end": 7497,
+                  "commentStart": 7463,
+                  "end": 7470,
                   "moduleId": 0,
-                  "start": 7490,
+                  "start": 7463,
                   "type": "TagDeclarator",
                   "value": "beadArc"
                 },
@@ -8080,10 +8080,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   4.6
                 ],
                 "tag": {
-                  "commentStart": 7599,
-                  "end": 7608,
+                  "commentStart": 7572,
+                  "end": 7581,
                   "moduleId": 0,
-                  "start": 7599,
+                  "start": 7572,
                   "type": "TagDeclarator",
                   "value": "lowerWall"
                 },
@@ -8104,10 +8104,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7678,
-                  "end": 7686,
+                  "commentStart": 7651,
+                  "end": 7659,
                   "moduleId": 0,
-                  "start": 7678,
+                  "start": 7651,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -8128,10 +8128,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7752,
-                  "end": 7762,
+                  "commentStart": 7725,
+                  "end": 7735,
                   "moduleId": 0,
-                  "start": 7752,
+                  "start": 7725,
                   "type": "TagDeclarator",
                   "value": "centerAxis"
                 },
@@ -8239,10 +8239,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7341,
-                "end": 7347,
+                "commentStart": 7314,
+                "end": 7320,
                 "moduleId": 0,
-                "start": 7341,
+                "start": 7314,
                 "type": "TagDeclarator",
                 "value": "topCap"
               },
@@ -8253,10 +8253,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7490,
-                "end": 7497,
+                "commentStart": 7463,
+                "end": 7470,
                 "moduleId": 0,
-                "start": 7490,
+                "start": 7463,
                 "type": "TagDeclarator",
                 "value": "beadArc"
               },
@@ -8267,10 +8267,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7599,
-                "end": 7608,
+                "commentStart": 7572,
+                "end": 7581,
                 "moduleId": 0,
-                "start": 7599,
+                "start": 7572,
                 "type": "TagDeclarator",
                 "value": "lowerWall"
               },
@@ -8281,10 +8281,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7678,
-                "end": 7686,
+                "commentStart": 7651,
+                "end": 7659,
                 "moduleId": 0,
-                "start": 7678,
+                "start": 7651,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -8295,10 +8295,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7752,
-                "end": 7762,
+                "commentStart": 7725,
+                "end": 7735,
                 "moduleId": 0,
-                "start": 7752,
+                "start": 7725,
                 "type": "TagDeclarator",
                 "value": "centerAxis"
               },
@@ -8320,10 +8320,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7341,
-                  "end": 7347,
+                  "commentStart": 7314,
+                  "end": 7320,
                   "moduleId": 0,
-                  "start": 7341,
+                  "start": 7314,
                   "type": "TagDeclarator",
                   "value": "topCap"
                 },
@@ -8344,10 +8344,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7413,
-                  "end": 7422,
+                  "commentStart": 7386,
+                  "end": 7395,
                   "moduleId": 0,
-                  "start": 7413,
+                  "start": 7386,
                   "type": "TagDeclarator",
                   "value": "upperWall"
                 },
@@ -8374,10 +8374,10 @@ description: Variables in memory after executing tube-manifold.kcl
                 ],
                 "radius": 0.20000000000000018,
                 "tag": {
-                  "commentStart": 7490,
-                  "end": 7497,
+                  "commentStart": 7463,
+                  "end": 7470,
                   "moduleId": 0,
-                  "start": 7490,
+                  "start": 7463,
                   "type": "TagDeclarator",
                   "value": "beadArc"
                 },
@@ -8398,10 +8398,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   4.6
                 ],
                 "tag": {
-                  "commentStart": 7599,
-                  "end": 7608,
+                  "commentStart": 7572,
+                  "end": 7581,
                   "moduleId": 0,
-                  "start": 7599,
+                  "start": 7572,
                   "type": "TagDeclarator",
                   "value": "lowerWall"
                 },
@@ -8422,10 +8422,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7678,
-                  "end": 7686,
+                  "commentStart": 7651,
+                  "end": 7659,
                   "moduleId": 0,
-                  "start": 7678,
+                  "start": 7651,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -8446,10 +8446,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7752,
-                  "end": 7762,
+                  "commentStart": 7725,
+                  "end": 7735,
                   "moduleId": 0,
-                  "start": 7752,
+                  "start": 7725,
                   "type": "TagDeclarator",
                   "value": "centerAxis"
                 },
@@ -8557,10 +8557,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7341,
-                "end": 7347,
+                "commentStart": 7314,
+                "end": 7320,
                 "moduleId": 0,
-                "start": 7341,
+                "start": 7314,
                 "type": "TagDeclarator",
                 "value": "topCap"
               },
@@ -8571,10 +8571,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7490,
-                "end": 7497,
+                "commentStart": 7463,
+                "end": 7470,
                 "moduleId": 0,
-                "start": 7490,
+                "start": 7463,
                 "type": "TagDeclarator",
                 "value": "beadArc"
               },
@@ -8585,10 +8585,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7599,
-                "end": 7608,
+                "commentStart": 7572,
+                "end": 7581,
                 "moduleId": 0,
-                "start": 7599,
+                "start": 7572,
                 "type": "TagDeclarator",
                 "value": "lowerWall"
               },
@@ -8599,10 +8599,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7678,
-                "end": 7686,
+                "commentStart": 7651,
+                "end": 7659,
                 "moduleId": 0,
-                "start": 7678,
+                "start": 7651,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -8613,10 +8613,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7752,
-                "end": 7762,
+                "commentStart": 7725,
+                "end": 7735,
                 "moduleId": 0,
-                "start": 7752,
+                "start": 7725,
                 "type": "TagDeclarator",
                 "value": "centerAxis"
               },
@@ -8638,10 +8638,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7341,
-                  "end": 7347,
+                  "commentStart": 7314,
+                  "end": 7320,
                   "moduleId": 0,
-                  "start": 7341,
+                  "start": 7314,
                   "type": "TagDeclarator",
                   "value": "topCap"
                 },
@@ -8662,10 +8662,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7413,
-                  "end": 7422,
+                  "commentStart": 7386,
+                  "end": 7395,
                   "moduleId": 0,
-                  "start": 7413,
+                  "start": 7386,
                   "type": "TagDeclarator",
                   "value": "upperWall"
                 },
@@ -8692,10 +8692,10 @@ description: Variables in memory after executing tube-manifold.kcl
                 ],
                 "radius": 0.20000000000000018,
                 "tag": {
-                  "commentStart": 7490,
-                  "end": 7497,
+                  "commentStart": 7463,
+                  "end": 7470,
                   "moduleId": 0,
-                  "start": 7490,
+                  "start": 7463,
                   "type": "TagDeclarator",
                   "value": "beadArc"
                 },
@@ -8716,10 +8716,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   4.6
                 ],
                 "tag": {
-                  "commentStart": 7599,
-                  "end": 7608,
+                  "commentStart": 7572,
+                  "end": 7581,
                   "moduleId": 0,
-                  "start": 7599,
+                  "start": 7572,
                   "type": "TagDeclarator",
                   "value": "lowerWall"
                 },
@@ -8740,10 +8740,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7678,
-                  "end": 7686,
+                  "commentStart": 7651,
+                  "end": 7659,
                   "moduleId": 0,
-                  "start": 7678,
+                  "start": 7651,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -8764,10 +8764,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7752,
-                  "end": 7762,
+                  "commentStart": 7725,
+                  "end": 7735,
                   "moduleId": 0,
-                  "start": 7752,
+                  "start": 7725,
                   "type": "TagDeclarator",
                   "value": "centerAxis"
                 },
@@ -8875,10 +8875,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7341,
-                "end": 7347,
+                "commentStart": 7314,
+                "end": 7320,
                 "moduleId": 0,
-                "start": 7341,
+                "start": 7314,
                 "type": "TagDeclarator",
                 "value": "topCap"
               },
@@ -8889,10 +8889,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7490,
-                "end": 7497,
+                "commentStart": 7463,
+                "end": 7470,
                 "moduleId": 0,
-                "start": 7490,
+                "start": 7463,
                 "type": "TagDeclarator",
                 "value": "beadArc"
               },
@@ -8903,10 +8903,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7599,
-                "end": 7608,
+                "commentStart": 7572,
+                "end": 7581,
                 "moduleId": 0,
-                "start": 7599,
+                "start": 7572,
                 "type": "TagDeclarator",
                 "value": "lowerWall"
               },
@@ -8917,10 +8917,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7678,
-                "end": 7686,
+                "commentStart": 7651,
+                "end": 7659,
                 "moduleId": 0,
-                "start": 7678,
+                "start": 7651,
                 "type": "TagDeclarator",
                 "value": "baseLine"
               },
@@ -8931,10 +8931,10 @@ description: Variables in memory after executing tube-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7752,
-                "end": 7762,
+                "commentStart": 7725,
+                "end": 7735,
                 "moduleId": 0,
-                "start": 7752,
+                "start": 7725,
                 "type": "TagDeclarator",
                 "value": "centerAxis"
               },
@@ -8956,10 +8956,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7341,
-                  "end": 7347,
+                  "commentStart": 7314,
+                  "end": 7320,
                   "moduleId": 0,
-                  "start": 7341,
+                  "start": 7314,
                   "type": "TagDeclarator",
                   "value": "topCap"
                 },
@@ -8980,10 +8980,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   6.0
                 ],
                 "tag": {
-                  "commentStart": 7413,
-                  "end": 7422,
+                  "commentStart": 7386,
+                  "end": 7395,
                   "moduleId": 0,
-                  "start": 7413,
+                  "start": 7386,
                   "type": "TagDeclarator",
                   "value": "upperWall"
                 },
@@ -9010,10 +9010,10 @@ description: Variables in memory after executing tube-manifold.kcl
                 ],
                 "radius": 0.20000000000000018,
                 "tag": {
-                  "commentStart": 7490,
-                  "end": 7497,
+                  "commentStart": 7463,
+                  "end": 7470,
                   "moduleId": 0,
-                  "start": 7490,
+                  "start": 7463,
                   "type": "TagDeclarator",
                   "value": "beadArc"
                 },
@@ -9034,10 +9034,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   4.6
                 ],
                 "tag": {
-                  "commentStart": 7599,
-                  "end": 7608,
+                  "commentStart": 7572,
+                  "end": 7581,
                   "moduleId": 0,
-                  "start": 7599,
+                  "start": 7572,
                   "type": "TagDeclarator",
                   "value": "lowerWall"
                 },
@@ -9058,10 +9058,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7678,
-                  "end": 7686,
+                  "commentStart": 7651,
+                  "end": 7659,
                   "moduleId": 0,
-                  "start": 7678,
+                  "start": 7651,
                   "type": "TagDeclarator",
                   "value": "baseLine"
                 },
@@ -9082,10 +9082,10 @@ description: Variables in memory after executing tube-manifold.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 7752,
-                  "end": 7762,
+                  "commentStart": 7725,
+                  "end": 7735,
                   "moduleId": 0,
-                  "start": 7752,
+                  "start": 7725,
                   "type": "TagDeclarator",
                   "value": "centerAxis"
                 },
