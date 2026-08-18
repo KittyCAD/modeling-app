@@ -20,7 +20,7 @@ sketch001 = sketch(on = XY) {
   verticalDistance([line2.end, line2.start]) == 100
 }
 hidden001 = hide(sketch001)
-region001 = region(point = [0.64mm, 2.7875mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(
   region001,
   length = 100,

@@ -86,12 +86,12 @@ plateSketch = sketch(on = XY) {
   horizontal(edge3)
   vertical(edge4)
 }
-plate = extrude(region(point = [10mm, 10mm], sketch = plateSketch), length = 5mm)
+plate = extrude(region(segments = [plateSketch.edge1, plateSketch.edge2]), length = 5mm)
 
 bossSketch = sketch(on = XY) {
   boundary = circle(start = [var 40mm, var 20mm], center = [var 30mm, var 20mm])
 }
-boss = extrude(region(point = [30mm, 20mm], sketch = bossSketch), length = 12mm)
+boss = extrude(region(segments = [bossSketch.boundary]), length = 12mm)
 
 // This file hides the boss, so the scene generated on successful execution
 // shows the plate alone. The views below are unaffected by this call; each

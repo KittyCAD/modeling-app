@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 primaryTubeDiameter = 1.625
@@ -66,7 +66,7 @@ sectionSketch001 = sketch(on = sectionPlane001) {
   coincident([line2.end, circle1.start])
   horizontal(line2)
 }
-sectionRegion001 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch001)
+sectionRegion001 = region(segments = [sectionSketch001.circle1])
 primaryTube001 = sweep(sectionRegion001, path = pathSketch001)
 hide(sectionSketch001)
 hide(pathSketch001)
@@ -128,7 +128,7 @@ sectionSketch003 = sketch(on = sectionPlane003) {
   horizontalDistance([circle1.center, circle1.start]) == primaryTubeDiameter / 2
   verticalDistance([circle1.center, circle1.start]) == 0in
 }
-sectionRegion003 = region(point = [tubeWallMidRadius, 0in], sketch = sectionSketch003)
+sectionRegion003 = region(segments = [sectionSketch003.circle1])
 primaryTube003 = sweep(sectionRegion003, path = pathSketch003)
 hide(sectionSketch003)
 hide(pathSketch003)
@@ -272,7 +272,7 @@ flangeSketch = sketch(on = XY) {
   horizontalDistance([circle24.center, circle24.start]) == 0.125in
   verticalDistance([circle24.center, circle24.start]) == 0in
 }
-flangeRegion = region(point = [-0.9in, 0in], sketch = flangeSketch)
+flangeRegion = region(segments = [flangeSketch.line1, flangeSketch.arc2], direction = CW)
 flangeExtrude = extrude(flangeRegion, length = plateHeight)
 hide(flangeSketch)
 
@@ -280,27 +280,39 @@ flangeTopLeftFillet = fillet(
   flangeExtrude,
   radius = 1.5,
   tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line7)
+    getCommonEdge(faces = [
+      flangeRegion.tags.line6,
+      flangeRegion.tags.line7
+    ])
   ],
 )
 flangeTopFillets = fillet(
   flangeTopLeftFillet,
   radius = 1.5,
   tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line12)
+    getCommonEdge(faces = [
+      flangeRegion.tags.line11,
+      flangeRegion.tags.line12
+    ])
   ],
 )
 flangeBottomLeftFillet = fillet(
   flangeTopFillets,
   radius = 0.25,
   tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line6)
+    getCommonEdge(faces = [
+      flangeRegion.tags.line5,
+      flangeRegion.tags.line6
+    ])
   ],
 )
 flangeBody = fillet(
   flangeBottomLeftFillet,
   radius = 0.25,
   tags = [
-    getNextAdjacentEdge(flangeExtrude.sketch.tags.line13)
+    getCommonEdge(faces = [
+      flangeRegion.tags.line12,
+      flangeRegion.tags.line13
+    ])
   ],
 )

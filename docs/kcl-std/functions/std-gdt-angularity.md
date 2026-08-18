@@ -100,7 +100,13 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+stampedPart = extrude(
+  region(segments = [
+    stampedProfile.datumFace,
+    stampedProfile.flangeEnd
+  ]),
+  length = 0.8mm,
+)
 
 gdt::datum(
   face = stampedPart.sketch.tags.datumFace,
@@ -175,7 +181,10 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+stampedRegion = region(segments = [
+  stampedProfile.datumFace,
+  stampedProfile.flangeEnd
+])
 hide(stampedProfile)
 stampedPart = extrude(stampedRegion, length = 0.8mm)
 

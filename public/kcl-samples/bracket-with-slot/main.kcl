@@ -257,13 +257,7 @@ slotProfile = sketch(on = XY) {
   ])
 }
 // Step 6: Slot cutter extrusion
-slotRegion = region(
-  point = [
-    slotCenterOffsetFromBend - (slotOverallLength / 2),
-    0
-  ],
-  sketch = slotProfile,
-)
+slotRegion = region(segments = [slotProfile.line1, slotProfile.arc2])
 slotCutSolid = extrude(slotRegion, length = sheetMetalThickness, method = NEW)
 hiddenSlotProfile = hide(slotProfile)
 
