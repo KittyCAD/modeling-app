@@ -297,10 +297,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8360,
-            "end": 8371,
+            "commentStart": 8382,
+            "end": 8393,
             "moduleId": 0,
-            "start": 8360,
+            "start": 8382,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -311,10 +311,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8443,
-            "end": 8454,
+            "commentStart": 8465,
+            "end": 8476,
             "moduleId": 0,
-            "start": 8443,
+            "start": 8465,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -342,10 +342,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.74,
             "tag": {
-              "commentStart": 8360,
-              "end": 8371,
+              "commentStart": 8382,
+              "end": 8393,
               "moduleId": 0,
-              "start": 8360,
+              "start": 8382,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -372,10 +372,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.625,
             "tag": {
-              "commentStart": 8443,
-              "end": 8454,
+              "commentStart": 8465,
+              "end": 8476,
               "moduleId": 0,
-              "start": 8443,
+              "start": 8465,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -477,10 +477,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.74,
           "tag": {
-            "commentStart": 8360,
-            "end": 8371,
+            "commentStart": 8382,
+            "end": 8393,
             "moduleId": 0,
-            "start": 8360,
+            "start": 8382,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -507,10 +507,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.625,
           "tag": {
-            "commentStart": 8443,
-            "end": 8454,
+            "commentStart": 8465,
+            "end": 8476,
             "moduleId": 0,
-            "start": 8443,
+            "start": 8465,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -854,10 +854,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.74,
                   "tag": {
-                    "commentStart": 8360,
-                    "end": 8371,
+                    "commentStart": 8382,
+                    "end": 8393,
                     "moduleId": 0,
-                    "start": 8360,
+                    "start": 8382,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -901,10 +901,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.625,
                   "tag": {
-                    "commentStart": 8443,
-                    "end": 8454,
+                    "commentStart": 8465,
+                    "end": 8476,
                     "moduleId": 0,
-                    "start": 8443,
+                    "start": 8465,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -1238,10 +1238,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8360,
-            "end": 8371,
+            "commentStart": 8382,
+            "end": 8393,
             "moduleId": 0,
-            "start": 8360,
+            "start": 8382,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -1252,10 +1252,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8443,
-            "end": 8454,
+            "commentStart": 8465,
+            "end": 8476,
             "moduleId": 0,
-            "start": 8443,
+            "start": 8465,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -1283,10 +1283,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.74,
             "tag": {
-              "commentStart": 8360,
-              "end": 8371,
+              "commentStart": 8382,
+              "end": 8393,
               "moduleId": 0,
-              "start": 8360,
+              "start": 8382,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -1313,10 +1313,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.625,
             "tag": {
-              "commentStart": 8443,
-              "end": 8454,
+              "commentStart": 8465,
+              "end": 8476,
               "moduleId": 0,
-              "start": 8443,
+              "start": 8465,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -1416,10 +1416,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -1447,10 +1447,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -1538,10 +1538,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -1569,10 +1569,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -1660,10 +1660,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -1691,10 +1691,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -1782,10 +1782,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -1813,10 +1813,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -1934,10 +1934,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.21875,
           "tag": {
-            "commentStart": 5304,
-            "end": 5322,
+            "commentStart": 5326,
+            "end": 5344,
             "moduleId": 0,
-            "start": 5304,
+            "start": 5326,
             "type": "TagDeclarator",
             "value": "counterdrillCircle"
           },
@@ -2023,10 +2023,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -2054,10 +2054,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -2145,10 +2145,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5304,
-                "end": 5322,
+                "commentStart": 5326,
+                "end": 5344,
                 "moduleId": 0,
-                "start": 5304,
+                "start": 5326,
                 "type": "TagDeclarator",
                 "value": "counterdrillCircle"
               },
@@ -2176,10 +2176,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.21875,
                 "tag": {
-                  "commentStart": 5304,
-                  "end": 5322,
+                  "commentStart": 5326,
+                  "end": 5344,
                   "moduleId": 0,
-                  "start": 5304,
+                  "start": 5326,
                   "type": "TagDeclarator",
                   "value": "counterdrillCircle"
                 },
@@ -2269,10 +2269,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5304,
-            "end": 5322,
+            "commentStart": 5326,
+            "end": 5344,
             "moduleId": 0,
-            "start": 5304,
+            "start": 5326,
             "type": "TagDeclarator",
             "value": "counterdrillCircle"
           },
@@ -2300,10 +2300,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.21875,
             "tag": {
-              "commentStart": 5304,
-              "end": 5322,
+              "commentStart": 5326,
+              "end": 5344,
               "moduleId": 0,
-              "start": 5304,
+              "start": 5326,
               "type": "TagDeclarator",
               "value": "counterdrillCircle"
             },
@@ -2890,10 +2890,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.21875,
                   "tag": {
-                    "commentStart": 5304,
-                    "end": 5322,
+                    "commentStart": 5326,
+                    "end": 5344,
                     "moduleId": 0,
-                    "start": 5304,
+                    "start": 5326,
                     "type": "TagDeclarator",
                     "value": "counterdrillCircle"
                   },
@@ -3207,10 +3207,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9841,
-                "end": 9850,
+                "commentStart": 9802,
+                "end": 9811,
                 "moduleId": 0,
-                "start": 9841,
+                "start": 9802,
                 "type": "TagDeclarator",
                 "value": "innerWall"
               },
@@ -3221,10 +3221,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9924,
-                "end": 9931,
+                "commentStart": 9885,
+                "end": 9892,
                 "moduleId": 0,
-                "start": 9924,
+                "start": 9885,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -3235,10 +3235,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10005,
-                "end": 10015,
+                "commentStart": 9966,
+                "end": 9976,
                 "moduleId": 0,
-                "start": 10005,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "slopedEdge"
               },
@@ -3249,10 +3249,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10090,
-                "end": 10099,
+                "commentStart": 10051,
+                "end": 10060,
                 "moduleId": 0,
-                "start": 10090,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "outerRise"
               },
@@ -3263,10 +3263,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10174,
-                "end": 10182,
+                "commentStart": 10135,
+                "end": 10143,
                 "moduleId": 0,
-                "start": 10174,
+                "start": 10135,
                 "type": "TagDeclarator",
                 "value": "baseEdge"
               },
@@ -3288,10 +3288,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 9841,
-                  "end": 9850,
+                  "commentStart": 9802,
+                  "end": 9811,
                   "moduleId": 0,
-                  "start": 9841,
+                  "start": 9802,
                   "type": "TagDeclarator",
                   "value": "innerWall"
                 },
@@ -3312,10 +3312,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 9924,
-                  "end": 9931,
+                  "commentStart": 9885,
+                  "end": 9892,
                   "moduleId": 0,
-                  "start": 9924,
+                  "start": 9885,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -3336,10 +3336,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 10005,
-                  "end": 10015,
+                  "commentStart": 9966,
+                  "end": 9976,
                   "moduleId": 0,
-                  "start": 10005,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "slopedEdge"
                 },
@@ -3360,10 +3360,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.65
                 ],
                 "tag": {
-                  "commentStart": 10090,
-                  "end": 10099,
+                  "commentStart": 10051,
+                  "end": 10060,
                   "moduleId": 0,
-                  "start": 10090,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "outerRise"
                 },
@@ -3384,10 +3384,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 10174,
-                  "end": 10182,
+                  "commentStart": 10135,
+                  "end": 10143,
                   "moduleId": 0,
-                  "start": 10174,
+                  "start": 10135,
                   "type": "TagDeclarator",
                   "value": "baseEdge"
                 },
@@ -3491,10 +3491,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9841,
-                "end": 9850,
+                "commentStart": 9802,
+                "end": 9811,
                 "moduleId": 0,
-                "start": 9841,
+                "start": 9802,
                 "type": "TagDeclarator",
                 "value": "innerWall"
               },
@@ -3505,10 +3505,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9924,
-                "end": 9931,
+                "commentStart": 9885,
+                "end": 9892,
                 "moduleId": 0,
-                "start": 9924,
+                "start": 9885,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -3519,10 +3519,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10005,
-                "end": 10015,
+                "commentStart": 9966,
+                "end": 9976,
                 "moduleId": 0,
-                "start": 10005,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "slopedEdge"
               },
@@ -3533,10 +3533,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10090,
-                "end": 10099,
+                "commentStart": 10051,
+                "end": 10060,
                 "moduleId": 0,
-                "start": 10090,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "outerRise"
               },
@@ -3547,10 +3547,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10174,
-                "end": 10182,
+                "commentStart": 10135,
+                "end": 10143,
                 "moduleId": 0,
-                "start": 10174,
+                "start": 10135,
                 "type": "TagDeclarator",
                 "value": "baseEdge"
               },
@@ -3572,10 +3572,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 9841,
-                  "end": 9850,
+                  "commentStart": 9802,
+                  "end": 9811,
                   "moduleId": 0,
-                  "start": 9841,
+                  "start": 9802,
                   "type": "TagDeclarator",
                   "value": "innerWall"
                 },
@@ -3596,10 +3596,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 9924,
-                  "end": 9931,
+                  "commentStart": 9885,
+                  "end": 9892,
                   "moduleId": 0,
-                  "start": 9924,
+                  "start": 9885,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -3620,10 +3620,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 10005,
-                  "end": 10015,
+                  "commentStart": 9966,
+                  "end": 9976,
                   "moduleId": 0,
-                  "start": 10005,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "slopedEdge"
                 },
@@ -3644,10 +3644,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.65
                 ],
                 "tag": {
-                  "commentStart": 10090,
-                  "end": 10099,
+                  "commentStart": 10051,
+                  "end": 10060,
                   "moduleId": 0,
-                  "start": 10090,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "outerRise"
                 },
@@ -3668,10 +3668,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 10174,
-                  "end": 10182,
+                  "commentStart": 10135,
+                  "end": 10143,
                   "moduleId": 0,
-                  "start": 10174,
+                  "start": 10135,
                   "type": "TagDeclarator",
                   "value": "baseEdge"
                 },
@@ -3780,10 +3780,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11786,
-                "end": 11795,
+                "commentStart": 11747,
+                "end": 11756,
                 "moduleId": 0,
-                "start": 11786,
+                "start": 11747,
                 "type": "TagDeclarator",
                 "value": "innerWall"
               },
@@ -3794,10 +3794,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11869,
-                "end": 11876,
+                "commentStart": 11830,
+                "end": 11837,
                 "moduleId": 0,
-                "start": 11869,
+                "start": 11830,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -3808,10 +3808,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11950,
-                "end": 11960,
+                "commentStart": 11911,
+                "end": 11921,
                 "moduleId": 0,
-                "start": 11950,
+                "start": 11911,
                 "type": "TagDeclarator",
                 "value": "slopedEdge"
               },
@@ -3822,10 +3822,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12035,
-                "end": 12044,
+                "commentStart": 11996,
+                "end": 12005,
                 "moduleId": 0,
-                "start": 12035,
+                "start": 11996,
                 "type": "TagDeclarator",
                 "value": "outerRise"
               },
@@ -3836,10 +3836,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12119,
-                "end": 12127,
+                "commentStart": 12080,
+                "end": 12088,
                 "moduleId": 0,
-                "start": 12119,
+                "start": 12080,
                 "type": "TagDeclarator",
                 "value": "baseEdge"
               },
@@ -3861,10 +3861,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 11786,
-                  "end": 11795,
+                  "commentStart": 11747,
+                  "end": 11756,
                   "moduleId": 0,
-                  "start": 11786,
+                  "start": 11747,
                   "type": "TagDeclarator",
                   "value": "innerWall"
                 },
@@ -3885,10 +3885,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 11869,
-                  "end": 11876,
+                  "commentStart": 11830,
+                  "end": 11837,
                   "moduleId": 0,
-                  "start": 11869,
+                  "start": 11830,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -3909,10 +3909,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 11950,
-                  "end": 11960,
+                  "commentStart": 11911,
+                  "end": 11921,
                   "moduleId": 0,
-                  "start": 11950,
+                  "start": 11911,
                   "type": "TagDeclarator",
                   "value": "slopedEdge"
                 },
@@ -3933,10 +3933,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.65
                 ],
                 "tag": {
-                  "commentStart": 12035,
-                  "end": 12044,
+                  "commentStart": 11996,
+                  "end": 12005,
                   "moduleId": 0,
-                  "start": 12035,
+                  "start": 11996,
                   "type": "TagDeclarator",
                   "value": "outerRise"
                 },
@@ -3957,10 +3957,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 12119,
-                  "end": 12127,
+                  "commentStart": 12080,
+                  "end": 12088,
                   "moduleId": 0,
-                  "start": 12119,
+                  "start": 12080,
                   "type": "TagDeclarator",
                   "value": "baseEdge"
                 },
@@ -4064,10 +4064,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11786,
-                "end": 11795,
+                "commentStart": 11747,
+                "end": 11756,
                 "moduleId": 0,
-                "start": 11786,
+                "start": 11747,
                 "type": "TagDeclarator",
                 "value": "innerWall"
               },
@@ -4078,10 +4078,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11869,
-                "end": 11876,
+                "commentStart": 11830,
+                "end": 11837,
                 "moduleId": 0,
-                "start": 11869,
+                "start": 11830,
                 "type": "TagDeclarator",
                 "value": "topEdge"
               },
@@ -4092,10 +4092,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11950,
-                "end": 11960,
+                "commentStart": 11911,
+                "end": 11921,
                 "moduleId": 0,
-                "start": 11950,
+                "start": 11911,
                 "type": "TagDeclarator",
                 "value": "slopedEdge"
               },
@@ -4106,10 +4106,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12035,
-                "end": 12044,
+                "commentStart": 11996,
+                "end": 12005,
                 "moduleId": 0,
-                "start": 12035,
+                "start": 11996,
                 "type": "TagDeclarator",
                 "value": "outerRise"
               },
@@ -4120,10 +4120,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 12119,
-                "end": 12127,
+                "commentStart": 12080,
+                "end": 12088,
                 "moduleId": 0,
-                "start": 12119,
+                "start": 12080,
                 "type": "TagDeclarator",
                 "value": "baseEdge"
               },
@@ -4145,10 +4145,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 11786,
-                  "end": 11795,
+                  "commentStart": 11747,
+                  "end": 11756,
                   "moduleId": 0,
-                  "start": 11786,
+                  "start": 11747,
                   "type": "TagDeclarator",
                   "value": "innerWall"
                 },
@@ -4169,10 +4169,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 11869,
-                  "end": 11876,
+                  "commentStart": 11830,
+                  "end": 11837,
                   "moduleId": 0,
-                  "start": 11869,
+                  "start": 11830,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -4193,10 +4193,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   2.1
                 ],
                 "tag": {
-                  "commentStart": 11950,
-                  "end": 11960,
+                  "commentStart": 11911,
+                  "end": 11921,
                   "moduleId": 0,
-                  "start": 11950,
+                  "start": 11911,
                   "type": "TagDeclarator",
                   "value": "slopedEdge"
                 },
@@ -4217,10 +4217,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.65
                 ],
                 "tag": {
-                  "commentStart": 12035,
-                  "end": 12044,
+                  "commentStart": 11996,
+                  "end": 12005,
                   "moduleId": 0,
-                  "start": 12035,
+                  "start": 11996,
                   "type": "TagDeclarator",
                   "value": "outerRise"
                 },
@@ -4241,10 +4241,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   0.5
                 ],
                 "tag": {
-                  "commentStart": 12119,
-                  "end": 12127,
+                  "commentStart": 12080,
+                  "end": 12088,
                   "moduleId": 0,
-                  "start": 12119,
+                  "start": 12080,
                   "type": "TagDeclarator",
                   "value": "baseEdge"
                 },
@@ -4721,10 +4721,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 9841,
-                    "end": 9850,
+                    "commentStart": 9802,
+                    "end": 9811,
                     "moduleId": 0,
-                    "start": 9841,
+                    "start": 9802,
                     "type": "TagDeclarator",
                     "value": "innerWall"
                   },
@@ -4745,10 +4745,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.1
                   ],
                   "tag": {
-                    "commentStart": 9924,
-                    "end": 9931,
+                    "commentStart": 9885,
+                    "end": 9892,
                     "moduleId": 0,
-                    "start": 9924,
+                    "start": 9885,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -4769,10 +4769,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.1
                   ],
                   "tag": {
-                    "commentStart": 10005,
-                    "end": 10015,
+                    "commentStart": 9966,
+                    "end": 9976,
                     "moduleId": 0,
-                    "start": 10005,
+                    "start": 9966,
                     "type": "TagDeclarator",
                     "value": "slopedEdge"
                   },
@@ -4793,10 +4793,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.65
                   ],
                   "tag": {
-                    "commentStart": 10090,
-                    "end": 10099,
+                    "commentStart": 10051,
+                    "end": 10060,
                     "moduleId": 0,
-                    "start": 10090,
+                    "start": 10051,
                     "type": "TagDeclarator",
                     "value": "outerRise"
                   },
@@ -4817,10 +4817,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 10174,
-                    "end": 10182,
+                    "commentStart": 10135,
+                    "end": 10143,
                     "moduleId": 0,
-                    "start": 10174,
+                    "start": 10135,
                     "type": "TagDeclarator",
                     "value": "baseEdge"
                   },
@@ -5656,10 +5656,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 11786,
-                    "end": 11795,
+                    "commentStart": 11747,
+                    "end": 11756,
                     "moduleId": 0,
-                    "start": 11786,
+                    "start": 11747,
                     "type": "TagDeclarator",
                     "value": "innerWall"
                   },
@@ -5680,10 +5680,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.1
                   ],
                   "tag": {
-                    "commentStart": 11869,
-                    "end": 11876,
+                    "commentStart": 11830,
+                    "end": 11837,
                     "moduleId": 0,
-                    "start": 11869,
+                    "start": 11830,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -5704,10 +5704,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.1
                   ],
                   "tag": {
-                    "commentStart": 11950,
-                    "end": 11960,
+                    "commentStart": 11911,
+                    "end": 11921,
                     "moduleId": 0,
-                    "start": 11950,
+                    "start": 11911,
                     "type": "TagDeclarator",
                     "value": "slopedEdge"
                   },
@@ -5728,10 +5728,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.65
                   ],
                   "tag": {
-                    "commentStart": 12035,
-                    "end": 12044,
+                    "commentStart": 11996,
+                    "end": 12005,
                     "moduleId": 0,
-                    "start": 12035,
+                    "start": 11996,
                     "type": "TagDeclarator",
                     "value": "outerRise"
                   },
@@ -5752,10 +5752,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 12119,
-                    "end": 12127,
+                    "commentStart": 12080,
+                    "end": 12088,
                     "moduleId": 0,
-                    "start": 12119,
+                    "start": 12080,
                     "type": "TagDeclarator",
                     "value": "baseEdge"
                   },
@@ -6224,10 +6224,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 9841,
-            "end": 9850,
+            "commentStart": 9802,
+            "end": 9811,
             "moduleId": 0,
-            "start": 9841,
+            "start": 9802,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -6248,10 +6248,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.1
           ],
           "tag": {
-            "commentStart": 9924,
-            "end": 9931,
+            "commentStart": 9885,
+            "end": 9892,
             "moduleId": 0,
-            "start": 9924,
+            "start": 9885,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -6272,10 +6272,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.1
           ],
           "tag": {
-            "commentStart": 10005,
-            "end": 10015,
+            "commentStart": 9966,
+            "end": 9976,
             "moduleId": 0,
-            "start": 10005,
+            "start": 9966,
             "type": "TagDeclarator",
             "value": "slopedEdge"
           },
@@ -6296,10 +6296,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.65
           ],
           "tag": {
-            "commentStart": 10090,
-            "end": 10099,
+            "commentStart": 10051,
+            "end": 10060,
             "moduleId": 0,
-            "start": 10090,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "outerRise"
           },
@@ -6320,10 +6320,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 10174,
-            "end": 10182,
+            "commentStart": 10135,
+            "end": 10143,
             "moduleId": 0,
-            "start": 10174,
+            "start": 10135,
             "type": "TagDeclarator",
             "value": "baseEdge"
           },
@@ -6426,10 +6426,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 11786,
-            "end": 11795,
+            "commentStart": 11747,
+            "end": 11756,
             "moduleId": 0,
-            "start": 11786,
+            "start": 11747,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -6450,10 +6450,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.1
           ],
           "tag": {
-            "commentStart": 11869,
-            "end": 11876,
+            "commentStart": 11830,
+            "end": 11837,
             "moduleId": 0,
-            "start": 11869,
+            "start": 11830,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -6474,10 +6474,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.1
           ],
           "tag": {
-            "commentStart": 11950,
-            "end": 11960,
+            "commentStart": 11911,
+            "end": 11921,
             "moduleId": 0,
-            "start": 11950,
+            "start": 11911,
             "type": "TagDeclarator",
             "value": "slopedEdge"
           },
@@ -6498,10 +6498,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.65
           ],
           "tag": {
-            "commentStart": 12035,
-            "end": 12044,
+            "commentStart": 11996,
+            "end": 12005,
             "moduleId": 0,
-            "start": 12035,
+            "start": 11996,
             "type": "TagDeclarator",
             "value": "outerRise"
           },
@@ -6522,10 +6522,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 12119,
-            "end": 12127,
+            "commentStart": 12080,
+            "end": 12088,
             "moduleId": 0,
-            "start": 12119,
+            "start": 12080,
             "type": "TagDeclarator",
             "value": "baseEdge"
           },
@@ -6624,10 +6624,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9841,
-            "end": 9850,
+            "commentStart": 9802,
+            "end": 9811,
             "moduleId": 0,
-            "start": 9841,
+            "start": 9802,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -6638,10 +6638,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9924,
-            "end": 9931,
+            "commentStart": 9885,
+            "end": 9892,
             "moduleId": 0,
-            "start": 9924,
+            "start": 9885,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -6652,10 +6652,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10005,
-            "end": 10015,
+            "commentStart": 9966,
+            "end": 9976,
             "moduleId": 0,
-            "start": 10005,
+            "start": 9966,
             "type": "TagDeclarator",
             "value": "slopedEdge"
           },
@@ -6666,10 +6666,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10090,
-            "end": 10099,
+            "commentStart": 10051,
+            "end": 10060,
             "moduleId": 0,
-            "start": 10090,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "outerRise"
           },
@@ -6680,10 +6680,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10174,
-            "end": 10182,
+            "commentStart": 10135,
+            "end": 10143,
             "moduleId": 0,
-            "start": 10174,
+            "start": 10135,
             "type": "TagDeclarator",
             "value": "baseEdge"
           },
@@ -6705,10 +6705,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 9841,
-              "end": 9850,
+              "commentStart": 9802,
+              "end": 9811,
               "moduleId": 0,
-              "start": 9841,
+              "start": 9802,
               "type": "TagDeclarator",
               "value": "innerWall"
             },
@@ -6729,10 +6729,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.1
             ],
             "tag": {
-              "commentStart": 9924,
-              "end": 9931,
+              "commentStart": 9885,
+              "end": 9892,
               "moduleId": 0,
-              "start": 9924,
+              "start": 9885,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -6753,10 +6753,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.1
             ],
             "tag": {
-              "commentStart": 10005,
-              "end": 10015,
+              "commentStart": 9966,
+              "end": 9976,
               "moduleId": 0,
-              "start": 10005,
+              "start": 9966,
               "type": "TagDeclarator",
               "value": "slopedEdge"
             },
@@ -6777,10 +6777,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.65
             ],
             "tag": {
-              "commentStart": 10090,
-              "end": 10099,
+              "commentStart": 10051,
+              "end": 10060,
               "moduleId": 0,
-              "start": 10090,
+              "start": 10051,
               "type": "TagDeclarator",
               "value": "outerRise"
             },
@@ -6801,10 +6801,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 10174,
-              "end": 10182,
+              "commentStart": 10135,
+              "end": 10143,
               "moduleId": 0,
-              "start": 10174,
+              "start": 10135,
               "type": "TagDeclarator",
               "value": "baseEdge"
             },
@@ -6908,10 +6908,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11786,
-            "end": 11795,
+            "commentStart": 11747,
+            "end": 11756,
             "moduleId": 0,
-            "start": 11786,
+            "start": 11747,
             "type": "TagDeclarator",
             "value": "innerWall"
           },
@@ -6922,10 +6922,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11869,
-            "end": 11876,
+            "commentStart": 11830,
+            "end": 11837,
             "moduleId": 0,
-            "start": 11869,
+            "start": 11830,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -6936,10 +6936,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11950,
-            "end": 11960,
+            "commentStart": 11911,
+            "end": 11921,
             "moduleId": 0,
-            "start": 11950,
+            "start": 11911,
             "type": "TagDeclarator",
             "value": "slopedEdge"
           },
@@ -6950,10 +6950,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12035,
-            "end": 12044,
+            "commentStart": 11996,
+            "end": 12005,
             "moduleId": 0,
-            "start": 12035,
+            "start": 11996,
             "type": "TagDeclarator",
             "value": "outerRise"
           },
@@ -6964,10 +6964,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12119,
-            "end": 12127,
+            "commentStart": 12080,
+            "end": 12088,
             "moduleId": 0,
-            "start": 12119,
+            "start": 12080,
             "type": "TagDeclarator",
             "value": "baseEdge"
           },
@@ -6989,10 +6989,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 11786,
-              "end": 11795,
+              "commentStart": 11747,
+              "end": 11756,
               "moduleId": 0,
-              "start": 11786,
+              "start": 11747,
               "type": "TagDeclarator",
               "value": "innerWall"
             },
@@ -7013,10 +7013,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.1
             ],
             "tag": {
-              "commentStart": 11869,
-              "end": 11876,
+              "commentStart": 11830,
+              "end": 11837,
               "moduleId": 0,
-              "start": 11869,
+              "start": 11830,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -7037,10 +7037,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.1
             ],
             "tag": {
-              "commentStart": 11950,
-              "end": 11960,
+              "commentStart": 11911,
+              "end": 11921,
               "moduleId": 0,
-              "start": 11950,
+              "start": 11911,
               "type": "TagDeclarator",
               "value": "slopedEdge"
             },
@@ -7061,10 +7061,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.65
             ],
             "tag": {
-              "commentStart": 12035,
-              "end": 12044,
+              "commentStart": 11996,
+              "end": 12005,
               "moduleId": 0,
-              "start": 12035,
+              "start": 11996,
               "type": "TagDeclarator",
               "value": "outerRise"
             },
@@ -7085,10 +7085,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 12119,
-              "end": 12127,
+              "commentStart": 12080,
+              "end": 12088,
               "moduleId": 0,
-              "start": 12119,
+              "start": 12080,
               "type": "TagDeclarator",
               "value": "baseEdge"
             },
@@ -7747,10 +7747,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.125,
                   "tag": {
-                    "commentStart": 3774,
-                    "end": 3784,
+                    "commentStart": 3796,
+                    "end": 3806,
                     "moduleId": 0,
-                    "start": 3774,
+                    "start": 3796,
                     "type": "TagDeclarator",
                     "value": "holeCircle"
                   },
@@ -7869,10 +7869,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7275,
-            "end": 7288,
+            "commentStart": 7297,
+            "end": 7310,
             "moduleId": 0,
-            "start": 7275,
+            "start": 7297,
             "type": "TagDeclarator",
             "value": "pinholeCircle"
           },
@@ -7900,10 +7900,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.125,
             "tag": {
-              "commentStart": 7275,
-              "end": 7288,
+              "commentStart": 7297,
+              "end": 7310,
               "moduleId": 0,
-              "start": 7275,
+              "start": 7297,
               "type": "TagDeclarator",
               "value": "pinholeCircle"
             },
@@ -8015,10 +8015,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.125,
           "tag": {
-            "commentStart": 7275,
-            "end": 7288,
+            "commentStart": 7297,
+            "end": 7310,
             "moduleId": 0,
-            "start": 7275,
+            "start": 7297,
             "type": "TagDeclarator",
             "value": "pinholeCircle"
           },
@@ -8117,10 +8117,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.125,
                   "tag": {
-                    "commentStart": 7275,
-                    "end": 7288,
+                    "commentStart": 7297,
+                    "end": 7310,
                     "moduleId": 0,
-                    "start": 7275,
+                    "start": 7297,
                     "type": "TagDeclarator",
                     "value": "pinholeCircle"
                   },
@@ -8571,10 +8571,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1029,
+            "commentStart": 1037,
+            "end": 1047,
             "moduleId": 0,
-            "start": 1019,
+            "start": 1037,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -8585,10 +8585,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1117,
+            "commentStart": 1126,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1126,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -8599,10 +8599,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1194,
-            "end": 1201,
+            "commentStart": 1212,
+            "end": 1219,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1212,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -8613,10 +8613,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1286,
+            "commentStart": 1296,
+            "end": 1304,
             "moduleId": 0,
-            "start": 1278,
+            "start": 1296,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -8627,10 +8627,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
+            "commentStart": 2290,
+            "end": 2299,
             "moduleId": 0,
-            "start": 2272,
+            "start": 2290,
             "type": "TagDeclarator",
             "value": "innerHole"
           },
@@ -8641,10 +8641,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2860,
-            "end": 2869,
+            "commentStart": 2882,
+            "end": 2891,
             "moduleId": 0,
-            "start": 2860,
+            "start": 2882,
             "type": "TagDeclarator",
             "value": "plateTop"
           },
@@ -8672,10 +8672,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1029,
+              "commentStart": 1037,
+              "end": 1047,
               "moduleId": 0,
-              "start": 1019,
+              "start": 1037,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -8696,10 +8696,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1117,
+              "commentStart": 1126,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1126,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -8720,10 +8720,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1194,
-              "end": 1201,
+              "commentStart": 1212,
+              "end": 1219,
               "moduleId": 0,
-              "start": 1194,
+              "start": 1212,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -8744,10 +8744,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1286,
+              "commentStart": 1296,
+              "end": 1304,
               "moduleId": 0,
-              "start": 1278,
+              "start": 1296,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -8774,10 +8774,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.6250000000116667,
             "tag": {
-              "commentStart": 2272,
-              "end": 2281,
+              "commentStart": 2290,
+              "end": 2299,
               "moduleId": 0,
-              "start": 2272,
+              "start": 2290,
               "type": "TagDeclarator",
               "value": "innerHole"
             },
@@ -8943,10 +8943,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1029,
+            "commentStart": 1037,
+            "end": 1047,
             "moduleId": 0,
-            "start": 1019,
+            "start": 1037,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -8957,10 +8957,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1117,
+            "commentStart": 1126,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1126,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -8971,10 +8971,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1194,
-            "end": 1201,
+            "commentStart": 1212,
+            "end": 1219,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1212,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -8985,10 +8985,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1286,
+            "commentStart": 1296,
+            "end": 1304,
             "moduleId": 0,
-            "start": 1278,
+            "start": 1296,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -8999,10 +8999,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
+            "commentStart": 2290,
+            "end": 2299,
             "moduleId": 0,
-            "start": 2272,
+            "start": 2290,
             "type": "TagDeclarator",
             "value": "innerHole"
           },
@@ -9013,10 +9013,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2860,
-            "end": 2869,
+            "commentStart": 2882,
+            "end": 2891,
             "moduleId": 0,
-            "start": 2860,
+            "start": 2882,
             "type": "TagDeclarator",
             "value": "plateTop"
           },
@@ -9044,10 +9044,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1029,
+              "commentStart": 1037,
+              "end": 1047,
               "moduleId": 0,
-              "start": 1019,
+              "start": 1037,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -9068,10 +9068,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1117,
+              "commentStart": 1126,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1126,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -9092,10 +9092,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1194,
-              "end": 1201,
+              "commentStart": 1212,
+              "end": 1219,
               "moduleId": 0,
-              "start": 1194,
+              "start": 1212,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -9116,10 +9116,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1286,
+              "commentStart": 1296,
+              "end": 1304,
               "moduleId": 0,
-              "start": 1278,
+              "start": 1296,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -9146,10 +9146,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.6250000000116667,
             "tag": {
-              "commentStart": 2272,
-              "end": 2281,
+              "commentStart": 2290,
+              "end": 2299,
               "moduleId": 0,
-              "start": 2272,
+              "start": 2290,
               "type": "TagDeclarator",
               "value": "innerHole"
             },
@@ -9319,10 +9319,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 1019,
-            "end": 1029,
+            "commentStart": 1037,
+            "end": 1047,
             "moduleId": 0,
-            "start": 1019,
+            "start": 1037,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -9343,10 +9343,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 1108,
-            "end": 1117,
+            "commentStart": 1126,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1126,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -9367,10 +9367,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1194,
-            "end": 1201,
+            "commentStart": 1212,
+            "end": 1219,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1212,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -9391,10 +9391,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1278,
-            "end": 1286,
+            "commentStart": 1296,
+            "end": 1304,
             "moduleId": 0,
-            "start": 1278,
+            "start": 1296,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -9421,10 +9421,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.6250000000116667,
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
+            "commentStart": 2290,
+            "end": 2299,
             "moduleId": 0,
-            "start": 2272,
+            "start": 2290,
             "type": "TagDeclarator",
             "value": "innerHole"
           },
@@ -10260,10 +10260,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     -2.25
                   ],
                   "tag": {
-                    "commentStart": 1019,
-                    "end": 1029,
+                    "commentStart": 1037,
+                    "end": 1047,
                     "moduleId": 0,
-                    "start": 1019,
+                    "start": 1037,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -10284,10 +10284,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     -2.25
                   ],
                   "tag": {
-                    "commentStart": 1108,
-                    "end": 1117,
+                    "commentStart": 1126,
+                    "end": 1135,
                     "moduleId": 0,
-                    "start": 1108,
+                    "start": 1126,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -10308,10 +10308,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 1194,
-                    "end": 1201,
+                    "commentStart": 1212,
+                    "end": 1219,
                     "moduleId": 0,
-                    "start": 1194,
+                    "start": 1212,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -10332,10 +10332,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                     2.25
                   ],
                   "tag": {
-                    "commentStart": 1278,
-                    "end": 1286,
+                    "commentStart": 1296,
+                    "end": 1304,
                     "moduleId": 0,
-                    "start": 1278,
+                    "start": 1296,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -10379,10 +10379,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                   ],
                   "radius": 0.6250000000116667,
                   "tag": {
-                    "commentStart": 2272,
-                    "end": 2281,
+                    "commentStart": 2290,
+                    "end": 2299,
                     "moduleId": 0,
-                    "start": 2272,
+                    "start": 2290,
                     "type": "TagDeclarator",
                     "value": "innerHole"
                   },
@@ -10732,10 +10732,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1029,
+            "commentStart": 1037,
+            "end": 1047,
             "moduleId": 0,
-            "start": 1019,
+            "start": 1037,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -10746,10 +10746,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1117,
+            "commentStart": 1126,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1126,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -10760,10 +10760,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1194,
-            "end": 1201,
+            "commentStart": 1212,
+            "end": 1219,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1212,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -10774,10 +10774,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1286,
+            "commentStart": 1296,
+            "end": 1304,
             "moduleId": 0,
-            "start": 1278,
+            "start": 1296,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -10788,10 +10788,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
+            "commentStart": 2290,
+            "end": 2299,
             "moduleId": 0,
-            "start": 2272,
+            "start": 2290,
             "type": "TagDeclarator",
             "value": "innerHole"
           },
@@ -10802,10 +10802,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2860,
-            "end": 2869,
+            "commentStart": 2882,
+            "end": 2891,
             "moduleId": 0,
-            "start": 2860,
+            "start": 2882,
             "type": "TagDeclarator",
             "value": "plateTop"
           },
@@ -10833,10 +10833,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1029,
+              "commentStart": 1037,
+              "end": 1047,
               "moduleId": 0,
-              "start": 1019,
+              "start": 1037,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -10857,10 +10857,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1117,
+              "commentStart": 1126,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1126,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -10881,10 +10881,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1194,
-              "end": 1201,
+              "commentStart": 1212,
+              "end": 1219,
               "moduleId": 0,
-              "start": 1194,
+              "start": 1212,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -10905,10 +10905,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1286,
+              "commentStart": 1296,
+              "end": 1304,
               "moduleId": 0,
-              "start": 1278,
+              "start": 1296,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -10935,10 +10935,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.6250000000116667,
             "tag": {
-              "commentStart": 2272,
-              "end": 2281,
+              "commentStart": 2290,
+              "end": 2299,
               "moduleId": 0,
-              "start": 2272,
+              "start": 2290,
               "type": "TagDeclarator",
               "value": "innerHole"
             },
@@ -11046,10 +11046,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1029,
+            "commentStart": 1037,
+            "end": 1047,
             "moduleId": 0,
-            "start": 1019,
+            "start": 1037,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -11060,10 +11060,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1117,
+            "commentStart": 1126,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1126,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -11074,10 +11074,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1194,
-            "end": 1201,
+            "commentStart": 1212,
+            "end": 1219,
             "moduleId": 0,
-            "start": 1194,
+            "start": 1212,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -11088,10 +11088,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1278,
-            "end": 1286,
+            "commentStart": 1296,
+            "end": 1304,
             "moduleId": 0,
-            "start": 1278,
+            "start": 1296,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -11102,10 +11102,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2272,
-            "end": 2281,
+            "commentStart": 2290,
+            "end": 2299,
             "moduleId": 0,
-            "start": 2272,
+            "start": 2290,
             "type": "TagDeclarator",
             "value": "innerHole"
           },
@@ -11116,10 +11116,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2860,
-            "end": 2869,
+            "commentStart": 2882,
+            "end": 2891,
             "moduleId": 0,
-            "start": 2860,
+            "start": 2882,
             "type": "TagDeclarator",
             "value": "plateTop"
           },
@@ -11147,10 +11147,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1029,
+              "commentStart": 1037,
+              "end": 1047,
               "moduleId": 0,
-              "start": 1019,
+              "start": 1037,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -11171,10 +11171,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1117,
+              "commentStart": 1126,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1126,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -11195,10 +11195,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1194,
-              "end": 1201,
+              "commentStart": 1212,
+              "end": 1219,
               "moduleId": 0,
-              "start": 1194,
+              "start": 1212,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -11219,10 +11219,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1278,
-              "end": 1286,
+              "commentStart": 1296,
+              "end": 1304,
               "moduleId": 0,
-              "start": 1278,
+              "start": 1296,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -11249,10 +11249,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.6250000000116667,
             "tag": {
-              "commentStart": 2272,
-              "end": 2281,
+              "commentStart": 2290,
+              "end": 2299,
               "moduleId": 0,
-              "start": 2272,
+              "start": 2290,
               "type": "TagDeclarator",
               "value": "innerHole"
             },
@@ -11440,10 +11440,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -11471,10 +11471,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -11562,10 +11562,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -11593,10 +11593,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -11684,10 +11684,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -11715,10 +11715,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -11806,10 +11806,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -11837,10 +11837,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -11940,10 +11940,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           ],
           "radius": 0.125,
           "tag": {
-            "commentStart": 3774,
-            "end": 3784,
+            "commentStart": 3796,
+            "end": 3806,
             "moduleId": 0,
-            "start": 3774,
+            "start": 3796,
             "type": "TagDeclarator",
             "value": "holeCircle"
           },
@@ -12029,10 +12029,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -12060,10 +12060,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -12151,10 +12151,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3774,
-                "end": 3784,
+                "commentStart": 3796,
+                "end": 3806,
                 "moduleId": 0,
-                "start": 3774,
+                "start": 3796,
                 "type": "TagDeclarator",
                 "value": "holeCircle"
               },
@@ -12182,10 +12182,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
                 ],
                 "radius": 0.125,
                 "tag": {
-                  "commentStart": 3774,
-                  "end": 3784,
+                  "commentStart": 3796,
+                  "end": 3806,
                   "moduleId": 0,
-                  "start": 3774,
+                  "start": 3796,
                   "type": "TagDeclarator",
                   "value": "holeCircle"
                 },
@@ -12275,10 +12275,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3774,
-            "end": 3784,
+            "commentStart": 3796,
+            "end": 3806,
             "moduleId": 0,
-            "start": 3774,
+            "start": 3796,
             "type": "TagDeclarator",
             "value": "holeCircle"
           },
@@ -12306,10 +12306,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "radius": 0.125,
             "tag": {
-              "commentStart": 3774,
-              "end": 3784,
+              "commentStart": 3796,
+              "end": 3806,
               "moduleId": 0,
-              "start": 3774,
+              "start": 3796,
               "type": "TagDeclarator",
               "value": "holeCircle"
             },
