@@ -1826,14 +1826,6 @@ impl ExecutorContext {
             .await;
         exec_state.global.mod_loader.leave_module(path, source_range)?;
 
-        let import_name = match path {
-            ModulePath::Local {
-                original_import_path: Some(original),
-                ..
-            } => original.to_string(),
-            _ => path.to_string(),
-        };
-
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
         result.map_err(|(err, _, _)| {
@@ -1845,7 +1837,16 @@ impl ExecutorContext {
                 // The module loaded successfully, so preserve execution errors
                 // exactly as they occurred inside it. Rewrapping them here loses
                 // the error kind, structured fields, and imported-file location.
-                _ => err.add_import_location(format!("import {import_name}"), source_range),
+                _ => {
+                    let import_name = match path {
+                        ModulePath::Local {
+                            original_import_path: Some(original),
+                            ..
+                        } => original.to_string(),
+                        _ => path.to_string(),
+                    };
+                    err.add_import_location(format!("import {import_name}"), source_range)
+                }
             }
         })
     }
