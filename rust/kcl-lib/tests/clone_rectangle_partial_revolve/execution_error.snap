@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing clone_rectangle_partial_revolve.kcl
+---
+KCL Engine error
+
+  × engine: Cannot transform a surface of revolution with non-uniform scaling
+  │ or shear.
+  │ Failed to transform object
+    ╭─[16:6]
+ 15 │ panel = revolve(panelRegion, axis = Y, angle = 55deg)
+ 16 │   |> scale(x = 1.015, y = 0.79, z = 1, global = true)
+    ·      ────────────────────────┬───────────────────────┬
+    ·                              ╰── tests/clone_rectangle_partial_revolve/input.kcl
+    ·                              ╰── tests/clone_rectangle_partial_revolve/input.kcl
+ 17 │ panelCopy = clone(panel)
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: Cannot transform a surface of revolution with non-uniform
+        │ scaling or shear.
+        │ Failed to transform object
+          ╭─[16:6]
+       15 │ panel = revolve(panelRegion, axis = Y, angle = 55deg)
+       16 │   |> scale(x = 1.015, y = 0.79, z = 1, global = true)
+          ·      ────────────────────────┬───────────────────────
+          ·                              ╰── tests/
+      clone_rectangle_partial_revolve/input.kcl
+       17 │ panelCopy = clone(panel)
+          ╰────
