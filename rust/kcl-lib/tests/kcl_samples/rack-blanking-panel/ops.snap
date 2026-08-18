@@ -5082,72 +5082,15 @@ description: Operations executed rack-blanking-panel.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 233.4933,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 10.752,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
@@ -5173,72 +5116,15 @@ description: Operations executed rack-blanking-panel.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 233.7022,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 33.769,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "circle1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "circle2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line1": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line2": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line3": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "line4": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              }
-            }
           },
           "sourceRange": []
         }
