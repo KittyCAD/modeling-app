@@ -48,6 +48,36 @@ Coordinate systems:
 
 ---
 
+## Limitations
+
+Imported geometry has type `ImportedGeometry`, not `Solid`. The two are distinct and there is no
+conversion between them, so an import can be positioned but not modelled against.
+
+Accepted: `clone`, `translate`, `rotate`, `scale`, `appearance`, `hide`, `delete`.
+
+Rejected by everything that expects a `Solid`: `subtract`, `union`, `intersect`, `fillet`,
+`chamfer`, `shell`, and the 3D pattern functions. Also rejected by `startSketchOn`, so you cannot sketch on an imported face, and by the
+operations that build solids from a `Sketch` — `extrude`, `revolve`, `sweep`, and `loft` — since an
+import is neither. Passing an import to any of them is a type error, not a runtime failure:
+
+```
+The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
+but found an array of `ImportedGeometry` with 1 value (with type `[any; 1]`).
+```
+
+This holds for every supported format. A mesh file such as STL has no BREP data to operate on, and
+a STEP file's BREP data is not yet exposed to the modelling operations either — see
+[known issues](known-issues).
+
+Two workarounds:
+
+1. Recreate the shape natively in KCL, keeping the import visible as a reference while you rebuild,
+   then operate on the native solid.
+2. Leave the import as-is and model a separate part that fits it, positioning it with `translate`
+   and `rotate`.
+
+---
+
 ## Performance deep‑dive for foreign‑file imports
 
 Parallelized foreign‑file imports now let you overlap file reads, initialization,
