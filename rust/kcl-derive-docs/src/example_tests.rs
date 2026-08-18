@@ -419,6 +419,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-scale-1",
     "std-transform-scale-2",
     "std-transform-scale-3",
+    "std-transform-scale-4",
     "std-transform-hide-0",
     "std-transform-hide-1",
     "std-transform-hide-2",
