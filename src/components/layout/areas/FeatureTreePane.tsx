@@ -288,10 +288,12 @@ export const FeatureTreePaneContents = memo(() => {
     unfilteredOperationsByModule,
     ROOT_MODULE_ID
   )
+  const visibilityOperations = getAllOperations(kclManager.operationsByModule)
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   // Live execution tracking: expand only the active module branch.
   const liveActiveModuleId = kclManager.liveActiveModuleId
+  const liveLatestOperationKey = kclManager.liveLatestOperationKey
 
   function goToError() {
     const l = layout.signal.value
@@ -397,7 +399,9 @@ export const FeatureTreePaneContents = memo(() => {
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={selectOperation}
+              visibilityOperations={visibilityOperations}
               liveActiveModuleId={liveActiveModuleId}
+              liveLatestOperationKey={liveLatestOperationKey}
             />
           ))}
         </>
@@ -423,7 +427,9 @@ function OperationItemGroup({
   modelingActor,
   engineCommandManager,
   onSelect,
+  visibilityOperations,
   isModuleOwned = false,
+  liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   items: Operation[]
   isModuleOwned?: boolean
@@ -454,7 +460,9 @@ function OperationItemGroup({
           modelingActor={modelingActor}
           engineCommandManager={engineCommandManager}
           onSelect={onSelect}
+          visibilityOperations={visibilityOperations}
           isModuleOwned={isModuleOwned}
+          liveLatestOperationKey={liveLatestOperationKey}
         />
       )
     }
@@ -482,7 +490,9 @@ function OperationItemGroup({
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={onSelect}
+              visibilityOperations={visibilityOperations}
               isModuleOwned={isModuleOwned}
+              liveLatestOperationKey={liveLatestOperationKey}
             />
           </div>
         </div>
@@ -500,8 +510,10 @@ function OperationItemGroup({
                   modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={onSelect}
+                  visibilityOperations={visibilityOperations}
                   size="sm"
                   isModuleOwned={isModuleOwned}
+                  liveLatestOperationKey={liveLatestOperationKey}
                 />
               )
             })}
@@ -537,8 +549,10 @@ function OperationItemGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
+                visibilityOperations={visibilityOperations}
                 size="sm"
                 isModuleOwned={isModuleOwned}
+                liveLatestOperationKey={liveLatestOperationKey}
               />
             )
           })}
@@ -558,8 +572,10 @@ function OperationBranchGroup({
   modelingActor,
   engineCommandManager,
   onSelect,
+  visibilityOperations,
   isModuleOwned = false,
   liveActiveModuleId,
+  liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
   childItems: OperationTreeNode[]
@@ -576,7 +592,9 @@ function OperationBranchGroup({
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
+        visibilityOperations={visibilityOperations}
         isModuleOwned={true}
+        liveLatestOperationKey={liveLatestOperationKey}
       />
     )
   }
@@ -617,7 +635,9 @@ function OperationBranchGroup({
             modelingActor={modelingActor}
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
+            visibilityOperations={visibilityOperations}
             isModuleOwned={true}
+            liveLatestOperationKey={liveLatestOperationKey}
           />
         </div>
       </div>
@@ -635,7 +655,9 @@ function OperationBranchGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
+                visibilityOperations={visibilityOperations}
                 isModuleOwned={true}
+                liveLatestOperationKey={liveLatestOperationKey}
               />
             )
           })}
@@ -791,10 +813,13 @@ interface OperationProps {
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
+  visibilityOperations: Operation[]
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
   /** During live execution, the module that received the latest operation. */
   liveActiveModuleId?: number | null
+  /** During live execution, the operation that was most recently added. */
+  liveLatestOperationKey: string | null
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
   referenceModuleId?: number
 }
@@ -916,6 +941,8 @@ const OperationItem = ({
   size,
   isModuleOwned = false,
   referenceModuleId,
+  visibilityOperations,
+  liveLatestOperationKey,
 }: OperationProps) => {
   useSignals()
   const app = useApp()
@@ -932,8 +959,7 @@ const OperationItem = ({
   const sourceRange =
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
-  const isLiveLatest =
-    kclManager.liveLatestOperationKey === getOperationKey(item)
+  const isLiveLatest = liveLatestOperationKey === getOperationKey(item)
   const isEditorSelected = useMemo(() => {
     if (!sourceRange) {
       return false
@@ -1413,7 +1439,7 @@ const OperationItem = ({
 
   const visibilityState = resolveFeatureTreeVisibility({
     item,
-    operations: getAllOperations(kclManager.operationsByModule),
+    operations: visibilityOperations,
     artifactGraph: kclManager.artifactGraph,
   })
 
