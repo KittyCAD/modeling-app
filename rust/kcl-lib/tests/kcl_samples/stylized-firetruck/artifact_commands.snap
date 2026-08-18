@@ -258,15 +258,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -538,15 +529,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -594,15 +576,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -683,15 +656,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "set_object_transform",
         "object_id": "[uuid]",
         "transforms": [
@@ -756,15 +720,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -1110,15 +1065,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -1348,15 +1294,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -1602,15 +1539,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -1840,15 +1768,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -2094,15 +2013,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -2331,15 +2241,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -2402,15 +2303,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -2491,15 +2383,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
       },
@@ -2538,15 +2421,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -2653,15 +2527,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
       },
@@ -2700,15 +2565,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -2815,15 +2671,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
       },
@@ -2862,15 +2709,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -3309,15 +3147,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3363,15 +3192,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -3727,15 +3547,6 @@ description: Artifact commands stylized-firetruck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -3781,15 +3592,6 @@ description: Artifact commands stylized-firetruck.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }

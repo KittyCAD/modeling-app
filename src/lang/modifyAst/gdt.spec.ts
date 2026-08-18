@@ -19,6 +19,7 @@ import {
   getNextAvailableDatumName,
   getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
+import { getCommonFacesForEdge } from '@src/lang/std/artifactGraph'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -655,10 +656,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+        throw new Error('Expected a cap face and segment edge')
       }
 
       const tolerance = await getKclCommandValue(
@@ -695,11 +696,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!edge) {
-        throw new Error('Expected a sweep edge')
+        throw new Error('Expected a segment edge')
       }
+      const commonFaces = getCommonFacesForEdge(edge, artifactGraph)
+      if (err(commonFaces)) throw commonFaces
 
       const tolerance = await getKclCommandValue(
         '0.1mm',
@@ -714,7 +717,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
             {
               entityRef: {
                 type: 'edge',
-                side_faces: edge.commonSurfaceIds ?? [],
+                side_faces: commonFaces.map((face) => face.id),
               },
             },
           ],
@@ -881,7 +884,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1055,7 +1058,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1324,7 +1327,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1413,7 +1416,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!edge) {
         throw new Error('Expected a sweep edge')
@@ -1458,18 +1461,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const seenSegmentIds = new Set<string>()
       const edges = [...artifactGraph.values()]
         .filter((artifact) => {
-          if (
-            artifact.type !== 'sweepEdge' ||
-            seenSegmentIds.has(artifact.segId)
-          ) {
+          if (artifact.type !== 'segment' || seenSegmentIds.has(artifact.id)) {
             return false
           }
-          seenSegmentIds.add(artifact.segId)
+          seenSegmentIds.add(artifact.id)
           return true
         })
         .slice(0, 3)
       if (edges.length !== 3) {
-        throw new Error('Expected three sweep edges')
+        throw new Error('Expected three segment edges')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1511,10 +1511,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
       const edges = [...artifactGraph.values()]
-        .filter((artifact) => artifact.type === 'sweepEdge')
+        .filter((artifact) => artifact.type === 'segment')
         .slice(0, 2)
       if (edges.length !== 2) {
-        throw new Error('Expected two sweep edges')
+        throw new Error('Expected two segment edges')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1600,7 +1600,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap' || artifact.type === 'wall'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a face and sweep edge')
@@ -1647,7 +1647,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1701,7 +1701,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1755,7 +1755,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')
@@ -1809,7 +1809,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
         throw new Error('Expected a cap face and sweep edge')

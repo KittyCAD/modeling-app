@@ -1144,7 +1144,6 @@ describe('getOwningSweepForEdgeCut', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -1153,8 +1152,6 @@ describe('getOwningSweepForEdgeCut', () => {
       type: 'edgeCut',
       id: 'edge-cut-1',
       subType: 'chamfer',
-      consumedEdgeId: '',
-      edgeIds: [],
       codeRef: {
         ...codeRefFromRange([edgeCutStart, code.length, 0], ast),
         nodePath: defaultNodePath(),
@@ -1225,8 +1222,6 @@ chamfer(extrude001, tags = edge001, length = 1)`
       type: 'edgeCut',
       id: 'edge-cut-1',
       subType: 'chamfer',
-      consumedEdgeId: 'edge-1',
-      edgeIds: [],
       codeRef,
     }
     const artifactGraph = new Map([[edgeCut.id, edgeCut]])

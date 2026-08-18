@@ -6,7 +6,7 @@ import type { NodePath } from "./NodePath";
 import type { PlaneName } from "./PlaneName";
 import type { SourceRange } from "./SourceRange";
 
-export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "sweepEdge" } & SweepEdge | { "type": "edgeCut" } & EdgeCut | { "type": "edgeCutEdge" } & EdgeCutEdge | { "type": "helix" } & Helix | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "namedView" } & NamedViewArtifact | { "type": "pattern" } & Pattern;
+export type Artifact = { "type": "compositeSolid" } & CompositeSolid | { "type": "plane" } & Plane | { "type": "path" } & Path | { "type": "segment" } & Segment | { "type": "solid2d" } & Solid2d | { "type": "primitiveFace" } & PrimitiveFace | { "type": "primitiveEdge" } & PrimitiveEdge | { "type": "planeOfFace" } & PlaneOfFace | { "type": "startSketchOnFace" } & StartSketchOnFace | { "type": "startSketchOnPlane" } & StartSketchOnPlane | { "type": "sketchBlock" } & SketchBlock | { "type": "sketchBlockConstraint" } & SketchBlockConstraint | { "type": "sweep" } & Sweep | { "type": "wall" } & Wall | { "type": "cap" } & Cap | { "type": "edgeCut" } & EdgeCut | { "type": "helix" } & Helix | { "type": "gdtAnnotation" } & GdtAnnotationArtifact | { "type": "namedView" } & NamedViewArtifact | { "type": "pattern" } & Pattern;
 
 /**
  * Where a named view's camera looks from: one variant per KCL constructor
@@ -105,7 +105,7 @@ export type ArtifactSweepMethod = "new" | "merge";
  */
 export type ArtifactVisibility = "show" | "hide";
 
-export type Cap = { id: ArtifactId, subType: CapSubType, edgeCutEdgeIds: Array<ArtifactId>, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
+export type Cap = { id: ArtifactId, subType: CapSubType, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
 /**
  * This is for the sketch-on-face plane, not for the cap itself.  Traverse
  * to the extrude and/or segment to get the cap's code_ref.
@@ -150,9 +150,7 @@ patternIds?: Array<ArtifactId>, };
 
 export type CompositeSolidSubType = "intersect" | "subtract" | "split" | "union";
 
-export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
-
-export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
+export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
 
@@ -288,7 +286,7 @@ sourceSegmentId?: ArtifactId | null,
  * If this artifact is a segment in a region, the segment in the original
  * sketch that this was derived from.
  */
-originalSegId?: ArtifactId | null, surfaceId?: ArtifactId | null, edgeIds: Array<ArtifactId>, edgeCutId?: ArtifactId | null, codeRef: CodeRef, commonSurfaceIds: Array<ArtifactId>, };
+originalSegId?: ArtifactId | null, surfaceId?: ArtifactId | null, edgeCutId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type SketchBlock = { id: ArtifactId, 
 /**
@@ -335,7 +333,7 @@ export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef:
 /**
  * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
  */
-export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
+export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, codeRef: CodeRef, 
 /**
  * The original sweep this body was cloned from, if any. For clones of
  * clones, this continues to point to the originating sweep.
@@ -356,13 +354,9 @@ consumed: boolean,
  */
 patternIds?: Array<ArtifactId>, };
 
-export type SweepEdge = { id: ArtifactId, subType: SweepEdgeSubType, segId: ArtifactId, cmdId: string, sweepId: ArtifactId, commonSurfaceIds: Array<ArtifactId>, };
-
-export type SweepEdgeSubType = "opposite" | "adjacent" | "previousAdjacent";
-
 export type SweepSubType = "extrusion" | "extrusionTwist" | "revolve" | "revolveAboutEdge" | "loft" | "blend" | "sweep";
 
-export type Wall = { id: ArtifactId, segId: ArtifactId, edgeCutEdgeIds: Array<ArtifactId>, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
+export type Wall = { id: ArtifactId, segId: ArtifactId, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
 /**
  * This is for the sketch-on-face plane, not for the wall itself.  Traverse
  * to the extrude and/or segment to get the wall's code_ref.

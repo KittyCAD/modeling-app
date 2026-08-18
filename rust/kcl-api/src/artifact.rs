@@ -290,11 +290,9 @@ pub struct Segment {
     pub original_seg_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
-    pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 /// A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
@@ -307,7 +305,6 @@ pub struct Sweep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path_id: Option<ArtifactId>,
     pub surface_ids: Vec<ArtifactId>,
-    pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     /// The original sweep this body was cloned from, if any. For clones of
     /// clones, this continues to point to the originating sweep.
@@ -457,7 +454,6 @@ pub struct SketchBlockConstraint {
 pub struct Wall {
     pub id: ArtifactId,
     pub seg_id: ArtifactId,
-    pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
@@ -473,7 +469,6 @@ pub struct Wall {
 pub struct Cap {
     pub id: ArtifactId,
     pub sub_type: CapSubType,
-    pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
@@ -494,36 +489,9 @@ pub enum CapSubType {
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct SweepEdge {
-    pub id: ArtifactId,
-    pub sub_type: SweepEdgeSubType,
-    pub seg_id: ArtifactId,
-    pub cmd_id: Uuid,
-    // This is only used for sorting, not for the actual artifact.
-    #[serde(skip)]
-    pub index: usize,
-    pub sweep_id: ArtifactId,
-    pub common_surface_ids: Vec<ArtifactId>,
-}
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
-pub enum SweepEdgeSubType {
-    Opposite,
-    Adjacent,
-    PreviousAdjacent,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub consumed_edge_id: Option<ArtifactId>,
-    pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -536,15 +504,6 @@ pub enum EdgeCutSubType {
     Fillet,
     Chamfer,
     Custom,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct EdgeCutEdge {
-    pub id: ArtifactId,
-    pub edge_cut_id: ArtifactId,
-    pub surface_id: ArtifactId,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
@@ -644,9 +603,7 @@ pub enum Artifact {
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
-    SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
-    EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
     GdtAnnotation(GdtAnnotationArtifact),
     NamedView(NamedViewArtifact),
@@ -671,9 +628,7 @@ impl Artifact {
             Self::Sweep(a) => a.id,
             Self::Wall(a) => a.id,
             Self::Cap(a) => a.id,
-            Self::SweepEdge(a) => a.id,
             Self::EdgeCut(a) => a.id,
-            Self::EdgeCutEdge(a) => a.id,
             Self::Helix(a) => a.id,
             Self::GdtAnnotation(a) => a.id,
             Self::NamedView(a) => a.id,
@@ -698,9 +653,8 @@ impl Artifact {
             Self::SketchBlock(a) => Some(&a.code_ref),
             Self::SketchBlockConstraint(a) => Some(&a.code_ref),
             Self::Sweep(a) => Some(&a.code_ref),
-            Self::Wall(_) | Self::Cap(_) | Self::SweepEdge(_) => None,
+            Self::Wall(_) | Self::Cap(_) => None,
             Self::EdgeCut(a) => Some(&a.code_ref),
-            Self::EdgeCutEdge(_) => None,
             Self::Helix(a) => Some(&a.code_ref),
             Self::GdtAnnotation(a) => Some(&a.code_ref),
             Self::NamedView(a) => Some(&a.code_ref),

@@ -107,11 +107,11 @@ pattern001 = patternLinear3d(extrude001, instances = 3, distance = 10, axis = [0
       const sourcePathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const sweep: Artifact = {
         type: 'sweep',
+        edgeIds: [],
         id: 'sweep-id',
         subType: 'extrusion',
         pathId: 'path-id',
         surfaceIds: [],
-        edgeIds: [],
         codeRef: {
           range: sourceRange,
           pathToNode: sourcePathToNode,
@@ -1557,11 +1557,11 @@ extrude001 = extrude(profile001, length = 10)`
       }
       const capArtifact: Artifact = {
         type: 'cap',
+        edgeCutEdgeIds: [],
         id: 'cap-end-test',
         subType: 'end',
         sweepId: bodyArtifact.id,
         pathIds: [],
-        edgeCutEdgeIds: [],
         faceCodeRef: bodyArtifact.codeRef,
         cmdId: '',
       }

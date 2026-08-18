@@ -7455,7 +7455,6 @@ mod tests {
                 sub_type: SweepSubType::Extrusion,
                 path_id: Some(ArtifactId::new(Uuid::new_v4())),
                 surface_ids: Vec::new(),
-                edge_ids: Vec::new(),
                 code_ref: code_ref.clone(),
                 source_sweep_id: None,
                 trajectory_id: None,

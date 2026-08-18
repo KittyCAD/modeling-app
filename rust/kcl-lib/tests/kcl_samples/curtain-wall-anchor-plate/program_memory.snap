@@ -2705,10 +2705,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7818,
-            "end": 7825,
+            "commentStart": 7826,
+            "end": 7833,
             "moduleId": 0,
-            "start": 7818,
+            "start": 7826,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2736,10 +2736,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 7818,
-              "end": 7825,
+              "commentStart": 7826,
+              "end": 7833,
               "moduleId": 0,
-              "start": 7818,
+              "start": 7826,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2848,10 +2848,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6024,
-            "end": 6029,
+            "commentStart": 5984,
+            "end": 5989,
             "moduleId": 0,
-            "start": 6024,
+            "start": 5984,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2862,10 +2862,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6098,
-            "end": 6103,
+            "commentStart": 6058,
+            "end": 6063,
             "moduleId": 0,
-            "start": 6098,
+            "start": 6058,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2876,10 +2876,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6212,
-            "end": 6217,
+            "commentStart": 6172,
+            "end": 6177,
             "moduleId": 0,
-            "start": 6212,
+            "start": 6172,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2890,10 +2890,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6324,
-            "end": 6329,
+            "commentStart": 6284,
+            "end": 6289,
             "moduleId": 0,
-            "start": 6324,
+            "start": 6284,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2904,10 +2904,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6437,
-            "end": 6442,
+            "commentStart": 6397,
+            "end": 6402,
             "moduleId": 0,
-            "start": 6437,
+            "start": 6397,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2918,10 +2918,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6553,
-            "end": 6558,
+            "commentStart": 6513,
+            "end": 6518,
             "moduleId": 0,
-            "start": 6553,
+            "start": 6513,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2943,10 +2943,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.00000000000000015883264053847466
             ],
             "tag": {
-              "commentStart": 6024,
-              "end": 6029,
+              "commentStart": 5984,
+              "end": 5989,
               "moduleId": 0,
-              "start": 6024,
+              "start": 5984,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2967,10 +2967,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.660254037851814
             ],
             "tag": {
-              "commentStart": 6098,
-              "end": 6103,
+              "commentStart": 6058,
+              "end": 6063,
               "moduleId": 0,
-              "start": 6098,
+              "start": 6058,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2991,10 +2991,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.660254037851818
             ],
             "tag": {
-              "commentStart": 6212,
-              "end": 6217,
+              "commentStart": 6172,
+              "end": 6177,
               "moduleId": 0,
-              "start": 6212,
+              "start": 6172,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3015,10 +3015,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.000000000000000753989212956401
             ],
             "tag": {
-              "commentStart": 6324,
-              "end": 6329,
+              "commentStart": 6284,
+              "end": 6289,
               "moduleId": 0,
-              "start": 6324,
+              "start": 6284,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3039,10 +3039,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -8.660254037851816
             ],
             "tag": {
-              "commentStart": 6437,
-              "end": 6442,
+              "commentStart": 6397,
+              "end": 6402,
               "moduleId": 0,
-              "start": 6437,
+              "start": 6397,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3063,10 +3063,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -8.660254037851816
             ],
             "tag": {
-              "commentStart": 6553,
-              "end": 6558,
+              "commentStart": 6513,
+              "end": 6518,
               "moduleId": 0,
-              "start": 6553,
+              "start": 6513,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4146,10 +4146,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     0.00000000000000015883264053847466
                   ],
                   "tag": {
-                    "commentStart": 6024,
-                    "end": 6029,
+                    "commentStart": 5984,
+                    "end": 5989,
                     "moduleId": 0,
-                    "start": 6024,
+                    "start": 5984,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4170,10 +4170,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     8.660254037851814
                   ],
                   "tag": {
-                    "commentStart": 6098,
-                    "end": 6103,
+                    "commentStart": 6058,
+                    "end": 6063,
                     "moduleId": 0,
-                    "start": 6098,
+                    "start": 6058,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4194,10 +4194,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     8.660254037851818
                   ],
                   "tag": {
-                    "commentStart": 6212,
-                    "end": 6217,
+                    "commentStart": 6172,
+                    "end": 6177,
                     "moduleId": 0,
-                    "start": 6212,
+                    "start": 6172,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4218,10 +4218,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     0.000000000000000753989212956401
                   ],
                   "tag": {
-                    "commentStart": 6324,
-                    "end": 6329,
+                    "commentStart": 6284,
+                    "end": 6289,
                     "moduleId": 0,
-                    "start": 6324,
+                    "start": 6284,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4242,10 +4242,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -8.660254037851816
                   ],
                   "tag": {
-                    "commentStart": 6437,
-                    "end": 6442,
+                    "commentStart": 6397,
+                    "end": 6402,
                     "moduleId": 0,
-                    "start": 6437,
+                    "start": 6397,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -4266,10 +4266,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -8.660254037851816
                   ],
                   "tag": {
-                    "commentStart": 6553,
-                    "end": 6558,
+                    "commentStart": 6513,
+                    "end": 6518,
                     "moduleId": 0,
-                    "start": 6553,
+                    "start": 6513,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -4391,10 +4391,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.00000000000000015883264053847466
           ],
           "tag": {
-            "commentStart": 6024,
-            "end": 6029,
+            "commentStart": 5984,
+            "end": 5989,
             "moduleId": 0,
-            "start": 6024,
+            "start": 5984,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4415,10 +4415,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             8.660254037851814
           ],
           "tag": {
-            "commentStart": 6098,
-            "end": 6103,
+            "commentStart": 6058,
+            "end": 6063,
             "moduleId": 0,
-            "start": 6098,
+            "start": 6058,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4439,10 +4439,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             8.660254037851818
           ],
           "tag": {
-            "commentStart": 6212,
-            "end": 6217,
+            "commentStart": 6172,
+            "end": 6177,
             "moduleId": 0,
-            "start": 6212,
+            "start": 6172,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4463,10 +4463,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.000000000000000753989212956401
           ],
           "tag": {
-            "commentStart": 6324,
-            "end": 6329,
+            "commentStart": 6284,
+            "end": 6289,
             "moduleId": 0,
-            "start": 6324,
+            "start": 6284,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4487,10 +4487,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -8.660254037851816
           ],
           "tag": {
-            "commentStart": 6437,
-            "end": 6442,
+            "commentStart": 6397,
+            "end": 6402,
             "moduleId": 0,
-            "start": 6437,
+            "start": 6397,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4511,10 +4511,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -8.660254037851816
           ],
           "tag": {
-            "commentStart": 6553,
-            "end": 6558,
+            "commentStart": 6513,
+            "end": 6518,
             "moduleId": 0,
-            "start": 6553,
+            "start": 6513,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -4765,10 +4765,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 7818,
-                    "end": 7825,
+                    "commentStart": 7826,
+                    "end": 7833,
                     "moduleId": 0,
-                    "start": 7818,
+                    "start": 7826,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4976,10 +4976,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 7818,
-            "end": 7825,
+            "commentStart": 7826,
+            "end": 7833,
             "moduleId": 0,
-            "start": 7818,
+            "start": 7826,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -5061,10 +5061,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9805,
-            "end": 9810,
+            "commentStart": 9813,
+            "end": 9818,
             "moduleId": 0,
-            "start": 9805,
+            "start": 9813,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5075,10 +5075,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9880,
-            "end": 9885,
+            "commentStart": 9888,
+            "end": 9893,
             "moduleId": 0,
-            "start": 9880,
+            "start": 9888,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5089,10 +5089,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9996,
-            "end": 10001,
+            "commentStart": 10004,
+            "end": 10009,
             "moduleId": 0,
-            "start": 9996,
+            "start": 10004,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5103,10 +5103,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10109,
-            "end": 10114,
+            "commentStart": 10117,
+            "end": 10122,
             "moduleId": 0,
-            "start": 10109,
+            "start": 10117,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5117,10 +5117,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10223,
-            "end": 10228,
+            "commentStart": 10231,
+            "end": 10236,
             "moduleId": 0,
-            "start": 10223,
+            "start": 10231,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -5131,10 +5131,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10341,
-            "end": 10346,
+            "commentStart": 10349,
+            "end": 10354,
             "moduleId": 0,
-            "start": 10341,
+            "start": 10349,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5156,10 +5156,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -0.0000000000000012851246740515602
             ],
             "tag": {
-              "commentStart": 9805,
-              "end": 9810,
+              "commentStart": 9813,
+              "end": 9818,
               "moduleId": 0,
-              "start": 9805,
+              "start": 9813,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5180,10 +5180,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               10.392304845413271
             ],
             "tag": {
-              "commentStart": 9880,
-              "end": 9885,
+              "commentStart": 9888,
+              "end": 9893,
               "moduleId": 0,
-              "start": 9880,
+              "start": 9888,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5204,10 +5204,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               10.392304845413271
             ],
             "tag": {
-              "commentStart": 9996,
-              "end": 10001,
+              "commentStart": 10004,
+              "end": 10009,
               "moduleId": 0,
-              "start": 9996,
+              "start": 10004,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5228,10 +5228,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.000000000000000023724451678575613
             ],
             "tag": {
-              "commentStart": 10109,
-              "end": 10114,
+              "commentStart": 10117,
+              "end": 10122,
               "moduleId": 0,
-              "start": 10109,
+              "start": 10117,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5252,10 +5252,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -10.392304845413273
             ],
             "tag": {
-              "commentStart": 10223,
-              "end": 10228,
+              "commentStart": 10231,
+              "end": 10236,
               "moduleId": 0,
-              "start": 10223,
+              "start": 10231,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -5276,10 +5276,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -10.392304845413271
             ],
             "tag": {
-              "commentStart": 10341,
-              "end": 10346,
+              "commentStart": 10349,
+              "end": 10354,
               "moduleId": 0,
-              "start": 10341,
+              "start": 10349,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -5381,10 +5381,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8594,
-            "end": 8599,
+            "commentStart": 8602,
+            "end": 8607,
             "moduleId": 0,
-            "start": 8594,
+            "start": 8602,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5395,10 +5395,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8670,
-            "end": 8675,
+            "commentStart": 8678,
+            "end": 8683,
             "moduleId": 0,
-            "start": 8670,
+            "start": 8678,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5409,10 +5409,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8784,
-            "end": 8789,
+            "commentStart": 8792,
+            "end": 8797,
             "moduleId": 0,
-            "start": 8784,
+            "start": 8792,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5423,10 +5423,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8898,
-            "end": 8903,
+            "commentStart": 8906,
+            "end": 8911,
             "moduleId": 0,
-            "start": 8898,
+            "start": 8906,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5448,10 +5448,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 8594,
-              "end": 8599,
+              "commentStart": 8602,
+              "end": 8607,
               "moduleId": 0,
-              "start": 8594,
+              "start": 8602,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5472,10 +5472,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 8670,
-              "end": 8675,
+              "commentStart": 8678,
+              "end": 8683,
               "moduleId": 0,
-              "start": 8670,
+              "start": 8678,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5496,10 +5496,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 8784,
-              "end": 8789,
+              "commentStart": 8792,
+              "end": 8797,
               "moduleId": 0,
-              "start": 8784,
+              "start": 8792,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5520,10 +5520,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 8898,
-              "end": 8903,
+              "commentStart": 8906,
+              "end": 8911,
               "moduleId": 0,
-              "start": 8898,
+              "start": 8906,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6113,10 +6113,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 8594,
-                    "end": 8599,
+                    "commentStart": 8602,
+                    "end": 8607,
                     "moduleId": 0,
-                    "start": 8594,
+                    "start": 8602,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6137,10 +6137,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 8670,
-                    "end": 8675,
+                    "commentStart": 8678,
+                    "end": 8683,
                     "moduleId": 0,
-                    "start": 8670,
+                    "start": 8678,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -6161,10 +6161,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 8784,
-                    "end": 8789,
+                    "commentStart": 8792,
+                    "end": 8797,
                     "moduleId": 0,
-                    "start": 8784,
+                    "start": 8792,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -6185,10 +6185,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 8898,
-                    "end": 8903,
+                    "commentStart": 8906,
+                    "end": 8911,
                     "moduleId": 0,
-                    "start": 8898,
+                    "start": 8906,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -6293,10 +6293,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 8594,
-            "end": 8599,
+            "commentStart": 8602,
+            "end": 8607,
             "moduleId": 0,
-            "start": 8594,
+            "start": 8602,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6317,10 +6317,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 8670,
-            "end": 8675,
+            "commentStart": 8678,
+            "end": 8683,
             "moduleId": 0,
-            "start": 8670,
+            "start": 8678,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6341,10 +6341,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 8784,
-            "end": 8789,
+            "commentStart": 8792,
+            "end": 8797,
             "moduleId": 0,
-            "start": 8784,
+            "start": 8792,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6365,10 +6365,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 8898,
-            "end": 8903,
+            "commentStart": 8906,
+            "end": 8911,
             "moduleId": 0,
-            "start": 8898,
+            "start": 8906,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6706,10 +6706,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.00000000000000015883264053847466
           ],
           "tag": {
-            "commentStart": 6024,
-            "end": 6029,
+            "commentStart": 5984,
+            "end": 5989,
             "moduleId": 0,
-            "start": 6024,
+            "start": 5984,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6730,10 +6730,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             8.660254037851814
           ],
           "tag": {
-            "commentStart": 6098,
-            "end": 6103,
+            "commentStart": 6058,
+            "end": 6063,
             "moduleId": 0,
-            "start": 6098,
+            "start": 6058,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6754,10 +6754,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             8.660254037851818
           ],
           "tag": {
-            "commentStart": 6212,
-            "end": 6217,
+            "commentStart": 6172,
+            "end": 6177,
             "moduleId": 0,
-            "start": 6212,
+            "start": 6172,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6778,10 +6778,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.000000000000000753989212956401
           ],
           "tag": {
-            "commentStart": 6324,
-            "end": 6329,
+            "commentStart": 6284,
+            "end": 6289,
             "moduleId": 0,
-            "start": 6324,
+            "start": 6284,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6802,10 +6802,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -8.660254037851816
           ],
           "tag": {
-            "commentStart": 6437,
-            "end": 6442,
+            "commentStart": 6397,
+            "end": 6402,
             "moduleId": 0,
-            "start": 6437,
+            "start": 6397,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6826,10 +6826,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -8.660254037851816
           ],
           "tag": {
-            "commentStart": 6553,
-            "end": 6558,
+            "commentStart": 6513,
+            "end": 6518,
             "moduleId": 0,
-            "start": 6553,
+            "start": 6513,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6942,10 +6942,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 7818,
-            "end": 7825,
+            "commentStart": 7826,
+            "end": 7833,
             "moduleId": 0,
-            "start": 7818,
+            "start": 7826,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7026,10 +7026,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 8594,
-            "end": 8599,
+            "commentStart": 8602,
+            "end": 8607,
             "moduleId": 0,
-            "start": 8594,
+            "start": 8602,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7050,10 +7050,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 8670,
-            "end": 8675,
+            "commentStart": 8678,
+            "end": 8683,
             "moduleId": 0,
-            "start": 8670,
+            "start": 8678,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7074,10 +7074,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 8784,
-            "end": 8789,
+            "commentStart": 8792,
+            "end": 8797,
             "moduleId": 0,
-            "start": 8784,
+            "start": 8792,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7098,10 +7098,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 8898,
-            "end": 8903,
+            "commentStart": 8906,
+            "end": 8911,
             "moduleId": 0,
-            "start": 8898,
+            "start": 8906,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7200,10 +7200,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -0.0000000000000012851246740515602
           ],
           "tag": {
-            "commentStart": 9805,
-            "end": 9810,
+            "commentStart": 9813,
+            "end": 9818,
             "moduleId": 0,
-            "start": 9805,
+            "start": 9813,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7224,10 +7224,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             10.392304845413271
           ],
           "tag": {
-            "commentStart": 9880,
-            "end": 9885,
+            "commentStart": 9888,
+            "end": 9893,
             "moduleId": 0,
-            "start": 9880,
+            "start": 9888,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7248,10 +7248,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             10.392304845413271
           ],
           "tag": {
-            "commentStart": 9996,
-            "end": 10001,
+            "commentStart": 10004,
+            "end": 10009,
             "moduleId": 0,
-            "start": 9996,
+            "start": 10004,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7272,10 +7272,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.000000000000000023724451678575613
           ],
           "tag": {
-            "commentStart": 10109,
-            "end": 10114,
+            "commentStart": 10117,
+            "end": 10122,
             "moduleId": 0,
-            "start": 10109,
+            "start": 10117,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7296,10 +7296,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -10.392304845413273
           ],
           "tag": {
-            "commentStart": 10223,
-            "end": 10228,
+            "commentStart": 10231,
+            "end": 10236,
             "moduleId": 0,
-            "start": 10223,
+            "start": 10231,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7320,10 +7320,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -10.392304845413271
           ],
           "tag": {
-            "commentStart": 10341,
-            "end": 10346,
+            "commentStart": 10349,
+            "end": 10354,
             "moduleId": 0,
-            "start": 10341,
+            "start": 10349,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8665,10 +8665,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -0.0000000000000012851246740515602
                   ],
                   "tag": {
-                    "commentStart": 9805,
-                    "end": 9810,
+                    "commentStart": 9813,
+                    "end": 9818,
                     "moduleId": 0,
-                    "start": 9805,
+                    "start": 9813,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8689,10 +8689,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     10.392304845413271
                   ],
                   "tag": {
-                    "commentStart": 9880,
-                    "end": 9885,
+                    "commentStart": 9888,
+                    "end": 9893,
                     "moduleId": 0,
-                    "start": 9880,
+                    "start": 9888,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8713,10 +8713,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     10.392304845413271
                   ],
                   "tag": {
-                    "commentStart": 9996,
-                    "end": 10001,
+                    "commentStart": 10004,
+                    "end": 10009,
                     "moduleId": 0,
-                    "start": 9996,
+                    "start": 10004,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8737,10 +8737,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     0.000000000000000023724451678575613
                   ],
                   "tag": {
-                    "commentStart": 10109,
-                    "end": 10114,
+                    "commentStart": 10117,
+                    "end": 10122,
                     "moduleId": 0,
-                    "start": 10109,
+                    "start": 10117,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8761,10 +8761,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -10.392304845413273
                   ],
                   "tag": {
-                    "commentStart": 10223,
-                    "end": 10228,
+                    "commentStart": 10231,
+                    "end": 10236,
                     "moduleId": 0,
-                    "start": 10223,
+                    "start": 10231,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -8785,10 +8785,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     -10.392304845413271
                   ],
                   "tag": {
-                    "commentStart": 10341,
-                    "end": 10346,
+                    "commentStart": 10349,
+                    "end": 10354,
                     "moduleId": 0,
-                    "start": 10341,
+                    "start": 10349,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -9134,10 +9134,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -0.0000000000000012851246740515602
           ],
           "tag": {
-            "commentStart": 9805,
-            "end": 9810,
+            "commentStart": 9813,
+            "end": 9818,
             "moduleId": 0,
-            "start": 9805,
+            "start": 9813,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9158,10 +9158,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             10.392304845413271
           ],
           "tag": {
-            "commentStart": 9880,
-            "end": 9885,
+            "commentStart": 9888,
+            "end": 9893,
             "moduleId": 0,
-            "start": 9880,
+            "start": 9888,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -9182,10 +9182,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             10.392304845413271
           ],
           "tag": {
-            "commentStart": 9996,
-            "end": 10001,
+            "commentStart": 10004,
+            "end": 10009,
             "moduleId": 0,
-            "start": 9996,
+            "start": 10004,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9206,10 +9206,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.000000000000000023724451678575613
           ],
           "tag": {
-            "commentStart": 10109,
-            "end": 10114,
+            "commentStart": 10117,
+            "end": 10122,
             "moduleId": 0,
-            "start": 10109,
+            "start": 10117,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9230,10 +9230,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -10.392304845413273
           ],
           "tag": {
-            "commentStart": 10223,
-            "end": 10228,
+            "commentStart": 10231,
+            "end": 10236,
             "moduleId": 0,
-            "start": 10223,
+            "start": 10231,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -9254,10 +9254,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -10.392304845413271
           ],
           "tag": {
-            "commentStart": 10341,
-            "end": 10346,
+            "commentStart": 10349,
+            "end": 10354,
             "moduleId": 0,
-            "start": 10341,
+            "start": 10349,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9384,10 +9384,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9805,
-                "end": 9810,
+                "commentStart": 9813,
+                "end": 9818,
                 "moduleId": 0,
-                "start": 9805,
+                "start": 9813,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -9398,10 +9398,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9880,
-                "end": 9885,
+                "commentStart": 9888,
+                "end": 9893,
                 "moduleId": 0,
-                "start": 9880,
+                "start": 9888,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -9412,10 +9412,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9996,
-                "end": 10001,
+                "commentStart": 10004,
+                "end": 10009,
                 "moduleId": 0,
-                "start": 9996,
+                "start": 10004,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -9426,10 +9426,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10109,
-                "end": 10114,
+                "commentStart": 10117,
+                "end": 10122,
                 "moduleId": 0,
-                "start": 10109,
+                "start": 10117,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9440,10 +9440,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10223,
-                "end": 10228,
+                "commentStart": 10231,
+                "end": 10236,
                 "moduleId": 0,
-                "start": 10223,
+                "start": 10231,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -9454,10 +9454,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10341,
-                "end": 10346,
+                "commentStart": 10349,
+                "end": 10354,
                 "moduleId": 0,
-                "start": 10341,
+                "start": 10349,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -9479,10 +9479,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -0.0000000000000012851246740515602
                 ],
                 "tag": {
-                  "commentStart": 9805,
-                  "end": 9810,
+                  "commentStart": 9813,
+                  "end": 9818,
                   "moduleId": 0,
-                  "start": 9805,
+                  "start": 9813,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9503,10 +9503,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 9880,
-                  "end": 9885,
+                  "commentStart": 9888,
+                  "end": 9893,
                   "moduleId": 0,
-                  "start": 9880,
+                  "start": 9888,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9527,10 +9527,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 9996,
-                  "end": 10001,
+                  "commentStart": 10004,
+                  "end": 10009,
                   "moduleId": 0,
-                  "start": 9996,
+                  "start": 10004,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9551,10 +9551,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.000000000000000023724451678575613
                 ],
                 "tag": {
-                  "commentStart": 10109,
-                  "end": 10114,
+                  "commentStart": 10117,
+                  "end": 10122,
                   "moduleId": 0,
-                  "start": 10109,
+                  "start": 10117,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9575,10 +9575,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413273
                 ],
                 "tag": {
-                  "commentStart": 10223,
-                  "end": 10228,
+                  "commentStart": 10231,
+                  "end": 10236,
                   "moduleId": 0,
-                  "start": 10223,
+                  "start": 10231,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -9599,10 +9599,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 10341,
-                  "end": 10346,
+                  "commentStart": 10349,
+                  "end": 10354,
                   "moduleId": 0,
-                  "start": 10341,
+                  "start": 10349,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },
@@ -9704,10 +9704,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9805,
-                "end": 9810,
+                "commentStart": 9813,
+                "end": 9818,
                 "moduleId": 0,
-                "start": 9805,
+                "start": 9813,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -9718,10 +9718,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9880,
-                "end": 9885,
+                "commentStart": 9888,
+                "end": 9893,
                 "moduleId": 0,
-                "start": 9880,
+                "start": 9888,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -9732,10 +9732,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9996,
-                "end": 10001,
+                "commentStart": 10004,
+                "end": 10009,
                 "moduleId": 0,
-                "start": 9996,
+                "start": 10004,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -9746,10 +9746,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10109,
-                "end": 10114,
+                "commentStart": 10117,
+                "end": 10122,
                 "moduleId": 0,
-                "start": 10109,
+                "start": 10117,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -9760,10 +9760,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10223,
-                "end": 10228,
+                "commentStart": 10231,
+                "end": 10236,
                 "moduleId": 0,
-                "start": 10223,
+                "start": 10231,
                 "type": "TagDeclarator",
                 "value": "line5"
               },
@@ -9774,10 +9774,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10341,
-                "end": 10346,
+                "commentStart": 10349,
+                "end": 10354,
                 "moduleId": 0,
-                "start": 10341,
+                "start": 10349,
                 "type": "TagDeclarator",
                 "value": "line6"
               },
@@ -9799,10 +9799,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -0.0000000000000012851246740515602
                 ],
                 "tag": {
-                  "commentStart": 9805,
-                  "end": 9810,
+                  "commentStart": 9813,
+                  "end": 9818,
                   "moduleId": 0,
-                  "start": 9805,
+                  "start": 9813,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -9823,10 +9823,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 9880,
-                  "end": 9885,
+                  "commentStart": 9888,
+                  "end": 9893,
                   "moduleId": 0,
-                  "start": 9880,
+                  "start": 9888,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -9847,10 +9847,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 9996,
-                  "end": 10001,
+                  "commentStart": 10004,
+                  "end": 10009,
                   "moduleId": 0,
-                  "start": 9996,
+                  "start": 10004,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -9871,10 +9871,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.000000000000000023724451678575613
                 ],
                 "tag": {
-                  "commentStart": 10109,
-                  "end": 10114,
+                  "commentStart": 10117,
+                  "end": 10122,
                   "moduleId": 0,
-                  "start": 10109,
+                  "start": 10117,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -9895,10 +9895,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413273
                 ],
                 "tag": {
-                  "commentStart": 10223,
-                  "end": 10228,
+                  "commentStart": 10231,
+                  "end": 10236,
                   "moduleId": 0,
-                  "start": 10223,
+                  "start": 10231,
                   "type": "TagDeclarator",
                   "value": "line5"
                 },
@@ -9919,10 +9919,10 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413271
                 ],
                 "tag": {
-                  "commentStart": 10341,
-                  "end": 10346,
+                  "commentStart": 10349,
+                  "end": 10354,
                   "moduleId": 0,
-                  "start": 10341,
+                  "start": 10349,
                   "type": "TagDeclarator",
                   "value": "line6"
                 },

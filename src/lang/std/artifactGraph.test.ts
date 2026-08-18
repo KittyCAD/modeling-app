@@ -29,8 +29,6 @@ function createSourceSegmentGraph(suffix = ''): {
     type: 'segment',
     id: `source-segment${idSuffix}`,
     pathId: `source-path${idSuffix}`,
-    edgeIds: [],
-    commonSurfaceIds: [],
     codeRef,
   }
   artifactGraph.set(sourceSegment.id, sourceSegment)
@@ -57,7 +55,7 @@ function addMappedRegion(
   const generatedSegmentId = `generated-segment-${suffix}`
   const regionPathId = `region-path-${suffix}`
   const sweepId = `sweep-${targetSuffix}`
-  const commonSurfaceIds = withFaces
+  const surfaceIds = withFaces
     ? [`wall-${targetSuffix}`, `cap-${targetSuffix}`]
     : []
 
@@ -66,14 +64,14 @@ function addMappedRegion(
     id: generatedSegmentId,
     pathId: regionPathId,
     originalSegId: sourceSegment.id,
-    commonSurfaceIds,
+    surfaceId: withFaces ? `wall-${targetSuffix}` : undefined,
   })
   artifactGraph.set(regionPathId, {
     type: 'path',
     subType: 'region',
     id: regionPathId,
     codeRef,
-    planeId: 'plane-1',
+    planeId: withFaces ? `cap-${targetSuffix}` : 'plane-1',
     segIds: [generatedSegmentId],
     sweepId,
     trajectorySweepId: null,
@@ -85,8 +83,7 @@ function addMappedRegion(
     codeRef,
     pathId: regionPathId,
     subType: 'extrusion',
-    surfaceIds: commonSurfaceIds,
-    edgeIds: [],
+    surfaceIds,
     method: 'merge',
     trajectoryId: null,
     consumed: false,
@@ -99,7 +96,6 @@ function addMappedRegion(
       segId: generatedSegmentId,
       sweepId,
       pathIds: [],
-      edgeCutEdgeIds: [],
       cmdId: `cmd-${targetSuffix}`,
       faceCodeRef: codeRef,
     })
@@ -109,7 +105,6 @@ function addMappedRegion(
       subType: 'end',
       sweepId,
       pathIds: [],
-      edgeCutEdgeIds: [],
       cmdId: `cmd-${targetSuffix}`,
       faceCodeRef: codeRef,
     })
@@ -135,6 +130,7 @@ describe('getSweepArtifactFromSelection', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 0, 0],
@@ -144,7 +140,6 @@ describe('getSweepArtifactFromSelection', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -152,10 +147,10 @@ describe('getSweepArtifactFromSelection', () => {
 
     const segment: Artifact = {
       type: 'segment',
-      id: 'segment-1',
-      pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
+      id: 'segment-1',
+      pathId: 'path-1',
       edgeCutId: 'edge-cut-1',
       codeRef: {
         range: [0, 0, 0],
@@ -166,10 +161,11 @@ describe('getSweepArtifactFromSelection', () => {
 
     const edgeCut: Artifact = {
       type: 'edgeCut',
-      id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
-      subType: 'chamfer',
+      consumedEdgeId: '',
       edgeIds: [],
+      id: 'edge-cut-1',
+      subType: 'chamfer',
+      surfaceId: null,
       codeRef: {
         range: [0, 0, 0],
         pathToNode: [],
@@ -328,10 +324,10 @@ describe('getSketchBlockForArtifact', () => {
 
     const segment: Artifact = {
       type: 'segment',
-      id: 'segment-1',
-      pathId: 'path-1',
       edgeIds: [],
       commonSurfaceIds: [],
+      id: 'segment-1',
+      pathId: 'path-1',
       codeRef,
     }
 
@@ -539,6 +535,7 @@ describe('getBodiesFromArtifactGraph', () => {
     const artifactGraph: ArtifactGraph = new Map()
     const sourceSweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 100, 0],
@@ -548,7 +545,6 @@ describe('getBodiesFromArtifactGraph', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -580,6 +576,7 @@ describe('getBodiesFromArtifactGraph', () => {
     const artifactGraph: ArtifactGraph = new Map()
     const sourceSweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 100, 0],
@@ -589,7 +586,6 @@ describe('getBodiesFromArtifactGraph', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -649,6 +645,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -658,7 +655,6 @@ describe('isFaceFromLegacySketch', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: ['wall-1'],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -666,10 +662,10 @@ describe('isFaceFromLegacySketch', () => {
 
     const wall: Artifact = {
       type: 'wall',
+      edgeCutEdgeIds: [],
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',
-      edgeCutEdgeIds: [],
       pathIds: [],
       sweepId: 'sweep-1',
       faceCodeRef: {
@@ -703,6 +699,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -712,7 +709,6 @@ describe('isFaceFromLegacySketch', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: ['wall-1'],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -720,10 +716,10 @@ describe('isFaceFromLegacySketch', () => {
 
     const wall: Artifact = {
       type: 'wall',
+      edgeCutEdgeIds: [],
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',
-      edgeCutEdgeIds: [],
       pathIds: [],
       sweepId: 'sweep-1',
       faceCodeRef: {

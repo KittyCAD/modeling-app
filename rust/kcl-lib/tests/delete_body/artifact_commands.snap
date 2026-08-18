@@ -175,15 +175,6 @@ description: Artifact commands delete_body.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "remove_scene_objects",
         "object_ids": [
           "[uuid]"

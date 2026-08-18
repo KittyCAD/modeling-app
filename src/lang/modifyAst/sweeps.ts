@@ -49,7 +49,6 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
-  getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
@@ -1379,28 +1378,6 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
       return edgeSelection
     }
     edge = edgeSelection
-  } else if (axisValue.type === 'Uuid') {
-    axisOrEdge = 'Edge'
-    const artifact = getArtifactOfTypes(
-      {
-        key: axisValue.value,
-        types: ['sweepEdge'],
-      },
-      artifactGraph
-    )
-    if (err(artifact)) {
-      return new Error("Couldn't find related edge artifact")
-    }
-
-    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
-    if (err(codeRef)) {
-      return new Error("Couldn't find related edge code ref")
-    }
-
-    edge = {
-      graphSelections: [{ artifact, codeRef }],
-      otherSelections: [],
-    }
   } else {
     return new Error('The type of the axis argument is unsupported')
   }

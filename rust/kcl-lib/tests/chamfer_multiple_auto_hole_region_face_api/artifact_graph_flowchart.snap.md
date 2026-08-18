@@ -52,25 +52,13 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   24["Cap End"]
     %% face_code_ref=Missing NodePath
-  25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["EdgeCut Chamfer<br>[696, 862, 0]"]
+  25["EdgeCut Chamfer<br>[696, 862, 0]"]
     %% [ProgramBodyItem { index: 3 }, ExpressionStatementExpr]
-  38["SketchBlock<br>[93, 571, 0]"]
+  26["SketchBlock<br>[93, 571, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 9
-  1 <--x 38
+  1 <--x 26
   2 --- 3
   2 --- 4
   2 --- 5
@@ -78,7 +66,7 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 <--x 9
-  38 --- 2
+  26 --- 2
   3 <--x 10
   4 <--x 11
   5 <--x 12
@@ -93,29 +81,11 @@ flowchart LR
   9 --- 15
   9 ---- 16
   10 --- 17
-  10 x--> 23
-  10 --- 25
-  10 --- 26
   11 --- 18
-  11 x--> 23
-  11 --- 27
-  11 --- 28
   12 --- 19
-  12 x--> 23
-  12 --- 29
-  12 --- 30
   13 --- 20
-  13 x--> 23
-  13 --- 31
-  13 --- 32
   14 --- 21
-  14 x--> 23
-  14 --- 33
-  14 --- 34
   15 --- 22
-  15 x--> 23
-  15 --- 35
-  15 --- 36
   16 --- 17
   16 --- 18
   16 --- 19
@@ -124,38 +94,4 @@ flowchart LR
   16 --- 22
   16 --- 23
   16 --- 24
-  16 --- 25
-  16 --- 26
-  16 --- 27
-  16 --- 28
-  16 --- 29
-  16 --- 30
-  16 --- 31
-  16 --- 32
-  16 --- 33
-  16 --- 34
-  16 --- 35
-  16 --- 36
-  17 --- 25
-  17 --- 26
-  28 <--x 17
-  18 --- 27
-  18 --- 28
-  30 <--x 18
-  19 --- 29
-  19 --- 30
-  32 <--x 19
-  26 <--x 20
-  20 --- 31
-  20 --- 32
-  21 --- 33
-  21 --- 34
-  22 --- 35
-  22 --- 36
-  25 <--x 24
-  27 <--x 24
-  29 <--x 24
-  31 <--x 24
-  33 <--x 24
-  35 <--x 24
 ```

@@ -242,9 +242,7 @@ impl ArtifactMermaidExt for Artifact {
             }
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
-            Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
-            Artifact::EdgeCut(a) => a.consumed_edge_id.into_iter().collect(),
-            Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
+            Artifact::EdgeCut(_) => Vec::new(),
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
             Artifact::GdtAnnotation(_) => Vec::new(),
             // A view names objects that already exist when it is declared, so
@@ -300,11 +298,9 @@ impl ArtifactMermaidExt for Artifact {
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
                 }
-                ids.extend(&a.edge_ids);
                 if let Some(edge_cut_id) = a.edge_cut_id {
                     ids.push(edge_cut_id);
                 }
-                ids.extend(&a.common_surface_ids);
                 ids
             }
             Artifact::Solid2d(_) => {
@@ -347,45 +343,24 @@ impl ArtifactMermaidExt for Artifact {
                 // Note: Don't include these since they're parents: path_id.
                 let mut ids = Vec::new();
                 ids.extend(&a.surface_ids);
-                ids.extend(&a.edge_ids);
                 ids.extend(&a.pattern_ids);
                 ids
             }
             Artifact::Wall(a) => {
                 // Note: Don't include these since they're parents: seg_id,
                 // sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.edge_cut_edge_ids);
-                ids.extend(&a.path_ids);
-                ids
+                a.path_ids.clone()
             }
             Artifact::Cap(a) => {
                 // Note: Don't include these since they're parents: sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.edge_cut_edge_ids);
-                ids.extend(&a.path_ids);
-                ids
-            }
-            Artifact::SweepEdge(a) => {
-                // Note: Don't include these since they're parents: seg_id,
-                // sweep_id.
-                let mut ids = Vec::new();
-                ids.extend(&a.common_surface_ids);
-                ids
+                a.path_ids.clone()
             }
             Artifact::EdgeCut(a) => {
-                // Note: Don't include these since they're parents:
-                // consumed_edge_id.
                 let mut ids = Vec::new();
-                ids.extend(&a.edge_ids);
                 if let Some(surface_id) = a.surface_id {
                     ids.push(surface_id);
                 }
                 ids
-            }
-            Artifact::EdgeCutEdge(a) => {
-                // Note: Don't include these since they're parents: edge_cut_id.
-                vec![a.surface_id]
             }
             Artifact::Helix(a) => {
                 // Note: Don't include these since they're parents: axis_id.
@@ -501,9 +476,7 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 | Artifact::Sweep(_)
                 | Artifact::Wall(_)
                 | Artifact::Cap(_)
-                | Artifact::SweepEdge(_)
                 | Artifact::EdgeCut(_)
-                | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
                 | Artifact::GdtAnnotation(_)
                 | Artifact::NamedView(_)
@@ -681,9 +654,6 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                 writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
                 node_path_display(output, prefix, Some("face_code_ref="), &cap.face_code_ref)?;
             }
-            Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
-            }
             Artifact::EdgeCut(edge_cut) => {
                 writeln!(
                     output,
@@ -692,9 +662,6 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
                     code_ref_display(&edge_cut.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &edge_cut.code_ref)?;
-            }
-            Artifact::EdgeCutEdge(_edge_cut_edge) => {
-                writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
             }
             Artifact::Helix(helix) => {
                 writeln!(
@@ -852,11 +819,9 @@ impl ArtifactGraphMermaidExt for ArtifactGraph {
             Artifact::Sweep(sweep) => format!("Sweep:{:?}:{}", sweep.sub_type, code_ref_key(&sweep.code_ref)),
             Artifact::Wall(_) => "Wall".to_owned(),
             Artifact::Cap(cap) => format!("Cap:{:?}", cap.sub_type),
-            Artifact::SweepEdge(sweep_edge) => format!("SweepEdge:{:?}", sweep_edge.sub_type),
             Artifact::EdgeCut(edge_cut) => {
                 format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
             }
-            Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
             Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
             Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
             // The name is part of the key so that two views declared in one
@@ -1226,10 +1191,8 @@ fn segment_artifact(original_seg_id: Option<ArtifactId>) -> Artifact {
         source_segment_id: None,
         original_seg_id,
         surface_id: None,
-        edge_ids: Vec::new(),
         edge_cut_id: None,
         code_ref: CodeRef::placeholder(SourceRange::synthetic()),
-        common_surface_ids: Vec::new(),
     })
 }
 

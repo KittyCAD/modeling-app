@@ -218,7 +218,7 @@ export function expandWall(
   wall: WallArtifact,
   artifactGraph: ArtifactGraph
 ): WallArtifactRich {
-  const { pathIds, sweepId: _s, edgeCutEdgeIds, ...keptProperties } = wall
+  const { pathIds, sweepId: _s, ...keptProperties } = wall
   const paths = pathIds?.length
     ? Array.from(
         getArtifactsOfTypes(
@@ -228,14 +228,10 @@ export function expandWall(
       )
     : []
   const sweep = artifactGraph.get(wall.sweepId) as SweepArtifact
-  const edgeCuts = edgeCutEdgeIds?.length
-    ? Array.from(
-        getArtifactsOfTypes(
-          { keys: edgeCutEdgeIds, types: ['edgeCut'] },
-          artifactGraph
-        ).values()
-      )
-    : []
+  const edgeCuts = Array.from(artifactGraph.values()).filter(
+    (artifact): artifact is Extract<Artifact, { type: 'edgeCut' }> =>
+      artifact.type === 'edgeCut' && artifact.surfaceId === wall.id
+  )
   const segment = artifactGraph.get(wall.segId) as PathArtifact
   return {
     type: 'wall',
@@ -250,7 +246,7 @@ export function expandCap(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
 ): CapArtifactRich {
-  const { pathIds, sweepId: _s, edgeCutEdgeIds, ...keptProperties } = cap
+  const { pathIds, sweepId: _s, ...keptProperties } = cap
   const paths = pathIds?.length
     ? Array.from(
         getArtifactsOfTypes(
@@ -264,14 +260,10 @@ export function expandCap(
     artifactGraph
   )
   const sweep = err(maybeSweep) ? undefined : maybeSweep
-  const edgeCuts = edgeCutEdgeIds?.length
-    ? Array.from(
-        getArtifactsOfTypes(
-          { keys: edgeCutEdgeIds, types: ['edgeCut'] },
-          artifactGraph
-        ).values()
-      )
-    : []
+  const edgeCuts = Array.from(artifactGraph.values()).filter(
+    (artifact): artifact is Extract<Artifact, { type: 'edgeCut' }> =>
+      artifact.type === 'edgeCut' && artifact.surfaceId === cap.id
+  )
   return {
     type: 'cap',
     ...keptProperties,
@@ -345,74 +337,50 @@ export function getSweepEdgeCodeRef(
   if (err(seg)) return seg
   return seg.codeRef
 }
-/** Read consumed edge id from EdgeCut; Rust bindings use camelCase (edgeIds). */
+/** Resolve the consumed segment id from EdgeCut via Segment.edgeCutId. */
 export function getEdgeCutConsumedEdgeId(
-  edge:
-    | EdgeCut
-    | { edgeIds?: string[]; edge_ids?: string[]; consumedEdgeId?: string }
+  edge: EdgeCut,
+  artifactGraph: ArtifactGraph
 ): string | null {
-  const edgeIds =
-    (edge as { edgeIds?: string[] }).edgeIds ??
-    (edge as { edge_ids?: string[] }).edge_ids
-  const first = edgeIds?.length ? edgeIds[0] : null
-  return first ?? (edge as { consumedEdgeId?: string }).consumedEdgeId ?? null
+  if (edge.consumedEdgeId) return edge.consumedEdgeId
+  return getSegmentForEdgeCut(edge.id, artifactGraph)?.id ?? null
 }
 
-/**
- * Resolve the segment consumed by an edgeCut. The graph may key segments by segment id (direct
- * lookup) or only expose the edge id on EdgeCut; walls/caps carry that edge id in
- * edge_cut_edge_ids and the segment id in seg_id, so we resolve via the wall/cap that
- * references this edge.
- */
 export function getSegmentForEdgeCut(
-  edgeIdOrEdgeCutId: string,
+  edgeCutId: string,
   artifactGraph: ArtifactGraph
-): SegmentArtifact | null {
+): Extract<Artifact, { type: 'segment' }> | null {
   for (const artifact of artifactGraph.values()) {
-    if (artifact.type !== 'wall' && artifact.type !== 'cap') continue
-    const asAny = artifact as {
-      edgeCutEdgeIds?: string[]
-      edge_cut_edge_ids?: string[]
-      segId?: string
-      seg_id?: string
-    }
-    const ids = asAny.edgeCutEdgeIds ?? asAny.edge_cut_edge_ids
-    if (!ids?.includes(edgeIdOrEdgeCutId)) continue
-    const segId = asAny.segId ?? asAny.seg_id
-    if (segId == null) continue
-    const seg = getArtifactOfTypes(
-      { key: segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(seg)) return seg
+    if (artifact.type !== 'segment') continue
+    if (artifact.edgeCutId !== edgeCutId) continue
+    return artifact
   }
   return null
+}
+
+export function getSegmentArtifactForEdgeCut(
+  edge: EdgeCut,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | null {
+  if (!edge.consumedEdgeId) return getSegmentForEdgeCut(edge.id, artifactGraph)
+  const consumedArtifact = artifactGraph.get(edge.consumedEdgeId)
+  if (consumedArtifact?.type === 'segment') return consumedArtifact
+  if (consumedArtifact?.type === 'sweepEdge') {
+    const segment = artifactGraph.get(consumedArtifact.segId)
+    if (segment?.type === 'segment') return segment
+  }
+  return getSegmentForEdgeCut(edge.id, artifactGraph)
 }
 
 export function getEdgeCutConsumedCodeRef(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
-  const consumedEdgeId = getEdgeCutConsumedEdgeId(edge)
-  if (consumedEdgeId == null || consumedEdgeId === '') {
-    return new Error('edgeCut has no edge_ids or consumedEdgeId')
+  const consumedSegment = getSegmentArtifactForEdgeCut(edge, artifactGraph)
+  if (consumedSegment == null) {
+    return new Error('edgeCut has no consumed segment')
   }
-  const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
-  let seg: SegmentArtifact | null =
-    rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
-  if (!seg) {
-    const segmentViaWallOrCap = getSegmentForEdgeCut(
-      consumedEdgeId,
-      artifactGraph
-    )
-    if (!segmentViaWallOrCap) {
-      return new Error(
-        `No segment found for edgeCut consumed edge ${consumedEdgeId}`
-      )
-    }
-    seg = segmentViaWallOrCap
-  }
-  return seg.codeRef
+  return consumedSegment.codeRef
 }
 
 /**
@@ -469,24 +437,21 @@ export function getSweepFromSuspectedSweepSurface(
     }
     return getArtifactOfTypes({ key: sweepId, types: ['sweep'] }, artifactGraph)
   }
-  const consumedEdgeId = getEdgeCutConsumedEdgeId(faceArtifact)
-  if (consumedEdgeId == null || consumedEdgeId === '') {
-    return new Error('edgeCut has no edge_ids or consumedEdgeId')
-  }
-  const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
-  let segment: SegmentArtifact | null =
-    rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
-  if (!segment) {
-    const segmentViaWallOrCap = getSegmentForEdgeCut(
-      consumedEdgeId,
-      artifactGraph
-    )
-    if (!segmentViaWallOrCap) {
-      return new Error(
-        `No segment found for edgeCut consumed edge ${consumedEdgeId}`
+  const segment = getSegmentArtifactForEdgeCut(faceArtifact, artifactGraph)
+  if (segment == null) {
+    if (faceArtifact.surfaceId) {
+      const surface = getArtifactOfTypes(
+        { key: faceArtifact.surfaceId, types: ['wall', 'cap'] },
+        artifactGraph
       )
+      if (!err(surface)) {
+        return getArtifactOfTypes(
+          { key: surface.sweepId, types: ['sweep'] },
+          artifactGraph
+        )
+      }
     }
-    segment = segmentViaWallOrCap
+    return new Error('edgeCut has no consumed segment')
   }
   const pathId = segment.pathId
   if (pathId == null || pathId === '') {
@@ -517,18 +482,38 @@ export function getCommonFacesForEdge(
   let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
 
   for (const candidate of candidates) {
-    const faces = getArtifactsOfTypes(
-      { keys: candidate.commonSurfaceIds, types: ['wall', 'cap'] },
+    if (!candidate.surfaceId) continue
+    const wall = getArtifactOfTypes(
+      { key: candidate.surfaceId, types: ['wall'] },
       artifactGraph
     )
-    if (err(faces)) {
-      return faces
-    }
-    if (faces.size === 0) {
-      continue
-    }
+    if (err(wall)) continue
 
-    const candidateFaces = [...faces.values()]
+    const path = getArtifactOfTypes(
+      { key: candidate.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) continue
+
+    const sketchPlaneFace = getArtifactOfTypes(
+      { key: path.planeId, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    const cap = !err(sketchPlaneFace)
+      ? sketchPlaneFace
+      : ([...artifactGraph.values()].find(
+          (face): face is Extract<Artifact, { type: 'cap' }> =>
+            face.type === 'cap' &&
+            face.sweepId === path.sweepId &&
+            face.subType === 'start'
+        ) ??
+        [...artifactGraph.values()].find(
+          (face): face is Extract<Artifact, { type: 'cap' }> =>
+            face.type === 'cap' && face.sweepId === path.sweepId
+        ))
+    if (!cap || cap.id === wall.id) continue
+
+    const candidateFaces = [wall, cap]
     const commonFaceIds = new Set(commonFaces?.map(({ id }) => id))
     if (
       commonFaces &&
@@ -633,7 +618,10 @@ export function getSweepArtifactFromSelection(
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
     // Handle edgeCut by getting its consumed edge (segment; sweepEdge removed from artifact graph / selectionsV2)
-    const consumedEdgeId = getEdgeCutConsumedEdgeId(selection.artifact)
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(
+      selection.artifact,
+      artifactGraph
+    )
     if (consumedEdgeId != null && consumedEdgeId !== '') {
       const segOrEdge = getArtifactOfTypes(
         { key: consumedEdgeId, types: ['segment'] },
@@ -649,32 +637,7 @@ export function getSweepArtifactFromSelection(
         )
       }
     }
-    // Fallback: find a cap or wall that references this edgeCut and get sweep from it
-    const edgeCutId = selection.artifact.id
-    for (const [, artifact] of artifactGraph) {
-      if (artifact.type === 'cap' || artifact.type === 'wall') {
-        const asAny = artifact as {
-          edgeCutEdgeIds?: string[]
-          edge_cut_edge_ids?: string[]
-          sweepId?: string
-        }
-        const ids = asAny.edgeCutEdgeIds ?? asAny.edge_cut_edge_ids
-        if (ids?.includes(edgeCutId)) {
-          const sweepId = asAny.sweepId
-          if (sweepId) {
-            const sweep = getArtifactOfTypes(
-              { key: sweepId, types: ['sweep'] },
-              artifactGraph
-            )
-            if (!err(sweep)) return sweep
-          }
-          break
-        }
-      }
-    }
-    return new Error(
-      'edgeCut artifact has no edge_ids or consumedEdgeId; cannot resolve sweep'
-    )
+    return new Error('edgeCut artifact has no consumed segment')
   }
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
