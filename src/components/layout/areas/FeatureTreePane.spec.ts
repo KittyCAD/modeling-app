@@ -1,4 +1,4 @@
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeValueDetail,
@@ -317,6 +317,106 @@ describe('FeatureTreePane', () => {
 
         expect(valueDetail?.display).toBe('A')
         expect(valueDetail?.calculated).toEqual({ type: 'String', value: 'A' })
+      })
+    })
+
+    describe('named view name extraction', () => {
+      // The argument shape is transcribed from real executor output: the
+      // `ops.snap` record of the simulation test `named_views_baseline_show`
+      // records the name as
+      // `"unlabeledArg": { "value": { "type": "String", "value": "Plate in
+      // context" } }`, with `camera` and `baseline` as labeled arguments. Unlike
+      // `gdt::datum` above, which records `"unlabeledArg": null` and carries its
+      // name in `labeledArgs`, the name here is the unlabeled first argument.
+      function createNamedViewOperation(
+        name: OpKclValue,
+        nameSourceRange: [number, number, number]
+      ): Operation {
+        return {
+          type: 'StdLibCall',
+          name: 'view::named',
+          unlabeledArg: {
+            value: name,
+            sourceRange: nameSourceRange,
+          },
+          labeledArgs: {
+            camera: {
+              value: { type: 'CameraView' },
+              sourceRange: defaultSourceRange(),
+            },
+            baseline: {
+              value: { type: 'Enum', enum_name: 'Visibility', variant: 'Show' },
+              sourceRange: defaultSourceRange(),
+            },
+          },
+          nodePath: defaultNodePath(),
+          sourceRange: defaultSourceRange(),
+          isError: false,
+        }
+      }
+
+      function rangeOfText(
+        code: string,
+        target: string
+      ): [number, number, number] {
+        const start = code.indexOf(target)
+        if (start === -1) {
+          throw new Error(`Could not find \`${target}\` in: ${code}`)
+        }
+        return [start, start + target.length, 0]
+      }
+
+      it('reads the view name from the unlabeled argument', () => {
+        const mockCode =
+          'plateInContext = view::named("Plate in context", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'String', value: 'Plate in context' },
+          rangeOfText(mockCode, '"Plate in context"')
+        )
+
+        const valueDetail = getFeatureTreeValueDetail(mockOperation, mockCode)
+
+        expect(valueDetail?.calculated).toEqual({
+          type: 'String',
+          value: 'Plate in context',
+        })
+        expect(valueDetail?.display).toBe('"Plate in context"')
+      })
+
+      // A name need not be a literal: KCL concatenates strings with `+`, and a
+      // function that declares a view can take the name as a parameter. The
+      // recorded value is then the resolved name while the source text is the
+      // expression that produced it, and the row must show the resolved name,
+      // since that is what identifies the view.
+      it('uses the recorded value, not the source text, for a computed name', () => {
+        const mockCode = 'view::named("Front " + suffix, camera = camera001)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'String', value: 'Front A' },
+          rangeOfText(mockCode, '"Front " + suffix')
+        )
+
+        const valueDetail = getFeatureTreeValueDetail(mockOperation, mockCode)
+
+        expect(valueDetail?.calculated).toEqual({
+          type: 'String',
+          value: 'Front A',
+        })
+        expect(valueDetail?.display).toBe('"Front " + suffix')
+      })
+
+      // The signature types the name as a string, so this shape is unreachable
+      // from KCL today. The guard is here so that a signature change produces no
+      // value detail rather than a wrong one.
+      it('returns no value detail when the unlabeled argument is not a string', () => {
+        const mockCode = 'view::named(true, camera = camera001)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'Bool', value: true },
+          rangeOfText(mockCode, 'true')
+        )
+
+        expect(
+          getFeatureTreeValueDetail(mockOperation, mockCode)
+        ).toBeUndefined()
       })
     })
   })

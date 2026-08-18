@@ -20,6 +20,7 @@ import {
   filterOperations,
   getHideOpForArtifact,
   getOperationCalculatedDisplay,
+  getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
@@ -1081,6 +1082,27 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       expect(
         getOperationCalculatedDisplay({ type: 'Uuid', value: 'abc' })
       ).toBe('Uuid')
+    })
+  })
+
+  describe('view::named in the feature tree', () => {
+    const namedView = stdlib('view::named')
+
+    // Without a `stdLibMap` entry, both lookups fall back: the label becomes
+    // the raw operation name `view::named` and the icon becomes `questionMark`.
+    // Replacing those two fallbacks is the entire purpose of the entry, so both
+    // are pinned here.
+    it('labels the operation and gives it its own icon', () => {
+      expect(getOperationLabel(namedView)).toBe('Named View')
+      expect(getOperationIcon(namedView)).toBe('namedView')
+    })
+
+    // The row is registered for every user, unlike the interactive named views
+    // surface, which is gated on a feature flag. A view is an operation the
+    // user's own KCL produced, and suppressing the label would not remove the
+    // row, only reduce it to an unlabelled one.
+    it('keeps the operation in the feature tree', () => {
+      expect(filterOperations([namedView])).toEqual([namedView])
     })
   })
 

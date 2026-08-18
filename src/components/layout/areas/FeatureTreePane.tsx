@@ -1710,5 +1710,28 @@ export function getFeatureTreeValueDetail(
     }
   }
 
+  // Show the view's name for named view operations. `view::named` takes its
+  // name as the unlabeled first argument, so the name is read from
+  // `unlabeledArg` rather than from `labeledArgs` as `gdt::datum` above reads
+  // its own `name` argument.
+  //
+  // The recorded value is used for `calculated` instead of the source text,
+  // because a name need not be a literal: KCL concatenates strings with `+`,
+  // and a function that declares a view can take the name as a parameter. In
+  // those cases the source text is the expression that produced the name, so
+  // it belongs in `display`, which is where this function puts source text for
+  // every other operation.
+  if (operation.type === 'StdLibCall' && operation.name === 'view::named') {
+    const nameArg = operation.unlabeledArg
+    if (nameArg?.value.type === 'String') {
+      return {
+        display: code.slice(
+          ...nameArg.sourceRange.map((r) => toUtf16(r, code))
+        ),
+        calculated: nameArg.value,
+      }
+    }
+  }
+
   return undefined
 }
