@@ -30,6 +30,39 @@ pub(crate) type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath
 pub(crate) type UniverseMap = HashMap<TypedPath, AstNode<ImportStatement>>;
 pub(crate) type Universe = HashMap<String, DependencyInfo>;
 
+/// Add the ancestor import statements between `module_id` and the root module
+/// to an error raised while eagerly executing that module.
+///
+/// Imported modules are executed in dependency order, so a leaf can fail
+/// before its parents execute and naturally unwind. The universe still holds
+/// each module's importing statement, which lets us reconstruct that chain.
+/// `exec_module_from_ast` already adds the immediate import site, so this starts
+/// with its parent.
+pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId, universe: &Universe) -> KclError {
+    let Some((immediate_import, _, _, _)) = universe
+        .values()
+        .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
+    else {
+        return error;
+    };
+    module_id = SourceRange::from(immediate_import).module_id();
+
+    while module_id != ModuleId::default() {
+        let Some((import_stmt, _, _, _)) = universe
+            .values()
+            .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
+        else {
+            break;
+        };
+
+        let import_site = SourceRange::from(import_stmt);
+        error = error.add_import_location(format!("import {}", import_stmt.path), import_site);
+        module_id = import_site.module_id();
+    }
+
+    error
+}
+
 /// Process a number of programs, returning the graph of dependencies.
 ///
 /// This will (currently) return a list of lists of IDs that can be safely

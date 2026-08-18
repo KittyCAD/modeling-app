@@ -399,11 +399,17 @@ impl miette::Diagnostic for ReportWithOutputs {
     }
 
     fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
+        // Source ranges can span modules when an imported module fails. This
+        // report's source text belongs to the deepest (last) range, so only
+        // render labels from that module here; the other modules are emitted as
+        // related reports below.
+        let primary_module_id = self.error.error.source_ranges().last().map(|range| range.module_id());
         let iter = self
             .error
             .error
             .source_ranges()
             .into_iter()
+            .filter(move |range| Some(range.module_id()) == primary_module_id)
             .map(miette::SourceSpan::from)
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))

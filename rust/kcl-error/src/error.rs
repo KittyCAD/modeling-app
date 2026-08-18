@@ -362,6 +362,46 @@ impl KclError {
 
         new
     }
+
+    /// Add the statement that imported the module containing this error.
+    ///
+    /// Import locations are prepended so the original, deepest source range
+    /// remains last. KCL's diagnostic renderer treats the last source range as
+    /// primary and renders the preceding ranges as related context.
+    pub fn add_import_location(&self, import_name: String, source_range: SourceRange) -> Self {
+        let mut new = self.clone();
+        match &mut new {
+            KclError::Lexical { details: e }
+            | KclError::Syntax { details: e }
+            | KclError::Semantic { details: e }
+            | KclError::ImportCycle { details: e }
+            | KclError::Argument { details: e }
+            | KclError::Type { details: e }
+            | KclError::UserDefined { details: e }
+            | KclError::Io { details: e }
+            | KclError::Unexpected { details: e }
+            | KclError::ValueAlreadyDefined { details: e }
+            | KclError::UndefinedValue { details: e, .. }
+            | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
+            | KclError::Refactor { details: e }
+            | KclError::Engine { details: e }
+            | KclError::EngineHangup { details: e, .. }
+            | KclError::EngineInternal { details: e }
+            | KclError::Internal { details: e } => {
+                e.backtrace.insert(
+                    0,
+                    BacktraceItem {
+                        source_range,
+                        fn_name: Some(import_name),
+                    },
+                );
+                e.source_ranges.insert(0, source_range);
+            }
+        }
+
+        new
+    }
 }
 
 #[derive(

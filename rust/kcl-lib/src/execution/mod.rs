@@ -1826,6 +1826,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
+                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
                         return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
@@ -2371,7 +2372,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn mock_import_preserves_inner_error() {
+    async fn nested_import_preserves_inner_error_and_backtrace() {
         let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_import_error").unwrap();
         tokio::fs::write(
             tmpdir.path().join("broken.kcl"),
@@ -2379,15 +2380,63 @@ mod tests {
         )
         .await
         .unwrap();
+        tokio::fs::write(
+            tmpdir.path().join("assembly.kcl"),
+            "import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n",
+        )
+        .await
+        .unwrap();
 
-        let program = crate::Program::parse_no_errs("import brokenValue from \"broken.kcl\"\n\nbrokenValue\n").unwrap();
-        let ctx = ExecutorContext::new_mock(Some(ExecutorSettings {
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        let main_path = tmpdir.path().join("main.kcl");
+        tokio::fs::write(&main_path, main_code).await.unwrap();
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+        let settings = ExecutorSettings {
             project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+            current_file: Some(crate::TypedPath(main_path.clone())),
             ..Default::default()
-        }))
-        .await;
+        };
 
-        let error = ctx
+        let assert_error = |error: &KclErrorWithOutputs| {
+            let KclError::UndefinedValue { details, name } = &error.error else {
+                panic!("expected UndefinedValue, got {:#?}", error.error);
+            };
+            assert_eq!(name.as_deref(), Some("missingName"));
+            assert_eq!(details.message, "`missingName` is not defined");
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("import assembly.kcl"), Some("import broken.kcl"), None]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("broken.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    main_path.to_string_lossy().as_ref(),
+                    tmpdir.path().join("assembly.kcl").to_string_lossy().as_ref()
+                ]
+            );
+
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("broken.kcl"));
+            assert!(rendered.contains("assembly.kcl"));
+            assert!(rendered.contains("main.kcl"));
+            assert!(rendered.contains("export brokenValue = missingName + 1"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        let mock_error = mock_ctx
             .run_mock(
                 &program,
                 &MockConfig {
@@ -2397,23 +2446,14 @@ mod tests {
             )
             .await
             .unwrap_err();
-        ctx.close().await;
+        mock_ctx.close().await;
+        assert_error(&mock_error);
 
-        let KclError::UndefinedValue { details, name } = &error.error else {
-            panic!("expected UndefinedValue, got {:#?}", error.error);
-        };
-        assert_eq!(name.as_deref(), Some("missingName"));
-        assert_eq!(details.message, "`missingName` is not defined");
-        assert_eq!(details.source_ranges.len(), 1);
-
-        let inner_range = details.source_ranges[0];
-        assert_ne!(inner_range.module_id(), ModuleId::default());
-        assert!(
-            error.source_files[&inner_range.module_id()]
-                .path
-                .to_string()
-                .ends_with("broken.kcl")
-        );
+        let concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.

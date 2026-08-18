@@ -1826,6 +1826,14 @@ impl ExecutorContext {
             .await;
         exec_state.global.mod_loader.leave_module(path, source_range)?;
 
+        let import_name = match path {
+            ModulePath::Local {
+                original_import_path: Some(original),
+                ..
+            } => original.to_string(),
+            _ => path.to_string(),
+        };
+
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
         result.map_err(|(err, _, _)| {
@@ -1837,12 +1845,12 @@ impl ExecutorContext {
                 KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
                     // Propagate this type of error. It's likely a transient
                     // error that just needs to be retried.
-                    err.override_source_ranges(vec![source_range])
+                    err.add_import_location(format!("import {import_name}"), source_range)
                 }
                 // The module loaded successfully, so preserve execution errors
                 // exactly as they occurred inside it. Rewrapping them here loses
                 // the error kind, structured fields, and imported-file location.
-                _ => err,
+                _ => err.add_import_location(format!("import {import_name}"), source_range),
             }
         })
     }
