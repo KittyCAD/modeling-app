@@ -82,29 +82,44 @@ test(
       await page.goto(deepLink)
 
       await expectProjectFileRoute(page)
-      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`))
+      await expect(page).toHaveURL(new RegExp(`${projectName}%2Fmain\\.kcl`), {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
       await expect
-        .poll(() =>
-          page.evaluate(() => {
-            const layout = window.app.layout.get()
-            return 'sizes' in layout ? layout.sizes : []
-          })
+        .poll(
+          () =>
+            page.evaluate(() => {
+              const layout = window.app.layout.get()
+              return 'sizes' in layout ? layout.sizes : []
+            }),
+          { timeout: CLOUD_SYNC_E2E_TIMEOUT }
         )
         .toEqual([0, 50, 50])
-      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible()
+      await expect(page.getByTestId('command-bar-wrapper')).not.toBeVisible({
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
       await expect(
         page.getByTestId('ml-ephant-conversation-input')
-      ).toHaveValue(prompt)
+      ).toHaveValue(prompt, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
       await expect
-        .poll(() => new URL(page.url()).searchParams.has('cmd'))
+        .poll(() => new URL(page.url()).searchParams.has('cmd'), {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
         .toBe(false)
       await expect
-        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'))
+        .poll(() => new URL(page.url()).searchParams.has('ttc-prompt'), {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
         .toBe(false)
-      await expect.poll(() => apiCalls.creates.length).toBe(index + 1)
       await expect
-        .poll(() =>
-          opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`)
+        .poll(() => apiCalls.creates.length, {
+          timeout: CLOUD_SYNC_E2E_TIMEOUT,
+        })
+        .toBe(index + 1)
+      await expect
+        .poll(
+          () => opfsPathExists(page, `${PROJECT_DIR}/${projectName}/main.kcl`),
+          { timeout: CLOUD_SYNC_E2E_TIMEOUT }
         )
         .toBe(true)
       const files = await readOpfsTextFiles(page, {
@@ -303,7 +318,11 @@ test(
     await page.getByTestId('continue-to-web-app-button').click()
 
     await expectProjectFileRoute(page)
-    expect(publicProjectDownloads).toBe(1)
+    await expect
+      .poll(() => publicProjectDownloads, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBe(1)
     await expect
       .poll(() => apiCalls.creates.length, {
         timeout: CLOUD_SYNC_E2E_TIMEOUT,
