@@ -5,6 +5,7 @@ members = [
   "kcl-bumper",
   "kcl-derive-docs",
   "kcl-directory-test-macro",
+  "kcl-engine-codec",
   "kcl-error",
   "kcl-language-server",
   "kcl-language-server-release",
