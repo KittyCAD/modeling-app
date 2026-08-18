@@ -2373,29 +2373,35 @@ mod tests {
 
     #[tokio::test]
     async fn nested_import_preserves_inner_error_and_backtrace() {
-        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_import_error").unwrap();
-        tokio::fs::write(
-            tmpdir.path().join("broken.kcl"),
-            "export brokenValue = missingName + 1\n",
-        )
-        .await
-        .unwrap();
-        tokio::fs::write(
-            tmpdir.path().join("assembly.kcl"),
-            "import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n",
-        )
-        .await
-        .unwrap();
-
+        // The imported modules live in an in-memory file system under a
+        // synthetic project directory, so parallel tests share no on-disk
+        // state and there is nothing to clean up even if the process is
+        // killed.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-error");
+        let main_path = project_dir.join("main.kcl");
+        let assembly_path = project_dir.join("assembly.kcl");
         let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
-        let main_path = tmpdir.path().join("main.kcl");
-        tokio::fs::write(&main_path, main_code).await.unwrap();
-        let program = crate::Program::parse_no_errs(main_code).unwrap();
+        // Key each module by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [
+            (
+                project_dir.join("broken.kcl").to_string(),
+                b"export brokenValue = missingName + 1\n".to_vec(),
+            ),
+            (
+                assembly_path.to_string(),
+                b"import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
         let settings = ExecutorSettings {
-            project_directory: Some(crate::TypedPath(tmpdir.path().into())),
-            current_file: Some(crate::TypedPath(main_path.clone())),
+            project_directory: Some(project_dir),
+            current_file: Some(main_path.clone()),
             ..Default::default()
         };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
 
         let assert_error = |error: &KclErrorWithOutputs| {
             let KclError::UndefinedValue { details, name } = &error.error else {
@@ -2421,10 +2427,7 @@ mod tests {
                     .iter()
                     .map(|related| related.filename.as_str())
                     .collect::<Vec<_>>(),
-                [
-                    main_path.to_string_lossy().as_ref(),
-                    tmpdir.path().join("assembly.kcl").to_string_lossy().as_ref()
-                ]
+                [main_path.to_string(), assembly_path.to_string()]
             );
 
             let rendered = format!("{:?}", miette::Report::new(report));
@@ -2435,7 +2438,8 @@ mod tests {
             assert!(!rendered.contains("Failed to read contents"));
         };
 
-        let mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
         let mock_error = mock_ctx
             .run_mock(
                 &program,
@@ -2449,7 +2453,8 @@ mod tests {
         mock_ctx.close().await;
         assert_error(&mock_error);
 
-        let concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
         let mut exec_state = ExecState::new(&concurrent_ctx);
         let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
         concurrent_ctx.close().await;
