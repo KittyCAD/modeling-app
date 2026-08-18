@@ -105,13 +105,17 @@ describe('ProjectLibraryPreviewRow', () => {
     renderProjectLibraryPreviewRow(cloudLibrary)
 
     const libraryLink = screen.getByTestId('project-library-link')
+    const summaryDescription = screen.getByTestId(
+      'project-library-summary-description'
+    )
     expect(libraryLink).toHaveTextContent('Personal Cloud')
-    expect(libraryLink).toHaveTextContent(
+    expect(summaryDescription).toHaveTextContent(
       'Projects in this library sync to your Zoo account'
     )
-    expect(libraryLink).not.toHaveTextContent('zoo://personal')
-    expect(
-      screen.getByTitle(/Technical source: zoo:\/\/personal/)
-    ).toBeInTheDocument()
+    expect(summaryDescription).not.toHaveTextContent('zoo://personal')
+    expect(screen.getByRole('tooltip', { hidden: true })).toBeInTheDocument()
+    expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent(
+      'Technical source: zoo://personal'
+    )
   })
 })

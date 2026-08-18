@@ -1,5 +1,6 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { PATHS } from '@src/lib/paths'
 import {
@@ -101,20 +102,23 @@ export function ProjectLibraryPreviewRow({
         className="group flex items-center gap-3 rounded-sm border border-transparent p-1 !no-underline hover:border-primary/30 hover:bg-primary/5"
         data-testid="project-library-link"
       >
-        <span
-          className="grid h-8 w-8 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
-          title={getProjectLibrarySummaryTooltip(library)}
-        >
+        <div className="grid h-8 w-8 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
           <CustomIcon
             name={getProjectLibraryIconName(library)}
             className="h-5 w-5"
           />
-        </span>
+          <Tooltip position="right" contentClassName="max-w-xs text-xs">
+            {getProjectLibrarySummaryTooltip(library)}
+          </Tooltip>
+        </div>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-base font-semibold text-chalkboard-100 dark:text-chalkboard-10">
             {library.title}
           </span>
-          <span className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30">
+          <span
+            className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30"
+            data-testid="project-library-summary-description"
+          >
             {getProjectLibrarySummaryDescription(library)}
           </span>
         </span>
