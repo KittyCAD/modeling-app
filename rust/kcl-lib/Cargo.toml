@@ -71,6 +71,7 @@ indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.15.0"
 kcl-api = { version = "=0.2.177", path = "../kcl-api" }
 kcl-derive-docs = { version = "=0.2.177", path = "../kcl-derive-docs" }
+kcl-engine-codec = { version = "=0.2.177", path = "../kcl-engine-codec" }
 kcl-error = { version = "=0.2.177", path = "../kcl-error" }
 kcl-syntax = { version = "=0.2.177", path = "../kcl-syntax" }
 ezpz = { workspace = true }
@@ -94,7 +95,6 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls-native-roots",
 ] }
 rgba_simple = "0.10.0"
-rmp-serde = { workspace = true }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = [
   "impl_json_schema",
