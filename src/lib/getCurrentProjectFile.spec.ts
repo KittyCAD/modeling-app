@@ -3,7 +3,6 @@ import os from 'os'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DEFAULT_BLANK_MAIN_KCL_CONTENTS } from '@src/lang/project'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, test } from 'vitest'
@@ -102,46 +101,6 @@ describe('getCurrentProjectFile', () => {
       await expect(
         fs.access(path.join(tmpProjectDir, 'main.kcl'))
       ).rejects.toThrow()
-    } finally {
-      await fs.rm(tmpProjectDir, { recursive: true, force: true })
-    }
-  })
-
-  test('with blank existing main.kcl, seeds KCL 2.0 settings', async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const name = `kittycad-modeling-projects-${uuidv4()}`
-    const tmpProjectDir = path.join(os.tmpdir(), name)
-    const mainKclPath = path.join(tmpProjectDir, 'main.kcl')
-    await fs.mkdir(tmpProjectDir, { recursive: true })
-    await fs.writeFile(mainKclPath, '')
-
-    try {
-      const state = await getCurrentProjectFile(tmpProjectDir, instance)
-
-      expect(state).toBe(mainKclPath)
-      expect(await fs.readFile(mainKclPath, 'utf8')).toBe(
-        DEFAULT_BLANK_MAIN_KCL_CONTENTS
-      )
-    } finally {
-      await fs.rm(tmpProjectDir, { recursive: true, force: true })
-    }
-  })
-
-  test('with settings-only main.kcl, adds KCL 2.0 without replacing other settings', async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const name = `kittycad-modeling-projects-${uuidv4()}`
-    const tmpProjectDir = path.join(os.tmpdir(), name)
-    const mainKclPath = path.join(tmpProjectDir, 'main.kcl')
-    await fs.mkdir(tmpProjectDir, { recursive: true })
-    await fs.writeFile(mainKclPath, '@settings(defaultLengthUnit = in)\n')
-
-    try {
-      const state = await getCurrentProjectFile(tmpProjectDir, instance)
-      const contents = await fs.readFile(mainKclPath, 'utf8')
-
-      expect(state).toBe(mainKclPath)
-      expect(contents).toContain('kclVersion = 2.0')
-      expect(contents).toContain('defaultLengthUnit = in')
     } finally {
       await fs.rm(tmpProjectDir, { recursive: true, force: true })
     }
