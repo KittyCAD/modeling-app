@@ -1,4 +1,5 @@
 import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -10,6 +11,7 @@ import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibrarie
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
+import { getProjectLibraryIconName } from './projectLibraryIcons'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -50,12 +52,31 @@ export function HomeHeader({
             {library && showLibraryBackLink && (
               <Link
                 to={PATHS.HOME}
-                className="text-sm text-chalkboard-70 underline underline-offset-2 dark:text-chalkboard-30"
+                className="inline-flex items-center gap-1 text-sm text-chalkboard-70 underline underline-offset-2 dark:text-chalkboard-30"
               >
+                <CustomIcon
+                  name="caretLeft"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                />
                 All libraries
               </Link>
             )}
-            <h1 className="text-3xl font-bold">{title}</h1>
+            <div className="flex items-center gap-3">
+              {library && (
+                <span
+                  className="grid h-12 w-12 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
+                  data-testid="project-library-details-icon"
+                >
+                  <CustomIcon
+                    name={getProjectLibraryIconName(library)}
+                    className="h-7 w-7"
+                    aria-hidden="true"
+                  />
+                </span>
+              )}
+              <h1 className="text-3xl font-bold">{title}</h1>
+            </div>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">

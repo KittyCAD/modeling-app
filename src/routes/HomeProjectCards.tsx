@@ -1,5 +1,5 @@
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
-import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { PATHS } from '@src/lib/paths'
@@ -14,6 +14,7 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
+import { getProjectLibraryIconName } from './projectLibraryIcons'
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 
@@ -48,18 +49,6 @@ interface ProjectLibraryPreviewRowProps {
 
 function getProjectLibraryRoute(library: ProjectLibrary) {
   return `${PATHS.LIBRARY}/${encodeURIComponent(library.id)}`
-}
-
-function getProjectLibraryIconName(library: ProjectLibrary): CustomIconName {
-  if (library.type === 'cloud' || library.icon === 'cloud') {
-    return 'cloud'
-  }
-
-  if (library.icon === 'network') {
-    return 'network'
-  }
-
-  return 'folder'
 }
 
 function projectCountLabel(count: number) {

@@ -35,8 +35,10 @@ const projectActions = {
 
 function renderHomeHeader({
   showFreeCloudProjectTrainingDisclosure,
+  showLibraryBackLink = false,
 }: {
   showFreeCloudProjectTrainingDisclosure: boolean
+  showLibraryBackLink?: boolean
 }) {
   render(
     <MemoryRouter>
@@ -50,6 +52,7 @@ function renderHomeHeader({
         showFreeCloudProjectTrainingDisclosure={
           showFreeCloudProjectTrainingDisclosure
         }
+        showLibraryBackLink={showLibraryBackLink}
       />
     </MemoryRouter>
   )
@@ -97,6 +100,23 @@ describe('HomeHeader', () => {
     expect(
       screen.queryByText(/Zoo trains on Free user cloud projects/)
     ).not.toBeInTheDocument()
+  })
+
+  it('shows the selected library type icon and caret back link', () => {
+    renderHomeHeader({
+      showFreeCloudProjectTrainingDisclosure: false,
+      showLibraryBackLink: true,
+    })
+
+    const backLink = screen.getByRole('link', { name: 'All libraries' })
+    expect(backLink).toHaveAttribute('href', '/home')
+    expect(backLink.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
+
+    const detailsIcon = screen.getByTestId('project-library-details-icon')
+    expect(detailsIcon.querySelector('svg')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    )
   })
 })
 
