@@ -25,6 +25,43 @@ export function formatProjectLibraryPathForDisplay(
   return `${CLOUD_PROJECT_LIBRARY_PATH_DISPLAY_PREFIX}${cloudSource.replace(/^\/+/, '')}`
 }
 
+export function getProjectLibrarySummaryDescription(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return 'Projects in this library sync to your Zoo account'
+  }
+
+  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
+    return 'Projects in this library are saved only on this computer'
+  }
+
+  return formatProjectLibraryPathForDisplay(library)
+}
+
+export function getProjectLibrarySummaryTooltip(
+  library: Pick<ProjectLibrarySetting, 'path' | 'source' | 'type'>
+) {
+  const technicalLocation = formatProjectLibraryPathForDisplay(library)
+
+  if (library.type === CLOUD_PROJECT_LIBRARY_TYPE) {
+    return [
+      'Projects in this library sync to your Zoo account.',
+      'Storage type and model-training controls depend on your plan.',
+      `Technical source: ${technicalLocation}`,
+    ].join(' ')
+  }
+
+  if (library.type === DIRECTORY_PROJECT_LIBRARY_TYPE) {
+    return [
+      'Projects in this library are saved only on this computer.',
+      `Folder: ${technicalLocation}`,
+    ].join(' ')
+  }
+
+  return technicalLocation
+}
+
 export type ProjectLibraryType = string
 
 export interface ProjectLibrarySetting {
