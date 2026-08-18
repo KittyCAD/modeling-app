@@ -54,7 +54,7 @@ export function ZookeeperConnectionErrorBanner(
             aria-label="Upgrade"
             to={withSiteBaseURL('/account/billing')}
             className={billingButtonClassName}
-            iconStart={{ icon: 'link' }}
+            iconStart={{ icon: 'link', bgClassName: '!bg-transparent' }}
             rel="noreferrer"
             tabIndex={0}
           >
@@ -66,7 +66,7 @@ export function ZookeeperConnectionErrorBanner(
           aria-label="Reconnect"
           type="button"
           className={terminalRecoveryButtonClassName}
-          iconStart={{ icon: 'refresh' }}
+          iconStart={{ icon: 'refresh', bgClassName: '!bg-transparent' }}
           onClick={props.onReconnect}
           disabled={props.isClearingChat}
           tabIndex={0}
@@ -86,7 +86,7 @@ export function ZookeeperConnectionErrorBanner(
             aria-label={props.isClearingChat ? 'Clearing...' : 'Clear chat'}
             type="button"
             className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
-            iconStart={{ icon: 'trash' }}
+            iconStart={{ icon: 'trash', bgClassName: '!bg-transparent' }}
             onClick={props.onClickClearChat}
             disabled={props.isClearingChat}
             tabIndex={0}

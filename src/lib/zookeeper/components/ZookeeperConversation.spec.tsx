@@ -159,7 +159,11 @@ describe('ZookeeperConversation', () => {
     expect(clearChatButton).toHaveClass('!bg-chalkboard-10')
     expect(
       clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
-    ).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
+    ).toHaveClass(
+      'bg-chalkboard-20',
+      'dark:bg-chalkboard-80',
+      '!bg-transparent'
+    )
 
     fireEvent.click(reconnectButton)
     fireEvent.click(clearChatButton)
@@ -225,9 +229,13 @@ describe('ZookeeperConversation', () => {
       withSiteBaseURL('/account/billing')
     )
     expect(
-      billingLink.querySelector('svg[aria-label="link"]')
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Reconnect' })).toBeEnabled()
+      billingLink.querySelector('svg[aria-label="link"]')?.parentElement
+    ).toHaveClass('!bg-transparent')
+    const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
+    expect(reconnectButton).toBeEnabled()
+    expect(
+      reconnectButton.querySelector('svg[aria-label="refresh"]')?.parentElement
+    ).toHaveClass('!bg-transparent')
   })
 
   test('shows setup progress while loading a conversation', () => {
