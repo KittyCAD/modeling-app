@@ -15,7 +15,7 @@ const changeDefaultUnits = vi.fn((kcl: string, len: string) => {
 
 const changeKclVersion = vi.fn((kcl: string, versionString: string) => {
   const version = JSON.parse(versionString)
-  if (kcl.trim().startsWith('@settings(')) {
+  if (kcl.startsWith('@settings(')) {
     return kcl.replace(')', `, kclVersion = ${version})`)
   }
   return `@settings(kclVersion = ${version})\n${kcl}`
