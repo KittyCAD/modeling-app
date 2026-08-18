@@ -9,27 +9,42 @@ description: Variables in memory after executing clone_an_import.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 215,
-            "end": 222,
-            "moduleId": 1,
-            "start": 215,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              38.0,
+              0.0
+            ],
+            "radius": 38.0,
+            "tag": {
+              "commentStart": 61,
+              "end": 68,
+              "moduleId": 1,
+              "start": 61,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              38.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -123,8 +138,8 @@ description: Variables in memory after executing clone_an_import.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
@@ -147,27 +162,42 @@ description: Variables in memory after executing clone_an_import.kcl
       "type": "Solid",
       "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 215,
-            "end": 222,
-            "moduleId": 2,
-            "start": 215,
-            "type": "TagDeclarator",
-            "value": "circle2"
-          },
-          "type": "extrudeArc"
-        }
-      ],
+      "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
         "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              38.0,
+              0.0
+            ],
+            "radius": 38.0,
+            "tag": {
+              "commentStart": 61,
+              "end": 68,
+              "moduleId": 2,
+              "start": 61,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              38.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "mm"
+          },
           {
             "__geoMeta": {
               "id": "[uuid]",
@@ -261,8 +291,8 @@ description: Variables in memory after executing clone_an_import.kcl
         "originSketchId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": null,
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }

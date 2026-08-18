@@ -64,6 +64,37 @@ async fn assert_trim_does_not_create_degenerate_geometry(base_kcl_code: &str, tr
     assert_no_zero_length_line_or_arc_constructors(&result.kcl_code);
 }
 
+#[tokio::test]
+async fn test_trim_arc_crossed_once_does_not_create_extra_arc() {
+    let base_kcl_code = r#"@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = YZ) {
+  arc1 = arc(start = [var 1.03mm, var -0.6mm], end = [var 1.34mm, var -3.19mm], center = [var -4.83mm, var -2.61mm])
+  line1 = line(start = [var -1.21mm, var 2.31mm], end = [var -1.17mm, var -0.13mm])
+  line(start = [var -2.01mm, var -8.09mm], end = [var -9.3mm, var 2.73mm])
+  line2 = line(start = [var -1.49mm, var -1.06mm], end = [var 0mm, var 3.31mm])
+  vertical([line2.end, ORIGIN])
+  line3 = line(start = [var 0mm, var 3.31mm], end = [var 1.34mm, var -3.19mm])
+  coincident([line2.end, line3.start])
+  vertical([line3.start, ORIGIN])
+  arc2 = arc(start = [var -1.17mm, var -0.13mm], end = [var -8.85mm, var -4.14mm], center = [var -5mm, var -2.15mm])
+  coincident([arc1.end, line3.end])
+  coincident([arc2.start, line2])
+  coincident([line1.end, arc2])
+  point(at = [var -4.81mm, var 5.29mm])
+  point(at = [var -5.43mm, var 2.88mm])
+  point(at = [var -4.78mm, var 0.95mm])
+}"#;
+    let trim_points = [Coords2d { x: -5.43, y: 2.88 }, Coords2d { x: -4.78, y: 0.95 }];
+
+    assert_trim_result_default_sketch(
+        "test_trim_arc_crossed_once_does_not_create_extra_arc",
+        base_kcl_code,
+        &trim_points,
+    )
+    .await;
+}
+
 mod sync {
     use crate::frontend::trim::*;
 
@@ -924,11 +955,14 @@ mod sync {
     }
 
     #[test]
-    fn test_arc_arc_intersection() {
-        // Test case matching TypeScript test: two arcs that may or may not intersect
-        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0° to 90°)
-        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0° to 90°)
-        let result = arc_arc_intersection(
+    fn test_arc_arc_intersections_spans_do_not_overlap() {
+        // arc1: center [0, 0], start [1, 0], end [0, 1] (quarter circle from 0 to 90 degrees)
+        // arc2: center [1, 0], start [2, 0], end [1, 1] (quarter circle from 0 to 90 degrees)
+        // The underlying unit circles intersect at (0.5, +-sqrt(3)/2), but
+        // neither point is within both arcs' sweeps: (0.5, 0.866) is at 120
+        // degrees from arc2's center, and (0.5, -0.866) is at -60 degrees from
+        // arc1's center.
+        let intersections = arc_arc_intersections(
             Coords2d { x: 0.0, y: 0.0 }, // arc1 center
             Coords2d { x: 1.0, y: 0.0 }, // arc1 start
             Coords2d { x: 0.0, y: 1.0 }, // arc1 end
@@ -937,11 +971,30 @@ mod sync {
             Coords2d { x: 1.0, y: 1.0 }, // arc2 end
             EPSILON_POINT_ON_SEGMENT,
         );
-        // arc_arc_intersection may return None if no intersection, or Some(point)
-        // The test just verifies the function works without panicking
-        // In this case, the arcs may or may not intersect depending on geometry
-        // The important thing is that the function returns Option<Coords2d>
-        assert!(result.is_none() || result.is_some());
+
+        assert!(intersections.is_empty());
+    }
+
+    #[test]
+    fn test_arc_arc_intersections_returns_point_on_both_arcs() {
+        // Same circles as above, but arc2 sweeps half the circle (0 to 180
+        // degrees), so the circle intersection at (0.5, sqrt(3)/2) is on both
+        // arcs: 60 degrees from arc1's center and 120 degrees from arc2's.
+        // The other circle intersection at (0.5, -sqrt(3)/2) is still outside
+        // both sweeps.
+        let intersections = arc_arc_intersections(
+            Coords2d { x: 0.0, y: 0.0 }, // arc1 center
+            Coords2d { x: 1.0, y: 0.0 }, // arc1 start
+            Coords2d { x: 0.0, y: 1.0 }, // arc1 end
+            Coords2d { x: 1.0, y: 0.0 }, // arc2 center
+            Coords2d { x: 2.0, y: 0.0 }, // arc2 start
+            Coords2d { x: 0.0, y: 0.0 }, // arc2 end
+            EPSILON_POINT_ON_SEGMENT,
+        );
+
+        assert_eq!(intersections.len(), 1);
+        assert!((intersections[0].x - 0.5).abs() < 1e-5);
+        assert!((intersections[0].y - 3.0_f64.sqrt() / 2.0).abs() < 1e-5);
     }
 
     #[test]

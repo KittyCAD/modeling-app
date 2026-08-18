@@ -47,8 +47,13 @@ impl<'i> KclType<'i> {
                     } else if ty.starts_with("fn") {
                         format!("[`{ty}`](/docs/kcl-std/types/std-types-fn)")
                     // Special case for `tag` because it exists as a type but is deprecated and mostly used as an arg name
-                    } else if matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
-                        format!("[`{ty}`](/docs/kcl-std/types/std-types-{ty})")
+                    } else if let Some(doc @ DocData::Ty(_)) = kcl_std.find_by_name(ty)
+                        && ty != "tag"
+                    {
+                        // Ask the type where its own page is rather than assuming
+                        // `std::types`: a type declared in any other module, such as
+                        // `std::view::Orientation`, has its page under that module.
+                        format!("[`{ty}`](/docs/kcl-std/{})", doc.file_name())
                     } else {
                         ty.to_owned()
                     }

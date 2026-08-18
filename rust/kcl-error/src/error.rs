@@ -144,6 +144,10 @@ impl KclError {
         KclError::InvalidExpression { details }
     }
 
+    pub fn new_max_call_stack(details: KclErrorDetails) -> KclError {
+        KclError::MaxCallStack { details }
+    }
+
     pub fn refactor(message: String) -> KclError {
         KclError::Refactor {
             details: KclErrorDetails {

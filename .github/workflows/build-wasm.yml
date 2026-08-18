@@ -19,7 +19,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v4.0.2
+        uses: dorny/paths-filter@v4.0.3
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -93,23 +93,11 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - name: Generate TypeScript bindings
+      - name: Use committed TypeScript bindings
         if: ${{ steps.wasm.outputs.should-build-wasm != 'true' }}
         shell: bash
         run: |
-          cd rust
-          cargo test -p kcl-lib --features artifact-graph export_bindings
-          cd ..
-
-      - name: Check TypeScript-facing bindings against expected
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          ./scripts/update-expected-bindings.sh
-          git add -A -- rust/kcl-lib/expected-bindings/
-          git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
-            || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
-                     'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
+          cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings
 
       - name: Copy Wasm to public
         run: |

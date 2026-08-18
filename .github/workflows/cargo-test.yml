@@ -22,7 +22,7 @@ jobs:
     name: Build test artifacts
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v2.2.0
+      - uses: runs-on/action@v2.3.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -148,13 +148,22 @@ jobs:
         run: |
           cd rust
           cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
+      - name: Check TypeScript-facing bindings against expected
+        shell: bash
+        run: |
+          ./scripts/generate-bindings.sh
+          ./scripts/update-expected-bindings.sh
+          git add -A -- rust/kcl-lib/expected-bindings/
+          git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
+            || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
+                     'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
       - name: Upload archive to workflow
         uses: actions/upload-artifact@v7
         with:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
-    name: cargo test (shard ${{ matrix.partitionIndex}})
+    name: cargo test (${{ matrix.executor }}, shard ${{ matrix.partitionIndex}})
     runs-on: namespace-profile-ubuntu-8-cores
     needs: build-test-artifacts
     strategy:
@@ -162,8 +171,12 @@ jobs:
       matrix:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
+        # Differential testing: the whole suite runs under both the recursive
+        # executor and the CEK machine executor, and must produce identical
+        # snapshots. See rust/kcl-lib/src/execution/machine.rs.
+        executor: [recursive, machine]
     steps:
-      - uses: runs-on/action@v2.2.0
+      - uses: runs-on/action@v2.3.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -206,9 +219,20 @@ jobs:
         run: |-
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
           pushd rust
+          # The recursive leg runs the full suite. The machine leg reruns
+          # only executor-sensitive tests: packages and modules that never
+          # construct an ExecutorContext (parsers, printers, ts-rs bindings
+          # codegen, ...) behave identically under both executors, so they
+          # run once. Exclusion-based so that a new execution test is
+          # machine-covered by default.
+          executor_filter=()
+          if [ "${{ matrix.executor }}" = "machine" ]; then
+            executor_filter=(-E "package(kcl-lib) and not (test(/^parsing::/) or test(/^unparser::/) or test(/^walk::/) or test(/^settings::/) or test(/^fs::/) or test(/^fmt::/) or test(/^tooling::/) or test(/^errors::/) or test(/export_bindings/))")
+          fi
           cargo nextest run \
             --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
             --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
+            "${executor_filter[@]}" \
             2>&1 | tee /tmp/github-actions.log || true  # let TAB determine failure
           popd
           .github/ci-cd-scripts/upload-results.sh
@@ -216,6 +240,7 @@ jobs:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
+          KCL_EXECUTOR: ${{ matrix.executor }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}

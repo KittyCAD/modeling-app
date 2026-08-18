@@ -278,7 +278,12 @@ function indexRelationshipInputs({
   }
 
   for (const realization of realizations) {
-    const remoteProjectId = realization.cloudProjectId?.trim()
+    const normalizedProjectPath = normalizePathForSync(
+      realization.localProjectPath
+    )
+    const remoteProjectId =
+      realization.cloudProjectId?.trim() ||
+      metadataByPath.get(normalizedProjectPath)?.remoteProjectId?.trim()
     if (!remoteProjectId) {
       continue
     }

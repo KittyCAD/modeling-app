@@ -113,10 +113,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1377,
-            "end": 1389,
+            "commentStart": 1376,
+            "end": 1388,
             "moduleId": 0,
-            "start": 1377,
+            "start": 1376,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -127,10 +127,10 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1352,
-            "end": 1362,
+            "commentStart": 1351,
+            "end": 1361,
             "moduleId": 0,
-            "start": 1352,
+            "start": 1351,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },

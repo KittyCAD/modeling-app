@@ -54,7 +54,7 @@ blockProfile = sketch(on = XY) {
   horizontal(edge3)
   vertical(edge4)
 }
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 
 gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
 
@@ -81,7 +81,7 @@ blockProfile = sketch(on = XY) {
   horizontal(edge3)
   vertical(edge4)
 }
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 
 notePlane = offsetPlane(XZ, offset = 12mm)
 gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition = [12mm, 8mm])

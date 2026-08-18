@@ -40,6 +40,14 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   order?: number
 }
 
+export interface ProjectLibraryInitialProject {
+  files: readonly {
+    requestedFileName: string
+    requestedData: Uint8Array<ArrayBuffer>
+  }[]
+  entrypointFilePath: string
+}
+
 export type SerializedProjectLibrarySetting = Omit<
   ProjectLibrarySetting,
   'path'
