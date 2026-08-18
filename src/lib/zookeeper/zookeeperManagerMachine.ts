@@ -1707,6 +1707,7 @@ export const zookeeperManagerMachine = setup({
                       'delta',
                       'tool_output',
                       'reasoning',
+                      'files',
                       'replay',
                     ]
                     const lastMessageType:

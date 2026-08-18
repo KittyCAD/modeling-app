@@ -712,6 +712,85 @@ describe('zookeeperManagerMachine', () => {
 
       actor.stop()
     })
+
+    it('stores file responses in the current exchange', async () => {
+      const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            request: {
+              type: 'user',
+              content: 'export this in step',
+            },
+            responses: [],
+            deltasAggregated:
+              'Exported successfully. The download is ready here.',
+          },
+        ],
+      }
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({ ws, conversation })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: { apiToken: '' },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      actor.send({
+        type: ZookeeperManagerTransitions.ResponseReceive,
+        response: {
+          files: {
+            files: [
+              {
+                name: 'model.step',
+                mimetype: 'model/step',
+                data: [1, 2, 3],
+                metadata: { export_format: 'step' },
+              },
+            ],
+          },
+        },
+      })
+
+      await waitFor(actor, (state) => state.context.lastMessageType === 'files')
+      expect(
+        actor.getSnapshot().context.conversation?.exchanges[0]?.responses
+      ).toContainEqual({
+        files: {
+          files: [
+            {
+              name: 'model.step',
+              mimetype: 'model/step',
+              data: [1, 2, 3],
+              metadata: { export_format: 'step' },
+            },
+          ],
+        },
+      })
+
+      actor.stop()
+    })
   })
 
   describe('ConversationClose', () => {
