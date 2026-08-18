@@ -33,7 +33,7 @@ export type ProjectsCommandSchema = {
     name: string
     libraryId?: string
   }
-  'Move to library': {
+  'Move project': {
     project: string
     library: string
   }
@@ -413,8 +413,8 @@ export function createProjectCommands({
 
   const moveToLibraryCommand: Command = {
     icon: 'folder',
-    name: 'Move to library',
-    displayName: 'Move to library',
+    name: 'Move project',
+    displayName: 'Move project',
     description: 'Move a project to another library',
     groupId: 'projects',
     needsReview: true,

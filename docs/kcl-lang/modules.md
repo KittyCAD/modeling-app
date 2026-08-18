@@ -105,7 +105,7 @@ fn cube(height) {
     coincident([line3.end, line4.start])
     coincident([line4.end, line1.start])
   }
-  region001 = region(point = [2mm, 2mm], sketch = sketch001)
+  region001 = region(segments = [sketch001.line1, sketch001.line2])
   return extrude(region001, length = height)
 }
 

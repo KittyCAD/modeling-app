@@ -653,7 +653,7 @@ const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
           {
             id: 'home-projects.move-to-library-project-menu-item',
             order: 10,
-            label: 'Move to library',
+            label: 'Move project',
             dataTestId: 'project-sidebar-move-to-library',
             isVisible: ({ projectPath }) => {
               const project = findProject(projectPath)
@@ -672,7 +672,7 @@ const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
                 type: 'Find and select command',
                 data: {
                   groupId: 'projects',
-                  name: 'Move to library',
+                  name: 'Move project',
                   argDefaultValues: {
                     project: project.id,
                   },
