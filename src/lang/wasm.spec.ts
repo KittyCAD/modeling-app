@@ -13,6 +13,7 @@ import {
   applyOperationCallbacksToOperationsByModule,
   assertParse,
   countOperations,
+  defaultNodePath,
   errFromErrWithOutputs,
   formatNumberLiteral,
   kclLint,
@@ -137,6 +138,24 @@ it('can execute parsed AST', async () => {
     throw new Error('Expected KCL value Number')
   }
   expect(x.value).toEqual(1)
+})
+
+it('applies operation callbacks to operations-by-module in one batch', () => {
+  const operation = {
+    type: 'VariableDeclaration',
+    name: 'part001',
+    value: { type: 'Number', value: 1, ty: { type: 'Unknown' } },
+    visibility: 'default',
+    nodePath: defaultNodePath(),
+    sourceRange: [0, 1, 0] as [number, number, number],
+  } as const
+
+  const next = applyOperationCallbacksToOperationsByModule({
+    operationsByModule: { map: {} },
+    callbacks: [{ moduleId: 7, operation, index: 0 }],
+  })
+
+  expect(next).toEqual({ map: { 7: [operation] } })
 })
 
 it('matches client-built operations map to ExecOutcome.operations', async () => {

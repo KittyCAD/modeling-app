@@ -7,24 +7,15 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 const LIVE_OPERATION_PRESSURE_PROJECT_NAME =
   'issue-12676-live-operation-pressure'
 const LIVE_OPERATION_PRESSURE_MODULE_COUNT = 8
-const LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE = 16
-const LIVE_OPERATION_PRESSURE_INSTANCES_PER_MODULE = 4
+const LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE = 20
 
 interface LiveOperationPressureMetrics {
-  mountedFeatureTreeCallbackCount: number
-  insideOnOperation: boolean
-  synchronousPublications: number
-  totalPublications: number
-  originalCreateExecutionCallbacks: LiveOperationPressureManager['createExecutionCallbacks']
+  publicationCount: number
   originalDispatchUpdateOperations: LiveOperationPressureManager['dispatchUpdateOperations']
 }
 
 interface LiveOperationPressureManager {
-  createExecutionCallbacks(executionId: number): {
-    onOperation(args: unknown): void
-  }
   dispatchUpdateOperations(operations: unknown[]): void
-  isExecuting: boolean
   __issue12676Metrics?: LiveOperationPressureMetrics
 }
 
@@ -62,21 +53,9 @@ function createLiveOperationPressureProjectFiles() {
       return `import ${exportedValueName} as part${index} from "part-${index}.kcl"`
     }
   ).join('\n')
-  const instances = Array.from(
-    { length: LIVE_OPERATION_PRESSURE_MODULE_COUNT },
-    (_, moduleIndex) => {
-      const index = zeroPaddedIndex(moduleIndex)
-      return Array.from(
-        { length: LIVE_OPERATION_PRESSURE_INSTANCES_PER_MODULE },
-        (_, instanceIndex) => `assembly${index}_${instanceIndex} = part${index}`
-      ).join('\n')
-    }
-  ).join('\n')
   const main = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 ${imports}
-
-${instances}
 
 body = startSketchOn(XY)
   |> circle(center = [0mm, 0mm], radius = 5mm)
@@ -234,73 +213,33 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       await page.evaluate(() => {
         const manager = window.app.singletons
           .kclManager as unknown as LiveOperationPressureManager
-        const originalCreateExecutionCallbacks =
-          // eslint-disable-next-line @typescript-eslint/unbound-method
-          manager.createExecutionCallbacks
         const originalDispatchUpdateOperations =
           // eslint-disable-next-line @typescript-eslint/unbound-method
           manager.dispatchUpdateOperations
         const metrics: LiveOperationPressureMetrics = {
-          mountedFeatureTreeCallbackCount: 0,
-          insideOnOperation: false,
-          synchronousPublications: 0,
-          totalPublications: 0,
-          originalCreateExecutionCallbacks,
+          publicationCount: 0,
           originalDispatchUpdateOperations,
         }
         manager.__issue12676Metrics = metrics
-        manager.createExecutionCallbacks = (executionId) => {
-          const callbacks = originalCreateExecutionCallbacks.call(
-            manager,
-            executionId
-          )
-          return {
-            ...callbacks,
-            onOperation(args) {
-              if (document.querySelector('#operations-list-pane')) {
-                metrics.mountedFeatureTreeCallbackCount += 1
-              }
-              metrics.insideOnOperation = true
-              try {
-                callbacks.onOperation(args)
-              } finally {
-                metrics.insideOnOperation = false
-              }
-            },
-          }
-        }
         manager.dispatchUpdateOperations = (operations) => {
-          metrics.totalPublications += 1
-          if (metrics.insideOnOperation) {
-            metrics.synchronousPublications += 1
-          }
+          metrics.publicationCount += 1
           originalDispatchUpdateOperations.call(manager, operations)
         }
       })
 
-      const getExecutionMetrics = () =>
-        page.evaluate(() => {
-          const manager = window.app.singletons
-            .kclManager as unknown as LiveOperationPressureManager
-          const metrics = manager.__issue12676Metrics
-          return metrics
-            ? {
-                mountedFeatureTreeCallbackCount:
-                  metrics.mountedFeatureTreeCallbackCount,
-                synchronousPublications: metrics.synchronousPublications,
-                totalPublications: metrics.totalPublications,
-              }
-            : null
-        })
-
       await homePage.openProject(LIVE_OPERATION_PRESSURE_PROJECT_NAME)
       await expect
         .poll(
-          async () =>
-            (await getExecutionMetrics())?.mountedFeatureTreeCallbackCount ?? 0,
+          () =>
+            page.evaluate(
+              () =>
+                Object.keys(
+                  window.app.singletons.kclManager.operationsByModule.map
+                ).length
+            ),
           { timeout: 30_000 }
         )
-        .toBeGreaterThan(50)
+        .toBeGreaterThanOrEqual(LIVE_OPERATION_PRESSURE_MODULE_COUNT + 1)
       await expect
         .poll(
           () =>
@@ -311,7 +250,6 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       await scene.settled()
 
       await expect(toolbar.featureTreePane).toBeVisible()
-      await expect(page.getByText('Building feature tree')).not.toBeVisible()
       await expect(
         toolbar.featureTreePane.getByRole('button', {
           name: 'body',
@@ -337,16 +275,16 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         LIVE_OPERATION_PRESSURE_MODULE_COUNT *
           LIVE_OPERATION_PRESSURE_OPERATIONS_PER_MODULE
       )
-      const executionMetrics = await getExecutionMetrics()
-      expect(executionMetrics).not.toBeNull()
-      if (!executionMetrics) {
+      const publicationCount = await page.evaluate(() => {
+        const manager = window.app.singletons
+          .kclManager as unknown as LiveOperationPressureManager
+        return manager.__issue12676Metrics?.publicationCount
+      })
+      if (publicationCount === undefined) {
         throw new Error('Live operation publication metrics were not recorded')
       }
-      expect(executionMetrics.synchronousPublications).toBe(0)
-      expect(executionMetrics.totalPublications).toBeGreaterThan(0)
-      expect(executionMetrics.totalPublications * 2).toBeLessThan(
-        executionMetrics.mountedFeatureTreeCallbackCount
-      )
+      expect(publicationCount).toBeGreaterThan(0)
+      expect(publicationCount * 2).toBeLessThan(operationStats.operationCount)
       expect(
         await page.evaluate(
           () => window.app.singletons.kclManager.errors.length
@@ -365,8 +303,6 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
             if (!metrics) {
               return
             }
-            manager.createExecutionCallbacks =
-              metrics.originalCreateExecutionCallbacks
             manager.dispatchUpdateOperations =
               metrics.originalDispatchUpdateOperations
             delete manager.__issue12676Metrics

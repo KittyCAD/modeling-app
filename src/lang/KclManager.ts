@@ -2472,9 +2472,14 @@ export class KclManager extends File {
       return
     }
 
+    const executionId = args.executionId || Date.now()
     try {
-      await this.executeAstOnce(args)
+      await this.executeAstOnce({ ...args, executionId })
     } finally {
+      // Clear execution-owned state before marking execution complete. Setting
+      // isExecuting to false can synchronously launch the queued execution.
+      this.endLiveOperationUpdates(executionId)
+      this._cancelTokens.delete(executionId)
       this.isExecuting = false
     }
   }
@@ -2537,7 +2542,6 @@ export class KclManager extends File {
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this.endLiveOperationUpdates(currentExecutionId)
-      this._cancelTokens.delete(currentExecutionId)
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('cancelled')
       return
@@ -2600,7 +2604,6 @@ export class KclManager extends File {
       data: null,
     })
 
-    this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
     this.notifyExecutionCompletion('completed')
 
