@@ -193,8 +193,7 @@ describe('ZookeeperConversation', () => {
   })
 
   test('shows billing recovery without offering to clear the chat', () => {
-    const billingError =
-      'This request is not included in your current plan, and your account has no API credits available. Enable pay as you go or update your plan in your account: https://dev.zoo.dev/account/billing'
+    const billingError = 'no API credits available'
 
     render(
       <ZookeeperConversation

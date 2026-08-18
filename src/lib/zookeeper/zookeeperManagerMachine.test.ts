@@ -115,8 +115,7 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
-const billingError =
-  'This request is not included in your current plan, and your account has no API credits available. Enable pay as you go or update your plan in your account: https://dev.zoo.dev/account/billing'
+const billingError = 'no API credits available'
 
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
