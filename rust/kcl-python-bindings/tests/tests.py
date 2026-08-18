@@ -177,8 +177,8 @@ async def test_kcl_mock_execute_with_warnings():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute_with_engine_exception_should_pass():
     # Read from a file.
-    issues = await kcl.mock_execute(engine_error_file)
-    assert issues == []
+    outcome = await kcl.mock_execute(engine_error_file)
+    assert outcome.issues() == []
 
 
 @requires_engine
@@ -196,8 +196,8 @@ async def test_kcl_execute_with_engine_exception_should_fail():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute():
     # Read from a file.
-    issues = await kcl.mock_execute(lego_file)
-    assert issues == []
+    outcome = await kcl.mock_execute(lego_file)
+    assert outcome.issues() == []
 
 
 @pytest.mark.asyncio
@@ -207,8 +207,8 @@ async def test_kcl_mock_execute_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        issues = await kcl.mock_execute_code(code)
-        assert issues == []
+        outcome = await kcl.mock_execute_code(code)
+        assert outcome.issues() == []
 
 
 @requires_engine
