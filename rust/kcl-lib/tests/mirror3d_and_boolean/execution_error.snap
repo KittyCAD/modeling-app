@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing mirror3d_and_boolean.kcl
+---
+KCL Internal error
+
+  × internal: failed to fix tags and references: Engine { details:
+  │ KclErrorDetails { source_ranges: [SourceRange([7372, 7403, 0])],
+  │ backtrace: [BacktraceItem { source_range: SourceRange([7372, 7403, 0]),
+  │ fn_name: None }], message: "Failed to find new face id for old face id:
+  │ [uuid]" } }
+     ╭─[172:12]
+ 171 │ solid002 = subtract(solid001, tools = extrude003)
+ 172 │ solid003 = mirror3d(solid002, across = YZ)
+     ·            ───────────────┬───────────────┬
+     ·                           ╰── tests/mirror3d_and_boolean/input.kcl
+     ·                           ╰── tests/mirror3d_and_boolean/input.kcl
+     ╰────
+  ╰─▶ KCL Internal error
+      
+        × internal: failed to fix tags and references: Engine { details:
+        │ KclErrorDetails { source_ranges: [SourceRange([7372, 7403, 0])],
+        │ backtrace: [BacktraceItem { source_range: SourceRange([7372, 7403,
+        │ 0]), fn_name: None }], message: "Failed to find new face id for old
+        │ face id: [uuid]" } }
+           ╭─[172:12]
+       171 │ solid002 = subtract(solid001, tools = extrude003)
+       172 │ solid003 = mirror3d(solid002, across = YZ)
+           ·            ───────────────┬───────────────
+           ·                           ╰── tests/mirror3d_and_boolean/
+      input.kcl
+           ╰────
