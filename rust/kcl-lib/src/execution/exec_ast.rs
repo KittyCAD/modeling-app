@@ -1842,11 +1842,6 @@ impl ExecutorContext {
                     // It was an import cycle.  Keep the original message.
                     err.override_source_ranges(vec![source_range])
                 }
-                KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
-                    // Propagate this type of error. It's likely a transient
-                    // error that just needs to be retried.
-                    err.add_import_location(format!("import {import_name}"), source_range)
-                }
                 // The module loaded successfully, so preserve execution errors
                 // exactly as they occurred inside it. Rewrapping them here loses
                 // the error kind, structured fields, and imported-file location.
