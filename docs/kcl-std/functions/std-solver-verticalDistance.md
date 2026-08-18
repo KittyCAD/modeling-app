@@ -44,7 +44,7 @@ profile = sketch(on = XY) {
   verticalDistance([edge1.start, edge4.start]) == 5mm
 }
 
-solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 
 ```
 

@@ -1138,7 +1138,12 @@ sketch003 = startSketchOn(XZ)
         codeBefore.indexOf(lineOfInterest),
         codeBefore.indexOf(lineOfInterest) + lineOfInterest.length
       )
-      const artifact = { type } as unknown as Artifact
+      const artifact = [...execState.artifactGraph.values()].find(
+        (candidate) => candidate.type === type
+      )
+      if (!artifact) {
+        throw new Error(`Expected execution to produce a ${type} artifact`)
+      }
       const newAst = await deleteFromSelection(
         ast,
         {

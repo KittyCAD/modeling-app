@@ -3584,6 +3584,17 @@ export function getCodeRefsFromEntityReference(
       )
       if (!err(segArtifact) && segArtifact.codeRef) {
         codeRefs.push({ range: segArtifact.codeRef.range })
+        const originalSegment = getOriginalSegmentArtifact(
+          segArtifact.id,
+          artifactGraph
+        )
+        if (
+          originalSegment &&
+          originalSegment.id !== segArtifact.id &&
+          originalSegment.codeRef
+        ) {
+          codeRefs.push({ range: originalSegment.codeRef.range })
+        }
       }
       // Also get the extrude (sweep) codeRef, like getCodeRefsByArtifactId does
       const extrusion = getSweepFromSuspectedSweepSurface(

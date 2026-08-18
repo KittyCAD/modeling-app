@@ -142,11 +142,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   69["CompositeSolid Subtract<br>[1366, 1580, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
-  70["StartSketchOnPlane<br>[12171, 12274, 15]"]
+  70["StartSketchOnPlane<br>[12187, 12290, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  71["StartSketchOnPlane<br>[12171, 12274, 15]"]
+  71["StartSketchOnPlane<br>[12187, 12290, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  72["StartSketchOnPlane<br>[12171, 12274, 15]"]
+  72["StartSketchOnPlane<br>[12187, 12290, 15]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3

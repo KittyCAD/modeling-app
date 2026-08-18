@@ -737,6 +737,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
 

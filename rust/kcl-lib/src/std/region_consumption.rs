@@ -19,6 +19,7 @@ use crate::std::RegionBehavior;
 
 const REGION_REUSE_WORKAROUND: &str = "Create a separate region for each consuming operation by calling `region(...)` multiple times with the original sketch. Do not clone the source sketch.";
 
+#[derive(Debug)]
 pub(crate) struct PendingRegionConsumption {
     region_ids: AhashIndexSet<Uuid>,
     operation: ConsumedRegionOperation,

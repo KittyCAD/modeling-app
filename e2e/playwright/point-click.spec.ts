@@ -553,7 +553,11 @@ sketch001 = extrude(region001, length = -12)`
         0
       )
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
+      await expect(toolbar.selectionStatus).not.toContainText('No selection')
+      await toolbar.removeFeatureTreeOperation(operationButton)
+      await scene.settled()
+      await expect(toolbar.selectionStatus).toContainText('No selection')
+      await editor.expectEditor.not.toContain(expectedOutput)
     })
   })
 

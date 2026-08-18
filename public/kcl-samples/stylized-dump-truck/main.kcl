@@ -12,7 +12,7 @@
 // - Front circular headlights and rear rectangular taillights
 
 // Set units and version
-@settings(defaultLengthUnit = m)
+@settings(defaultLengthUnit = m, kclVersion = 2.0)
 
 // Chassis dimensions
 chassisLength = 4.2 // total vehicle length
@@ -333,8 +333,8 @@ wheelSketch = sketch(on = XZ) {
   verticalDistance([circle1.center, circle1.start]) == 0m
 }
 
-wheelProfile = region(point = [0, 0.1], sketch = wheelSketch)
-diskProfile = region(point = [0, wheelDiameter / 2], sketch = wheelSketch)
+wheelProfile = region(segments = [wheelSketch.circle1])
+diskProfile = region(segments = [wheelSketch.circle2])
 wheelTireBody = extrude(wheelProfile, length = -wheelWidth)
   |> appearance(%, color = "#141414")
 diskBody = extrude(diskProfile, length = -wheelWidth)

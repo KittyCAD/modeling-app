@@ -6,8 +6,12 @@ import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  Artifact,
+  ExecState,
+  SourceRange,
+} from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -16,6 +20,7 @@ import {
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
+  getCodeRefsFromEntityReference,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -27,6 +32,77 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { DefaultPlaneSelection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+
+test('includes region, source segment, and sweep ranges for a wall face', () => {
+  const sourceSegmentRange = [10, 20, 0] as SourceRange
+  const regionRange = [30, 40, 0] as SourceRange
+  const sweepRange = [50, 60, 0] as SourceRange
+  const sourceSegment = {
+    type: 'segment',
+    id: 'source-segment',
+    pathId: 'sketch-path',
+    edgeIds: [],
+    codeRef: {
+      range: sourceSegmentRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+    commonSurfaceIds: [],
+  } satisfies Extract<Artifact, { type: 'segment' }>
+  const regionSegment = {
+    type: 'segment',
+    id: 'region-segment',
+    pathId: 'region-path',
+    originalSegId: sourceSegment.id,
+    edgeIds: [],
+    codeRef: { range: regionRange, nodePath: { steps: [] }, pathToNode: [] },
+    commonSurfaceIds: [],
+  } satisfies Extract<Artifact, { type: 'segment' }>
+  const wall = {
+    type: 'wall',
+    id: 'wall',
+    segId: regionSegment.id,
+    edgeCutEdgeIds: [],
+    sweepId: 'sweep',
+    pathIds: [],
+    faceCodeRef: {
+      range: sweepRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+    cmdId: 'wall-command',
+  } satisfies Extract<Artifact, { type: 'wall' }>
+  const sweep = {
+    type: 'sweep',
+    id: 'sweep',
+    subType: 'extrusion',
+    pathId: 'region-path',
+    surfaceIds: [wall.id],
+    edgeIds: [],
+    codeRef: { range: sweepRange, nodePath: { steps: [] }, pathToNode: [] },
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+  } satisfies Extract<Artifact, { type: 'sweep' }>
+  const artifactGraph = new Map<string, Artifact>([
+    [sourceSegment.id, sourceSegment],
+    [regionSegment.id, regionSegment],
+    [wall.id, wall],
+    [sweep.id, sweep],
+  ])
+
+  expect(
+    getCodeRefsFromEntityReference(
+      { type: 'face', face_id: 'wall' },
+      artifactGraph
+    )
+  ).toEqual([
+    { range: regionRange },
+    { range: sourceSegmentRange },
+    { range: sweepRange },
+  ])
+})
+
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [105.55, 105.55])
@@ -1526,9 +1602,10 @@ describe('pattern copy selection highlighting', () => {
     copyEdgeIds: ['copy-edge-id'],
     codeRef: {
       range: selectionCodeRef.range,
-      nodePath: [],
+      nodePath: { steps: [] },
+      pathToNode: [],
     },
-  } as unknown as Artifact
+  } satisfies Extract<Artifact, { type: 'pattern' }>
   const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
 
   test('maps pattern code selections to copied engine entities', () => {
@@ -1767,7 +1844,7 @@ describe('mixed entity-reference selection highlighting', () => {
         nodePath: { steps: [] },
       },
     }
-    const artifactGraph: ArtifactGraph = new Map([
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [codeOnlyArtifact.id, codeOnlyArtifact],
     ])
 
@@ -1836,7 +1913,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       copyFaceIds: ['copy-face-1'],
       copyEdgeIds: [],
       codeRef,
-    } as unknown as Artifact
+    } satisfies Extract<Artifact, { type: 'pattern' }>
     const artifactGraph: ArtifactGraph = new Map([
       [patternArtifact.id, patternArtifact],
     ])
@@ -1932,31 +2009,27 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       pathToNode,
       nodePath: { steps: [] },
     }
-    const artifactGraph: ArtifactGraph = new Map([
-      [
-        'sketch-1',
-        {
-          type: 'sketchBlock',
-          id: 'sketch-1',
-          codeRef,
-          planeId: 'plane-1',
-          sketchId: 1,
-        } as unknown as Artifact,
-      ],
-      [
-        'path-1',
-        {
-          type: 'path',
-          subType: 'sketch',
-          id: 'path-1',
-          codeRef,
-          planeId: 'plane-1',
-          segIds: [],
-          trajectorySweepId: null,
-          consumed: false,
-          sketchBlockId: 'sketch-1',
-        } as unknown as Artifact,
-      ],
+    const sketchBlock = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef,
+      planeId: 'plane-1',
+      sketchId: 1,
+    } satisfies Extract<Artifact, { type: 'sketchBlock' }>
+    const sketchPath = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+      sketchBlockId: sketchBlock.id,
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [sketchBlock.id, sketchBlock],
+      [sketchPath.id, sketchPath],
     ])
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
@@ -2023,22 +2096,24 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
   test('falls back to a primitive selection for a surface boundary edge without face metadata', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse('', instance)
+    const surfaceSweep = {
+      type: 'sweep',
+      id: 'surface-sweep',
+      subType: 'extrusion',
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: '',
+      surfaceIds: [],
+      edgeIds: [],
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
     const artifactGraph: ArtifactGraph = new Map([
-      [
-        'surface-sweep',
-        {
-          type: 'sweep',
-          id: 'surface-sweep',
-          codeRef: {
-            range: [0, 0, 0],
-            pathToNode: [],
-            nodePath: { steps: [] },
-          },
-          pathId: '',
-          surfaceIds: [],
-          edgeIds: [],
-        } as unknown as Artifact,
-      ],
+      [surfaceSweep.id, surfaceSweep],
     ])
     const modelingResponse = (modeling_response: unknown) => ({
       success: true,
@@ -2138,10 +2213,24 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
 
   test('treats path artifacts with region subtype as region selections', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const regionPath = {
+      type: 'path',
+      id: 'region-path',
+      subType: 'region',
+      planeId: 'xy-plane',
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+    } satisfies Extract<Artifact, { type: 'path' }>
     const selection = {
       graphSelections: [
         {
-          artifact: { type: 'path', subType: 'region' } as unknown as Artifact,
+          artifact: regionPath,
           codeRef,
         },
       ],
@@ -2155,15 +2244,22 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
 
   test('resolves solid2d entity refs to region path artifacts before display', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const artifactGraph = new Map([
-      [
-        'path-1',
-        {
-          id: 'path-1',
-          type: 'path',
-          subType: 'region',
-        } as unknown as Artifact,
-      ],
+    const regionPath = {
+      id: 'path-1',
+      type: 'path',
+      subType: 'region',
+      planeId: 'xy-plane',
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const artifactGraph = new Map<string, Artifact>([
+      [regionPath.id, regionPath],
     ])
     const selection: Selections = {
       graphSelections: [
@@ -2179,15 +2275,22 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
 
   test('resolves solid3d entity refs to sweep artifacts before display', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const artifactGraph = new Map([
-      [
-        'sweep-1',
-        {
-          id: 'sweep-1',
-          type: 'sweep',
-        } as unknown as Artifact,
-      ],
-    ])
+    const sweep = {
+      id: 'sweep-1',
+      type: 'sweep',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+    const artifactGraph = new Map<string, Artifact>([[sweep.id, sweep]])
     const selection: Selections = {
       graphSelections: [
         { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },

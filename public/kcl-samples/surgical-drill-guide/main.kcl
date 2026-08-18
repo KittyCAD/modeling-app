@@ -65,7 +65,10 @@ handleProfile = sketch(on = YZ) {
   horizontalDistance([returnEdge.start, returnEdge.end]) == handleLength / 6
   verticalDistance([returnEdge.start, returnEdge.end]) == -handleLength * sqrt(3) / 6
 }
-handleProfileRegion = region(point = [10mm, 3mm], sketch = handleProfile)
+handleProfileRegion = region(segments = [
+  handleProfile.base,
+  handleProfile.frontFace
+])
 hide(handleProfile)
 
 bracket = extrude(
