@@ -1,5 +1,4 @@
 import {
-  DEFAULT_BLANK_MAIN_KCL_CONTENTS,
   ensureDefaultKclVersionOnBlankMain,
   isMainKclPath,
   newKclFile,
@@ -40,13 +39,13 @@ describe('newKclFile', () => {
 
   it('creates fresh files with the current KCL version setting', () => {
     expect(newKclFile(undefined, 'mm', wasmInstance)).toBe(
-      DEFAULT_BLANK_MAIN_KCL_CONTENTS
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
     )
     expect(newKclFile('', 'mm', wasmInstance)).toBe(
-      DEFAULT_BLANK_MAIN_KCL_CONTENTS
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
     )
     expect(newKclFile('  \n', 'mm', wasmInstance)).toBe(
-      DEFAULT_BLANK_MAIN_KCL_CONTENTS
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
     )
     expect(changeDefaultUnits).not.toHaveBeenCalled()
     expect(changeKclVersion).toHaveBeenCalledWith(
@@ -95,7 +94,7 @@ describe('ensureDefaultKclVersionOnBlankMain', () => {
         '',
         wasmInstance
       )
-    ).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+    ).toBe(`@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`)
     expect(changeKclVersion).toHaveBeenCalledWith(
       '',
       JSON.stringify(DEFAULT_KCL_VERSION)

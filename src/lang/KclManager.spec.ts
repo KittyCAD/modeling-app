@@ -6,7 +6,7 @@ import type {
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
-import { DEFAULT_BLANK_MAIN_KCL_CONTENTS } from '@src/lang/project'
+import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -701,13 +701,17 @@ describe('KclManager diagnostics', () => {
 
     await vi.advanceTimersByTimeAsync(1000)
 
-    expect(kclManager.code).toBe(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+    expect(kclManager.code).toBe(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
     expect(writeSpy).not.toHaveBeenCalled()
 
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(writeSpy).toHaveBeenCalledTimes(1)
-    expect(writeSpy).toHaveBeenCalledWith(DEFAULT_BLANK_MAIN_KCL_CONTENTS)
+    expect(writeSpy).toHaveBeenCalledWith(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {

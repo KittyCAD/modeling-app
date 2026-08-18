@@ -13,8 +13,6 @@ import fsZds from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export const DEFAULT_BLANK_MAIN_KCL_CONTENTS = `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
-
 export function isMainKclPath(filePath: string): boolean {
   const normalizedPath = filePath.replace(/\\/g, '/')
   return (
