@@ -1,4 +1,4 @@
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeValueDetail,
@@ -317,6 +317,92 @@ describe('FeatureTreePane', () => {
 
         expect(valueDetail?.display).toBe('A')
         expect(valueDetail?.calculated).toEqual({ type: 'String', value: 'A' })
+      })
+    })
+
+    describe('named view name extraction', () => {
+      // Argument shape transcribed from the named_views_baseline_show ops.snap.
+      function createNamedViewOperation(
+        name: OpKclValue,
+        nameSourceRange: [number, number, number]
+      ): Operation {
+        return {
+          type: 'StdLibCall',
+          name: 'view::named',
+          unlabeledArg: {
+            value: name,
+            sourceRange: nameSourceRange,
+          },
+          labeledArgs: {
+            camera: {
+              value: { type: 'CameraView' },
+              sourceRange: defaultSourceRange(),
+            },
+            baseline: {
+              value: { type: 'Enum', enum_name: 'Visibility', variant: 'Show' },
+              sourceRange: defaultSourceRange(),
+            },
+          },
+          nodePath: defaultNodePath(),
+          sourceRange: defaultSourceRange(),
+          isError: false,
+        }
+      }
+
+      function rangeOfText(
+        code: string,
+        target: string
+      ): [number, number, number] {
+        const start = code.indexOf(target)
+        if (start === -1) {
+          throw new Error(`Could not find \`${target}\` in: ${code}`)
+        }
+        return [start, start + target.length, 0]
+      }
+
+      it('reads the view name from the unlabeled argument', () => {
+        const mockCode =
+          'plateInContext = view::named("Plate in context", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'String', value: 'Plate in context' },
+          rangeOfText(mockCode, '"Plate in context"')
+        )
+
+        const valueDetail = getFeatureTreeValueDetail(mockOperation, mockCode)
+
+        expect(valueDetail?.calculated).toEqual({
+          type: 'String',
+          value: 'Plate in context',
+        })
+        expect(valueDetail?.display).toBe('"Plate in context"')
+      })
+
+      it('uses the recorded value, not the source text, for a computed name', () => {
+        const mockCode = 'view::named("Front " + suffix, camera = camera001)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'String', value: 'Front A' },
+          rangeOfText(mockCode, '"Front " + suffix')
+        )
+
+        const valueDetail = getFeatureTreeValueDetail(mockOperation, mockCode)
+
+        expect(valueDetail?.calculated).toEqual({
+          type: 'String',
+          value: 'Front A',
+        })
+        expect(valueDetail?.display).toBe('"Front " + suffix')
+      })
+
+      it('returns no value detail for a non-string name, which the signature cannot yet produce', () => {
+        const mockCode = 'view::named(true, camera = camera001)'
+        const mockOperation = createNamedViewOperation(
+          { type: 'Bool', value: true },
+          rangeOfText(mockCode, 'true')
+        )
+
+        expect(
+          getFeatureTreeValueDetail(mockOperation, mockCode)
+        ).toBeUndefined()
       })
     })
   })

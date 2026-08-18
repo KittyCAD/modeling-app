@@ -180,6 +180,10 @@ name = "digest_benchmark"
 harness = false
 
 [[bench]]
+name = "ast_benchmark"
+harness = false
+
+[[bench]]
 name = "lsp_semantic_tokens_benchmark_criterion"
 harness = false
 required-features = ["lsp-test-util"]

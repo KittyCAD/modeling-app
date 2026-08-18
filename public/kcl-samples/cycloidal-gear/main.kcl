@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Medical
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 gearPitch = 0.3
 gearHeight = 1.5
@@ -101,8 +101,8 @@ boreProfile = sketch(on = XY) {
   verticalDistance([hole.center, hole.start]) == 0in
 }
 
-outerRegion = region(point = [0in, outerProbeRadius], sketch = outerProfile)
-boreRegion = region(point = [boreProbeRadius, 0in], sketch = boreProfile)
+outerRegion = region(segments = [outerProfile.arc1, outerProfile.arc2])
+boreRegion = region(segments = [boreProfile.hole])
 
 gearBlank = extrude(
   outerRegion,

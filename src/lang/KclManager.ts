@@ -178,6 +178,10 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  type UserFeaturesSettleService,
+  waitForUserFeaturesSettled,
+} from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -301,6 +305,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  userFeatures: UserFeaturesSettleService
   keymap?: KeymapService
 }
 
@@ -436,6 +441,7 @@ export class ZDSProject {
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
+      userFeatures: this.app.userFeatures,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -1197,30 +1203,50 @@ export class KclManager extends File {
   }
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
+    let liveOperationUpdatesFailed = false
+
     return {
       onOperation: (callback: OperationCallbackArgs) => {
-        if (
-          this.activeLiveOperationExecutionId !== executionId ||
-          this._cancelTokens.get(executionId)
-        ) {
-          return
+        try {
+          if (
+            liveOperationUpdatesFailed ||
+            this.activeLiveOperationExecutionId !== executionId ||
+            this._cancelTokens.get(executionId)
+          ) {
+            return
+          }
+
+          this._liveActiveModuleId.value = callback.moduleId
+          this._liveLatestOperationKey.value = getOperationKey(
+            callback.operation
+          )
+
+          const operationsByModule = applyOperationCallbackToOperationsByModule(
+            {
+              operationsByModule: this._liveOperationsByModule.value,
+              callback,
+            }
+          )
+          this._liveOperationsByModule.value = operationsByModule
+          this.dispatchUpdateOperations(
+            getOperationsForCurrentFile({
+              operationsByModule,
+              filenames: this.execState.filenames,
+              currentPath: this.path,
+            })
+          )
+        } catch (error) {
+          // An exception escaping into WASM can strand its async execution.
+          // Stop progressive updates for this run and let finalization continue.
+          liveOperationUpdatesFailed = true
+          const message =
+            error instanceof Error
+              ? (error.stack ?? error.message)
+              : String(error)
+          queueMicrotask(() =>
+            reportRejection(`Live operation updates failed: ${message}`)
+          )
         }
-
-        this._liveActiveModuleId.value = callback.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
-
-        const operationsByModule = applyOperationCallbackToOperationsByModule({
-          operationsByModule: this._liveOperationsByModule.value,
-          callback,
-        })
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
       },
     }
   }
@@ -2621,6 +2647,11 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    // Runtime feature flags (e.g. the KCL executor selection) come from user
+    // features fetched over the network after login; the first execution must
+    // not race that fetch, or it runs with the flags' defaults. Settled
+    // features make this await instant.
+    await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
     this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 

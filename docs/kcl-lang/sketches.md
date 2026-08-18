@@ -102,20 +102,10 @@ segments. Use `intersectionIndex` only when they intersect more than once, and
 use `direction = CW` when the default counterclockwise trace selects the wrong
 boundary.
 
-If segment tracing cannot identify the intended boundary, use a point strictly
-inside the region and provide its sketch:
-
-```kcl
-fallbackProfile = sketch(on = XY) {
-  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
-  coincident([perimeter.center, ORIGIN])
-  radius(perimeter) == 10mm
-  horizontal([perimeter.center, perimeter.start])
-}
-
-fallbackRegion = region(point = [0mm, 0mm], sketch = fallbackProfile)
-fallbackBody = extrude(fallbackRegion, length = 5mm)
-```
+If segment tracing cannot identify the intended boundary, make the boundary
+unambiguous by passing an adjacent segment pair and setting `direction` or
+`intersectionIndex` when needed. For new code, prefer correcting the boundary
+selection instead of falling back to a coordinate inside the region.
 
 ## Control arc direction
 

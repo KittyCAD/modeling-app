@@ -609,10 +609,18 @@ describe('project command config', () => {
     const moveCommand = commands.find(
       (command) => command.name === 'Move to library'
     )
+    const projectArg = moveCommand?.args?.project as unknown as {
+      hidden: (context: {
+        argumentsToSubmit: Record<string, unknown>
+      }) => boolean
+    }
     const libraryArg = moveCommand?.args?.library as unknown as {
       defaultValue: (
         context: ContextFrom<typeof commandBarMachine>
       ) => string | undefined
+      hidden: (context: {
+        argumentsToSubmit: Record<string, unknown>
+      }) => boolean
       options: (context: {
         argumentsToSubmit: Record<string, unknown>
       }) => CommandArgumentOption<string>[]
@@ -645,6 +653,37 @@ describe('project command config', () => {
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
     ).toBe('cloud-personal')
+    expect(
+      projectArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: targetLibrary.id,
+        },
+      })
+    ).toBe(true)
+    expect(
+      libraryArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: targetLibrary.id,
+        },
+      })
+    ).toBe(true)
+    expect(
+      projectArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+        },
+      })
+    ).toBe(false)
+    expect(
+      libraryArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: 'unknown-library',
+        },
+      })
+    ).toBe(false)
 
     await moveCommand?.onSubmit({
       project: homeProject.id,
