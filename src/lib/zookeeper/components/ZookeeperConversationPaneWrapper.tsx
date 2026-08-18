@@ -548,11 +548,9 @@ function useZookeeperEditPatchHistory({
       pendingZookeeperHistoryByExchange.current.delete(exchangeId)
       const snapshotFiles = getReadyZookeeperSnapshotFiles(pending)
       if (!pending.fileWriteFailed) {
-        const count = snapshotFiles.length
-          ? snapshotFiles.filter(
-              (file) => file.previousContent !== file.nextContent
-            ).length
-          : pending.patch.changed_files.length
+        const count = snapshotFiles.filter(
+          (file) => file.previousContent !== file.nextContent
+        ).length
         if (count > 0) {
           toast.success(
             `Successfully updated ${count} ${count === 1 ? 'file' : 'files'}`,
