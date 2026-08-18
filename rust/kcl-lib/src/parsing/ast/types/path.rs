@@ -691,7 +691,7 @@ mod tests {
             crate::modules::ModuleInfo {
                 id: ModuleId::default(),
                 path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+                repr: crate::modules::ModuleRepr::Kcl(Box::new(program.ast.clone()), Box::new(None)),
             },
         )]);
         let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
@@ -996,7 +996,7 @@ mod tests {
             crate::modules::ModuleInfo {
                 id: ModuleId::default(),
                 path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+                repr: crate::modules::ModuleRepr::Kcl(Box::new(program.ast.clone()), Box::new(None)),
             },
         )]);
         let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
@@ -1079,7 +1079,7 @@ import "cylinder.kcl" as cylinder
             crate::modules::ModuleInfo {
                 id: ModuleId::default(),
                 path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+                repr: crate::modules::ModuleRepr::Kcl(Box::new(program.ast.clone()), Box::new(None)),
             },
         )]);
         let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);

@@ -1,3 +1,4 @@
+#![allow(clippy::large_futures)]
 //! A binary to transpile KCL files with old sketch syntax (startProfile in pipe
 //! expressions) to the new sketch block syntax. This is only a temporary dev
 //! tool before we integrate it into the app.
@@ -1002,7 +1003,7 @@ async fn execute(program: Program, settings: ExecutorSettings) -> Result<ExecOut
     // Always close the context.
     ctx.close().await;
 
-    result
+    result.map(|outcome| *outcome)
 }
 
 #[derive(Debug, Default)]
