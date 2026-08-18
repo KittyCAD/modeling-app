@@ -140,7 +140,7 @@ describe('project command config', () => {
     expect(commands.map((command) => command.name)).toEqual([
       'Open project',
       'Create project',
-      'Move to library',
+      'Move project',
       'Delete project',
       'Rename project',
       'Import file from URL',
@@ -607,7 +607,7 @@ describe('project command config', () => {
       getHomeProjectEntries: () => [homeProject],
     })
     const moveCommand = commands.find(
-      (command) => command.name === 'Move to library'
+      (command) => command.name === 'Move project'
     )
     const projectArg = moveCommand?.args?.project as unknown as {
       hidden: (context: {

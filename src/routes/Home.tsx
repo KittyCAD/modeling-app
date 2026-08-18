@@ -403,7 +403,7 @@ const Home = () => {
         type: 'Find and select command',
         data: {
           groupId: 'projects',
-          name: 'Move to library',
+          name: 'Move project',
           argDefaultValues: {
             project: project.id,
             ...(libraryId ? { library: libraryId } : {}),
