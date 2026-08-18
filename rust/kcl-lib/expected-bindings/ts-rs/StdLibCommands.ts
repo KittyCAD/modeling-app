@@ -6804,7 +6804,7 @@ export default {
       {
         "name": "x",
         "ty": "number(_)",
-        "docs": "The scale factor for the x axis.",
+        "docs": "The dimensionless scale factor for the x axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6814,7 +6814,7 @@ export default {
       {
         "name": "y",
         "ty": "number(_)",
-        "docs": "The scale factor for the y axis.",
+        "docs": "The dimensionless scale factor for the y axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6824,7 +6824,7 @@ export default {
       {
         "name": "z",
         "ty": "number(_)",
-        "docs": "The scale factor for the z axis.",
+        "docs": "The dimensionless scale factor for the z axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6844,7 +6844,7 @@ export default {
       {
         "name": "factor",
         "ty": "number(_)",
-        "docs": "If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
+        "docs": "If given, scale the solid by this dimensionless factor. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
         "required": false,
         "special": false,
         "experimental": false,
