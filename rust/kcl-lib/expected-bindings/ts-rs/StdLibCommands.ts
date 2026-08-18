@@ -4796,7 +4796,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to intersect.",
+        "docs": "The solids to intersect. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8239,7 +8239,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 1+]",
-        "docs": "The solids to use as the base to subtract from.",
+        "docs": "The solids to use as the base to subtract from. These solids are consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8249,7 +8249,7 @@ export default {
       {
         "name": "tools",
         "ty": "[Solid]",
-        "docs": "The solids to subtract.",
+        "docs": "The solids to subtract. These tool solids are also consumed by this operation.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -8650,7 +8650,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to union.",
+        "docs": "The solids to union. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
