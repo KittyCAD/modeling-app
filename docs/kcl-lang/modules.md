@@ -105,7 +105,7 @@ import makeWheel from "wheel.kcl"
 wheel = makeWheel()
 ```
 
-For larger projects, keep dependencies flowing in one direction:
+For all projects, keep dependencies flowing in one direction:
 
 1. Parameter modules import nothing.
 2. Utility modules may import parameters.
