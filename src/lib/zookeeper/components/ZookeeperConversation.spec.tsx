@@ -162,7 +162,8 @@ describe('ZookeeperConversation', () => {
     ).toHaveClass(
       'bg-chalkboard-20',
       'dark:bg-chalkboard-80',
-      '!bg-transparent'
+      '!bg-transparent',
+      'ml-1'
     )
 
     fireEvent.click(reconnectButton)
@@ -230,12 +231,12 @@ describe('ZookeeperConversation', () => {
     )
     expect(
       billingLink.querySelector('svg[aria-label="link"]')?.parentElement
-    ).toHaveClass('!bg-transparent')
+    ).toHaveClass('!bg-transparent', 'ml-1')
     const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
     expect(reconnectButton).toBeEnabled()
     expect(
       reconnectButton.querySelector('svg[aria-label="refresh"]')?.parentElement
-    ).toHaveClass('!bg-transparent')
+    ).toHaveClass('!bg-transparent', 'ml-1')
   })
 
   test('shows setup progress while loading a conversation', () => {
