@@ -629,7 +629,13 @@ class SketchConstraintStatus:
     Per-sketch summary of constraint freedom analysis.
     """
     @property
-    def name(self) -> builtins.str: ...
+    def name(self) -> builtins.str:
+        r"""
+        Name of the variable the sketch was assigned to. Empty when the sketch
+        has no enclosing variable declaration, and shared between entries when
+        two sketches resolve to the same declaration. The report carries no
+        other sketch identifier.
+        """
     @property
     def status(self) -> zooConstraintKind: ...
     @property
