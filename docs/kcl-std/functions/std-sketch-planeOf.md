@@ -75,7 +75,7 @@ baseProfile = sketch(on = XY) {
   vertical(line4)
 }
 
-baseRegion = region(point = [3mm, 2mm], sketch = baseProfile)
+baseRegion = region(segments = [baseProfile.line1, baseProfile.line2])
 block = extrude(baseRegion, length = 4mm, tagEnd = $top)
 sidePlane = planeOf(block, face = top)
 

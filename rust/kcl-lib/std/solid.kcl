@@ -79,7 +79,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -90,6 +90,132 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///
 /// blockWithTab = extrude(tabProfile, length = 1mm)
 /// filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+/// ```
+/// ```kcl,sketchSolve
+/// // This example shows rolling ball fillets, a new type of fillet
+/// // available with KCL 3.
+/// @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+/// 
+/// sketch001 = sketch(on = XY) {
+///   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
+///   seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
+///   topRightInset = line(start = [var 195.16mm, var 112.75mm], end = [var 168.73mm, var 112.75mm])
+///   innerRightDrop = line(start = [var 168.73mm, var 112.75mm], end = [var 168.73mm, var 62.75mm])
+///   lowerSpan = line(start = [var 168.73mm, var 62.75mm], end = [var -104.94mm, var 62.75mm])
+///   innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
+///   topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
+///   seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
+/// 
+///   coincident([seg02.end, seg01.start])
+///   coincident([seg01.end, topRightInset.start])
+///   coincident([
+///     topRightInset.end,
+///     innerRightDrop.start
+///   ])
+///   coincident([innerRightDrop.end, lowerSpan.start])
+///   coincident([lowerSpan.end, innerLeftRise.start])
+///   coincident([innerLeftRise.end, topLeftInset.start])
+///   coincident([topLeftInset.end, seg03.start])
+///   coincident([seg03.end, seg02.start])
+/// 
+///   horizontal(seg02)
+///   vertical(seg01)
+///   horizontal(topRightInset)
+///   vertical(innerRightDrop)
+///   horizontal(lowerSpan)
+///   vertical(innerLeftRise)
+///   horizontal(topLeftInset)
+/// 
+///   horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
+///   verticalDistance([ORIGIN, seg02.start]) == 32.75mm
+///   distance([seg01.start, seg01.end]) == 80
+///   distance([topRightInset.start, topRightInset.end]) == 26.43mm
+///   distance([
+///   innerRightDrop.start,
+///   innerRightDrop.end
+/// ]) == 50
+///   distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
+///   distance([innerLeftRise.start, innerLeftRise.end]) == 50
+///   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
+///   vertical(seg03)
+/// }
+/// 
+/// hidden001 = hide(sketch001)
+/// profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
+/// revolve001 = revolve(profile001, angle = 360deg, axis = X)
+///   |> fillet(
+///        radius = 10mm,
+///        tags = [
+///          getCommonEdge(faces = [seg02, seg01]),
+///          getCommonEdge(faces = [seg02, seg03])
+///        ],
+///      )
+///   |> rotate(yaw = 70deg, pitch = 10deg)
+/// ```
+/// ```kcl,sketchSolve
+/// // Same as previous example, but with the fillet and revolve call
+/// // in separate commands, with an intermediate variable.
+/// @settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+/// 
+/// sketch001 = sketch(on = XY) {
+///   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
+///   seg01 = line(start = [var 195.16mm, var 32.75mm], end = [var 195.16mm, var 112.75mm])
+///   topRightInset = line(start = [var 195.16mm, var 112.75mm], end = [var 168.73mm, var 112.75mm])
+///   innerRightDrop = line(start = [var 168.73mm, var 112.75mm], end = [var 168.73mm, var 62.75mm])
+///   lowerSpan = line(start = [var 168.73mm, var 62.75mm], end = [var -104.94mm, var 62.75mm])
+///   innerLeftRise = line(start = [var -104.94mm, var 62.75mm], end = [var -104.94mm, var 112.75mm])
+///   topLeftInset = line(start = [var -104.94mm, var 112.75mm], end = [var -131.92mm, var 112.75mm])
+///   seg03 = line(start = [var -131.92mm, var 112.75mm], end = [var -131.92mm, var 32.75mm])
+/// 
+///   coincident([seg02.end, seg01.start])
+///   coincident([seg01.end, topRightInset.start])
+///   coincident([
+///     topRightInset.end,
+///     innerRightDrop.start
+///   ])
+///   coincident([innerRightDrop.end, lowerSpan.start])
+///   coincident([lowerSpan.end, innerLeftRise.start])
+///   coincident([innerLeftRise.end, topLeftInset.start])
+///   coincident([topLeftInset.end, seg03.start])
+///   coincident([seg03.end, seg02.start])
+/// 
+///   horizontal(seg02)
+///   vertical(seg01)
+///   horizontal(topRightInset)
+///   vertical(innerRightDrop)
+///   horizontal(lowerSpan)
+///   vertical(innerLeftRise)
+///   horizontal(topLeftInset)
+/// 
+///   horizontalDistance([seg02.start, ORIGIN]) == 131.92mm
+///   verticalDistance([ORIGIN, seg02.start]) == 32.75mm
+///   distance([seg01.start, seg01.end]) == 80
+///   distance([topRightInset.start, topRightInset.end]) == 26.43mm
+///   distance([
+///   innerRightDrop.start,
+///   innerRightDrop.end
+/// ]) == 50
+///   distance([lowerSpan.start, lowerSpan.end]) == 273.67mm
+///   distance([innerLeftRise.start, innerLeftRise.end]) == 50
+///   distance([topLeftInset.start, topLeftInset.end]) == 26.98mm
+///   vertical(seg03)
+/// }
+/// 
+/// hidden001 = hide(sketch001)
+/// profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionIndex = -1, direction = CCW)
+/// 
+/// revolve001 = revolve(profile001, angle = 360deg, axis = X)
+/// 
+/// fillet001 = fillet(
+///   revolve001,
+///   tags = getCommonEdge(faces = [
+///     profile001.tags.seg02,
+///     profile001.tags.seg01
+///   ]),
+///   radius = 10,
+///   version=2
+/// )
+///   |> rotate(yaw = 70deg, pitch = 10deg)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn fillet(
@@ -115,11 +241,13 @@ export fn fillet(
   /// Defaults to false.
   @(deprecated_since = "2.0")
   legacyMethod?: bool,
-  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
-  @(experimental = true) version?: number(Count) = 1,
+  /// On KCL 2.0 and before, the default is 1.
+  /// On KCL 3.0 and later, the default is 2.
+  @(experimental = true) version?: number(Count),
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -224,7 +352,7 @@ export fn fillet(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = baseProfile), length = 3mm, tagEnd = $top)
+/// block = extrude(region(segments = [baseProfile.edge1, baseProfile.edge2]), length = 3mm, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -441,7 +569,7 @@ export fn chamfer(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [3mm, 2mm], sketch = boxProfile), length = 4mm)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm)
 /// openBox = shell(box, faces = [END], thickness = 0.5mm)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1785,7 +1913,7 @@ export fn isSurface(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [2mm, 2mm], sketch = boxProfile), length = 4mm, tagEnd = $top)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm, tagEnd = $top)
 /// openBox = deleteFace(box, faces = [top])
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1863,9 +1991,9 @@ export fn deleteFace(
 ///   coincident([line8.end, line5.start])
 /// }
 ///
-/// region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+/// region001 = region(segments = [sketch002.line5, sketch002.line6])
 /// extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
-/// region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+/// region002 = region(segments = [sketch001.line1, sketch001.line2])
 /// extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
 ///
 /// myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])

@@ -103,7 +103,7 @@ const Home = () => {
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
 
   useEffect(() => {
     if (!keymap) {
@@ -128,8 +128,8 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
-  const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(

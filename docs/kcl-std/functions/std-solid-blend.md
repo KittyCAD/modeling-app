@@ -125,9 +125,9 @@ sketch002 = sketch(on = -XZ) {
   coincident([line8.end, line5.start])
 }
 
-region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+region001 = region(segments = [sketch002.line5, sketch002.line6])
 extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
-region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+region002 = region(segments = [sketch001.line1, sketch001.line2])
 extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
 
 myBlend = blend([

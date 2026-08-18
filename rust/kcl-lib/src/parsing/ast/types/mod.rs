@@ -126,7 +126,7 @@ impl<T> Node<T> {
     }
 
     pub fn boxed(start: usize, end: usize, module_id: ModuleId, inner: T) -> BoxNode<T> {
-        Box::new(Node {
+        BoxNode::new(Node {
             inner,
             start,
             end,
@@ -146,7 +146,7 @@ impl<T> Node<T> {
         node_path: NodePath,
         inner: T,
     ) -> BoxNode<T> {
-        Box::new(Node {
+        BoxNode::new(Node {
             inner,
             start,
             end,
@@ -257,7 +257,173 @@ impl<T> From<&BoxNode<T>> for SourceRange {
     }
 }
 
-pub type BoxNode<T> = Box<Node<T>>;
+/// Counts how many times [`BoxNode`]'s copy-on-write `DerefMut` had to
+/// deep-clone a node because its `Arc` was shared at mutation time. Parse,
+/// execute, and digest workloads are expected to keep this at 0 (they only
+/// mutate exclusively owned trees); editing workloads that mutate a shared
+/// tree may see bounded nonzero counts.
+#[cfg(debug_assertions)]
+#[doc(hidden)]
+pub static BOX_NODE_COW_CLONES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+/// An AST node shared behind an [`Arc`], so owned handles to subtrees (e.g. a
+/// function body held by a closure value) are cheap to clone and carry no
+/// lifetimes.
+///
+/// This is a newtype rather than a bare `Arc<Node<T>>` so that:
+///
+/// - `DerefMut` keeps every existing in-place mutation site (digests, node
+///   paths, code-mod edits) compiling, via copy-on-write ([`Arc::make_mut`]).
+///   Mutating an exclusively owned tree (refcount 1, the common case) stays
+///   in place with no copying.
+/// - The serde and ts-rs impls stay transparent: `BoxNode<T>` serializes
+///   exactly like `Node<T>` did when this was `Box<Node<T>>`. (The workspace
+///   does not enable serde's `rc` feature, so `Arc<Node<T>>` has no serde
+///   impls of its own.)
+///
+/// Caveat: if a node's `Arc` is shared at mutation time (e.g. a function AST
+/// kept alive by a `FunctionSource` clone from a previous run), `DerefMut`
+/// silently deep-clones that node. [`BOX_NODE_COW_CLONES`] counts those
+/// clones in debug builds.
+pub struct BoxNode<T>(Arc<Node<T>>);
+
+impl<T> BoxNode<T> {
+    pub fn new(node: Node<T>) -> Self {
+        Self(Arc::new(node))
+    }
+
+    /// A cheap owned handle to the shared node.
+    pub fn arc(&self) -> Arc<Node<T>> {
+        self.0.clone()
+    }
+}
+
+impl<T: Clone> BoxNode<T> {
+    /// Take the node out, cloning only if the `Arc` is shared (it usually is
+    /// not). The successor of moving out of the old `Box<Node<T>>`.
+    pub fn into_node(self) -> Node<T> {
+        Arc::unwrap_or_clone(self.0)
+    }
+}
+
+impl<T> AsRef<Node<T>> for BoxNode<T> {
+    fn as_ref(&self) -> &Node<T> {
+        &self.0
+    }
+}
+
+impl<T: Clone> AsMut<Node<T>> for BoxNode<T> {
+    /// Copy-on-write, like `DerefMut`.
+    fn as_mut(&mut self) -> &mut Node<T> {
+        self
+    }
+}
+
+impl<T> Clone for BoxNode<T> {
+    fn clone(&self) -> Self {
+        // Cheap: clones the Arc, not the node.
+        Self(self.0.clone())
+    }
+}
+
+impl<T: fmt::Debug> fmt::Debug for BoxNode<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Delegate so output matches the old Box<Node<T>>.
+        self.0.fmt(f)
+    }
+}
+
+impl<T: fmt::Display> fmt::Display for BoxNode<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl<T: PartialEq> PartialEq for BoxNode<T> {
+    fn eq(&self, other: &Self) -> bool {
+        // Arc compares by pointee, same as Box did.
+        self.0 == other.0
+    }
+}
+
+impl<T> Deref for BoxNode<T> {
+    type Target = Node<T>;
+
+    fn deref(&self) -> &Node<T> {
+        &self.0
+    }
+}
+
+impl<T: Clone> DerefMut for BoxNode<T> {
+    fn deref_mut(&mut self) -> &mut Node<T> {
+        #[cfg(debug_assertions)]
+        if Arc::strong_count(&self.0) > 1 || Arc::weak_count(&self.0) > 0 {
+            // Arc::make_mut below will deep-clone this node.
+            BOX_NODE_COW_CLONES.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+// Serialize as the inner Node<T>, not the Arc, keeping the serialized form
+// (JSON, MessagePack, ts-rs) byte-identical to the old Box<Node<T>>.
+impl<T> Serialize for BoxNode<T>
+where
+    Node<T>: Serialize,
+{
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T> Deserialize<'de> for BoxNode<T>
+where
+    Node<T>: Deserialize<'de>,
+{
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Node::<T>::deserialize(deserializer).map(BoxNode::new)
+    }
+}
+
+// Transparent ts-rs impl, mirroring ts-rs's own wrapper impls (e.g. TS for
+// Box<T>), so the generated TypeScript is unchanged from Box<Node<T>>.
+impl<T> ts_rs::TS for BoxNode<T>
+where
+    Node<T>: ts_rs::TS,
+{
+    type WithoutGenerics = Self;
+    type OptionInnerType = Self;
+
+    fn name(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::name(cfg)
+    }
+    fn inline(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::inline(cfg)
+    }
+    fn inline_flattened(cfg: &ts_rs::Config) -> String {
+        <Node<T> as ts_rs::TS>::inline_flattened(cfg)
+    }
+    fn visit_dependencies(v: &mut impl ts_rs::TypeVisitor)
+    where
+        Self: 'static,
+    {
+        <Node<T> as ts_rs::TS>::visit_dependencies(v);
+    }
+    fn visit_generics(v: &mut impl ts_rs::TypeVisitor)
+    where
+        Self: 'static,
+    {
+        <Node<T> as ts_rs::TS>::visit_generics(v);
+        v.visit::<Node<T>>();
+    }
+    fn decl(_: &ts_rs::Config) -> String {
+        panic!("wrapper type cannot be declared")
+    }
+    fn decl_concrete(_: &ts_rs::Config) -> String {
+        panic!("wrapper type cannot be declared")
+    }
+}
+
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 pub type NodeRefMut<'a, T> = &'a mut Node<T>;
@@ -324,19 +490,32 @@ impl CodeBlock for Node<Program> {
 }
 
 fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let value = kcl_version.parse::<f64>().map_err(|_| {
-        KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            format!("Unexpected KCL version value: `{kcl_version}`; expected a number, e.g. `2.0`"),
-            vec![],
-        ))
-    })?;
+    let version = kcl_version.parse::<crate::KclVersion>()?;
+    let (value, raw) = match version {
+        crate::KclVersion::V1 | crate::KclVersion::V2 => {
+            let value = kcl_version.parse::<f64>().map_err(|_| {
+                KclError::new_semantic(crate::errors::KclErrorDetails::new(
+                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
+                    vec![],
+                ))
+            })?;
+            (
+                LiteralValue::Number {
+                    value,
+                    suffix: NumericSuffix::None,
+                },
+                kcl_version.to_owned(),
+            )
+        }
+        crate::KclVersion::V3Preview => (
+            LiteralValue::String(version.as_str().to_owned()),
+            format!("\"{}\"", version.as_str()),
+        ),
+    };
 
-    Ok(Expr::Literal(Box::new(Node::no_src(Literal {
-        value: LiteralValue::Number {
-            value,
-            suffix: NumericSuffix::None,
-        },
-        raw: kcl_version.to_owned(),
+    Ok(Expr::Literal(BoxNode::new(Node::no_src(Literal {
+        value,
+        raw,
         digest: None,
     }))))
 }
@@ -473,7 +652,7 @@ impl Node<Program> {
                 if let Some(len) = length_units {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
-                        Expr::Name(Box::new(Name::new(len.to_string()))),
+                        Expr::Name(BoxNode::new(Name::new(len.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -489,7 +668,7 @@ impl Node<Program> {
             if let Some(len) = length_units {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
-                    Expr::Name(Box::new(Name::new(len.to_string()))),
+                    Expr::Name(BoxNode::new(Name::new(len.to_string()))),
                 );
             }
 
@@ -556,7 +735,7 @@ impl Node<Program> {
                 if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                        Expr::Name(Box::new(Name::new(level.as_str()))),
+                        Expr::Name(BoxNode::new(Name::new(level.as_str()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -572,7 +751,7 @@ impl Node<Program> {
             if let Some(level) = warning_level {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                    Expr::Name(Box::new(Name::new(level.as_str()))),
+                    Expr::Name(BoxNode::new(Name::new(level.as_str()))),
                 );
             }
 
@@ -898,39 +1077,9 @@ impl Program {
     }
 
     /// Rename all identifiers that have the old name to the new given name.
-    /// `excluded` lists names that must not be renamed (e.g. function params that shadow outer bindings).
+    /// See [`rename_identifiers_in_body`] for the scoping rules.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        for item in &mut self.body {
-            item.rename_identifiers(old_name, new_name, excluded);
-        }
-    }
-
-    /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
-    /// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
-    /// uses after the binding are not. We use `body_item_defined_names` so all bindings are
-    /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
-    /// names, etc.).
-    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
-        for item in &mut self.body {
-            let names_in_this = body_item_defined_names(&*item);
-            let shadowed_here = names_in_this.iter().any(|name| name == old_name);
-            let excluded_for_this: Vec<&str> = match item {
-                BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
-                _ => {
-                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-                    for n in &names_in_this {
-                        v.push(n.as_str());
-                    }
-                    v
-                }
-            };
-            item.rename_identifiers(old_name, new_name, &excluded_for_this);
-            excluded_owned.extend(names_in_this);
-            if shadowed_here {
-                break;
-            }
-        }
+        rename_identifiers_in_body(&mut self.body, old_name, new_name, excluded);
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1178,8 +1327,38 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
+/// Rename all identifiers in the body items that have the old name to the new given name.
+/// `excluded` lists names that must not be renamed (e.g. function params that shadow outer
+/// bindings). A name bound by a body item is excluded only for items that appear *after* the
+/// item that binds it. So a use-before-declaration (referring to an outer binding) gets renamed;
+/// uses after the binding are not. We use `body_item_defined_names` so all bindings are
+/// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
+/// names, etc.).
+fn rename_identifiers_in_body(items: &mut [BodyItem], old_name: &str, new_name: &str, excluded: &[&str]) {
+    let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+    for item in items {
+        let names_in_this = body_item_defined_names(&*item);
+        let shadowed_here = names_in_this.iter().any(|name| name == old_name);
+        let excluded_for_this: Vec<&str> = match item {
+            BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
+            _ => {
+                let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                for n in &names_in_this {
+                    v.push(n.as_str());
+                }
+                v
+            }
+        };
+        item.rename_identifiers(old_name, new_name, &excluded_for_this);
+        excluded_owned.extend(names_in_this);
+        if shadowed_here {
+            break;
+        }
+    }
+}
+
 /// Collect all names that are defined (bound) by this body item, in order. Used so that
-/// order-aware rename excludes a name only for items after the one that binds it.
+/// rename excludes a name only for items after the one that binds it.
 pub(crate) fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
     let mut out = Vec::new();
     match item {
@@ -1854,9 +2033,7 @@ impl Block {
     }
 
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        for item in &mut self.items {
-            item.rename_identifiers(old_name, new_name, excluded);
-        }
+        rename_identifiers_in_body(&mut self.items, old_name, new_name, excluded);
     }
 
     /// Returns the body item that includes the given character position.
@@ -2628,7 +2805,7 @@ pub struct LabeledArg {
 
 impl From<Node<CallExpressionKw>> for Expr {
     fn from(call_expression: Node<CallExpressionKw>) -> Self {
-        Expr::CallExpressionKw(Box::new(call_expression))
+        Expr::CallExpressionKw(BoxNode::new(call_expression))
     }
 }
 
@@ -2840,6 +3017,15 @@ impl Node<VariableDeclaration> {
         if declaration_source_range.contains(pos) {
             let old_name = self.declaration.id.name.clone();
             self.declaration.id.name = new_name.to_string();
+            // An `fn name() {}` declaration also stores its name on the function expression
+            // (see the parser's `declaration`). Keep it in sync so the declaration doesn't
+            // look like it still binds the old name.
+            if let Expr::FunctionExpression(func) = &mut self.declaration.init
+                && let Some(fn_name) = &mut func.name
+                && fn_name.name == old_name
+            {
+                fn_name.name = new_name.to_string();
+            }
             return Some(old_name);
         }
 
@@ -2886,10 +3072,9 @@ impl VariableDeclaration {
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        // Skip the init for the variable with the new name since it is the one we are renaming.
-        if self.declaration.id.name != new_name {
-            self.declaration.init.rename_identifiers(old_name, new_name, excluded);
-        }
+        // This is also called on the declaration being renamed itself; its init must be walked
+        // too so that a renamed function's recursive calls are updated.
+        self.declaration.init.rename_identifiers(old_name, new_name, excluded);
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -3262,7 +3447,7 @@ impl From<&BoxNode<TagDeclarator>> for KclValue {
 
 impl From<&Node<TagDeclarator>> for KclValue {
     fn from(tag: &Node<TagDeclarator>) -> Self {
-        KclValue::TagDeclarator(Box::new(tag.clone()))
+        KclValue::TagDeclarator(BoxNode::new(tag.clone()))
     }
 }
 
@@ -3357,7 +3542,7 @@ impl PipeSubstitution {
 
 impl From<Node<PipeSubstitution>> for Expr {
     fn from(pipe_substitution: Node<PipeSubstitution>) -> Self {
-        Expr::PipeSubstitution(Box::new(pipe_substitution))
+        Expr::PipeSubstitution(BoxNode::new(pipe_substitution))
     }
 }
 
@@ -3376,7 +3561,7 @@ pub struct ArrayExpression {
 
 impl From<Node<ArrayExpression>> for Expr {
     fn from(array_expression: Node<ArrayExpression>) -> Self {
-        Expr::ArrayExpression(Box::new(array_expression))
+        Expr::ArrayExpression(BoxNode::new(array_expression))
     }
 }
 
@@ -3436,7 +3621,7 @@ pub struct ArrayRangeExpression {
 
 impl From<Node<ArrayRangeExpression>> for Expr {
     fn from(array_expression: Node<ArrayRangeExpression>) -> Self {
-        Expr::ArrayRangeExpression(Box::new(array_expression))
+        Expr::ArrayRangeExpression(BoxNode::new(array_expression))
     }
 }
 
@@ -3869,7 +4054,7 @@ pub struct PipeExpression {
 
 impl From<Node<PipeExpression>> for Expr {
     fn from(pipe_expression: Node<PipeExpression>) -> Self {
-        Expr::PipeExpression(Box::new(pipe_expression))
+        Expr::PipeExpression(BoxNode::new(pipe_expression))
     }
 }
 
@@ -4338,11 +4523,15 @@ impl FunctionExpression {
     /// Rename all identifiers that have the old name to the new given name (e.g. in nested function bodies).
     /// Parameter names are excluded for the whole body; local variable names are excluded only for
     /// references that appear after their declaration (so use-before-local-declaration is still renamed).
+    /// The function's own name is also excluded: inside the body it refers to this function
+    /// (recursion), not to an outer binding being renamed.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
         let param_names: Vec<&str> = self.params.iter().map(|p| p.identifier.name.as_str()).collect();
-        let excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
-        self.body
-            .rename_identifiers_order_aware(old_name, new_name, &excluded_for_body);
+        let mut excluded_for_body: Vec<&str> = excluded.iter().copied().chain(param_names.iter().copied()).collect();
+        if self.name.as_ref().is_some_and(|name| name.name == old_name) {
+            excluded_for_body.push(old_name);
+        }
+        self.body.rename_identifiers(old_name, new_name, &excluded_for_body);
     }
 
     pub fn signature(&self) -> String {
@@ -4373,8 +4562,8 @@ impl FunctionExpression {
     }
 
     #[cfg(test)]
-    pub fn dummy() -> Box<Node<Self>> {
-        Box::new(Node::new(
+    pub fn dummy() -> BoxNode<Self> {
+        BoxNode::new(Node::new(
             FunctionExpression {
                 name: None,
                 params: Vec::new(),
@@ -5219,7 +5408,7 @@ startSketchOn(XY)
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
@@ -5247,13 +5436,54 @@ startSketchOn(XY)"#;
         let meta_settings = result.unwrap();
 
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
-        assert_eq!(meta_settings.kcl_version, "2.0");
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V2);
 
         let formatted = new_program.recast_top(&Default::default(), 0);
 
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_rejects_unsupported_kcl_version() {
+        let program = crate::parsing::top_level_parse(
+            r#"@settings(kclVersion = 99.123)
+
+startSketchOn(XY)"#,
+        )
+        .unwrap();
+
+        let err = program.meta_settings().unwrap_err();
+
+        assert!(err.get_message().contains("Unrecognized version 99.123"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_accepts_preview_kcl_version_string() {
+        let program =
+            crate::parsing::top_level_parse(r#"@settings(kclVersion = "3.0-preview", defaultLengthUnit = mm)"#)
+                .unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+
+        assert_eq!(meta_settings.kcl_version, crate::KclVersion::V3Preview);
+        assert_eq!(meta_settings.default_length_units, UnitLength::Millimeters);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_change_kcl_version_writes_preview_as_string() {
+        let program = crate::parsing::top_level_parse("startSketchOn(XY)").unwrap();
+
+        let new_program = program.change_kcl_version(Some("3.0-preview".to_owned())).unwrap();
+
+        assert_eq!(
+            new_program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = "3.0-preview")
 
 startSketchOn(XY)
 "#
@@ -5495,6 +5725,272 @@ fn demo(a) {
     }
 
     #[test]
+    fn test_rename_top_level_skips_sketch_block_binding_with_same_name() {
+        // The sketch block declares its own `line1`, so renaming the top-level `line1` must not
+        // touch references to the block-local binding.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("width", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+width = 99
+result = width
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_stops_after_shadowing_in_sketch_block() {
+        let code = r#"foo = 1
+
+s = sketch(on = XY) {
+  before = foo
+  foo = line(start = [var 0, var 0], end = [var 10, var 0])
+  after = foo
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("foo_initial", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"foo_initial = 1
+
+s = sketch(on = XY) {
+  before = foo_initial
+  foo = line(start = [var 0, var 0], end = [var 10, var 0])
+  after = foo
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_sketch_block_is_a_no_op() {
+        // Renaming a variable declared inside a sketch block is intentionally not supported;
+        // the rename must be a no-op. Supporting it would mean also updating references to
+        // tags, both of the sketch itself and of its regions.
+        //
+        // The same-named top-level `line1` pins that the attempt doesn't rename the outer
+        // binding instead.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_reference_inside_sketch_block_is_a_no_op() {
+        // Like test_rename_of_declaration_inside_sketch_block_is_a_no_op, but with the cursor
+        // on a reference to the block-local variable instead of its declaration.
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1.end").unwrap() + 1;
+
+        program.rename_symbol("renamed", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_fn_declaration_keeps_expression_name_in_sync() {
+        // An `fn name() {}` declaration stores the name on both the declarator and the function
+        // expression (see the parser's `declaration`). Renaming the declaration must update both;
+        // otherwise the declaration looks like it still binds the old name, which would stop the
+        // rename before reaching later call sites.
+        let code = r#"fn helper() {
+  return 1
+}
+a = helper()
+b = helper()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("helper").unwrap() + 1;
+
+        program.rename_symbol("assist", pos);
+
+        let BodyItem::VariableDeclaration(decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected function expression")
+        };
+        assert_eq!(func.name.as_ref().unwrap().name, "assist");
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn assist() {
+  return 1
+}
+a = assist()
+b = assist()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_declaration_keeps_differing_fn_expression_name() {
+        // In `myFunc = fn recursiveName() {}` the declarator and the function expression's name
+        // are separate bindings. Renaming the declaration must not touch the function
+        // expression's name.
+        let code = r#"myFunc = fn recursiveName() {
+  return 1
+}
+result = myFunc()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("myFunc").unwrap() + 1;
+
+        program.rename_symbol("yourFunc", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"yourFunc = fn recursiveName() {
+  return 1
+}
+result = yourFunc()
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_fn_renames_recursive_calls() {
+        let code = r#"fn accum(n) {
+  return accum(n)
+}
+total = accum(3)
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("addUp", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"fn addUp(n) {
+  return addUp(n)
+}
+total = addUp(3)
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn() {
+        let code = r#"foo = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  fn foo() {
+    return foo()
+  }
+  return foo()
+}
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_does_not_touch_shadowing_nested_fn_but_updates_uses() {
+        let code = r#"foo = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return foo + myFunc()
+  }
+  return foo()
+}
+"#;
+        let mut program = parse(code);
+        let BodyItem::VariableDeclaration(first_decl) = program.body.first().unwrap() else {
+            panic!("expected variable declaration")
+        };
+        let pos = first_decl.declaration.id.start + 1;
+
+        program.rename_symbol("bar", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"bar = 1
+
+fn helper() {
+  foo = fn myFunc() {
+    return bar + myFunc()
+  }
+  return foo()
+}
+"#
+        );
+    }
+
+    #[test]
     fn test_rename_inside_if_then_branch() {
         let code = r#"param1 = 1
 if true {
@@ -5631,5 +6127,35 @@ if true {
         assert!(meta.start_nodes.is_empty());
         assert_eq!(meta.non_code_nodes.len(), 1);
         assert_eq!(meta.non_code_nodes[&0][0].value(), "after 1");
+    }
+    #[test]
+    // The counter only exists with debug assertions; release test builds
+    // must still compile.
+    #[cfg(debug_assertions)]
+    fn box_node_cow_clones_zero_for_parse_digest_node_paths() {
+        // compute_digest and fill_node_paths mutate the AST in place through
+        // BoxNode's copy-on-write DerefMut. On an exclusively owned tree
+        // (fresh from the parser), make_mut must never deep-clone; a nonzero
+        // delta here means some pass left an Arc shared before mutating.
+        let code = r#"fn cube(@side, center) {
+  x = if side > 1 { side * 2 } else { side + 1 }
+  return startSketchOn(XY)
+    |> startProfile(at = [center[0] - side, center[1] - side])
+    |> line(end = [side * 2, 0], tag = $edge1)
+    |> line(end = [0, x])
+    |> close()
+    |> extrude(length = side)
+}
+part = cube(10, [0, 0])
+"#;
+        let before = BOX_NODE_COW_CLONES.load(std::sync::atomic::Ordering::Relaxed);
+        let (program, issues) = crate::Program::parse(code).unwrap();
+        assert!(issues.is_empty(), "{issues:?}");
+        let mut program = program.unwrap();
+        program.compute_digest();
+        let program = program.fill_node_paths();
+        drop(program);
+        let after = BOX_NODE_COW_CLONES.load(std::sync::atomic::Ordering::Relaxed);
+        assert_eq!(after, before, "BoxNode COW deep-cloned on an exclusively owned AST");
     }
 }

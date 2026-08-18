@@ -1880,7 +1880,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. On KCL 3.0 and later, the default is 2.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -9162,6 +9162,59 @@ export default {
         "name": "projection",
         "ty": "Projection",
         "docs": "The camera projection. When omitted, the view is orthographic, so the same file renders identically in every consumer.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "view::named": {
+    "name": "named",
+    "preferredName": "view::named",
+    "qualName": "std::view::named",
+    "moduleName": "view",
+    "returnType": "NamedView",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "The name of the view, as a reader should see it. Required, unique within the file, and compared exactly.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "camera",
+        "ty": "CameraView",
+        "docs": "The camera the view activates. Call `view::oriented()` or `view::directed()` to build one.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "baseline",
+        "ty": "Visibility",
+        "docs": "The default visibility of every object the program creates: visible under `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to override that default for individual objects.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "except",
+        "ty": "[Solid | Sketch | GdtAnnotation; 1+]",
+        "docs": "The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`.",
         "required": false,
         "special": false,
         "experimental": false,
