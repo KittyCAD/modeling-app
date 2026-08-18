@@ -57,7 +57,7 @@ jobs:
             --bench digest_benchmark \
             --bench memory_benchmark_criterion
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v5.0.1
+        uses: CodSpeedHQ/action@v5.0.3
         with:
           mode: simulation
           working-directory: rust

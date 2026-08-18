@@ -2,7 +2,7 @@
 // Simplified M4 countersunk screw with a conical flush-mount head and internal hex socket drive for fast layout and fit checks.
 // Categories: Fasteners
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 boltShankLength = 20
 boltShankDiameter = 3.87
@@ -107,9 +107,12 @@ hexSocketSketch = sketch(on = XZ) {
   ])
 }
 
-boltProfileRegion = region(point = [-0.9675mm, -19.9975mm], sketch = boltProfileSketch)
+boltProfileRegion = region(segments = [
+  boltProfileSketch.shankTopEdge,
+  boltProfileSketch.shankSideWall
+])
 boltBlank = revolve(boltProfileRegion, angle = 360deg, axis = Y)
-hexSocketRegion = region(point = [1.0853349mm, 0.6266184mm], sketch = hexSocketSketch)
+hexSocketRegion = region(segments = [hexSocketSketch.upperRightFacet])
 hexSocketCut = extrude(hexSocketRegion, length = socketDepth)
 bolt = subtract([boltBlank], tools = [hexSocketCut])
   |> appearance(color = "#acb1b9", metalness = 100, roughness = 50)

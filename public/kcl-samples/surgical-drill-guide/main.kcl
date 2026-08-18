@@ -3,7 +3,7 @@
 // Categories: Medical
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 handleLength = 150
@@ -65,7 +65,10 @@ handleProfile = sketch(on = YZ) {
   horizontalDistance([returnEdge.start, returnEdge.end]) == handleLength / 6
   verticalDistance([returnEdge.start, returnEdge.end]) == -handleLength * sqrt(3) / 6
 }
-handleProfileRegion = region(point = [10mm, 3mm], sketch = handleProfile)
+handleProfileRegion = region(segments = [
+  handleProfile.base,
+  handleProfile.frontFace
+])
 hide(handleProfile)
 
 bracket = extrude(
@@ -211,13 +214,7 @@ grip01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset + 16)) {
   innerRadiusGuide.end
 ]) == bitSize01
 }
-grip01Region = region(
-  point = [
-    (gripOuterRadius + bitSize01) / 2,
-    firstBitAxisY
-  ],
-  sketch = grip01Sketch,
-)
+grip01Region = region(segments = [grip01Sketch.outerCircle])
 hide(grip01Sketch)
 
 grip01 = extrude(
@@ -339,13 +336,7 @@ grip02Sketch = sketch(on = offsetPlane(XY, offset = -3)) {
   innerRadiusGuide.end
 ]) == bitSize02
 }
-grip02Region = region(
-  point = [
-    (gripOuterRadius + bitSize02) / 2,
-    handleLength
-  ],
-  sketch = grip02Sketch,
-)
+grip02Region = region(segments = [grip02Sketch.outerCircle])
 hide(grip02Sketch)
 
 grip02 = extrude(

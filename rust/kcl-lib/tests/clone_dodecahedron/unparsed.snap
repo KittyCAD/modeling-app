@@ -1,0 +1,133 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing clone_dodecahedron.kcl
+---
+// Regression test for https://github.com/KittyCAD/modeling-app/issues/9922
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0, experimentalFeatures = allow)
+
+// ------------------------------
+// Small dodecahedron (seed part)
+// ------------------------------
+// Define the dihedral angle for a regular dodecahedron
+// Built as intersection of 12 oriented slabs
+dihedral = 116.565
+// Create a face template function that makes a large thin cube
+fn createFaceTemplate(@dither) {
+  baseSketch = startSketchOn(XY)
+    |> startProfile(at = [-1000 - dither, -1000 - dither])
+    |> line(endAbsolute = [1000 + dither, -1000 - dither])
+    |> line(endAbsolute = [1000 + dither, 1000 + dither])
+    |> line(endAbsolute = [-1000 - dither, 1000 + dither])
+    |> close()
+  extruded = extrude(baseSketch, length = 1000 + dither + 1000)
+  return extruded
+    |> translate(x = 0, y = 0, z = -260 - dither)
+}
+// Define the rotations array with [pitch, roll, yaw, dither] for each face
+faceRotations = [
+  [0, 0, 0, 0],
+  [dihedral, 0, 0, 0.1],
+  [dihedral, 0, 72, 0.2],
+  [dihedral, 0, 144, 0.3],
+  [dihedral, 0, 216, 0.4],
+  [dihedral, 0, 288, 0.5],
+  [180, 0, 0, 0.6],
+  [180 - dihedral, 0, 36, 0.7],
+  [180 - dihedral, 0, 108, 0.8],
+  [180 - dihedral, 0, 180, 0.9],
+  [180 - dihedral, 0, 252, 0.11],
+  [180 - dihedral, 0, 324, 0.12]
+]
+// Create faces by mapping over the rotations array
+dodecFaces = map(
+  faceRotations,
+  f = fn(@rotation) {
+    return createFaceTemplate(rotation[3])
+      |> rotate(
+           pitch = rotation[0],
+           roll = rotation[1],
+           yaw = rotation[2],
+           global = true,
+         )
+  },
+)
+fn calculateArrayLength(@arr) {
+  return reduce(
+    arr,
+    initial = 0,
+    f = fn(@item, accum) {
+      return accum + 1
+    },
+  )
+}
+fn createIntersection(@solids) {
+  fn reduceIntersect(@previous, accum) {
+    return intersect([previous, accum])
+  }
+  lastIndex = calculateArrayLength(solids) - 1
+  lastSolid = solids[lastIndex]
+  remainingSolids = pop(solids)
+  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
+}
+seed = createIntersection(dodecFaces)
+// Optionally shrink the seed so clones don't overlap
+seedScale = 0.25
+seedSmall = scale(seed, factor = seedScale)
+// ----------------------------------------------
+// Pattern: place the seed at the 20 vertices of a
+// larger, virtual dodecahedron centered at origin
+// ----------------------------------------------
+// User-facing parameter: radius from origin to each vertex
+outerRadius = 800 // in
+phi = (1 + sqrt(5)) / 2
+invPhi = 1 / phi
+// All vertices of a regular dodecahedron with circumscribed radius sqrt(3)
+vertsUnit = [
+  // (±1, ±1, ±1) — 8 vertices
+  [1, 1, 1],
+  [1, 1, -1],
+  [1, -1, 1],
+  [1, -1, -1],
+  [-1, 1, 1],
+  [-1, 1, -1],
+  [-1, -1, 1],
+  [-1, -1, -1],
+  // (0, ±1/φ, ±φ)
+  [0, invPhi, phi],
+  [0, invPhi, -phi],
+  [0, -invPhi, phi],
+  [0, -invPhi, -phi],
+  // (±1/φ, ±φ, 0)
+  [invPhi, phi, 0],
+  [invPhi, -phi, 0],
+  [-invPhi, phi, 0],
+  [-invPhi, -phi, 0],
+  // (±φ, 0, ±1/φ)
+  [phi, 0, invPhi],
+  [phi, 0, -invPhi],
+  [-phi, 0, invPhi],
+  [-phi, 0, -invPhi]
+]
+// Scale to the requested radius (these unit coords lie on a sphere of radius sqrt(3))
+baseR = sqrt(3)
+scaleToR = outerRadius / baseR
+verts = map(
+  vertsUnit,
+  f = fn(@v) {
+    return [
+      v[0] * scaleToR,
+      v[1] * scaleToR,
+      v[2] * scaleToR
+    ]
+  },
+)
+// Place a clone of the (possibly scaled) seed at each vertex
+pattern = map(
+  verts,
+  f = fn(@p) {
+    return clone(seedSmall)
+      |> translate(x = p[0], y = p[1], z = p[2])
+  },
+)
+pattern

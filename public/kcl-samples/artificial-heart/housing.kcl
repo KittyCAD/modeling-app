@@ -1,7 +1,7 @@
 // Housing
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Sketch the primary housing for the pump, to be revolved
 sketch001 = sketch(on = XY) {
@@ -72,7 +72,7 @@ sketch001 = sketch(on = XY) {
   verticalDistance([line12.end, ORIGIN]) == 0.19
   distance([line1.start, line1.end]) == 0.04
 }
-region001 = region(point = [0.4700984in, -0.21in], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 hide(sketch001)
 revolve001 = revolve(region001, angle = 360deg, axis = Y)
   |> appearance(color = "#ededed", opacity = 30)
@@ -84,7 +84,7 @@ sketch002 = sketch(on = XZ) {
   radius(circle1) == 3 / 2
 }
 hide(sketch002)
-region002 = region(point = [0in, 0in], sketch = sketch002)
+region002 = region(segments = [sketch002.circle1])
 
 extrude002 = extrude(region002, length = 2, symmetric = true)
 
@@ -113,8 +113,8 @@ sketch003 = sketch(on = -YZ) {
 }
 hide(sketch003)
 
-region003 = region(point = [-0.5707679in, -0.0595579in], sketch = sketch003)
-region004 = region(point = [0.2134512in, 0.2177397in], sketch = sketch003)
+region003 = region(segments = [sketch003.circle2])
+region004 = region(segments = [sketch003.circle1])
 
 extrude001 = extrude([region003, region004], length = 1.8)
   |> appearance(color = "#ededed", opacity = 30)
@@ -161,7 +161,7 @@ sketch004 = sketch(on = offsetPlane(XZ, offset = 0.73)) {
   diameter(circle1) == 1.22in
 }
 hide(sketch004)
-region006 = region(point = [-1.007515in, 0.7893424in], sketch = sketch004)
+region006 = region(segments = [sketch004.arc1])
 
 extrude004 = extrude(region006, length = .02)
   |> appearance(color = "#ededed", opacity = 30)
@@ -191,7 +191,7 @@ sketch006 = sketch(on = offsetPlane(XZ, offset = 0.7)) {
   radius(circle2) == 0.17
 }
 hide(sketch006)
-region005 = region(point = [-0.1498938in, -0.1322592in], sketch = sketch006)
+region005 = region(segments = [sketch006.circle1])
 
 sweep001 = sweep(region005, path = sketch005)
   |> appearance(color = "#ededed", opacity = 30)
@@ -226,7 +226,7 @@ sketch008 = sketch(on = offsetPlane(XZ, offset = -0.7)) {
   radius(circle2) == 0.17
 }
 hide(sketch008)
-region008 = region(point = [-0.1498938in, -0.1322592in], sketch = sketch008)
+region008 = region(segments = [sketch008.circle1])
 
 sweep002 = sweep(region008, path = sketch007)
   |> appearance(color = "#ededed", opacity = 30)
