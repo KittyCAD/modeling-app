@@ -300,7 +300,7 @@ profile = sketch(on = YZ) {
   coincident([edge4.end, edge1.start])
 }
 
-profileRegion = region(point = [1mm, 1mm], sketch = profile)
+profileRegion = region(segments = [profile.edge1, profile.edge2])
 
 path = startSketchOn(XY)
   |> startProfile(at = [0mm, 0mm])
@@ -350,7 +350,7 @@ sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
   line2 = line(start = [var 00mm, var 0mm], end = [var 2mm, var 1mm])
 }
 
-mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+mySquare = region(segments = [sketch001.line1, sketch001.line2])
 
 // Sweep the square along the path.
 sweep(mySquare, path = sketch002.line1)
@@ -387,7 +387,7 @@ sketch001 = sketch(on = XY) {
   parallel([line3, line1])
   perpendicular([line1, line2])
 }
-mySquare = region(point = [1.9975mm, 1mm], sketch = sketch001)
+mySquare = region(segments = [sketch001.line1, sketch001.line2])
 
 // Sketch a path
 sketch002 = sketch(on = offsetPlane(YZ, offset = -2)) {
@@ -436,7 +436,7 @@ sketch001 = sketch(on = XY) {
   horizontal(line3)
 }
 
-mySquare = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+mySquare = region(segments = [sketch001.line1, sketch001.line2])
 
 sketch002 = sketch(on = XZ) {
   line1 = line(start = [var -1.17mm, var -0.79mm], end = [var -15.37mm, var -0.7mm])
@@ -482,7 +482,7 @@ sketch001 = sketch(on = XY) {
   horizontal(line3)
 }
 hidden001 = hide(sketch001)
-region001 = region(point = [0mm, 2.9975mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5, tagEnd = $capFace)
 sketch002 = sketch(on = XZ) {
   line1 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 12mm])

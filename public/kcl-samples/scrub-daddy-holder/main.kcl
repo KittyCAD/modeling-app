@@ -21,7 +21,7 @@ magnetSketch = sketch(on = XY) {
   horizontalDistance([line1.start, line1.end]) == 17mm
   diameter(circle1) == magnetDiameter
 }
-magnetRegion = region(point = [18.6017mm, 2.652mm], sketch = magnetSketch)
+magnetRegion = region(segments = [magnetSketch.circle1])
 magnets = extrude(magnetRegion, length = magnetThickness)
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
