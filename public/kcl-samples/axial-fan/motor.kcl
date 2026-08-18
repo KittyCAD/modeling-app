@@ -24,11 +24,15 @@ motorBody = extrude(
 )
   |> appearance(color = "#021b55")
   |> fillet(
-       tags = [
-         getCommonEdge(faces = [region001.tags.circle1, capStart001]),
-         getCommonEdge(faces = [region001.tags.circle1, capEnd001])
-       ],
        radius = 2,
+       edges = [
+         {
+           sideFaces = [region001.tags.circle1, capStart001]
+         },
+         {
+           sideFaces = [region001.tags.circle1, capEnd001]
+         }
+       ],
      )
 sketch002 = sketch(on = offsetPlane(XY, offset = 21)) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])

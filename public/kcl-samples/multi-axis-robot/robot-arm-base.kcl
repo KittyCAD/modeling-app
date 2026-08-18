@@ -113,23 +113,31 @@ extrude003 = extrude(region003, length = 1)
   |> appearance(color = "#754110", roughness = 90, metalness = 90)
 chamfer001 = chamfer(
   sketch001,
-  tags = [
-    getCommonEdge(faces = [
-      region001.tags.line2,
-      region001.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line3,
-      region001.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line3,
-      region001.tags.line4
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line4,
-      region001.tags.line2
-    ])
-  ],
   length = 1,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.line2,
+        region001.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.line3,
+        region001.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.line3,
+        region001.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        region001.tags.line4,
+        region001.tags.line2
+      ]
+    }
+  ],
 )

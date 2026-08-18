@@ -121,15 +121,15 @@ flowchart LR
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path116 [Path]
-    116["Path Region<br>[4415, 4468, 0]<br>Consumed: true"]
+    116["Path Region<br>[4415, 4462, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    117["Segment<br>[4415, 4468, 0]"]
+    117["Segment<br>[4415, 4462, 0]"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    118["Segment<br>[4415, 4468, 0]"]
+    118["Segment<br>[4415, 4462, 0]"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    119["Segment<br>[4415, 4468, 0]"]
+    119["Segment<br>[4415, 4462, 0]"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    120["Segment<br>[4415, 4468, 0]"]
+    120["Segment<br>[4415, 4462, 0]"]
       %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[240, 2352, 0]"]
@@ -231,7 +231,7 @@ flowchart LR
   109["SweepEdge Adjacent"]
   110["Plane<br>[3309, 4402, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  121["Sweep Extrusion<br>[4482, 4515, 0]<br>Consumed: false"]
+  121["Sweep Extrusion<br>[4476, 4509, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   122[Wall]
     %% face_code_ref=Missing NodePath
@@ -253,7 +253,7 @@ flowchart LR
   133["SweepEdge Adjacent"]
   134["SweepEdge Opposite"]
   135["SweepEdge Adjacent"]
-  136["EdgeCut Fillet<br>[4563, 4981, 0]"]
+  136["EdgeCut Fillet<br>[4557, 5012, 0]"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   137["SketchBlock<br>[240, 2352, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -661,22 +661,22 @@ flowchart LR
   116 --- 119
   116 --- 120
   116 ---- 121
-  117 --- 125
+  117 --- 122
   117 x--> 127
-  117 --- 134
-  117 --- 135
-  118 --- 122
+  117 --- 128
+  117 --- 129
+  118 --- 123
   118 x--> 127
-  118 --- 128
-  118 --- 129
-  119 --- 123
+  118 --- 130
+  118 --- 131
+  119 --- 124
   119 x--> 127
-  119 --- 130
-  119 --- 131
-  120 --- 124
+  119 --- 132
+  119 --- 133
+  120 --- 125
   120 x--> 127
-  120 --- 132
-  120 --- 133
+  120 --- 134
+  120 --- 135
   121 --- 122
   121 --- 123
   121 --- 124
@@ -707,5 +707,4 @@ flowchart LR
   130 <--x 126
   132 <--x 126
   134 <--x 126
-  135 <--x 136
 ```

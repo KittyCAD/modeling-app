@@ -31,20 +31,20 @@ profile001 = startProfile(bracketSketch, at = [0, 0])
 
 // Extrude the bracket sketch to make the body. Add fillets to all corners.
 bracketExtrude = extrude(
-       profile001,
-       length = bracketLength,
-       tagStart = $capStart001,
-       tagEnd = $capEnd001,
-     )
-  |> fillet(radius = .125, tags = [getCommonEdge(faces = [seg01, seg02])])
-  |> fillet(radius = .25, tags = [getCommonEdge(faces = [seg03, seg04])])
+  profile001,
+  length = bracketLength,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+  |> fillet(radius = .125, edges = [{ sideFaces = [seg01, seg02] }])
+  |> fillet(radius = .25, edges = [{ sideFaces = [seg03, seg04] }])
   |> fillet(
        radius = .125,
-       tags = [
-         getCommonEdge(faces = [seg06, capEnd001]),
-         getCommonEdge(faces = [seg06, capStart001]),
-         getCommonEdge(faces = [seg05, capStart001]),
-         getCommonEdge(faces = [seg05, capEnd001])
+       edges = [
+         { sideFaces = [seg06, capEnd001] },
+         { sideFaces = [seg06, capStart001] },
+         { sideFaces = [seg05, capStart001] },
+         { sideFaces = [seg05, capEnd001] }
        ],
      )
 
@@ -90,18 +90,18 @@ profile007 = startProfile(pClampSketch, at = [0, 0])
   |> close()
 
 pClampBody = extrude(
-       profile007,
-       length = width,
-       tagEnd = $capEnd002,
-       tagStart = $capStart002,
-     )
+  profile007,
+  length = width,
+  tagEnd = $capEnd002,
+  tagStart = $capStart002,
+)
   |> chamfer(
        length = .125,
-       tags = [
-         getCommonEdge(faces = [seg005, capEnd002]),
-         getCommonEdge(faces = [seg005, capStart002]),
-         getCommonEdge(faces = [seg006, capStart002]),
-         getCommonEdge(faces = [seg006, capEnd002])
+       edges = [
+         { sideFaces = [seg005, capEnd002] },
+         { sideFaces = [seg005, capStart002] },
+         { sideFaces = [seg006, capStart002] },
+         { sideFaces = [seg006, capEnd002] }
        ],
      )
 

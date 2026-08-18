@@ -5862,7 +5862,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "segments",
+                  "name": "point",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -5870,49 +5870,35 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
+                      "abs_path": false,
                       "commentStart": 0,
-                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sectionSketch001",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
+                        "name": "tubeWallMidRadius",
                         "start": 0,
-                        "type": "Name",
-                        "type": "Name"
+                        "type": "Identifier"
                       },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
+                      "path": [],
                       "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0in",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "Inch"
+                      }
                     }
                   ],
                   "end": 0,
@@ -5920,6 +5906,35 @@ description: Result of parsing exhaust-manifold.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "sketch",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "sectionSketch001",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -11932,7 +11947,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "segments",
+                  "name": "point",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -11940,49 +11955,35 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
+                      "abs_path": false,
                       "commentStart": 0,
-                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sectionSketch003",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
+                        "name": "tubeWallMidRadius",
                         "start": 0,
-                        "type": "Name",
-                        "type": "Name"
+                        "type": "Identifier"
                       },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
+                      "path": [],
                       "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0in",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "Inch"
+                      }
                     }
                   ],
                   "end": 0,
@@ -11990,6 +11991,35 @@ description: Result of parsing exhaust-manifold.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "sketch",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "sectionSketch003",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -30227,7 +30257,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "segments",
+                  "name": "point",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30235,94 +30265,39 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
+                      "argument": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "raw": "0.9in",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.9,
+                          "suffix": "Inch"
+                        }
+                      },
                       "commentStart": 0,
-                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "flangeSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
+                      "operator": "-",
                       "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
                     },
                     {
                       "commentStart": 0,
-                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "flangeSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "arc2",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
+                      "raw": "0in",
                       "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "Inch"
+                      }
                     }
                   ],
                   "end": 0,
@@ -30338,7 +30313,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "direction",
+                  "name": "sketch",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30351,7 +30326,7 @@ description: Result of parsing exhaust-manifold.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "CW",
+                    "name": "flangeSketch",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -30593,7 +30568,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30601,18 +30576,25 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -30674,7 +30656,7 @@ description: Result of parsing exhaust-manifold.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line6",
+                                    "name": "arc8",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -30768,30 +30750,9 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -30900,7 +30861,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30908,18 +30869,25 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -30981,7 +30949,7 @@ description: Result of parsing exhaust-manifold.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line11",
+                                    "name": "line13",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -31075,30 +31043,9 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -31207,7 +31154,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -31215,18 +31162,25 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -31288,7 +31242,7 @@ description: Result of parsing exhaust-manifold.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line5",
+                                    "name": "line7",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -31382,30 +31336,9 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -31514,7 +31447,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -31522,18 +31455,25 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -31595,7 +31535,7 @@ description: Result of parsing exhaust-manifold.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line12",
+                                    "name": "arc14",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -31689,30 +31629,9 @@ description: Result of parsing exhaust-manifold.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -31832,34 +31751,6 @@ description: Result of parsing exhaust-manifold.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
-            }
-          },
-          {
-            "commentStart": 0,
-            "end": 0,
-            "key": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "kclVersion",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "moduleId": 0,
-            "start": 0,
-            "type": "ObjectProperty",
-            "value": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "2.0",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 2.0,
-                "suffix": "None"
-              }
             }
           }
         ],

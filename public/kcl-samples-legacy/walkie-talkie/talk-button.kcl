@@ -21,11 +21,11 @@ talkButtonSketch = startSketchOn(YZ)
 extrude(talkButtonSketch, length = talkButtonHeight)
   |> fillet(
        radius = 0.050,
-       tags = [
-         getNextAdjacentEdge(tag1),
-         getNextAdjacentEdge(tag2),
-         getNextAdjacentEdge(tag3),
-         getNextAdjacentEdge(tag4)
+       edges = [
+         { sideFaces = [tag2, tag1] },
+         { sideFaces = [tag3, tag2] },
+         { sideFaces = [tag4, tag3] },
+         { sideFaces = [tag4, tag1] }
        ],
      )
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)

@@ -68,7 +68,7 @@ blockSketch = sketch(on = XY) {
   vertical(edge4)
 }
 
-blockRegion = region(segments = [blockSketch.edge1, blockSketch.edge2])
+blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
 hide(blockSketch)
 block = extrude(blockRegion, length = 10mm)
 gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
@@ -96,7 +96,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
 gdt::straightness(
   faces = [top],
   tolerance = 0.02mm,
@@ -127,8 +127,10 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+sideEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::straightness(
   edges = [sideEdge],
   tolerance = 0.05mm,

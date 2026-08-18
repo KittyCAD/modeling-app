@@ -21,8 +21,15 @@ extrude011 = extrude(sketch011, length = -axisJ2ArmThickness)
 sketch012 = startSketchOn(extrude011, face = START)
   |> circle(center = [-1.75, 8], radius = 1.9, tag = $referenceEdge4)
 
-extrude012 = extrude(sketch012, length = 0.15)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge4)])
+extrude012 = extrude(sketch012, length = 0.15, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 0.1,
+       edges = [
+         {
+           sideFaces = [referenceEdge4, capEnd001]
+         }
+       ],
+     )
 sketch013 = startSketchOn(extrude011, face = START)
   |> circle(
        center = [
@@ -33,8 +40,15 @@ sketch013 = startSketchOn(extrude011, face = START)
        tag = $referenceEdge5,
      )
 
-extrude013 = extrude(sketch013, length = 1)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge5)])
+extrude013 = extrude(sketch013, length = 1, tagEnd = $capEnd002)
+  |> fillet(
+       radius = 0.1,
+       edges = [
+         {
+           sideFaces = [referenceEdge5, capEnd002]
+         }
+       ],
+     )
 
 // Draw Bolt Patterns on J2 Robot Arm
 sketch014 = startSketchOn(extrude012, face = END)

@@ -89,10 +89,7 @@ latchProfile = sketch(on = XZ) {
   vertical(leftSide)
 }
 
-latchBlockRegion = region(segments = [
-  latchProfile.bottom,
-  latchProfile.datumWidthFace
-])
+latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 latchBlock = extrude(latchBlockRegion, length = 12mm)
 
 gdt::datum(
@@ -144,15 +141,14 @@ latchProfile = sketch(on = XZ) {
   vertical(leftSide)
 }
 
-latchBlockRegion = region(segments = [
-  latchProfile.bottom,
-  latchProfile.datumWidthFace
-])
+latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-grooveFloorFrontEdge = getCommonEdge(faces = [
-  latchBlock.sketch.tags.grooveFloor,
-  frontFace
-])
+grooveFloorFrontEdge = {
+  sideFaces = [
+    latchBlock.sketch.tags.grooveFloor,
+    frontFace
+  ]
+}
 
 gdt::datum(
   face = latchBlock.sketch.tags.bottom,

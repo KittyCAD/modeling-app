@@ -26,19 +26,19 @@ angled_bracket_sketch = startSketchOn(XY)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg03)
   |> close()
 angled_bracket = extrude(
-       angled_bracket_sketch,
-       length = length_1,
-       tagStart = $capStart001,
-       tagEnd = $capEnd001,
-     )
+  angled_bracket_sketch,
+  length = length_1,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
   |> fillet(
        radius = radius001,
-       tags = [
-         getCommonEdge(faces = [seg03, capStart001]),
-         getCommonEdge(faces = [seg03, capEnd001]),
-         getCommonEdge(faces = [seg01, capStart001]),
-         getCommonEdge(faces = [seg01, capEnd001]),
-         getCommonEdge(faces = [seg03, seg01])
+       edges = [
+         { sideFaces = [seg03, capStart001] },
+         { sideFaces = [seg03, capEnd001] },
+         { sideFaces = [seg01, capStart001] },
+         { sideFaces = [seg01, capEnd001] },
+         { sideFaces = [seg03, seg01] }
        ],
      )
 
@@ -112,20 +112,15 @@ plate_thickness = 0.25
 screw_champfer = (0.86 - 0.45) / 2
 
 extrude001 = extrude(
-       plate,
-       length = plate_thickness,
-       tagStart = $capStart002,
-       tagEnd = $capEnd002,
-     )
-  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg04, seg05])])
-  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg06, seg04])])
-  |> fillet(radius = outerEdge, tags = [getCommonEdge(faces = [seg07, seg06])])
-  |> fillet(
-       radius = outerEdge,
-       tags = [
-         getCommonEdge(faces = [p_seg03, seg07])
-       ],
-     )
+  plate,
+  length = plate_thickness,
+  tagStart = $capStart002,
+  tagEnd = $capEnd002,
+)
+  |> fillet(radius = outerEdge, edges = [{ sideFaces = [seg04, seg05] }])
+  |> fillet(radius = outerEdge, edges = [{ sideFaces = [seg06, seg04] }])
+  |> fillet(radius = outerEdge, edges = [{ sideFaces = [seg07, seg06] }])
+  |> fillet(radius = outerEdge, edges = [{ sideFaces = [p_seg03, seg07] }])
 hole_1 = startSketchOn(extrude001, face = START)
   |> circle(
        center = [
@@ -184,33 +179,13 @@ hole_4 = startSketchOn(extrude001, face = START)
        ],
      ) */
 mounting_hole1 = extrude(hole_1, length = -plate_thickness)
-  |> chamfer(
-       length = screw_champfer,
-       tags = [
-         getCommonEdge(faces = [capStart002, seg12])
-       ],
-     )
+  |> chamfer(length = screw_champfer, edges = [{ sideFaces = [capStart002, seg12] }])
 
 mounting_hole2 = extrude(hole_2, length = -plate_thickness)
-  |> chamfer(
-       length = screw_champfer,
-       tags = [
-         getCommonEdge(faces = [capStart002, seg11])
-       ],
-     )
+  |> chamfer(length = screw_champfer, edges = [{ sideFaces = [capStart002, seg11] }])
 
 mounting_hole3 = extrude(hole_3, length = -plate_thickness)
-  |> chamfer(
-       length = screw_champfer,
-       tags = [
-         getCommonEdge(faces = [capStart002, seg10])
-       ],
-     )
+  |> chamfer(length = screw_champfer, edges = [{ sideFaces = [capStart002, seg10] }])
 
 mounting_hole4 = extrude(hole_4, length = -plate_thickness)
-  |> chamfer(
-       length = screw_champfer,
-       tags = [
-         getCommonEdge(faces = [capStart002, seg08])
-       ],
-     )
+  |> chamfer(length = screw_champfer, edges = [{ sideFaces = [capStart002, seg08] }])

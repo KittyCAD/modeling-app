@@ -113,37 +113,37 @@ export fn mirror2d(
 /// ```
 /// // Simple mirror3d example, showing mirroring across named axes.
 /// @settings(kclVersion = 2.0)
-///
+/// 
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 /// }
-///
+/// 
 /// hidden001 = hide(sketch001)
-/// region001 = region(segments = [sketch001.line3, sketch001.arc1])
+/// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// mySolid = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-///
+/// 
 /// mySolid2 = mirror3d([mySolid], across = YZ)
 /// mirror3d([mySolid, mySolid2], across = XY)
 /// ```
 /// ```
 /// // Similar mirror example, but showing mirroring across an arbitrary plane.
 /// @settings(kclVersion = 2.0)
-///
+/// 
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 /// }
-///
+/// 
 /// hidden001 = hide(sketch001)
-/// region001 = region(segments = [sketch001.line3, sketch001.arc1])
+/// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-///
-///
+/// 
+/// 
 /// customPlane = {
 ///   origin = { x = 0, y = 1, z = 0},
 ///   xAxis = { x = 1, y = 1, z = 0 },
@@ -154,25 +154,25 @@ export fn mirror2d(
 /// ```
 /// // Example of mirroring across segments.
 /// @settings(kclVersion = 2.0)
-///
+/// 
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 ///   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
 /// }
-///
+/// 
 /// hidden001 = hide(sketch001)
-/// region001 = region(segments = [sketch001.line3, sketch001.arc1])
+/// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-///
+/// 
 /// shape2 = mirror3d([shape1], across = sketch001.axisLine)
 /// ```
 /// ```
 /// // Mirror geometry across the edge of some other geometry.
 /// @settings(kclVersion = 2.0)
-///
+/// 
 /// // Sketch the solid to mirror.
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -180,11 +180,11 @@ export fn mirror2d(
 ///   horizontal([arc1.end, ORIGIN])
 ///   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
 /// }
-///
-/// region001 = region(segments = [sketch001.line3, sketch001.arc1])
+/// 
+/// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-///
+/// 
 /// // Sketch the solid which will be mirrored across.
 /// sketch002 = sketch(on = XY) {
 ///   line1 = line(start = [var -1.43mm, var 1.01mm], end = [var 1.85mm, var 1.01mm])
@@ -201,11 +201,16 @@ export fn mirror2d(
 ///   horizontal(line3)
 /// }
 /// hidden002 = hide(sketch002)
-/// region002 = region(segments = [sketch002.line1, sketch002.line2])
-/// extrude001 = extrude(region002, length = 1)
-///
+/// region002 = region(point = [0.21mm, 1.0075mm], sketch = sketch002)
+/// extrude001 = extrude(region002, length = 1, tagEnd = $capEnd001)
+/// 
 /// // Do the mirroring, across an edge of some solid.
-/// shape2 = mirror3d([shape1], across = getOppositeEdge(extrude001.sketch.tags.line1))
+/// shape2 = mirror3d(
+///   [shape1],
+///   across = {
+///     sideFaces = [region002.tags.line1, capEnd001]
+///   },
+/// )
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn mirror3d(

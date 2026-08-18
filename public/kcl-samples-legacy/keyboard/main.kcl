@@ -27,15 +27,15 @@ sketch001 = startSketchOn(YZ)
   |> line(endAbsolute = [5.13, 0], tag = $seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg04)
   |> close()
-  |> extrude(length = 13.6)
+  |> extrude(length = 13.6, tagEnd = $capEnd001, tagStart = $capStart001)
   |> appearance(color = baseColor)
   |> fillet(
        radius = .6,
-       tags = [
-         getOppositeEdge(seg01),
-         getOppositeEdge(seg03),
-         seg01,
-         seg03
+       edges = [
+         { sideFaces = [seg01, capEnd001] },
+         { sideFaces = [seg03, capEnd001] },
+         { sideFaces = [seg01, capStart001] },
+         { sideFaces = [seg03, capStart001] }
        ],
      )
 

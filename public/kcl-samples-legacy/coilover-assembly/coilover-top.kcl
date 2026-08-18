@@ -17,12 +17,7 @@ pistonRodStopperProfile = circle(
 )
 
 pistonRodStopperExtrude = extrude(pistonRodStopperProfile, length = -pistonRodStopLength, tagStart = $capStart001)
-  |> chamfer(
-       length = 6,
-       tags = [
-         getCommonEdge(faces = [seg01, capStart001])
-       ],
-     )
+  |> chamfer(length = 6, edges = [{ sideFaces = [seg01, capStart001] }])
 
 // Piston Rod located below the Stopper
 pistonRodSketch = startSketchOn(pistonRodStopperExtrude, face = START)
@@ -38,12 +33,7 @@ upperMountPlateProfile = circle(
   tag = $seg02,
 )
 upperMountPlateExtrude = extrude(upperMountPlateProfile, length = upperMountPlateThickness, tagEnd = $capEnd001)
-  |> chamfer(
-       length = 19,
-       tags = [
-         getCommonEdge(faces = [seg02, capEnd001])
-       ],
-     )
+  |> chamfer(length = 19, edges = [{ sideFaces = [seg02, capEnd001] }])
 
 // Eye End for Upper Mount
 eyeEndSketch = startSketchOn(upperMountPlateExtrude, face = END)
@@ -54,22 +44,17 @@ eyeEndProfile = circle(
   tag = $seg03,
 )
 eyeEndExtrude = extrude(eyeEndProfile, length = eyeEndMountLength, tagEnd = $capEnd002)
-  |> fillet(
-       radius = eyeEndMountOuterDia / 2 - 0.01,
-       tags = [
-         getCommonEdge(faces = [seg03, capEnd002])
-       ],
-     )
+  |> fillet(radius = eyeEndMountOuterDia / 2 - 0.01, edges = [{ sideFaces = [seg03, capEnd002] }])
 
 // Eye End Outer Profile for Upper Mount
 eyeEndOuterSketch = startSketchOn(YZ)
 eyeEndOuterProfile = startProfile(
-       eyeEndOuterSketch,
-       at = [
-         eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset,
-         upperMountPlateThickness + eyeEndMountLength - 25
-       ],
-     )
+  eyeEndOuterSketch,
+  at = [
+    eyeEndMountThickness / 2 + eyeEndMountFillet + pointOffset,
+    upperMountPlateThickness + eyeEndMountLength - 25
+  ],
+)
   |> xLine(length = -pointOffset)
   |> tangentialArc(radius = eyeEndMountFillet, angle = -90)
   |> yLine(length = 22)

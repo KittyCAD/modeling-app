@@ -66,7 +66,11 @@ sketch001 = sketch(on = XZ) {
 }
 region001 = region(point = [0.4203mm, -1.2375mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line4, capEnd001]), radius = 1)
+fillet001 = fillet(
+  extrude001,
+  edges = [{ sideFaces = [region001.tags.line4, capEnd001] }],
+  radius = 1,
+)
 ```
 
 
@@ -79,8 +83,8 @@ When a function requires declaring a new tag (using the `$` syntax), the argumen
 A tag created using a tag declarator can be used by writing its name without the `$`, e.g., `myTag`.
 Where necessary to disambiguate from tag declarations, we call these tag identifiers.
 
-In the example above we use the tag identifier `capEnd001` to get the edge in common
-using `getCommonEdge(capEnd001)`.
+In the example above we use the tag identifier `capEnd001` in an edge reference object
+to select the edge shared by `region001.tags.line4` and `capEnd001`.
 
 
 Tags can identify an edge or face of a solid. Functions that take a tag identifier as an argument will use either [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) (for the edge of a solid) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace).

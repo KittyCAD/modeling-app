@@ -104,24 +104,32 @@ extrude001 = extrude(region007, length = -1in)
   |> appearance(color = "#ffffff")
 fillet001 = fillet(
   extrude001,
-  tags = [
-    getCommonEdge(faces = [
-      region007.tags.line2,
-      region007.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      region007.tags.line3,
-      region007.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      region007.tags.line3,
-      region007.tags.line4
-    ]),
-    getCommonEdge(faces = [
-      region007.tags.line4,
-      region007.tags.line2
-    ])
-  ],
   radius = 3in,
+  edges = [
+    {
+      sideFaces = [
+        region007.tags.line2,
+        region007.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        region007.tags.line3,
+        region007.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        region007.tags.line3,
+        region007.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        region007.tags.line4,
+        region007.tags.line2
+      ]
+    }
+  ],
 )
 hide(sketch002)

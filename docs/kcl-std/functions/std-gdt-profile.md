@@ -62,7 +62,7 @@ startSketchOn(XY)
   |> close()
   |> extrude(length = 5, tagEnd = $top)
 
-profileEdge = getCommonEdge(faces = [side1, top])
+profileEdge = { sideFaces = [side1, top] }
 
 gdt::profile(
   edges = [profileEdge],
@@ -82,7 +82,7 @@ cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
+cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
 gdt::profile(
   faces = [top],
   tolerance = 0.05mm,

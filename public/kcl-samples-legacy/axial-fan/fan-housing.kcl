@@ -140,14 +140,54 @@ startSketchOn(motorHousing, face = END)
   |> appearance(color = "#a55e2c")
   |> fillet(
        radius = abs(fanSize - mountingHoleSpacing) / 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001),
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentB001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB001,
+             rectangleSegmentC001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentB002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB002,
+             rectangleSegmentC002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC002,
+             rectangleSegmentD002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentD002
+           ]
+         }
        ],
      )

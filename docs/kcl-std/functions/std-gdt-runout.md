@@ -69,25 +69,24 @@ controlledSketch = sketch(on = YZ) {
 }
 
 controlledShaft = extrude(
-  region(segments = [
-    controlledSketch.upperPerimeter,
-    controlledSketch.lowerPerimeter
-  ]),
+  region(point = [0mm, 1mm], sketch = controlledSketch),
   length = -58mm,
   tagStart = $controlledShoulder,
   tagEnd = $controlledFreeEnd,
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
-  controlledShaft.sketch.tags.upperPerimeter,
-  controlledShoulder
-])
+controlledUpperShoulderEdge = {
+  sideFaces = [
+    controlledShaft.sketch.tags.upperPerimeter,
+    controlledShoulder
+  ]
+}
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-datumShaft = extrude(region(segments = [datumSketch.perimeter]), length = 36mm, tagEnd = $datumEnd)
+datumShaft = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 36mm, tagEnd = $datumEnd)
 
 gdt::datum(
   face = datumShaft.sketch.tags.perimeter,
