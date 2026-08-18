@@ -1,5 +1,7 @@
 import {
+  type CloudApiError,
   getRemoteProjectThumbnailUrl,
+  listRemoteProjects,
   normalizeRemoteProjectThumbnailUrl,
   remoteProjectThumbnailTargetPathFromUrl,
   thumbnailUrlFromRemoteProjectPayload,
@@ -85,5 +87,30 @@ describe('remote project thumbnail URLs', () => {
     expect((requestInit?.headers as Headers).get('Authorization')).toBe(
       'Bearer token-123'
     )
+  })
+
+  test('preserves retry-after delays on API failures', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async () => {
+      return new Response(JSON.stringify({ message: 'Too many requests' }), {
+        status: 429,
+        statusText: 'Too Many Requests',
+        headers: {
+          'content-type': 'application/json',
+          'retry-after': '7',
+        },
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      listRemoteProjects({
+        enabled: true,
+        baseUrl: 'https://api.dev.zoo.dev',
+      })
+    ).rejects.toMatchObject({
+      status: 429,
+      message: 'Too many requests',
+      retryAfterMs: 7000,
+    } satisfies Partial<CloudApiError>)
   })
 })

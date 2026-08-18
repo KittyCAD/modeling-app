@@ -10,6 +10,7 @@ import {
   getCloudSyncProjectSyncPreflightAction,
   getCloudSyncRemoteArchiveReconciliationAction,
   getCloudSyncRemoteIndexAction,
+  getCloudSyncRetryDelayMs,
   getCloudSyncScopePlan,
   type OutboxEntry,
   type ProjectArchiveFile,
@@ -17,6 +18,7 @@ import {
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
   shouldAutoEnrollCloudLibraryProject,
+  shouldScheduleCloudSyncPendingWork,
 } from '@src/lib/cloudSync'
 import {
   getCloudProjectLibraryMaterializationDirectoryPath,
@@ -839,5 +841,44 @@ describe('cloudSync sync helpers', () => {
         hasBaseManifest: true,
       })
     ).toBe(true)
+  })
+
+  it('backs off sync retries exponentially and respects longer retry-after delays', () => {
+    expect(getCloudSyncRetryDelayMs({ attempt: 0 })).toBe(30_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 1 })).toBe(60_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 2 })).toBe(120_000)
+    expect(getCloudSyncRetryDelayMs({ attempt: 10 })).toBe(5 * 60 * 1000)
+    expect(
+      getCloudSyncRetryDelayMs({
+        attempt: 0,
+        retryAfterMs: 45_000,
+      })
+    ).toBe(45_000)
+  })
+
+  it('does not schedule normal pending-work debounce after a retry is scheduled', () => {
+    expect(
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: 1,
+        state: 'failed',
+        failureRetryScheduled: true,
+      })
+    ).toBe(false)
+
+    expect(
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: 1,
+        state: 'idle',
+        failureRetryScheduled: false,
+      })
+    ).toBe(true)
+
+    expect(
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: 1,
+        state: 'conflict',
+        failureRetryScheduled: false,
+      })
+    ).toBe(false)
   })
 })

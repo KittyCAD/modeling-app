@@ -134,6 +134,7 @@ export function isCloudSyncConflictRevisionChangedError(error: unknown) {
 
 const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
+const SYNC_RETRY_MAX_MS = 5 * 60 * 1000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
   'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
@@ -145,6 +146,7 @@ let config: CloudSyncConfig = {
 }
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
+let syncRetryAttempt = 0
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
@@ -195,10 +197,15 @@ function projectFailureKind(error: unknown) {
 
 function projectFailureError(
   kind: ProjectSyncFailureKind,
-  message: string
-): Error & { kind: ProjectSyncFailureKind } {
-  const error = new Error(message) as Error & { kind: ProjectSyncFailureKind }
+  message: string,
+  options: { retryAfterMs?: number } = {}
+): Error & { kind: ProjectSyncFailureKind; retryAfterMs?: number } {
+  const error = new Error(message) as Error & {
+    kind: ProjectSyncFailureKind
+    retryAfterMs?: number
+  }
   error.kind = kind
+  error.retryAfterMs = options.retryAfterMs
   return error
 }
 
@@ -206,13 +213,75 @@ function remoteUploadFailureFromError(error: unknown) {
   return error instanceof CloudApiError && error.status === 403
     ? projectFailureError(
         'remote-upload-forbidden',
-        REMOTE_UPLOAD_FORBIDDEN_MESSAGE
+        REMOTE_UPLOAD_FORBIDDEN_MESSAGE,
+        { retryAfterMs: error.retryAfterMs }
       )
     : error
 }
 
 function rejectRemoteUploadFailure(error: unknown): Promise<never> {
   return Promise.reject(remoteUploadFailureFromError(error))
+}
+
+function cloudApiRetryAfterMs(error: unknown): number | undefined {
+  if (error instanceof CloudApiError) {
+    return error.retryAfterMs
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'retryAfterMs' in error &&
+    typeof error.retryAfterMs === 'number'
+  ) {
+    return error.retryAfterMs
+  }
+  if (error instanceof Error && error.cause !== undefined) {
+    return cloudApiRetryAfterMs(error.cause)
+  }
+  return undefined
+}
+
+export function getCloudSyncRetryDelayMs({
+  attempt,
+  retryAfterMs,
+}: {
+  attempt: number
+  retryAfterMs?: number
+}) {
+  const normalizedAttempt = Math.max(0, Math.floor(attempt))
+  const exponentialDelay = Math.min(
+    SYNC_RETRY_MAX_MS,
+    SYNC_RETRY_MS * 2 ** normalizedAttempt
+  )
+
+  return Math.max(exponentialDelay, retryAfterMs ?? 0)
+}
+
+function nextSyncRetryDelayMs(error: unknown) {
+  const retryDelay = getCloudSyncRetryDelayMs({
+    attempt: syncRetryAttempt,
+    retryAfterMs: cloudApiRetryAfterMs(error),
+  })
+  syncRetryAttempt =
+    retryDelay >= SYNC_RETRY_MAX_MS ? syncRetryAttempt : syncRetryAttempt + 1
+
+  return retryDelay
+}
+
+function resetSyncRetryBackoff() {
+  syncRetryAttempt = 0
+}
+
+export function shouldScheduleCloudSyncPendingWork({
+  pendingCount,
+  state,
+  failureRetryScheduled,
+}: {
+  pendingCount: number
+  state: CloudSyncStatus['state']
+  failureRetryScheduled: boolean
+}) {
+  return pendingCount > 0 && state !== 'conflict' && !failureRetryScheduled
 }
 
 export function getCloudSyncProjectRootInDirectory(
@@ -2002,7 +2071,7 @@ function markCloudMetadataFailure(error: unknown) {
     lastFailure: errorMessage(error),
     lastFailureAt: nowIso(),
   })
-  scheduleSync(SYNC_RETRY_MS)
+  scheduleSyncFailureRetry(error)
 }
 
 async function markProjectSynced(
@@ -3224,6 +3293,8 @@ async function runCloudSync() {
     : undefined
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
+  let remoteIndexFailure: unknown
+  let failureRetryScheduled = false
 
   try {
     let entries = await getAllOutboxEntries()
@@ -3234,6 +3305,7 @@ async function runCloudSync() {
       await syncRemoteIndex().catch((error) => {
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
+        remoteIndexFailure = error
         reportCloudSyncFailure('remote-index', error)
         updateStatus({
           state: 'failed',
@@ -3266,8 +3338,12 @@ async function runCloudSync() {
         lastFailureAt: nowIso(),
         ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
       })
-      scheduleSync(SYNC_RETRY_MS)
+      scheduleSyncFailureRetry(
+        remoteIndexFailure ?? new Error(remoteIndexFailureMessage)
+      )
+      failureRetryScheduled = true
     } else if (cloudSyncStatus.value.state !== 'conflict') {
+      resetSyncRetryBackoff()
       updateStatus({
         state: 'idle',
         activeProjectPath: undefined,
@@ -3281,8 +3357,11 @@ async function runCloudSync() {
       })
     }
     if (
-      cloudSyncStatus.value.pendingCount > 0 &&
-      cloudSyncStatus.value.state !== 'conflict'
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: cloudSyncStatus.value.pendingCount,
+        state: cloudSyncStatus.value.state,
+        failureRetryScheduled,
+      })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
@@ -3298,13 +3377,17 @@ async function runCloudSync() {
       activeProjectPath: scopedScope?.syncable ? scopedProjectPath : undefined,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
     })
-    scheduleSync(SYNC_RETRY_MS)
+    scheduleSyncFailureRetry(error)
+    failureRetryScheduled = true
   } finally {
     syncInProgress = false
     pendingStatusSyncedAt = undefined
     if (
-      cloudSyncStatus.value.pendingCount > 0 &&
-      cloudSyncStatus.value.state !== 'conflict'
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: cloudSyncStatus.value.pendingCount,
+        state: cloudSyncStatus.value.state,
+        failureRetryScheduled,
+      })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
@@ -3315,6 +3398,7 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
   if (!isConfiguredForCloud()) {
     return
   }
+
   if (syncTimer) {
     clearTimeout(syncTimer)
   }
@@ -3323,6 +3407,10 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
     syncTimer = undefined
     void runCloudSync()
   }, delay)
+}
+
+function scheduleSyncFailureRetry(error: unknown) {
+  scheduleSync(nextSyncRetryDelayMs(error))
 }
 
 function scheduleRemoteIndexSync(delay = 0) {
@@ -3773,6 +3861,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   ) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
+    resetSyncRetryBackoff()
   }
 
   if (!config.enabled) {
@@ -3783,6 +3872,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
     lastRemoteIndexSyncAt = 0
+    resetSyncRetryBackoff()
     cloudSyncRemoteProjects.value = []
     updateStatus({
       enabled: false,
@@ -3828,10 +3918,11 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
 }
 
 export function retryCloudSyncEngine() {
+  resetSyncRetryBackoff()
   if (syncScopeProjectPath) {
     scheduleSync(0)
     return
   }
 
-  scheduleRemoteIndexSync()
+  scheduleRemoteIndexSync(0)
 }
