@@ -1937,8 +1937,8 @@ async fn resumable_entry(
                 crate::std::patterns::pattern_transform_parse_args(&args, exec_state)?;
             crate::std::patterns::pattern_check_instances(instances, source_range)?;
             let geometry = match geometry {
-                crate::std::patterns::PatternGeometry3d::Solids(solids) => PatternGeometry::Solids(solids),
-                crate::std::patterns::PatternGeometry3d::ImportedGeometry(geometry) => {
+                crate::std::patterns::Patternable3d::Solids(solids) => PatternGeometry::Solids(solids),
+                crate::std::patterns::Patternable3d::ImportedGeometry(geometry) => {
                     PatternGeometry::ImportedGeometry(geometry)
                 }
             };

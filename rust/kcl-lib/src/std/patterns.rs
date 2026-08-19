@@ -27,7 +27,6 @@ use crate::execution::EarlyReturn;
 use crate::execution::ExecState;
 use crate::execution::Geometries;
 use crate::execution::Geometry;
-use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::ImportedGeometry;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
@@ -67,22 +66,17 @@ pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
+/// Something that can be 3D patterned, e.g. a 3D body.
 #[derive(Debug)]
-pub(crate) enum PatternGeometry3d {
+pub(crate) enum Patternable3d {
     Solids(Vec<Solid>),
     ImportedGeometry(ImportedGeometry),
 }
 
+/// Runtime type of [`Patternable3d`], i.e. something that can be replicated
+/// in a 3D pattern.
 fn pattern_geometry_3d_type() -> RuntimeType {
     RuntimeType::Union(vec![RuntimeType::solids(), RuntimeType::imported()])
-}
-
-fn imported_geometries_to_kcl_value(geometries: Vec<ImportedGeometry>) -> KclValue {
-    geometries
-        .into_iter()
-        .map(|geometry| GeometryWithImportedGeometry::ImportedGeometry(Box::new(geometry)))
-        .collect::<Vec<_>>()
-        .into()
 }
 
 /// Repeat some 3D geometry, changing each repetition slightly.
@@ -115,12 +109,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 pub(crate) fn pattern_transform_parse_args(
     args: &Args,
     exec_state: &mut ExecState,
-) -> Result<(PatternGeometry3d, u32, FunctionSource, Option<bool>), KclError> {
+) -> Result<(Patternable3d, u32, FunctionSource, Option<bool>), KclError> {
     let geometry: SolidOrImportedGeometry =
         args.get_unlabeled_kw_arg("solids", &pattern_geometry_3d_type(), exec_state)?;
     let geometry = match geometry {
-        SolidOrImportedGeometry::SolidSet(solids) => PatternGeometry3d::Solids(solids),
-        SolidOrImportedGeometry::ImportedGeometry(geometry) => PatternGeometry3d::ImportedGeometry(*geometry),
+        SolidOrImportedGeometry::SolidSet(solids) => Patternable3d::Solids(solids),
+        SolidOrImportedGeometry::ImportedGeometry(geometry) => Patternable3d::ImportedGeometry(*geometry),
     };
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
     let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
@@ -224,7 +218,7 @@ pub(crate) fn transforms_from_callback_value<T: GeometryTrait>(
 }
 
 async fn inner_pattern_transform(
-    geometry: PatternGeometry3d,
+    geometry: Patternable3d,
     instances: u32,
     transform: FunctionSource,
     use_original: Option<bool>,
@@ -236,7 +230,7 @@ async fn inner_pattern_transform(
     pattern_check_instances(instances, args.source_range)?;
     for i in 1..instances {
         let t = match &geometry {
-            PatternGeometry3d::Solids(_) => {
+            Patternable3d::Solids(_) => {
                 make_transform::<Solid>(
                     i,
                     &transform,
@@ -247,7 +241,7 @@ async fn inner_pattern_transform(
                 )
                 .await?
             }
-            PatternGeometry3d::ImportedGeometry(_) => {
+            Patternable3d::ImportedGeometry(_) => {
                 make_transform::<ImportedGeometry>(
                     i,
                     &transform,
@@ -262,7 +256,7 @@ async fn inner_pattern_transform(
         transform_vec.push(t);
     }
     match geometry {
-        PatternGeometry3d::Solids(solids) => Ok(execute_pattern_transform::<Solid>(
+        Patternable3d::Solids(solids) => Ok(execute_pattern_transform::<Solid>(
             transform_vec,
             solids,
             use_original.unwrap_or_default(),
@@ -271,7 +265,7 @@ async fn inner_pattern_transform(
         )
         .await?
         .into()),
-        PatternGeometry3d::ImportedGeometry(geometry) => Ok(imported_geometries_to_kcl_value(
+        Patternable3d::ImportedGeometry(geometry) => Ok(KclValue::from_imported_geometries(
             execute_pattern_transform(
                 transform_vec,
                 vec![geometry],
@@ -904,7 +898,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
                     .into(),
             )
         }
-        SolidOrImportedGeometry::ImportedGeometry(geometry) => Ok(imported_geometries_to_kcl_value(
+        SolidOrImportedGeometry::ImportedGeometry(geometry) => Ok(KclValue::from_imported_geometries(
             inner_pattern_linear_3d(
                 vec![*geometry],
                 instances,
@@ -1190,7 +1184,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         )
         .await?
         .into()),
-        SolidOrImportedGeometry::ImportedGeometry(geometry) => Ok(imported_geometries_to_kcl_value(
+        SolidOrImportedGeometry::ImportedGeometry(geometry) => Ok(KclValue::from_imported_geometries(
             inner_pattern_circular_3d(
                 vec![*geometry],
                 instances,

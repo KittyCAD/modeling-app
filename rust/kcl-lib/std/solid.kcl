@@ -648,7 +648,7 @@ export fn hollow(
   thickness: number(Length),
 ): Solid {}
 
-/// Repeat a 3-dimensional solid or imported geometry, changing it each time.
+/// Repeat a 3-dimensional body or imported geometry, changing it each time.
 ///
 /// Replicates the 3D solid or imported geometry, applying a transformation function to each replica.
 /// Transformation function could alter rotation, scale, visibility, position, etc.
@@ -866,7 +866,7 @@ export fn patternTransform(
   useOriginal?: bool = false,
 ): [Solid | ImportedGeometry; 1+] {}
 
-/// Repeat a 3-dimensional solid or imported geometry along a linear path, with a dynamic amount
+/// Repeat a 3-dimensional body or imported geometry along a linear path, with a dynamic amount
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```kcl,legacySketch
@@ -971,7 +971,7 @@ export fn patternLinear3d(
   useOriginal?: bool = false,
 ): [Solid | ImportedGeometry; 1+] {}
 
-/// Repeat a 3-dimensional solid or imported geometry some number of times along a partial or
+/// Repeat a 3-dimensional body or imported geometry some number of times along a partial or
 /// complete circle some specified number of times. Each object may
 /// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.

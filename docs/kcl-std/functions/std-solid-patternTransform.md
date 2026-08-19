@@ -1,11 +1,11 @@
 ---
 title: "patternTransform"
 subtitle: "Function in std::solid"
-excerpt: "Repeat a 3-dimensional solid or imported geometry, changing it each time."
+excerpt: "Repeat a 3-dimensional body or imported geometry, changing it each time."
 layout: manual
 ---
 
-Repeat a 3-dimensional solid or imported geometry, changing it each time.
+Repeat a 3-dimensional body or imported geometry, changing it each time.
 
 ```kcl
 patternTransform(
