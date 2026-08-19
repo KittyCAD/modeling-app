@@ -460,18 +460,31 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_body_type_queries_use_locally_known_type() {
         let code = r#"
-fn square(@plane, origin, side, bodyType) {
-  return startSketchOn(plane)
-    |> startProfile(at = origin)
-    |> yLine(length = side)
-    |> xLine(length = side)
-    |> yLine(length = -side)
-    |> xLine(length = -side)
-    |> extrude(length = side, bodyType = bodyType)
-}
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-solid = square(XY, origin = [0, 0], side = 5, bodyType = "solid")
-surface = square(XY, origin = [10, 0], side = 5, bodyType = "surface")
+solidSketch = sketch(on = XY) {
+  profile = circle(
+    start = [var 5mm, var 0mm],
+    center = [var 0mm, var 0mm],
+  )
+}
+solid = extrude(
+  region(segments = [solidSketch.profile]),
+  length = 5mm,
+  bodyType = "solid",
+)
+
+surfaceSketch = sketch(on = XY) {
+  profile = circle(
+    start = [var 20mm, var 0mm],
+    center = [var 15mm, var 0mm],
+  )
+}
+surface = extrude(
+  region(segments = [surfaceSketch.profile]),
+  length = 5mm,
+  bodyType = "surface",
+)
 
 assertIs(isSolid(solid))
 assertIs(!isSurface(solid))
@@ -479,9 +492,10 @@ assertIs(isSurface(surface))
 assertIs(!isSolid(surface))
 "#;
 
-        let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
         ctx.close().await;
+        result.unwrap();
     }
 }
