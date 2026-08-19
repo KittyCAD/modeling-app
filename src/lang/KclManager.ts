@@ -2205,18 +2205,14 @@ export class KclManager extends File {
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
         this._kclVersion = getKclVersion(wasmInstance)
-        if (typeof wasmInstance === 'string') {
-          this.wasmInitFailed = true
-        } else {
-          this.reconfigureHistoryLimit(getSketchCheckpointLimit(wasmInstance))
-          await this.safeParse(this.code, wasmInstance).then((ast) => {
-            if (ast) {
-              this.ast = ast
-              // on setup, set _lastAst so it's populated.
-              this._lastAst = ast
-            }
-          })
-        }
+        this.reconfigureHistoryLimit(getSketchCheckpointLimit(wasmInstance))
+        await this.safeParse(this.code, wasmInstance).then((ast) => {
+          if (ast) {
+            this.ast = ast
+            // on setup, set _lastAst so it's populated.
+            this._lastAst = ast
+          }
+        })
       })
       .catch((e) => {
         this._wasmInitFailed.value = true
@@ -3885,9 +3881,6 @@ export class KclManager extends File {
     }
 
     const wasmInstance = await this.wasmInstancePromise
-    if (typeof wasmInstance === 'string') {
-      return false
-    }
     if (requestedDocumentVersion !== this._documentVersion) {
       return false
     }
