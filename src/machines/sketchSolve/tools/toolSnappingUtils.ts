@@ -1,6 +1,7 @@
-import { Group } from 'three'
+import { Group, OrthographicCamera } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
@@ -13,6 +14,10 @@ import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
+import type {
+  SketchSolveContext,
+  SketchSolveMachineEvent,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   type SnappingCandidate,
   allowSnapping,
@@ -25,19 +30,39 @@ type ToolSelf = {
   _parent?: {
     getSnapshot?: () => {
       context?: {
-        sketchExecOutcome?: {
-          sceneGraphDelta?: {
-            new_graph?: {
-              objects?: any[]
-            }
-          }
-        }
+        rustContext?: Pick<SketchSolveContext['rustContext'], 'settingsActor'>
+        sketchExecOutcome?: Partial<
+          NonNullable<SketchSolveContext['sketchExecOutcome']>
+        >
       }
     }
-    send?: (event: {
-      type: 'update hovered id'
-      data: { hoveredId: SketchSolveSelectionId | null }
-    }) => void
+    send?: (
+      event: Extract<SketchSolveMachineEvent, { type: 'update hovered id' }>
+    ) => void
+  }
+}
+
+export function getGridSnapOptions(
+  self: ToolSelf,
+  sceneInfra: SceneInfra
+): GridSnapOptions | undefined {
+  const modelingSettings = self._parent
+    ?.getSnapshot?.()
+    .context?.rustContext?.settingsActor?.getSnapshot?.().context?.modeling
+  if (!modelingSettings?.snapToGrid?.current) {
+    return undefined
+  }
+  const camera = sceneInfra.camControls.camera
+  if (!(camera instanceof OrthographicCamera)) {
+    return undefined
+  }
+
+  return {
+    fixedSizeGrid: modelingSettings.fixedSizeGrid.current,
+    majorGridSpacing: modelingSettings.majorGridSpacing.current,
+    minorGridsPerMajor: modelingSettings.minorGridsPerMajor.current,
+    snapsPerMinor: modelingSettings.snapsPerMinor.current,
+    pixelsPerBaseUnit: sceneInfra.getPixelsPerBaseUnit(camera),
   }
 }
 
@@ -99,13 +124,16 @@ export function getBestSnappingCandidate({
   }
 
   const snapshot = self._parent?.getSnapshot?.()
+  const gridSnapOptions = getGridSnapOptions(self, sceneInfra)
   const objects =
     snapshot?.context?.sketchExecOutcome?.sceneGraphDelta?.new_graph?.objects
-  if (!objects) {
+  if (!objects && !gridSnapOptions) {
     return null
   }
 
-  const currentSketchObjects = getCurrentSketchObjectsById(objects, sketchId)
+  const currentSketchObjects = objects
+    ? getCurrentSketchObjectsById(objects, sketchId)
+    : []
   const excludedPointIdSet = new Set(excludedPointIds)
   const excludedSegmentIdSet = new Set<number>()
 
@@ -144,18 +172,21 @@ export function getBestSnappingCandidate({
   }
 
   return (
-    getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
-      (candidate) => {
-        return (
-          isCandidateAllowed?.({
-            candidate,
-            currentSketchObjects,
-            excludedPointIdSet,
-            excludedSegmentIdSet,
-          }) ?? defaultIsCandidateAllowed(candidate)
-        )
-      }
-    ) ?? null
+    getSnappingCandidates(
+      mousePosition,
+      currentSketchObjects,
+      sceneInfra,
+      gridSnapOptions
+    ).find((candidate) => {
+      return (
+        isCandidateAllowed?.({
+          candidate,
+          currentSketchObjects,
+          excludedPointIdSet,
+          excludedSegmentIdSet,
+        }) ?? defaultIsCandidateAllowed(candidate)
+      )
+    }) ?? null
   )
 }
 

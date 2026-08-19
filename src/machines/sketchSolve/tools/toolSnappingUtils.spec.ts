@@ -1,7 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
+import { OrthographicCamera } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { getObjectIdForSnapTarget } from '@src/machines/sketchSolve/snapping'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import {
+  GRID_TARGET,
+  getObjectIdForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
 import {
   createLineApiObject,
   createMockSceneInfra,
@@ -30,7 +35,86 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
   } satisfies ApiObject
 }
 
+function createGridSceneInfra(): SceneInfra {
+  return {
+    ...createMockSceneInfra(),
+    camControls: {
+      camera: new OrthographicCamera(),
+    },
+    getPixelsPerBaseUnit: vi.fn(() => 100),
+  } as unknown as SceneInfra
+}
+
+function createGridSelf({
+  snapToGrid,
+  sceneGraphDelta,
+}: {
+  snapToGrid: boolean
+  sceneGraphDelta?: ReturnType<typeof createSceneGraphDelta>
+}) {
+  return {
+    _parent: {
+      getSnapshot: () => ({
+        context: {
+          rustContext: {
+            settingsActor: {
+              getSnapshot: () => ({
+                context: {
+                  modeling: {
+                    snapToGrid: { current: snapToGrid },
+                    fixedSizeGrid: { current: true },
+                    majorGridSpacing: { current: 2 },
+                    minorGridsPerMajor: { current: 4 },
+                    snapsPerMinor: { current: 2 },
+                  },
+                },
+              }),
+            },
+          },
+          sketchExecOutcome: sceneGraphDelta
+            ? {
+                sceneGraphDelta,
+              }
+            : undefined,
+        },
+      }),
+    },
+  } as unknown as Parameters<typeof getBestSnappingCandidate>[0]['self']
+}
+
 describe('toolSnappingUtils', () => {
+  it('snaps to the grid when sketch graph objects are empty or unavailable', () => {
+    const sceneInfra = createGridSceneInfra()
+    const mousePosition: [number, number] = [20.37, 30.62]
+
+    for (const sceneGraphDelta of [undefined, createSceneGraphDelta([])]) {
+      const candidate = getBestSnappingCandidate({
+        self: createGridSelf({ snapToGrid: true, sceneGraphDelta }),
+        sceneInfra,
+        sketchId: 0,
+        mousePosition,
+        mouseEvent: new MouseEvent('mousemove'),
+      })
+
+      expect(candidate).toMatchObject({
+        target: { type: GRID_TARGET },
+        position: [20.25, 30.5],
+      })
+    }
+  })
+
+  it('does not add a grid candidate when snap to grid is disabled', () => {
+    const candidate = getBestSnappingCandidate({
+      self: createGridSelf({ snapToGrid: false }),
+      sceneInfra: createGridSceneInfra(),
+      sketchId: 0,
+      mousePosition: [20.37, 30.62],
+      mouseEvent: new MouseEvent('mousemove'),
+    })
+
+    expect(candidate).toBeNull()
+  })
+
   it('sends the snapped segment id for non-point snapping targets', () => {
     const send = vi.fn()
 
