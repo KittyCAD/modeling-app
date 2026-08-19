@@ -53,9 +53,10 @@ async fn inner_mirror_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let mut unmapped_mirrored_bodies = bodies.clone();
+    let unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
+        let mut unmapped_mirrored_bodies = unmapped_mirrored_bodies;
         for mirrored_body in &mut unmapped_mirrored_bodies {
             let id = exec_state.next_uuid();
             mirrored_body.set_id(id);
