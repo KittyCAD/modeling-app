@@ -2,7 +2,6 @@ import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
-  reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
@@ -1891,7 +1890,7 @@ export async function renameRemoteCloudProject(
   const updated = await updateRemoteProject({
     config,
     projectPath: localProjectNameForRemoteProject(remoteProject),
-    projectId,
+    project: remoteProject,
     files,
     expectedRevision: getRevision(remoteProject),
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2262,7 +2261,7 @@ async function applyLocalDataForConflict(
   const updated = await updateRemoteProject({
     config,
     projectPath: metadata.localProjectPath,
-    projectId: metadata.remoteProjectId,
+    project: remoteProject,
     files: localFiles,
     expectedRevision,
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2399,7 +2398,11 @@ async function hydrateCleanLocalProjectTitle(
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
-  remoteUpdatedAt: string | undefined
+  remoteUpdatedAt: string | undefined,
+  manifests: {
+    localManifest?: ProjectManifest
+    remoteManifest?: ProjectManifest
+  } = {}
 ) {
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
@@ -2422,7 +2425,6 @@ async function markProjectConflict(
   }
   await putProjectMetadata(nextMetadata)
   publishScopedProjectCloudProjectId(nextMetadata)
-  reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',
@@ -2431,7 +2433,18 @@ async function markProjectConflict(
       lastFailureAt: createdAt,
     })
   }
-  reportCloudSyncConflict()
+  reportCloudSyncConflict({
+    localProjectPath: metadata.localProjectPath,
+    remoteProjectId: metadata.remoteProjectId,
+    syncBaseRemoteRevision: metadata.remoteRevision,
+    conflictRemoteRevision: remoteRevision,
+    conflictRemoteUpdatedAt: remoteUpdatedAt,
+    baseManifest: metadata.baseManifest,
+    localManifest: manifests.localManifest,
+    remoteManifest: manifests.remoteManifest,
+    existingConflictCreatedAt: existingConflict?.createdAt,
+    reportedAt: createdAt,
+  })
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -2917,7 +2930,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
+            project: remoteProject,
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -3004,7 +3017,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
+            project: remoteProject,
             files: autoReconciledFiles,
             expectedRevision: remoteRevision,
           })
@@ -3025,7 +3038,11 @@ async function syncProject(
     await markProjectConflict(
       metadata,
       remoteRevision,
-      getRemoteUpdatedAt(remoteProject)
+      getRemoteUpdatedAt(remoteProject),
+      {
+        localManifest,
+        remoteManifest,
+      }
     )
   } catch (error) {
     await markProjectFailure(metadata, error)
