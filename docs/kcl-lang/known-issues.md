@@ -11,9 +11,7 @@ once fixed in engine, will just start working here with no language changes.
 
 - **Import**: Right now you can import a file, but you cannot edit it — even if
     that file has BREP data. Imports have type `ImportedGeometry` rather than
-    `Solid`, so `subtract`, `union`, `intersect`, `fillet`, `chamfer`, `shell`,
-    the pattern functions, and `startSketchOn` all reject them. `clone`,
-    `translate`, `rotate`, `scale`, `appearance`, `hide`, and `delete` work.
+    `Solid`, so functions that operate on `Solid` will reject imported geometry.
     Recreate the geometry natively in KCL if you need to modify it. The engine
     will account for this later.
 
