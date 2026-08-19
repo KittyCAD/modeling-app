@@ -360,9 +360,10 @@ firstCut = subtract(base, tools = [tool])
 secondCut = subtract(mirroredBase, tools = [mirroredTool])
 "#;
 
-        let ctx = crate::ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
         ctx.close().await;
+        result.unwrap();
     }
 }
