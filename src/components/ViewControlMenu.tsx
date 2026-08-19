@@ -8,6 +8,8 @@ import {
   ContextMenuItem,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
@@ -223,6 +225,13 @@ export const ViewControlContextMenu = memo(function ViewControlContextMenu({
   ...props
 }: ContextMenuProps) {
   const menuItems = useViewControlMenuItems()
+  const { overallState } = useNetworkContext()
+  if (
+    overallState !== NetworkHealthState.Ok &&
+    overallState !== NetworkHealthState.Weak
+  )
+    return null
+
   return (
     <ContextMenu
       data-testid="view-controls-menu"

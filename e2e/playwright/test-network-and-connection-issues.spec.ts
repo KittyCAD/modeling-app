@@ -2,26 +2,55 @@ import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+import { EngineConnectionErrorKind } from '@src/lib/engineConnection/utils'
 
 // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
 test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
-    'simulate network down and network little widget',
+    'preserves the scene while offline and supports terminal reconnect',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ page, context, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await context.addInitScript(
+        (initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        },
+        `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 50mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 20mm)`
+      )
+
+      const dimensions = { width: 1200, height: 500 }
+      const modelProbe = {
+        x: dimensions.width / 2 + dimensions.width / 100,
+        y: dimensions.height / 2,
+      }
+      await page.setBodyDimensions(dimensions)
 
       await homePage.waitForAuthentication()
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.expectPixelColorNotToBe(
+        [TEST_COLORS.DARK_MODE_BKGD, TEST_COLORS.WHITE],
+        modelProbe,
+        15
+      )
+      const u = await getUtils(page)
+      const streamProbe = await scene.convertPagePositionToStream(
+        modelProbe.x,
+        modelProbe.y
+      )
+      const [modelPixel] = await u.getPixelRGBs(streamProbe, 1)
 
       const networkToggle = page.getByTestId(/network-toggle/)
 
@@ -51,17 +80,29 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.mouse.click(100, 100)
       await expect(networkPopover).not.toBeVisible()
 
-      // Turn off the network
-      await u.emulateNetworkConditions({
-        offline: true,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
+      const viewControlsMenu = page.getByTestId('view-controls-menu')
+      await page.getByLabel('View orientation gizmo').click({ button: 'right' })
+      await expect(viewControlsMenu).toBeVisible()
 
-      // Expect the network to be down
+      // Exercise Chromium's actual offline path so the WebSocket and WebRTC
+      // transports close in the same order they do for a real network loss.
+      await context.setOffline(true)
       await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(scene.engineConnectionsSpinner).not.toBeVisible()
+      await expect(scene.streamWrapper).toHaveAttribute('inert')
+      await expect(
+        page.getByTestId('engine-scene-view-extension-overlay')
+      ).toHaveAttribute('inert')
+      await expect(viewControlsMenu).not.toBeVisible()
+      await page.keyboard.press('s')
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+          )
+      )
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await scene.expectPixelColor(modelPixel, modelProbe, 15)
 
       // Click the network toggle
       await networkToggle.click()
@@ -73,14 +114,7 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await page.mouse.click(0, 0)
       await expect(networkPopover).not.toBeVisible()
 
-      // Turn back on the network
-      await u.emulateNetworkConditions({
-        offline: false,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      })
+      await context.setOffline(false)
 
       await expect(toolbar.startSketchBtn).not.toBeDisabled({
         timeout: 15000,
@@ -90,6 +124,48 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(
         networkToggleConnectedText.or(networkToggleWeakText)
       ).toBeVisible()
+
+      // A terminal websocket failure still needs an explicit escape hatch.
+      await page.evaluate(
+        (connectionError) => {
+          window.engineCommandManager.tearDown({
+            websocketClosed: true,
+            connectionError,
+          })
+        },
+        {
+          kind: EngineConnectionErrorKind.BackendDisconnect,
+          message: 'Backend disconnected.',
+          terminal: true,
+        }
+      )
+      const reconnectButton = scene.engineConnectionsSpinner.getByRole(
+        'button',
+        { name: /reconnect/i }
+      )
+      await expect(reconnectButton).toBeVisible()
+
+      await context.setOffline(true)
+      try {
+        await expect(networkToggle).toContainText('Network health (Offline)')
+        await expect(reconnectButton).toBeVisible()
+      } finally {
+        await context.setOffline(false)
+      }
+
+      await expect.poll(() => page.evaluate(() => navigator.onLine)).toBe(true)
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+          )
+      )
+      await expect(reconnectButton).toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeDisabled()
+      await reconnectButton.click()
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
     }
   )
 
