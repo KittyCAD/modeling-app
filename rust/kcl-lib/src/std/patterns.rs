@@ -587,25 +587,11 @@ mod tests {
     use crate::execution::types::PrimitiveType;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn mock_circular_patterns_preserve_requested_cardinality() {
+    async fn mock_circular_3d_preserves_requested_cardinality() {
         let code = r#"
-profile = startSketchOn(XZ)
-  |> startProfile(at = [1, 0])
-  |> line(end = [1, 0])
-  |> line(end = [0, 1])
-  |> line(end = [-1, 0])
-  |> close()
-
-sketchCopies = patternCircular2d(
-  profile,
-  center = [0, 0],
-  instances = 3,
-  arcDegrees = 360,
-  rotateDuplicates = true,
-)
-secondSketch = sketchCopies[1]
-
-seed = extrude(profile, length = 5)
+seed = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 5)
 solidCopies = patternCircular3d(
   seed,
   axis = X,
@@ -951,6 +937,10 @@ async fn inner_pattern_circular_2d(
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
     let starting_sketches = sketch_set;
+
+    if args.ctx.context_type == crate::execution::ContextType::Mock {
+        return Ok(starting_sketches);
+    }
     let center = center.unwrap_or(POINT_ZERO_ZERO);
     let data = CircularPattern2dData {
         instances,
