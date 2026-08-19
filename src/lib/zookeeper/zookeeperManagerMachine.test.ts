@@ -651,7 +651,7 @@ describe('zookeeperManagerMachine', () => {
       }
     })
 
-    it('recovers if a responsive websocket later stops responding', async () => {
+    it('allows slow setup progress and recovers if the websocket later stops responding', async () => {
       vi.useFakeTimers()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
@@ -668,6 +668,9 @@ describe('zookeeperManagerMachine', () => {
         })
 
         const socket = ControllableSetupWebSocket.instances[0]
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS / 2
+        )
         socket.open()
         await vi.waitFor(() => {
           expect(socket.sentPayloads).toContain(
@@ -675,11 +678,10 @@ describe('zookeeperManagerMachine', () => {
           )
         })
 
-        for (let heartbeat = 0; heartbeat < 3; heartbeat += 1) {
-          await vi.advanceTimersByTimeAsync(20_000)
-          socket.receive({ pong: {} })
-        }
-        await vi.advanceTimersByTimeAsync(20_000)
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS / 2 +
+            ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
         socket.receive({
           conversation_id: {
             conversation_id: 'conversation-id',
@@ -726,7 +728,7 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ContinueCheck', () => {
-    it('sends continue requests when the last exchange was interrupted', async () => {
+    it('continues with source files and changed project assets', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       const interruptedConversation: Conversation = {
         exchanges: [
@@ -760,6 +762,11 @@ describe('zookeeperManagerMachine', () => {
           relPath: 'notes.txt',
           data: new Blob(['notes']),
         },
+        {
+          type: 'other',
+          relPath: 'unchanged.txt',
+          data: new Blob(['unchanged']),
+        },
       ]
       const machine = zookeeperManagerMachine.provide({
         actors: {
@@ -769,6 +776,10 @@ describe('zookeeperManagerMachine', () => {
           >(async () => ({
             ws,
             conversation: interruptedConversation,
+            projectAssetSignatures: {
+              'unchanged.txt':
+                'aaa8d3c8d74ad3e8f6b1772aa9c7e0eaa528cb42fc93599ce2f125b00d4c424c',
+            },
           })),
         },
       })
@@ -813,6 +824,14 @@ describe('zookeeperManagerMachine', () => {
           current_files: {
             'main.kcl': Array.from(new TextEncoder().encode('cube()')),
             'notes.txt': Array.from(new TextEncoder().encode('notes')),
+          },
+          active_file: 'newFile.kcl',
+        }),
+        JSON.stringify({
+          type: 'project_context',
+          project_name: 'zoo-project',
+          current_files: {
+            'main.kcl': Array.from(new TextEncoder().encode('cube()')),
           },
           active_file: 'newFile.kcl',
         }),

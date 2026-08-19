@@ -3,7 +3,6 @@ import {
   type QueuedMessage,
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
-import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import {
@@ -26,7 +25,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
@@ -63,9 +62,7 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
-  const [showManualConnect, setShowManualConnect] = useState(
-    typeof navigator !== 'undefined' && navigator.onLine === false
-  )
+  const [showManualConnect, setShowManualConnect] = useState(false)
   const steeredId = useRef<string | null>(null)
   const savedProjectConversationLookupLoaded = useRef(false)
   const savedProjectConversationId = useRef<string | undefined>(undefined)
@@ -93,6 +90,9 @@ export const ZookeeperConversationPane = (props: {
   })
   const conversationId = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.conversationId
+  })
+  const ws = useSelector(props.zookeeperManagerActor, (actor) => {
+    return actor.context.ws
   })
   const isSettingUp = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.matches(ZookeeperManagerStates.Setup)
@@ -173,7 +173,7 @@ export const ZookeeperConversationPane = (props: {
     })
   }
 
-  const needsReconnect = abruptlyClosed || showManualConnect
+  const needsReconnect = abruptlyClosed
 
   const reconnect = useCallback(() => {
     if (isClearingChat.current) {
@@ -213,40 +213,50 @@ export const ZookeeperConversationPane = (props: {
 
   const onReconnect = useCallback(() => {
     setShowManualConnect(false)
-    reconnect()
-  }, [reconnect])
-
-  const onWindowOnlineOfflineParams = useMemo(
-    () => ({
-      close: () => {
-        reconnectAfterSavedConversationLookup.current = false
-        setShowManualConnect(true)
-        props.zookeeperManagerActor.send({
-          type: ZookeeperManagerTransitions.NetworkOffline,
-        })
-      },
-      connect: onReconnect,
-    }),
-    [onReconnect, props.zookeeperManagerActor]
-  )
-  useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
-
-  useEffect(() => {
-    if (typeof navigator === 'undefined' || navigator.onLine) {
-      return
+    if (showManualConnect) {
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.NetworkOffline,
+      })
     }
-    props.zookeeperManagerActor.send({
-      type: ZookeeperManagerTransitions.NetworkOffline,
-    })
-  }, [props.zookeeperManagerActor])
+    reconnect()
+  }, [props.zookeeperManagerActor, reconnect, showManualConnect])
 
   useEffect(() => {
-    if (
-      !needsReconnect ||
-      setupFailed ||
-      showManualConnect ||
-      isClearingChatPending
-    ) {
+    // Browser connectivity signals can be unreliable on spotty networks. An
+    // offline event shows recovery without automatically closing the socket.
+    const showOfflineRecovery = () => setShowManualConnect(true)
+    const reconnectWhenOnline = () => {
+      setShowManualConnect(false)
+      const readyState =
+        props.zookeeperManagerActor.getSnapshot().context.ws?.readyState
+      // Do not replace a healthy socket or restart a connection in progress.
+      if (
+        readyState === WebSocket.OPEN ||
+        readyState === WebSocket.CONNECTING
+      ) {
+        return
+      }
+      reconnect()
+    }
+
+    window.addEventListener('offline', showOfflineRecovery)
+    window.addEventListener('online', reconnectWhenOnline)
+    return () => {
+      window.removeEventListener('offline', showOfflineRecovery)
+      window.removeEventListener('online', reconnectWhenOnline)
+    }
+  }, [props.zookeeperManagerActor, reconnect])
+
+  useEffect(() => {
+    const dismissOfflineRecovery = () => setShowManualConnect(false)
+    ws?.addEventListener('message', dismissOfflineRecovery)
+    return () => ws?.removeEventListener('message', dismissOfflineRecovery)
+  }, [ws])
+
+  useEffect(() => {
+    // Abrupt closes retry automatically. Terminal setup failures wait for the
+    // user, while clear-chat owns its connection lifecycle until it completes.
+    if (!needsReconnect || setupFailed || isClearingChatPending) {
       return
     }
 
@@ -254,13 +264,7 @@ export const ZookeeperConversationPane = (props: {
     return () => {
       clearTimeout(timeoutReconnect)
     }
-  }, [
-    isClearingChatPending,
-    needsReconnect,
-    reconnect,
-    setupFailed,
-    showManualConnect,
-  ])
+  }, [isClearingChatPending, needsReconnect, reconnect, setupFailed])
 
   const onCancel = () => {
     props.zookeeperManagerActor.send({

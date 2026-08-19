@@ -70,6 +70,7 @@ type FakeZookeeperSnapshot = {
     conversationId?: string
     defaultMode?: MlCopilotModeId
     modeOptions?: MlCopilotModeOption[]
+    ws?: EventTarget & { readyState: WebSocket['readyState'] }
   }
   matches: (state: unknown) => boolean
 }
@@ -93,6 +94,7 @@ const createFakeActor = ({
   setupAttempt = 0,
   includeConversationId = true,
   conversationId = 'conversation-id',
+  ws,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
@@ -104,6 +106,7 @@ const createFakeActor = ({
   setupAttempt?: number
   includeConversationId?: boolean
   conversationId?: string
+  ws?: EventTarget & { readyState: WebSocket['readyState'] }
 } = {}): FakeZookeeperActor => {
   const snapshot: FakeZookeeperSnapshot = {
     value,
@@ -117,6 +120,7 @@ const createFakeActor = ({
       conversationId: includeConversationId ? conversationId : undefined,
       defaultMode,
       modeOptions,
+      ws,
     },
     matches: (state: unknown) => state === value,
   }
@@ -398,57 +402,85 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('shows recovery while offline and reconnects when the browser comes online', async () => {
-    vi.useFakeTimers()
+  test('shows browser offline recovery without replacing a live connection', () => {
+    const ws: EventTarget & { readyState: WebSocket['readyState'] } =
+      Object.assign(new EventTarget(), {
+        readyState: WebSocket.OPEN,
+      })
     const zookeeperManagerActor = createFakeActor({
       awaitingResponse: false,
+      ws,
     })
 
-    try {
-      renderPane({ zookeeperManagerActor })
+    renderPane({ zookeeperManagerActor })
 
-      act(() => {
-        window.dispatchEvent(new Event('offline'))
-      })
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
 
-      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
-        type: ZookeeperManagerTransitions.NetworkOffline,
-      })
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'No internet connection.'
-      )
-      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
-      expect(
-        screen.queryByRole('button', { name: /Clear chat/ })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.getByTestId('ml-ephant-conversation-input-button')
-      ).toBeDisabled()
-      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
-
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(3000)
-      })
-
-      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-        })
-      )
-
-      act(() => {
-        window.dispatchEvent(new Event('online'))
-      })
-      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'No internet connection.'
+    )
+    expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.NetworkOffline,
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-        refParentSend: zookeeperManagerActor.send,
-        conversationId: 'conversation-id',
       })
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-    } finally {
-      vi.useRealTimers()
-    }
+    )
+
+    act(() => {
+      ws.dispatchEvent(new MessageEvent('message'))
+    })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
+    fireEvent.click(screen.getByRole('button', { name: /reconnect/i }))
+    expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.NetworkOffline,
+    })
+    expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: zookeeperManagerActor.send,
+      conversationId: 'conversation-id',
+    })
+    zookeeperManagerActor.send.mockClear()
+
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalled()
+
+    ws.readyState = WebSocket.CONNECTING
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+
+    ws.readyState = WebSocket.CLOSED
+    act(() => {
+      window.dispatchEvent(new Event('offline'))
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.NetworkOffline,
+    })
+
+    act(() => {
+      window.dispatchEvent(new Event('online'))
+    })
+    expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      refParentSend: zookeeperManagerActor.send,
+      conversationId: 'conversation-id',
+    })
   })
 
   test('waits for the saved conversation lookup before reconnecting an initially offline project', async () => {
