@@ -85,6 +85,12 @@ async fn inner_is_equal_body_type(
     args: Args,
     expected: BodyType,
 ) -> Result<bool, KclError> {
+    if args.ctx.no_engine_commands().await
+        && let Some(body_type) = surface.body_type
+    {
+        return Ok(expected == body_type);
+    }
+
     let meta = ModelingCmdMeta::from_args(exec_state, &args);
     let cmd = ModelingCmd::from(mcmd::Solid3dGetBodyType::builder().object_id(surface.id).build());
 
@@ -343,6 +349,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         value_id: id,
         topology_id: id,
         pattern_source_artifact_id: None,
+        body_type: Some(BodyType::Surface),
         artifact_id: id.into(),
         value: vec![],
         faces: Default::default(),
@@ -412,6 +419,7 @@ async fn inner_join(
             value_id: body_out_id,
             topology_id: body_out_id,
             pattern_source_artifact_id: None,
+            body_type: None,
             artifact_id: body_out_id.into(),
             value: vec![],
             faces: Default::default(),
@@ -431,5 +439,38 @@ async fn inner_join(
             std::slice::from_ref(&solid),
         );
         Ok(solid)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_body_type_queries_use_locally_known_type() {
+        let code = r#"
+fn square(@plane, origin, side, bodyType) {
+  return startSketchOn(plane)
+    |> startProfile(at = origin)
+    |> yLine(length = side)
+    |> xLine(length = side)
+    |> yLine(length = -side)
+    |> xLine(length = -side)
+    |> extrude(length = side, bodyType = bodyType)
+}
+
+solid = square(XY, origin = [0, 0], side = 5, bodyType = "solid")
+surface = square(XY, origin = [10, 0], side = 5, bodyType = "surface")
+
+assertIs(isSolid(solid))
+assertIs(!isSurface(solid))
+assertIs(isSurface(surface))
+assertIs(!isSolid(surface))
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
     }
 }
