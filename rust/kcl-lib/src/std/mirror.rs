@@ -25,6 +25,7 @@ use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::MirrorAcross3d;
 use crate::std::clone::fix_tags_and_references;
+use crate::std::patterns::GeometryTrait;
 
 /// Mirror a solid.
 pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -52,9 +53,14 @@ async fn inner_mirror_3d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    let unmapped_mirrored_bodies = bodies.clone();
+    let mut unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
+        for mirrored_body in &mut unmapped_mirrored_bodies {
+            let id = exec_state.next_uuid();
+            mirrored_body.set_id(id);
+            mirrored_body.become_new_body(id, id.into());
+        }
         return Ok(unmapped_mirrored_bodies);
     }
 
@@ -322,4 +328,41 @@ async fn inner_mirror_2d(
     }
 
     Ok(starting_sketches)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_mirror_has_independent_consumption_identity() {
+        let code = r#"
+base = startSketchOn(XY)
+  |> startProfile(at = [1, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> close()
+  |> extrude(length = 5)
+
+mirroredBase = mirror3d([base], across = YZ)
+
+tool = startSketchOn(XY)
+  |> startProfile(at = [3, 3])
+  |> xLine(length = 2)
+  |> yLine(length = 2)
+  |> xLine(length = -2)
+  |> close()
+  |> extrude(length = 5)
+
+mirroredTool = mirror3d([tool], across = YZ)
+firstCut = subtract(base, tools = [tool])
+secondCut = subtract(mirroredBase, tools = [mirroredTool])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
 }
