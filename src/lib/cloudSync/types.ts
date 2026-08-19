@@ -91,6 +91,12 @@ export type ProjectUploadBody = {
   expected_revision?: Revision
 }
 
+/** Publication metadata that whole-project replacements must preserve. */
+export type ProjectUploadPublicationMetadata = {
+  description: string
+  category_ids: string[]
+}
+
 /** Runtime configuration for enabling and targeting cloud sync replication. */
 export type CloudSyncConfig = {
   enabled: boolean

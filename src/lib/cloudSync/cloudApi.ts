@@ -7,6 +7,7 @@ import {
 import type {
   CloudSyncConfig,
   ProjectArchiveFile,
+  ProjectUploadPublicationMetadata,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
@@ -372,7 +373,12 @@ export async function createRemoteProject(
 ) {
   return cloudJson<RemoteProject>(config, '/user/projects', {
     method: 'POST',
-    body: buildProjectFormData(projectPath, files),
+    body: buildProjectFormData(projectPath, files, {
+      publicationMetadata: {
+        description: '',
+        category_ids: [],
+      },
+    }),
   })
 }
 
@@ -380,6 +386,7 @@ export async function updateRemoteProject({
   config,
   projectPath,
   projectId,
+  currentRemoteProject,
   files,
   expectedRevision,
   entrypointPath,
@@ -387,10 +394,20 @@ export async function updateRemoteProject({
   config: CloudSyncConfig
   projectPath: string
   projectId: string
+  currentRemoteProject: RemoteProject
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
   entrypointPath?: string
 }) {
+  if (currentRemoteProject.id !== projectId) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Cloud sync cannot preserve publication metadata for project ${projectId}: remote metadata belongs to project ${currentRemoteProject.id}.`
+    )
+  }
+  const publicationMetadata =
+    getProjectUploadPublicationMetadata(currentRemoteProject)
+
   return cloudJson<RemoteProject>(
     config,
     appendExpectedRevisionParam(
@@ -402,6 +419,7 @@ export async function updateRemoteProject({
       body: buildProjectFormData(projectPath, files, {
         expectedRevision,
         entrypointPath,
+        publicationMetadata,
       }),
     }
   )
@@ -410,6 +428,7 @@ export async function updateRemoteProject({
 type BuildProjectFormDataOptions = {
   expectedRevision?: Revision
   entrypointPath?: string
+  publicationMetadata?: ProjectUploadPublicationMetadata
 }
 
 function buildProjectFormData(
@@ -445,4 +464,37 @@ function buildProjectFormData(
   }
 
   return formData
+}
+
+function getProjectUploadPublicationMetadata(
+  project: RemoteProject
+): ProjectUploadPublicationMetadata {
+  if (typeof project.description !== 'string') {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Cloud sync cannot preserve publication metadata for project ${project.id}: missing description.`
+    )
+  }
+  if (!isArray(project.category_ids)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error(
+      `Cloud sync cannot preserve publication metadata for project ${project.id}: missing category_ids.`
+    )
+  }
+
+  const categoryIds: string[] = []
+  for (const categoryId of project.category_ids) {
+    if (typeof categoryId !== 'string') {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new Error(
+        `Cloud sync cannot preserve publication metadata for project ${project.id}: invalid category_ids.`
+      )
+    }
+    categoryIds.push(categoryId)
+  }
+
+  return {
+    description: project.description,
+    category_ids: categoryIds,
+  }
 }
