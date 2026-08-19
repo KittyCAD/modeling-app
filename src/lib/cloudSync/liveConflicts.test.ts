@@ -215,10 +215,26 @@ describe('cloud sync live conflicts', () => {
           errorName: 'CloudSyncConflict',
           message: 'Cloud sync conflict: local and remote both changed.',
           route: '/cloud-sync',
-          extra: {
+          dedupeKey: expect.stringContaining(
+            `CloudSync:conflict:remote-project-id:${remoteProjectId}:rev-1:rev-2:`
+          ),
+          extra: expect.objectContaining({
             source: 'CloudSyncEngine',
             operation: 'reconcile-project',
-          },
+            clientInstanceId: expect.any(String),
+            projectIdentityKind: 'remote-project-id',
+            projectIdentity: remoteProjectId,
+            remoteProjectId,
+            localProjectPathHash: expect.any(String),
+            syncBaseRemoteRevision: 'rev-1',
+            conflictRemoteRevision: 'rev-2',
+            conflictRemoteUpdatedAt: remoteUpdatedAt,
+            conflictAlreadyRecorded: false,
+            baseManifestFingerprint: expect.any(String),
+            localManifestFingerprint: expect.any(String),
+            remoteManifestFingerprint: expect.any(String),
+            divergentChangedFileCount: expect.any(Number),
+          }),
         })
       )
     )
