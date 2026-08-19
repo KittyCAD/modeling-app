@@ -201,6 +201,9 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
         ...payload.files.map((file) => file.requestedFileName),
         ...payload.filesToDelete.map((file) => file.requestedFileName),
       ]
+      const trackedRelativePaths =
+        payload.zookeeperEditPatch?.changed_files?.map((file) => file.path) ??
+        writtenRelativePaths
       const shouldTrackZookeeperWrite = Boolean(
         project?.path && writtenRelativePaths.length
       )
@@ -249,7 +252,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                   await beginPendingZookeeperHistoryWrite({
                     activeFilePath,
                     exchangeId,
-                    filePaths: writtenRelativePaths,
+                    filePaths: trackedRelativePaths,
                     projectPath: project.path,
                     recordHistory: shouldRecordZookeeperHistory,
                     reserved: pendingHistoryReserved,
@@ -311,7 +314,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                           currentFileRequestedCode:
                             currentEditorFile?.requestedCode,
                           exchangeId,
-                          filePaths: writtenRelativePaths,
+                          filePaths: trackedRelativePaths,
                           patch: payload.zookeeperEditPatch,
                           projectPath: project.path,
                         })
@@ -554,11 +557,6 @@ function useZookeeperEditPatchHistory({
       }
       try {
         if (pending.patch?.changed_files?.length && pending.activeFilePath) {
-          const patchPaths = new Set(
-            pending.patch.changed_files.map((file) =>
-              normalizeZookeeperPatchPath(file.path)
-            )
-          )
           recordZookeeperHistory({
             activeFileDeleted: pending.activeFileDeleted,
             activeFilePath: pending.activeFilePath,
@@ -568,9 +566,7 @@ function useZookeeperEditPatchHistory({
             currentFileRequestedCode: pending.currentFileRequestedCode,
             patch: pending.patch,
             projectPath: pending.projectPath,
-            snapshotFiles: snapshotFiles.filter((file) =>
-              patchPaths.has(file.relativePath)
-            ),
+            snapshotFiles,
           })
         }
       } finally {

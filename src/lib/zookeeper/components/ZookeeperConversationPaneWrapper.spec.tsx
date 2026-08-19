@@ -175,12 +175,15 @@ function patchBackedZookeeperEdit(code: string, path = 'main.kcl') {
   return patchBackedZookeeperFiles({ [path]: code })
 }
 
-function patchBackedZookeeperFiles(outputs: Record<string, string>) {
+function patchBackedZookeeperFiles(
+  outputs: Record<string, string>,
+  changedFiles = outputs
+) {
   return {
     ...zookeeperFiles(outputs),
     zookeeper_edit_patch: {
       run_id: 'run-1',
-      changed_files: Object.entries(outputs).map(([path, contents]) => ({
+      changed_files: Object.entries(changedFiles).map(([path, contents]) => ({
         path,
         status: 'created',
         contents,
@@ -387,12 +390,18 @@ describe('ZookeeperConversationPaneWrapper', () => {
       'cube.kcl': 'cube = true',
       'unchanged-1.kcl': 'unchanged 1',
       'unchanged-2.kcl': 'unchanged 2',
-      'unchanged-3.kcl': 'unchanged 3',
+      'untracked.kcl': 'untracked change',
     }
-    for (const [path, contents] of Object.entries(secondOutputs).slice(2)) {
+    for (const [path, contents] of Object.entries(secondOutputs).slice(2, 4)) {
       mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
     }
-    emitZookeeperFileRequestOutput(zookeeperFiles(secondOutputs), 1)
+    emitZookeeperFileRequestOutput(
+      patchBackedZookeeperFiles(secondOutputs, {
+        'main.kcl': secondOutputs['main.kcl'],
+        'cube.kcl': secondOutputs['cube.kcl'],
+      }),
+      1
+    )
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
     emitEndOfStream(1)
     expect(mocks.toastSuccess).not.toHaveBeenCalled()
