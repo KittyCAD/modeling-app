@@ -6,6 +6,7 @@ import type {
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
+import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -14,6 +15,12 @@ const clientErrorMocks = vi.hoisted(() => ({
 
 vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
+}))
+vi.mock('react-hot-toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }))
 
 import {
@@ -667,6 +674,44 @@ describe('KclManager diagnostics', () => {
 
     readSpy.mockRestore()
     watchSpy.mockRestore()
+  })
+
+  it('seeds the default KCL version when the user clears main.kcl', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    await kclManager.wasmInstancePromise
+    vi.useFakeTimers()
+
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/project/main.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('x = 1')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+
+    kclManager.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: kclManager.editorView.state.doc.length,
+        insert: '',
+      },
+    })
+
+    expect(kclManager.code).toBe('')
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.code).toBe(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
+    expect(writeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+    expect(writeSpy).toHaveBeenCalledWith(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {
