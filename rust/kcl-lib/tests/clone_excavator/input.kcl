@@ -1,0 +1,162 @@
+@settings(kclVersion = 2.0)
+
+treadSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 20
+  horizontal([circle1.start, circle1.center])
+  line1 = line(start = [var -17mm, var -15mm], end = [var -17mm, var 25mm])
+  line2 = line(start = [var -17mm, var 25mm], end = [var 59mm, var 25mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 59mm, var 25mm], end = [var 80.5mm, var 48.7mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 80.5mm, var 48.7mm], end = [var 102mm, var 25mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 102mm, var 25mm], end = [var 162mm, var 25mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 162mm, var 25mm], end = [var 162mm, var -25mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 162mm, var -25mm], end = [var 156mm, var -25mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 156mm, var -25mm], end = [var 156mm, var -15mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 156mm, var -15mm], end = [var 126mm, var -15mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 126mm, var -15mm], end = [var 126mm, var -25mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 126mm, var -25mm], end = [var 106mm, var -25mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 106mm, var -25mm], end = [var 106mm, var -15mm])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 106mm, var -15mm], end = [var 76mm, var -15mm])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 76mm, var -15mm], end = [var 76mm, var -25mm])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 76mm, var -25mm], end = [var 56mm, var -25mm])
+  coincident([line14.end, line15.start])
+  line16 = line(start = [var 56mm, var -25mm], end = [var 56mm, var -15mm])
+  coincident([line15.end, line16.start])
+  line17 = line(start = [var 56mm, var -15mm], end = [var 26mm, var -15mm])
+  coincident([line16.end, line17.start])
+  line18 = line(start = [var 26mm, var -15mm], end = [var 26mm, var -25mm])
+  coincident([line17.end, line18.start])
+  line19 = line(start = [var 26mm, var -25mm], end = [var 6mm, var -25mm])
+  coincident([line18.end, line19.start])
+  line20 = line(start = [var 6mm, var -25mm], end = [var 6mm, var -15mm])
+  coincident([line19.end, line20.start])
+  line21 = line(start = [var 6mm, var -15mm], end = [var -17mm, var -15mm])
+  coincident([line20.end, line21.start])
+  horizontal(line2)
+  horizontal(line5)
+  horizontal(line21)
+  horizontal(line19)
+  horizontal(line17)
+  horizontal(line15)
+  horizontal(line13)
+  horizontal(line11)
+  horizontal(line9)
+  horizontal(line7)
+  coincident([line1.start, line21.end])
+  vertical(line1)
+  vertical(line20)
+  vertical(line18)
+  vertical(line16)
+  vertical(line14)
+  vertical(line12)
+  vertical(line10)
+  vertical(line8)
+  distance([line13.start, line13.end], labelPosition = [87.75mm, -20.47mm]) == 30
+  equalLength([line13, line9])
+  distance([line11.start, line11.end]) == 20
+  equalLength([line15, line11])
+  distance([line7.start, line7.end]) == 6
+  vertical(line6)
+  distance([line6.start, line6.end]) == 50
+  distance([line5.start, line5.end]) == 60
+  equalLength([line17, line13])
+  equalLength([line15, line19])
+  distance([line1.start, line1.end]) == 40
+  distance([line21.start, line21.end]) == 23
+  horizontal([line5.start, line3.start])
+  coincident([line17, line13])
+  coincident([line9, line13])
+  equalLength([
+    line20,
+    line18,
+    line16,
+    line14,
+    line12,
+    line10
+  ])
+  distance([line11, line5], labelPosition = [183.4mm, -26.23mm]) == 50
+  distance([line3.start, line5.start], labelPosition = [80.36mm, 6.28mm]) == 43
+  distance([line4.start, line4.end]) == 32
+  equalLength([line3, line4])
+  distance([circle1, line21]) == 5
+  distance([circle1, line1]) == 7
+}
+
+hidden001 = hide(treadSketch)
+region001 = region(point = [-16.9975mm, 5mm], sketch = treadSketch)
+extrude001 = extrude(region001, length = 400, symmetric = true)
+face001 = faceOf(extrude001, face = END)
+sketch002 = sketch(on = face001) {
+  line1 = line(start = [var -18.14mm, var 28.05mm], end = [var 42.86mm, var 28.05mm])
+  line2 = line(start = [var 42.86mm, var 28.05mm], end = [var 42.86mm, var -30.85mm])
+  line3 = line(start = [var 42.86mm, var -30.85mm], end = [var -18.14mm, var -30.85mm])
+  line4 = line(start = [var -18.14mm, var -30.85mm], end = [var -18.14mm, var 28.05mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  distance([line1.start, line1.end]) == 61
+}
+hidden002 = hide(sketch002)
+region002 = region(point = [13.08mm, 24.9775mm], sketch = sketch002)
+
+extrude002 = extrude(region002, length = -75, method = NEW)
+face002 = faceOf(extrude001, face = START)
+sketch003 = sketch(on = face002) {
+  line1 = line(start = [var 32.2mm, var 30.61mm], end = [var -42.88mm, var 30.61mm])
+  line2 = line(start = [var -42.88mm, var 30.61mm], end = [var -42.88mm, var -28.07mm])
+  line3 = line(start = [var -42.88mm, var -28.07mm], end = [var 32.2mm, var -28.07mm])
+  line4 = line(start = [var 32.2mm, var -28.07mm], end = [var 32.2mm, var 30.61mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden003 = hide(sketch003)
+region003 = region(point = [-13.155mm, 25.0375mm], sketch = sketch003)
+extrude003 = extrude(region003, length = -75, method = NEW)
+
+
+face003 = faceOf(extrude001, face = region001.tags.line5)
+sketch004 = sketch(on = face003) {
+  line1 = line(start = [var -179.34mm, var 125.87mm], end = [var -110.35mm, var 125.87mm])
+  line2 = line(start = [var -110.35mm, var 125.87mm], end = [var -110.35mm, var -124.13mm])
+  line3 = line(start = [var -110.35mm, var -124.13mm], end = [var -179.34mm, var -124.13mm])
+  line4 = line(start = [var -179.34mm, var -124.13mm], end = [var -179.34mm, var 125.87mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  distance([line2.start, line2.end]) == 250
+}
+hidden004 = hide(sketch004)
+region004 = region(point = [-144.845mm, 125.8675mm], sketch = sketch004)
+extrude004 = extrude(region004, length = -50, method = NEW)
+
+export tread = subtract(extrude001, tools = [extrude002, extrude003, extrude004])

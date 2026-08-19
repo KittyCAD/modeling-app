@@ -1080,7 +1080,7 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
     // So let's find an edge of the old body.
-    let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);
+    let mut extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);
 
     let mut sketch = sketch.clone();
     match body_type {
@@ -1150,7 +1150,7 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let face_infos = if let OkWebSocketResponseData::Modeling {
+    let mut face_infos = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
     } = solid3d_info
     {
@@ -1158,6 +1158,43 @@ pub(crate) async fn do_post_extrude<'a>(
     } else {
         vec![]
     };
+
+    // A region can contain multiple boundary loops. The engine may return no
+    // metadata when the arbitrary first edge is a complete inner loop, so
+    // retry with one of the remaining boundary edges.
+    if face_infos.is_empty()
+        && matches!(
+            sketch.paths.first(),
+            Some(Path::Circle { .. } | Path::CircleThreePoint { .. })
+        )
+        && let Some(candidate) = sketch
+            .paths
+            .iter()
+            .skip(1)
+            .find(|path| !matches!(path, Path::Circle { .. } | Path::CircleThreePoint { .. }))
+            .map(|path| path.get_base().geo_meta.id)
+    {
+        let candidate = get_extrusion_info_edge_id(&sketch, candidate, clone_id_map);
+        let retry = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(
+                    mcmd::Solid3dGetExtrusionFaceInfo::builder()
+                        .maybe_edge_id(candidate)
+                        .object_id(sketch_id)
+                        .build(),
+                ),
+            )
+            .await?;
+        if let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
+        } = retry
+            && !data.faces.is_empty()
+        {
+            extrusion_info_edge_id = candidate;
+            face_infos = data.faces;
+        }
+    }
 
     // Only do this if we need the artifact graph.
     if !args.ctx.settings.skip_artifact_graph {
