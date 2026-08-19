@@ -336,24 +336,73 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_mirror_has_independent_consumption_identity() {
-        let code = r#"
-base = startSketchOn(XY)
-  |> startProfile(at = [1, 0])
-  |> xLine(length = 10)
-  |> yLine(length = 10)
-  |> xLine(length = -10)
-  |> close()
-  |> extrude(length = 5)
+        let code = r#"// Mirrored rectangular cut blocks
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseStartX = 1mm
+baseWidth = 10mm
+baseHeight = 10mm
+partThickness = 5mm
+cutStartX = 3mm
+cutStartY = 3mm
+cutWidth = 2mm
+cutHeight = 2mm
+
+baseSketch = sketch(on = XY) {
+  baseBottom = line(start = [var 1mm, var 0mm], end = [var 11mm, var 0mm])
+  baseRight = line(start = [var 11mm, var 0mm], end = [var 11mm, var 10mm])
+  baseTop = line(start = [var 11mm, var 10mm], end = [var 1mm, var 10mm])
+  baseLeft = line(start = [var 1mm, var 10mm], end = [var 1mm, var 0mm])
+
+  coincident([baseBottom.end, baseRight.start])
+  coincident([baseRight.end, baseTop.start])
+  coincident([baseTop.end, baseLeft.start])
+  coincident([baseLeft.end, baseBottom.start])
+  horizontal(baseBottom)
+  horizontal(baseTop)
+  vertical(baseRight)
+  vertical(baseLeft)
+  horizontalDistance([ORIGIN, baseBottom.start]) == baseStartX
+  verticalDistance([ORIGIN, baseBottom.start]) == 0mm
+  horizontalDistance([baseBottom.start, baseBottom.end]) == baseWidth
+  verticalDistance([baseBottom.start, baseLeft.start]) == baseHeight
+}
+
+baseRegion = region(segments = [
+  baseSketch.baseBottom,
+  baseSketch.baseRight
+])
+base = extrude(baseRegion, length = partThickness)
+hiddenBaseSketch = hide(baseSketch)
 
 mirroredBase = mirror3d([base], across = YZ)
 
-tool = startSketchOn(XY)
-  |> startProfile(at = [3, 3])
-  |> xLine(length = 2)
-  |> yLine(length = 2)
-  |> xLine(length = -2)
-  |> close()
-  |> extrude(length = 5)
+cutSketch = sketch(on = XY) {
+  cutBottom = line(start = [var 3mm, var 3mm], end = [var 5mm, var 3mm])
+  cutRight = line(start = [var 5mm, var 3mm], end = [var 5mm, var 5mm])
+  cutTop = line(start = [var 5mm, var 5mm], end = [var 3mm, var 5mm])
+  cutLeft = line(start = [var 3mm, var 5mm], end = [var 3mm, var 3mm])
+
+  coincident([cutBottom.end, cutRight.start])
+  coincident([cutRight.end, cutTop.start])
+  coincident([cutTop.end, cutLeft.start])
+  coincident([cutLeft.end, cutBottom.start])
+  horizontal(cutBottom)
+  horizontal(cutTop)
+  vertical(cutRight)
+  vertical(cutLeft)
+  horizontalDistance([ORIGIN, cutBottom.start]) == cutStartX
+  verticalDistance([ORIGIN, cutBottom.start]) == cutStartY
+  horizontalDistance([cutBottom.start, cutBottom.end]) == cutWidth
+  verticalDistance([cutBottom.start, cutLeft.start]) == cutHeight
+}
+
+cutRegion = region(segments = [
+  cutSketch.cutBottom,
+  cutSketch.cutRight
+])
+tool = extrude(cutRegion, length = partThickness)
+hiddenCutSketch = hide(cutSketch)
 
 mirroredTool = mirror3d([tool], across = YZ)
 firstCut = subtract(base, tools = [tool])
