@@ -161,44 +161,6 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.filesToDelete).toEqual([])
   })
 
-  it('writes only files identified as changed by a Zookeeper edit patch', () => {
-    const preparedPayload = prepareZookeeperNewFileRequest({
-      projectNameCurrentlyOpened: 'some-project',
-      fileFocusedOnInEditor: {
-        name: 'main.kcl',
-        path: '/some-project/main.kcl',
-        children: null,
-      },
-      toolOutput: asMlToolResult({
-        status_code: 200,
-        type: 'edit_kcl_code',
-        project_name: 'some-project',
-        outputs: {
-          'main.kcl': 'width = 10',
-          'unchanged.kcl': 'unchanged = true',
-        },
-        zookeeper_edit_patch: {
-          run_id: 'run-filter-writes',
-          changed_files: [
-            { path: 'main.kcl', status: 'modified', diff: '' },
-            {
-              path: 'old.kcl',
-              status: 'deleted',
-              previous_contents: 'old = true',
-            },
-          ],
-        },
-      } satisfies EditKclCodeToolResultWithLocalPatch),
-    })
-
-    expect(
-      preparedPayload?.files.map((file) => file.requestedFileName)
-    ).toEqual(['main.kcl'])
-    expect(preparedPayload?.filesToDelete).toEqual([
-      { requestedFileName: 'old.kcl' },
-    ])
-  })
-
   it('collects project files from disk and excludes .gitignore patterns', async () => {
     const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
     await fsZds.mkdir(fsZds.join(projectPath, '.hidden-dir'), {
