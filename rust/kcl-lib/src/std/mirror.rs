@@ -25,6 +25,7 @@ use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::MirrorAcross3d;
 use crate::std::clone::fix_tags_and_references;
+use crate::std::patterns::GeometryTrait;
 
 /// Mirror a solid.
 pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -55,6 +56,12 @@ async fn inner_mirror_3d(
     let unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
+        let mut unmapped_mirrored_bodies = unmapped_mirrored_bodies;
+        for mirrored_body in &mut unmapped_mirrored_bodies {
+            let id = exec_state.next_uuid();
+            mirrored_body.set_id(id);
+            mirrored_body.become_new_body(id, id.into());
+        }
         return Ok(unmapped_mirrored_bodies);
     }
 
@@ -322,4 +329,91 @@ async fn inner_mirror_2d(
     }
 
     Ok(starting_sketches)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_mirror_has_independent_consumption_identity() {
+        let code = r#"// Mirrored rectangular cut blocks
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseStartX = 1mm
+baseWidth = 10mm
+baseHeight = 10mm
+partThickness = 5mm
+cutStartX = 3mm
+cutStartY = 3mm
+cutWidth = 2mm
+cutHeight = 2mm
+
+baseSketch = sketch(on = XY) {
+  baseBottom = line(start = [var 1mm, var 0mm], end = [var 11mm, var 0mm])
+  baseRight = line(start = [var 11mm, var 0mm], end = [var 11mm, var 10mm])
+  baseTop = line(start = [var 11mm, var 10mm], end = [var 1mm, var 10mm])
+  baseLeft = line(start = [var 1mm, var 10mm], end = [var 1mm, var 0mm])
+
+  coincident([baseBottom.end, baseRight.start])
+  coincident([baseRight.end, baseTop.start])
+  coincident([baseTop.end, baseLeft.start])
+  coincident([baseLeft.end, baseBottom.start])
+  horizontal(baseBottom)
+  horizontal(baseTop)
+  vertical(baseRight)
+  vertical(baseLeft)
+  horizontalDistance([ORIGIN, baseBottom.start]) == baseStartX
+  verticalDistance([ORIGIN, baseBottom.start]) == 0mm
+  horizontalDistance([baseBottom.start, baseBottom.end]) == baseWidth
+  verticalDistance([baseBottom.start, baseLeft.start]) == baseHeight
+}
+
+baseRegion = region(segments = [
+  baseSketch.baseBottom,
+  baseSketch.baseRight
+])
+base = extrude(baseRegion, length = partThickness)
+hiddenBaseSketch = hide(baseSketch)
+
+mirroredBase = mirror3d([base], across = YZ)
+
+cutSketch = sketch(on = XY) {
+  cutBottom = line(start = [var 3mm, var 3mm], end = [var 5mm, var 3mm])
+  cutRight = line(start = [var 5mm, var 3mm], end = [var 5mm, var 5mm])
+  cutTop = line(start = [var 5mm, var 5mm], end = [var 3mm, var 5mm])
+  cutLeft = line(start = [var 3mm, var 5mm], end = [var 3mm, var 3mm])
+
+  coincident([cutBottom.end, cutRight.start])
+  coincident([cutRight.end, cutTop.start])
+  coincident([cutTop.end, cutLeft.start])
+  coincident([cutLeft.end, cutBottom.start])
+  horizontal(cutBottom)
+  horizontal(cutTop)
+  vertical(cutRight)
+  vertical(cutLeft)
+  horizontalDistance([ORIGIN, cutBottom.start]) == cutStartX
+  verticalDistance([ORIGIN, cutBottom.start]) == cutStartY
+  horizontalDistance([cutBottom.start, cutBottom.end]) == cutWidth
+  verticalDistance([cutBottom.start, cutLeft.start]) == cutHeight
+}
+
+cutRegion = region(segments = [
+  cutSketch.cutBottom,
+  cutSketch.cutRight
+])
+tool = extrude(cutRegion, length = partThickness)
+hiddenCutSketch = hide(cutSketch)
+
+mirroredTool = mirror3d([tool], across = YZ)
+firstCut = subtract(base, tools = [tool])
+secondCut = subtract(mirroredBase, tools = [mirroredTool])
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        result.unwrap();
+    }
 }

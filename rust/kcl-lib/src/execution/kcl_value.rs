@@ -930,6 +930,14 @@ impl KclValue {
         }
     }
 
+    pub fn from_imported_geometries(geometries: Vec<ImportedGeometry>) -> Self {
+        geometries
+            .into_iter()
+            .map(|geometry| GeometryWithImportedGeometry::ImportedGeometry(Box::new(geometry)))
+            .collect::<Vec<_>>()
+            .into()
+    }
+
     /// Put the point into a KCL value.
     pub fn from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
         let [x, y, z] = p;
