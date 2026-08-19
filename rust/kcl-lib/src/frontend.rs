@@ -441,12 +441,8 @@ impl FrontendState {
         constraint: Constraint,
         options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let previous_commit_mode = self
-            .next_edit_commits_solver_solutions
-            .replace(options.commit_solved_initial_guesses);
-        let result = SketchApi::edit_distance_constraint(self, ctx, version, sketch, constraint_id, constraint).await;
-        self.next_edit_commits_solver_solutions = previous_commit_mode;
-        result
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, constraint, options)
+            .await
     }
 
     /// Edit an angle constraint with optional solver writeback.
@@ -459,12 +455,90 @@ impl FrontendState {
         angle: Angle,
         options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let previous_commit_mode = self
-            .next_edit_commits_solver_solutions
-            .replace(options.commit_solved_initial_guesses);
-        let result = SketchApi::edit_angle_constraint(self, ctx, version, sketch, constraint_id, angle).await;
-        self.next_edit_commits_solver_solutions = previous_commit_mode;
-        result
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, Constraint::Angle(angle), options)
+            .await
+    }
+
+    /// Edit an angle or distance-family constraint with optional solver writeback.
+    pub async fn edit_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+
+        let mut new_ast = self.program.ast.clone();
+        let command = match &object.kind {
+            ObjectKind::Constraint {
+                constraint:
+                    Constraint::Distance(_) | Constraint::HorizontalDistance(_) | Constraint::VerticalDistance(_),
+            } => {
+                let (function_name, distance) = match &constraint {
+                    Constraint::Distance(distance) => (DISTANCE_FN, distance),
+                    Constraint::HorizontalDistance(distance) => (HORIZONTAL_DISTANCE_FN, distance),
+                    Constraint::VerticalDistance(distance) => (VERTICAL_DISTANCE_FN, distance),
+                    _ => {
+                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                            "A distance constraint can only be replaced by another distance constraint".to_owned(),
+                        )));
+                    }
+                };
+                let (call, value) = self
+                    .distance_constraint_ast_parts(function_name, distance, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditDistanceConstraint { call, value }
+            }
+            ObjectKind::Constraint {
+                constraint: Constraint::Angle(_),
+            } => {
+                let Constraint::Angle(angle) = &constraint else {
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                        "An angle constraint can only be replaced by another angle constraint".to_owned(),
+                    )));
+                };
+                let (call, value) = self
+                    .angle_constraint_ast_parts(angle, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditAngleConstraint { call, value }
+            }
+            ObjectKind::Constraint { .. } => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Editing {} is not supported",
+                    object.kind.human_friendly_kind_with_article(),
+                ))));
+            }
+            _ => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Object is not a constraint: {constraint_id:?}"
+                ))));
+            }
+        };
+
+        self.mutate_ast(&mut new_ast, constraint_id, command)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: options.commit_solved_initial_guesses,
+            },
+        )
+        .await
     }
 
     pub async fn restore_sketch_checkpoint(
@@ -1615,128 +1689,6 @@ impl SketchApi for FrontendState {
             &mut new_ast,
             ExecuteAfterEditOptions {
                 segment_ids_edited: anchor_segment_ids.into_iter().collect(),
-                edit_kind: EditDeleteKind::Edit,
-                commit_solved_initial_guesses,
-            },
-        )
-        .await
-    }
-
-    // Replace a distance-family call and value, e.g. `distance(...) == 5mm` to `verticalDistance(...) == -6mm`.
-    async fn edit_distance_constraint(
-        &mut self,
-        ctx: &ExecutorContext,
-        _version: Version,
-        sketch: ObjectId,
-        constraint_id: ObjectId,
-        constraint: Constraint,
-    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
-        })?;
-        if !matches!(
-            &object.kind,
-            ObjectKind::Constraint {
-                constraint: Constraint::Distance(_)
-                    | Constraint::HorizontalDistance(_)
-                    | Constraint::VerticalDistance(_),
-            }
-        ) {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object should be a distance constraint but it was {}",
-                object.kind.human_friendly_kind_with_article(),
-            ))));
-        }
-
-        let (function_name, distance) = match &constraint {
-            Constraint::Distance(distance) => (DISTANCE_FN, distance),
-            Constraint::HorizontalDistance(distance) => (HORIZONTAL_DISTANCE_FN, distance),
-            Constraint::VerticalDistance(distance) => (VERTICAL_DISTANCE_FN, distance),
-            _ => {
-                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                    "New constraint should be a distance constraint".to_owned(),
-                )));
-            }
-        };
-
-        let mut new_ast = self.program.ast.clone();
-        let (call, value) = self
-            .distance_constraint_ast_parts(function_name, distance, &mut new_ast)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.mutate_ast(
-            &mut new_ast,
-            constraint_id,
-            AstMutateCommand::EditDistanceConstraint { call, value },
-        )
-        .map_err(KclErrorWithOutputs::no_outputs)?;
-        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
-
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            sketch_block_ref,
-            &mut new_ast,
-            ExecuteAfterEditOptions {
-                segment_ids_edited: Default::default(),
-                edit_kind: EditDeleteKind::Edit,
-                commit_solved_initial_guesses,
-            },
-        )
-        .await
-    }
-
-    async fn edit_angle_constraint(
-        &mut self,
-        ctx: &ExecutorContext,
-        _version: Version,
-        sketch: ObjectId,
-        constraint_id: ObjectId,
-        angle: Angle,
-    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
-        })?;
-        if !matches!(
-            &object.kind,
-            ObjectKind::Constraint {
-                constraint: Constraint::Angle(_),
-            }
-        ) {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object should be an angle constraint but it was {}",
-                object.kind.human_friendly_kind_with_article(),
-            ))));
-        }
-
-        let mut new_ast = self.program.ast.clone();
-        let (call, value) = self
-            .angle_constraint_ast_parts(&angle, &mut new_ast)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.mutate_ast(
-            &mut new_ast,
-            constraint_id,
-            AstMutateCommand::EditAngleConstraint { call, value },
-        )
-        .map_err(KclErrorWithOutputs::no_outputs)?;
-        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
-
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            sketch_block_ref,
-            &mut new_ast,
-            ExecuteAfterEditOptions {
-                segment_ids_edited: Default::default(),
                 edit_kind: EditDeleteKind::Edit,
                 commit_solved_initial_guesses,
             },
