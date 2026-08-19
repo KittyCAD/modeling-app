@@ -143,10 +143,12 @@ const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
 
 type EngineSceneViewExtensionOverlayProps = EngineSceneExtensionContext & {
   extensions: readonly EngineSceneViewExtension[]
+  inert?: boolean
 }
 
 export function EngineSceneViewExtensionOverlay({
   extensions,
+  inert,
   ...context
 }: EngineSceneViewExtensionOverlayProps) {
   const registeredExtensions = resolveEngineSceneViewExtensions(
@@ -158,6 +160,8 @@ export function EngineSceneViewExtensionOverlay({
     <div
       className="absolute inset-0 z-10 pointer-events-none"
       aria-hidden={registeredExtensions.length === 0}
+      data-testid="engine-scene-view-extension-overlay"
+      inert={inert}
     >
       {engineSceneViewExtensionZones.map((zone) => {
         const zoneExtensions = registeredExtensions.filter(

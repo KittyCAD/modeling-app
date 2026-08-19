@@ -22,6 +22,7 @@ export type ExchangeCardProps = Exchange & {
   userAvatar?: string
   onClickClearChat: () => void
   isLastResponse: boolean
+  clearChatDisabled?: boolean
 }
 
 type MlCopilotServerMessageError = Extract<
@@ -116,6 +117,7 @@ export const ResponseCardToolBar = (props: {
   responses?: MlCopilotServerMessage[]
   onClickClearChat: () => void
   isLastResponse: boolean
+  clearChatDisabled?: boolean
 }) => {
   const isEndOfStream = isExchangeComplete(props.responses)
 
@@ -134,7 +136,10 @@ export const ResponseCardToolBar = (props: {
         <div></div>
       )}
       {props.isLastResponse && (
-        <ButtonClearChat onClick={props.onClickClearChat} />
+        <ButtonClearChat
+          onClick={props.onClickClearChat}
+          disabled={props.clearChatDisabled}
+        />
       )}
     </div>
   )
@@ -344,6 +349,7 @@ type ResponsesCardProp = {
   deltasAggregated: Exchange['deltasAggregated']
   isLastResponse: boolean
   onClickClearChat: () => void
+  clearChatDisabled?: boolean
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -442,6 +448,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
         responses={props.items}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
+        clearChatDisabled={props.clearChatDisabled}
       />
     </>
   ) : null
@@ -551,6 +558,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         deltasAggregated={props.deltasAggregated}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
+        clearChatDisabled={props.clearChatDisabled}
       />
     </div>
   )
