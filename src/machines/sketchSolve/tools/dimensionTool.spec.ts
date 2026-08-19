@@ -613,6 +613,63 @@ describe('dimensionTool', () => {
     })
   })
 
+  it.each([
+    {
+      clicks: [
+        [5, 0],
+        [5, 4],
+      ] as [Coords2d, Coords2d],
+      segments: [10, 11],
+    },
+    {
+      clicks: [
+        [5, 4],
+        [5, 0],
+      ] as [Coords2d, Coords2d],
+      segments: [11, 10],
+    },
+  ])(
+    'creates a distance draft for nearly anti-parallel lines selected as $segments',
+    async ({ clicks, segments }) => {
+      const sketch = createSketchApiObject({ id: 0 })
+      const line0Start = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const line0End = createPointApiObject({ id: 2, x: 10, y: 0 })
+      const line1Start = createPointApiObject({ id: 3, x: 10, y: 4 })
+      const line1End = createPointApiObject({
+        id: 4,
+        x: 0,
+        y: 4.00000005,
+      })
+      const line0 = createLineApiObject({ id: 10, start: 1, end: 2 })
+      const line1 = createLineApiObject({ id: 11, start: 3, end: 4 })
+      const { actor, sceneInfra, rustContext } = createParentHarness([
+        sketch,
+        line0Start,
+        line0End,
+        line1Start,
+        line1End,
+        line0,
+        line1,
+      ])
+      const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+      callbacks.onClick(createMouseEvent(clicks[0]))
+      callbacks.onClick(createMouseEvent(clicks[1]))
+
+      await waitFor(
+        actor,
+        () => (rustContext.addConstraint as any).mock.calls.length === 1
+      )
+      expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject(
+        {
+          type: 'Distance',
+          segments,
+          distance: { value: 4, units: 'Mm' },
+        }
+      )
+    }
+  )
+
   it('starts distance placement when initialized with two selected points', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })

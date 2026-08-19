@@ -945,33 +945,33 @@ function getDimensionDraftContext(
   objects: ApiObject[]
 ): DimensionDraftContext | null {
   if (firstSelection.type === 'line' && secondSelection.type === 'line') {
+    const line0 = getLinePoints(objects[firstSelection.id], objects)
+    const line1 = getLinePoints(objects[secondSelection.id], objects)
+    if (!line0 || !line1) {
+      return null
+    }
+
+    if (linesAreParallel(line0, line1)) {
+      const distance = distancePointToLine2d(line0[0], line1)
+      return distance === null
+        ? null
+        : {
+            type: 'distance',
+            distance: {
+              kind: 'lineLine',
+              line0: firstSelection,
+              line1: secondSelection,
+              distance,
+            },
+          }
+    }
+
     const angle = getDimensionAngleContext(
       firstSelection,
       secondSelection,
       objects
     )
-    if (angle) {
-      return { type: 'angle', angle }
-    }
-
-    const line0 = getLinePoints(objects[firstSelection.id], objects)
-    const line1 = getLinePoints(objects[secondSelection.id], objects)
-    if (!line0 || !line1 || !linesAreParallel(line0, line1)) {
-      return null
-    }
-
-    const distance = distancePointToLine2d(line0[0], line1)
-    return distance === null
-      ? null
-      : {
-          type: 'distance',
-          distance: {
-            kind: 'lineLine',
-            line0: firstSelection,
-            line1: secondSelection,
-            distance,
-          },
-        }
+    return angle ? { type: 'angle', angle } : null
   }
 
   if (firstSelection.type === 'point' && secondSelection.type === 'point') {
