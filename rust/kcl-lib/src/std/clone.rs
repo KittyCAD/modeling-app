@@ -168,7 +168,7 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
             sketch.clone = Some(source_topology_id);
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
@@ -188,7 +188,7 @@ pub(super) async fn fix_tags_and_references(
             sketch.artifact_id = new_geometry_id.into();
             sketch.clone = Some(source_topology_id);
 
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, Some(solid_value)).await?;
             let sketch_for_post = sketch.clone();
 
             // Fix the edge cuts.
@@ -210,7 +210,7 @@ pub(super) async fn fix_tags_and_references(
 
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
-            let new_solid = do_post_extrude(
+            let mut new_solid = do_post_extrude(
                 &sketch_for_post,
                 solid_artifact_id,
                 solid.sectional,
@@ -228,6 +228,7 @@ pub(super) async fn fix_tags_and_references(
             )
             .await?;
 
+            restore_sketch_tag_surfaces(&mut new_solid);
             *solid = new_solid;
 
             restore_face_tags(solid, &old_face_tag_names, exec_state);
@@ -235,6 +236,31 @@ pub(super) async fn fix_tags_and_references(
     }
 
     Ok(())
+}
+
+/// Restore any sketch tag surfaces that could not be mapped from stale source
+/// metadata before [`do_post_extrude`] rebuilt the cloned solid's surfaces.
+fn restore_sketch_tag_surfaces(solid: &mut Solid) {
+    let surfaces_by_tag = solid
+        .value
+        .iter()
+        .filter_map(|surface| surface.get_tag().map(|tag| (tag.name.clone(), surface.clone())))
+        .collect::<HashMap<_, _>>();
+    let Some(sketch) = solid.sketch_mut() else {
+        return;
+    };
+
+    for (name, tag) in &mut sketch.tags {
+        let Some(surface) = surfaces_by_tag.get(name) else {
+            continue;
+        };
+        let Some((_, info)) = tag.info.last_mut() else {
+            continue;
+        };
+        if info.surface.is_none() {
+            info.surface = Some(surface.clone());
+        }
+    }
 }
 
 /// Rebuild the face tag map of a cloned solid from its new surfaces.
@@ -348,7 +374,6 @@ async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,
-    args: &Args,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
@@ -380,17 +405,18 @@ async fn fix_sketch_tags_and_references(
             let mut surface = None;
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = (*found_surface).clone();
-                let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!(
-                            "Failed to find new face id for old face id: {:?}",
-                            new_surface.face_id()
-                        ),
-                        vec![args.source_range],
-                    )));
-                };
-                new_surface.set_face_id(new_face_id);
-                surface = Some(new_surface);
+                if let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() {
+                    new_surface.set_face_id(new_face_id);
+                    surface = Some(new_surface);
+                } else {
+                    // A boolean can retain a tagged path while replacing or
+                    // removing its old face. `do_post_extrude` queries the
+                    // live topology and rebuilds this optional surface data.
+                    crate::log::logln!(
+                        "Failed to find new face id for stale old face id: {:?}",
+                        new_surface.face_id()
+                    );
+                }
             }
 
             new_sketch.add_tag(&tag, &path, exec_state, surface.as_ref());

@@ -1,5 +1,4 @@
 import { Popover } from '@headlessui/react'
-import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -12,6 +11,7 @@ import { useApp } from '@src/lib/boot'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
+import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import type {
   Conversation,
   Exchange,
@@ -27,9 +27,6 @@ import type { ChangeEvent, ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
-
-const terminalRecoveryButtonClassName =
-  'h-7 w-fit !border-chalkboard-30 !bg-chalkboard-10 enabled:hover:!border-chalkboard-40 enabled:hover:!bg-chalkboard-20 disabled:!border-chalkboard-20 disabled:!bg-chalkboard-20/50 disabled:!text-chalkboard-60 focus-visible:outline-appForeground dark:!border-chalkboard-70 dark:!bg-chalkboard-90 dark:enabled:hover:!border-chalkboard-60 dark:enabled:hover:!bg-chalkboard-80 dark:disabled:!border-chalkboard-70 dark:disabled:!bg-chalkboard-90 dark:disabled:!text-chalkboard-40'
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
 
@@ -722,59 +719,13 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   reconnectDisabled={props.isClearingChat}
                 />
               ) : props.needsReconnect && props.connectionFailed ? (
-                <div
-                  className="m-4 flex flex-col gap-3 rounded-md border border-destroy-30 bg-destroy-10 p-4 text-left dark:border-destroy-70 dark:bg-destroy-80/20"
-                  role="alert"
-                >
-                  <div className="flex items-start gap-2">
-                    <div className="flex flex-col gap-1">
-                      <p className="font-semibold">
-                        {props.connectionError ??
-                          'Zookeeper disconnected unexpectedly.'}
-                      </p>
-                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-                        {props.canClearChat
-                          ? 'Reconnect to try loading this conversation again.'
-                          : 'Reconnect to try connecting again.'}
-                      </p>
-                    </div>
-                  </div>
-                  <ActionButton
-                    Element="button"
-                    aria-label="Reconnect"
-                    type="button"
-                    className={terminalRecoveryButtonClassName}
-                    iconStart={{ icon: 'refresh' }}
-                    onClick={props.onReconnect}
-                    disabled={props.isClearingChat}
-                    tabIndex={0}
-                  >
-                    Reconnect
-                  </ActionButton>
-                  {props.canClearChat && (
-                    <div className="flex flex-col gap-2 border-t border-destroy-30 pt-3 dark:border-destroy-70">
-                      <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-                        If reconnecting still does not work, clearing the chat
-                        is a last resort. Previous conversation data will no
-                        longer be visible in this pane.
-                      </p>
-                      <ActionButton
-                        Element="button"
-                        aria-label={
-                          props.isClearingChat ? 'Clearing...' : 'Clear chat'
-                        }
-                        type="button"
-                        className={`${terminalRecoveryButtonClassName} !text-destroy-80 dark:!text-destroy-20`}
-                        iconStart={{ icon: 'trash' }}
-                        onClick={props.onClickClearChat}
-                        disabled={props.isClearingChat}
-                        tabIndex={0}
-                      >
-                        {props.isClearingChat ? 'Clearing...' : 'Clear chat'}
-                      </ActionButton>
-                    </div>
-                  )}
-                </div>
+                <ZookeeperConnectionErrorBanner
+                  connectionError={props.connectionError}
+                  canClearChat={props.canClearChat}
+                  isClearingChat={props.isClearingChat}
+                  onReconnect={props.onReconnect}
+                  onClickClearChat={props.onClickClearChat}
+                />
               ) : props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false ? (

@@ -74,10 +74,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 716,
-            "end": 724,
+            "commentStart": 734,
+            "end": 742,
             "moduleId": 0,
-            "start": 716,
+            "start": 734,
             "type": "TagDeclarator",
             "value": "leftSide"
           },
@@ -88,10 +88,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 805,
-            "end": 811,
+            "commentStart": 823,
+            "end": 829,
             "moduleId": 0,
-            "start": 805,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "topArc"
           },
@@ -102,10 +102,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 924,
-            "end": 933,
+            "commentStart": 942,
+            "end": 951,
             "moduleId": 0,
-            "start": 924,
+            "start": 942,
             "type": "TagDeclarator",
             "value": "rightSide"
           },
@@ -116,10 +116,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1012,
-            "end": 1021,
+            "commentStart": 1030,
+            "end": 1039,
             "moduleId": 0,
-            "start": 1012,
+            "start": 1030,
             "type": "TagDeclarator",
             "value": "bottomArc"
           },
@@ -141,10 +141,10 @@ description: Variables in memory after executing bottle.kcl
               -26.670000000000762
             ],
             "tag": {
-              "commentStart": 716,
-              "end": 724,
+              "commentStart": 734,
+              "end": 742,
               "moduleId": 0,
-              "start": 716,
+              "start": 734,
               "type": "TagDeclarator",
               "value": "leftSide"
             },
@@ -171,10 +171,10 @@ description: Variables in memory after executing bottle.kcl
             ],
             "radius": 152.64000000000195,
             "tag": {
-              "commentStart": 805,
-              "end": 811,
+              "commentStart": 823,
+              "end": 829,
               "moduleId": 0,
-              "start": 805,
+              "start": 823,
               "type": "TagDeclarator",
               "value": "topArc"
             },
@@ -195,10 +195,10 @@ description: Variables in memory after executing bottle.kcl
               26.663333333329334
             ],
             "tag": {
-              "commentStart": 924,
-              "end": 933,
+              "commentStart": 942,
+              "end": 951,
               "moduleId": 0,
-              "start": 924,
+              "start": 942,
               "type": "TagDeclarator",
               "value": "rightSide"
             },
@@ -225,10 +225,10 @@ description: Variables in memory after executing bottle.kcl
             ],
             "radius": 153.15000000000322,
             "tag": {
-              "commentStart": 1012,
-              "end": 1021,
+              "commentStart": 1030,
+              "end": 1039,
               "moduleId": 0,
-              "start": 1012,
+              "start": 1030,
               "type": "TagDeclarator",
               "value": "bottomArc"
             },
@@ -332,10 +332,10 @@ description: Variables in memory after executing bottle.kcl
             -26.670000000000762
           ],
           "tag": {
-            "commentStart": 716,
-            "end": 724,
+            "commentStart": 734,
+            "end": 742,
             "moduleId": 0,
-            "start": 716,
+            "start": 734,
             "type": "TagDeclarator",
             "value": "leftSide"
           },
@@ -362,10 +362,10 @@ description: Variables in memory after executing bottle.kcl
           ],
           "radius": 152.64000000000195,
           "tag": {
-            "commentStart": 805,
-            "end": 811,
+            "commentStart": 823,
+            "end": 829,
             "moduleId": 0,
-            "start": 805,
+            "start": 823,
             "type": "TagDeclarator",
             "value": "topArc"
           },
@@ -386,10 +386,10 @@ description: Variables in memory after executing bottle.kcl
             26.663333333329334
           ],
           "tag": {
-            "commentStart": 924,
-            "end": 933,
+            "commentStart": 942,
+            "end": 951,
             "moduleId": 0,
-            "start": 924,
+            "start": 942,
             "type": "TagDeclarator",
             "value": "rightSide"
           },
@@ -416,10 +416,10 @@ description: Variables in memory after executing bottle.kcl
           ],
           "radius": 153.15000000000322,
           "tag": {
-            "commentStart": 1012,
-            "end": 1021,
+            "commentStart": 1030,
+            "end": 1039,
             "moduleId": 0,
-            "start": 1012,
+            "start": 1030,
             "type": "TagDeclarator",
             "value": "bottomArc"
           },
@@ -1038,10 +1038,10 @@ description: Variables in memory after executing bottle.kcl
                     -26.670000000000762
                   ],
                   "tag": {
-                    "commentStart": 716,
-                    "end": 724,
+                    "commentStart": 734,
+                    "end": 742,
                     "moduleId": 0,
-                    "start": 716,
+                    "start": 734,
                     "type": "TagDeclarator",
                     "value": "leftSide"
                   },
@@ -1068,10 +1068,10 @@ description: Variables in memory after executing bottle.kcl
                   ],
                   "radius": 152.64000000000195,
                   "tag": {
-                    "commentStart": 805,
-                    "end": 811,
+                    "commentStart": 823,
+                    "end": 829,
                     "moduleId": 0,
-                    "start": 805,
+                    "start": 823,
                     "type": "TagDeclarator",
                     "value": "topArc"
                   },
@@ -1092,10 +1092,10 @@ description: Variables in memory after executing bottle.kcl
                     26.663333333329334
                   ],
                   "tag": {
-                    "commentStart": 924,
-                    "end": 933,
+                    "commentStart": 942,
+                    "end": 951,
                     "moduleId": 0,
-                    "start": 924,
+                    "start": 942,
                     "type": "TagDeclarator",
                     "value": "rightSide"
                   },
@@ -1122,10 +1122,10 @@ description: Variables in memory after executing bottle.kcl
                   ],
                   "radius": 153.15000000000322,
                   "tag": {
-                    "commentStart": 1012,
-                    "end": 1021,
+                    "commentStart": 1030,
+                    "end": 1039,
                     "moduleId": 0,
-                    "start": 1012,
+                    "start": 1030,
                     "type": "TagDeclarator",
                     "value": "bottomArc"
                   },
@@ -1637,10 +1637,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
+            "commentStart": 2845,
+            "end": 2855,
             "moduleId": 0,
-            "start": 2805,
+            "start": 2845,
             "type": "TagDeclarator",
             "value": "neckCircle"
           },
@@ -1651,10 +1651,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3457,
-            "end": 3465,
+            "commentStart": 3497,
+            "end": 3505,
             "moduleId": 0,
-            "start": 3457,
+            "start": 3497,
             "type": "TagDeclarator",
             "value": "neckTop"
           },
@@ -1688,10 +1688,10 @@ description: Variables in memory after executing bottle.kcl
             ],
             "radius": 22.5,
             "tag": {
-              "commentStart": 2805,
-              "end": 2815,
+              "commentStart": 2845,
+              "end": 2855,
               "moduleId": 0,
-              "start": 2805,
+              "start": 2845,
               "type": "TagDeclarator",
               "value": "neckCircle"
             },
@@ -1777,10 +1777,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
+            "commentStart": 2845,
+            "end": 2855,
             "moduleId": 0,
-            "start": 2805,
+            "start": 2845,
             "type": "TagDeclarator",
             "value": "neckCircle"
           },
@@ -1791,10 +1791,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3457,
-            "end": 3465,
+            "commentStart": 3497,
+            "end": 3505,
             "moduleId": 0,
-            "start": 3457,
+            "start": 3497,
             "type": "TagDeclarator",
             "value": "neckTop"
           },
@@ -1828,10 +1828,10 @@ description: Variables in memory after executing bottle.kcl
             ],
             "radius": 22.5,
             "tag": {
-              "commentStart": 2805,
-              "end": 2815,
+              "commentStart": 2845,
+              "end": 2855,
               "moduleId": 0,
-              "start": 2805,
+              "start": 2845,
               "type": "TagDeclarator",
               "value": "neckCircle"
             },
@@ -1926,10 +1926,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
+            "commentStart": 2845,
+            "end": 2855,
             "moduleId": 0,
-            "start": 2805,
+            "start": 2845,
             "type": "TagDeclarator",
             "value": "neckCircle"
           },
@@ -1940,10 +1940,10 @@ description: Variables in memory after executing bottle.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3457,
-            "end": 3465,
+            "commentStart": 3497,
+            "end": 3505,
             "moduleId": 0,
-            "start": 3457,
+            "start": 3497,
             "type": "TagDeclarator",
             "value": "neckTop"
           },
@@ -1977,10 +1977,10 @@ description: Variables in memory after executing bottle.kcl
             ],
             "radius": 22.5,
             "tag": {
-              "commentStart": 2805,
-              "end": 2815,
+              "commentStart": 2845,
+              "end": 2855,
               "moduleId": 0,
-              "start": 2805,
+              "start": 2845,
               "type": "TagDeclarator",
               "value": "neckCircle"
             },
@@ -2133,10 +2133,10 @@ description: Variables in memory after executing bottle.kcl
                   ],
                   "radius": 22.5,
                   "tag": {
-                    "commentStart": 2805,
-                    "end": 2815,
+                    "commentStart": 2845,
+                    "end": 2855,
                     "moduleId": 0,
-                    "start": 2805,
+                    "start": 2845,
                     "type": "TagDeclarator",
                     "value": "neckCircle"
                   },
@@ -2467,10 +2467,10 @@ description: Variables in memory after executing bottle.kcl
           ],
           "radius": 22.5,
           "tag": {
-            "commentStart": 2805,
-            "end": 2815,
+            "commentStart": 2845,
+            "end": 2855,
             "moduleId": 0,
-            "start": 2805,
+            "start": 2845,
             "type": "TagDeclarator",
             "value": "neckCircle"
           },

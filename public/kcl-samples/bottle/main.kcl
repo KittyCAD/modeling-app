@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set Units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Input dimensions to define the bottle
 bottleWidth = 80
@@ -61,7 +61,10 @@ bottleFootprint = sketch(on = XY) {
   radius(bottomArc) == 153.15mm
 }
 
-bottleBodyRegion = region(point = [30mm, 0mm], sketch = bottleFootprint)
+bottleBodyRegion = region(segments = [
+  bottleFootprint.leftSide,
+  bottleFootprint.topArc
+])
 hide(bottleFootprint)
 bottleBody = extrude(bottleBodyRegion, length = bottleHeight - neckDepth)
 

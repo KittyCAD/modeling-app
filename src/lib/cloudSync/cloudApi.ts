@@ -4,7 +4,6 @@ import {
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
 } from '@src/lib/cloudSync/projectArchive'
-import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CloudSyncConfig,
   ProjectArchiveFile,
@@ -12,15 +11,40 @@ import type {
   RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
+import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
 export class CloudApiError extends Error {
   status: number
+  retryAfterMs?: number
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    options: { retryAfterMs?: number } = {}
+  ) {
     super(message)
     this.status = status
+    this.retryAfterMs = options.retryAfterMs
   }
+}
+
+function retryAfterDelayMs(value: string | null) {
+  if (!value?.trim()) {
+    return undefined
+  }
+
+  const numericSeconds = Number(value)
+  if (Number.isFinite(numericSeconds) && numericSeconds >= 0) {
+    return numericSeconds * 1000
+  }
+
+  const retryAtMs = Date.parse(value)
+  if (Number.isNaN(retryAtMs)) {
+    return undefined
+  }
+
+  return Math.max(0, retryAtMs - Date.now())
 }
 
 function getBaseUrl(config: CloudSyncConfig) {
@@ -67,7 +91,9 @@ async function cloudFetch(
     }
 
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new CloudApiError(response.status, message)
+    throw new CloudApiError(response.status, message, {
+      retryAfterMs: retryAfterDelayMs(response.headers.get('Retry-After')),
+    })
   }
 
   return response

@@ -143,6 +143,7 @@ class CompilationIssue:
     def is_warning(self) -> builtins.bool: ...
     def is_err(self) -> builtins.bool: ...
     def is_fatal(self) -> builtins.bool: ...
+    def message(self) -> builtins.str: ...
 
 @typing.final
 class CreoImportOptions:
@@ -193,6 +194,7 @@ class ExecOutcome:
         Render the given compilation issue as a miette report string, using
         the source code and filename captured at execution time.
         """
+    def report_all(self) -> builtins.list[builtins.str]: ...
 
 @typing.final
 class ExportFile:
@@ -1392,12 +1394,12 @@ def lint_and_fix_families(code: builtins.str, families_to_fix: typing.Sequence[F
     Returns any unfixed lints.
     """
 
-async def mock_execute(path: builtins.str) -> builtins.bool:
+async def mock_execute(path: builtins.str) -> zooExecOutcome:
     r"""
     Mock execute the kcl code from a file path.
     """
 
-async def mock_execute_code(code: builtins.str) -> builtins.bool:
+async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     r"""
     Mock execute the kcl code.
     """
