@@ -23,10 +23,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - name: Check KCL files for header comment block and blank line
+      - name: Check KCL file headers
         run: |
           files=$(find public/kcl-samples -type f -name '*.kcl')
-          failed_files=()
+          invalid_header_files=()
 
           for file in $files; do
             if ! awk '
@@ -37,12 +37,26 @@ jobs:
               in_comment == 0 && NF > 0 { exit 0 }
               END { if (in_comment == 1) exit 1 }
               ' "$file"; then
-              failed_files+=("$file")
+              invalid_header_files+=("$file")
             fi
           done
 
-          if [ ${#failed_files[@]} -ne 0 ]; then
+          if [ ${#invalid_header_files[@]} -ne 0 ]; then
             echo "One or more KCL files do not begin with a header comment block followed by a blank line:"
-            printf '%s\n' "${failed_files[@]}"
+            printf '%s\n' "${invalid_header_files[@]}"
+            exit 1
+          fi
+
+          missing_category_files=()
+
+          for file in public/kcl-samples/*/main.kcl; do
+            if ! awk 'NR == 3 && $0 ~ /^\/\/ Categories: [^[:space:]]/ { found = 1 } END { exit !found }' "$file"; then
+              missing_category_files+=("$file")
+            fi
+          done
+
+          if [ ${#missing_category_files[@]} -ne 0 ]; then
+            echo "One or more KCL sample entry points do not have a non-empty '// Categories:' comment on line 3:"
+            printf '%s\n' "${missing_category_files[@]}"
             exit 1
           fi

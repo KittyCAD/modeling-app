@@ -102,6 +102,9 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "blend-tutorial/main.kcl",
     "multipleFiles": false,
     "title": "Blend Trim Operations",
@@ -538,6 +541,9 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Manufacturing"
+    ],
     "pathFromProjectDirectoryToFirstFile": "gdt-tutorial/main.kcl",
     "multipleFiles": false,
     "title": "GD&T Basics in Zoo Design Studio",
@@ -857,6 +863,10 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "pipe-elbow-90deg/main.kcl",
     "multipleFiles": false,
     "title": "90 Degree Pipe Elbow",

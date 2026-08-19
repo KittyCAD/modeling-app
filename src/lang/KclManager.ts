@@ -1191,30 +1191,50 @@ export class KclManager extends File {
   }
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
+    let liveOperationUpdatesFailed = false
+
     return {
       onOperation: (callback: OperationCallbackArgs) => {
-        if (
-          this.activeLiveOperationExecutionId !== executionId ||
-          this._cancelTokens.get(executionId)
-        ) {
-          return
+        try {
+          if (
+            liveOperationUpdatesFailed ||
+            this.activeLiveOperationExecutionId !== executionId ||
+            this._cancelTokens.get(executionId)
+          ) {
+            return
+          }
+
+          this._liveActiveModuleId.value = callback.moduleId
+          this._liveLatestOperationKey.value = getOperationKey(
+            callback.operation
+          )
+
+          const operationsByModule = applyOperationCallbackToOperationsByModule(
+            {
+              operationsByModule: this._liveOperationsByModule.value,
+              callback,
+            }
+          )
+          this._liveOperationsByModule.value = operationsByModule
+          this.dispatchUpdateOperations(
+            getOperationsForCurrentFile({
+              operationsByModule,
+              filenames: this.execState.filenames,
+              currentPath: this.path,
+            })
+          )
+        } catch (error) {
+          // An exception escaping into WASM can strand its async execution.
+          // Stop progressive updates for this run and let finalization continue.
+          liveOperationUpdatesFailed = true
+          const message =
+            error instanceof Error
+              ? (error.stack ?? error.message)
+              : String(error)
+          queueMicrotask(() =>
+            reportRejection(`Live operation updates failed: ${message}`)
+          )
         }
-
-        this._liveActiveModuleId.value = callback.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
-
-        const operationsByModule = applyOperationCallbackToOperationsByModule({
-          operationsByModule: this._liveOperationsByModule.value,
-          callback,
-        })
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
       },
     }
   }
