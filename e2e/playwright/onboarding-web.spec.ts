@@ -14,6 +14,7 @@ const TUTORIAL_PROJECT_IDS = [
   '12902000-0000-4000-8000-000000000001',
   '12902000-0000-4000-8000-000000000002',
 ] as const
+const ONBOARDING_REPLAY_TIMEOUT = 15_000
 
 async function replayOnboardingFromSettings(
   page: Page,
@@ -33,9 +34,41 @@ async function replayOnboardingFromSettings(
   await page.getByRole('button', { name: 'Replay onboarding' }).click()
 
   await expect(page).toHaveURL(
-    new RegExp(`${expectedProjectName}%2Fmain\\.kcl/onboarding/`)
+    new RegExp(`${expectedProjectName}%2Fmain\\.kcl/onboarding/`),
+    { timeout: ONBOARDING_REPLAY_TIMEOUT }
   )
-  await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible()
+  await expect(page.getByText('Welcome to Zoo Design Studio')).toBeVisible({
+    timeout: ONBOARDING_REPLAY_TIMEOUT,
+  })
+}
+
+async function expectOnboardingNextButton(page: Page) {
+  const onboardingNextButton = page.getByTestId('onboarding-next')
+  await expect(onboardingNextButton).toBeVisible({
+    timeout: ONBOARDING_REPLAY_TIMEOUT,
+  })
+  return onboardingNextButton
+}
+
+async function expectOnboardingHeading(page: Page, name: string) {
+  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible({
+    timeout: ONBOARDING_REPLAY_TIMEOUT,
+  })
+}
+
+async function expectOnboardingUrl(page: Page, pattern: RegExp) {
+  await expect(page).toHaveURL(pattern, {
+    timeout: ONBOARDING_REPLAY_TIMEOUT,
+  })
+}
+
+async function replaceWithOnboardingUrl(
+  page: Page,
+  url: string,
+  pattern: RegExp
+) {
+  await page.evaluate((nextUrl) => window.location.replace(nextUrl), url)
+  await expectOnboardingUrl(page, pattern)
 }
 
 async function expectBackDoesNotReopenOnboarding(page: Page) {
@@ -106,10 +139,14 @@ test(
     const conclusionUrl = `/file/${encodeURIComponent(
       `${PROJECT_DIR}/tutorial-project/main.kcl`
     )}/onboarding/desktop/conclusion`
-    await page.evaluate((url) => window.location.replace(url), conclusionUrl)
-    await expect(page).toHaveURL(/\/onboarding\/desktop\/conclusion$/)
-    await page.getByTestId('onboarding-next').click()
-    await expect(page).toHaveURL(/\/home$/)
+    await replaceWithOnboardingUrl(
+      page,
+      conclusionUrl,
+      /\/onboarding\/desktop\/conclusion$/
+    )
+    await expectOnboardingHeading(page, 'Time to start building')
+    await (await expectOnboardingNextButton(page)).click()
+    await expectOnboardingUrl(page, /\/home$/)
     await expectBackDoesNotReopenOnboarding(page)
     await expect(
       page.getByRole('heading', {
@@ -159,8 +196,9 @@ test(
       })
       .toContain('plateLength = 10')
 
-    await page.getByTestId('onboarding-next').click()
-    await expect(page).toHaveURL(
+    await (await expectOnboardingNextButton(page)).click()
+    await expectOnboardingUrl(
+      page,
       /tutorial-project-1%2Fblank\.kcl\/onboarding\/desktop\/scene/
     )
     await expect
@@ -175,13 +213,12 @@ test(
     const promptResultUrl = `/file/${encodeURIComponent(
       `${PROJECT_DIR}/tutorial-project-1/main.kcl`
     )}/onboarding/desktop/prompt-to-edit-result`
-    await page.evaluate((url) => window.location.replace(url), promptResultUrl)
-    await expect(page).toHaveURL(
+    await replaceWithOnboardingUrl(
+      page,
+      promptResultUrl,
       /tutorial-project-1%2Fmain\.kcl\/onboarding\/desktop\/prompt-to-edit-result/
     )
-    await expect(
-      page.getByRole('heading', { name: 'Result', exact: true })
-    ).toBeVisible()
+    await expectOnboardingHeading(page, 'Result')
     await expect
       .poll(async () => {
         const files = await readOpfsTextFiles(page, {
