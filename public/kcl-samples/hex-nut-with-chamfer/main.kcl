@@ -2,7 +2,7 @@
 // This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole
 // Categories: Fasteners
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Parameters
 // Nut
@@ -67,7 +67,7 @@ hexProfile = sketch(on = XY) {
   radius(circle1) == holeRadius
 }
 
-region001 = region(point = [holeRadius * 1.1, 0], sketch = hexProfile)
+region001 = region(segments = [hexProfile.line1, hexProfile.line2])
 
 // Main nut body from the hex profile
 nutSolid = extrude(region001, length = nutThickness)

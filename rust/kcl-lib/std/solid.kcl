@@ -79,7 +79,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+/// block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 3, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -352,7 +352,7 @@ export fn fillet(
 ///   vertical(edge4)
 /// }
 ///
-/// block = extrude(region(point = [3mm, 2mm], sketch = baseProfile), length = 3mm, tagEnd = $top)
+/// block = extrude(region(segments = [baseProfile.edge1, baseProfile.edge2]), length = 3mm, tagEnd = $top)
 ///
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
@@ -363,6 +363,53 @@ export fn fillet(
 ///
 /// blockWithTab = extrude(tabProfile, length = 1mm)
 /// chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+/// ```
+///
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+///  
+/// // Chamfer the top circular edge of an extruded 8 mm shaft.
+/// // These two shafts show two equivalent edge-selection approaches:
+/// // `getOppositeEdge` and a tagged end face with `getCommonEdge`.
+/// 
+/// // Sketch two circles, one on the left, one on the right.
+/// // We'll use them for shafts below.
+/// leftShaftSketch = sketch(on = XY) {
+///   leftCircle = circle(start = [var -8mm, var 0mm], center = [var -12mm, var 0mm])
+///   radius(leftCircle) == 4mm
+/// }
+/// rightShaftSketch = sketch(on = XY) {
+///   rightCircle = circle(start = [var 16mm, var 0mm], center = [var 12mm, var 0mm])
+///   radius(rightCircle) == 4mm
+/// }
+/// 
+/// // For each sketch, get the region inside its circle.
+/// leftRegion = region(segments = [leftShaftSketch.leftCircle])
+/// rightRegion = region(segments = [rightShaftSketch.rightCircle])
+/// 
+/// // Extrude one circle into a shaft,
+/// // then use `leftRegion.tags.leftCircle` to reference the original circle
+/// // at the base of the shaft,
+/// // then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
+/// leftShaft = extrude(leftRegion, length = 20mm)
+///   |> chamfer(
+///        length = 1mm,
+///        tags = [
+///          getOppositeEdge(leftRegion.tags.leftCircle)
+///        ],
+///      )
+/// 
+/// // Extrude the other circle into a shaft and tag its top end face.
+/// rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
+///
+/// // After extrusion, the circle identifies the cylindrical side face.
+/// // `getCommonEdge` selects the top rim shared by that face and the top end face.
+/// rightTopEdge = getCommonEdge(faces = [
+///   rightShaftBase.sketch.tags.rightCircle,
+///   rightShaftBase.faces.rightShaftTop
+/// ])
+///
+/// rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn chamfer(
@@ -569,7 +616,7 @@ export fn chamfer(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [3mm, 2mm], sketch = boxProfile), length = 4mm)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm)
 /// openBox = shell(box, faces = [END], thickness = 0.5mm)
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1030,6 +1077,11 @@ export fn patternCircular3d(
 
 /// Union two or more solids into a single solid.
 ///
+/// This operation consumes every input solid. After it succeeds, the original
+/// solid variables cannot be used in another modeling operation. Assign the
+/// returned solid or solids to a new variable and use that result for any
+/// subsequent operations.
+///
 /// ```kcl,legacySketch
 /// // Union two cubes using the stdlib functions.
 ///
@@ -1099,7 +1151,7 @@ export fn patternCircular3d(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn union(
-  /// The solids to union.
+  /// The solids to union. Every input solid is consumed by this operation.
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1117,6 +1169,11 @@ export fn union(
 /// returning a new solid representing the volume that is common to all input
 /// solids. This operation is useful for determining shared material regions,
 /// verifying fit, and analyzing overlapping geometries in assemblies.
+///
+/// This operation consumes every input solid. After it succeeds, the original
+/// solid variables cannot be used in another modeling operation. Assign the
+/// returned solid or solids to a new variable and use that result for any
+/// subsequent operations.
 ///
 /// ```kcl,legacySketch
 /// // Intersect two cubes using the stdlib functions.
@@ -1162,7 +1219,7 @@ export fn union(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn intersect(
-  /// The solids to intersect.
+  /// The solids to intersect. Every input solid is consumed by this operation.
   @solids: [Solid; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1180,6 +1237,12 @@ export fn intersect(
 /// representing the material that remains after all tool solids have been cut
 /// away. This function is essential for machining simulations, cavity creation,
 /// and complex multi-body part modeling.
+///
+/// This operation consumes both the base solids and the tool solids. After it
+/// succeeds, neither set of original variables can be used in another modeling
+/// operation. Assign the returned solid or solids to a new variable and use that
+/// result for subsequent operations. For multiple cuts, pass each `subtract`
+/// result into the next call instead of reusing the original base solid.
 ///
 /// ```kcl,legacySketch
 /// // Subtract a cylinder from a cube using the stdlib functions.
@@ -1320,9 +1383,9 @@ export fn intersect(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn subtract(
-  /// The solids to use as the base to subtract from.
+  /// The solids to use as the base to subtract from. These solids are consumed by this operation.
   @solids: [Solid; 1+],
-  /// The solids to subtract.
+  /// The solids to subtract. These tool solids are also consumed by this operation.
   tools: [Solid],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -1913,7 +1976,7 @@ export fn isSurface(
 ///   vertical(edge4)
 /// }
 ///
-/// box = extrude(region(point = [2mm, 2mm], sketch = boxProfile), length = 4mm, tagEnd = $top)
+/// box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm, tagEnd = $top)
 /// openBox = deleteFace(box, faces = [top])
 /// ```
 @(impl = std_rust, feature_tree = true)
@@ -1991,9 +2054,9 @@ export fn deleteFace(
 ///   coincident([line8.end, line5.start])
 /// }
 ///
-/// region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+/// region001 = region(segments = [sketch002.line5, sketch002.line6])
 /// extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
-/// region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+/// region002 = region(segments = [sketch001.line1, sketch001.line2])
 /// extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
 ///
 /// myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])

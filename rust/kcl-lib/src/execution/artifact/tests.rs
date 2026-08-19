@@ -22,6 +22,339 @@ fn gdt_annotation_artifacts_get_node_paths() {
     assert!(!annotation.code_ref.node_path.is_empty());
 }
 
+/// A named view value carrying `camera`. The name takes no part in what any of
+/// the cases below assert, so it is fixed.
+fn named_view_value_with(
+    camera: CameraView,
+    baseline: Visibility,
+    except_ids: Option<Vec<ArtifactId>>,
+) -> NamedViewValue {
+    NamedViewValue::new(
+        ArtifactId::new(Uuid::new_v4()),
+        "Front".to_owned(),
+        camera,
+        baseline,
+        except_ids,
+        ModuleId::default(),
+        [],
+        vec![],
+    )
+    .expect("the view is valid")
+}
+
+/// A named view value whose camera is fixed as well, for the cases that assert
+/// something other than the camera.
+fn named_view_value(baseline: Visibility, except_ids: Option<Vec<ArtifactId>>) -> NamedViewValue {
+    let camera = CameraView::oriented(Orientation::Front, None, None, None, vec![]).unwrap();
+    named_view_value_with(camera, baseline, except_ids)
+}
+
+/// A placeholder code reference, for the cases where the code reference is not
+/// what is being asserted.
+fn placeholder_code_ref() -> CodeRef {
+    CodeRef::placeholder(SourceRange::default())
+}
+
+/// Each kcl-lib enum variant becomes the kcl-api variant of the same name.
+///
+/// Every mapping is a hand-written `match`, so swapping two arms compiles and
+/// runs. The pairs below state the intended mapping a second time, which is what
+/// makes a swap fail, and the length assertions catch a variant added to an enum
+/// but not to this test.
+#[test]
+fn named_view_artifact_maps_every_enum_variant() {
+    let orientations = [
+        (Orientation::Front, ArtifactOrientation::Front),
+        (Orientation::Back, ArtifactOrientation::Back),
+        (Orientation::Left, ArtifactOrientation::Left),
+        (Orientation::Right, ArtifactOrientation::Right),
+        (Orientation::Top, ArtifactOrientation::Top),
+        (Orientation::Bottom, ArtifactOrientation::Bottom),
+        (Orientation::Isometric, ArtifactOrientation::Isometric),
+    ];
+    assert_eq!(
+        orientations.len(),
+        Orientation::ALL.len(),
+        "every orientation needs a row"
+    );
+    for (from, to) in orientations {
+        assert_eq!(artifact_orientation(from), to);
+    }
+
+    let projections = [
+        (Projection::Orthographic, ArtifactProjection::Orthographic),
+        (Projection::Perspective, ArtifactProjection::Perspective),
+    ];
+    assert_eq!(projections.len(), Projection::ALL.len(), "every projection needs a row");
+    for (from, to) in projections {
+        assert_eq!(artifact_projection(from), to);
+    }
+
+    let visibilities = [
+        (Visibility::Show, ArtifactVisibility::Show),
+        (Visibility::Hide, ArtifactVisibility::Hide),
+    ];
+    assert_eq!(
+        visibilities.len(),
+        Visibility::ALL.len(),
+        "every visibility needs a row"
+    );
+    for (from, to) in visibilities {
+        assert_eq!(artifact_visibility(from), to);
+    }
+}
+
+/// Every field of a camera reaches the artifact, for both camera forms.
+///
+/// Nothing else in the suite reads an artifact's camera: the Mermaid label the
+/// simulation tests snapshot prints only the view's name, baseline and range,
+/// and `program_memory.snap` pins the kcl-lib value rather than this conversion.
+/// Without this case, a camera could reach a consumer with the wrong
+/// orientation, the wrong projection, or a distance in the wrong unit.
+#[test]
+fn named_view_artifact_carries_the_whole_camera() {
+    use crate::execution::Point3d;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
+    use crate::std::args::TyF64;
+
+    let millimeters = |x, y, z| Point3d {
+        x,
+        y,
+        z,
+        units: Some(kcl_api::UnitLength::Millimeters),
+    };
+
+    // An oriented camera with every optional field supplied.
+    let oriented = CameraView::oriented(
+        Orientation::Left,
+        Some(millimeters(1.0, -2.0, 3.0)),
+        Some(TyF64::new(250.0, NumericType::mm())),
+        Some(Projection::Perspective),
+        vec![],
+    )
+    .unwrap();
+    let artifact = named_view_artifact(
+        &named_view_value_with(oriented, Visibility::Show, None),
+        placeholder_code_ref(),
+    );
+    assert_eq!(
+        artifact.camera.look,
+        ArtifactCameraLook::Oriented {
+            orientation: ArtifactOrientation::Left
+        }
+    );
+    assert_eq!(
+        artifact.camera.target,
+        Some(ArtifactPoint3d {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            units: Some(kcl_api::UnitLength::Millimeters),
+        })
+    );
+    assert_eq!(artifact.camera.distance, Some(250.0));
+    assert_eq!(artifact.camera.projection, ArtifactProjection::Perspective);
+
+    // A directed camera carries both normalized vectors, and the fields the
+    // author omitted stay absent rather than acquiring a value in the
+    // conversion, because absence is what tells a consumer to resolve them
+    // against the model.
+    let directed = CameraView::directed(
+        Point3d {
+            x: 0.0,
+            y: -2.0,
+            z: 0.0,
+            units: None,
+        },
+        None,
+        None,
+        None,
+        None,
+        vec![],
+    )
+    .unwrap();
+    let artifact = named_view_artifact(
+        &named_view_value_with(directed, Visibility::Hide, None),
+        placeholder_code_ref(),
+    );
+    assert_eq!(
+        artifact.camera.look,
+        ArtifactCameraLook::Directed {
+            direction: ArtifactPoint3d {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+                units: None,
+            },
+            up: ArtifactPoint3d {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+                units: None,
+            },
+        }
+    );
+    assert_eq!(artifact.camera.target, None);
+    assert_eq!(artifact.camera.distance, None);
+    assert_eq!(artifact.camera.projection, ArtifactProjection::Orthographic);
+}
+
+/// The value holds one exception list plus a baseline; the artifact holds two
+/// lists. The baseline decides which list the exception lands in, and the other
+/// must come out empty, because a consumer reads the two lists rather than
+/// re-deriving them from the baseline.
+///
+/// The Mermaid flowchart that the simulation tests snapshot merges the two lists
+/// into one set of edges, so it cannot tell the two cases apart. This is where
+/// the split is pinned.
+#[test]
+fn named_view_artifact_splits_the_exception_list_by_baseline() {
+    let excepted = vec![ArtifactId::new(Uuid::new_v4()), ArtifactId::new(Uuid::new_v4())];
+
+    let showing = named_view_artifact(
+        &named_view_value(Visibility::Show, Some(excepted.clone())),
+        placeholder_code_ref(),
+    );
+    assert_eq!(showing.baseline, ArtifactVisibility::Show);
+    assert!(showing.show_ids.is_empty());
+    assert_eq!(showing.hide_ids, excepted);
+
+    let hiding = named_view_artifact(
+        &named_view_value(Visibility::Hide, Some(excepted.clone())),
+        placeholder_code_ref(),
+    );
+    assert_eq!(hiding.baseline, ArtifactVisibility::Hide);
+    assert_eq!(hiding.show_ids, excepted);
+    assert!(hiding.hide_ids.is_empty());
+}
+
+/// A named view's artifact must end up with a node path, so a consumer can map
+/// it back to the declaring call. Mirrors `gdt_annotation_artifacts_get_node_paths`:
+/// both artifacts are registered during execution rather than built from an
+/// engine command, so both start with a placeholder `CodeRef` that this pass is
+/// what fills in.
+#[test]
+fn named_view_artifacts_get_node_paths() {
+    let code = r#"v = view::named("Front", camera = view::oriented(view::Orientation::Front))"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let mut artifact = Artifact::NamedView(named_view_artifact(
+        &named_view_value(Visibility::Show, None),
+        CodeRef::placeholder(source_range),
+    ));
+
+    fill_in_node_paths(&mut artifact, &programs, 0, &AHashMap::default());
+
+    let Artifact::NamedView(view) = artifact else {
+        panic!("Expected named view artifact");
+    };
+    assert_eq!(view.code_ref.range, source_range);
+    assert!(!view.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn import_files_creates_imported_geometry_artifact() {
+    let code = r#"import "cube.obj" as cube"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::ImportFiles::builder()
+                .files(vec![
+                    kcmc::ImportFile::builder()
+                        .path("cube.obj".to_owned())
+                        .data(Vec::new())
+                        .build(),
+                ])
+                .format(kcmc::format::InputFormat3d::Obj(
+                    kcmc::format::obj::import::Options::default(),
+                ))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected ImportFiles to create imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn entity_clone_remaps_imported_geometry_artifact() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: source_id,
+            code_ref: source_code_ref,
+        }),
+    );
+
+    let code = "clone(cube)";
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityClone::builder()
+                .entity_id(Uuid::from(source_id))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected EntityClone to preserve imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
 #[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());

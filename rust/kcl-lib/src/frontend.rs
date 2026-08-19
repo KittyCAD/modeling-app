@@ -661,11 +661,11 @@ impl SketchApi for FrontendState {
             );
             new_ast
                 .body
-                .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                     face_decl,
                 ))));
             defined_names.insert(face_name.clone());
-            plane_ast = ast::Expr::Name(Box::new(ast::Name::new(&face_name)));
+            plane_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(&face_name)));
         }
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
@@ -684,14 +684,14 @@ impl SketchApi for FrontendState {
         let sketch_decl = ast::VariableDeclaration::new(
             ast::VariableDeclarator::new(
                 &sketch_name,
-                ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+                ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_ast))),
             ),
             ast::ItemVisibility::Default,
             ast::VariableKind::Const,
         );
         new_ast
             .body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 sketch_decl,
             ))));
         // Convert to string source to create real source ranges.
@@ -2052,7 +2052,7 @@ impl FrontendState {
         // Create updated KCL source from args.
         let at_ast = to_ast_point2d(&ctor.position)
             .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        let point_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let point_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(POINT_FN)),
             unlabeled: None,
             arguments: vec![ast::LabeledArg {
@@ -2185,14 +2185,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let line_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
             unlabeled: None,
             arguments,
@@ -2320,21 +2320,21 @@ impl FrontendState {
         if ctor.direction == Some(ArcDirection::Cw) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
-                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+                arg: ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
             });
         }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let arc_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
             arguments,
@@ -2456,14 +2456,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let circle_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let circle_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
             unlabeled: None,
             arguments,
@@ -2581,14 +2581,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let spline_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let spline_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CONTROL_POINT_SPLINE_FN)),
             unlabeled: None,
             arguments,
@@ -3141,7 +3141,7 @@ impl FrontendState {
             .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: segment_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3192,7 +3192,7 @@ impl FrontendState {
             .map(|point| self.axis_constraint_segment_to_ast(point, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: point_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3245,7 +3245,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3298,7 +3298,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3331,7 +3331,7 @@ impl FrontendState {
             .map(|segment_id| self.equal_radius_segment_id_to_ast_reference(*segment_id, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: input_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3731,23 +3731,24 @@ impl FrontendState {
         };
 
         // Create the distance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -3780,7 +3781,7 @@ impl FrontendState {
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
         let (angle_call_ast, angle_value_ast) = self.angle_constraint_ast_parts(&angle, new_ast)?;
-        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let angle_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: angle_call_ast,
             operator: ast::BinaryOperator::Eq,
             right: angle_value_ast,
@@ -3810,7 +3811,7 @@ impl FrontendState {
 
         let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
         let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
-        let lines_ast = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let lines_ast = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: vec![l0_ast, l1_ast],
             digest: None,
             non_code_meta: Default::default(),
@@ -3833,7 +3834,7 @@ impl FrontendState {
         if let Some(sector) = angle.sector {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Number {
                         value: f64::from(sector),
                         suffix: NumericSuffix::None,
@@ -3847,7 +3848,7 @@ impl FrontendState {
         if angle.inverse == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: true.to_string(),
                     digest: None,
@@ -3862,7 +3863,7 @@ impl FrontendState {
             });
         }
 
-        let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
                 ANGLE_DIMENSION_FN
             } else {
@@ -3873,7 +3874,7 @@ impl FrontendState {
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let value = ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
                 value: angle.angle.value,
                 suffix: angle.angle.units,
@@ -4151,17 +4152,17 @@ impl FrontendState {
         };
 
         // Create the function call.
-        let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(params.function_name)),
             unlabeled: Some(arc_ast),
             arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let constraint_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: params.value,
                     suffix: params.units,
@@ -4211,23 +4212,24 @@ impl FrontendState {
         };
 
         // Create the horizontalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -4281,23 +4283,24 @@ impl FrontendState {
         };
 
         // Create the verticalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -4551,9 +4554,9 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LinesAtAngleKind::Parallel.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: line_asts,
                     digest: None,
@@ -4642,9 +4645,9 @@ impl FrontendState {
         let line1_ast = self.line_id_to_ast_reference(line1_id, new_ast)?;
 
         // Create the parallel() or perpendicular() call.
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(angle_kind.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: vec![line0_ast, line1_ast],
                     digest: None,
@@ -5728,14 +5731,14 @@ fn default_plane_ast_expr(name: crate::engine::PlaneName) -> ast::Expr {
 }
 
 fn negated_plane_ast_expr(name: &str) -> ast::Expr {
-    ast::Expr::UnaryExpression(Box::new(ast::UnaryExpression::new(
+    ast::Expr::UnaryExpression(BoxNode::new(ast::UnaryExpression::new(
         ast::UnaryOperator::Neg,
-        ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
+        ast::BinaryPart::Name(BoxNode::new(ast_name(name.to_owned()))),
     )))
 }
 
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
@@ -5748,17 +5751,19 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
 }
 
 fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceId")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-                value: index as f64,
-                suffix: NumericSuffix::None,
-                raw: index.to_string(),
-                digest: None,
-            })))),
+            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+                ast::NumericLiteral {
+                    value: index as f64,
+                    suffix: NumericSuffix::None,
+                    raw: index.to_string(),
+                    digest: None,
+                },
+            )))),
         }],
         digest: None,
         non_code_meta: Default::default(),
@@ -5824,7 +5829,7 @@ fn get_or_insert_ast_reference(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
         ));
     };
-    let var_expr = ast::Expr::Name(Box::new(ast::Name::new(&var_name)));
+    let var_expr = ast::Expr::Name(BoxNode::new(ast::Name::new(&var_name)));
     let Some(property) = property else {
         // No property; just return the variable name.
         return Ok(var_expr);
@@ -6303,7 +6308,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 sketch_block
                     .body
                     .items
-                    .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                    .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                         ast::VariableDeclaration::new(
                             ast::VariableDeclarator::new(&name, expr.clone()),
                             ast::ItemVisibility::Default,
@@ -6325,7 +6330,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
                 let mutate_node =
-                    ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration::new(
+                    ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(ast::VariableDeclaration::new(
                         ast::VariableDeclarator::new(&name, expr_stmt.expression.clone()),
                         ast::ItemVisibility::Default,
                         ast::VariableKind::Const,
@@ -6380,18 +6385,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6437,7 +6443,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         .iter()
                         .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
                     if direction_value.is_clockwise() {
-                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        let direction_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
                         if direction_exists {
                             // Update existing direction kwarg
                             for labeled_arg in &mut call.arguments {
@@ -6471,18 +6477,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6527,18 +6534,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6575,17 +6583,18 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         if construction_exists {
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6686,7 +6695,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
+                sketch_var.initial = Some(BoxNode::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -7050,7 +7059,7 @@ fn preserve_var_solution_literal_style(
 }
 
 pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node {
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node {
         inner: ast::ArrayExpression {
             elements: vec![to_source_expr(&point.x)?, to_source_expr(&point.y)?],
             non_code_meta: Default::default(),
@@ -7067,7 +7076,7 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
 }
 
 pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: points.iter().map(to_ast_point2d).collect::<anyhow::Result<Vec<_>>>()?,
             digest: None,
@@ -7077,13 +7086,13 @@ pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<a
 }
 
 fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: vec![
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.x,
                 )?)))),
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.y,
                 )?)))),
             ],
@@ -7095,7 +7104,7 @@ fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
     match expr {
-        Expr::Number(number) => Ok(ast::Expr::Literal(Box::new(ast::Node {
+        Expr::Number(number) => Ok(ast::Expr::Literal(BoxNode::new(ast::Node {
             inner: ast::Literal::from(to_source_number(*number)?),
             start: Default::default(),
             end: Default::default(),
@@ -7105,9 +7114,9 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Var(number) => Ok(ast::Expr::SketchVar(Box::new(ast::Node {
+        Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(Box::new(ast::Node {
+                initial: Some(BoxNode::new(ast::Node {
                     inner: to_source_number(*number)?,
                     start: Default::default(),
                     end: Default::default(),
@@ -7141,7 +7150,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
 }
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
-    ast::Expr::Name(Box::new(ast_name(name)))
+    ast::Expr::Name(BoxNode::new(ast_name(name)))
 }
 
 fn ast_name(name: String) -> ast::Node<ast::Name> {
@@ -7200,14 +7209,14 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
     debug_assert!(elements.len() >= 2, "Coincident AST should have at least 2 inputs");
 
     // Create array [expr1, expr2, ...]
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create coincident([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7218,7 +7227,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
 
 /// Create an AST node for line(start = [...], end = [...])
 pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7238,7 +7247,7 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
 
 /// Create an AST node for arc(start = [...], end = [...], center = [...])
 pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7262,7 +7271,7 @@ pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_as
 
 /// Create an AST node for circle(start = [...], center = [...])
 pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7282,7 +7291,7 @@ pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> 
 
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7293,7 +7302,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create an AST node for vertical(line)
 pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7304,9 +7313,9 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create a member expression like object.property (e.g., line1.end)
 pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Name(Box::new(ast::Node::no_src(ast::Name {
+        property: ast::Expr::Name(BoxNode::new(ast::Node::no_src(ast::Name {
             name: ast::Node::no_src(ast::Identifier {
                 name: property.to_string(),
                 digest: None,
@@ -7321,14 +7330,16 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
 }
 
 pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-            value: index as f64,
-            suffix: NumericSuffix::None,
-            raw: index.to_string(),
-            digest: None,
-        })))),
+        property: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+            ast::NumericLiteral {
+                value: index as f64,
+                suffix: NumericSuffix::None,
+                raw: index.to_string(),
+                digest: None,
+            },
+        )))),
         computed: true,
         digest: None,
     })))
@@ -7337,27 +7348,27 @@ pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> a
 /// Create an AST node for `fixed([point, [x, y]])`.
 fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
     // Create [x, y] array literal.
-    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let x_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.x,
     )?))));
-    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let y_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.y,
     )?))));
-    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let point_array = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![x_literal, y_literal],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create [point, [x, y]] outer array.
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![point_expr, point_array],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create fixed([...])
-    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(
         ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
             unlabeled: Some(array_expr),
@@ -7370,14 +7381,14 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
 
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: line_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create equalLength([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7388,13 +7399,13 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
 
 /// Create an AST node for equalRadius([seg1, seg2, ...])
 pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: segment_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_RADIUS_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7405,13 +7416,13 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
 
 /// Create an AST node for tangent([seg1, seg2])
 pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![seg1_expr, seg2_expr],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(TANGENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7422,7 +7433,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 
 /// Create an AST node for symmetric([input1, input2], axis = line)
 pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
         digest: None,
         non_code_meta: Default::default(),
@@ -7432,7 +7443,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arg: axis_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
         unlabeled: Some(array_expr),
         arguments,
@@ -7448,7 +7459,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arg: point_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(MIDPOINT_FN)),
         unlabeled: Some(segment_expr),
         arguments,
@@ -14463,7 +14474,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 face_decl,
             ))));
         let face_source = source_from_ast(&ast);
@@ -14775,7 +14786,7 @@ part = subtract(boxSolid, tools = [cutSolid])
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 cap_face_decl,
             ))));
         let generated_source = source_from_ast(&ast);

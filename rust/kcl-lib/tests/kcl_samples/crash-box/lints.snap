@@ -13,8 +13,8 @@ description: Lints crash-box.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2734,
-      3046,
+      2752,
+      3064,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints crash-box.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4608,
-      4775,
+      4626,
+      4793,
       0
     ],
     "overridden": false,

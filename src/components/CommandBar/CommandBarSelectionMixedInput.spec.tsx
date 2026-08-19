@@ -62,6 +62,7 @@ describe('CommandBarSelectionMixedInput', () => {
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
+        userFeatures: app.userFeatures,
         projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
@@ -95,6 +96,7 @@ describe('CommandBarSelectionMixedInput', () => {
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
+        userFeatures: app.userFeatures,
         projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
@@ -125,6 +127,7 @@ describe('CommandBarSelectionMixedInput', () => {
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
+        userFeatures: app.userFeatures,
         projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
@@ -155,6 +158,7 @@ describe('CommandBarSelectionMixedInput', () => {
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
+        userFeatures: app.userFeatures,
         projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
@@ -200,6 +204,7 @@ describe('CommandBarSelectionMixedInput', () => {
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
+        userFeatures: app.userFeatures,
         projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(

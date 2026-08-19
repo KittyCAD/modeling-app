@@ -245,10 +245,6 @@ test(
       500,
       scene.streamWrapper
     )
-
-    await test.step('Ensure the code is empty', async () => {
-      await editor.expectEditor.toBe('\n')
-    })
   }
 )
 

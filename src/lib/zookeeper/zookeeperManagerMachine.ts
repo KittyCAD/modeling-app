@@ -23,6 +23,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 
 import { Socket, SocketConnectionError } from '@src/lib/socket'
+import { isZookeeperBillingError } from '@src/lib/zookeeper/zookeeperBilling'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -204,7 +205,7 @@ export enum ZookeeperManagerTransitions {
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
-export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 30_000
+export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 60_000
 export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
 export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
@@ -722,7 +723,7 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason) {
+      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
         toast.error(event.closeReason)
       }
       return {
@@ -1079,6 +1080,27 @@ export const zookeeperManagerMachine = setup({
 
             // Ignore pong
             if ('pong' in response) {
+              return
+            }
+
+            if (
+              'error' in response &&
+              isZookeeperBillingError(response.error.detail)
+            ) {
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.AbruptClose,
+                  closeReason: response.error.detail,
+                })
+              } else {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    response.error.detail,
+                    response.error.detail
+                  )
+                )
+              }
               return
             }
 

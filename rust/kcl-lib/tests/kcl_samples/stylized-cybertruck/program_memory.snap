@@ -273,10 +273,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7526,
-            "end": 7531,
+            "commentStart": 7544,
+            "end": 7549,
             "moduleId": 0,
-            "start": 7526,
+            "start": 7544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -287,10 +287,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7605,
-            "end": 7610,
+            "commentStart": 7623,
+            "end": 7628,
             "moduleId": 0,
-            "start": 7605,
+            "start": 7623,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -301,10 +301,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7683,
-            "end": 7688,
+            "commentStart": 7701,
+            "end": 7706,
             "moduleId": 0,
-            "start": 7683,
+            "start": 7701,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -326,10 +326,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7526,
-              "end": 7531,
+              "commentStart": 7544,
+              "end": 7549,
               "moduleId": 0,
-              "start": 7526,
+              "start": 7544,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -350,10 +350,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 7605,
-              "end": 7610,
+              "commentStart": 7623,
+              "end": 7628,
               "moduleId": 0,
-              "start": 7605,
+              "start": 7623,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -374,10 +374,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7683,
-              "end": 7688,
+              "commentStart": 7701,
+              "end": 7706,
               "moduleId": 0,
-              "start": 7683,
+              "start": 7701,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -482,10 +482,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8541,
-            "end": 8546,
+            "commentStart": 8559,
+            "end": 8564,
             "moduleId": 0,
-            "start": 8541,
+            "start": 8559,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -496,10 +496,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8619,
-            "end": 8624,
+            "commentStart": 8637,
+            "end": 8642,
             "moduleId": 0,
-            "start": 8619,
+            "start": 8637,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -510,10 +510,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8697,
-            "end": 8702,
+            "commentStart": 8715,
+            "end": 8720,
             "moduleId": 0,
-            "start": 8697,
+            "start": 8715,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -524,10 +524,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8773,
-            "end": 8778,
+            "commentStart": 8791,
+            "end": 8796,
             "moduleId": 0,
-            "start": 8773,
+            "start": 8791,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -549,10 +549,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 8541,
-              "end": 8546,
+              "commentStart": 8559,
+              "end": 8564,
               "moduleId": 0,
-              "start": 8541,
+              "start": 8559,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -573,10 +573,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 8619,
-              "end": 8624,
+              "commentStart": 8637,
+              "end": 8642,
               "moduleId": 0,
-              "start": 8619,
+              "start": 8637,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -597,10 +597,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 8697,
-              "end": 8702,
+              "commentStart": 8715,
+              "end": 8720,
               "moduleId": 0,
-              "start": 8697,
+              "start": 8715,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -621,10 +621,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 8773,
-              "end": 8778,
+              "commentStart": 8791,
+              "end": 8796,
               "moduleId": 0,
-              "start": 8773,
+              "start": 8791,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1214,10 +1214,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 8541,
-                    "end": 8546,
+                    "commentStart": 8559,
+                    "end": 8564,
                     "moduleId": 0,
-                    "start": 8541,
+                    "start": 8559,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1238,10 +1238,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 8619,
-                    "end": 8624,
+                    "commentStart": 8637,
+                    "end": 8642,
                     "moduleId": 0,
-                    "start": 8619,
+                    "start": 8637,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1262,10 +1262,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 8697,
-                    "end": 8702,
+                    "commentStart": 8715,
+                    "end": 8720,
                     "moduleId": 0,
-                    "start": 8697,
+                    "start": 8715,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1286,10 +1286,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 8773,
-                    "end": 8778,
+                    "commentStart": 8791,
+                    "end": 8796,
                     "moduleId": 0,
-                    "start": 8773,
+                    "start": 8791,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1394,10 +1394,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 8541,
-            "end": 8546,
+            "commentStart": 8559,
+            "end": 8564,
             "moduleId": 0,
-            "start": 8541,
+            "start": 8559,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1418,10 +1418,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 8619,
-            "end": 8624,
+            "commentStart": 8637,
+            "end": 8642,
             "moduleId": 0,
-            "start": 8619,
+            "start": 8637,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1442,10 +1442,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 8697,
-            "end": 8702,
+            "commentStart": 8715,
+            "end": 8720,
             "moduleId": 0,
-            "start": 8697,
+            "start": 8715,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1466,10 +1466,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 8773,
-            "end": 8778,
+            "commentStart": 8791,
+            "end": 8796,
             "moduleId": 0,
-            "start": 8773,
+            "start": 8791,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1573,10 +1573,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7526,
-            "end": 7531,
+            "commentStart": 7544,
+            "end": 7549,
             "moduleId": 0,
-            "start": 7526,
+            "start": 7544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1587,10 +1587,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7605,
-            "end": 7610,
+            "commentStart": 7623,
+            "end": 7628,
             "moduleId": 0,
-            "start": 7605,
+            "start": 7623,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1601,10 +1601,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7683,
-            "end": 7688,
+            "commentStart": 7701,
+            "end": 7706,
             "moduleId": 0,
-            "start": 7683,
+            "start": 7701,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1626,10 +1626,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7526,
-              "end": 7531,
+              "commentStart": 7544,
+              "end": 7549,
               "moduleId": 0,
-              "start": 7526,
+              "start": 7544,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1650,10 +1650,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.95
             ],
             "tag": {
-              "commentStart": 7605,
-              "end": 7610,
+              "commentStart": 7623,
+              "end": 7628,
               "moduleId": 0,
-              "start": 7605,
+              "start": 7623,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1674,10 +1674,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 7683,
-              "end": 7688,
+              "commentStart": 7701,
+              "end": 7706,
               "moduleId": 0,
-              "start": 7683,
+              "start": 7701,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2143,10 +2143,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7526,
-                    "end": 7531,
+                    "commentStart": 7544,
+                    "end": 7549,
                     "moduleId": 0,
-                    "start": 7526,
+                    "start": 7544,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2167,10 +2167,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.95
                   ],
                   "tag": {
-                    "commentStart": 7605,
-                    "end": 7610,
+                    "commentStart": 7623,
+                    "end": 7628,
                     "moduleId": 0,
-                    "start": 7605,
+                    "start": 7623,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2191,10 +2191,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 7683,
-                    "end": 7688,
+                    "commentStart": 7701,
+                    "end": 7706,
                     "moduleId": 0,
-                    "start": 7683,
+                    "start": 7701,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2295,10 +2295,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7526,
-            "end": 7531,
+            "commentStart": 7544,
+            "end": 7549,
             "moduleId": 0,
-            "start": 7526,
+            "start": 7544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2319,10 +2319,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.95
           ],
           "tag": {
-            "commentStart": 7605,
-            "end": 7610,
+            "commentStart": 7623,
+            "end": 7628,
             "moduleId": 0,
-            "start": 7605,
+            "start": 7623,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2343,10 +2343,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 7683,
-            "end": 7688,
+            "commentStart": 7701,
+            "end": 7706,
             "moduleId": 0,
-            "start": 7683,
+            "start": 7701,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2437,10 +2437,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6372,
-            "end": 6377,
+            "commentStart": 6390,
+            "end": 6395,
             "moduleId": 0,
-            "start": 6372,
+            "start": 6390,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2451,10 +2451,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6437,
-            "end": 6442,
+            "commentStart": 6455,
+            "end": 6460,
             "moduleId": 0,
-            "start": 6437,
+            "start": 6455,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2465,10 +2465,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6502,
-            "end": 6507,
+            "commentStart": 6520,
+            "end": 6525,
             "moduleId": 0,
-            "start": 6502,
+            "start": 6520,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2479,10 +2479,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6567,
-            "end": 6572,
+            "commentStart": 6585,
+            "end": 6590,
             "moduleId": 0,
-            "start": 6567,
+            "start": 6585,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2504,10 +2504,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7499999963999996
             ],
             "tag": {
-              "commentStart": 6372,
-              "end": 6377,
+              "commentStart": 6390,
+              "end": 6395,
               "moduleId": 0,
-              "start": 6372,
+              "start": 6390,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2528,10 +2528,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7499999941499995
             ],
             "tag": {
-              "commentStart": 6437,
-              "end": 6442,
+              "commentStart": 6455,
+              "end": 6460,
               "moduleId": 0,
-              "start": 6437,
+              "start": 6455,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2552,10 +2552,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999950499995
             ],
             "tag": {
-              "commentStart": 6502,
-              "end": 6507,
+              "commentStart": 6520,
+              "end": 6525,
               "moduleId": 0,
-              "start": 6502,
+              "start": 6520,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2576,10 +2576,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999957999996
             ],
             "tag": {
-              "commentStart": 6567,
-              "end": 6572,
+              "commentStart": 6585,
+              "end": 6590,
               "moduleId": 0,
-              "start": 6567,
+              "start": 6585,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3196,10 +3196,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.7499999963999996
                   ],
                   "tag": {
-                    "commentStart": 6372,
-                    "end": 6377,
+                    "commentStart": 6390,
+                    "end": 6395,
                     "moduleId": 0,
-                    "start": 6372,
+                    "start": 6390,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3237,10 +3237,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.7499999941499995
                   ],
                   "tag": {
-                    "commentStart": 6437,
-                    "end": 6442,
+                    "commentStart": 6455,
+                    "end": 6460,
                     "moduleId": 0,
-                    "start": 6437,
+                    "start": 6455,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3278,10 +3278,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999950499995
                   ],
                   "tag": {
-                    "commentStart": 6502,
-                    "end": 6507,
+                    "commentStart": 6520,
+                    "end": 6525,
                     "moduleId": 0,
-                    "start": 6502,
+                    "start": 6520,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3319,10 +3319,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999957999996
                   ],
                   "tag": {
-                    "commentStart": 6567,
-                    "end": 6572,
+                    "commentStart": 6585,
+                    "end": 6590,
                     "moduleId": 0,
-                    "start": 6567,
+                    "start": 6585,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3427,10 +3427,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.7499999963999996
           ],
           "tag": {
-            "commentStart": 6372,
-            "end": 6377,
+            "commentStart": 6390,
+            "end": 6395,
             "moduleId": 0,
-            "start": 6372,
+            "start": 6390,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3451,10 +3451,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.7499999941499995
           ],
           "tag": {
-            "commentStart": 6437,
-            "end": 6442,
+            "commentStart": 6455,
+            "end": 6460,
             "moduleId": 0,
-            "start": 6437,
+            "start": 6455,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3475,10 +3475,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999950499995
           ],
           "tag": {
-            "commentStart": 6502,
-            "end": 6507,
+            "commentStart": 6520,
+            "end": 6525,
             "moduleId": 0,
-            "start": 6502,
+            "start": 6520,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3499,10 +3499,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999957999996
           ],
           "tag": {
-            "commentStart": 6567,
-            "end": 6572,
+            "commentStart": 6585,
+            "end": 6590,
             "moduleId": 0,
-            "start": 6567,
+            "start": 6585,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3620,10 +3620,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.3500000000000106
           ],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3644,10 +3644,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.8046633388240976
           ],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3668,10 +3668,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.8046633388241028
           ],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3692,10 +3692,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.3500000000000027
           ],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3716,10 +3716,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -0.10466333882410354
           ],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3740,10 +3740,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             -0.10466333882409189
           ],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3846,10 +3846,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3860,10 +3860,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3874,10 +3874,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3888,10 +3888,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3902,10 +3902,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3916,10 +3916,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3941,10 +3941,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3844,
-              "end": 3849,
+              "commentStart": 3862,
+              "end": 3867,
               "moduleId": 0,
-              "start": 3844,
+              "start": 3862,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3965,10 +3965,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3921,
-              "end": 3926,
+              "commentStart": 3939,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3921,
+              "start": 3939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3989,10 +3989,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4042,
+              "commentStart": 4055,
+              "end": 4060,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4055,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4013,10 +4013,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4193,
-              "end": 4198,
+              "commentStart": 4211,
+              "end": 4216,
               "moduleId": 0,
-              "start": 4193,
+              "start": 4211,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4037,10 +4037,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4309,
-              "end": 4314,
+              "commentStart": 4327,
+              "end": 4332,
               "moduleId": 0,
-              "start": 4309,
+              "start": 4327,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -4061,10 +4061,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4427,
-              "end": 4432,
+              "commentStart": 4445,
+              "end": 4450,
               "moduleId": 0,
-              "start": 4427,
+              "start": 4445,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4172,10 +4172,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10033,
-            "end": 10040,
+            "commentStart": 10051,
+            "end": 10058,
             "moduleId": 0,
-            "start": 10033,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -4203,10 +4203,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 10033,
-              "end": 10040,
+              "commentStart": 10051,
+              "end": 10058,
               "moduleId": 0,
-              "start": 10033,
+              "start": 10051,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -4308,10 +4308,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 10033,
-            "end": 10040,
+            "commentStart": 10051,
+            "end": 10058,
             "moduleId": 0,
-            "start": 10033,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -4398,10 +4398,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2645,
-            "end": 2650,
+            "commentStart": 2663,
+            "end": 2668,
             "moduleId": 0,
-            "start": 2645,
+            "start": 2663,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4412,10 +4412,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2710,
-            "end": 2715,
+            "commentStart": 2728,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2710,
+            "start": 2728,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4426,10 +4426,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2775,
-            "end": 2780,
+            "commentStart": 2793,
+            "end": 2798,
             "moduleId": 0,
-            "start": 2775,
+            "start": 2793,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4440,10 +4440,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2840,
-            "end": 2845,
+            "commentStart": 2858,
+            "end": 2863,
             "moduleId": 0,
-            "start": 2840,
+            "start": 2858,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4465,10 +4465,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2645,
-              "end": 2650,
+              "commentStart": 2663,
+              "end": 2668,
               "moduleId": 0,
-              "start": 2645,
+              "start": 2663,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4489,10 +4489,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2710,
-              "end": 2715,
+              "commentStart": 2728,
+              "end": 2733,
               "moduleId": 0,
-              "start": 2710,
+              "start": 2728,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4513,10 +4513,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2775,
-              "end": 2780,
+              "commentStart": 2793,
+              "end": 2798,
               "moduleId": 0,
-              "start": 2775,
+              "start": 2793,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4537,10 +4537,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2840,
-              "end": 2845,
+              "commentStart": 2858,
+              "end": 2863,
               "moduleId": 0,
-              "start": 2840,
+              "start": 2858,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5157,10 +5157,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.3999999993999999
                   ],
                   "tag": {
-                    "commentStart": 2645,
-                    "end": 2650,
+                    "commentStart": 2663,
+                    "end": 2668,
                     "moduleId": 0,
-                    "start": 2645,
+                    "start": 2663,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5198,10 +5198,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.3999999981999999
                   ],
                   "tag": {
-                    "commentStart": 2710,
-                    "end": 2715,
+                    "commentStart": 2728,
+                    "end": 2733,
                     "moduleId": 0,
-                    "start": 2710,
+                    "start": 2728,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5239,10 +5239,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.7500000016500001
                   ],
                   "tag": {
-                    "commentStart": 2775,
-                    "end": 2780,
+                    "commentStart": 2793,
+                    "end": 2798,
                     "moduleId": 0,
-                    "start": 2775,
+                    "start": 2793,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5280,10 +5280,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.7500000004
                   ],
                   "tag": {
-                    "commentStart": 2840,
-                    "end": 2845,
+                    "commentStart": 2858,
+                    "end": 2863,
                     "moduleId": 0,
-                    "start": 2840,
+                    "start": 2858,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5388,10 +5388,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.3999999993999999
           ],
           "tag": {
-            "commentStart": 2645,
-            "end": 2650,
+            "commentStart": 2663,
+            "end": 2668,
             "moduleId": 0,
-            "start": 2645,
+            "start": 2663,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5412,10 +5412,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.3999999981999999
           ],
           "tag": {
-            "commentStart": 2710,
-            "end": 2715,
+            "commentStart": 2728,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2710,
+            "start": 2728,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5436,10 +5436,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.7500000016500001
           ],
           "tag": {
-            "commentStart": 2775,
-            "end": 2780,
+            "commentStart": 2793,
+            "end": 2798,
             "moduleId": 0,
-            "start": 2775,
+            "start": 2793,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5460,10 +5460,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             0.7500000004
           ],
           "tag": {
-            "commentStart": 2840,
-            "end": 2845,
+            "commentStart": 2858,
+            "end": 2863,
             "moduleId": 0,
-            "start": 2840,
+            "start": 2858,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5567,10 +5567,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2645,
-            "end": 2650,
+            "commentStart": 2663,
+            "end": 2668,
             "moduleId": 0,
-            "start": 2645,
+            "start": 2663,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5581,10 +5581,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2710,
-            "end": 2715,
+            "commentStart": 2728,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2710,
+            "start": 2728,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5595,10 +5595,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2775,
-            "end": 2780,
+            "commentStart": 2793,
+            "end": 2798,
             "moduleId": 0,
-            "start": 2775,
+            "start": 2793,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5609,10 +5609,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2840,
-            "end": 2845,
+            "commentStart": 2858,
+            "end": 2863,
             "moduleId": 0,
-            "start": 2840,
+            "start": 2858,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5634,10 +5634,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3999999993999999
             ],
             "tag": {
-              "commentStart": 2645,
-              "end": 2650,
+              "commentStart": 2663,
+              "end": 2668,
               "moduleId": 0,
-              "start": 2645,
+              "start": 2663,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5658,10 +5658,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3999999981999999
             ],
             "tag": {
-              "commentStart": 2710,
-              "end": 2715,
+              "commentStart": 2728,
+              "end": 2733,
               "moduleId": 0,
-              "start": 2710,
+              "start": 2728,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5682,10 +5682,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7500000016500001
             ],
             "tag": {
-              "commentStart": 2775,
-              "end": 2780,
+              "commentStart": 2793,
+              "end": 2798,
               "moduleId": 0,
-              "start": 2775,
+              "start": 2793,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5706,10 +5706,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.7500000004
             ],
             "tag": {
-              "commentStart": 2840,
-              "end": 2845,
+              "commentStart": 2858,
+              "end": 2863,
               "moduleId": 0,
-              "start": 2840,
+              "start": 2858,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5809,10 +5809,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5823,10 +5823,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5837,10 +5837,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5851,10 +5851,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5865,10 +5865,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -5879,10 +5879,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5904,10 +5904,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3844,
-              "end": 3849,
+              "commentStart": 3862,
+              "end": 3867,
               "moduleId": 0,
-              "start": 3844,
+              "start": 3862,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -5928,10 +5928,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3921,
-              "end": 3926,
+              "commentStart": 3939,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3921,
+              "start": 3939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5952,10 +5952,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4042,
+              "commentStart": 4055,
+              "end": 4060,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4055,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5976,10 +5976,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4193,
-              "end": 4198,
+              "commentStart": 4211,
+              "end": 4216,
               "moduleId": 0,
-              "start": 4193,
+              "start": 4211,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6000,10 +6000,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4309,
-              "end": 4314,
+              "commentStart": 4327,
+              "end": 4332,
               "moduleId": 0,
-              "start": 4309,
+              "start": 4327,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -6024,10 +6024,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4427,
-              "end": 4432,
+              "commentStart": 4445,
+              "end": 4450,
               "moduleId": 0,
-              "start": 4427,
+              "start": 4445,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6135,10 +6135,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6149,10 +6149,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6163,10 +6163,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6177,10 +6177,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6191,10 +6191,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6205,10 +6205,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6230,10 +6230,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3844,
-              "end": 3849,
+              "commentStart": 3862,
+              "end": 3867,
               "moduleId": 0,
-              "start": 3844,
+              "start": 3862,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6254,10 +6254,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3921,
-              "end": 3926,
+              "commentStart": 3939,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3921,
+              "start": 3939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6278,10 +6278,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4042,
+              "commentStart": 4055,
+              "end": 4060,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4055,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6302,10 +6302,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4193,
-              "end": 4198,
+              "commentStart": 4211,
+              "end": 4216,
               "moduleId": 0,
-              "start": 4193,
+              "start": 4211,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6326,10 +6326,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4309,
-              "end": 4314,
+              "commentStart": 4327,
+              "end": 4332,
               "moduleId": 0,
-              "start": 4309,
+              "start": 4327,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -6350,10 +6350,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4427,
-              "end": 4432,
+              "commentStart": 4445,
+              "end": 4450,
               "moduleId": 0,
-              "start": 4427,
+              "start": 4445,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6470,10 +6470,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12204,
-            "end": 12209,
+            "commentStart": 12196,
+            "end": 12201,
             "moduleId": 0,
-            "start": 12204,
+            "start": 12196,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6484,10 +6484,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12269,
-            "end": 12274,
+            "commentStart": 12261,
+            "end": 12266,
             "moduleId": 0,
-            "start": 12269,
+            "start": 12261,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6498,10 +6498,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12334,
-            "end": 12339,
+            "commentStart": 12326,
+            "end": 12331,
             "moduleId": 0,
-            "start": 12334,
+            "start": 12326,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6512,10 +6512,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12399,
-            "end": 12404,
+            "commentStart": 12391,
+            "end": 12396,
             "moduleId": 0,
-            "start": 12399,
+            "start": 12391,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6537,10 +6537,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999951199994
             ],
             "tag": {
-              "commentStart": 12204,
-              "end": 12209,
+              "commentStart": 12196,
+              "end": 12201,
               "moduleId": 0,
-              "start": 12204,
+              "start": 12196,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6561,10 +6561,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999919099992
             ],
             "tag": {
-              "commentStart": 12269,
-              "end": 12274,
+              "commentStart": 12261,
+              "end": 12266,
               "moduleId": 0,
-              "start": 12269,
+              "start": 12261,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6585,10 +6585,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999937699994
             ],
             "tag": {
-              "commentStart": 12334,
-              "end": 12339,
+              "commentStart": 12326,
+              "end": 12331,
               "moduleId": 0,
-              "start": 12334,
+              "start": 12326,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6609,10 +6609,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999945199995
             ],
             "tag": {
-              "commentStart": 12399,
-              "end": 12404,
+              "commentStart": 12391,
+              "end": 12396,
               "moduleId": 0,
-              "start": 12399,
+              "start": 12391,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -6776,10 +6776,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999951199994
           ],
           "tag": {
-            "commentStart": 12204,
-            "end": 12209,
+            "commentStart": 12196,
+            "end": 12201,
             "moduleId": 0,
-            "start": 12204,
+            "start": 12196,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6800,10 +6800,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999919099992
           ],
           "tag": {
-            "commentStart": 12269,
-            "end": 12274,
+            "commentStart": 12261,
+            "end": 12266,
             "moduleId": 0,
-            "start": 12269,
+            "start": 12261,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6824,10 +6824,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999937699994
           ],
           "tag": {
-            "commentStart": 12334,
-            "end": 12339,
+            "commentStart": 12326,
+            "end": 12331,
             "moduleId": 0,
-            "start": 12334,
+            "start": 12326,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6848,10 +6848,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999945199995
           ],
           "tag": {
-            "commentStart": 12399,
-            "end": 12404,
+            "commentStart": 12391,
+            "end": 12396,
             "moduleId": 0,
-            "start": 12399,
+            "start": 12391,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7436,10 +7436,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.0699999951199994
                   ],
                   "tag": {
-                    "commentStart": 12204,
-                    "end": 12209,
+                    "commentStart": 12196,
+                    "end": 12201,
                     "moduleId": 0,
-                    "start": 12204,
+                    "start": 12196,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7477,10 +7477,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.0699999919099992
                   ],
                   "tag": {
-                    "commentStart": 12269,
-                    "end": 12274,
+                    "commentStart": 12261,
+                    "end": 12266,
                     "moduleId": 0,
-                    "start": 12269,
+                    "start": 12261,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7518,10 +7518,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999937699994
                   ],
                   "tag": {
-                    "commentStart": 12334,
-                    "end": 12339,
+                    "commentStart": 12326,
+                    "end": 12331,
                     "moduleId": 0,
-                    "start": 12334,
+                    "start": 12326,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7559,10 +7559,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999945199995
                   ],
                   "tag": {
-                    "commentStart": 12399,
-                    "end": 12404,
+                    "commentStart": 12391,
+                    "end": 12396,
                     "moduleId": 0,
-                    "start": 12399,
+                    "start": 12391,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7720,10 +7720,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7734,10 +7734,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7748,10 +7748,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7762,10 +7762,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7776,10 +7776,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7790,10 +7790,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -7815,10 +7815,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3844,
-              "end": 3849,
+              "commentStart": 3862,
+              "end": 3867,
               "moduleId": 0,
-              "start": 3844,
+              "start": 3862,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7839,10 +7839,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3921,
-              "end": 3926,
+              "commentStart": 3939,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3921,
+              "start": 3939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7863,10 +7863,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4042,
+              "commentStart": 4055,
+              "end": 4060,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4055,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7887,10 +7887,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4193,
-              "end": 4198,
+              "commentStart": 4211,
+              "end": 4216,
               "moduleId": 0,
-              "start": 4193,
+              "start": 4211,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7911,10 +7911,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4309,
-              "end": 4314,
+              "commentStart": 4327,
+              "end": 4332,
               "moduleId": 0,
-              "start": 4309,
+              "start": 4327,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -7935,10 +7935,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4427,
-              "end": 4432,
+              "commentStart": 4445,
+              "end": 4450,
               "moduleId": 0,
-              "start": 4427,
+              "start": 4445,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8055,10 +8055,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3844,
-            "end": 3849,
+            "commentStart": 3862,
+            "end": 3867,
             "moduleId": 0,
-            "start": 3844,
+            "start": 3862,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8069,10 +8069,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3921,
-            "end": 3926,
+            "commentStart": 3939,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3921,
+            "start": 3939,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8083,10 +8083,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4037,
-            "end": 4042,
+            "commentStart": 4055,
+            "end": 4060,
             "moduleId": 0,
-            "start": 4037,
+            "start": 4055,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8097,10 +8097,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4193,
-            "end": 4198,
+            "commentStart": 4211,
+            "end": 4216,
             "moduleId": 0,
-            "start": 4193,
+            "start": 4211,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8111,10 +8111,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4309,
-            "end": 4314,
+            "commentStart": 4327,
+            "end": 4332,
             "moduleId": 0,
-            "start": 4309,
+            "start": 4327,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8125,10 +8125,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4427,
-            "end": 4432,
+            "commentStart": 4445,
+            "end": 4450,
             "moduleId": 0,
-            "start": 4427,
+            "start": 4445,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8150,10 +8150,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000106
             ],
             "tag": {
-              "commentStart": 3844,
-              "end": 3849,
+              "commentStart": 3862,
+              "end": 3867,
               "moduleId": 0,
-              "start": 3844,
+              "start": 3862,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8174,10 +8174,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388240976
             ],
             "tag": {
-              "commentStart": 3921,
-              "end": 3926,
+              "commentStart": 3939,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3921,
+              "start": 3939,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8198,10 +8198,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.8046633388241028
             ],
             "tag": {
-              "commentStart": 4037,
-              "end": 4042,
+              "commentStart": 4055,
+              "end": 4060,
               "moduleId": 0,
-              "start": 4037,
+              "start": 4055,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8222,10 +8222,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               0.3500000000000027
             ],
             "tag": {
-              "commentStart": 4193,
-              "end": 4198,
+              "commentStart": 4211,
+              "end": 4216,
               "moduleId": 0,
-              "start": 4193,
+              "start": 4211,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -8246,10 +8246,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882410354
             ],
             "tag": {
-              "commentStart": 4309,
-              "end": 4314,
+              "commentStart": 4327,
+              "end": 4332,
               "moduleId": 0,
-              "start": 4309,
+              "start": 4327,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8270,10 +8270,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               -0.10466333882409189
             ],
             "tag": {
-              "commentStart": 4427,
-              "end": 4432,
+              "commentStart": 4445,
+              "end": 4450,
               "moduleId": 0,
-              "start": 4427,
+              "start": 4445,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -8390,10 +8390,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13376,
-            "end": 13381,
+            "commentStart": 13368,
+            "end": 13373,
             "moduleId": 0,
-            "start": 13376,
+            "start": 13368,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8404,10 +8404,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13441,
-            "end": 13446,
+            "commentStart": 13433,
+            "end": 13438,
             "moduleId": 0,
-            "start": 13441,
+            "start": 13433,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8418,10 +8418,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13506,
-            "end": 13511,
+            "commentStart": 13498,
+            "end": 13503,
             "moduleId": 0,
-            "start": 13506,
+            "start": 13498,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8432,10 +8432,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 13571,
-            "end": 13576,
+            "commentStart": 13563,
+            "end": 13568,
             "moduleId": 0,
-            "start": 13571,
+            "start": 13563,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8457,10 +8457,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999951199994
             ],
             "tag": {
-              "commentStart": 13376,
-              "end": 13381,
+              "commentStart": 13368,
+              "end": 13373,
               "moduleId": 0,
-              "start": 13376,
+              "start": 13368,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8481,10 +8481,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.0699999919099992
             ],
             "tag": {
-              "commentStart": 13441,
-              "end": 13446,
+              "commentStart": 13433,
+              "end": 13438,
               "moduleId": 0,
-              "start": 13441,
+              "start": 13433,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -8505,10 +8505,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999937699994
             ],
             "tag": {
-              "commentStart": 13506,
-              "end": 13511,
+              "commentStart": 13498,
+              "end": 13503,
               "moduleId": 0,
-              "start": 13506,
+              "start": 13498,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -8529,10 +8529,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               1.1499999945199995
             ],
             "tag": {
-              "commentStart": 13571,
-              "end": 13576,
+              "commentStart": 13563,
+              "end": 13568,
               "moduleId": 0,
-              "start": 13571,
+              "start": 13563,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -8705,10 +8705,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999951199994
           ],
           "tag": {
-            "commentStart": 13376,
-            "end": 13381,
+            "commentStart": 13368,
+            "end": 13373,
             "moduleId": 0,
-            "start": 13376,
+            "start": 13368,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8729,10 +8729,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.0699999919099992
           ],
           "tag": {
-            "commentStart": 13441,
-            "end": 13446,
+            "commentStart": 13433,
+            "end": 13438,
             "moduleId": 0,
-            "start": 13441,
+            "start": 13433,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8753,10 +8753,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999937699994
           ],
           "tag": {
-            "commentStart": 13506,
-            "end": 13511,
+            "commentStart": 13498,
+            "end": 13503,
             "moduleId": 0,
-            "start": 13506,
+            "start": 13498,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8777,10 +8777,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             1.1499999945199995
           ],
           "tag": {
-            "commentStart": 13571,
-            "end": 13576,
+            "commentStart": 13563,
+            "end": 13568,
             "moduleId": 0,
-            "start": 13571,
+            "start": 13563,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -9374,10 +9374,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.0699999951199994
                   ],
                   "tag": {
-                    "commentStart": 13376,
-                    "end": 13381,
+                    "commentStart": 13368,
+                    "end": 13373,
                     "moduleId": 0,
-                    "start": 13376,
+                    "start": 13368,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -9415,10 +9415,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.0699999919099992
                   ],
                   "tag": {
-                    "commentStart": 13441,
-                    "end": 13446,
+                    "commentStart": 13433,
+                    "end": 13438,
                     "moduleId": 0,
-                    "start": 13441,
+                    "start": 13433,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -9456,10 +9456,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999937699994
                   ],
                   "tag": {
-                    "commentStart": 13506,
-                    "end": 13511,
+                    "commentStart": 13498,
+                    "end": 13503,
                     "moduleId": 0,
-                    "start": 13506,
+                    "start": 13498,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -9497,10 +9497,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     1.1499999945199995
                   ],
                   "tag": {
-                    "commentStart": 13571,
-                    "end": 13576,
+                    "commentStart": 13563,
+                    "end": 13568,
                     "moduleId": 0,
-                    "start": 13571,
+                    "start": 13563,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -10591,10 +10591,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.3500000000000106
                   ],
                   "tag": {
-                    "commentStart": 3844,
-                    "end": 3849,
+                    "commentStart": 3862,
+                    "end": 3867,
                     "moduleId": 0,
-                    "start": 3844,
+                    "start": 3862,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -10615,10 +10615,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.8046633388240976
                   ],
                   "tag": {
-                    "commentStart": 3921,
-                    "end": 3926,
+                    "commentStart": 3939,
+                    "end": 3944,
                     "moduleId": 0,
-                    "start": 3921,
+                    "start": 3939,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -10639,10 +10639,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.8046633388241028
                   ],
                   "tag": {
-                    "commentStart": 4037,
-                    "end": 4042,
+                    "commentStart": 4055,
+                    "end": 4060,
                     "moduleId": 0,
-                    "start": 4037,
+                    "start": 4055,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -10663,10 +10663,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     0.3500000000000027
                   ],
                   "tag": {
-                    "commentStart": 4193,
-                    "end": 4198,
+                    "commentStart": 4211,
+                    "end": 4216,
                     "moduleId": 0,
-                    "start": 4193,
+                    "start": 4211,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -10687,10 +10687,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     -0.10466333882410354
                   ],
                   "tag": {
-                    "commentStart": 4309,
-                    "end": 4314,
+                    "commentStart": 4327,
+                    "end": 4332,
                     "moduleId": 0,
-                    "start": 4309,
+                    "start": 4327,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -10711,10 +10711,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     -0.10466333882409189
                   ],
                   "tag": {
-                    "commentStart": 4427,
-                    "end": 4432,
+                    "commentStart": 4445,
+                    "end": 4450,
                     "moduleId": 0,
-                    "start": 4427,
+                    "start": 4445,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -10835,10 +10835,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9948,
-                "end": 9955,
+                "commentStart": 9966,
+                "end": 9973,
                 "moduleId": 0,
-                "start": 9948,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10849,10 +10849,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -10880,10 +10880,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 9948,
-                  "end": 9955,
+                  "commentStart": 9966,
+                  "end": 9973,
                   "moduleId": 0,
-                  "start": 9948,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10910,10 +10910,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11005,10 +11005,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11036,10 +11036,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11136,10 +11136,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9948,
-                "end": 9955,
+                "commentStart": 9966,
+                "end": 9973,
                 "moduleId": 0,
-                "start": 9948,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11150,10 +11150,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11181,10 +11181,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 9948,
-                  "end": 9955,
+                  "commentStart": 9966,
+                  "end": 9973,
                   "moduleId": 0,
-                  "start": 9948,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11211,10 +11211,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11306,10 +11306,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11337,10 +11337,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11444,10 +11444,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "radius": 0.34999999997,
           "tag": {
-            "commentStart": 9948,
-            "end": 9955,
+            "commentStart": 9966,
+            "end": 9973,
             "moduleId": 0,
-            "start": 9948,
+            "start": 9966,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -11474,10 +11474,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "radius": 0.175000000005,
           "tag": {
-            "commentStart": 10033,
-            "end": 10040,
+            "commentStart": 10051,
+            "end": 10058,
             "moduleId": 0,
-            "start": 10033,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -11567,10 +11567,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9948,
-                "end": 9955,
+                "commentStart": 9966,
+                "end": 9973,
                 "moduleId": 0,
-                "start": 9948,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11581,10 +11581,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11612,10 +11612,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 9948,
-                  "end": 9955,
+                  "commentStart": 9966,
+                  "end": 9973,
                   "moduleId": 0,
-                  "start": 9948,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11642,10 +11642,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11737,10 +11737,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11768,10 +11768,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -11868,10 +11868,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9948,
-                "end": 9955,
+                "commentStart": 9966,
+                "end": 9973,
                 "moduleId": 0,
-                "start": 9948,
+                "start": 9966,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11882,10 +11882,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -11913,10 +11913,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.34999999997,
                 "tag": {
-                  "commentStart": 9948,
-                  "end": 9955,
+                  "commentStart": 9966,
+                  "end": 9973,
                   "moduleId": 0,
-                  "start": 9948,
+                  "start": 9966,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11943,10 +11943,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12038,10 +12038,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10033,
-                "end": 10040,
+                "commentStart": 10051,
+                "end": 10058,
                 "moduleId": 0,
-                "start": 10033,
+                "start": 10051,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -12069,10 +12069,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 ],
                 "radius": 0.175000000005,
                 "tag": {
-                  "commentStart": 10033,
-                  "end": 10040,
+                  "commentStart": 10051,
+                  "end": 10058,
                   "moduleId": 0,
-                  "start": 10033,
+                  "start": 10051,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -12543,10 +12543,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   ],
                   "radius": 0.34999999997,
                   "tag": {
-                    "commentStart": 9948,
-                    "end": 9955,
+                    "commentStart": 9966,
+                    "end": 9973,
                     "moduleId": 0,
-                    "start": 9948,
+                    "start": 9966,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -12590,10 +12590,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   ],
                   "radius": 0.175000000005,
                   "tag": {
-                    "commentStart": 10033,
-                    "end": 10040,
+                    "commentStart": 10051,
+                    "end": 10058,
                     "moduleId": 0,
-                    "start": 10033,
+                    "start": 10051,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -12686,10 +12686,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9948,
-            "end": 9955,
+            "commentStart": 9966,
+            "end": 9973,
             "moduleId": 0,
-            "start": 9948,
+            "start": 9966,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -12700,10 +12700,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10033,
-            "end": 10040,
+            "commentStart": 10051,
+            "end": 10058,
             "moduleId": 0,
-            "start": 10033,
+            "start": 10051,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -12731,10 +12731,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "radius": 0.34999999997,
             "tag": {
-              "commentStart": 9948,
-              "end": 9955,
+              "commentStart": 9966,
+              "end": 9973,
               "moduleId": 0,
-              "start": 9948,
+              "start": 9966,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -12761,10 +12761,10 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "radius": 0.175000000005,
             "tag": {
-              "commentStart": 10033,
-              "end": 10040,
+              "commentStart": 10051,
+              "end": 10058,
               "moduleId": 0,
-              "start": 10033,
+              "start": 10051,
               "type": "TagDeclarator",
               "value": "circle2"
             },

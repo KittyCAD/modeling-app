@@ -13,8 +13,8 @@ description: Lints surgical-drill-guide.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      6366,
-      6509,
+      6403,
+      6546,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints surgical-drill-guide.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      8916,
-      9194,
+      8890,
+      9168,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints surgical-drill-guide.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      10732,
-      10875,
+      10706,
+      10849,
       0
     ],
     "overridden": false,
@@ -64,8 +64,8 @@ description: Lints surgical-drill-guide.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      13272,
-      13550,
+      13184,
+      13462,
       0
     ],
     "overridden": false,
