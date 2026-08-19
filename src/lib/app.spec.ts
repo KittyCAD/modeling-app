@@ -289,6 +289,7 @@ describe('project system', () => {
 
   it('does not reapply the camera projection while sketch solve mode is active', () => {
     const app = createAppForTest()
+    const session = app.registry.get(projectSession)
     const cameraProjectionSetter = vi.spyOn(
       app.singletons.kclManager.sceneInfra.camControls,
       'engineCameraProjection',
@@ -296,7 +297,9 @@ describe('project system', () => {
     )
 
     try {
-      app.project = {} as NonNullable<typeof app.project>
+      session.setProject({
+        projectIORefSignal: signal(mockProject),
+      } as NonNullable<ReturnType<typeof session.getProject>>)
       app.singletons.kclManager.modelingState = {
         matches: (state: string) => state === 'sketchSolveMode',
       } as unknown as NonNullable<KclManager['modelingState']>
@@ -306,7 +309,7 @@ describe('project system', () => {
       expect(cameraProjectionSetter).not.toHaveBeenCalled()
     } finally {
       cameraProjectionSetter.mockRestore()
-      app.project = undefined
+      session.clearProject()
       app.dispose()
     }
   })
