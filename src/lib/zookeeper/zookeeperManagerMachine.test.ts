@@ -24,6 +24,7 @@ import {
   ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
+import toast from 'react-hot-toast'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -1342,8 +1343,11 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('keeps recoverable context after an abrupt close', async () => {
+    it('silences recoverable closes but reports a terminal project-size failure', async () => {
       const { fetchMock } = stubClientErrorFetch()
+      const toastErrorSpy = vi
+        .spyOn(toast, 'error')
+        .mockImplementation(() => 'toast-id')
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
       let setupContext: ZookeeperManagerContext | undefined
       const machine = zookeeperManagerMachine.provide({
@@ -1388,6 +1392,7 @@ describe('zookeeperManagerMachine', () => {
 
       actor.send({
         type: ZookeeperManagerTransitions.AbruptClose,
+        closeReason: 'Zookeeper connection timed out.',
       })
 
       await waitFor(actor, (state) => state.matches(S.Await))
@@ -1397,13 +1402,24 @@ describe('zookeeperManagerMachine', () => {
       )
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
+      expect(actor.getSnapshot().context.closeReason).toBe(
+        'Zookeeper connection timed out.'
+      )
       expect(fetchMock).not.toHaveBeenCalled()
+      expect(toastErrorSpy).not.toHaveBeenCalled()
 
       actor.send({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
         refParentSend: vi.fn(),
         conversationId: 'conversation-id',
       })
+
+      expect(actor.getSnapshot().matches(ZookeeperManagerStates.Setup)).toBe(
+        true
+      )
+      expect(actor.getSnapshot().context.conversation).toBe(
+        completedConversation
+      )
 
       await waitFor(actor, (state) =>
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
@@ -1412,6 +1428,26 @@ describe('zookeeperManagerMachine', () => {
       expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
         completedConversationStartedAt
       )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      const projectTooLargeReason =
+        'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
+      actor.send({
+        type: ZookeeperManagerTransitions.AbruptClose,
+        closeReason: projectTooLargeReason,
+      })
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(toastErrorSpy).toHaveBeenCalledOnce()
+      expect(toastErrorSpy).toHaveBeenCalledWith(projectTooLargeReason)
 
       actor.stop()
     })
