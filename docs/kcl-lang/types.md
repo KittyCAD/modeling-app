@@ -38,12 +38,6 @@ these objects have type `ImportedGeometry`, which is distinct from `Solid`: ther
 is no access to their internal components, and no conversion between the two
 types.
 
-`ImportedGeometry` can be positioned and styled — `clone`, `translate`, `rotate`,
-`scale`, `appearance`, `hide`, and `delete` all accept it. Everything else does
-not. `subtract`, `union`, `intersect`, `fillet`, `chamfer`, `shell`, the pattern
-functions, and `startSketchOn` are all typed to take a `Solid` and will reject an
-import, whether the file holds BREP surfaces or a triangle mesh:
-
 ```
 The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
 but found an array of `ImportedGeometry`
