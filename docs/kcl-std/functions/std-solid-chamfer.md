@@ -214,7 +214,8 @@ chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(ta
 // These two shafts show two equivalent edge-selection approaches:
 // `getOppositeEdge` and a tagged end face with `getCommonEdge`.
 
-// Sketch two shafts, one on the left, one on the right.
+// Sketch two circles, one on the left, one on the right.
+// We'll use them for shafts below.
 leftShaftSketch = sketch(on = XY) {
   leftCircle = circle(start = [var -8mm, var 0mm], center = [var -12mm, var 0mm])
   radius(leftCircle) == 4mm
@@ -228,10 +229,10 @@ rightShaftSketch = sketch(on = XY) {
 leftRegion = region(segments = [leftShaftSketch.leftCircle])
 rightRegion = region(segments = [rightShaftSketch.rightCircle])
 
-// Extrude one shaft,
+// Extrude one circle into a shaft,
 // then use `leftRegion.tags.leftCircle` to reference the original circle
 // at the base of the shaft,
-// then use `getOppositeEdge` to get the face at the *top* of the shaft.
+// then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
 leftShaft = extrude(leftRegion, length = 20mm)
   |> chamfer(
        length = 1mm,
@@ -240,9 +241,10 @@ leftShaft = extrude(leftRegion, length = 20mm)
        ],
      )
 
-// Extrude the other shaft, tagging the top face,
+// Extrude the other circle into a shaft, tagging the top face,
 // then use `getCommonEdge` to select the shared edge
-// between the top and bottom faces, and chamfer it.
+// between the top and the extruded side face created from extruding `rightCircle`.
+// Then chamfer it.
 rightShaft = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
   |> chamfer(
        length = 1mm,
