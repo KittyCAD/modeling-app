@@ -587,6 +587,45 @@ mod tests {
     use crate::execution::types::PrimitiveType;
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn mock_circular_patterns_preserve_requested_cardinality() {
+        let code = r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [1, 0])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> line(end = [-1, 0])
+  |> close()
+
+sketchCopies = patternCircular2d(
+  profile,
+  center = [0, 0],
+  instances = 3,
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)
+secondSketch = sketchCopies[1]
+
+seed = extrude(profile, length = 5)
+solidCopies = patternCircular3d(
+  seed,
+  axis = X,
+  center = [0, 0, 0],
+  instances = 3,
+  arcDegrees = 360,
+  rotateDuplicates = true,
+)
+secondSolid = solidCopies[1]
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_mock(&program, &crate::execution::MockConfig::default())
+            .await
+            .unwrap();
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new(&ctx);
@@ -912,10 +951,6 @@ async fn inner_pattern_circular_2d(
     args: Args,
 ) -> Result<Vec<Sketch>, KclError> {
     let starting_sketches = sketch_set;
-
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting_sketches);
-    }
     let center = center.unwrap_or(POINT_ZERO_ZERO);
     let data = CircularPattern2dData {
         instances,
@@ -1012,10 +1047,6 @@ async fn inner_pattern_circular_3d(
         .await?;
 
     let starting_solids = solids;
-
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting_solids);
-    }
 
     let mut solids = Vec::new();
     let center = center.unwrap_or(POINT_ZERO_ZERO_ZERO);
