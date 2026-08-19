@@ -64,6 +64,8 @@ function remoteProjectPayload(revision = 'rev-2') {
   return {
     id: remoteProjectId,
     title: 'Demo',
+    description: 'Existing description',
+    category_ids: ['existing-category'],
     revision,
     updated_at: remoteUpdatedAt,
   }
@@ -211,9 +213,9 @@ describe('cloud sync live conflicts', () => {
     await vi.waitFor(() =>
       expect(clientErrorsMock.reportClientError).toHaveBeenCalledWith(
         expect.objectContaining({
-          code: 'cloud_sync_conflict_copy_detected',
-          errorName: 'CloudSyncConflictCopyDetected',
-          message: 'Cloud sync "conflict copy" folder detected',
+          code: 'cloud_sync_conflict',
+          errorName: 'CloudSyncConflict',
+          message: 'Cloud sync conflict: local and remote both changed.',
           route: '/cloud-sync',
           extra: {
             source: 'CloudSyncEngine',
@@ -221,6 +223,11 @@ describe('cloud sync live conflicts', () => {
           },
         })
       )
+    )
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'cloud_sync_conflict_copy_detected',
+      })
     )
     const metadata = await getCloudSyncProjectMetadata(projectPath)
     expect(metadata?.conflict?.conflictProjectPath).toBeUndefined()
@@ -279,6 +286,8 @@ describe('cloud sync live conflicts', () => {
       [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
     ])
     const updatePayloads: Array<{
+      categoryIds?: string[]
+      description?: string
       expectedRevision?: string
       main?: string
       remote?: string
@@ -318,8 +327,14 @@ describe('cloud sync live conflicts', () => {
         const formData = init?.body as FormData
         const body = JSON.parse(
           await (formData.get('body') as Blob).text()
-        ) as { expected_revision?: string }
+        ) as {
+          category_ids?: string[]
+          description?: string
+          expected_revision?: string
+        }
         updatePayloads.push({
+          categoryIds: body.category_ids,
+          description: body.description,
           expectedRevision: body.expected_revision,
           main: await (formData.get('main.kcl') as Blob).text(),
           remote: await (formData.get('remote.kcl') as Blob).text(),
@@ -345,6 +360,8 @@ describe('cloud sync live conflicts', () => {
 
     expect(updatePayloads).toEqual([
       {
+        categoryIds: ['existing-category'],
+        description: 'Existing description',
         expectedRevision: 'rev-2',
         main: 'local = 2\n',
         remote: 'cloud = 2\n',

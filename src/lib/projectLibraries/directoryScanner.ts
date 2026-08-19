@@ -3,6 +3,7 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
+import { reportCloudSyncConflictCopyDetected } from '@src/lib/cloudSync/clientErrorReporting'
 import {
   clearLegacyConflictCopyReferences,
   clearOutboxEntriesTouchingProject,
@@ -232,6 +233,7 @@ async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
   await clearOutboxEntriesTouchingProject(projectPath)
   await clearLegacyConflictCopyReferences(projectPath)
   await deleteProjectMetadata(projectPath)
+  reportCloudSyncConflictCopyDetected()
 }
 
 export function shouldSendProjectFolderReadProgress(

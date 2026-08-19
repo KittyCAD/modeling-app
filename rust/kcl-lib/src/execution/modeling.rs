@@ -223,10 +223,22 @@ impl ExecState {
             return Err(no_modeling_in_sketch_block_error(meta.source_range));
         }
         let id = meta.id(self.id_generator());
+        let tracked_command = match cmd {
+            ModelingCmd::ImportFiles(import_files) => {
+                // Graph construction does not read imported file bytes. Retain the file paths
+                // and format in execution state without duplicating the full input payload.
+                let mut tracked_import = import_files.clone();
+                for file in &mut tracked_import.files {
+                    file.data.clear();
+                }
+                ModelingCmd::ImportFiles(tracked_import)
+            }
+            _ => cmd.clone(),
+        };
         self.push_command(ArtifactCommand {
             cmd_id: id,
             range: meta.source_range,
-            command: cmd.clone(),
+            command: tracked_command,
             entity_clone_info: None,
             omit_from_graph: false,
         });

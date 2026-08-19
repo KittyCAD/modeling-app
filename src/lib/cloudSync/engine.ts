@@ -2,7 +2,6 @@ import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
-  reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
@@ -1891,7 +1890,7 @@ export async function renameRemoteCloudProject(
   const updated = await updateRemoteProject({
     config,
     projectPath: localProjectNameForRemoteProject(remoteProject),
-    projectId,
+    project: remoteProject,
     files,
     expectedRevision: getRevision(remoteProject),
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2262,7 +2261,7 @@ async function applyLocalDataForConflict(
   const updated = await updateRemoteProject({
     config,
     projectPath: metadata.localProjectPath,
-    projectId: metadata.remoteProjectId,
+    project: remoteProject,
     files: localFiles,
     expectedRevision,
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2422,7 +2421,6 @@ async function markProjectConflict(
   }
   await putProjectMetadata(nextMetadata)
   publishScopedProjectCloudProjectId(nextMetadata)
-  reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',
@@ -2917,7 +2915,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
+            project: remoteProject,
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -3004,7 +3002,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
+            project: remoteProject,
             files: autoReconciledFiles,
             expectedRevision: remoteRevision,
           })
