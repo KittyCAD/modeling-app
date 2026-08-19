@@ -2,7 +2,7 @@
 // A guide for routing a slate for a cross bar.
 // Categories: Construction
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 routerDiameter = 12.7
 templateDiameter = (11 / 16): in
