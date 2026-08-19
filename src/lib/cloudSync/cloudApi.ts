@@ -385,33 +385,24 @@ export async function createRemoteProject(
 export async function updateRemoteProject({
   config,
   projectPath,
-  projectId,
-  currentRemoteProject,
+  project,
   files,
   expectedRevision,
   entrypointPath,
 }: {
   config: CloudSyncConfig
   projectPath: string
-  projectId: string
-  currentRemoteProject: RemoteProject
+  project: RemoteProject
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
   entrypointPath?: string
 }) {
-  if (currentRemoteProject.id !== projectId) {
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new Error(
-      `Cloud sync cannot preserve publication metadata for project ${projectId}: remote metadata belongs to project ${currentRemoteProject.id}.`
-    )
-  }
-  const publicationMetadata =
-    getProjectUploadPublicationMetadata(currentRemoteProject)
+  const publicationMetadata = getProjectUploadPublicationMetadata(project)
 
   return cloudJson<RemoteProject>(
     config,
     appendExpectedRevisionParam(
-      `/user/projects/${projectId}`,
+      `/user/projects/${project.id}`,
       expectedRevision
     ),
     {

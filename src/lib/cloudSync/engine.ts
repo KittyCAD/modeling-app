@@ -1891,8 +1891,7 @@ export async function renameRemoteCloudProject(
   const updated = await updateRemoteProject({
     config,
     projectPath: localProjectNameForRemoteProject(remoteProject),
-    projectId,
-    currentRemoteProject: remoteProject,
+    project: remoteProject,
     files,
     expectedRevision: getRevision(remoteProject),
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2263,8 +2262,7 @@ async function applyLocalDataForConflict(
   const updated = await updateRemoteProject({
     config,
     projectPath: metadata.localProjectPath,
-    projectId: metadata.remoteProjectId,
-    currentRemoteProject: remoteProject,
+    project: remoteProject,
     files: localFiles,
     expectedRevision,
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2919,8 +2917,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
-            currentRemoteProject: remoteProject,
+            project: remoteProject,
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -3007,8 +3004,7 @@ async function syncProject(
           updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
-            projectId: remoteProjectId,
-            currentRemoteProject: remoteProject,
+            project: remoteProject,
             files: autoReconciledFiles,
             expectedRevision: remoteRevision,
           })

@@ -87,8 +87,7 @@ describe('remote project uploads', () => {
         baseUrl: 'https://api.dev.zoo.dev',
       },
       projectPath: '/projects/bracket',
-      projectId: 'project-existing',
-      currentRemoteProject: {
+      project: {
         id: 'project-existing',
         description: 'Existing Aquarium description.',
         category_ids: ['category-a', 'category-b'],
