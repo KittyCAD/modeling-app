@@ -23,6 +23,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 
 import { Socket, SocketConnectionError } from '@src/lib/socket'
+import { isZookeeperBillingError } from '@src/lib/zookeeper/zookeeperBilling'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -722,7 +723,7 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason) {
+      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
         toast.error(event.closeReason)
       }
       return {
@@ -1079,6 +1080,27 @@ export const zookeeperManagerMachine = setup({
 
             // Ignore pong
             if ('pong' in response) {
+              return
+            }
+
+            if (
+              'error' in response &&
+              isZookeeperBillingError(response.error.detail)
+            ) {
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.AbruptClose,
+                  closeReason: response.error.detail,
+                })
+              } else {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    response.error.detail,
+                    response.error.detail
+                  )
+                )
+              }
               return
             }
 
