@@ -5772,7 +5772,7 @@ export default {
     "preferredName": "patternCircular3d",
     "qualName": "std::solid::patternCircular3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5780,8 +5780,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to pattern.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to pattern.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5918,7 +5918,7 @@ export default {
     "preferredName": "patternLinear3d",
     "qualName": "std::solid::patternLinear3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5926,8 +5926,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5981,7 +5981,7 @@ export default {
     "preferredName": "patternTransform",
     "qualName": "std::solid::patternTransform",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5989,8 +5989,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,

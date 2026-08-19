@@ -327,6 +327,7 @@ export const zookeeperArtifactSelectionPromptHandlers = {
   edgeCut: selectedArtifactSourceRangePrompt,
   edgeCutEdge: selectedArtifactSourceRangePrompt,
   helix: selectedArtifactSourceRangePrompt,
+  importedGeometry: selectedArtifactSourceRangePrompt,
   gdtAnnotation: selectedArtifactSourceRangePrompt,
   namedView: selectedArtifactSourceRangePrompt,
   pattern: selectedArtifactSourceRangePrompt,
