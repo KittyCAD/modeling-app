@@ -663,7 +663,7 @@ export default class RustContext {
   }
 
   /** Edit a constraint value in a sketch. */
-  async editConstraint(
+  async editConstraintValue(
     version: ApiVersion,
     sketch: ApiObjectId,
     constraintId: ApiObjectId,
@@ -678,7 +678,7 @@ export default class RustContext {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
-      } = await instance.edit_constraint(
+      } = await instance.edit_constraint_value(
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraintId),

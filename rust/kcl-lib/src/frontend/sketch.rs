@@ -114,7 +114,7 @@ pub trait SketchApi {
         label: Option<String>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
-    async fn edit_constraint(
+    async fn edit_constraint_value(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,

@@ -1587,7 +1587,7 @@ impl SketchApi for FrontendState {
     }
 
     // Edit only the value, e.g. `distance(...) == 5mm` to `distance(...) == 7mm`.
-    async fn edit_constraint(
+    async fn edit_constraint_value(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
@@ -7631,7 +7631,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_parse_error_messages_are_user_facing() {
+    async fn test_edit_constraint_value_parse_error_messages_are_user_facing() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7655,7 +7655,7 @@ sketch(on = XY) {
             ("3'", "Invalid constraint value: found unknown token '''"),
         ] {
             let err = frontend
-                .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
+                .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
                 .await
                 .expect_err("expected invalid constraint expression to fail");
             let message = err.error.message();
@@ -7670,7 +7670,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_failed_edit_constraint_does_not_update_program() {
+    async fn test_failed_edit_constraint_value_does_not_update_program() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7691,7 +7691,7 @@ sketch(on = XY) {
         let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
 
         frontend
-            .edit_constraint(
+            .edit_constraint_value(
                 &mock_ctx,
                 version,
                 sketch_id,
@@ -7708,7 +7708,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_array_index_oob_fails_in_sketch_mode() {
+    async fn test_edit_constraint_value_array_index_oob_fails_in_sketch_mode() {
         let initial_source = "\
 arr = [0]
 sketch(on = XY) {
@@ -7732,7 +7732,7 @@ sketch(on = XY) {
         // It should not fall back to the first element of the array the way
         // plain mock execution does.
         let err = frontend
-            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
+            .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
             .await
             .expect_err("expected out-of-bounds array index to be an error in sketch mode execution");
         let message = err.error.message();

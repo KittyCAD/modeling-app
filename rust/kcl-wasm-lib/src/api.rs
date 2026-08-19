@@ -580,9 +580,9 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Edit a constraint in a sketch.
+    /// Edit a constraint value in a sketch.
     #[wasm_bindgen]
-    pub async fn edit_constraint(
+    pub async fn edit_constraint_value(
         &self,
         version_json: &str,
         sketch_json: &str,
@@ -601,13 +601,13 @@ impl Context {
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit constraint. {TRUE_BUG} Details: {e}")
+            format!("Could not create KCL executor context for edit constraint value. {TRUE_BUG} Details: {e}")
         })?;
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_constraint(&ctx, version, sketch, constraint_id, value_expression.to_string())
+            .edit_constraint_value(&ctx, version, sketch, constraint_id, value_expression.to_string())
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {
@@ -627,7 +627,7 @@ impl Context {
         };
 
         Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
+            .map_err(|e| format!("Could not serialize edit constraint value result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Edit an angle constraint in a sketch.
