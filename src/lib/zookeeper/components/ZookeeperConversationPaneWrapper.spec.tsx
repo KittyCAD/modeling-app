@@ -177,10 +177,7 @@ function patchBackedZookeeperEdit(code: string, path = 'main.kcl') {
 
 function patchBackedZookeeperFiles(outputs: Record<string, string>) {
   return {
-    type: 'edit_kcl_code',
-    status_code: 201,
-    project_name: 'demo',
-    outputs,
+    ...zookeeperFiles(outputs),
     zookeeper_edit_patch: {
       run_id: 'run-1',
       changed_files: Object.entries(outputs).map(([path, contents]) => ({
@@ -192,11 +189,20 @@ function patchBackedZookeeperFiles(outputs: Record<string, string>) {
   }
 }
 
+function zookeeperFiles(outputs: Record<string, string>) {
+  return {
+    type: 'edit_kcl_code',
+    status_code: 201,
+    project_name: 'demo',
+    outputs,
+  }
+}
+
 function emitZookeeperFileRequest(code: string, path = 'main.kcl') {
   emitZookeeperFileRequestOutput(patchBackedZookeeperEdit(code, path))
 }
 
-function emitZookeeperFileRequestOutput(toolOutput: unknown) {
+function emitZookeeperFileRequestOutput(toolOutput: unknown, exchangeId = 0) {
   mocks.watchCallback?.({
     toolOutput,
     projectNameCurrentlyOpened: 'demo',
@@ -205,19 +211,22 @@ function emitZookeeperFileRequestOutput(toolOutput: unknown) {
       path: '/workspace/demo/main.kcl',
       children: null,
     },
-    exchangeId: 0,
+    exchangeId,
   })
 }
 
-function emitEndOfStream() {
+function emitEndOfStream(exchangeId = 0) {
   for (const subscriber of mocks.zookeeperSubscribers) {
     subscriber({
       context: {
         awaitingResponse: false,
         conversation: {
-          exchanges: [{ responses: [], deltasAggregated: '' }],
+          exchanges: Array.from({ length: exchangeId + 1 }, () => ({
+            responses: [],
+            deltasAggregated: '',
+          })),
         },
-        lastMessageId: 999,
+        lastMessageId: 999 + exchangeId,
         lastMessageType: 'end_of_stream',
       },
     })
@@ -350,32 +359,52 @@ describe('ZookeeperConversationPaneWrapper', () => {
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
   })
 
-  test('reports only the effective file changes from a cumulative patch', async () => {
+  test('reports one file for a cube, then two when moving it to a new file', async () => {
     renderWrapper()
 
-    const outputs = {
+    const firstCode = 'cube = true'
+    emitZookeeperFileRequestOutput(zookeeperFiles({ 'main.kcl': firstCode }), 0)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+    emitEndOfStream(0)
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.showSuccessToast).toBe(false)
+    mocks.filesOnDisk.set('/workspace/demo/main.kcl', firstCode)
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    await waitFor(() =>
+      expect(mocks.toastSuccess).toHaveBeenCalledWith(
+        'Successfully updated 1 file',
+        { id: 'zookeeper-file-write-toast' }
+      )
+    )
+    mocks.toastSuccess.mockClear()
+    mocks.kclManager.code = firstCode
+
+    const secondOutputs = {
       'main.kcl': 'import cube from "cube.kcl"',
       'cube.kcl': 'cube = true',
       'unchanged-1.kcl': 'unchanged 1',
       'unchanged-2.kcl': 'unchanged 2',
       'unchanged-3.kcl': 'unchanged 3',
     }
-    for (const [path, contents] of Object.entries(outputs).slice(2)) {
+    for (const [path, contents] of Object.entries(secondOutputs).slice(2)) {
       mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
     }
-    emitZookeeperFileRequestOutput(patchBackedZookeeperFiles(outputs))
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
-    emitEndOfStream()
+    emitZookeeperFileRequestOutput(zookeeperFiles(secondOutputs), 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    emitEndOfStream(1)
     expect(mocks.toastSuccess).not.toHaveBeenCalled()
 
-    const request = mocks.systemIOSend.mock.calls[0][0].data
-    expect(request.files).toHaveLength(5)
-    expect(request.showSuccessToast).toBe(false)
-    for (const [path, contents] of Object.entries(outputs)) {
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    expect(secondRequest.files).toHaveLength(5)
+    expect(secondRequest.showSuccessToast).toBe(false)
+    for (const [path, contents] of Object.entries(secondOutputs)) {
       mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
     }
-    request.onFileSystemSuccess()
-    request.onSuccess()
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
 
     await waitFor(() =>
       expect(mocks.toastSuccess).toHaveBeenCalledWith(
