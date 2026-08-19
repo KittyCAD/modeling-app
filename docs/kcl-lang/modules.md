@@ -344,7 +344,7 @@ file represents object(s) in memory. If you import the same file multiple times,
 it will only be rendered once.
 
 If you want to have multiple instances of the same object, you can use the
-[`clone`](/docs/kcl/clone) function. This will render a new instance of the object in memory.
+[`clone`](/docs/kcl-std/functions/std-clone) function. This will render a new instance of the object in memory.
 
 ```norun
 import cube from "cube.kcl"
