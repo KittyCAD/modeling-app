@@ -65,7 +65,7 @@ fn is_literal_parallel_angle(part: &BinaryPart) -> bool {
     };
     match suffix {
         // A unitless zero is independent of the program's default angle unit.
-        NumericSuffix::None | NumericSuffix::Count => value == 0.0,
+        NumericSuffix::None => value == 0.0,
         NumericSuffix::Deg => value % 180.0 == 0.0,
         // Zero is the only radian literal that can exactly express a multiple
         // of pi without evaluating an expression or using a tolerance.
@@ -119,6 +119,7 @@ mod tests {
         for angle in [
             "90deg",
             "270deg",
+            "0_",
             "3.141592653589793rad",
             "180deg + 180deg",
             "180deg + 0",
