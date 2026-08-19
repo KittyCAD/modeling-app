@@ -691,26 +691,35 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          clearChatDisabled={props.disabled}
         />
       )
     }
   )
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
+  const hasLoadedConversation = props.conversation !== undefined
+  const shouldShowOfflineRecovery =
+    props.showManualConnect && !hasLoadedConversation
+  const shouldShowTerminalRecovery =
+    props.needsReconnect && Boolean(props.connectionFailed)
 
   return (
     <div className="relative">
-      <div className="absolute inset-0">
+      <div
+        className="absolute inset-0"
+        data-testid="zookeeper-conversation-content"
+      >
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto relative">
             <div
               className={
-                props.showManualConnect
+                shouldShowOfflineRecovery
                   ? 'h-full min-h-0 overflow-auto'
                   : 'overflow-auto'
               }
               ref={refScroll}
             >
-              {props.showManualConnect ? (
+              {shouldShowOfflineRecovery ? (
                 <ConnectionRecovery
                   className="h-full min-h-[12rem] w-full"
                   title={props.connectionError ?? 'No internet connection.'}
@@ -718,7 +727,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   onReconnect={props.onReconnect}
                   reconnectDisabled={props.isClearingChat}
                 />
-              ) : props.needsReconnect && props.connectionFailed ? (
+              ) : shouldShowTerminalRecovery ? (
                 <ZookeeperConnectionErrorBanner
                   connectionError={props.connectionError}
                   canClearChat={props.canClearChat}
@@ -787,6 +796,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   ) : null}
                   <button
                     type="button"
+                    disabled={props.disabled}
                     onClick={() => props.onSteer(msg.id)}
                     className="shrink-0 flex gap-0.5 items-center pl-0.5 pr-2 py-0.5 m-0 rounded border border-chalkboard-30 dark:border-chalkboard-70 bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"
                     aria-label={`Send queued message ${index + 1} now`}
@@ -799,6 +809,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   </button>
                   <button
                     type="button"
+                    disabled={props.disabled}
                     onClick={() => props.onRemoveFromQueue(msg.id)}
                     className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 p-1 m-0 border-none bg-transparent"
                     aria-label={`Remove queued message ${index + 1}`}
@@ -814,7 +825,11 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               Progressively loading attachments into context...
             </div>
           ) : null}
-          <div className="border-t b-4">
+          <div
+            className="border-t b-4"
+            data-testid="zookeeper-conversation-composer"
+            inert={props.disabled}
+          >
             <ZookeeperConversationInput
               disabled={
                 Boolean(props.blockedReason) ||

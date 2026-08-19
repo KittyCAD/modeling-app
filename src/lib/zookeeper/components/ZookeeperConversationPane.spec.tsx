@@ -130,6 +130,90 @@ const createFakeActor = ({
   }
 }
 
+const createStatefulReconnectActor = () => {
+  let snapshot: FakeZookeeperSnapshot = {
+    value: 'ready',
+    context: {
+      abruptlyClosed: false,
+      setupFailed: false,
+      setupAttempt: 0,
+      awaitingResponse: false,
+      attachmentsLoadedForCurrentPrompt: true,
+      conversation: completedConversation,
+      conversationId: 'conversation-id',
+      defaultMode: undefined,
+      modeOptions: undefined,
+    },
+    matches: (state: unknown) => state === snapshot.value,
+  }
+  const listeners = new Set<(next: FakeZookeeperSnapshot) => void>()
+  const emit = () => {
+    for (const listener of listeners) {
+      listener(snapshot)
+    }
+  }
+
+  const actor = {
+    getSnapshot: () => snapshot,
+    subscribe: (listener?: (next: FakeZookeeperSnapshot) => void) => {
+      if (listener !== undefined) {
+        listeners.add(listener)
+      }
+      return {
+        unsubscribe: () => {
+          if (listener !== undefined) {
+            listeners.delete(listener)
+          }
+        },
+      }
+    },
+    send: vi.fn((event: { type: string; conversationId?: string }) => {
+      if (event.type === ZookeeperManagerTransitions.NetworkOffline) {
+        snapshot = {
+          ...snapshot,
+          value: 'await',
+          context: {
+            ...snapshot.context,
+            abruptlyClosed: true,
+            closeReason: 'No internet connection.',
+          },
+        }
+        emit()
+        return
+      }
+
+      if (event.type === ZookeeperManagerTransitions.CacheSetupAndConnect) {
+        snapshot = {
+          ...snapshot,
+          value: 'setup',
+          context: {
+            ...snapshot.context,
+            abruptlyClosed: false,
+            closeReason: undefined,
+            conversation: undefined,
+            conversationId: event.conversationId,
+          },
+        }
+        emit()
+      }
+    }),
+    finishReconnect: () => {
+      snapshot = {
+        ...snapshot,
+        value: 'ready',
+        context: {
+          ...snapshot.context,
+          abruptlyClosed: false,
+          conversation: completedConversation,
+        },
+      }
+      emit()
+    },
+  }
+
+  return actor
+}
+
 type FakeConversationStore = ZookeeperConversationStore & {
   completeDelete: () => void
 }
@@ -398,14 +482,21 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('shows recovery while offline and reconnects when the browser comes online', async () => {
+  test('preserves the conversation while offline and reconnects when the browser comes online', async () => {
     vi.useFakeTimers()
-    const zookeeperManagerActor = createFakeActor({
-      awaitingResponse: false,
-    })
+    const zookeeperManagerActor = createStatefulReconnectActor()
+    const conversationStore = createFakeConversationStore()
+    const project = {
+      name: 'sample-project',
+      path: '/tmp/sample-project',
+    }
 
     try {
-      renderPane({ zookeeperManagerActor })
+      const { rerender } = renderPane({
+        zookeeperManagerActor,
+        conversationStore,
+        theProject: project,
+      })
 
       act(() => {
         window.dispatchEvent(new Event('offline'))
@@ -414,17 +505,22 @@ describe('ZookeeperConversationPane', () => {
       expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
         type: ZookeeperManagerTransitions.NetworkOffline,
       })
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'No internet connection.'
-      )
-      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: /Clear chat/ })
+        screen.queryByTestId('connection-recovery')
       ).not.toBeInTheDocument()
+      expect(screen.getByText('make a cube 10mm')).toBeInTheDocument()
+      expect(screen.getByText('Done.')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('zookeeper-conversation-content')
+      ).not.toHaveAttribute('inert')
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).toHaveAttribute('inert')
       expect(
         screen.getByTestId('ml-ephant-conversation-input-button')
       ).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Clear chat/ })).toBeDisabled()
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
 
       await act(async () => {
@@ -445,7 +541,42 @@ describe('ZookeeperConversationPane', () => {
         refParentSend: zookeeperManagerActor.send,
         conversationId: 'conversation-id',
       })
+      expect(zookeeperManagerActor.getSnapshot().value).toBe('setup')
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(screen.getByText('make a cube 10mm')).toBeInTheDocument()
+      expect(screen.getByText('Done.')).toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).toHaveAttribute('inert')
+
+      rerender(
+        createPaneElement({
+          zookeeperManagerActor,
+          conversationStore,
+          settingsMetaId: 'persisted-project-id',
+          theProject: project,
+        })
+      )
+      await act(async () => {
+        await Promise.resolve()
+        await Promise.resolve()
+      })
+
+      expect(screen.getByText('make a cube 10mm')).toBeInTheDocument()
+      expect(screen.getByText('Done.')).toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+
+      act(() => {
+        zookeeperManagerActor.finishReconnect()
+      })
+
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).not.toHaveAttribute('inert')
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
     } finally {
       vi.useRealTimers()
     }
@@ -531,7 +662,7 @@ describe('ZookeeperConversationPane', () => {
     const zookeeperManagerActor = createFakeActor({
       abruptlyClosed: true,
       awaitingResponse: false,
-      conversation: undefined,
+      conversation: completedConversation,
       conversationId: 'project-a-conversation',
       value: 'await',
     })
@@ -564,6 +695,9 @@ describe('ZookeeperConversationPane', () => {
           },
         })
       )
+
+      expect(screen.queryByText('make a cube 10mm')).not.toBeInTheDocument()
+      expect(screen.queryByText('Done.')).not.toBeInTheDocument()
 
       await waitFor(() => {
         expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(

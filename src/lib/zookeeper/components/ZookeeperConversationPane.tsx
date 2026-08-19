@@ -16,7 +16,10 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type {
+  Conversation,
+  ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
@@ -72,6 +75,9 @@ export const ZookeeperConversationPane = (props: {
   const savedProjectConversationLookupPath = useRef(props.theProject?.path)
   const actorConversationProjectPath = useRef(props.theProject?.path)
   const reconnectAfterSavedConversationLookup = useRef(false)
+  const [reconnectingProject, setReconnectingProject] = useState<{
+    path: string | undefined
+  }>()
   const clearChatOperationGeneration = useRef(0)
   const loaderFileRef = useRef(props.loaderFile)
   useEffect(() => {
@@ -127,6 +133,48 @@ export const ZookeeperConversationPane = (props: {
     conversation = undefined
   }
 
+  const currentProjectPath = props.theProject?.path
+  useEffect(() => {
+    setReconnectingProject(undefined)
+  }, [currentProjectPath])
+
+  const actorConversationMatchesCurrentProject =
+    actorConversationProjectPath.current === currentProjectPath
+  const currentProjectConversation = actorConversationMatchesCurrentProject
+    ? conversation
+    : undefined
+  const [preservedConversation, setPreservedConversation] = useState<{
+    path: string | undefined
+    conversation: Conversation
+  } | null>(() =>
+    currentProjectConversation === undefined
+      ? null
+      : {
+          path: currentProjectPath,
+          conversation: currentProjectConversation,
+        }
+  )
+
+  useEffect(() => {
+    if (currentProjectConversation === undefined) {
+      return
+    }
+    setPreservedConversation({
+      path: currentProjectPath,
+      conversation: currentProjectConversation,
+    })
+  }, [currentProjectConversation, currentProjectPath])
+
+  const isReconnectingCurrentProject =
+    reconnectingProject !== undefined &&
+    reconnectingProject.path === currentProjectPath
+
+  useEffect(() => {
+    if (isReady && currentProjectConversation !== undefined) {
+      setReconnectingProject(undefined)
+    }
+  }, [currentProjectConversation, isReady])
+
   const onProcess = async (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -180,7 +228,6 @@ export const ZookeeperConversationPane = (props: {
       return
     }
 
-    const currentProjectPath = props.theProject?.path
     const actorConversationId =
       props.zookeeperManagerActor.getSnapshot().context.conversationId
     const actorConversationMatchesCurrentProject =
@@ -200,6 +247,7 @@ export const ZookeeperConversationPane = (props: {
 
     reconnectAfterSavedConversationLookup.current = false
     actorConversationProjectPath.current = currentProjectPath
+    setReconnectingProject({ path: currentProjectPath })
     props.zookeeperManagerActor.send({
       type: ZookeeperManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.zookeeperManagerActor.send,
@@ -209,7 +257,7 @@ export const ZookeeperConversationPane = (props: {
           ? actorConversationId
           : savedProjectConversationId.current,
     })
-  }, [props.zookeeperManagerActor, props.theProject?.path])
+  }, [currentProjectPath, props.zookeeperManagerActor])
 
   const onReconnect = useCallback(() => {
     setShowManualConnect(false)
@@ -365,6 +413,7 @@ export const ZookeeperConversationPane = (props: {
 
     isClearingChat.current = true
     reconnectAfterSavedConversationLookup.current = false
+    setReconnectingProject(undefined)
     setIsClearingChatPending(true)
     const clearOperationGeneration = clearChatOperationGeneration.current + 1
     clearChatOperationGeneration.current = clearOperationGeneration
@@ -394,6 +443,7 @@ export const ZookeeperConversationPane = (props: {
 
     steeredId.current = null
     setQueue([])
+    setPreservedConversation(null)
     savedProjectConversationLookupLoaded.current = true
     savedProjectConversationId.current = undefined
 
@@ -603,8 +653,23 @@ export const ZookeeperConversationPane = (props: {
   }, [searchParams, setSearchParams])
 
   const userBlockedOnPaymentReason = props.user?.block_message
+  const preservedCurrentProjectConversation =
+    preservedConversation !== null &&
+    preservedConversation.path === currentProjectPath
+      ? preservedConversation.conversation
+      : undefined
+  const shouldUsePreservedConversation =
+    (needsReconnect || isReconnectingCurrentProject) &&
+    !setupFailed &&
+    currentProjectConversation === undefined
+  const conversationForDisplay =
+    currentProjectConversation ??
+    (shouldUsePreservedConversation
+      ? preservedCurrentProjectConversation
+      : undefined)
+  const needsReconnectForUi = needsReconnect || isReconnectingCurrentProject
   const isLoadingAttachments =
-    !attachmentsLoadedForCurrentPrompt && conversation !== undefined
+    !attachmentsLoadedForCurrentPrompt && conversationForDisplay !== undefined
   const wasPromptRunningRef = useRef(false)
 
   useEffect(() => {
@@ -630,12 +695,12 @@ export const ZookeeperConversationPane = (props: {
 
   return (
     <ZookeeperConversation
-      isLoading={conversation === undefined}
+      isLoading={conversationForDisplay === undefined}
       isLoadingAttachments={isLoadingAttachments}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
-      conversation={conversation}
+      conversation={conversationForDisplay}
       welcomeMessage={
         // Replace this local component with a remote-authored content source
         // later. `ZookeeperConversation` already handles placement and ordering.
@@ -662,13 +727,13 @@ export const ZookeeperConversationPane = (props: {
       loadingMessage={
         isSettingUp
           ? 'Connecting to Zookeeper...'
-          : needsReconnect
+          : needsReconnectForUi
             ? 'Reconnecting...'
             : undefined
       }
       onCancel={onCancel}
-      disabled={needsReconnect || isClearingChatPending}
-      needsReconnect={needsReconnect}
+      disabled={needsReconnectForUi || isClearingChatPending}
+      needsReconnect={needsReconnectForUi}
       hasPromptCompleted={!isPromptRunning}
       isProcessing={isPromptRunning}
       queue={queue}

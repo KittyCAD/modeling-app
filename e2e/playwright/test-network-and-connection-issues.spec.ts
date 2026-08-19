@@ -5,17 +5,33 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ page, context, homePage, toolbar, scene }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await context.addInitScript(
+        (initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        },
+        `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])
+  |> line(end = [10.0, 0])
+  |> line(end = [0, 10.0])
+  |> close()`
+      )
+
+      const dimensions = { width: 1200, height: 500 }
+      const modelProbe = {
+        x: dimensions.width / 2 + dimensions.width / 100,
+        y: dimensions.height / 2,
+      }
+      await page.setBodyDimensions(dimensions)
 
       await homePage.goToModelingScene()
       await scene.settled()
+      await scene.expectPixelColor(TEST_COLORS.GREY, modelProbe, 15)
 
       const networkToggle = page.getByTestId(/network-toggle/)
 
@@ -46,16 +62,19 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       await expect(networkPopover).not.toBeVisible()
 
       // Turn off the network
-      await u.emulateNetworkConditions({
-        offline: true,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('offline'))
       })
 
       // Expect the network to be down
       await expect(networkToggle).toContainText('Network health (Offline)')
+      await expect(scene.engineConnectionsSpinner).not.toBeVisible()
+      await expect(scene.streamWrapper).toHaveAttribute('inert')
+      await expect(
+        page.getByTestId('engine-scene-view-extension-overlay')
+      ).toHaveAttribute('inert')
+      await expect(toolbar.startSketchBtn).toBeDisabled()
+      await scene.expectPixelColor(TEST_COLORS.GREY, modelProbe, 15)
 
       // Click the network toggle
       await networkToggle.click()
@@ -63,26 +82,50 @@ test.describe('Test network related behaviors', { tag: '@desktop' }, () => {
       // Check the modal opened.
       await expect(networkPopover).toBeVisible()
 
-      // Click off the modal.
-      await page.mouse.click(0, 0)
+      // Toggle the popover closed while the viewport itself is inert.
+      await networkToggle.click()
       await expect(networkPopover).not.toBeVisible()
 
       // Turn back on the network
-      await u.emulateNetworkConditions({
-        offline: false,
-        // values of 0 remove any active throttling. crbug.com/456324#c9
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
+      await page.evaluate(() => {
+        window.dispatchEvent(new Event('online'))
       })
 
       await expect(toolbar.startSketchBtn).not.toBeDisabled({
         timeout: 15000,
       })
+      await expect(scene.streamWrapper).not.toHaveAttribute('inert')
+      await expect(
+        page.getByTestId('engine-scene-view-extension-overlay')
+      ).not.toHaveAttribute('inert')
 
       // (Second check) expect the network to be up
+      await expect(networkToggle).toContainText(
+        /Network health \((Strong|Ok)\)/
+      )
+
+      // A terminal websocket failure still needs an explicit escape hatch.
+      // Unlike the recoverable offline window above, code 1006 intentionally
+      // stops automatic retries.
+      await page.evaluate(() => {
+        window.engineCommandManager.dispatchEvent(
+          new CustomEvent('websocket-closed', {
+            detail: { code: '1006' },
+          })
+        )
+      })
+      await expect(scene.engineConnectionsSpinner).toBeVisible()
+      await expect(scene.engineConnectionsSpinner).toHaveAttribute(
+        'role',
+        'alert'
+      )
+      await expect(scene.engineConnectionsSpinner).toContainText(
+        'Failed to connect.'
+      )
       await expect(
-        networkToggleConnectedText.or(networkToggleWeakText)
+        scene.engineConnectionsSpinner.getByRole('button', {
+          name: /reconnect/i,
+        })
       ).toBeVisible()
     }
   )

@@ -723,7 +723,7 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
+      if (event.closeReason === ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON) {
         toast.error(event.closeReason)
       }
       return {
