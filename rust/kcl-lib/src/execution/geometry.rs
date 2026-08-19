@@ -1305,7 +1305,7 @@ pub struct Solid {
     /// topology may leave it unset.
     #[serde(skip)]
     #[ts(skip)]
-    pub(crate) body_type: Option<kcmc::shared::BodyType>,
+    pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.

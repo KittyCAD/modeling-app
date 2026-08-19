@@ -222,7 +222,7 @@ mod tests {
             value_id,
             topology_id: id,
             pattern_source_artifact_id: None,
-            body_type: None,
+            best_guess_body_type: None,
             artifact_id: ArtifactId::new(id),
             value: vec![],
             faces: Default::default(),
