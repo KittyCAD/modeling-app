@@ -2,7 +2,6 @@ import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
-  reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
@@ -2422,7 +2421,6 @@ async function markProjectConflict(
   }
   await putProjectMetadata(nextMetadata)
   publishScopedProjectCloudProjectId(nextMetadata)
-  reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',

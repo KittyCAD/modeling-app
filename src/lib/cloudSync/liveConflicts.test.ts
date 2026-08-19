@@ -211,9 +211,9 @@ describe('cloud sync live conflicts', () => {
     await vi.waitFor(() =>
       expect(clientErrorsMock.reportClientError).toHaveBeenCalledWith(
         expect.objectContaining({
-          code: 'cloud_sync_conflict_copy_detected',
-          errorName: 'CloudSyncConflictCopyDetected',
-          message: 'Cloud sync "conflict copy" folder detected',
+          code: 'cloud_sync_conflict',
+          errorName: 'CloudSyncConflict',
+          message: 'Cloud sync conflict: local and remote both changed.',
           route: '/cloud-sync',
           extra: {
             source: 'CloudSyncEngine',
@@ -221,6 +221,11 @@ describe('cloud sync live conflicts', () => {
           },
         })
       )
+    )
+    expect(clientErrorsMock.reportClientError).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: 'cloud_sync_conflict_copy_detected',
+      })
     )
     const metadata = await getCloudSyncProjectMetadata(projectPath)
     expect(metadata?.conflict?.conflictProjectPath).toBeUndefined()
