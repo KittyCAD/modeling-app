@@ -546,7 +546,9 @@ function useZookeeperEditPatchHistory({
       const snapshotFiles = getReadyZookeeperSnapshotFiles(pending)
       if (!pending.fileWriteFailed) {
         const count = snapshotFiles.filter(
-          (file) => file.previousContent !== file.nextContent
+          (file) =>
+            file.relativePath.endsWith('.kcl') &&
+            file.previousContent !== file.nextContent
         ).length
         if (count > 0) {
           toast.success(

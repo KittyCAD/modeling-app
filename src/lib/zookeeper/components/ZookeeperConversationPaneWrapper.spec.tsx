@@ -366,13 +366,20 @@ describe('ZookeeperConversationPaneWrapper', () => {
     renderWrapper()
 
     const firstCode = 'cube = true'
-    emitZookeeperFileRequestOutput(zookeeperFiles({ 'main.kcl': firstCode }), 0)
+    const firstOutputs = {
+      'main.kcl': firstCode,
+      'project.toml': 'updated metadata',
+    }
+    emitZookeeperFileRequestOutput(patchBackedZookeeperFiles(firstOutputs), 0)
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
     emitEndOfStream(0)
 
     const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.files).toHaveLength(2)
     expect(firstRequest.showSuccessToast).toBe(false)
-    mocks.filesOnDisk.set('/workspace/demo/main.kcl', firstCode)
+    for (const [path, contents] of Object.entries(firstOutputs)) {
+      mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
+    }
     firstRequest.onFileSystemSuccess()
     firstRequest.onSuccess()
 
@@ -388,17 +395,18 @@ describe('ZookeeperConversationPaneWrapper', () => {
     const secondOutputs = {
       'main.kcl': 'import cube from "cube.kcl"',
       'cube.kcl': 'cube = true',
+      'project.toml': 'newer metadata',
       'unchanged-1.kcl': 'unchanged 1',
       'unchanged-2.kcl': 'unchanged 2',
-      'untracked.kcl': 'untracked change',
     }
-    for (const [path, contents] of Object.entries(secondOutputs).slice(2, 4)) {
+    for (const [path, contents] of Object.entries(secondOutputs).slice(3)) {
       mocks.filesOnDisk.set(`/workspace/demo/${path}`, contents)
     }
     emitZookeeperFileRequestOutput(
       patchBackedZookeeperFiles(secondOutputs, {
         'main.kcl': secondOutputs['main.kcl'],
         'cube.kcl': secondOutputs['cube.kcl'],
+        'project.toml': secondOutputs['project.toml'],
       }),
       1
     )
