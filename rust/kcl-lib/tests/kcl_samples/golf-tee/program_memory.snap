@@ -112,6 +112,20 @@ description: Variables in memory after executing golf-tee.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 691,
+            "end": 700,
+            "moduleId": 0,
+            "start": 691,
+            "type": "TagDeclarator",
+            "value": "shaftEdge"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
             "commentStart": 820,
             "end": 829,
             "moduleId": 0,
@@ -134,20 +148,6 @@ description: Variables in memory after executing golf-tee.kcl
             "value": "cupLipArc"
           },
           "type": "extrudeArc"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 1105,
-            "end": 1113,
-            "moduleId": 0,
-            "start": 1105,
-            "type": "TagDeclarator",
-            "value": "axisEdge"
-          },
-          "type": "extrudePlane"
         }
       ],
       "sketch": {
