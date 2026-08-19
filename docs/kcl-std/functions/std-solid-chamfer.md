@@ -241,20 +241,17 @@ leftShaft = extrude(leftRegion, length = 20mm)
        ],
      )
 
-// Extrude the other circle into a shaft, tagging the top face,
-// then use `getCommonEdge` to select the shared edge
-// between the top and the extruded side face created from extruding `rightCircle`.
-// Then chamfer it.
-rightShaft = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
-  |> chamfer(
-       length = 1mm,
-       tags = [
-         getCommonEdge(faces = [
-           rightRegion.tags.rightCircle,
-           rightShaftTop
-         ])
-       ],
-     )
+// Extrude the other circle into a shaft and tag its top end face.
+rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
+
+// After extrusion, the circle identifies the cylindrical side face.
+// `getCommonEdge` selects the top rim shared by that face and the top end face.
+rightTopEdge = getCommonEdge(faces = [
+  rightShaftBase.sketch.tags.rightCircle,
+  rightShaftBase.faces.rightShaftTop
+])
+
+rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
 
 ```
 
