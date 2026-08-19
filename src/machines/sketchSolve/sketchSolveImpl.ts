@@ -121,11 +121,7 @@ export type SketchSolveMachineEvent =
       keepSelection?: boolean
     }
   | {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
       keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }

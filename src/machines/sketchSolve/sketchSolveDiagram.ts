@@ -235,80 +235,6 @@ function getCurrentDistanceBetweenSelections(
   return null
 }
 
-async function addAxisDistanceConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self'],
-  axis: 'horizontal' | 'vertical',
-  providedDistance?: number,
-  keepSelection = false
-) {
-  let segmentsToConstrain = [...context.selectedIds]
-  if (
-    segmentsToConstrain.length === 1 &&
-    typeof segmentsToConstrain[0] === 'number'
-  ) {
-    const first =
-      context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-        segmentsToConstrain[0]
-      ]
-    if (isLineSegment(first)) {
-      segmentsToConstrain = [first.kind.segment.start, first.kind.segment.end]
-    }
-  }
-  const currentSelections = segmentsToConstrain
-    .map((id) =>
-      id === ORIGIN_TARGET
-        ? ORIGIN_TARGET
-        : context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-    )
-    .filter(Boolean)
-  let distance =
-    providedDistance !== undefined
-      ? providedDistance
-      : DEFAULT_DISTANCE_FALLBACK
-  const units = baseUnitToNumericSuffix(
-    context.kclManager.fileSettings.defaultLengthUnit
-  )
-  // Calculate distance between two points if both are point segments
-  if (currentSelections.length === 2 && providedDistance === undefined) {
-    const first = currentSelections[0]
-    const second = currentSelections[1]
-    const point1 = getSelectionPointCoords(first)
-    const point2 = getSelectionPointCoords(second)
-    if (point1 && point2) {
-      const signedDistance =
-        axis === 'horizontal'
-          ? roundOff(point2[0] - point1[0])
-          : roundOff(point2[1] - point1[1])
-
-      if (signedDistance < 0) {
-        segmentsToConstrain = [segmentsToConstrain[1], segmentsToConstrain[0]]
-        distance = -signedDistance
-      } else {
-        distance = signedDistance
-      }
-    }
-  }
-  const result = await context.rustContext.addConstraint(
-    0,
-    context.sketchId,
-    {
-      type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
-      distance: { value: distance, units },
-      segments: segmentsToConstrain.map(
-        (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-      ),
-      source: {
-        expr: distance.toString(),
-        is_literal: true,
-      },
-    },
-    jsAppSettings(context.kclManager.systemDeps.settings),
-    true
-  )
-  sendToolbarConstraintOutcome(self, result, keepSelection)
-}
-
 function getPreparedApplyForConstraintTool(
   context: SketchSolveContext,
   toolName: ConstraintToolName
@@ -728,38 +654,6 @@ export const sketchSolveMachine = setup({
               true
             )
             sendToolbarConstraintOutcome(self, result, keepSelection)
-          }
-        )
-      },
-    },
-    HorizontalDistance: {
-      actions: ({ self, context, event }) => {
-        void runSketchSolveToolbarAction(
-          'add a horizontal distance constraint',
-          async () => {
-            await addAxisDistanceConstraint(
-              context,
-              self,
-              'horizontal',
-              undefined,
-              event.keepSelection ?? false
-            )
-          }
-        )
-      },
-    },
-    VerticalDistance: {
-      actions: ({ self, context, event }) => {
-        void runSketchSolveToolbarAction(
-          'add a vertical distance constraint',
-          async () => {
-            await addAxisDistanceConstraint(
-              context,
-              self,
-              'vertical',
-              undefined,
-              event.keepSelection ?? false
-            )
           }
         )
       },
