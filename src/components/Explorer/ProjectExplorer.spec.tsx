@@ -9,7 +9,7 @@ import { app } from '@src/lib/boot'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { projectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   PROJECT_EXPLORER_COMMAND_IDS,
   defaultKeymap,
@@ -100,10 +100,10 @@ describe('ProjectExplorer', () => {
   beforeEach(() => {
     // reset the project before each test
     project = JSON.parse(JSON.stringify(PROJECT_TEMPLATE))
-    app.registry.get(projectSessionService).clearProject()
+    app.registry.get(projectSession).clearProject()
   })
   afterEach(() => {
-    app.registry.get(projectSessionService).clearProject()
+    app.registry.get(projectSession).clearProject()
     vi.restoreAllMocks()
     cleanup()
   })
@@ -871,7 +871,7 @@ describe('ProjectExplorer', () => {
   it('should create files through the project session service', async () => {
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     const openedProject = createFakeOpenedProject(project)
-    app.registry.get(projectSessionService).setProject(openedProject)
+    app.registry.get(projectSession).setProject(openedProject)
     const systemIOSend = vi.spyOn(app.systemIOActor, 'send')
 
     const { rerender } = render(
