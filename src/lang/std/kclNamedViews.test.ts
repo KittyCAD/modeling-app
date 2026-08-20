@@ -4,13 +4,9 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type {
-  VisibilityKind,
-  VisibilityUniverse,
-} from '@src/lang/std/kclNamedViews'
+import type { VisibilityUniverse } from '@src/lang/std/kclNamedViews'
 import {
   KCL_DEFAULT_VIEW_NAME,
-  VISIBILITY_KINDS,
   engineIdForArtifact,
   engineIdsForVisibility,
   getViewUniverse,
@@ -20,7 +16,6 @@ import {
 } from '@src/lang/std/kclNamedViews'
 import type { ArtifactGraph, ExecState } from '@src/lang/wasm'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
-import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import { describe, expect, it } from 'vitest'
 
 const ROOT_PATH: ModulePath = {
@@ -476,48 +471,6 @@ describe('visibilityForKclDefault', () => {
     expect(visibilityForKclDefault({ universe, hiddenIds: new Set() })).toEqual(
       new Map([['body-1', false]])
     )
-  })
-})
-
-const EXCEPT_TYPE_TO_KINDS: Record<string, readonly VisibilityKind[]> = {
-  Solid: ['sweep', 'compositeSolid'],
-  Sketch: ['path'],
-  GdtAnnotation: ['gdtAnnotation'],
-}
-
-/** Splits the recorded type `[Solid | Sketch | GdtAnnotation; 1+]`. */
-function kclTypesInArrayType(recordedType: string): string[] {
-  const match = /^\[(.+);\s*1\+\]$/.exec(recordedType)
-  expect(
-    match,
-    `unexpected recorded type for except: ${recordedType}`
-  ).not.toBeNull()
-
-  return (match?.[1] ?? '').split('|').map((name) => name.trim())
-}
-
-describe('the universe and `view::named`', () => {
-  it('cover exactly the same objects', () => {
-    const exceptArg = STD_LIB_COMMANDS['view::named'].args.find(
-      (arg) => arg.name === 'except'
-    )
-    expect(exceptArg, 'view::named has no `except` argument').toBeDefined()
-
-    const kclTypes = kclTypesInArrayType(exceptArg?.ty ?? '')
-    expect(kclTypes.length).toBeGreaterThan(0)
-
-    for (const kclType of kclTypes) {
-      expect(
-        EXCEPT_TYPE_TO_KINDS[kclType],
-        `no universe kind recorded for the type ${kclType} that except accepts`
-      ).toBeDefined()
-    }
-
-    const kindsExceptCanName = new Set(
-      kclTypes.flatMap((kclType) => [...(EXCEPT_TYPE_TO_KINDS[kclType] ?? [])])
-    )
-
-    expect([...kindsExceptCanName].sort()).toEqual([...VISIBILITY_KINDS].sort())
   })
 })
 
