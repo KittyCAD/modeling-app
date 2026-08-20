@@ -28,6 +28,10 @@ import {
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
 } from '@src/lib/constants'
+import {
+  canSubmitSelectionArg,
+  type ResolvedSelectionType,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -317,6 +321,48 @@ describe('Extrude surface arguments', () => {
           length: parsedLength(),
         },
       })
+    ).toBe(true)
+  })
+})
+
+describe('Object selection arguments', () => {
+  it('shares path regions across simple and mixed object selection flows', () => {
+    const helixConfig = modelingMachineCommandConfig.Helix
+    const unionConfig = modelingMachineCommandConfig['Boolean Union']
+    if (
+      !helixConfig ||
+      isArray(helixConfig) ||
+      !unionConfig ||
+      isArray(unionConfig)
+    ) {
+      throw new Error('Object commands should have single command configs')
+    }
+
+    const cylinderArg = helixConfig.args?.cylinder
+    const solidsArg = unionConfig.args?.solids
+    if (
+      !cylinderArg ||
+      cylinderArg.inputType !== 'selection' ||
+      !solidsArg ||
+      solidsArg.inputType !== 'selectionMixed'
+    ) {
+      throw new Error('Object commands should expose selection arguments')
+    }
+
+    for (const arg of [cylinderArg, solidsArg]) {
+      expect(arg.selectionTypes).toContain('pathRegion')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
     ).toBe(true)
   })
 })
