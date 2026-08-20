@@ -133,23 +133,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const runQueuedProjectMutation = <Result>(
-    operation: ProjectSessionMutationOperation,
-    targetPath: string | undefined,
-    run: (currentProject: ZDSProject) => Promise<Result>,
-    options: { refreshProjectTree?: boolean } = {}
-  ) =>
-    ctx.services.get(fsOperationQueue).run(
-      {
-        kind: operation,
-        targetPath,
-        metadata: {
-          service: 'projectSession',
-        },
-      },
-      () => runProjectMutation(operation, targetPath, run, options)
-    )
-
   const serviceImpl: ProjectSessionService = {
     project,
     projectTree,
@@ -157,6 +140,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     mutation,
     getProject: () => project.value,
     setProject: (nextProject) => {
+      nextProject?.setFileSystemOperations(ctx.services.get(fsOperationQueue))
       project.value = nextProject
       watchProjectTree(nextProject)
     },
@@ -219,45 +203,39 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       }
     },
     createFile: (input: ProjectSessionFileWriteInput) =>
-      runQueuedProjectMutation('create-file', input.path, (currentProject) =>
+      runProjectMutation('create-file', input.path, (currentProject) =>
         currentProject.createFile(input)
       ),
     writeFile: (input: ProjectSessionFileWriteInput) =>
-      runQueuedProjectMutation('write-file', input.path, (currentProject) =>
+      runProjectMutation('write-file', input.path, (currentProject) =>
         currentProject.writeFile(input)
       ),
     createFolder: (input: ProjectSessionEntryPathInput) =>
-      runQueuedProjectMutation('create-folder', input.path, (currentProject) =>
+      runProjectMutation('create-folder', input.path, (currentProject) =>
         currentProject.createFolder(input)
       ),
     renameEntry: (input: ProjectSessionEntryRenameInput) =>
-      runQueuedProjectMutation(
-        'rename-entry',
-        input.newPath,
-        (currentProject) => currentProject.renameEntry(input)
+      runProjectMutation('rename-entry', input.newPath, (currentProject) =>
+        currentProject.renameEntry(input)
       ),
     deleteEntry: (input: ProjectSessionEntryPathInput) =>
-      runQueuedProjectMutation('delete-entry', input.path, (currentProject) =>
+      runProjectMutation('delete-entry', input.path, (currentProject) =>
         currentProject.deleteEntry(input)
       ),
     copyEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runQueuedProjectMutation(
-        'copy-entry',
-        input.targetPath,
-        (currentProject) => currentProject.copyEntry(input)
+      runProjectMutation('copy-entry', input.targetPath, (currentProject) =>
+        currentProject.copyEntry(input)
       ),
     moveEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runQueuedProjectMutation(
-        'move-entry',
-        input.targetPath,
-        (currentProject) => currentProject.moveEntry(input)
+      runProjectMutation('move-entry', input.targetPath, (currentProject) =>
+        currentProject.moveEntry(input)
       ),
     archiveEntry: (input: ProjectSessionEntryPathInput) =>
-      runQueuedProjectMutation('archive-entry', input.path, (currentProject) =>
+      runProjectMutation('archive-entry', input.path, (currentProject) =>
         currentProject.archiveEntry(input)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
-      runQueuedProjectMutation(
+      runProjectMutation(
         'apply-file-patch',
         input.files.at(-1)?.path,
         (currentProject) => currentProject.applyFilePatch(input)
