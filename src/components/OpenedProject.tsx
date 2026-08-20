@@ -195,7 +195,7 @@ export function OpenedProject() {
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             accountUrl: withSiteBaseURL('/account'),
-            projectSession,
+            projectSession: session,
           }),
         {
           id: ONBOARDING_TOAST_ID,

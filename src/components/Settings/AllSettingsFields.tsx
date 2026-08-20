@@ -77,7 +77,7 @@ export const AllSettingsFields = forwardRef(
       return acceptOnboarding({
         onboardingStatus: onboardingStartPath,
         navigate,
-      projectSession: session,
+        projectSession: session,
       })
     }
 
