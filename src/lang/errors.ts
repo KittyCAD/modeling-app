@@ -151,8 +151,16 @@ export function kclErrorsToDiagnostics(
           }
           backtraceLines.push(name)
         }
-        // If the backtrace is only one line, it's not helpful to show.
-        if (backtraceLines.length > 1) {
+        // A single function frame repeats what the squiggle already points
+        // at, so it's not helpful to show. But a lone import frame is the
+        // only sign that the error lives in another file, so show it.
+        const hasImportFrame = err.kclBacktrace.some(
+          (item) => item.kind === 'import'
+        )
+        if (
+          backtraceLines.length > 1 ||
+          (hasImportFrame && backtraceLines.length === 1)
+        ) {
           message += `\n\nBacktrace:\n${backtraceLines.join('\n')}`
         }
       }

@@ -126,6 +126,85 @@ describe('test kclErrToDiagnostic', () => {
     ])
   })
 
+  it('shows the backtrace for a direct import with a single frame', () => {
+    // One-level import: the only named frame is the import itself, which is
+    // the only sign the error lives in another file.
+    const sourceCode = 'import partValue from "part.kcl"\n\npartValue\n'
+    const errors: KCLError[] = [
+      {
+        name: '',
+        message: '',
+        kind: 'undefined_value',
+        msg: '`missingName` is not defined',
+        sourceRange: [0, 32, 0],
+        kclBacktrace: [
+          {
+            sourceRange: [21, 32, 1],
+            fnName: 'import part.kcl',
+            kind: 'import',
+          },
+          { sourceRange: [0, 32, 0], fnName: null, kind: 'call' },
+        ],
+        nonFatal: [],
+        variables: {},
+        operations: emptyOperationsByModule(),
+        artifactGraph: defaultArtifactGraph(),
+        filenames: {},
+        defaultPlanes: null,
+      },
+    ]
+    const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
+    expect(diagnostics).toEqual([
+      {
+        from: 0,
+        to: 32,
+        message: '`missingName` is not defined\n\nBacktrace:\nimport part.kcl',
+        severity: 'error',
+      },
+    ])
+  })
+
+  it('still suppresses a single function frame', () => {
+    // A one-frame function backtrace repeats what the squiggle already
+    // points at, so it is not shown.
+    const sourceCode =
+      'fn f(@x) {\n  return assert(x, isGreaterThan = 0)\n}\n\nf(0)\n'
+    const errors: KCLError[] = [
+      {
+        name: '',
+        message: '',
+        kind: 'user_defined',
+        msg: 'assert failed',
+        sourceRange: [20, 47, 0],
+        kclBacktrace: [
+          { sourceRange: [20, 47, 0], fnName: 'f', kind: 'call' },
+          { sourceRange: [52, 56, 0], fnName: null, kind: 'call' },
+        ],
+        nonFatal: [],
+        variables: {},
+        operations: emptyOperationsByModule(),
+        artifactGraph: defaultArtifactGraph(),
+        filenames: {},
+        defaultPlanes: null,
+      },
+    ]
+    const diagnostics = kclErrorsToDiagnostics(errors, sourceCode)
+    expect(diagnostics).toEqual([
+      {
+        from: 52,
+        to: 56,
+        message: 'Part of the error backtrace',
+        severity: 'hint',
+      },
+      {
+        from: 20,
+        to: 47,
+        message: 'assert failed',
+        severity: 'error',
+      },
+    ])
+  })
+
   it('renders function frames with parens alongside import frames', () => {
     const sourceCode =
       'import assemblyValue from "assembly.kcl"\n\nassemblyValue\n'
