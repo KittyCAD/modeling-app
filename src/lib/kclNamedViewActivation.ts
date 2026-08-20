@@ -36,14 +36,14 @@ export type ActiveView = {
 }
 
 /**
- * The active view, or null for `KCL Default`.
+ * The active view, or null for `Default View`.
  */
 export const activeViewSignal = signal<ActiveView | null>(null)
 
 /**
  * The camera as it was before the active view moved it.
  *
- * Null while `KCL Default` is active. Held here rather than in
+ * Null while `Default View` is active. Held here rather than in
  * `CameraControls.oldCameraState`, which is owned by the idle-reconnect.
  */
 let preActivationCamera: CameraViewState | null = null

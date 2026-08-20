@@ -16,7 +16,7 @@ import type {
  * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/execution/named_views.rs`
  * declares the same string. Changing one alone fails a test on each side.
  */
-export const KCL_DEFAULT_VIEW_NAME = 'KCL Default'
+export const KCL_DEFAULT_VIEW_NAME = 'Default View'
 
 /**
  * A KclNamedView is one `view::named` artifact and the module that declared it.
@@ -39,7 +39,7 @@ export interface KclNamedView {
  * Views from imported modules are included. Two modules may declare one display
  * name, and both are returned.
  *
- * `KCL Default` is never among them. It is computed, not declared.
+ * `Default View` is never among them. It is computed, not declared.
  */
 export function listNamedViews({
   artifactGraph,
@@ -298,7 +298,7 @@ export function visibilityForView({
 }
 
 /**
- * Returns the visibility of `KCL Default`, the resulting scene from a successful execution.
+ * Returns the visibility of `Default View`, the resulting scene from a successful execution.
  *
  * That scene is a `show` baseline excepting the objects the program's own
  * `hide()` calls named, so activating it needs no re-execution.

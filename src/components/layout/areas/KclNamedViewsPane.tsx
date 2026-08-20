@@ -44,7 +44,7 @@ function moduleName(path: ModulePath | undefined): string | undefined {
 }
 
 /**
- * Returns one row per view, `KCL Default` first.
+ * Returns one row per view, `Default View` first.
  *
  * A display name two modules both declare is prefixed with the declaring
  * module, as `bracket::Front`. Unique names are left bare.

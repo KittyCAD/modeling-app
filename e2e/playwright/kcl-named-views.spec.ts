@@ -159,7 +159,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
   })
 
-  test('lists KCL Default first and prefixes a name two modules declare', async ({
+  test('lists Default View first and prefixes a name two modules declare', async ({
     homePage,
     scene,
     toolbar,
@@ -179,7 +179,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     // Graph insertion order: the `import` executes before the local
     // declarations, so the imported view is registered first.
     await expect(labels).toHaveText([
-      'KCL Default',
+      'Default View',
       'panel::Front',
       'main::Front',
       'Top',
@@ -200,15 +200,15 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
 
     const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
-    const kclDefault = rows.filter({ hasText: 'KCL Default' })
+    const defaultView = rows.filter({ hasText: 'Default View' })
     const top = rows.filter({ hasText: 'Top' })
 
     await top.click()
     await expect(top).toHaveAttribute('data-active', 'true')
-    await expect(kclDefault).toHaveAttribute('data-active', 'false')
+    await expect(defaultView).toHaveAttribute('data-active', 'false')
 
-    await kclDefault.click()
-    await expect(kclDefault).toHaveAttribute('data-active', 'true')
+    await defaultView.click()
+    await expect(defaultView).toHaveAttribute('data-active', 'true')
     await expect(top).toHaveAttribute('data-active', 'false')
   })
 
@@ -245,7 +245,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await expect(top).toHaveAttribute('data-active', 'true')
   })
 
-  test('deleting the active view returns to KCL Default and says so', async ({
+  test('deleting the active view returns to Default View and says so', async ({
     homePage,
     scene,
     toolbar,
@@ -260,7 +260,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
 
     const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
     const top = rows.filter({ hasText: 'Top' })
-    const kclDefault = rows.filter({ hasText: 'KCL Default' })
+    const defaultView = rows.filter({ hasText: 'Default View' })
 
     await top.click()
     await expect(top).toHaveAttribute('data-active', 'true')
@@ -269,7 +269,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await editor.replaceCode('', MAIN_KCL_WITHOUT_TOP)
 
     await expect(top).toHaveCount(0)
-    await expect(kclDefault).toHaveAttribute('data-active', 'true')
+    await expect(defaultView).toHaveAttribute('data-active', 'true')
     await expect(
       page.getByText('The view "Top" is no longer in this program.')
     ).toBeVisible()

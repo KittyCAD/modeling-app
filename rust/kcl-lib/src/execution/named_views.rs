@@ -425,7 +425,7 @@ impl CameraView {
 /// so two views answering to one name would leave activation ambiguous.
 /// Reserving the name before anything computes the default view means no file
 /// written today stops being valid once it exists.
-pub(crate) const RESERVED_DEFAULT_VIEW_NAME: &str = "KCL Default";
+pub(crate) const RESERVED_DEFAULT_VIEW_NAME: &str = "Default View";
 
 /// An input rejected by [`NamedViewValue::new`].
 ///
@@ -909,8 +909,8 @@ mod tests {
             NamedViewError::ReservedName
         );
         // Only the reserved name itself is reserved.
-        view_named("KCL Default view").unwrap();
-        view_named("kcl default").unwrap();
+        view_named("Default View 2").unwrap();
+        view_named("default view").unwrap();
 
         // A name is display text, so interior spaces and punctuation are
         // ordinary.

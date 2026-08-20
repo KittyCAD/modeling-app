@@ -198,7 +198,7 @@ describe('moduleKeyOf', () => {
 })
 
 describe('isSameView', () => {
-  it('treats KCL Default as itself and as nothing else', () => {
+  it('treats Default View as itself and as nothing else', () => {
     expect(isSameView(null, null)).toBe(true)
     expect(isSameView(null, { name: 'Front', moduleKey: 'Main' })).toBe(false)
     expect(isSameView({ name: 'Front', moduleKey: 'Main' }, null)).toBe(false)
@@ -293,7 +293,7 @@ describe('activateNamedView', () => {
     expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
-  it('sends no camera of its own for KCL Default', async () => {
+  it('sends no camera of its own for Default View', async () => {
     setFlag(true)
     const f = fakes()
 
@@ -320,7 +320,7 @@ describe('the pre-activation camera', () => {
     resetNamedViewSession()
   })
 
-  it('is put back by KCL Default', async () => {
+  it('is put back by Default View', async () => {
     const f = fakes()
 
     await activateNamedView({
@@ -488,7 +488,7 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
-  it('falls back to KCL Default, and says so, once the view is gone', async () => {
+  it('falls back to Default View, and says so, once the view is gone', async () => {
     const f = fakes()
     await activateFront(f)
 
@@ -535,7 +535,7 @@ describe('reapplying the active view after a reconnection', () => {
     })
   })
 
-  it('leaves the camera to the caller while KCL Default is active', async () => {
+  it('leaves the camera to the caller while Default View is active', async () => {
     const f = fakes()
 
     const movedTheCamera = await reapplyActiveViewAfterReconnect(f.kclManager)
@@ -556,7 +556,7 @@ describe('reapplying the active view after a reconnection', () => {
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
   })
 
-  it('falls back to KCL Default once the view is gone', async () => {
+  it('falls back to Default View once the view is gone', async () => {
     const f = fakes()
     await activateFront(f)
 

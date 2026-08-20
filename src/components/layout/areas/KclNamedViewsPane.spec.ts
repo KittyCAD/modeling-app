@@ -53,7 +53,7 @@ const LOCAL_BRACKET: ModulePath = {
 }
 
 describe('viewRows', () => {
-  it('puts KCL Default first when the program declared no views', () => {
+  it('puts Default View first when the program declared no views', () => {
     expect(viewRows([])).toEqual([
       {
         key: 'kcl-default',
@@ -64,7 +64,7 @@ describe('viewRows', () => {
     ])
   })
 
-  it('keeps KCL Default first and the declared views in order', () => {
+  it('keeps Default View first and the declared views in order', () => {
     const rows = viewRows([
       view({ name: 'Front', modulePath: LOCAL_MAIN }),
       view({ name: 'Plate in context', modulePath: LOCAL_MAIN }),
