@@ -1742,7 +1742,12 @@ impl ExecutorContext {
                             exec_state.mod_local.artifacts = Default::default();
                             let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
-                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                                .map(|geom| Some(KclValue::ImportedGeometry(geom)))
+                                // Label the failure with the import so the
+                                // backtrace names the foreign file (and so
+                                // add_import_backtrace's assumption that the
+                                // immediate frame is present holds).
+                                .map_err(|err| err.add_import_location(&module_path.import_name(), source_range));
                             let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
 
                             result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))

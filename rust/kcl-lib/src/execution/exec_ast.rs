@@ -1799,7 +1799,9 @@ impl ExecutorContext {
                         // Preserve the failed command in the caller's error artifacts, matching
                         // the behavior before foreign module artifact states were isolated.
                         exec_state.mod_local.artifacts.extend(module_artifacts);
-                        Err(e)
+                        // Label the failure with the import so the backtrace
+                        // names the foreign file, like KCL module failures do.
+                        Err(e.add_import_location(&path.import_name(), source_range))
                     }
                 }
             }
@@ -1837,16 +1839,7 @@ impl ExecutorContext {
                 // The module loaded successfully, so preserve execution errors
                 // exactly as they occurred inside it. Rewrapping them here loses
                 // the error kind, structured fields, and imported-file location.
-                _ => {
-                    let import_name = match path {
-                        ModulePath::Local {
-                            original_import_path: Some(original),
-                            ..
-                        } => original.to_string(),
-                        _ => path.to_string(),
-                    };
-                    err.add_import_location(&import_name, source_range)
-                }
+                _ => err.add_import_location(&path.import_name(), source_range),
             }
         })
     }

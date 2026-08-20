@@ -36,10 +36,11 @@ pub(crate) type Universe = HashMap<String, DependencyInfo>;
 /// Imported modules are executed in dependency order, so a leaf can fail
 /// before its parents execute and naturally unwind. The universe still holds
 /// each module's importing statement, which lets us reconstruct that chain.
-/// Every per-module error path in the eager loop already ranges the error at
-/// the immediate import site (`exec_module_from_ast` for KCL modules,
-/// `send_to_engine` for foreign ones, and the not-found internal error), so
-/// this starts with its parent.
+/// Every per-module error path in the eager loop already records the
+/// immediate import frame (`exec_module_from_ast` for KCL modules, the
+/// labeled `send_to_engine` failure for foreign ones, and the not-found
+/// internal error, which ranges the error at the import site), so this
+/// starts with its parent.
 pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId, universe: &Universe) -> KclError {
     let Some((immediate_import, _, _, _)) = universe
         .values()
@@ -370,6 +371,46 @@ mod tests {
             .map(|range| range.module_id())
             .collect();
         assert_eq!(modules, [leaf, mid, root]);
+    }
+
+    #[test]
+    fn foreign_import_failure_gets_full_backtrace() {
+        // main.kcl imports assembly.kcl, which imports model.obj. The engine
+        // send fails; the error is ranged at the import statement in
+        // assembly.kcl and carries no deeper frames because foreign files
+        // have no source ranges.
+        let root = ModuleId::default();
+        let assembly = ModuleId::from_usize(1);
+        let obj = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert(
+            "assembly.kcl".to_owned(),
+            dependency_info("assembly.kcl", assembly, root),
+        );
+        universe.insert("model.obj".to_owned(), dependency_info("model.obj", obj, assembly));
+
+        let obj_import_site = SourceRange::new(0, 18, assembly);
+        let engine_error =
+            KclError::new_engine(KclErrorDetails::new("engine hangup".to_owned(), vec![obj_import_site]));
+        // The eager loop's foreign arm labels the failure with the import.
+        let error = engine_error.add_import_location("model.obj", obj_import_site);
+        let error = add_import_backtrace(error, obj, &universe);
+
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(
+            fn_names,
+            [
+                Some("import model.obj".to_owned()),
+                Some("import assembly.kcl".to_owned()),
+                None
+            ]
+        );
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [assembly, assembly, root]);
     }
 
     #[test]
