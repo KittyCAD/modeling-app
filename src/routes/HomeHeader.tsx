@@ -8,7 +8,7 @@ import {
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
-import type { HTMLProps } from 'react'
+import type { HTMLProps, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
 type ReadWriteProjectState = {
@@ -25,6 +25,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setSearchParams: (params: Record<string, string>) => void
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
+  libraryHomeSummary?: ReactNode
   showFreeCloudProjectTrainingDisclosure?: boolean
 }
 
@@ -37,6 +38,7 @@ export function HomeHeader({
   setSearchParams,
   readWriteProjectDir,
   projectSearchKeybinding,
+  libraryHomeSummary,
   showFreeCloudProjectTrainingDisclosure = false,
   ...rest
 }: HomeHeaderProps) {
@@ -109,30 +111,37 @@ export function HomeHeader({
         </div>
       </div>
       {library ? (
-        <p className="my-4 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Loaded from{' '}
-          <Link
-            data-testid="project-directory-settings-link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-            className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-          >
-            {formatProjectLibraryPathForDisplay(library)}
-          </Link>
-          {showFreeCloudProjectTrainingDisclosure && (
-            <>
-              . Zoo trains on Free user cloud projects.{' '}
-              <a
-                href={FREE_CLOUD_PROJECT_TRAINING_POLICY_URL}
-                onClick={openExternalBrowserIfDesktop(
-                  FREE_CLOUD_PROJECT_TRAINING_POLICY_URL
-                )}
-                className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-              >
-                See our policy
-              </a>
-            </>
+        <div className="my-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+          {libraryHomeSummary && (
+            <div className="flex flex-none sm:order-2 sm:ml-auto">
+              {libraryHomeSummary}
+            </div>
           )}
-        </p>
+          <p className="m-0 min-w-0 flex-1 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30 sm:order-1">
+            Loaded from{' '}
+            <Link
+              data-testid="project-directory-settings-link"
+              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+            >
+              {formatProjectLibraryPathForDisplay(library)}
+            </Link>
+            {showFreeCloudProjectTrainingDisclosure && (
+              <>
+                . Zoo trains on Free user cloud projects.{' '}
+                <a
+                  href={FREE_CLOUD_PROJECT_TRAINING_POLICY_URL}
+                  onClick={openExternalBrowserIfDesktop(
+                    FREE_CLOUD_PROJECT_TRAINING_POLICY_URL
+                  )}
+                  className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+                >
+                  See our policy
+                </a>
+              </>
+            )}
+          </p>
+        </div>
       ) : null}
       {!readWriteProjectDir.value && (
         <section>

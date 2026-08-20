@@ -10,6 +10,7 @@ import { signal } from '@preact/signals-core'
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
+import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import {
   cloudSyncPlugin,
   cloudSyncProjectLibraryType,
@@ -18,7 +19,6 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
-import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -37,10 +37,10 @@ import {
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
   getProjectLibraryCreateProjectOperation,
+  type ProjectLibraryRealization,
   projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
-  type ProjectLibraryRealization,
 } from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
@@ -61,6 +61,7 @@ import { createActor, createMachine } from 'xstate'
 const cloudConflictDialogMocks = vi.hoisted(
   (): {
     conflict: unknown
+    conflicts: { localProjectPath: string; projectName: string }[] | undefined
     conflictDialogProjectPath?: string
     dialogProjectPaths: string[]
     errorDialogMessage?: string
@@ -68,6 +69,7 @@ const cloudConflictDialogMocks = vi.hoisted(
     notify: () => void
   } => ({
     conflict: undefined,
+    conflicts: [],
     conflictDialogProjectPath: undefined,
     dialogProjectPaths: [],
     errorDialogMessage: undefined,
@@ -146,7 +148,7 @@ vi.mock('@src/components/CloudConflictDialog', async () => {
       cloudConflictDialogMocks.notify()
     },
     useCloudSyncProjectConflict: () => cloudConflictDialogMocks.conflict,
-    useCloudSyncProjectConflicts: () => [],
+    useCloudSyncProjectConflicts: () => cloudConflictDialogMocks.conflicts,
   }
 })
 
@@ -430,6 +432,7 @@ function enableCloudSyncPlugin(registry: Registry) {
 afterEach(() => {
   window.electron = originalElectron
   cloudConflictDialogMocks.conflict = undefined
+  cloudConflictDialogMocks.conflicts = []
   cloudConflictDialogMocks.conflictDialogProjectPath = undefined
   cloudConflictDialogMocks.dialogProjectPaths = []
   cloudConflictDialogMocks.errorDialogMessage = undefined
@@ -461,8 +464,8 @@ describe('cloud sync status presentation', () => {
   })
 })
 
-describe('cloud sync status bar conflict dialog', () => {
-  test('contributes the cloud sync status bar item only on home', () => {
+describe('cloud sync library home summary', () => {
+  test('does not contribute the aggregate cloud sync status bar item', () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'idle',
@@ -492,96 +495,85 @@ describe('cloud sync status bar conflict dialog', () => {
       expect(
         registry
           .get(statusBarGlobalItemsValueSpec)
-          .find((item) => item.id === 'cloud-sync')
-      ).toMatchObject({
-        scopes: ['home'],
-      })
+          .some((item) => item.id === 'cloud-sync')
+      ).toBe(false)
     } finally {
       registry[Symbol.dispose]()
     }
   })
 
-  test('keeps inspecting the clicked project when global conflict status changes', async () => {
-    cloudConflictDialogMocks.conflict = {
-      conflict: {
-        conflictProjectPath: '/projects/current (cloud conflict)',
-        remoteRevision: 'remote-rev-2',
-        createdAt: new Date(now).toISOString(),
-      },
-    }
+  test('keeps inspecting the clicked library project when global conflict status changes', async () => {
+    const projectPath = projectWellFormed.path
     cloudSyncStatus.value = {
       enabled: true,
       state: 'conflict',
       pendingCount: 0,
-      activeProjectPath: '/projects/current',
+      activeProjectPath: projectPath,
       lastFailure: 'Cloud sync conflict: local and remote both changed.',
       lastFailureAt: new Date(now).toISOString(),
     }
     const registry = new Registry()
     const settings = createSettingsService({})
-    const settingsExtension = defineRegistryItem({
-      id: 'test-settings-service',
-      providesServices: [provideService(settingsService, settings.service)],
-    })
-    const userFeaturesExtension = defineRegistryItem({
-      id: 'test-user-features-service',
-      providesServices: [
-        provideService(userFeaturesService, createUserFeaturesService()),
-      ],
-    })
 
-    registry.configure([
-      settingsExtension,
-      userFeaturesExtension,
-      cloudSyncPlugin,
-    ])
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
     enableCloudSyncPlugin(registry)
 
     try {
-      const statusItem = registry
-        .get(statusBarGlobalItemsValueSpec)
-        .find((item) => item.id === 'cloud-sync')
-      expect(statusItem).toBeDefined()
-      if (!statusItem || !('component' in statusItem)) {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      const HomeSummary = cloudLibraryType?.homeSummary
+      expect(HomeSummary).toBeDefined()
+      if (!HomeSummary) {
         return
       }
 
-      const StatusBarItem = statusItem.component
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      const project = {
+        ...homeProjectEntryFromProject(projectWellFormed),
+        id: `local:${projectPath}`,
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        status: 'conflicted',
+        conflict: {},
+      } satisfies HomeProjectEntry
       const app = {
         registry,
         settings: {
           useSettings: () => settings.settingsSignal.value,
         },
       } as unknown as App
-      window.history.pushState({}, '', '/file/%2Fprojects%2Fcurrent%2Fmain.kcl')
       renderWithRouter(
         <>
-          <StatusBarItem />
+          <HomeSummary library={cloudLibrary} projects={[project]} />
           <CloudSyncDialogHostContribution app={app} />
         </>
       )
 
-      fireEvent.click(screen.getByTestId('cloud-sync-status'))
+      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
+      fireEvent.click(await screen.findByRole('button', { name: 'Simple Box' }))
       expect(
         await screen.findByTestId('cloud-conflict-dialog')
-      ).toHaveTextContent('/projects/current')
+      ).toHaveTextContent(projectPath)
 
       cloudSyncStatus.value = {
         ...cloudSyncStatus.value,
-        activeProjectPath: '/projects/other',
+        activeProjectPath: '/some/path/other',
         lastFailureAt: new Date(now + 1).toISOString(),
       }
 
       await waitFor(() =>
         expect(screen.getByTestId('cloud-conflict-dialog')).toHaveTextContent(
-          '/projects/current'
+          projectPath
         )
       )
       expect(screen.getByTestId('cloud-conflict-dialog')).not.toHaveTextContent(
-        '/projects/other'
+        '/some/path/other'
       )
       expect(cloudConflictDialogMocks.dialogProjectPaths).not.toContain(
-        '/projects/other'
+        '/some/path/other'
       )
     } finally {
       registry[Symbol.dispose]()
@@ -794,6 +786,7 @@ describe('cloud sync project library', () => {
         title: 'Cloud',
         icon: 'cloud',
         defaultSetting: getDefaultCloudProjectLibrarySetting(),
+        homeSummary: expect.any(Function),
         operations: {
           duplicateProject: expect.any(Object),
           openProject: expect.any(Object),
