@@ -870,7 +870,7 @@ export class ZDSProject {
 
     for (const file of input.files) {
       if (file.contents === null) {
-        await fsZds.rm(file.path)
+        await fsZds.rm(file.path, { force: true })
       } else {
         await this.writeFile({
           path: file.path,
