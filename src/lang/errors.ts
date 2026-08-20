@@ -136,12 +136,19 @@ export function kclErrorsToDiagnostics(
           }
           // Import frames are already labeled like `import foo.kcl`;
           // rendering call parens only makes sense for function frames.
-          const name =
-            item.kind === 'import'
-              ? (item.fnName ?? '(import)')
-              : item.fnName
-                ? `${item.fnName}()`
-                : '(anonymous)'
+          let name: string
+          switch (item.kind) {
+            case 'call':
+              name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+              break
+            case 'import':
+              name = item.fnName ?? '(import)'
+              break
+            default:
+              const _exhaustiveCheck: never = item.kind
+              name = '(unknown)'
+              break
+          }
           backtraceLines.push(name)
         }
         // If the backtrace is only one line, it's not helpful to show.
