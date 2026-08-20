@@ -39,8 +39,8 @@ export const PublishButton = memo(function PublishButton({
   app,
 }: PublishButtonProps) {
   useSignals()
-  const project = app.registry.get(projectSession).project.value
-    ?.projectIORefSignal.value
+  const project =
+    app.registry.get(projectSession).project.value?.projectIORefSignal.value
 
   return (
     <Popover className="relative hidden sm:flex">
