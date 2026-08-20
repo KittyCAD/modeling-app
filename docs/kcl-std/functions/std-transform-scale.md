@@ -36,6 +36,9 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 `(1,1) - (1,2) - (2,2) - (2,1)` and you scale by 2 globally it will become
 `(2,2) - (2,4)`...etc so the origin has moved from `(1.5, 1.5)` to `(2,2)`.
 
+**NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+way (i.e. scaled differently along each axis).
+
 ### Arguments
 
 | Name | Type | Description | Required |
