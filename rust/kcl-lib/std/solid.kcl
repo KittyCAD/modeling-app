@@ -1363,11 +1363,11 @@ export fn patternCircular3d(
   useOriginal?: bool = false,
 ): [Solid | ImportedGeometry; 1+] {}
 
-/// Union two or more solids into a single solid.
+/// Union two or more solids or imported geometries into a single body.
 ///
-/// This operation consumes every input solid. After it succeeds, the original
-/// solid variables cannot be used in another modeling operation. Assign the
-/// returned solid or solids to a new variable and use that result for any
+/// This operation consumes every input body. After it succeeds, the original
+/// solid or imported geometry variables cannot be used in another modeling operation. Assign the
+/// returned body or bodies to a new variable and use that result for any
 /// subsequent operations.
 ///
 /// ```kcl,legacySketch
@@ -1437,10 +1437,21 @@ export fn patternCircular3d(
 /// // will understand `+`, we made both work.
 /// unionedPart = part001 | part002
 /// ```
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// // Union imported geometry with a solid created in KCL.
+/// import "tests/inputs/cube.step" as cube
+///
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [400, 500], radius = 300)
+///   |> extrude(length = 1000, symmetric = true)
+///
+/// result = union([cube, cylinder])
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn union(
-  /// The solids to union. Every input solid is consumed by this operation.
-  @solids: [Solid; 2+],
+  /// The solids or imported geometries to union. Every input body is consumed by this operation.
+  @solids: [Solid | ImportedGeometry; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -1448,7 +1459,7 @@ export fn union(
   /// Defaults to false.
   @(deprecated_since = "2.0", removed_in = "3.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid | ImportedGeometry; 1+] {}
 
 /// Intersect returns the shared volume between multiple solids, preserving only
 /// overlapping regions.
@@ -1458,9 +1469,9 @@ export fn union(
 /// solids. This operation is useful for determining shared material regions,
 /// verifying fit, and analyzing overlapping geometries in assemblies.
 ///
-/// This operation consumes every input solid. After it succeeds, the original
-/// solid variables cannot be used in another modeling operation. Assign the
-/// returned solid or solids to a new variable and use that result for any
+/// This operation consumes every input body. After it succeeds, the original
+/// solid or imported geometry variables cannot be used in another modeling operation. Assign the
+/// returned body or bodies to a new variable and use that result for any
 /// subsequent operations.
 ///
 /// ```kcl,legacySketch
@@ -1505,10 +1516,21 @@ export fn union(
 /// // This is the equivalent of: intersect([part001, part002])
 /// intersectedPart = part001 & part002
 /// ```
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// // Keep only the part of an imported model shared with a KCL solid.
+/// import "tests/inputs/cube.step" as cube
+///
+/// cylinder = startSketchOn(XY)
+///   |> circle(center = [0, 500], radius = 600)
+///   |> extrude(length = 800, symmetric = true)
+///
+/// result = intersect([cube, cylinder])
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn intersect(
-  /// The solids to intersect. Every input solid is consumed by this operation.
-  @solids: [Solid; 2+],
+  /// The solids or imported geometries to intersect. Every input body is consumed by this operation.
+  @solids: [Solid | ImportedGeometry; 2+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -1516,7 +1538,7 @@ export fn intersect(
   /// Defaults to false.
   @(deprecated_since = "2.0", removed_in = "3.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid | ImportedGeometry; 1+] {}
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
 ///
@@ -1526,9 +1548,9 @@ export fn intersect(
 /// away. This function is essential for machining simulations, cavity creation,
 /// and complex multi-body part modeling.
 ///
-/// This operation consumes both the base solids and the tool solids. After it
+/// This operation consumes both the base bodies and the tool bodies. After it
 /// succeeds, neither set of original variables can be used in another modeling
-/// operation. Assign the returned solid or solids to a new variable and use that
+/// operation. Assign the returned body or bodies to a new variable and use that
 /// result for subsequent operations. For multiple cuts, pass each `subtract`
 /// result into the next call instead of reusing the original base solid.
 ///
@@ -1598,12 +1620,23 @@ export fn intersect(
 /// // This is equivalent to: subtract([base], tools = [tool])
 /// subtractedPart = base - tool
 /// ```
+///
+/// ```kcl,norun,sketchSyntaxAgnostic
+/// // Cut a cylindrical hole through imported geometry.
+/// import "tests/inputs/cube.step" as cube
+///
+/// hole = startSketchOn(XY)
+///   |> circle(center = [0, 500], radius = 250)
+///   |> extrude(length = 1200, symmetric = true)
+///
+/// result = subtract([cube], tools = [hole])
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn subtract(
-  /// The solids to use as the base to subtract from. These solids are consumed by this operation.
-  @solids: [Solid; 1+],
-  /// The solids to subtract. These tool solids are also consumed by this operation.
-  tools: [Solid],
+  /// The solids or imported geometries to use as the base. These bodies are consumed by this operation.
+  @solids: [Solid | ImportedGeometry; 1+],
+  /// The solids or imported geometries to subtract. These tool bodies are also consumed by this operation.
+  tools: [Solid | ImportedGeometry; 1+],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
@@ -1611,7 +1644,7 @@ export fn subtract(
   /// Defaults to false.
   @(deprecated_since = "2.0", removed_in = "3.0")
   legacyMethod?: bool,
-): [Solid] {}
+): [Solid | ImportedGeometry] {}
 
 /// Set the appearance of a solid, imported geometry, or plane. This does not work on sketches or individual paths.
 ///
