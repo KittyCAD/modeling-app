@@ -76,8 +76,8 @@ function ArgumentInput({
   onSubmit: (event: any) => void
 }) {
   const app = useApp()
-  const executingEditor = app.registry.get(projectSession).project.value
-    ?.executingEditor.value
+  const executingEditor =
+    app.registry.get(projectSession).project.value?.executingEditor.value
   // @ts-ignore
   switch (arg.inputType) {
     case 'options':

@@ -539,9 +539,7 @@ export class App implements AppSubsystems {
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectLibraryId: () =>
-              this.registry
-                .get(projectSession)
-                .getCurrentProjectLibraryId(),
+              this.registry.get(projectSession).getCurrentProjectLibraryId(),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),

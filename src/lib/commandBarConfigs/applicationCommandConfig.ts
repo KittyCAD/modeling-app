@@ -295,8 +295,7 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: () =>
-          app.registry.get(projectSession).getProject()?.name,
+        defaultValue: () => app.registry.get(projectSession).getProject()?.name,
         options: (_, _context) => {
           const { folders } = app.systemIOActor.getSnapshot().context
           return getProjectDirectoryOptions(folders)
