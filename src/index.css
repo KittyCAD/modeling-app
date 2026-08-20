@@ -581,6 +581,13 @@ code,
     which lets you use them with @apply in your CSS, and get
     autocomplete in classNames in your JSX.
   */
+  .drop-shadow-tab-sm {
+    --tw-drop-shadow: drop-shadow(0 2px 4px rgb(0 0 0 / 0.24));
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast)
+      var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert)
+      var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+  }
+
   .parsed-markdown ul,
   .parsed-markdown ol {
     @apply list-outside pl-4 lg:pl-8 my-2;
