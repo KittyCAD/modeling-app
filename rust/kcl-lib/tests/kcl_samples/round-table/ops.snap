@@ -219,33 +219,6 @@ description: Operations executed round-table.kcl
       "sourceRange": []
     },
     {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -255,7 +228,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -329,7 +302,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -368,7 +341,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -418,7 +391,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -460,34 +433,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -509,7 +455,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -583,7 +529,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -622,7 +568,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -672,7 +618,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -714,7 +660,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -743,7 +689,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -783,34 +729,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -832,7 +751,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -906,7 +825,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -945,7 +864,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -995,7 +914,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1037,7 +956,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1148,7 +1067,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1172,7 +1091,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1196,7 +1115,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1220,7 +1139,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1244,7 +1163,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1268,7 +1187,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1292,7 +1211,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1316,7 +1235,7 @@ description: Operations executed round-table.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

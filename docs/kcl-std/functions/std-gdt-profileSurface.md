@@ -49,7 +49,7 @@ cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+cylinder = extrude(region(segments = [cylinderSketch.perimeter]), length = 10mm, tagEnd = $top)
 gdt::profileSurface(
   faces = [top],
   tolerance = 0.05mm,

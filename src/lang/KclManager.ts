@@ -13,6 +13,10 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import {
+  ensureDefaultKclVersionOnBlankMain,
+  isMainKclPath,
+} from '@src/lang/project'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -36,12 +40,14 @@ import {
   getSketchCheckpointLimit,
   parse,
   recast,
+  resultIsOk,
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
@@ -70,6 +76,7 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { deferredCallback, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
 import type {
   PlaneVisibilityMap,
   Selection,
@@ -171,6 +178,10 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  type UserFeaturesSettleService,
+  waitForUserFeaturesSettled,
+} from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -294,6 +305,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  userFeatures: UserFeaturesSettleService
   keymap?: KeymapService
 }
 
@@ -429,6 +441,7 @@ export class ZDSProject {
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
+      userFeatures: this.app.userFeatures,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -650,6 +663,13 @@ const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
+
+function notifyDefaultKclVersionSeeded() {
+  toast.success(
+    `Set project to use the default version (KCL ${DEFAULT_KCL_VERSION}).`,
+    { duration: 5_000 }
+  )
+}
 
 const modelingMachineAnnotation = Annotation.define<boolean>()
 export const modelingMachineEvent = modelingMachineAnnotation.of(true)
@@ -1039,7 +1059,7 @@ export class KclManager extends File {
         // Zookeeper history needs to record the active-file edit against the
         // editor's pre-write text, so don't let the watcher preemptively reload it.
         if (
-          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
           this.zookeeperHistoryRecordingInProgress
         ) {
           return
@@ -1108,7 +1128,7 @@ export class KclManager extends File {
     diskCode: string
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
    * its file writes land, so file watchers must not reload the active editor
@@ -1183,30 +1203,50 @@ export class KclManager extends File {
   }
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
+    let liveOperationUpdatesFailed = false
+
     return {
       onOperation: (callback: OperationCallbackArgs) => {
-        if (
-          this.activeLiveOperationExecutionId !== executionId ||
-          this._cancelTokens.get(executionId)
-        ) {
-          return
+        try {
+          if (
+            liveOperationUpdatesFailed ||
+            this.activeLiveOperationExecutionId !== executionId ||
+            this._cancelTokens.get(executionId)
+          ) {
+            return
+          }
+
+          this._liveActiveModuleId.value = callback.moduleId
+          this._liveLatestOperationKey.value = getOperationKey(
+            callback.operation
+          )
+
+          const operationsByModule = applyOperationCallbackToOperationsByModule(
+            {
+              operationsByModule: this._liveOperationsByModule.value,
+              callback,
+            }
+          )
+          this._liveOperationsByModule.value = operationsByModule
+          this.dispatchUpdateOperations(
+            getOperationsForCurrentFile({
+              operationsByModule,
+              filenames: this.execState.filenames,
+              currentPath: this.path,
+            })
+          )
+        } catch (error) {
+          // An exception escaping into WASM can strand its async execution.
+          // Stop progressive updates for this run and let finalization continue.
+          liveOperationUpdatesFailed = true
+          const message =
+            error instanceof Error
+              ? (error.stack ?? error.message)
+              : String(error)
+          queueMicrotask(() =>
+            reportRejection(`Live operation updates failed: ${message}`)
+          )
         }
-
-        this._liveActiveModuleId.value = callback.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
-
-        const operationsByModule = applyOperationCallbackToOperationsByModule({
-          operationsByModule: this._liveOperationsByModule.value,
-          callback,
-        })
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
       },
     }
   }
@@ -1349,8 +1389,17 @@ export class KclManager extends File {
     this.setDiagnosticsForCurrentErrors()
   }
 
-  syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
+  syncSketchSolveOutcome(
+    code: string,
+    sceneGraphDelta: SceneGraphDelta,
+    options: { refreshLintDiagnostics?: boolean } = {}
+  ): void {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
+
+    this.diagnostics = []
+    if (options.refreshLintDiagnostics !== false) {
+      void this.refreshSketchSolveLintDiagnostics(code, execState)
+    }
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1365,6 +1414,33 @@ export class KclManager extends File {
       })
     )
     void this.updateArtifactGraph(execState.artifactGraph)
+  }
+
+  private async refreshSketchSolveLintDiagnostics(
+    code: string,
+    execState: ExecState
+  ): Promise<void> {
+    const instance = await this.systemDeps.wasmInstancePromise
+    const parseResult = parse(code, instance)
+    if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    const diagnostics = await lintAst({
+      ast: parseResult.program,
+      sourceCode: code,
+      instance,
+      rustContext: this.rustContext,
+      legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      directTagFilletMetadata: execState.directTagFilletMetadata,
+      artifactGraph: execState.artifactGraph,
+    })
+
+    if (this.code !== code) {
+      return
+    }
+    this.addDiagnostics(diagnostics)
   }
 
   hasErrors(): boolean {
@@ -2411,6 +2487,7 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
@@ -2570,6 +2647,11 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    // Runtime feature flags (e.g. the KCL executor selection) come from user
+    // features fetched over the network after login; the first execution must
+    // not race that fetch, or it runs with the flags' defaults. Settled
+    // features make this await instant.
+    await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
     this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
@@ -3706,6 +3788,10 @@ export class KclManager extends File {
       return
     }
 
+    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+      return
+    }
+
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
@@ -3715,6 +3801,17 @@ export class KclManager extends File {
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'read_before_write',
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
         return Promise.reject(err)
       }
     }
@@ -3758,9 +3855,59 @@ export class KclManager extends File {
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
+      if (!isPathNotFoundError(err)) {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'write',
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
+      }
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }
+  }
+
+  /**
+   * When the user clears `main.kcl`, seed the editor with the default KCL
+   * version to prevent them from implicitly falling back to a legacy version.
+   */
+  private async seedDefaultKclVersionOnBlankMain(
+    requestedDocumentVersion: number
+  ): Promise<boolean> {
+    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+      return false
+    }
+
+    const wasmInstance = await this.wasmInstancePromise
+    if (typeof wasmInstance === 'string') {
+      return false
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return false
+    }
+
+    const currentCode = this.code
+    const seeded = ensureDefaultKclVersionOnBlankMain(
+      this.path,
+      currentCode,
+      wasmInstance
+    )
+    if (err(seeded) || seeded === currentCode) {
+      return false
+    }
+
+    this.updateCodeEditor(seeded, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    notifyDefaultKclVersionSeeded()
+    return true
   }
 
   async updateEditorWithAstAndWriteToFile(

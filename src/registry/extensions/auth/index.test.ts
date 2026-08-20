@@ -1,5 +1,12 @@
-import { Registry } from '@kittycad/registry'
-import { authService } from '@src/registry/contracts/auth'
+import { Registry, defineRegistryItem } from '@kittycad/registry'
+import {
+  clearSessionExpiredNotice,
+  notifySessionExpired,
+} from '@src/lib/sessionExpired'
+import {
+  authService,
+  provideAuthSessionExpiredListener,
+} from '@src/registry/contracts/auth'
 import authRegistryItem from '@src/registry/extensions/auth'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,6 +16,7 @@ describe('auth extension', () => {
   afterEach(() => {
     registry?.[Symbol.dispose]()
     registry = undefined
+    clearSessionExpiredNotice()
   })
 
   it('provides auth state, token, and login readiness through the registry', async () => {
@@ -29,5 +37,31 @@ describe('auth extension', () => {
     auth.send({ type: 'Log out' })
 
     expect(send).toHaveBeenCalledWith({ type: 'Log out' })
+  })
+
+  it('ignores stale session-expired notices emitted before the extension starts', async () => {
+    const listener = vi.fn()
+    notifySessionExpired('fetch')
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-session-expired-listener',
+        provides: [
+          provideAuthSessionExpiredListener(
+            'test-session-expired-listener',
+            listener
+          ),
+        ],
+      }),
+      authRegistryItem,
+    ])
+    registry.get(authService)
+
+    expect(listener).not.toHaveBeenCalled()
+
+    notifySessionExpired('fetch')
+
+    expect(listener).toHaveBeenCalledTimes(1)
   })
 })

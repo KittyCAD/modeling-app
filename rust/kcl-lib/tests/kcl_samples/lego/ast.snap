@@ -2799,7 +2799,7 @@ description: Result of parsing lego.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "startSketchOn",
+                      "name": "faceOf",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -4333,7 +4333,7 @@ description: Result of parsing lego.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "startSketchOn",
+                "name": "faceOf",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -6181,7 +6181,7 @@ description: Result of parsing lego.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "startSketchOn",
+                "name": "faceOf",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -8095,12 +8095,12 @@ description: Result of parsing lego.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }

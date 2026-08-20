@@ -1,0 +1,298 @@
+/// Named views: cameras and visibility sets defined in KCL.
+///
+/// A named view pairs a camera with a set of visible objects, so consumers
+/// such as the modeling app and STEP export can reproduce it. Build a camera by
+/// calling `view::oriented()` or `view::directed()`, then name a view by calling
+/// `view::named()`.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+import GdtAnnotation, Point3d, Sketch, Solid from "std::types"
+
+/// A standard camera orientation for a named view.
+///
+/// The six axis-aligned orientations name the side of the model the camera
+/// looks at; `Isometric` is the standard three-quarter view.
+@(experimental = true)
+export type Orientation {
+  /// The camera looks at the front of the model.
+  | Front
+  /// The camera looks at the back of the model.
+  | Back
+  /// The camera looks at the left side of the model.
+  | Left
+  /// The camera looks at the right side of the model.
+  | Right
+  /// The camera looks down at the top of the model.
+  | Top
+  /// The camera looks up at the bottom of the model.
+  | Bottom
+  /// The standard three-quarter view, showing three faces of the model at
+  /// once.
+  | Isometric
+}
+
+/// Whether the objects of a named view start visible or hidden.
+///
+/// This is the view's baseline: it applies to every object, and the view's
+/// `except` list names the objects it does not apply to.
+@(experimental = true)
+export type Visibility {
+  /// Every object is visible, except the ones the view excepts, which are
+  /// hidden.
+  | Show
+  /// Every object is hidden, except the ones the view excepts, which are the
+  /// only visible ones.
+  | Hide
+}
+
+/// The camera projection of a named view.
+@(experimental = true)
+export type Projection {
+  /// An object's projected size is independent of its distance from the
+  /// camera, and parallel edges remain parallel; the convention of
+  /// engineering drawings.
+  | Orthographic
+  /// Apparent size decreases with distance from the camera, as a physical
+  /// camera sees; parallel edges converge toward vanishing points.
+  | Perspective
+}
+
+/// A camera viewpoint, stored as intent: what the camera looks at and from
+/// which direction, not a snapshot of engine camera state.
+///
+/// Values of this type are opaque. Call
+/// [`view::oriented()`](/docs/kcl-std/functions/std-view-oriented) or
+/// [`view::directed()`](/docs/kcl-std/functions/std-view-directed) to produce
+/// one.
+@(impl = std_rust, experimental = true)
+export type CameraView
+
+/// A named view: a camera paired with the set of objects it shows or hides.
+///
+/// Values of this type are opaque. Call
+/// [`view::named()`](/docs/kcl-std/functions/std-view-named) to produce one.
+@(impl = std_rust, experimental = true)
+export type NamedView
+
+/// Create a camera view that looks at the model from a standard orientation.
+///
+/// The returned value stores intent, not resolved numbers: an argument you
+/// omit stays absent, and the consumer that activates the view resolves it
+/// against the model it is showing, so one view value is valid for any model.
+///
+/// Every argument you do pass must be a finite number; an infinite or
+/// undefined value, such as one produced by dividing by zero, is an error
+/// rather than a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm. The view means the same thing
+/// either way; a tool that reads the view back reports millimeters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative.
+///
+/// ```kcl,norun
+/// @settings(experimentalFeatures = allow)
+///
+/// isoView = view::oriented(view::Orientation::Isometric)
+///
+/// frontView = view::oriented(
+///   view::Orientation::Front,
+///   target = [0, 0, 0],
+///   distance = 500,
+///   projection = view::Projection::Perspective,
+/// )
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn oriented(
+  /// The standard orientation the camera looks from.
+  @orientation: Orientation,
+  /// The point the camera looks at. When omitted, the view centers on the
+  /// bounds of the model at activation.
+  target?: Point3d,
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
+  distance?: number(Length),
+  /// The camera projection. When omitted, the view is orthographic, so the
+  /// same file renders identically in every consumer.
+  projection?: Projection,
+): CameraView {}
+
+/// Create a camera view that looks along a custom direction.
+///
+/// The returned value stores intent, not resolved numbers: an argument you
+/// omit stays absent, and the consumer that activates the view resolves it
+/// against the model it is showing, so one view value is valid for any model.
+///
+/// `direction` and `up` set only directions: both are normalized when the
+/// view is constructed, so their magnitudes carry no information and zoom
+/// comes from `distance`. Each must be a non-zero vector, and they must not
+/// be parallel or nearly parallel to each other; such arguments are errors.
+/// Any angle above roughly 0.00006 degrees between the two is accepted, so
+/// only vectors that are parallel to within a rounding error are rejected.
+/// When that happens, choose an `up` that does not lie along `direction`.
+///
+/// Every argument you pass must be a finite number; an infinite or undefined
+/// value, such as one produced by dividing by zero, is an error rather than
+/// a stored value no consumer could use.
+///
+/// Lengths are recorded in millimeters whatever unit you write them in, so
+/// `distance = 2inch` is stored as 50.8mm, and a `target` coordinate is
+/// converted the same way. The view means the same thing either way; a tool
+/// that reads the view back reports millimeters. `direction` and `up` carry
+/// no unit at all, because only their ratio matters.
+///
+/// A `distance` is a separation, so it must be greater than zero. Zero would
+/// put the camera on the point it looks at, and a negative value would put it
+/// behind that point; both are errors rather than a camera nobody can
+/// resolve. A `target` is a point, so its coordinates may be negative.
+///
+/// ```kcl,norun
+/// @settings(experimentalFeatures = allow)
+///
+/// overheadView = view::directed([0, 1, -2])
+///
+/// closeUp = view::directed(
+///   [-1, -1, -0.3],
+///   up = [0, 0, 1],
+///   target = [0, 0, 10],
+///   distance = 200,
+///   projection = view::Projection::Perspective,
+/// )
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn directed(
+  /// The direction the camera looks, from the camera toward the target.
+  @direction: Point3d,
+  /// The camera's up direction. When omitted, `[0, 0, 1]`: the positive Z
+  /// axis, which is the modeling app's world up.
+  up?: Point3d,
+  /// The point the camera looks at. When omitted, the view centers on the
+  /// bounds of the model at activation.
+  target?: Point3d,
+  /// The distance from the camera to the target. Must be greater than zero.
+  /// When omitted, the view fits the model at activation.
+  distance?: number(Length),
+  /// The camera projection. When omitted, the view is orthographic, so the
+  /// same file renders identically in every consumer.
+  projection?: Projection,
+): CameraView {}
+
+/// Create a named view: a camera paired with the objects the view shows or
+/// hides.
+///
+/// A view is data, not an action. Creating one moves no camera and changes
+/// nothing about what is visible; a consumer such as the modeling app or a
+/// STEP export activates it later, which is why the same file yields the same
+/// views on every machine.
+///
+/// The name is display text, so it may contain spaces and punctuation. It is
+/// required, because a view is identified by the name you give it and not by
+/// the variable you bind it to, so renaming a variable never renames a view.
+/// Names are unique within one file and compared exactly, which makes `Front`
+/// and `front` two different views. Four names are rejected:
+///
+/// - the empty string, which identifies nothing;
+/// - a name of nothing but whitespace, which displays as nothing;
+/// - a name that starts or ends with whitespace, which a reader cannot see but
+///   the exact comparison above counts;
+/// - `KCL Default`, which is reserved for the view of the scene generated on
+///   successful execution of the program.
+///
+/// `baseline` and `except` together decide what the view shows. You start from a
+/// clean state: `baseline` sets the visibility every object takes, and `except`
+/// lists the objects that depart from it. Every view writes its baseline out, so
+/// what a view shows can be read from the call alone:
+///
+/// - `baseline = Visibility::Show` alone: everything is visible;
+/// - `baseline = Visibility::Show` with `except = [a, b]`: everything is
+///   visible except `a` and `b`;
+/// - `baseline = Visibility::Hide` with `except = [a, b]`: only `a` and `b`
+///   are visible;
+/// - `baseline = Visibility::Hide` alone: nothing is visible.
+///
+/// Duplicates in `except` are dropped, so listing an object twice does the same
+/// as listing it once.
+///
+/// ```kcl,norun
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
+/// // Two bodies to look at: a plate, and a boss standing on it. Declaring a
+/// // view never changes what a program builds, so this part is ordinary KCL.
+/// plateSketch = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 60mm, var 0mm])
+///   edge2 = line(start = [var 60mm, var 0mm], end = [var 60mm, var 40mm])
+///   edge3 = line(start = [var 60mm, var 40mm], end = [var 0mm, var 40mm])
+///   edge4 = line(start = [var 0mm, var 40mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+/// plate = extrude(region(segments = [plateSketch.edge1, plateSketch.edge2]), length = 5mm)
+///
+/// bossSketch = sketch(on = XY) {
+///   boundary = circle(start = [var 40mm, var 20mm], center = [var 30mm, var 20mm])
+/// }
+/// boss = extrude(region(segments = [bossSketch.boundary]), length = 12mm)
+///
+/// // This file hides the boss, so the scene generated on successful execution
+/// // shows the plate alone. The views below are unaffected by this call; each
+/// // one states its own visibility from scratch.
+/// hide(boss)
+///
+/// // 1. Everything visible.
+/// //
+/// // This is NOT the same as `KCL Default`, the view of the scene generated on
+/// // successful execution of the program. A `Show` baseline shows every object
+/// // the program built, including the boss that `hide(boss)` took out of that
+/// // scene.
+/// everything = view::named(
+///   "Everything",
+///   camera = view::oriented(view::Orientation::Isometric),
+///   baseline = view::Visibility::Show,
+/// )
+///
+/// // 2. Visible by default, with one object hidden. Add to `except` to hide
+/// // more.
+/// plateOnly = view::named(
+///   "Plate only",
+///   camera = view::oriented(view::Orientation::Front, distance = 200mm),
+///   baseline = view::Visibility::Show,
+///   except = [boss],
+/// )
+///
+/// // 3. Hidden by default, with one object shown. This is the form to reach for
+/// // when a view should isolate a few objects out of many, because `except`
+/// // then lists what you want rather than everything you do not.
+/// bossOnly = view::named(
+///   "Boss only",
+///   camera = view::oriented(view::Orientation::Top, distance = 150mm),
+///   baseline = view::Visibility::Hide,
+///   except = [boss],
+/// )
+/// ```
+@(impl = std_rust, experimental = true)
+export fn named(
+  /// The name of the view, as a reader should see it. Required, unique within
+  /// the file, and compared exactly.
+  @name: string,
+  /// The camera the view activates. Call `view::oriented()` or
+  /// `view::directed()` to build one.
+  camera: CameraView,
+  /// The default visibility of every object the program creates: visible under
+  /// `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to
+  /// override that default for individual objects.
+  baseline: Visibility,
+  /// The objects the baseline does not apply to: the hidden ones under a
+  /// `Show` baseline, and the only visible ones under `Hide`.
+  except?: [Solid | Sketch | GdtAnnotation; 1+],
+): NamedView {}

@@ -107,10 +107,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2032,
-            "end": 2039,
+            "commentStart": 2018,
+            "end": 2025,
             "moduleId": 0,
-            "start": 2032,
+            "start": 2018,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -138,10 +138,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.1,
             "tag": {
-              "commentStart": 2032,
-              "end": 2039,
+              "commentStart": 2018,
+              "end": 2025,
               "moduleId": 0,
-              "start": 2032,
+              "start": 2018,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -775,10 +775,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1148,
-            "end": 1153,
+            "commentStart": 1141,
+            "end": 1146,
             "moduleId": 0,
-            "start": 1148,
+            "start": 1141,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -789,10 +789,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1230,
-            "end": 1235,
+            "commentStart": 1223,
+            "end": 1228,
             "moduleId": 0,
-            "start": 1230,
+            "start": 1223,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -803,10 +803,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1349,
-            "end": 1354,
+            "commentStart": 1342,
+            "end": 1347,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1342,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -817,10 +817,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1469,
-            "end": 1474,
+            "commentStart": 1462,
+            "end": 1467,
             "moduleId": 0,
-            "start": 1469,
+            "start": 1462,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -831,10 +831,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1592,
-            "end": 1597,
+            "commentStart": 1585,
+            "end": 1590,
             "moduleId": 0,
-            "start": 1592,
+            "start": 1585,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -845,10 +845,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1710,
-            "end": 1715,
+            "commentStart": 1703,
+            "end": 1708,
             "moduleId": 0,
-            "start": 1710,
+            "start": 1703,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -870,10 +870,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.05
             ],
             "tag": {
-              "commentStart": 1148,
-              "end": 1153,
+              "commentStart": 1141,
+              "end": 1146,
               "moduleId": 0,
-              "start": 1148,
+              "start": 1141,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -894,10 +894,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.05
             ],
             "tag": {
-              "commentStart": 1230,
-              "end": 1235,
+              "commentStart": 1223,
+              "end": 1228,
               "moduleId": 0,
-              "start": 1230,
+              "start": 1223,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -918,10 +918,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.09
             ],
             "tag": {
-              "commentStart": 1349,
-              "end": 1354,
+              "commentStart": 1342,
+              "end": 1347,
               "moduleId": 0,
-              "start": 1349,
+              "start": 1342,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -942,10 +942,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               -0.05
             ],
             "tag": {
-              "commentStart": 1469,
-              "end": 1474,
+              "commentStart": 1462,
+              "end": 1467,
               "moduleId": 0,
-              "start": 1469,
+              "start": 1462,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -966,10 +966,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.05
             ],
             "tag": {
-              "commentStart": 1592,
-              "end": 1597,
+              "commentStart": 1585,
+              "end": 1590,
               "moduleId": 0,
-              "start": 1592,
+              "start": 1585,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -990,10 +990,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               0.09
             ],
             "tag": {
-              "commentStart": 1710,
-              "end": 1715,
+              "commentStart": 1703,
+              "end": 1708,
               "moduleId": 0,
-              "start": 1710,
+              "start": 1703,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -1102,10 +1102,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.05
           ],
           "tag": {
-            "commentStart": 1148,
-            "end": 1153,
+            "commentStart": 1141,
+            "end": 1146,
             "moduleId": 0,
-            "start": 1148,
+            "start": 1141,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1126,10 +1126,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             -0.05
           ],
           "tag": {
-            "commentStart": 1230,
-            "end": 1235,
+            "commentStart": 1223,
+            "end": 1228,
             "moduleId": 0,
-            "start": 1230,
+            "start": 1223,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1150,10 +1150,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             -0.09
           ],
           "tag": {
-            "commentStart": 1349,
-            "end": 1354,
+            "commentStart": 1342,
+            "end": 1347,
             "moduleId": 0,
-            "start": 1349,
+            "start": 1342,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1174,10 +1174,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             -0.05
           ],
           "tag": {
-            "commentStart": 1469,
-            "end": 1474,
+            "commentStart": 1462,
+            "end": 1467,
             "moduleId": 0,
-            "start": 1469,
+            "start": 1462,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1198,10 +1198,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.05
           ],
           "tag": {
-            "commentStart": 1592,
-            "end": 1597,
+            "commentStart": 1585,
+            "end": 1590,
             "moduleId": 0,
-            "start": 1592,
+            "start": 1585,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1222,10 +1222,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             0.09
           ],
           "tag": {
-            "commentStart": 1710,
-            "end": 1715,
+            "commentStart": 1703,
+            "end": 1708,
             "moduleId": 0,
-            "start": 1710,
+            "start": 1703,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2037,10 +2037,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     0.05
                   ],
                   "tag": {
-                    "commentStart": 1148,
-                    "end": 1153,
+                    "commentStart": 1141,
+                    "end": 1146,
                     "moduleId": 0,
-                    "start": 1148,
+                    "start": 1141,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2061,10 +2061,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     -0.05
                   ],
                   "tag": {
-                    "commentStart": 1230,
-                    "end": 1235,
+                    "commentStart": 1223,
+                    "end": 1228,
                     "moduleId": 0,
-                    "start": 1230,
+                    "start": 1223,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2085,10 +2085,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     -0.09
                   ],
                   "tag": {
-                    "commentStart": 1349,
-                    "end": 1354,
+                    "commentStart": 1342,
+                    "end": 1347,
                     "moduleId": 0,
-                    "start": 1349,
+                    "start": 1342,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2109,10 +2109,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     -0.05
                   ],
                   "tag": {
-                    "commentStart": 1469,
-                    "end": 1474,
+                    "commentStart": 1462,
+                    "end": 1467,
                     "moduleId": 0,
-                    "start": 1469,
+                    "start": 1462,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2133,10 +2133,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     0.05
                   ],
                   "tag": {
-                    "commentStart": 1592,
-                    "end": 1597,
+                    "commentStart": 1585,
+                    "end": 1590,
                     "moduleId": 0,
-                    "start": 1592,
+                    "start": 1585,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2157,10 +2157,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     0.09
                   ],
                   "tag": {
-                    "commentStart": 1710,
-                    "end": 1715,
+                    "commentStart": 1703,
+                    "end": 1708,
                     "moduleId": 0,
-                    "start": 1710,
+                    "start": 1703,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2276,10 +2276,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           ],
           "radius": 0.1,
           "tag": {
-            "commentStart": 2032,
-            "end": 2039,
+            "commentStart": 2018,
+            "end": 2025,
             "moduleId": 0,
-            "start": 2032,
+            "start": 2018,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2492,10 +2492,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   ],
                   "radius": 0.1,
                   "tag": {
-                    "commentStart": 2032,
-                    "end": 2039,
+                    "commentStart": 2018,
+                    "end": 2025,
                     "moduleId": 0,
-                    "start": 2032,
+                    "start": 2018,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

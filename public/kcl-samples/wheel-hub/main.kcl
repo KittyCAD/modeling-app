@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define Parameters
 hubSpacing = 3in
@@ -163,7 +163,7 @@ trimProfile = sketch(on = XY) {
   startOffsetGuide.end
 ]) == rotorBore / 2
   distance([line1.start, line1.end]) == lugSpacing / 3
-  angle([startOffsetGuide, line1]) == 10deg
+  angleDimension(lines = [startOffsetGuide, line1], sector = 1, labelPosition = [2.17in, -0.69in]) == 10deg
   distance([line2.start, line2.end]) == hubSpacing * 1.5
 }
 
@@ -217,7 +217,7 @@ mountingFlangeProfile = sketch(on = flangePlane) {
   radius(centerBoreCircle) == flangeBoreRadius
 }
 
-mountingFlangeRegion = region(point = [2.1in, 0in], sketch = mountingFlangeProfile)
+mountingFlangeRegion = region(segments = [mountingFlangeProfile.outerCircle])
 mountingFlangeBlank = extrude(
   mountingFlangeRegion,
   length = hubSpacing / 4,
@@ -273,7 +273,7 @@ chamfer002 = chamfer(
 mountingFlange = subtract([chamfer002], tools = [flangeHoleCutters])
 
 // Solver reconstruction of the welded lug bolts
-boltHeadProfile = sketch(on = startSketchOn(mountingFlange, face = START)) {
+boltHeadProfile = sketch(on = faceOf(mountingFlange, face = START)) {
   centerGuide = line(start = [var 0in, var 0in], end = [var -2.25in, var 0in], construction = true)
   boltHeadCircle = circle(start = [var -1.82in, var 0in], center = [var -2.25in, var 0in], construction = true)
 
@@ -336,12 +336,15 @@ boltHeadProfile = sketch(on = startSketchOn(mountingFlange, face = START)) {
 ]) == lugThreadDiameter / 1.25
 }
 
-boltHeadRegion = region(point = [-lugSpacing / 2, 0], sketch = boltHeadProfile)
+boltHeadRegion = region(segments = [
+  boltHeadProfile.line1,
+  boltHeadProfile.line2
+])
 boltHead = extrude(boltHeadRegion, length = hubSpacing / 8, method = NEW)
   |> appearance(color = "#121212")
 hide(boltHeadProfile)
 
-boltStemProfile = sketch(on = startSketchOn(boltHead, face = START)) {
+boltStemProfile = sketch(on = faceOf(boltHead, face = START)) {
   centerGuide = line(start = [var 0in, var 0in], end = [var 2.25in, var 0in], construction = true)
   radiusGuide = line(start = [var 2.25in, var 0in], end = [var 2.52in, var 0in], construction = true)
   circle1 = circle(start = [var 2.52in, var 0in], center = [var 2.25in, var 0in])

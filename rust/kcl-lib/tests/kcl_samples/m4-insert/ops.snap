@@ -3088,22 +3088,61 @@ description: Operations executed m4-insert.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "angle",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
+      "name": "angleDimension",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "labelPosition": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": -2.83,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "Number",
+                "value": -6.02,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "lines": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "KclNone"
+              },
+              {
+                "type": "KclNone"
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "sector": {
+          "value": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -3141,100 +3180,19 @@ description: Operations executed m4-insert.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": -3.1475,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": -1.14,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "bottomBridge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "centerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerBandWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerNeckWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "lowerRib": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "midWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerTopWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "taperFlank": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topBridge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topShoulder": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperNeckWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "upperRib": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -3538,7 +3496,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3562,7 +3520,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3586,7 +3544,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3610,7 +3568,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3634,7 +3592,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3658,7 +3616,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3682,7 +3640,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3706,7 +3664,7 @@ description: Operations executed m4-insert.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

@@ -87,17 +87,19 @@ use crate::frontend::sketch::SegmentCtor;
 use crate::frontend::sketch::SketchApi;
 use crate::frontend::sketch::SketchCtor;
 use crate::frontend::sketch::Vertical;
-use crate::frontend::traverse::MutateBodyItem;
-use crate::frontend::traverse::TraversalReturn;
-use crate::frontend::traverse::Visitor;
-use crate::frontend::traverse::dfs_mut;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
+use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
+use crate::walk::traverse::MutateBodyItem;
+use crate::walk::traverse::TraversalReturn;
+use crate::walk::traverse::Visitor;
+use crate::walk::traverse::dfs_mut;
 
 pub(crate) mod api;
 pub(crate) mod modify;
@@ -115,7 +117,6 @@ struct SketchCheckpoint {
     point_freedom_cache: HashMap<ObjectId, Freedom>,
     mock_memory: Option<SketchModeState>,
 }
-mod traverse;
 pub(crate) mod trim;
 
 struct ArcSizeConstraintParams {
@@ -154,6 +155,10 @@ const DIAMETER_FN: &str = "diameter";
 const DISTANCE_FN: &str = "distance";
 const FIXED_FN: &str = "fixed";
 const ANGLE_FN: &str = "angle";
+const ANGLE_DIMENSION_FN: &str = "angleDimension";
+const ANGLE_LINES_PARAM: &str = "lines";
+const ANGLE_SECTOR_PARAM: &str = "sector";
+const ANGLE_INVERSE_PARAM: &str = "inverse";
 const HORIZONTAL_DISTANCE_FN: &str = "horizontalDistance";
 const VERTICAL_DISTANCE_FN: &str = "verticalDistance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -254,6 +259,12 @@ pub struct EditSegmentsOptions {
 pub struct EditDistanceConstraintLabelPositionOptions {
     /// Edited scene objects to keep anchored while previewing the label edit.
     pub anchor_segment_ids: Vec<ObjectId>,
+    /// Whether solver-updated initial guesses should be written back to KCL.
+    pub commit_solved_initial_guesses: bool,
+}
+
+/// Options for editing an angle constraint during sketch dragging.
+pub struct EditAngleConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -416,6 +427,24 @@ impl FrontendState {
             options.anchor_segment_ids,
         )
         .await;
+        self.next_edit_commits_solver_solutions = previous_commit_mode;
+        result
+    }
+
+    /// Edit an angle constraint with optional solver writeback.
+    pub async fn edit_angle_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        angle: Angle,
+        options: EditAngleConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_commit_mode = self
+            .next_edit_commits_solver_solutions
+            .replace(options.commit_solved_initial_guesses);
+        let result = SketchApi::edit_angle_constraint(self, ctx, version, sketch, constraint_id, angle).await;
         self.next_edit_commits_solver_solutions = previous_commit_mode;
         result
     }
@@ -631,11 +660,11 @@ impl SketchApi for FrontendState {
             );
             new_ast
                 .body
-                .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                     face_decl,
                 ))));
             defined_names.insert(face_name.clone());
-            plane_ast = ast::Expr::Name(Box::new(ast::Name::new(&face_name)));
+            plane_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(&face_name)));
         }
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
@@ -654,14 +683,14 @@ impl SketchApi for FrontendState {
         let sketch_decl = ast::VariableDeclaration::new(
             ast::VariableDeclarator::new(
                 &sketch_name,
-                ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+                ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_ast))),
             ),
             ast::ItemVisibility::Default,
             ast::VariableKind::Const,
         );
         new_ast
             .body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 sketch_decl,
             ))));
         // Convert to string source to create real source ranges.
@@ -1574,6 +1603,60 @@ impl SketchApi for FrontendState {
         .await
     }
 
+    async fn edit_angle_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        angle: Angle,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+        if !matches!(
+            &object.kind,
+            ObjectKind::Constraint {
+                constraint: Constraint::Angle(_),
+            }
+        ) {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                "Object should be an angle constraint but it was {}",
+                object.kind.human_friendly_kind_with_article(),
+            ))));
+        }
+
+        let mut new_ast = self.program.ast.clone();
+        let (call, value) = self
+            .angle_constraint_ast_parts(&angle, &mut new_ast)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.mutate_ast(
+            &mut new_ast,
+            constraint_id,
+            AstMutateCommand::EditAngleConstraint { call, value },
+        )
+        .map_err(KclErrorWithOutputs::no_outputs)?;
+        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses,
+            },
+        )
+        .await
+    }
+
     /// Splitting a segment means creating a new segment, editing the old one, and then
     /// migrating a bunch of the constraints from the original segment to the new one
     /// (i.e. deleting them and re-adding them on the other segment).
@@ -1964,7 +2047,7 @@ impl FrontendState {
         // Create updated KCL source from args.
         let at_ast = to_ast_point2d(&ctor.position)
             .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        let point_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let point_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(POINT_FN)),
             unlabeled: None,
             arguments: vec![ast::LabeledArg {
@@ -2097,14 +2180,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let line_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
             unlabeled: None,
             arguments,
@@ -2232,21 +2315,21 @@ impl FrontendState {
         if ctor.direction == Some(ArcDirection::Cw) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
-                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+                arg: ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
             });
         }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let arc_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
             arguments,
@@ -2368,14 +2451,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let circle_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let circle_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
             unlabeled: None,
             arguments,
@@ -2493,14 +2576,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let spline_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let spline_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CONTROL_POINT_SPLINE_FN)),
             unlabeled: None,
             arguments,
@@ -3053,7 +3136,7 @@ impl FrontendState {
             .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: segment_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3104,7 +3187,7 @@ impl FrontendState {
             .map(|point| self.axis_constraint_segment_to_ast(point, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: point_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3157,7 +3240,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3210,7 +3293,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3243,7 +3326,7 @@ impl FrontendState {
             .map(|segment_id| self.equal_radius_segment_id_to_ast_reference(*segment_id, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: input_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3643,23 +3726,24 @@ impl FrontendState {
         };
 
         // Create the distance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -3690,72 +3774,12 @@ impl FrontendState {
         angle: Angle,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let &[l0_id, l1_id] = angle.lines.as_slice() else {
-            return Err(KclError::refactor(format!(
-                "Angle constraint must have exactly 2 lines, got {}",
-                angle.lines.len()
-            )));
-        };
         let sketch_id = sketch;
-
-        // Map the runtime objects back to variable names.
-        let line0_object = self
-            .scene_graph
-            .objects
-            .get(l0_id.0)
-            .ok_or_else(|| KclError::refactor(format!("Line not found: {l0_id:?}")))?;
-        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line0_object:?}")));
-        };
-        let Segment::Line(_) = line0_segment else {
-            return Err(KclError::refactor(format!(
-                "Only lines can be constrained to meet at an angle: {line0_object:?}",
-            )));
-        };
-        let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
-
-        let line1_object = self
-            .scene_graph
-            .objects
-            .get(l1_id.0)
-            .ok_or_else(|| KclError::refactor(format!("Line not found: {l1_id:?}")))?;
-        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
-            return Err(KclError::refactor(format!("Object is not a segment: {line1_object:?}")));
-        };
-        let Segment::Line(_) = line1_segment else {
-            return Err(KclError::refactor(format!(
-                "Only lines can be constrained to meet at an angle: {line1_object:?}",
-            )));
-        };
-        let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
-
-        // Create the angle() call.
-        let angle_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(ANGLE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![l0_ast, l1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments: Default::default(),
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let (angle_call_ast, angle_value_ast) = self.angle_constraint_ast_parts(&angle, new_ast)?;
+        let angle_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: angle_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: angle.angle.value,
-                    suffix: angle.angle.units,
-                },
-                raw: format_number_literal(angle.angle.value, angle.angle.units, None).map_err(|_| {
-                    KclError::refactor(format!("Could not format numeric suffix: {:?}", angle.angle.units))
-                })?,
-                digest: None,
-            }))),
+            right: angle_value_ast,
             digest: None,
         })));
 
@@ -3766,6 +3790,96 @@ impl FrontendState {
             AstMutateCommand::AddSketchBlockExprStmt { expr: angle_ast },
         )?;
         Ok(sketch_block_ref)
+    }
+
+    fn angle_constraint_ast_parts(
+        &self,
+        angle: &Angle,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
+        let &[l0_id, l1_id] = angle.lines.as_slice() else {
+            return Err(KclError::refactor(format!(
+                "Angle constraint must have exactly 2 lines, got {}",
+                angle.lines.len()
+            )));
+        };
+
+        let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
+        let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
+        let lines_ast = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
+            elements: vec![l0_ast, l1_ast],
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        if angle.inverse == Some(true) && angle.sector.is_none() {
+            return Err(KclError::refactor("Angle inverse requires an angle sector".to_owned()));
+        }
+
+        let uses_angle_dimension = angle.sector.is_some();
+        let mut arguments = if uses_angle_dimension {
+            vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_LINES_PARAM)),
+                arg: lines_ast.clone(),
+            }]
+        } else {
+            Default::default()
+        };
+
+        if let Some(sector) = angle.sector {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Number {
+                        value: f64::from(sector),
+                        suffix: NumericSuffix::None,
+                    },
+                    raw: sector.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if angle.inverse == Some(true) {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                    value: ast::LiteralValue::Bool(true),
+                    raw: true.to_string(),
+                    digest: None,
+                }))),
+            });
+        }
+
+        if let Some(label_position) = &angle.label_position {
+            arguments.push(ast::LabeledArg {
+                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
+                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
+            });
+        }
+
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
+                ANGLE_DIMENSION_FN
+            } else {
+                ANGLE_FN
+            })),
+            unlabeled: (!uses_angle_dimension).then_some(lines_ast),
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Number {
+                value: angle.angle.value,
+                suffix: angle.angle.units,
+            },
+            raw: format_number_literal(angle.angle.value, angle.angle.units, None)
+                .map_err(|_| KclError::refactor(format!("Could not format numeric suffix: {:?}", angle.angle.units)))?,
+            digest: None,
+        })));
+
+        Ok((call, value))
     }
 
     async fn add_tangent(
@@ -4033,17 +4147,17 @@ impl FrontendState {
         };
 
         // Create the function call.
-        let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(params.function_name)),
             unlabeled: Some(arc_ast),
             arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let constraint_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: params.value,
                     suffix: params.units,
@@ -4093,23 +4207,24 @@ impl FrontendState {
         };
 
         // Create the horizontalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -4163,23 +4278,24 @@ impl FrontendState {
         };
 
         // Create the verticalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let distance_call_ast =
+            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+                callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
+                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                    ast::ArrayExpression {
+                        elements: vec![pt0_ast, pt1_ast],
+                        digest: None,
+                        non_code_meta: Default::default(),
+                    },
+                )))),
+                arguments,
+                digest: None,
+                non_code_meta: Default::default(),
+            })));
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: distance_call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: distance.distance.value,
                     suffix: distance.distance.units,
@@ -4433,9 +4549,9 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LinesAtAngleKind::Parallel.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: line_asts,
                     digest: None,
@@ -4524,9 +4640,9 @@ impl FrontendState {
         let line1_ast = self.line_id_to_ast_reference(line1_id, new_ast)?;
 
         // Create the parallel() or perpendicular() call.
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(angle_kind.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: vec![line0_ast, line1_ast],
                     digest: None,
@@ -4976,7 +5092,8 @@ impl FrontendState {
                     | Constraint::HorizontalDistance(_)
                     | Constraint::VerticalDistance(_)
                     | Constraint::Radius(_)
-                    | Constraint::Diameter(_),
+                    | Constraint::Diameter(_)
+                    | Constraint::Angle(_),
             }
         ) {
             return Err(KclError::refactor(format!(
@@ -5107,53 +5224,29 @@ fn only_sketch_block(
         );
         return only_sketch_block_from_range(ast, sketch_block_ref.range, edit_kind);
     };
-    let mut found = false;
-    for item in ast.body.iter_mut() {
-        match item {
-            ast::BodyItem::ImportStatement(_) => {}
-            ast::BodyItem::ExpressionStatement(node) => {
-                // Check the statement.
-                if let Some(node_path) = &node.node_path
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-                // Check the expression.
-                if let Some(node_path) = node.expression.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::VariableDeclaration(node) => {
-                if let Some(node_path) = node.declaration.init.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::TypeDeclaration(_) => {}
-            ast::BodyItem::ReturnStatement(node) => {
-                if let Some(node_path) = node.argument.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
+    struct MarkSketchBlockBeingEdited<'a> {
+        target_node_path: &'a ast::NodePath,
     }
+
+    impl Visitor for MarkSketchBlockBeingEdited<'_> {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+            if let NodeMut::SketchBlock(sketch_block) = node
+                && sketch_block.node_path.as_ref() == Some(self.target_node_path)
+            {
+                sketch_block.is_being_edited = true;
+                return TraversalReturn::new_break(());
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut<'_>) {}
+    }
+
+    let mut marker = MarkSketchBlockBeingEdited { target_node_path };
+    let found = dfs_mut(ast, &mut marker).is_break();
     if !found {
         return Err(KclError::refactor(format!(
             "Sketch block node path not found in AST: {sketch_block_ref:?}, edit_kind={edit_kind:?}"
@@ -5452,6 +5545,12 @@ fn solid_output_index_for_sweep(
     sweep_id: ArtifactId,
     sweep_code_ref: &CodeRef,
 ) -> Option<usize> {
+    // Constituent sweeps are implementation details of one composite body,
+    // even when cloning gives them the same CodeRef as the composite root.
+    if downstream_composite_id_for_solid_source(artifact_graph, sweep_id).is_some() {
+        return None;
+    }
+
     let sibling_sweeps = artifact_graph
         .values()
         .filter_map(|artifact| match artifact {
@@ -5603,14 +5702,14 @@ fn default_plane_ast_expr(name: crate::engine::PlaneName) -> ast::Expr {
 }
 
 fn negated_plane_ast_expr(name: &str) -> ast::Expr {
-    ast::Expr::UnaryExpression(Box::new(ast::UnaryExpression::new(
+    ast::Expr::UnaryExpression(BoxNode::new(ast::UnaryExpression::new(
         ast::UnaryOperator::Neg,
-        ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
+        ast::BinaryPart::Name(BoxNode::new(ast_name(name.to_owned()))),
     )))
 }
 
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
@@ -5623,17 +5722,19 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
 }
 
 fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceId")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-                value: index as f64,
-                suffix: NumericSuffix::None,
-                raw: index.to_string(),
-                digest: None,
-            })))),
+            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+                ast::NumericLiteral {
+                    value: index as f64,
+                    suffix: NumericSuffix::None,
+                    raw: index.to_string(),
+                    digest: None,
+                },
+            )))),
         }],
         digest: None,
         non_code_meta: Default::default(),
@@ -5699,7 +5800,7 @@ fn get_or_insert_ast_reference(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
         ));
     };
-    let var_expr = ast::Expr::Name(Box::new(ast::Name::new(&var_name)));
+    let var_expr = ast::Expr::Name(BoxNode::new(ast::Name::new(&var_name)));
     let Some(property) = property else {
         // No property; just return the variable name.
         return Ok(var_expr);
@@ -5816,6 +5917,10 @@ enum AstMutateCommand {
         construction: Option<bool>,
     },
     EditConstraintValue {
+        value: ast::BinaryPart,
+    },
+    EditAngleConstraint {
+        call: ast::BinaryPart,
         value: ast::BinaryPart,
     },
     EditDistanceConstraintLabelPosition {
@@ -6025,6 +6130,33 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
     }
 }
 
+fn is_angle_constraint_call_name(name: &str) -> bool {
+    matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
+}
+
+fn is_constraint_call_name(name: &str) -> bool {
+    matches!(
+        name,
+        DISTANCE_FN
+            | HORIZONTAL_DISTANCE_FN
+            | VERTICAL_DISTANCE_FN
+            | RADIUS_FN
+            | DIAMETER_FN
+            | ANGLE_FN
+            | ANGLE_DIMENSION_FN
+    )
+}
+
+fn constraint_supports_label_position(part: &mut ast::BinaryPart) -> Option<&mut BoxNode<CallExpressionKw>> {
+    if let ast::BinaryPart::CallExpressionKw(call) = part
+        && is_constraint_call_name(call.callee.name.name.as_str())
+    {
+        Some(call)
+    } else {
+        None
+    }
+}
+
 fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, KclError>> {
     match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
@@ -6058,7 +6190,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 sketch_block
                     .body
                     .items
-                    .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                    .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                         ast::VariableDeclaration::new(
                             ast::VariableDeclarator::new(&name, expr.clone()),
                             ast::ItemVisibility::Default,
@@ -6080,7 +6212,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
                 let mutate_node =
-                    ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration::new(
+                    ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(ast::VariableDeclaration::new(
                         ast::VariableDeclarator::new(&name, expr_stmt.expression.clone()),
                         ast::ItemVisibility::Default,
                         ast::VariableKind::Const,
@@ -6135,18 +6267,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6192,7 +6325,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         .iter()
                         .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
                     if direction_value.is_clockwise() {
-                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        let direction_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
                         if direction_exists {
                             // Update existing direction kwarg
                             for labeled_arg in &mut call.arguments {
@@ -6226,18 +6359,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6282,18 +6416,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6330,17 +6465,18 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         if construction_exists {
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6359,11 +6495,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let left_is_constraint = matches!(
                     &binary_expr.left,
-                    ast::BinaryPart::CallExpressionKw(call)
-                        if matches!(
-                            call.callee.name.name.as_str(),
-                            DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN | ANGLE_FN
-                        )
+                    ast::BinaryPart::CallExpressionKw(call) if is_constraint_call_name(call.callee.name.name.as_str())
                 );
                 if left_is_constraint {
                     binary_expr.right = value.clone();
@@ -6374,17 +6506,43 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditAngleConstraint { call, value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_angle = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+                let right_is_angle = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_angle_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+
+                match (left_is_angle, right_is_angle) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
-                let ast::BinaryPart::CallExpressionKw(call) = &mut binary_expr.left else {
+                let call = if let Some(call) = constraint_supports_label_position(&mut binary_expr.left) {
+                    call
+                } else if let Some(call) = constraint_supports_label_position(&mut binary_expr.right) {
+                    call
+                } else {
                     return TraversalReturn::new_continue(());
                 };
-                if !matches!(
-                    call.callee.name.name.as_str(),
-                    DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN | RADIUS_FN | DIAMETER_FN
-                ) {
-                    return TraversalReturn::new_continue(());
-                }
 
                 if let Some(label_arg) = call
                     .arguments
@@ -6419,7 +6577,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
+                sketch_var.initial = Some(BoxNode::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6783,7 +6941,7 @@ fn preserve_var_solution_literal_style(
 }
 
 pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node {
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node {
         inner: ast::ArrayExpression {
             elements: vec![to_source_expr(&point.x)?, to_source_expr(&point.y)?],
             non_code_meta: Default::default(),
@@ -6800,7 +6958,7 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
 }
 
 pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: points.iter().map(to_ast_point2d).collect::<anyhow::Result<Vec<_>>>()?,
             digest: None,
@@ -6810,13 +6968,13 @@ pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<a
 }
 
 fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: vec![
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.x,
                 )?)))),
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.y,
                 )?)))),
             ],
@@ -6828,7 +6986,7 @@ fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
     match expr {
-        Expr::Number(number) => Ok(ast::Expr::Literal(Box::new(ast::Node {
+        Expr::Number(number) => Ok(ast::Expr::Literal(BoxNode::new(ast::Node {
             inner: ast::Literal::from(to_source_number(*number)?),
             start: Default::default(),
             end: Default::default(),
@@ -6838,9 +6996,9 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Var(number) => Ok(ast::Expr::SketchVar(Box::new(ast::Node {
+        Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(Box::new(ast::Node {
+                initial: Some(BoxNode::new(ast::Node {
                     inner: to_source_number(*number)?,
                     start: Default::default(),
                     end: Default::default(),
@@ -6874,7 +7032,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
 }
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
-    ast::Expr::Name(Box::new(ast_name(name)))
+    ast::Expr::Name(BoxNode::new(ast_name(name)))
 }
 
 fn ast_name(name: String) -> ast::Node<ast::Name> {
@@ -6933,14 +7091,14 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
     debug_assert!(elements.len() >= 2, "Coincident AST should have at least 2 inputs");
 
     // Create array [expr1, expr2, ...]
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create coincident([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -6951,7 +7109,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
 
 /// Create an AST node for line(start = [...], end = [...])
 pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -6971,7 +7129,7 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
 
 /// Create an AST node for arc(start = [...], end = [...], center = [...])
 pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
         unlabeled: None,
         arguments: vec![
@@ -6995,7 +7153,7 @@ pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_as
 
 /// Create an AST node for circle(start = [...], center = [...])
 pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7015,7 +7173,7 @@ pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> 
 
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7026,7 +7184,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create an AST node for vertical(line)
 pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7037,9 +7195,9 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create a member expression like object.property (e.g., line1.end)
 pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Name(Box::new(ast::Node::no_src(ast::Name {
+        property: ast::Expr::Name(BoxNode::new(ast::Node::no_src(ast::Name {
             name: ast::Node::no_src(ast::Identifier {
                 name: property.to_string(),
                 digest: None,
@@ -7054,14 +7212,16 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
 }
 
 pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-            value: index as f64,
-            suffix: NumericSuffix::None,
-            raw: index.to_string(),
-            digest: None,
-        })))),
+        property: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+            ast::NumericLiteral {
+                value: index as f64,
+                suffix: NumericSuffix::None,
+                raw: index.to_string(),
+                digest: None,
+            },
+        )))),
         computed: true,
         digest: None,
     })))
@@ -7070,27 +7230,27 @@ pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> a
 /// Create an AST node for `fixed([point, [x, y]])`.
 fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
     // Create [x, y] array literal.
-    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let x_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.x,
     )?))));
-    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let y_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.y,
     )?))));
-    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let point_array = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![x_literal, y_literal],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create [point, [x, y]] outer array.
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![point_expr, point_array],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create fixed([...])
-    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(
         ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
             unlabeled: Some(array_expr),
@@ -7103,14 +7263,14 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
 
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: line_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create equalLength([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7121,13 +7281,13 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
 
 /// Create an AST node for equalRadius([seg1, seg2, ...])
 pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: segment_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_RADIUS_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7138,13 +7298,13 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
 
 /// Create an AST node for tangent([seg1, seg2])
 pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![seg1_expr, seg2_expr],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(TANGENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7155,7 +7315,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 
 /// Create an AST node for symmetric([input1, input2], axis = line)
 pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
         digest: None,
         non_code_meta: Default::default(),
@@ -7165,7 +7325,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arg: axis_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
         unlabeled: Some(array_expr),
         arguments,
@@ -7181,7 +7341,7 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arg: point_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(MIDPOINT_FN)),
         unlabeled: Some(segment_expr),
         arguments,
@@ -7251,6 +7411,73 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn composite_constituent_sweeps_are_not_solid_outputs() {
+        use kcl_api::artifact::ArtifactSweepMethod;
+        use kcl_api::artifact::CompositeSolid;
+        use kcl_api::artifact::CompositeSolidSubType;
+        use kcl_api::artifact::Sweep;
+        use kcl_api::artifact::SweepSubType;
+
+        let first_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let second_sweep_id = ArtifactId::new(Uuid::new_v4());
+        let composite_id = ArtifactId::new(Uuid::new_v4());
+        let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+        let sweep = |id| {
+            Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Extrusion,
+                path_id: ArtifactId::new(Uuid::new_v4()),
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref: code_ref.clone(),
+                source_sweep_id: None,
+                trajectory_id: None,
+                method: ArtifactSweepMethod::New,
+                consumed: false,
+                pattern_ids: Vec::new(),
+            })
+        };
+        let mut artifacts = IndexMap::from([
+            (first_sweep_id, sweep(first_sweep_id)),
+            (second_sweep_id, sweep(second_sweep_id)),
+        ]);
+
+        let top_level_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, first_sweep_id, &code_ref),
+            Some(0)
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&top_level_graph, second_sweep_id, &code_ref),
+            Some(1)
+        );
+
+        artifacts.insert(
+            composite_id,
+            Artifact::CompositeSolid(CompositeSolid {
+                id: composite_id,
+                consumed: false,
+                sub_type: CompositeSolidSubType::Union,
+                output_index: None,
+                solid_ids: vec![first_sweep_id, second_sweep_id],
+                tool_ids: Vec::new(),
+                code_ref,
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+        let composite_graph = ArtifactGraph::from_parts(artifacts.clone(), artifacts.len());
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, first_sweep_id, &CodeRef::default()),
+            None
+        );
+        assert_eq!(
+            solid_output_index_for_sweep(&composite_graph, second_sweep_id, &CodeRef::default()),
+            None
+        );
     }
 
     #[test]
@@ -10930,6 +11157,286 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_label_position() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2]) == 60deg
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  angle([line1, line2], labelPosition = [10mm, 11mm]) == 60deg
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_label_position_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1)
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_distance_constraint_label_position(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                label_position.clone(),
+                vec![],
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.46mm])
+  60deg == angleDimension(lines = [line1, line2], sector = 1, labelPosition = [10mm, 11mm])
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2]) == 60deg
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+        let label_position = Point2d {
+            x: Number {
+                value: 10.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 11.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (src_delta, scene_delta) = frontend
+            .edit_angle_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Angle {
+                    lines: vec![line2_id, line1_id],
+                    angle: Number {
+                        value: 60.0,
+                        units: NumericSuffix::Deg,
+                    },
+                    sector: Some(3),
+                    inverse: Some(false),
+                    label_position: Some(label_position.clone()),
+                    source: Default::default(),
+                },
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angleDimension(lines = [line2, line1], sector = 3, labelPosition = [10mm, 11mm]) == 60deg
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::Angle(angle) = constraint else {
+            panic!("Expected angle constraint");
+        };
+        assert_eq!(angle.lines, vec![line2_id, line1_id]);
+        assert_eq!(angle.sector, Some(3));
+        assert_eq!(angle.inverse, Some(false));
+        assert_eq!(angle.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_angle_constraint_with_call_on_right() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angle([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let (src_delta, _) = frontend
+            .edit_angle_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Angle {
+                    lines: vec![line2_id, line1_id],
+                    angle: Number {
+                        value: 60.0,
+                        units: NumericSuffix::Deg,
+                    },
+                    sector: Some(3),
+                    inverse: Some(false),
+                    label_position: None,
+                    source: Default::default(),
+                },
+                EditAngleConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  60deg == angleDimension(lines = [line2, line1], sector = 3)
+}
+"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_edit_segments_can_commit_constraint_label_position_in_same_execution() {
         let initial_source = "\
 @settings(kclVersion = 2.0)
@@ -12652,6 +13159,9 @@ splineSketch = sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
+            sector: None,
+            inverse: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, _) = frontend
@@ -13292,6 +13802,9 @@ sketch(on = XY) {
                 value: 30.0,
                 units: NumericSuffix::Deg,
             },
+            sector: None,
+            inverse: None,
+            label_position: None,
             source: Default::default(),
         });
         let (src_delta, scene_delta) = frontend
@@ -13307,6 +13820,74 @@ sketch(on = XY) {
         );
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_angle_with_sector_uses_angle_dimension() {
+        let initial_source = "\
+sketch(on = XY) {
+  line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
+
+        let constraint = Constraint::Angle(Angle {
+            lines: vec![line1_id, line2_id],
+            angle: Number {
+                value: 270.0,
+                units: NumericSuffix::Deg,
+            },
+            sector: Some(1),
+            inverse: Some(true),
+            label_position: Some(Point2d {
+                x: Number {
+                    value: -0.73,
+                    units: NumericSuffix::Mm,
+                },
+                y: Number {
+                    value: 0.75,
+                    units: NumericSuffix::Mm,
+                },
+            }),
+            source: Default::default(),
+        });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
+  angleDimension(
+  lines = [line1, line2],
+  sector = 1,
+  inverse = true,
+  labelPosition = [-0.73mm, 0.75mm],
+) == 270deg
+}
+"
+        );
+
         mock_ctx.close().await;
     }
 
@@ -13707,7 +14288,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 face_decl,
             ))));
         let face_source = source_from_ast(&ast);
@@ -14019,7 +14600,7 @@ part = subtract(boxSolid, tools = [cutSolid])
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 cap_face_decl,
             ))));
         let generated_source = source_from_ast(&ast);
@@ -14204,6 +14785,118 @@ sketch(on = offsetPlane(XY, offset = width)) {
         assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_nested_in_pipe() {
+        clear_mem_cache().await;
+        let source = r#"
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+  |> translate(x = 2mm)
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected piped sketch object")
+            .id;
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+        assert!(
+            scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .any(|object| matches!(&object.kind, ObjectKind::Segment { .. })),
+            "Expected the piped sketch's segments to be present in sketch mode"
+        );
+
+        clear_mem_cache().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_issue_9409_edit_sketch_nested_in_if_with_var_feedback() {
+        clear_mem_cache().await;
+        let source = r#"
+useFirstProfile = true
+
+profile = if useFirstProfile {
+  sketch(on = XY) {
+    line1 = line(start = [0mm, 0mm], end = [var 20mm, var 10mm])
+  }
+} else {
+  sketch(on = XY) {
+    line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])
+  }
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object =
+            find_first_sketch_object(&frontend.scene_graph).expect("Expected active branch's sketch object");
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch
+            .segments
+            .get(1)
+            .expect("Expected the active branch's line end point");
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 30.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 15.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (source_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert!(
+            source_delta
+                .text
+                .contains("line1 = line(start = [0mm, 0mm], end = [var 30mm, var 15mm])"),
+            "Expected the active branch's dragged variables to be updated:\n{}",
+            source_delta.text
+        );
+        assert!(
+            source_delta
+                .text
+                .contains("line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])"),
+            "Expected the inactive branch to remain unchanged:\n{}",
+            source_delta.text
+        );
+
+        clear_mem_cache().await;
         mock_ctx.close().await;
     }
 
@@ -15133,5 +15826,261 @@ sketch001 = sketch(on = XY) {
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[test]
+    fn test_add_variable_declaration_uses_top_level_scope_after_sketch_block() {
+        // A non-target sketch block appears before the target so that the
+        // traversal enters and leaves it before reaching the target. The
+        // generated name must come from the top-level scope, where foo1 is
+        // taken, not the sketch's scope, where no foo names are taken. This
+        // is a regression test: dfs_mut used to visit the sketch block twice,
+        // pushing its scope twice but popping it once, leaving the sketch
+        // scope on top of the defined-names stack for the rest of the
+        // traversal.
+        let code = "\
+foo1 = 1
+sk = sketch() {
+  p = var 1.5
+}
+7 + 8
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &ast.body[2] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "foo".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "foo2");
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[2] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "foo2");
+    }
+
+    /// Get the function body of the variable declaration at `ast.body[index]`.
+    fn function_body_at(ast: &ast::Node<ast::Program>, index: usize) -> &ast::Node<ast::Program> {
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[index] else {
+            panic!("expected a variable declaration");
+        };
+        let ast::Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected a function expression");
+        };
+        &func.body
+    }
+
+    /// Get the then-branch block of the if-expression initializing the
+    /// variable declaration at `ast.body[index]`.
+    fn then_block_at(ast: &ast::Node<ast::Program>, index: usize) -> &ast::Node<ast::Program> {
+        let ast::BodyItem::VariableDeclaration(decl) = &ast.body[index] else {
+            panic!("expected a variable declaration");
+        };
+        let ast::Expr::IfExpression(if_expr) = &decl.declaration.init else {
+            panic!("expected an if expression");
+        };
+        &if_expr.then_val
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_function_body_uses_function_scope() {
+        // The generated name must come from the function body's scope, where
+        // thing1 is taken. Before dfs_mut visited function bodies as program
+        // nodes, the top-level scope was used instead, generating thing1 and
+        // colliding with the local.
+        let code = "\
+fn build() {
+  thing1 = 1
+  10 + 20
+  return thing1
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "thing".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "thing2");
+        let body = &function_body_at(&ast, 0).body;
+        assert_eq!(body.len(), 3);
+        let ast::BodyItem::VariableDeclaration(decl) = &body[1] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "thing2");
+        // Siblings are untouched.
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "thing1");
+        assert!(matches!(&body[2], ast::BodyItem::ReturnStatement(_)));
+    }
+
+    #[test]
+    fn test_delete_node_in_function_body_preserves_leading_comment() {
+        // Before the shared body traversal, MutateBodyItem::Delete was
+        // silently dropped inside function bodies, so this reported success
+        // without deleting anything.
+        let code = "\
+fn build() {
+  a = 1
+  // keep me
+  b = 2
+  return a
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::VariableDeclaration(b_decl) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(b_decl.name(), "b");
+        let source_ref = SourceRef::new(SourceRange::from(&b_decl.declaration.init), None);
+        mutate_ast_node_by_source_ref(&mut ast, &source_ref, AstMutateCommand::DeleteNode).unwrap();
+        let body = &function_body_at(&ast, 0).body;
+        assert_eq!(body.len(), 2, "expected b to be deleted");
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "a");
+        let ast::BodyItem::ReturnStatement(_) = &body[1] else {
+            panic!("expected the return statement to remain");
+        };
+        assert!(
+            body[1].get_comments().iter().any(|c| c.contains("keep me")),
+            "expected the deleted item's leading comment to migrate to the next item, got: {:?}",
+            body[1].get_comments()
+        );
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_function_body_ignores_parameters() {
+        // Locals in the function body are avoided: thing1 is taken, so the
+        // generated name is thing2. But find_defined_names only sees the
+        // block's body items, not the function's parameters, so the generated
+        // name collides with the thing2 parameter. This pins the current
+        // behavior.
+        // TODO: Should function parameters be included in the scope used for
+        // name generation?
+        let code = "\
+fn build(thing2) {
+  thing1 = 1
+  10 + 20
+  return thing1 + thing2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &function_body_at(&ast, 0).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: "thing".to_owned(),
+            },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "thing2", "locals are avoided, but parameters are not");
+    }
+
+    #[test]
+    fn test_add_variable_declaration_in_if_branch_uses_branch_scope() {
+        let code = "\
+x = 1
+y = if x > 0 {
+  q1 = 1
+  foo(q1)
+  q1
+} else {
+  2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::ExpressionStatement(stmt) = &then_block_at(&ast, 1).body[1] else {
+            panic!("expected an expression statement");
+        };
+        let source_ref = SourceRef::new(SourceRange::from(&stmt.expression), None);
+        let (_, cmd_return) = mutate_ast_node_by_source_ref(
+            &mut ast,
+            &source_ref,
+            AstMutateCommand::AddVariableDeclaration { prefix: "q".to_owned() },
+        )
+        .unwrap();
+        let AstMutateCommandReturn::Name(name) = cmd_return else {
+            panic!("expected a generated name");
+        };
+        assert_eq!(name, "q2");
+        let body = &then_block_at(&ast, 1).body;
+        assert_eq!(body.len(), 3);
+        let ast::BodyItem::VariableDeclaration(decl) = &body[1] else {
+            panic!("expected the expression statement to become a variable declaration");
+        };
+        assert_eq!(decl.name(), "q2");
+        // Siblings are untouched.
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "q1");
+        assert!(matches!(&body[2], ast::BodyItem::ExpressionStatement(_)));
+    }
+
+    #[test]
+    fn test_delete_node_in_if_branch_preserves_leading_comment() {
+        // Before the shared body traversal, MutateBodyItem::Delete was
+        // silently dropped inside if-expression branch blocks.
+        let code = "\
+y = if true {
+  a = 1
+  // keep me
+  b = 2
+  a + b
+} else {
+  2
+}
+";
+        let mut ast = crate::parsing::top_level_parse(code).unwrap();
+        let ast::BodyItem::VariableDeclaration(b_decl) = &then_block_at(&ast, 0).body[1] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(b_decl.name(), "b");
+        let source_ref = SourceRef::new(SourceRange::from(&b_decl.declaration.init), None);
+        mutate_ast_node_by_source_ref(&mut ast, &source_ref, AstMutateCommand::DeleteNode).unwrap();
+        let body = &then_block_at(&ast, 0).body;
+        assert_eq!(body.len(), 2, "expected b to be deleted");
+        let ast::BodyItem::VariableDeclaration(first) = &body[0] else {
+            panic!("expected a variable declaration");
+        };
+        assert_eq!(first.name(), "a");
+        let ast::BodyItem::ExpressionStatement(_) = &body[1] else {
+            panic!("expected the tail expression to remain");
+        };
+        assert!(
+            body[1].get_comments().iter().any(|c| c.contains("keep me")),
+            "expected the deleted item's leading comment to migrate to the next item, got: {:?}",
+            body[1].get_comments()
+        );
     }
 }

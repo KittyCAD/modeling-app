@@ -5862,7 +5862,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -5870,35 +5870,49 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "abs_path": false,
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "tubeWallMidRadius",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sectionSketch001",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "path": [],
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0in",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -5906,35 +5920,6 @@ description: Result of parsing exhaust-manifold.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sectionSketch001",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -11947,7 +11932,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -11955,35 +11940,49 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "abs_path": false,
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "tubeWallMidRadius",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sectionSketch003",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "path": [],
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "0in",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -11991,35 +11990,6 @@ description: Result of parsing exhaust-manifold.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sectionSketch003",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -30257,7 +30227,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30265,39 +30235,94 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "0.9in",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "flangeSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.9,
-                          "suffix": "Inch"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0in",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "flangeSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -30313,7 +30338,7 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -30326,7 +30351,7 @@ description: Result of parsing exhaust-manifold.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "flangeSketch",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -30576,7 +30601,173 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [],
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "faces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line6",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line7",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -30586,7 +30777,7 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "getNextAdjacentEdge",
+                          "name": "getCommonEdge",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -30600,105 +30791,7 @@ description: Result of parsing exhaust-manifold.kcl
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "flangeExtrude",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sketch",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "tags",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "line7",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
+                      "unlabeled": null
                     }
                   ],
                   "end": 0,
@@ -30815,7 +30908,173 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [],
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "faces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line11",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line12",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -30825,7 +31084,7 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "getNextAdjacentEdge",
+                          "name": "getCommonEdge",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -30839,105 +31098,7 @@ description: Result of parsing exhaust-manifold.kcl
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "flangeExtrude",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sketch",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "tags",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "line12",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
+                      "unlabeled": null
                     }
                   ],
                   "end": 0,
@@ -31054,7 +31215,173 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [],
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "faces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line5",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line6",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -31064,7 +31391,7 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "getNextAdjacentEdge",
+                          "name": "getCommonEdge",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -31078,105 +31405,7 @@ description: Result of parsing exhaust-manifold.kcl
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "flangeExtrude",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sketch",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "tags",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "line6",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
+                      "unlabeled": null
                     }
                   ],
                   "end": 0,
@@ -31293,7 +31522,173 @@ description: Result of parsing exhaust-manifold.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [],
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "faces",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line12",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "moduleId": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "computed": false,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "object": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "flangeRegion",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "property": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "tags",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "property": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": "line13",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -31303,7 +31698,7 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "getNextAdjacentEdge",
+                          "name": "getCommonEdge",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -31317,105 +31712,7 @@ description: Result of parsing exhaust-manifold.kcl
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "flangeExtrude",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sketch",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "tags",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "line13",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
+                      "unlabeled": null
                     }
                   ],
                   "end": 0,
@@ -31535,6 +31832,34 @@ description: Result of parsing exhaust-manifold.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

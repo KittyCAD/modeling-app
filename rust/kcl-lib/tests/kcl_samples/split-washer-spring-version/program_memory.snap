@@ -8,8 +8,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -64,10 +63,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2898,
-            "end": 2903,
+            "commentStart": 2858,
+            "end": 2863,
             "moduleId": 0,
-            "start": 2898,
+            "start": 2858,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -88,10 +87,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 2967,
-            "end": 2972,
+            "commentStart": 2927,
+            "end": 2932,
             "moduleId": 0,
-            "start": 2967,
+            "start": 2927,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -112,10 +111,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 3075,
-            "end": 3080,
+            "commentStart": 3035,
+            "end": 3040,
             "moduleId": 0,
-            "start": 3075,
+            "start": 3035,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -136,10 +135,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3183,
-            "end": 3188,
+            "commentStart": 3143,
+            "end": 3148,
             "moduleId": 0,
-            "start": 3183,
+            "start": 3143,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -154,7 +153,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XZ",
+        "kind": "Custom",
         "objectId": 0,
         "origin": {
           "x": 0.0,
@@ -234,10 +233,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2898,
-            "end": 2903,
+            "commentStart": 2858,
+            "end": 2863,
             "moduleId": 0,
-            "start": 2898,
+            "start": 2858,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -248,10 +247,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2967,
-            "end": 2972,
+            "commentStart": 2927,
+            "end": 2932,
             "moduleId": 0,
-            "start": 2967,
+            "start": 2927,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -262,10 +261,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3075,
-            "end": 3080,
+            "commentStart": 3035,
+            "end": 3040,
             "moduleId": 0,
-            "start": 3075,
+            "start": 3035,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -276,10 +275,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3183,
-            "end": 3188,
+            "commentStart": 3143,
+            "end": 3148,
             "moduleId": 0,
-            "start": 3183,
+            "start": 3143,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -301,10 +300,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2898,
-              "end": 2903,
+              "commentStart": 2858,
+              "end": 2863,
               "moduleId": 0,
-              "start": 2898,
+              "start": 2858,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -325,10 +324,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 2967,
-              "end": 2972,
+              "commentStart": 2927,
+              "end": 2932,
               "moduleId": 0,
-              "start": 2967,
+              "start": 2927,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -349,10 +348,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 3075,
-              "end": 3080,
+              "commentStart": 3035,
+              "end": 3040,
               "moduleId": 0,
-              "start": 3075,
+              "start": 3035,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -373,10 +372,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3183,
-              "end": 3188,
+              "commentStart": 3143,
+              "end": 3148,
               "moduleId": 0,
-              "start": 3183,
+              "start": 3143,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -391,7 +390,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
+          "kind": "Custom",
           "objectId": 0,
           "origin": {
             "x": 0.0,
@@ -585,7 +584,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -705,7 +704,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -825,7 +824,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -945,7 +944,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
-                  "kind": "XZ",
+                  "kind": "Custom",
                   "objectId": 0,
                   "origin": {
                     "x": 0.0,
@@ -1002,10 +1001,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2898,
-                    "end": 2903,
+                    "commentStart": 2858,
+                    "end": 2863,
                     "moduleId": 0,
-                    "start": 2898,
+                    "start": 2858,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1026,10 +1025,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 2967,
-                    "end": 2972,
+                    "commentStart": 2927,
+                    "end": 2932,
                     "moduleId": 0,
-                    "start": 2967,
+                    "start": 2927,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1050,10 +1049,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3075,
-                    "end": 3080,
+                    "commentStart": 3035,
+                    "end": 3040,
                     "moduleId": 0,
-                    "start": 3075,
+                    "start": 3035,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1074,10 +1073,10 @@ description: Variables in memory after executing split-washer-spring-version.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3183,
-                    "end": 3188,
+                    "commentStart": 3143,
+                    "end": 3148,
                     "moduleId": 0,
-                    "start": 3183,
+                    "start": 3143,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1092,7 +1091,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "XZ",
+                "kind": "Custom",
                 "objectId": 0,
                 "origin": {
                   "x": 0.0,
@@ -1165,39 +1164,6 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       }
     },
     "constrainable": false
-  },
-  "washerSectionSketch": {
-    "type": "Plane",
-    "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
-      "kind": "XZ",
-      "objectId": 0,
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": null
-      }
-    }
   },
   "washerSectionWidth": {
     "type": "Number",

@@ -141,21 +141,25 @@ async function ensureProjectTomlTitle({
   title,
   defaultFile,
   kclVersion,
+  readExistingProjectToml = true,
 }: {
   projectPath: string
   title: string
   defaultFile: string
   kclVersion?: string
+  readExistingProjectToml?: boolean
 }) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
-  try {
-    projectToml = await fsZds.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
-  } catch (error) {
-    if (!isPathNotFoundError(error)) {
-      return Promise.reject(error)
+  if (readExistingProjectToml) {
+    try {
+      projectToml = await fsZds.readFile(projectTomlPath, {
+        encoding: 'utf-8',
+      })
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
     }
   }
 
@@ -287,11 +291,13 @@ export async function createNewProjectDirectory(
   }
   const projectDir = fsZds.join(mainDir, projectName)
 
+  let projectDirectoryCreated = false
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
     if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
+      projectDirectoryCreated = true
     }
   }
 
@@ -319,6 +325,7 @@ export async function createNewProjectDirectory(
     title: projectTitle,
     defaultFile: kclFileName,
     kclVersion: initialCode ? undefined : DEFAULT_KCL_VERSION,
+    readExistingProjectToml: !projectDirectoryCreated,
   })
   let metadata: FileMetadata | null = null
   try {
@@ -1126,15 +1133,15 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
-export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
+export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (
   environmentName: string,
-  mlephantWebSocketUrl: string
+  zookeeperWebSocketUrl: string
 ) => {
-  mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
+  zookeeperWebSocketUrl = zookeeperWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration =
     await getEnvironmentConfigurationObject(environmentName)
-  environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
+  environmentConfiguration.zookeeperWebSocketUrl = zookeeperWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await fsZds.writeFile(
     path,
@@ -1144,15 +1151,18 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
   return result
 }
 
-export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
+export const readEnvironmentConfigurationZookeeperWebSocketUrl = async (
   environmentName: string
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  if (!environmentConfiguration?.mlephantWebSocketUrl) {
+  const zookeeperWebSocketUrl =
+    environmentConfiguration?.zookeeperWebSocketUrl ??
+    environmentConfiguration?.mlephantWebSocketUrl
+  if (!zookeeperWebSocketUrl) {
     return ''
   }
-  return environmentConfiguration.mlephantWebSocketUrl.trim()
+  return zookeeperWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async () => {

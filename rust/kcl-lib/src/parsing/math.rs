@@ -47,7 +47,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, C
         operand_stack.push(expr)
     }
     if let Some(BinaryPart::BinaryExpression(expr)) = operand_stack.pop() {
-        Ok(*expr)
+        Ok(expr.into_node())
     } else {
         // If this branch is used, the evaluation algorithm has a bug and must be fixed.
         // This is a programmer error, not a user error.
@@ -125,6 +125,7 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 mod tests {
     use super::*;
     use crate::ModuleId;
+    use crate::parsing::ast::types::BoxNode;
     use crate::parsing::ast::types::Literal;
     use crate::parsing::ast::types::LiteralValue;
     use crate::parsing::token::NumericSuffix;
@@ -133,7 +134,7 @@ mod tests {
     fn parse_and_evaluate() {
         /// Make a literal
         fn lit(n: u8) -> BinaryPart {
-            BinaryPart::Literal(Box::new(Node::new(
+            BinaryPart::Literal(BoxNode::new(Node::new(
                 Literal {
                     value: LiteralValue::Number {
                         value: n as f64,

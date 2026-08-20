@@ -1,10 +1,7 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
-import {
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
-  type ProjectLibrary,
-} from '@src/lib/projectLibraries'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -97,6 +94,7 @@ function createHomeProjectActions(
     canRename: vi.fn(() => true),
     canDelete: vi.fn(() => true),
     canMoveToLibrary: vi.fn(() => false),
+    canReviewDuplicateRealizations: vi.fn(() => false),
     open: vi.fn(async (project) => ({
       defaultFile: project.defaultFile ?? '',
     })),
@@ -105,6 +103,7 @@ function createHomeProjectActions(
     delete: vi.fn(async () => undefined),
     getMoveToLibraryTargets: vi.fn(() => []),
     moveToLibrary: vi.fn(async () => undefined),
+    deleteDuplicateRealizations: vi.fn(async () => undefined),
     ...overrides,
   }
 }
@@ -141,7 +140,7 @@ describe('project command config', () => {
     expect(commands.map((command) => command.name)).toEqual([
       'Open project',
       'Create project',
-      'Move to library',
+      'Move project',
       'Delete project',
       'Rename project',
       'Import file from URL',
@@ -539,11 +538,10 @@ describe('project command config', () => {
         localProjectPath: '/client-projects/bracket',
         libraryIds: ['client-projects'],
       }),
-      source: 'both',
+      source: 'local',
       status: 'synced',
-      libraryPath: '/client-projects',
-      libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
       remoteProjectId: 'remote-123',
+      deleteRemoteOnDelete: false,
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
@@ -609,12 +607,20 @@ describe('project command config', () => {
       getHomeProjectEntries: () => [homeProject],
     })
     const moveCommand = commands.find(
-      (command) => command.name === 'Move to library'
+      (command) => command.name === 'Move project'
     )
+    const projectArg = moveCommand?.args?.project as unknown as {
+      hidden: (context: {
+        argumentsToSubmit: Record<string, unknown>
+      }) => boolean
+    }
     const libraryArg = moveCommand?.args?.library as unknown as {
       defaultValue: (
         context: ContextFrom<typeof commandBarMachine>
       ) => string | undefined
+      hidden: (context: {
+        argumentsToSubmit: Record<string, unknown>
+      }) => boolean
       options: (context: {
         argumentsToSubmit: Record<string, unknown>
       }) => CommandArgumentOption<string>[]
@@ -647,6 +653,37 @@ describe('project command config', () => {
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
     ).toBe('cloud-personal')
+    expect(
+      projectArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: targetLibrary.id,
+        },
+      })
+    ).toBe(true)
+    expect(
+      libraryArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: targetLibrary.id,
+        },
+      })
+    ).toBe(true)
+    expect(
+      projectArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+        },
+      })
+    ).toBe(false)
+    expect(
+      libraryArg.hidden({
+        argumentsToSubmit: {
+          project: homeProject.id,
+          library: 'unknown-library',
+        },
+      })
+    ).toBe(false)
 
     await moveCommand?.onSubmit({
       project: homeProject.id,

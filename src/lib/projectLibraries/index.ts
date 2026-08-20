@@ -3,7 +3,7 @@ import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
-export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
+export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Local Projects'
 export const NEW_PROJECT_LIBRARY_TITLE = 'Project Library'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_ID = 'cloud-personal'
@@ -38,6 +38,14 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   id: string
   icon?: string
   order?: number
+}
+
+export interface ProjectLibraryInitialProject {
+  files: readonly {
+    requestedFileName: string
+    requestedData: Uint8Array<ArrayBuffer>
+  }[]
+  entrypointFilePath: string
 }
 
 export type SerializedProjectLibrarySetting = Omit<
@@ -97,7 +105,7 @@ export function getDefaultDirectoryProjectLibraryPath(
   return getDefaultDirectoryProjectLibrarySetting(libraries)?.path
 }
 
-function normalizeLibraryPath(path: string) {
+export function normalizeLibraryPath(path: string) {
   return path.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 

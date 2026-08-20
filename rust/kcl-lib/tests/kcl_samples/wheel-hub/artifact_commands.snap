@@ -216,7 +216,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -401,7 +402,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -586,7 +588,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -785,8 +788,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538977142,
-            "y": -12.434004430890894,
+            "x": 75.6211753897714,
+            "y": -12.434004430890873,
             "z": 0.0
           },
           "relative": false
@@ -802,7 +805,7 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538977142,
+            "x": 75.6211753897714,
             "y": -126.73400443089086,
             "z": 0.0
           },
@@ -820,7 +823,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": 38.1,
-            "y": -126.73400443089086,
+            "y": -126.73400443089083,
             "z": 0.0
           },
           "relative": false
@@ -853,7 +856,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1090,12 +1094,13 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 53.339999999999996,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1255,7 +1260,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1607,12 +1613,13 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": -57.15,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1772,7 +1779,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

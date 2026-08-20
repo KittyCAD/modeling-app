@@ -89,13 +89,12 @@ impl Geometry {
         }
     }
 
-    /// If this geometry is the result of a pattern, then return the ID of
-    /// the original sketch which was patterned.
-    /// Equivalent to the `id()` method if this isn't a pattern.
-    pub fn original_id(&self) -> uuid::Uuid {
+    /// Return the topology root to target when a pattern requests its
+    /// original geometry.
+    pub fn pattern_source_id(&self) -> uuid::Uuid {
         match self {
             Geometry::Sketch(s) => s.original_id,
-            Geometry::Solid(e) => e.original_id(),
+            Geometry::Solid(e) => e.topology_id(),
         }
     }
 }
@@ -1287,6 +1286,26 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub value_id: uuid::Uuid,
+    /// The engine entity whose children correspond to the topology references
+    /// stored on this solid. Pattern copies retain their source topology,
+    /// while consuming operations and clones replace it with their output.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) topology_id: uuid::Uuid,
+    /// The semantic body artifact from which a pattern copy was created.
+    /// Pattern commands replace `artifact_id` with the copy's engine entity
+    /// ID, so retain this to distinguish Sweep-backed bodies from composites.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Body type known from the KCL operation that created this value.
+    ///
+    /// Mock execution cannot query the engine for this, so retain it when it
+    /// is known locally. Procedural operations whose result depends on engine
+    /// topology may leave it unset.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -1378,6 +1397,27 @@ impl Solid {
 
     pub fn original_id(&self) -> uuid::Uuid {
         self.sketch().map(|sketch| sketch.original_id).unwrap_or(self.id)
+    }
+
+    pub(crate) fn topology_id(&self) -> uuid::Uuid {
+        self.topology_id
+    }
+
+    /// Make this solid a brand-new body produced by an operation. It now owns
+    /// the topology of `engine_id`, and any retained pattern provenance no
+    /// longer applies.
+    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+        self.topology_id = engine_id;
+        self.pattern_source_artifact_id = None;
+        self.artifact_id = artifact_id;
+    }
+
+    /// Make this solid a pattern copy. It gets a new top-level entity artifact
+    /// while retaining the source body's topology and semantic artifact
+    /// provenance.
+    pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
+        self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
+        self.artifact_id = ArtifactId::new(copy_engine_id);
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
@@ -2527,6 +2567,26 @@ pub struct SketchConstraint {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleRayDirection {
+    Forward,
+    Reverse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleSector {
+    One,
+    Two,
+    Three,
+    Four,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleConstraintMode {
+    LinesAtAngle,
+    PointsAtAngle { sector: AngleSector, inverse: bool },
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -2534,6 +2594,14 @@ pub enum SketchConstraintKind {
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
+        #[serde(skip)]
+        #[ts(skip)]
+        mode: AngleConstraintMode,
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],

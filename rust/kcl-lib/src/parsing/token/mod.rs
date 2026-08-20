@@ -25,6 +25,8 @@ use crate::errors::KclError;
 use crate::kcl_runtime_flags;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::VariableKind;
+use crate::runtime_flags::RuntimeFlagResolve;
+use crate::runtime_flags::resolve_from_sources;
 
 mod tokeniser;
 
@@ -611,6 +613,24 @@ pub(crate) enum LexerMode {
     New,
 }
 
+impl RuntimeFlagResolve for LexerMode {
+    fn on() -> Self {
+        Self::New
+    }
+
+    fn off() -> Self {
+        Self::Old
+    }
+
+    fn resolve_default() -> Self {
+        Self::DEFAULT
+    }
+
+    fn parse_env_var(value: &str) -> Self {
+        Self::parse(value)
+    }
+}
+
 impl LexerMode {
     /// The mode used when `KCL_LEXER` is unset.
     const DEFAULT: Self = Self::Old;
@@ -640,17 +660,7 @@ impl LexerMode {
     }
 
     fn resolve_from_sources(runtime_flag: RuntimeFlag, test_override: Option<Self>, env_value: Option<&str>) -> Self {
-        match runtime_flag {
-            RuntimeFlag::On => return Self::New,
-            RuntimeFlag::Off => return Self::Old,
-            RuntimeFlag::Unset => {}
-        }
-
-        if let Some(mode) = test_override {
-            return mode;
-        }
-
-        env_value.map(Self::parse).unwrap_or(Self::DEFAULT)
+        resolve_from_sources(runtime_flag, test_override, env_value)
     }
 
     #[cfg(test)]
@@ -793,6 +803,7 @@ mod lexer_mode_tests {
     fn set_runtime_lexer_flag(flag: RuntimeFlag) {
         crate::set_kcl_runtime_flags(KclRuntimeFlags {
             use_new_lexer_parser: flag,
+            ..Default::default()
         });
     }
 
@@ -838,6 +849,7 @@ mod lexer_mode_tests {
             crate::kcl_runtime_flags(),
             KclRuntimeFlags {
                 use_new_lexer_parser: RuntimeFlag::Unset,
+                ..Default::default()
             }
         );
     }

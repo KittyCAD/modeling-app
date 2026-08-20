@@ -197,7 +197,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -476,7 +477,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -556,6 +558,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -632,6 +639,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -708,6 +720,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -1032,7 +1049,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1274,7 +1292,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1534,7 +1553,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1779,7 +1799,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2014,24 +2035,26 @@ description: Artifact commands stylized-pickup-truck.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 0.0,
-          "y": 100.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 0.0,
-          "y": 350.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2207,6 +2230,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2257,6 +2285,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2359,6 +2392,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2409,6 +2447,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2511,6 +2554,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2561,6 +2609,11 @@ description: Artifact commands stylized-pickup-truck.kcl
       "command": {
         "type": "entity_clone",
         "entity_id": "[uuid]"
+      },
+      "entityCloneInfo": {
+        "sourceArtifactId": "[uuid]",
+        "resultArtifactId": "[uuid]",
+        "sourceTopologyId": "[uuid]"
       }
     },
     {
@@ -2938,7 +2991,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -3355,7 +3409,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

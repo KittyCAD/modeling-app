@@ -514,7 +514,11 @@ sketch001 = extrude(region001, length = -12)`
         0
       )
       await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
+      await expect(toolbar.selectionStatus).not.toContainText('No selection')
+      await toolbar.removeFeatureTreeOperation(operationButton)
+      await scene.settled()
+      await expect(toolbar.selectionStatus).toContainText('No selection')
+      await editor.expectEditor.not.toContain(expectedOutput)
     })
   })
 
@@ -700,7 +704,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getCommonEdge(faces=[region001.tags.line3,capEnd001]),
+          axis = getCommonEdge(faces=[region001.tags.line3,extrude001.faces.capEnd001]),
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -773,7 +777,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getCommonEdge(faces=[region001.tags.line3,capEnd001]),
+          axis = getCommonEdge(faces=[region001.tags.line3,extrude001.faces.capEnd001]),
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -1089,8 +1093,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capEnd001]), radius=5)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capStart001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capEnd001]), radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capStart001]), radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1626,8 +1630,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capEnd001]), length=5)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,capStart001]), length=5)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capEnd001]), length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capStart001]), length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2219,7 +2223,7 @@ sketch002 = sketch(on = face001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, capEnd001]))`
+    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, extrude001.faces.capEnd001]),)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2305,7 +2309,9 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       })
       await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
@@ -2364,12 +2370,8 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind
-          .replace('angle = 360deg', 'angle = angle001')
-          .replace(
-            'axis = getCommonEdge(faces = [region001.tags.line1, capEnd001])',
-            'axis = X'
-          )
+        'revolve001 = revolve(region002, angle = angle001, axis = X)',
+        { shouldNormalise: true }
       )
     })
   })
@@ -2421,6 +2423,7 @@ box = extrude(region001, length = 30)`
           currentArgValue: '',
           headerArguments: {
             Objects: '',
+            X: '5',
           },
           highlightedHeaderArg: 'objects',
           stage: 'arguments',
@@ -2431,8 +2434,23 @@ box = extrude(region001, length = 30)`
       })
 
       await test.step('Complete command flow', async () => {
-        await test.step('Progress to review since object is already selected', async () => {
+        await test.step('Progress to the prepopulated x argument', async () => {
           await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'x',
+            currentArgValue: '5',
+            headerArguments: {
+              Objects: '1 region',
+              X: '5',
+            },
+            highlightedHeaderArg: 'x',
+            commandName: 'Translate',
+          })
+        })
+
+        await test.step('Clear the default x translation', async () => {
+          await cmdBar.clearNonRequiredButton.click()
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
@@ -2449,7 +2467,7 @@ box = extrude(region001, length = 30)`
           await cmdBar.expectState({
             stage: 'arguments',
             currentArgKey: 'x',
-            currentArgValue: '0',
+            currentArgValue: '5',
             headerArguments: {
               Objects: '1 region',
               X: '',
@@ -2520,13 +2538,24 @@ box = extrude(region001, length = 30)`
       currentArgValue: '',
       headerArguments: {
         Objects: '',
+        X: '5',
       },
       highlightedHeaderArg: 'objects',
       stage: 'arguments',
     })
     await expect(page.getByText('1 helix selected')).toBeVisible()
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('x')
+    await cmdBar.expectState({
+      commandName: 'Translate',
+      currentArgKey: 'x',
+      currentArgValue: '5',
+      headerArguments: {
+        Objects: '1 helix',
+        X: '5',
+      },
+      highlightedHeaderArg: 'x',
+      stage: 'arguments',
+    })
     await page.keyboard.insertText('20')
     await cmdBar.progressCmdBar()
     await cmdBar.submit()

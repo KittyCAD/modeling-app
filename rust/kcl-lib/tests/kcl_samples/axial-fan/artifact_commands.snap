@@ -521,12 +521,13 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 0.0,
-          "y": -62.4975
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": true,
+        "version": "V1"
       }
     },
     {
@@ -851,12 +852,13 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 116.8825009,
-          "y": 12.5495212
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1031,7 +1033,7 @@ description: Artifact commands axial-fan.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": 120.00000000000001
+            "value": 119.99999999999997
           },
           "relative": false
         }
@@ -1101,7 +1103,7 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.5343527530685495,
+            "x": 3.534352761027354,
             "y": 11.999966666574073,
             "z": 0.0
           },
@@ -1118,17 +1120,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 3.5346422855062336,
-            "y": 17.999966666574082
+            "x": 3.534642285506254,
+            "y": 17.999966666574075
           },
-          "radius": 6.0000000069857595,
+          "radius": 6.000000006985372,
           "start": {
             "unit": "degrees",
-            "value": -90.00276483111642
+            "value": -90.00276475511563
           },
           "end": {
             "unit": "degrees",
-            "value": -150.00008042593913
+            "value": -150.00008044383247
           },
           "relative": false
         }
@@ -1143,8 +1145,8 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -24.597494791239196,
-            "y": 54.72625740898934,
+            "x": -24.59749479123913,
+            "y": 54.72625740898937,
             "z": 0.0
           },
           "relative": false
@@ -1160,17 +1162,17 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000010658141036401503,
-            "y": -0.0
+            "x": 0.000000000000003552713678800501,
+            "y": 0.000000000000007105427357601002
           },
           "radius": 60.0,
           "start": {
             "unit": "degrees",
-            "value": 114.20221194047117
+            "value": 114.2022119404711
           },
           "end": {
             "unit": "degrees",
-            "value": 120.00000000000001
+            "value": 119.99999999999997
           },
           "relative": false
         }
@@ -1185,8 +1187,8 @@ description: Artifact commands axial-fan.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.000000000000001,
-            "y": 5.196152422706632,
+            "x": -2.9999999999999947,
+            "y": 5.196152422706635,
             "z": 0.0
           },
           "relative": false
@@ -1206,12 +1208,13 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": -1.8127969,
-          "y": 5.7222175
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1412,12 +1415,13 @@ description: Artifact commands axial-fan.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": -7.5081825,
-          "y": -9.3577348
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1820,7 +1824,8 @@ description: Artifact commands axial-fan.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2127,7 +2132,8 @@ description: Artifact commands axial-fan.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2377,7 +2383,8 @@ description: Artifact commands axial-fan.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2651,7 +2658,8 @@ description: Artifact commands axial-fan.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

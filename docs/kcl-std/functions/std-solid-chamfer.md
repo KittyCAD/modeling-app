@@ -179,7 +179,7 @@ baseProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [3mm, 2mm], sketch = baseProfile), length = 3mm, tagEnd = $top)
+block = extrude(region(segments = [baseProfile.edge1, baseProfile.edge2]), length = 3mm, tagEnd = $top)
 
 tabProfile = startSketchOn(block, face = top)
   |> startProfile(at = [1mm, 1mm])
@@ -201,6 +201,68 @@ chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(ta
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+// Chamfer the top circular edge of an extruded 8 mm shaft.
+// These two shafts show two equivalent edge-selection approaches:
+// `getOppositeEdge` and a tagged end face with `getCommonEdge`.
+
+// Sketch two circles, one on the left, one on the right.
+// We'll use them for shafts below.
+leftShaftSketch = sketch(on = XY) {
+  leftCircle = circle(start = [var -8mm, var 0mm], center = [var -12mm, var 0mm])
+  radius(leftCircle) == 4mm
+}
+rightShaftSketch = sketch(on = XY) {
+  rightCircle = circle(start = [var 16mm, var 0mm], center = [var 12mm, var 0mm])
+  radius(rightCircle) == 4mm
+}
+
+// For each sketch, get the region inside its circle.
+leftRegion = region(segments = [leftShaftSketch.leftCircle])
+rightRegion = region(segments = [rightShaftSketch.rightCircle])
+
+// Extrude one circle into a shaft,
+// then use `leftRegion.tags.leftCircle` to reference the original circle
+// at the base of the shaft,
+// then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
+leftShaft = extrude(leftRegion, length = 20mm)
+  |> chamfer(
+       length = 1mm,
+       tags = [
+         getOppositeEdge(leftRegion.tags.leftCircle)
+       ],
+     )
+
+// Extrude the other circle into a shaft and tag its top end face.
+rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
+
+// After extrusion, the circle identifies the cylindrical side face.
+// `getCommonEdge` selects the top rim shared by that face and the top end face.
+rightTopEdge = getCommonEdge(faces = [
+  rightShaftBase.sketch.tags.rightCircle,
+  rightShaftBase.faces.rightShaftTop
+])
+
+rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer4.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
