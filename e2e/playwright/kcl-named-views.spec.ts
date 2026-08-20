@@ -159,7 +159,7 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     await expect(page.locator(VIEW_SWITCHER_PANE)).toHaveCount(0)
   })
 
-  test('lists Default View first and prefixes a name two modules declare', async ({
+  test('numbers the rows from 1, lists Default View first, and prefixes a name two modules declare', async ({
     homePage,
     scene,
     toolbar,
@@ -174,6 +174,9 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
     const labels = page
       .locator(VIEW_SWITCHER_PANE)
       .getByTestId('named-view-label')
+    const numbers = page
+      .locator(VIEW_SWITCHER_PANE)
+      .getByTestId('named-view-number')
     const rows = page.locator(VIEW_SWITCHER_PANE).getByTestId('named-view-row')
 
     // Graph insertion order: the `import` executes before the local
@@ -184,6 +187,8 @@ test.describe('KCL named views', { tag: '@desktop' }, () => {
       'main::Front',
       'Top',
     ])
+    // The number is the row's position in the list, so `Default View` is 1.
+    await expect(numbers).toHaveText(['1', '2', '3', '4'])
     await expect(rows.first()).toHaveAttribute('data-active', 'true')
   })
 

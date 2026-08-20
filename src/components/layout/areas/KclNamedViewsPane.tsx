@@ -110,10 +110,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       />
       <section className="overflow-auto mr-1 pb-8">
         <ul>
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <li key={row.key} className="px-1 py-0.5">
               <RowItemWithIconMenuAndToggle
-                icon="namedView"
                 isSelected={isSameView(row.identity, active)}
                 disabled={cannotReachEngine}
                 data-testid="named-view-row"
@@ -125,6 +124,12 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   }).catch(reportRejection)
                 }}
               >
+                <span
+                  data-testid="named-view-number"
+                  className="inline-block w-6 mr-2 text-right tabular-nums text-chalkboard-70 dark:text-chalkboard-40"
+                >
+                  {index + 1}
+                </span>
                 <span data-testid="named-view-label">{row.label}</span>
               </RowItemWithIconMenuAndToggle>
             </li>
