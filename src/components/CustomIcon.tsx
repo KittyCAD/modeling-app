@@ -1515,6 +1515,24 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  namedView: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="named view"
+    >
+      <path
+        d="M9 7L13.5 9.25V13.75L9 16L4.5 13.75V9.25L9 7Z"
+        stroke="currentColor"
+      />
+      <path
+        d="M9 11.5L4.5 9.25M9 11.5L13.5 9.25M9 11.5V16"
+        stroke="currentColor"
+      />
+      <path d="M13.5 3H17.5V9.5L15.5 8L13.5 9.5V3Z" fill="currentColor" />
+    </svg>
+  ),
   normal: (
     <svg
       viewBox="0 0 20 20"

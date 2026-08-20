@@ -23,6 +23,11 @@ correct size.
 
 For sketches, you can use this to scale a sketch and then loft it with another sketch.
 
+The `x`, `y`, `z`, and `factor` arguments are dimensionless multipliers, not physical
+distances. Unlike `translate`, `scale` does not accept a length such as `10mm`. To resize
+an object with a known size, divide the target length by the current length. For example,
+`targetWidth / seedWidth` produces the dimensionless scale factor for the x axis.
+
 By default the transform is applied in local sketch axis, therefore the origin will not move.
 
 If you want to apply the transform in global space, set `global` to `true`. The origin of the
@@ -36,11 +41,11 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, helix, or set of solids, sketches, or helices to scale. | Yes |
-| `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. | No |
-| `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
-| `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
+| `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the x axis. | No |
+| `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the y axis. | No |
+| `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the z axis. | No |
 | `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
-| `factor` | [`number(_)`](/docs/kcl-std/types/std-types-number) | If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
+| `factor` | [`number(_)`](/docs/kcl-std/types/std-types-number) | If given, scale the solid by this dimensionless factor. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
 
 ### Returns
 
@@ -176,6 +181,55 @@ button2 = startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Resize a 1 mm seed cube to exact physical dimensions.
+@settings(kclVersion = 2.0)
+
+seedSize = 1mm
+targetWidth = 40mm
+targetDepth = 20mm
+targetHeight = 10mm
+
+seedSketch = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  right = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+  top = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+  left = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+  horizontal(bottom)
+  horizontal(top)
+  vertical(right)
+  vertical(left)
+}
+seedRegion = region(segments = [seedSketch.bottom, seedSketch.right])
+seedCube = extrude(seedRegion, length = seedSize)
+
+resized = scale(
+  seedCube,
+  x = targetWidth / seedSize,
+  y = targetDepth / seedSize,
+  z = targetHeight / seedSize,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the scale function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale4_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale4.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

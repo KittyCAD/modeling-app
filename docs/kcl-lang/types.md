@@ -64,7 +64,7 @@ sketch001 = sketch(on = XZ) {
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
 }
-region001 = region(point = [0.4203mm, -1.2375mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line4, capEnd001]), radius = 1)
 ```

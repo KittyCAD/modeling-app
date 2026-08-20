@@ -33,7 +33,7 @@ export type ProjectsCommandSchema = {
     name: string
     libraryId?: string
   }
-  'Move to library': {
+  'Move project': {
     project: string
     library: string
   }
@@ -287,6 +287,17 @@ export function createProjectCommands({
   const defaultMoveToLibraryId = (
     context: ContextFrom<typeof commandBarMachine>
   ) => moveToLibraryOptions(context)[0]?.value ?? ''
+  const hasSelectedMoveToLibraryTarget = ({
+    argumentsToSubmit,
+  }: {
+    argumentsToSubmit: Record<string, unknown>
+  }) =>
+    Boolean(
+      selectedMoveToLibraryTarget({
+        projectId: argumentsToSubmit.project,
+        libraryId: argumentsToSubmit.library,
+      })
+    )
 
   const openProjectCommand: Command = {
     icon: 'folder',
@@ -402,8 +413,8 @@ export function createProjectCommands({
 
   const moveToLibraryCommand: Command = {
     icon: 'folder',
-    name: 'Move to library',
-    displayName: 'Move to library',
+    name: 'Move project',
+    displayName: 'Move project',
     description: 'Move a project to another library',
     groupId: 'projects',
     needsReview: true,
@@ -462,12 +473,14 @@ export function createProjectCommands({
       project: {
         inputType: 'options',
         required: true,
+        hidden: hasSelectedMoveToLibraryTarget,
         options: () => projectOptions('moveToLibrary'),
       },
       library: {
         inputType: 'options',
         required: true,
         prepopulate: true,
+        hidden: hasSelectedMoveToLibraryTarget,
         options: moveToLibraryOptions,
         defaultValue: defaultMoveToLibraryId,
       },

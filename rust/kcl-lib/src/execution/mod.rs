@@ -1736,15 +1736,16 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
+                            // The concurrent executor starts from a clone of the root module state.
+                            // Use a fresh artifact state so the import command belongs only to the
+                            // foreign module that issued it.
+                            exec_state.mod_local.artifacts = Default::default();
                             let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                            let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
 
-                            // Foreign modules don't produce their own operations;
-                            // use a fresh artifact state instead of capturing the
-                            // cloned root module's artifacts (which may contain
-                            // early-pushed ModuleInstance operations).
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -2336,6 +2337,37 @@ mod tests {
         let cloned = ctx.clone_with_fresh_execution_batch();
         assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
         assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn concurrent_foreign_import_preserves_artifact_command() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_foreign_import_artifact").unwrap();
+        tokio::fs::write(tmpdir.path().join("cube.obj"), "o cube\n")
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmpdir.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let mut exec_state = ExecState::new(&ctx);
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(main_ref, &ctx)
+            .await
+            .expect("foreign import execution should produce an outcome");
+        ctx.close().await;
+
+        let KclValueView::ImportedGeometry(imported) = &outcome.variables["model"] else {
+            panic!("model should be imported geometry");
+        };
+        let artifact_id = ArtifactId::new(imported.id);
+        let Some(Artifact::ImportedGeometry(artifact)) = outcome.artifact_graph.get(&artifact_id) else {
+            panic!("foreign import should produce an imported geometry artifact");
+        };
+        assert_eq!(artifact.id, artifact_id);
+        assert!(!artifact.code_ref.node_path.is_empty());
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.

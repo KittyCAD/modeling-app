@@ -255,6 +255,107 @@ fn named_view_artifacts_get_node_paths() {
 }
 
 #[test]
+fn import_files_creates_imported_geometry_artifact() {
+    let code = r#"import "cube.obj" as cube"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::ImportFiles::builder()
+                .files(vec![
+                    kcmc::ImportFile::builder()
+                        .path("cube.obj".to_owned())
+                        .data(Vec::new())
+                        .build(),
+                ])
+                .format(kcmc::format::InputFormat3d::Obj(
+                    kcmc::format::obj::import::Options::default(),
+                ))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected ImportFiles to create imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn entity_clone_remaps_imported_geometry_artifact() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: source_id,
+            code_ref: source_code_ref,
+        }),
+    );
+
+    let code = "clone(cube)";
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityClone::builder()
+                .entity_id(Uuid::from(source_id))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected EntityClone to preserve imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
+#[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let source_path_id = ArtifactId::new(Uuid::new_v4());
