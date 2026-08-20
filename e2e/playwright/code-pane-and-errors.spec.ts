@@ -138,6 +138,67 @@ middle()`)
     // There should be one hint inside middle() and one at the top level.
     await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
   })
+
+  test('KCL errors from imported files show the import backtrace', async ({
+    page,
+    toolbar,
+    homePage,
+    folderSetupFn,
+  }) => {
+    // A runtime error deep in a nested import: main.kcl imports
+    // assembly.kcl, which imports broken.kcl, which fails to execute.
+    await folderSetupFn(async (dir) => {
+      const projectDir = join(dir, 'broken-import')
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(
+        join(projectDir, 'broken.kcl'),
+        'export brokenValue = missingName + 1\n',
+        'utf-8'
+      )
+      await fsp.writeFile(
+        join(projectDir, 'assembly.kcl'),
+        'import brokenValue from "broken.kcl"\n\nexport assemblyValue = brokenValue\n',
+        'utf-8'
+      )
+      await fsp.writeFile(
+        join(projectDir, 'main.kcl'),
+        'import assemblyValue from "assembly.kcl"\n\nassemblyValue\n',
+        'utf-8'
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.openProject('broken-import')
+
+    await test.step('Wait for execution to report the error', async () => {
+      const codePaneButtonHolder = page.locator('#code-button-holder')
+      await expect(codePaneButtonHolder).toContainText('notification', {
+        timeout: 20_000,
+      })
+    })
+
+    // This shows all the diagnostics in a way that doesn't require the mouse
+    // pointer hovering over a coordinate, which would be brittle.
+    await test.step('Open CodeMirror diagnostics list', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      // Ensure keyboard focus is in the editor.
+      await page.getByText('import assemblyValue').click()
+      await page.keyboard.press('ControlOrMeta+Shift+M')
+    })
+
+    // The original error message is preserved, and import frames are
+    // labeled as imports (no call parens), innermost first.
+    await expect(
+      page.getByText(`\`missingName\` is not defined
+
+Backtrace:
+import broken.kcl
+import assembly.kcl`)
+    ).toBeVisible()
+    // The import frames are in other files and the top-level frame is the
+    // error's own range, so there are no backtrace hint diagnostics.
+    await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)
+  })
 })
 
 test('Opening multiple panes persists when switching projects', async ({
