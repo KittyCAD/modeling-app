@@ -11,9 +11,9 @@ import {
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
+import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
-import { getProjectLibraryIconName } from './projectLibraryIcons'
 
 type ReadWriteProjectState = {
   value: boolean

@@ -12,9 +12,9 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
-import { getProjectLibraryIconName } from './projectLibraryIcons'
 
 const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 
