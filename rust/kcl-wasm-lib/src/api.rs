@@ -788,12 +788,12 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
-        if !points.len().is_multiple_of(2) {
+        let (points, leftovers) = points.as_chunks::<2>();
+        if !leftovers.is_empty() {
             return Err(JsValue::from_str(
                 "Points array must have even length (pairs of x, y coordinates)",
             ));
         }
-        let points: Vec<[f64; 2]> = points.chunks_exact(2).map(|chunk| [chunk[0], chunk[1]]).collect();
 
         let ctx = self
             .create_executor_ctx(settings, None, true)
