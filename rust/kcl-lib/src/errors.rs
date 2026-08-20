@@ -248,53 +248,77 @@ impl KclErrorWithOutputs {
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
-        let mut source_ranges = self.error.source_ranges().into_iter();
+        let source_ranges = self.error.source_ranges();
 
         // Source ranges are ordered innermost first, so the first one is where
-        // the error actually occurred. Report it as primary; the outer frames
-        // (callers and import sites) become related reports below.
-        let first_source_range = source_ranges
-            .next()
+        // the error actually occurred; it anchors the primary report. Each
+        // outer frame either becomes another label on the primary (same file
+        // and not overlapping any label already kept; miette merges
+        // overlapping labels into hard-to-read shared rows) or its own
+        // related report below.
+        let first_source_range = *source_ranges
+            .first()
             .ok_or_else(|| anyhow::anyhow!("No source ranges found"))?;
+        let primary_module_id = first_source_range.module_id();
 
-        let source = self
-            .source_files
-            .get(&first_source_range.module_id())
-            .cloned()
-            .unwrap_or(ModuleSource {
+        let module_source = |module_id: ModuleId| {
+            self.source_files.get(&module_id).cloned().unwrap_or(ModuleSource {
                 source: code.to_string(),
-                path: self
-                    .filenames
-                    .get(&first_source_range.module_id())
-                    .cloned()
-                    .unwrap_or(ModulePath::Main),
-            });
+                path: self.filenames.get(&module_id).cloned().unwrap_or(ModulePath::Main),
+            })
+        };
+        let source = module_source(primary_module_id);
         let filename = source.path.to_string();
         let kcl_source = source.source;
 
+        let mut primary_labels = vec![miette::LabeledSpan::new_with_span(
+            Some(filename.clone()),
+            miette::SourceSpan::from(first_source_range),
+        )];
+        let mut kept_ranges = vec![first_source_range];
         let mut related = Vec::new();
-        for source_range in source_ranges {
-            let module_id = source_range.module_id();
-            let source = self.source_files.get(&module_id).cloned().unwrap_or(ModuleSource {
-                source: code.to_string(),
-                path: self.filenames.get(&module_id).cloned().unwrap_or(ModulePath::Main),
-            });
-            let error = self.error.override_source_ranges(vec![source_range]);
-            let report = Report {
-                error,
-                kcl_source: source.source.to_string(),
-                filename: source.path.to_string(),
-            };
-            related.push(report);
+        for source_range in source_ranges.into_iter().skip(1) {
+            let keep = source_range.module_id() == primary_module_id
+                && !kept_ranges.iter().any(|kept| ranges_overlap(*kept, source_range));
+            let source = module_source(source_range.module_id());
+            if keep {
+                primary_labels.push(miette::LabeledSpan::new_with_span(
+                    Some(source.path.to_string()),
+                    miette::SourceSpan::from(source_range),
+                ));
+                kept_ranges.push(source_range);
+            } else {
+                let error = self.error.override_source_ranges(vec![source_range]);
+                related.push(Report {
+                    error,
+                    kcl_source: source.source,
+                    filename: source.path.to_string(),
+                });
+            }
         }
 
         Ok(ReportWithOutputs {
             error: self,
             kcl_source,
             filename,
+            primary_labels,
             related,
         })
     }
+}
+
+/// Whether two source ranges cover any common source text.
+///
+/// Equal ranges count as overlapping even when empty so that repeated frames
+/// (e.g. recursion) do not stack duplicate labels on the primary report.
+fn ranges_overlap(a: SourceRange, b: SourceRange) -> bool {
+    if a.module_id() != b.module_id() {
+        return false;
+    }
+    if a.start() == b.start() && a.end() == b.end() {
+        return true;
+    }
+    a.start() < b.end() && b.start() < a.end()
 }
 
 impl IsRetryable for KclErrorWithOutputs {
@@ -368,6 +392,9 @@ pub struct ReportWithOutputs {
     pub error: KclErrorWithOutputs,
     pub kcl_source: String,
     pub filename: String,
+    /// Labels to render on the primary report, precomputed so they cannot
+    /// disagree with which frames were split out into `related`.
+    pub primary_labels: Vec<miette::LabeledSpan>,
     pub related: Vec<Report>,
 }
 
@@ -402,19 +429,7 @@ impl miette::Diagnostic for ReportWithOutputs {
     }
 
     fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
-        // Source ranges can span modules when an error unwinds out of an
-        // imported module or a function defined in one. This report's source
-        // text belongs to the innermost (first) range, so only render labels
-        // from that module here; the other modules are emitted as related
-        // reports below.
-        let source_ranges = self.error.error.source_ranges();
-        let primary_module_id = source_ranges.first().map(|range| range.module_id());
-        let iter = source_ranges
-            .into_iter()
-            .filter(move |range| Some(range.module_id()) == primary_module_id)
-            .map(miette::SourceSpan::from)
-            .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
-        Some(Box::new(iter))
+        Some(Box::new(self.primary_labels.iter().cloned()))
     }
 
     fn related<'a>(&'a self) -> Option<Box<dyn Iterator<Item = &'a dyn miette::Diagnostic> + 'a>> {
@@ -580,5 +595,53 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].message, "semantic: boom");
         assert_eq!(diagnostics[0].related_information, None);
+    }
+
+    fn report_for(ranges: Vec<SourceRange>) -> ReportWithOutputs {
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), ranges));
+        KclErrorWithOutputs::no_outputs(error)
+            .into_miette_report_with_outputs("code")
+            .unwrap()
+    }
+
+    #[test]
+    fn overlapping_same_file_ranges_become_related_reports() {
+        let module = ModuleId::default();
+        let narrow = SourceRange::new(10, 16, module);
+        let wide = SourceRange::new(0, 20, module);
+        let disjoint = SourceRange::new(30, 40, module);
+
+        let report = report_for(vec![narrow, wide, disjoint]);
+
+        // The wide range overlaps the primary label, so it is split out; the
+        // disjoint one stays as a second label.
+        assert_eq!(report.primary_labels.len(), 2);
+        assert_eq!(report.related.len(), 1);
+        assert_eq!(report.related[0].error.source_ranges(), vec![wide]);
+    }
+
+    #[test]
+    fn other_module_ranges_become_related_reports() {
+        let inner = SourceRange::new(0, 5, ModuleId::from_usize(7));
+        let outer = SourceRange::new(10, 20, ModuleId::default());
+
+        let report = report_for(vec![inner, outer]);
+
+        assert_eq!(report.primary_labels.len(), 1);
+        assert_eq!(report.related.len(), 1);
+        assert_eq!(report.related[0].error.source_ranges(), vec![outer]);
+    }
+
+    #[test]
+    fn repeated_frames_do_not_stack_duplicate_labels() {
+        // Recursion repeats the same range; only the first occurrence stays
+        // on the primary report.
+        let module = ModuleId::default();
+        let range = SourceRange::new(10, 16, module);
+
+        let report = report_for(vec![range, range, range]);
+
+        assert_eq!(report.primary_labels.len(), 1);
+        assert_eq!(report.related.len(), 2);
     }
 }

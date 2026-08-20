@@ -8,8 +8,7 @@ KCL Semantic error
     ╭─[19:14]
  18 │ 
  19 │ extrude002 = extrude(b, length = 6.7, bodyType = SURFACE, method = MERGE)
-    ·              ──────────────────────────────┬─────────────────────────────┬
-    ·                                            ╰── tests/surface_extrude_edge_merge_error/input.kcl
+    ·              ──────────────────────────────┬─────────────────────────────
     ·                                            ╰── tests/surface_extrude_edge_merge_error/input.kcl
     ╰────
   ╰─▶ KCL Semantic error

@@ -2541,7 +2541,6 @@ mod tests {
                     .map(|related| related.filename.as_str())
                     .collect::<Vec<_>>(),
                 [
-                    project_dir.join("helper.kcl").to_string(),
                     project_dir.join("assembly.kcl").to_string(),
                     project_dir.join("main.kcl").to_string()
                 ]
