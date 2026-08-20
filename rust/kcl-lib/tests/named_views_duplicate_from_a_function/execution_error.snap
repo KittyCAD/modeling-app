@@ -34,6 +34,6 @@ KCL Semantic error
        14 │ │       camera = view::oriented(view::Orientation::Front),
        15 │ │       baseline = view::Visibility::Show,
        16 │ ├─▶   )
-          · ╰──── tests/named_views_duplicate_from_a_function/input.kcl
+          · ╰──── in frontView()
        17 │     }
           ╰────

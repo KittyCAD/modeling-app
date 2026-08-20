@@ -13,7 +13,7 @@ KCL Type error
     ·                        ╰── tests/fillet_duplicate_tags/input.kcl
  12 │          getPreviousAdjacentEdge(line001)
     ·          ────────────────┬───────────────
-    ·                          ╰── tests/fillet_duplicate_tags/input.kcl
+    ·                          ╰── in fillet()
  13 │        ],
     ╰────
   ╰─▶ KCL Type error

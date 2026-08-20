@@ -16,8 +16,7 @@ KCL UndefinedValue error
   │      ╭─[1:1]
   │    1 │ import brokenValue from "broken.kcl"
   │      · ──────────────────┬─────────────────
-  │      ·                   ╰── tests/import_nested_runtime_error/
-  │   assembly.kcl
+  │      ·                   ╰── import assembly.kcl
   │    2 │
   │      ╰────
   ╰─▶ KCL UndefinedValue error

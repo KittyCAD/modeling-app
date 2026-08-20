@@ -271,19 +271,37 @@ impl KclErrorWithOutputs {
         let filename = source.path.to_string();
         let kcl_source = source.source;
 
+        // Label outer frames with their backtrace names so the chain reads
+        // like a backtrace; fall back to the filename. Some errors carry
+        // ranges without matching frames (e.g. hand-built details), so only
+        // trust the backtrace when it lines up.
+        let backtrace = self.error.backtrace();
+        let frame_label = |index: usize| -> Option<String> {
+            if backtrace.len() != source_ranges.len() {
+                return None;
+            }
+            let frame = &backtrace[index];
+            let name = frame.fn_name.as_ref()?;
+            match frame.kind {
+                BacktraceItemKind::Import => Some(name.clone()),
+                BacktraceItemKind::Call => Some(format!("in {name}()")),
+            }
+        };
+
         let mut primary_labels = vec![miette::LabeledSpan::new_with_span(
             Some(filename.clone()),
             miette::SourceSpan::from(first_source_range),
         )];
         let mut kept_ranges = vec![first_source_range];
         let mut related = Vec::new();
-        for source_range in source_ranges.into_iter().skip(1) {
+        for (index, source_range) in source_ranges.iter().copied().enumerate().skip(1) {
             let keep = source_range.module_id() == primary_module_id
                 && !kept_ranges.iter().any(|kept| ranges_overlap(*kept, source_range));
             let source = module_source(source_range.module_id());
+            let label = frame_label(index).unwrap_or_else(|| source.path.to_string());
             if keep {
                 primary_labels.push(miette::LabeledSpan::new_with_span(
-                    Some(source.path.to_string()),
+                    Some(label),
                     miette::SourceSpan::from(source_range),
                 ));
                 kept_ranges.push(source_range);
@@ -293,6 +311,7 @@ impl KclErrorWithOutputs {
                     error,
                     kcl_source: source.source,
                     filename: source.path.to_string(),
+                    label,
                 });
             }
         }
@@ -444,6 +463,9 @@ pub struct Report {
     pub error: KclError,
     pub kcl_source: String,
     pub filename: String,
+    /// Text for this report's span label: the backtrace frame name when one
+    /// exists, otherwise the filename.
+    pub label: String,
 }
 
 impl miette::Diagnostic for Report {
@@ -482,7 +504,7 @@ impl miette::Diagnostic for Report {
             .source_ranges()
             .into_iter()
             .map(miette::SourceSpan::from)
-            .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
+            .map(|span| miette::LabeledSpan::new_with_span(Some(self.label.clone()), span));
         Some(Box::new(iter))
     }
 }
@@ -630,6 +652,34 @@ mod tests {
         assert_eq!(report.primary_labels.len(), 1);
         assert_eq!(report.related.len(), 1);
         assert_eq!(report.related[0].error.source_ranges(), vec![outer]);
+    }
+
+    #[test]
+    fn labels_use_frame_names_when_available() {
+        let module = ModuleId::default();
+        let inner = SourceRange::new(10, 16, module);
+        let mid_call = SourceRange::new(30, 40, module);
+        let outer_call = SourceRange::new(0, 20, module);
+        let import_site = SourceRange::new(0, 5, ModuleId::from_usize(2));
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![inner]))
+            .add_unwind_location(Some("f".to_owned()), mid_call)
+            .add_unwind_location(Some("g".to_owned()), outer_call)
+            .add_import_location("part.kcl", import_site);
+
+        let report = KclErrorWithOutputs::no_outputs(error)
+            .into_miette_report_with_outputs("code")
+            .unwrap();
+
+        // mid_call is disjoint, so it stays as a label named for the function
+        // containing it; outer_call overlaps the anchor and was labeled by the
+        // import unwind; import_site has no frame name, so it falls back to
+        // its filename.
+        assert_eq!(report.primary_labels.len(), 2);
+        assert_eq!(report.primary_labels[1].label(), Some("in g()"));
+        assert_eq!(
+            report.related.iter().map(|r| r.label.as_str()).collect::<Vec<_>>(),
+            ["import part.kcl", report.related[1].filename.as_str()]
+        );
     }
 
     #[test]

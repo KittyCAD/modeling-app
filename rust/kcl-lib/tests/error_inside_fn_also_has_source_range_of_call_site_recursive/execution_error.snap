@@ -16,7 +16,7 @@ KCL Argument error
  5 │ 
  6 │     someNestedFunction(something)
    ·     ──────────────┬──────────────
-   ·                   ╰── tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+   ·                   ╰── in someFunction()
  7 │ }
  8 │ 
  9 │ someFunction('INVALID')
@@ -32,7 +32,6 @@ KCL Argument error
        2 │     fn someNestedFunction(@something2) {
        3 │         startSketchOn(something2)
          ·         ────────────┬────────────
-         ·                     ╰── tests/
-      error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+         ·                     ╰── in someNestedFunction()
        4 │     }
          ╰────
