@@ -289,10 +289,21 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        let mut solid = solids[0].clone();
-        solid.set_id(solid_out_id);
-        solid.become_new_body(solid_out_id, solid_out_id.into());
-        let new_solids = vec![solid];
+        let new_solids = solids
+            .iter()
+            .enumerate()
+            .map(|(index, solid)| {
+                let output_id = if index == 0 {
+                    solid_out_id
+                } else {
+                    exec_state.next_uuid()
+                };
+                let mut new_solid = solid.clone();
+                new_solid.set_id(output_id);
+                new_solid.become_new_body(output_id, output_id.into());
+                new_solid
+            })
+            .collect::<Vec<_>>();
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
         record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
         return Ok(new_solids);
@@ -498,10 +509,13 @@ pub(crate) async fn inner_imprint(
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use uuid::Uuid;
 
     use super::subtract_output_ids;
     use crate::errors::KclError;
+    use crate::execution::KclValueView;
     use crate::execution::MockConfig;
 
     fn test_uuid(id: u128) -> Uuid {
@@ -540,6 +554,49 @@ mod tests {
         let output_ids = subtract_output_ids(output_id, &[target_id], &[target_id], &[]);
 
         assert!(output_ids.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_subtract_multiple_targets_preserves_cardinality() {
+        let code = r#"
+left = startSketchOn(XY)
+  |> circle(center = [-4, 0], radius = 3)
+  |> extrude(length = 5)
+
+right = startSketchOn(XY)
+  |> circle(center = [4, 0], radius = 3)
+  |> extrude(length = 5)
+
+tool = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 5)
+
+results = subtract([left, right], tools = tool)
+secondResult = results[1]
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        let KclValueView::HomArray { value } = result.variables.get("results").unwrap() else {
+            panic!("Expected multi-target subtract to return an array");
+        };
+        assert_eq!(value.len(), 2);
+
+        let identities = value
+            .iter()
+            .map(|value| match value {
+                KclValueView::Solid { value } => (value.id, value.artifact_id),
+                other => panic!("Expected a solid result, got {other:?}"),
+            })
+            .collect::<HashSet<_>>();
+        assert_eq!(identities.len(), 2);
+        assert!(matches!(
+            result.variables.get("secondResult"),
+            Some(KclValueView::Solid { .. })
+        ));
     }
 
     #[tokio::test(flavor = "multi_thread")]
