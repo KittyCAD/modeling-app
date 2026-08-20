@@ -1258,6 +1258,7 @@ async fn execute_pattern_circular<T: GeometryTrait>(
             let new_id = exec_state.next_uuid();
             let mut new_geometry = seed.clone();
             new_geometry.set_id(new_id);
+            new_geometry.set_artifact_id(new_id);
             mock_responses.push(new_geometry);
         }
 
