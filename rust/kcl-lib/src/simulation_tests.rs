@@ -1614,6 +1614,27 @@ mod export_var_only_at_top_level {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_nested_runtime_error {
+    const TEST_NAME: &str = "import_nested_runtime_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod assembly_non_default_units {
     const TEST_NAME: &str = "assembly_non_default_units";
 
