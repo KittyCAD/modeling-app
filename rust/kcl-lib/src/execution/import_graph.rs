@@ -56,7 +56,7 @@ pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId,
         };
 
         let import_site = SourceRange::from(import_stmt);
-        error = error.add_import_location(format!("import {}", import_stmt.path), import_site);
+        error = error.add_import_location(&import_stmt.path.to_string(), import_site);
         module_id = import_site.module_id();
     }
 

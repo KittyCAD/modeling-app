@@ -1845,7 +1845,7 @@ impl ExecutorContext {
                         } => original.to_string(),
                         _ => path.to_string(),
                     };
-                    err.add_import_location(format!("import {import_name}"), source_range)
+                    err.add_import_location(&import_name, source_range)
                 }
             }
         })

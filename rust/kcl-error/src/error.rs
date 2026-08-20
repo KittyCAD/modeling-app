@@ -316,17 +316,20 @@ impl KclError {
 
     /// Add the statement that imported the module containing this error.
     ///
+    /// `import_path` is the path as written in the import statement; the
+    /// backtrace frame is labeled `import <path>`.
+    ///
     /// Import locations are prepended so the original, deepest source range
     /// remains last. KCL's diagnostic renderer treats the last source range as
     /// primary and renders the preceding ranges as related context.
-    pub fn add_import_location(&self, import_name: String, source_range: SourceRange) -> Self {
+    pub fn add_import_location(&self, import_path: &str, source_range: SourceRange) -> Self {
         let mut new = self.clone();
         let e = new.details_mut();
         e.backtrace.insert(
             0,
             BacktraceItem {
                 source_range,
-                fn_name: Some(import_name),
+                fn_name: Some(format!("import {import_path}")),
             },
         );
         e.source_ranges.insert(0, source_range);
