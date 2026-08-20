@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
+import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import {
   type ProjectSessionApplyFilePatchInput,
   type ProjectSessionEntryCopyMoveInput,
@@ -18,8 +19,9 @@ import {
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
+import fsOperationQueueRegistryItem from '@src/registry/extensions/fsOperationQueue'
 
-export const projectSessionExtension = defineRegistryItemFactory(() => {
+export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   const projectTree = signal(project.value?.projectIORefSignal.value)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
@@ -131,6 +133,23 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
     }
   }
 
+  const runQueuedProjectMutation = <Result>(
+    operation: ProjectSessionMutationOperation,
+    targetPath: string | undefined,
+    run: (currentProject: ZDSProject) => Promise<Result>,
+    options: { refreshProjectTree?: boolean } = {}
+  ) =>
+    ctx.services.get(fsOperationQueue).run(
+      {
+        kind: operation,
+        targetPath,
+        metadata: {
+          service: 'projectSession',
+        },
+      },
+      () => runProjectMutation(operation, targetPath, run, options)
+    )
+
   const serviceImpl: ProjectSessionService = {
     project,
     projectTree,
@@ -200,39 +219,45 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
       }
     },
     createFile: (input: ProjectSessionFileWriteInput) =>
-      runProjectMutation('create-file', input.path, (currentProject) =>
+      runQueuedProjectMutation('create-file', input.path, (currentProject) =>
         currentProject.createFile(input)
       ),
     writeFile: (input: ProjectSessionFileWriteInput) =>
-      runProjectMutation('write-file', input.path, (currentProject) =>
+      runQueuedProjectMutation('write-file', input.path, (currentProject) =>
         currentProject.writeFile(input)
       ),
     createFolder: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('create-folder', input.path, (currentProject) =>
+      runQueuedProjectMutation('create-folder', input.path, (currentProject) =>
         currentProject.createFolder(input)
       ),
     renameEntry: (input: ProjectSessionEntryRenameInput) =>
-      runProjectMutation('rename-entry', input.newPath, (currentProject) =>
-        currentProject.renameEntry(input)
+      runQueuedProjectMutation(
+        'rename-entry',
+        input.newPath,
+        (currentProject) => currentProject.renameEntry(input)
       ),
     deleteEntry: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('delete-entry', input.path, (currentProject) =>
+      runQueuedProjectMutation('delete-entry', input.path, (currentProject) =>
         currentProject.deleteEntry(input)
       ),
     copyEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runProjectMutation('copy-entry', input.targetPath, (currentProject) =>
-        currentProject.copyEntry(input)
+      runQueuedProjectMutation(
+        'copy-entry',
+        input.targetPath,
+        (currentProject) => currentProject.copyEntry(input)
       ),
     moveEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runProjectMutation('move-entry', input.targetPath, (currentProject) =>
-        currentProject.moveEntry(input)
+      runQueuedProjectMutation(
+        'move-entry',
+        input.targetPath,
+        (currentProject) => currentProject.moveEntry(input)
       ),
     archiveEntry: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('archive-entry', input.path, (currentProject) =>
+      runQueuedProjectMutation('archive-entry', input.path, (currentProject) =>
         currentProject.archiveEntry(input)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
-      runProjectMutation(
+      runQueuedProjectMutation(
         'apply-file-patch',
         input.files.at(-1)?.path,
         (currentProject) => currentProject.applyFilePatch(input)
@@ -257,5 +282,5 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
 
 export default defineRegistryItem({
   id: 'project-session',
-  uses: [projectSessionExtension],
+  uses: [fsOperationQueueRegistryItem, projectSessionExtension],
 })
