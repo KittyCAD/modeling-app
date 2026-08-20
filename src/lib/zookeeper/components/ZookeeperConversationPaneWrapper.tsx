@@ -42,7 +42,13 @@ import {
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -122,6 +128,14 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
+  const sessionIsActive = useRef(true)
+
+  useLayoutEffect(() => {
+    sessionIsActive.current = true
+    return () => {
+      sessionIsActive.current = false
+    }
+  }, [])
 
   useEffect(() => {
     const updatePromptRunning = (
@@ -167,6 +181,10 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
     zookeeperManagerActor,
     kclManager.engineCommandManager,
     (requestProps) => {
+      if (!sessionIsActive.current) {
+        return
+      }
+
       const activeFilePath =
         requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
       const payload = prepareZookeeperNewFileRequest({
@@ -231,11 +249,39 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
               let requestSettled = false
               let historyWriteCompleted = !shouldRecordZookeeperHistory
               let postWriteCompleted = !shouldRecordZookeeperHistory
+              let historyCanceled = false
               const settleRequest = () => {
                 if (requestSettled) return
                 if (!historyWriteCompleted || !postWriteCompleted) return
                 requestSettled = true
                 resolve()
+              }
+              const cancelRequestIfSessionEnded = ({
+                clearBulkManipulationFlag = false,
+              }: {
+                clearBulkManipulationFlag?: boolean
+              } = {}) => {
+                if (sessionIsActive.current) {
+                  return false
+                }
+                if (clearBulkManipulationFlag) {
+                  kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
+                }
+                if (
+                  !historyCanceled &&
+                  (pendingHistoryReserved || pendingHistoryStarted)
+                ) {
+                  historyCanceled = true
+                  cancelPendingZookeeperHistoryWrite({ exchangeId })
+                }
+                historyWriteCompleted = true
+                postWriteCompleted = true
+                settleRequest()
+                return true
+              }
+
+              if (cancelRequestIfSessionEnded()) {
+                return
               }
 
               void (async () => {
@@ -254,7 +300,13 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     reserved: pendingHistoryReserved,
                   })
                 }
+                if (cancelRequestIfSessionEnded()) {
+                  return
+                }
                 await waitForIdleState({ systemIOActor })
+                if (cancelRequestIfSessionEnded()) {
+                  return
+                }
                 kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
                 systemIOActor.send({
                   type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -265,7 +317,15 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     requestedProjectName: payload.requestedProjectName,
                     requestedFileNameWithExtension:
                       payload.requestedFileNameWithExtension ?? '',
+                    isRequestCurrent: () => sessionIsActive.current,
                     onFileSystemError: () => {
+                      if (
+                        cancelRequestIfSessionEnded({
+                          clearBulkManipulationFlag: true,
+                        })
+                      ) {
+                        return
+                      }
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
                       }
@@ -274,6 +334,13 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
+                      if (
+                        cancelRequestIfSessionEnded({
+                          clearBulkManipulationFlag: true,
+                        })
+                      ) {
+                        return
+                      }
                       if (historyRecorded) {
                         historyWriteCompleted = true
                         settleRequest()
@@ -313,6 +380,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                           currentFileRequestedCode:
                             currentEditorFile?.requestedCode,
                           exchangeId,
+                          isRequestCurrent: () => sessionIsActive.current,
                           patch: payload.zookeeperEditPatch,
                           projectPath: project.path,
                         })
@@ -336,6 +404,9 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     shouldRefreshActiveEditor
                       ? {
                           onSuccess: () => {
+                            if (cancelRequestIfSessionEnded()) {
+                              return
+                            }
                             if (
                               shouldRefreshActiveEditor &&
                               activeFileOutput &&
@@ -363,6 +434,9 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                   },
                 })
               })().catch((error: unknown) => {
+                if (cancelRequestIfSessionEnded()) {
+                  return
+                }
                 if (pendingHistoryReserved || pendingHistoryStarted) {
                   cancelPendingZookeeperHistoryWrite({ exchangeId })
                 }
@@ -456,7 +530,7 @@ function useZookeeperEditPatchHistory({
     new Map<number, PendingZookeeperHistory>()
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
     return () => {
       pendingZookeeperHistories.clear()
@@ -664,6 +738,7 @@ function useZookeeperEditPatchHistory({
       currentFilePath,
       currentFileRequestedCode,
       exchangeId,
+      isRequestCurrent,
       patch,
       projectPath,
     }: CompletePendingZookeeperHistoryWriteProps) => {
@@ -690,6 +765,9 @@ function useZookeeperEditPatchHistory({
       } catch (error: unknown) {
         console.error('Failed to capture Zookeeper history snapshots.', error)
         pending.snapshotFilesByRelativePath.clear()
+      }
+      if (!isRequestCurrent()) {
+        return
       }
       pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
@@ -945,6 +1023,7 @@ type CompletePendingZookeeperHistoryWriteProps = {
   currentFilePath?: string
   currentFileRequestedCode?: string
   exchangeId: number
+  isRequestCurrent: () => boolean
   patch: ZookeeperEditPatch
   projectPath: string
 }

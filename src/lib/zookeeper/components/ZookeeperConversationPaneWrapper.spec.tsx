@@ -2,12 +2,18 @@ import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
+  const waitForIdleState = vi.fn<() => Promise<void>>(async () => {})
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
-  const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const zookeeperSubscribers: Array<(snapshot: any) => void> = []
+  const zookeeperSubscribe = vi.fn((subscriber: (snapshot: any) => void) => {
+    zookeeperSubscribers.push(subscriber)
+    return { unsubscribe: vi.fn() }
+  })
+  const readFile = vi.fn(async () => 'current disk code')
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -19,12 +25,16 @@ const mocks = vi.hoisted(() => {
     addGlobalHistoryEvent: vi.fn(),
     addGlobalHistoryEventWithCodeChange: vi.fn(),
     updateCodeEditor: vi.fn(),
+    zookeeperManagerMachineBulkManipulatingFileSystem: false,
   }
 
   return {
     kclManager,
+    readFile,
     zookeeperSubscribe,
+    zookeeperSubscribers,
     systemIOSend,
+    waitForIdleState,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
       | ((props: {
@@ -95,7 +105,7 @@ vi.mock('@src/lib/fs-zds', () => ({
       parts
         .reduce((left, right) => (left ? `${left}/${right}` : right), '')
         .replaceAll(/\/+/g, '/'),
-    readFile: vi.fn(async () => 'current disk code'),
+    readFile: mocks.readFile,
     relative: (from: string, to: string) =>
       to.startsWith(`${from}/`) ? to.slice(from.length + 1) : to,
     sep: '/',
@@ -131,7 +141,7 @@ vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
 
   return {
     ...original,
-    waitForIdleState: vi.fn(async () => undefined),
+    waitForIdleState: mocks.waitForIdleState,
   }
 })
 
@@ -178,6 +188,15 @@ async function flushQueuedWork() {
   await Promise.resolve()
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
+
+beforeEach(() => {
+  mocks.kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
+  mocks.readFile.mockReset()
+  mocks.readFile.mockResolvedValue('current disk code')
+  mocks.waitForIdleState.mockReset()
+  mocks.waitForIdleState.mockResolvedValue(undefined)
+  mocks.zookeeperSubscribers.length = 0
+})
 
 describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
@@ -273,5 +292,129 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     emitZookeeperFileRequest('final code')
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
+  test('drops queued file work when its pane session ends', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.watchCallback = undefined
+
+    let releaseIdleWait: (() => void) | undefined
+    mocks.waitForIdleState.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          releaseIdleWait = resolve
+        })
+    )
+
+    const { unmount } = render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+    emitZookeeperFileRequest('late edit from the previous project')
+
+    await waitFor(() => expect(mocks.waitForIdleState).toHaveBeenCalledOnce())
+
+    unmount()
+    mocks.kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
+    releaseIdleWait?.()
+    await flushQueuedWork()
+
+    expect(mocks.systemIOSend).not.toHaveBeenCalled()
+    expect(
+      mocks.kclManager.zookeeperManagerMachineBulkManipulatingFileSystem
+    ).toBe(true)
+  })
+
+  test('marks dispatched file work stale when its pane session ends', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.watchCallback = undefined
+
+    const { unmount } = render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+    emitZookeeperFileRequest('edit dispatched for the previous project')
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    expect(request.isRequestCurrent()).toBe(true)
+
+    unmount()
+
+    expect(request.isRequestCurrent()).toBe(false)
+    request.onFileSystemSuccess()
+    expect(
+      mocks.kclManager.zookeeperManagerMachineBulkManipulatingFileSystem
+    ).toBe(false)
+  })
+
+  test('does not restore pending history after its pane session ends', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.kclManager.addGlobalHistoryEvent.mockClear()
+    mocks.kclManager.addGlobalHistoryEventWithCodeChange.mockClear()
+    mocks.watchCallback = undefined
+
+    const { unmount } = render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+    emitZookeeperFileRequest('edit whose history snapshot is still loading')
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    let releaseSnapshotRead: ((contents: string) => void) | undefined
+    mocks.readFile.mockReset()
+    mocks.readFile.mockImplementationOnce(
+      () =>
+        new Promise<string>((resolve) => {
+          releaseSnapshotRead = resolve
+        })
+    )
+    request.onFileSystemSuccess()
+    await waitFor(() => expect(mocks.readFile).toHaveBeenCalledOnce())
+
+    for (const subscriber of mocks.zookeeperSubscribers) {
+      subscriber({
+        context: {
+          awaitingResponse: false,
+          conversation: { exchanges: [{}] },
+          lastMessageId: 1,
+          lastMessageType: 'end_of_stream',
+        },
+      })
+    }
+    unmount()
+    releaseSnapshotRead?.('written code')
+    await flushQueuedWork()
+
+    expect(mocks.kclManager.addGlobalHistoryEvent).not.toHaveBeenCalled()
+    expect(
+      mocks.kclManager.addGlobalHistoryEventWithCodeChange
+    ).not.toHaveBeenCalled()
+    expect(mocks.kclManager.zookeeperHistoryRecordingInProgress).toBe(false)
   })
 })

@@ -162,6 +162,8 @@ export const systemIOMachine = setup({
             requestedSubRoute?: string
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
+            /** Writes finish once dispatched; false suppresses stale UI navigation. */
+            isRequestCurrent?: () => boolean
             onSuccess?: () => void
           }
         }
@@ -705,6 +707,7 @@ export const systemIOMachine = setup({
             requestedSubRoute?: string
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
+            isRequestCurrent?: () => boolean
             onSuccess?: () => void
           }
         }): Promise<{
@@ -1729,6 +1732,7 @@ export const systemIOMachine = setup({
             requestedSubRoute: event.data.requestedSubRoute,
             onFileSystemError: event.data.onFileSystemError,
             onFileSystemSuccess: event.data.onFileSystemSuccess,
+            isRequestCurrent: event.data.isRequestCurrent,
             onSuccess: event.data.onSuccess,
           }
         },

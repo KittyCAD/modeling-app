@@ -57,6 +57,32 @@ export {
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
 
+export function getBulkZookeeperWriteNavigation({
+  currentProject,
+  deletesRequestedFile,
+  isRequestCurrent,
+  requestedAbsolutePath,
+  requestedProjectName,
+}: {
+  currentProject?: { executingPath: string | null; name: string }
+  deletesRequestedFile: boolean
+  isRequestCurrent: boolean
+  requestedAbsolutePath: string
+  requestedProjectName: string
+}) {
+  const shouldNavigate =
+    isRequestCurrent &&
+    (!currentProject ||
+      currentProject.name !== requestedProjectName ||
+      currentProject.executingPath !== requestedAbsolutePath ||
+      deletesRequestedFile)
+
+  return {
+    shouldCallOnSuccess: isRequestCurrent && !shouldNavigate,
+    shouldNavigate,
+  }
+}
+
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
     return []
@@ -789,6 +815,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             requestedSubRoute?: string
             onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
+            isRequestCurrent?: () => boolean
             onSuccess?: () => void
           }
         }) => {
@@ -824,13 +851,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             const requestedAbsolutePath = project
               ? fsZds.join(project.path, input.requestedFileNameWithExtension)
               : ''
-            const shouldNavigate =
-              !project ||
-              project.name !== input.requestedProjectName ||
-              project.executingPath !== requestedAbsolutePath ||
-              deletesRequestedFile
+            const isRequestCurrent = input.isRequestCurrent?.() ?? true
+            const { shouldCallOnSuccess, shouldNavigate } =
+              getBulkZookeeperWriteNavigation({
+                currentProject: project,
+                deletesRequestedFile,
+                isRequestCurrent,
+                requestedAbsolutePath,
+                requestedProjectName: input.requestedProjectName,
+              })
 
-            if (!shouldNavigate) {
+            if (shouldCallOnSuccess) {
               input.onSuccess?.()
             }
 

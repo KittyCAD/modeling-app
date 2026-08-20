@@ -6,6 +6,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  getBulkZookeeperWriteNavigation,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
@@ -112,6 +113,23 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
+  describe('bulk Zookeeper file writes', () => {
+    it('suppresses navigation and callbacks for a stale result', () => {
+      expect(
+        getBulkZookeeperWriteNavigation({
+          currentProject: undefined,
+          deletesRequestedFile: true,
+          isRequestCurrent: false,
+          requestedAbsolutePath: '/previous-project/main.kcl',
+          requestedProjectName: 'previous-project',
+        })
+      ).toEqual({
+        shouldCallOnSuccess: false,
+        shouldNavigate: false,
+      })
+    })
+  })
+
   describe('project folder reads', () => {
     it('only emits folder read progress for initial loads', () => {
       expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
@@ -235,19 +253,24 @@ describe('systemIOMachine - XState', () => {
         }
       })
       it('defers bulk edit success until file navigation completes', async () => {
+        const isRequestCurrent = vi.fn(() => true)
+        let forwardedIsRequestCurrent: (() => boolean) | undefined
         const onSuccess = vi.fn()
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
               [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
-                fromPromise(async ({ input }) => ({
-                  message: 'done',
-                  projectName: input.requestedProjectName,
-                  fileName: input.requestedFileNameWithExtension,
-                  subRoute: '',
-                  shouldNavigate: true,
-                  onProjectLoaderComplete: input.onSuccess,
-                })),
+                fromPromise(async ({ input }) => {
+                  forwardedIsRequestCurrent = input.isRequestCurrent
+                  return {
+                    message: 'done',
+                    projectName: input.requestedProjectName,
+                    fileName: input.requestedFileNameWithExtension,
+                    subRoute: '',
+                    shouldNavigate: true,
+                    onProjectLoaderComplete: input.onSuccess,
+                  }
+                }),
               [SystemIOMachineActors.readFoldersFromProjectDirectory]:
                 fromPromise(async () => [] as Project[]),
             },
@@ -266,6 +289,7 @@ describe('systemIOMachine - XState', () => {
             files: [],
             requestedProjectName: 'demo-project',
             requestedFileNameWithExtension: 'main.kcl',
+            isRequestCurrent,
             onSuccess,
           },
         })
@@ -279,6 +303,7 @@ describe('systemIOMachine - XState', () => {
           state.matches(SystemIOMachineStates.idle)
         )
 
+        expect(forwardedIsRequestCurrent).toBe(isRequestCurrent)
         expect(onSuccess).not.toHaveBeenCalled()
         expect(
           actor.getSnapshot().context.requestedFileName.onProjectLoaderComplete

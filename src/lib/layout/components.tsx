@@ -10,7 +10,6 @@ import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { LayoutType } from '@src/lib/layout/types'
 import type {
   Action,
   ActionLibrary,
@@ -25,6 +24,12 @@ import type {
   Side,
   SplitLayout as SplitLayoutType,
 } from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
+import type {
+  IReplaceLayoutChildNode,
+  ITogglePane,
+  IUpdateNodeSizes,
+} from '@src/lib/layout/utils'
 import {
   defaultLayout,
   findAndReplaceLayoutChildNode,
@@ -44,23 +49,21 @@ import {
   sideToTailwindTabDirection,
   togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
-import type {
-  IReplaceLayoutChildNode,
-  ITogglePane,
-  IUpdateNodeSizes,
-} from '@src/lib/layout/utils'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { isArray } from '@src/lib/utils'
 import {
-  Fragment,
   createContext,
+  Fragment,
   memo,
+  type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 import isEqual from 'react-fast-compare'
 import { useHotkeys } from 'react-hotkeys-hook'
 import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
@@ -73,6 +76,7 @@ interface LayoutState {
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
+  keepMountedPaneScope?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus: boolean
 }
@@ -96,11 +100,15 @@ const LayoutStateContext = createContext<LayoutState>({
   updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
   togglePane: () => {},
+  keepMountedPaneScope: undefined,
   /** Kind of a feature flag, remove in future */
   enableContextMenus: false,
 })
 
+const PaneVisibilityContext = createContext(true)
+
 export const useLayoutState = () => useContext(LayoutStateContext)
+export const usePaneIsActive = () => useContext(PaneVisibilityContext)
 
 interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
@@ -113,6 +121,8 @@ interface LayoutRootNodeProps {
   notifications: boolean[]
   artifactGraph: ArtifactGraph
   layoutName?: string
+  /** Reset closed-pane sessions when their owning application scope changes. */
+  keepMountedPaneScope?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
 }
@@ -125,6 +135,7 @@ export const LayoutRootNode = memo(
     getLayout,
     setLayout,
     showDebugPanel,
+    keepMountedPaneScope,
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
@@ -168,6 +179,7 @@ export const LayoutRootNode = memo(
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
+        keepMountedPaneScope,
         enableContextMenus,
         // More API here if needed within nested layout components
         // The other properties are all callbacks which are set once.
@@ -177,6 +189,7 @@ export const LayoutRootNode = memo(
         enableContextMenus,
         areaLibrary,
         actionLibrary,
+        keepMountedPaneScope,
         togglePane,
         showDebugPanel,
       ]
@@ -192,6 +205,7 @@ export const LayoutRootNode = memo(
     isEqual(oldProps.layout, newProps.layout) &&
     oldProps.areaLibrary === newProps.areaLibrary &&
     oldProps.actionLibrary === newProps.actionLibrary &&
+    oldProps.keepMountedPaneScope === newProps.keepMountedPaneScope &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
     isEqual(oldProps.notifications, newProps.notifications) &&
@@ -254,10 +268,15 @@ function SplitLayoutContents({
   layout,
   direction,
   onClose,
+  renderLayoutNode,
 }: {
   direction: Direction
   layout: Layout
   onClose?: (id: string) => void
+  renderLayoutNode?: (
+    layout: Layout,
+    onClose: (idOverride?: unknown) => void
+  ) => ReactNode
 }) {
   const ref = useRef<ImperativePanelGroupHandle>(null)
   const [newSizes, setNewSizes] = useState<number[]>([])
@@ -312,6 +331,10 @@ function SplitLayoutContents({
           const disableFlex = shouldDisableFlex(a, layout)
           const isCollapsed = isCollapsedPaneLayout(a)
           const size = isCollapsed ? undefined : layout.sizes[i]
+          const closeLayoutNode = (idOverride?: unknown) => {
+            onClose?.(typeof idOverride === 'string' ? idOverride : a.id)
+          }
+          const renderedLayoutNode = renderLayoutNode?.(a, closeLayoutNode)
           return (
             <Fragment key={a.id}>
               <Panel
@@ -322,14 +345,9 @@ function SplitLayoutContents({
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
                 minSize={2}
               >
-                <LayoutNode
-                  layout={a}
-                  onClose={(idOverride?: unknown) => {
-                    onClose?.(
-                      typeof idOverride === 'string' ? idOverride : a.id
-                    )
-                  }}
-                />
+                {renderedLayoutNode ?? (
+                  <LayoutNode layout={a} onClose={closeLayoutNode} />
+                )}
               </Panel>
               <ResizeHandle
                 direction={direction}
@@ -348,6 +366,41 @@ function SplitLayoutContents({
 }
 
 /**
+ * Keep one React subtree alive while moving its stable DOM host between the
+ * active resizable panel and an inert parking area outside the panel group.
+ */
+function setKeepMountedPaneHostState(host: HTMLDivElement, isActive: boolean) {
+  host.style.display = isActive ? 'flex' : 'none'
+  if (isActive) {
+    host.removeAttribute('aria-hidden')
+    host.removeAttribute('inert')
+  } else {
+    host.setAttribute('aria-hidden', 'true')
+    host.setAttribute('inert', '')
+  }
+}
+
+function KeepMountedPane({
+  host,
+  isActive,
+  layout,
+  onClose,
+}: {
+  host: HTMLDivElement
+  isActive: boolean
+  layout: PaneChild
+  onClose: (idOverride?: unknown) => void
+}) {
+  return createPortal(
+    <PaneVisibilityContext.Provider value={isActive}>
+      <LayoutNode layout={layout} onClose={onClose} />
+    </PaneVisibilityContext.Provider>,
+    host,
+    `keep-mounted-pane-${layout.id}`
+  )
+}
+
+/**
  * A Pane layout is a wrapper around a Split layout that
  * includes a toolbar that can allow a user to set how many
  * active splits there are in the internal Split layout.
@@ -359,9 +412,19 @@ function SplitLayoutContents({
  * the pane UI buttons and invoke fire-and-forget actions.
  */
 function PaneLayout({ layout }: { layout: PaneLayoutType }) {
-  const { togglePane, areaLibrary, enableContextMenus, replaceLayoutNode } =
-    useLayoutState()
+  const {
+    togglePane,
+    areaLibrary,
+    enableContextMenus,
+    keepMountedPaneScope,
+    replaceLayoutNode,
+  } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
+  const [keepMountedActivation, setKeepMountedActivation] = useState<{
+    paneIds: ReadonlySet<string>
+    scope?: string
+  }>(() => ({ paneIds: new Set(), scope: keepMountedPaneScope }))
+  const keepMountedPaneHosts = useRef(new Map<string, HTMLDivElement>())
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
   const shouldHide = (l: PaneChild) => {
     if (l.type !== LayoutType.Simple) {
@@ -376,6 +439,57 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       item: layout.children[itemIndex],
     }))
     .filter(({ item }) => item !== undefined && !shouldHide(item))
+  const activePaneIds = new Set(activePanes.map(({ item }) => item.id))
+  const activeKeepMountedPaneIds = activePanes.flatMap(({ item }) =>
+    item.type === LayoutType.Simple &&
+    areaLibrary[item.areaType]?.keepMountedWhenClosed === true
+      ? [item.id]
+      : []
+  )
+  const activeKeepMountedPaneIdsKey = activeKeepMountedPaneIds.join('\0')
+  useLayoutEffect(() => {
+    setKeepMountedActivation((activation) => {
+      if (activation.scope !== keepMountedPaneScope) {
+        return {
+          paneIds: new Set(activeKeepMountedPaneIds),
+          scope: keepMountedPaneScope,
+        }
+      }
+      if (activeKeepMountedPaneIds.every((id) => activation.paneIds.has(id))) {
+        return activation
+      }
+      return {
+        ...activation,
+        paneIds: new Set([...activation.paneIds, ...activeKeepMountedPaneIds]),
+      }
+    })
+    // The joined key changes only when the ordered pane ids change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKeepMountedPaneIdsKey, keepMountedPaneScope])
+  const activatedKeepMountedPaneIds =
+    keepMountedActivation.scope === keepMountedPaneScope
+      ? keepMountedActivation.paneIds
+      : new Set<string>()
+  const keepMountedPanes = layout.children.filter(
+    (pane) =>
+      pane.type === LayoutType.Simple &&
+      !shouldHide(pane) &&
+      areaLibrary[pane.areaType]?.keepMountedWhenClosed === true &&
+      (activePaneIds.has(pane.id) || activatedKeepMountedPaneIds.has(pane.id))
+  )
+  const keepMountedPaneEntries = keepMountedPanes.map((pane) => {
+    let host = keepMountedPaneHosts.current.get(pane.id)
+    if (!host) {
+      host = document.createElement('div')
+      host.dataset.keepMountedPaneHost = pane.id
+      host.className = 'flex-1 min-w-0 min-h-0'
+      keepMountedPaneHosts.current.set(pane.id, host)
+    }
+    return { host, pane }
+  })
+  const keepMountedPaneIds = new Set(
+    keepMountedPaneEntries.map(({ pane }) => pane.id)
+  )
 
   const onToggleItem = (checked: boolean, targetNodeId: string) => {
     togglePane({
@@ -446,8 +560,60 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             children: activePanes.map(({ item }) => item),
           }}
           onClose={(id) => onToggleItem(false, id)}
+          renderLayoutNode={(pane) => {
+            if (!keepMountedPaneIds.has(pane.id)) {
+              return
+            }
+            return (
+              <div
+                ref={(node) => {
+                  const host = keepMountedPaneHosts.current.get(pane.id)
+                  if (node && host) {
+                    setKeepMountedPaneHostState(host, true)
+                    node.append(host)
+                  }
+                }}
+                className="flex flex-1 min-w-0 min-h-0"
+                data-keep-mounted-pane-target={pane.id}
+              />
+            )
+          }}
         />
       )}
+      {keepMountedPaneEntries.length > 0 ? (
+        <div
+          ref={(node) => {
+            if (!node) {
+              return
+            }
+            for (const { host, pane } of keepMountedPaneEntries) {
+              if (activePaneIds.has(pane.id)) {
+                continue
+              }
+              setKeepMountedPaneHostState(host, false)
+              node.append(host)
+            }
+          }}
+          aria-hidden="true"
+          inert
+          style={{ display: 'none' }}
+          data-keep-mounted-pane-parking
+        />
+      ) : null}
+      {keepMountedPaneEntries.map(({ host, pane }) => (
+        <KeepMountedPane
+          key={`${keepMountedPaneScope ?? 'default'}:${pane.id}`}
+          host={host}
+          isActive={activePaneIds.has(pane.id)}
+          layout={pane}
+          onClose={(idOverride) =>
+            onToggleItem(
+              false,
+              typeof idOverride === 'string' ? idOverride : pane.id
+            )
+          }
+        />
+      ))}
     </div>
   )
 }

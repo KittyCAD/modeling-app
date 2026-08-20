@@ -8,6 +8,7 @@ import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import { usePaneIsActive } from '@src/lib/layout/components'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -654,6 +655,7 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
+  const isPaneActive = usePaneIsActive()
   const exchangesLength = props.conversation?.exchanges.length ?? 0
   const hasMessages = exchangesLength > 0
   const lastExchange = exchangesLength
@@ -665,21 +667,21 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0 || !refScroll.current) return
+    if (!isPaneActive || exchangesLength === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [exchangesLength])
+  }, [exchangesLength, isPaneActive])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
-    if (!isEndOfStream || !refScroll.current) return
+    if (!isPaneActive || !isEndOfStream || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [isEndOfStream])
+  }, [isEndOfStream, isPaneActive])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {

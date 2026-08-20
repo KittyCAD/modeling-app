@@ -89,6 +89,7 @@ const zookeeperLayoutArea = defineRegistryItem({
     provide(layoutAreaLibraryValueSpec, {
       [AreaType.Zookeeper]: {
         hide: () => false,
+        keepMountedWhenClosed: true,
         shortcut: 'Ctrl + T',
         cssClassOverrides: {
           button:

@@ -323,6 +323,7 @@ export function OpenedProject() {
             showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
+            keepMountedPaneScope={projectPath ?? undefined}
           />
         </section>
         <StatusBar

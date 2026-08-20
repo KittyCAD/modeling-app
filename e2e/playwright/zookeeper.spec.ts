@@ -43,6 +43,99 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await expect(extrude).toBeVisible()
     })
   })
+  test('Closing and reopening the pane keeps the Zookeeper session alive', async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+  }) => {
+    await page.setBodyDimensions({ width: 1500, height: 1000 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+
+    await page.waitForFunction(
+      () => {
+        const actor = window.app.debug.zookeeperManagerActor
+        const snapshot = actor?.getSnapshot()
+        return (
+          snapshot?.matches('ready' as never) === true &&
+          snapshot.context.ws?.readyState === WebSocket.OPEN
+        )
+      },
+      undefined,
+      { timeout: 60_000 }
+    )
+
+    await page.evaluate(() => {
+      const actor = window.app.debug.zookeeperManagerActor
+      const websocket = actor?.getSnapshot().context.ws
+      if (!actor || !websocket) {
+        throw new Error('Expected a ready Zookeeper session')
+      }
+      Reflect.set(window, '__zookeeperActorBeforePaneClose', actor)
+      Reflect.set(window, '__zookeeperWebSocketBeforePaneClose', websocket)
+      Reflect.set(
+        window,
+        '__zookeeperConversationIdBeforePaneClose',
+        actor.getSnapshot().context.conversationId
+      )
+    })
+
+    await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+        })
+    )
+    const sessionStayedAliveWhileClosed = await page.evaluate(() => {
+      const actor = window.app.debug.zookeeperManagerActor
+      if (!actor) {
+        return false
+      }
+      return (
+        actor === Reflect.get(window, '__zookeeperActorBeforePaneClose') &&
+        actor.getSnapshot().context.ws ===
+          Reflect.get(window, '__zookeeperWebSocketBeforePaneClose') &&
+        actor.getSnapshot().context.ws?.readyState === WebSocket.OPEN
+      )
+    })
+    expect(sessionStayedAliveWhileClosed).toBe(true)
+
+    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+
+    const sessionWasReused = await page.evaluate(() => {
+      const actor = window.app.debug.zookeeperManagerActor
+      const sameActor =
+        actor === Reflect.get(window, '__zookeeperActorBeforePaneClose')
+      const sameWebSocket =
+        actor?.getSnapshot().context.ws ===
+        Reflect.get(window, '__zookeeperWebSocketBeforePaneClose')
+      const websocketIsOpen =
+        actor?.getSnapshot().context.ws?.readyState === WebSocket.OPEN
+      const sameConversationId =
+        actor?.getSnapshot().context.conversationId ===
+        Reflect.get(window, '__zookeeperConversationIdBeforePaneClose')
+      Reflect.deleteProperty(window, '__zookeeperActorBeforePaneClose')
+      Reflect.deleteProperty(window, '__zookeeperWebSocketBeforePaneClose')
+      Reflect.deleteProperty(window, '__zookeeperConversationIdBeforePaneClose')
+      return {
+        sameActor,
+        sameConversationId,
+        sameWebSocket,
+        websocketIsOpen,
+      }
+    })
+
+    expect(sessionWasReused).toEqual({
+      sameActor: true,
+      sameConversationId: true,
+      sameWebSocket: true,
+      websocketIsOpen: true,
+    })
+  })
   test(
     'Chat history can be cleared',
     { tag: ['@desktop', '@web'] },
