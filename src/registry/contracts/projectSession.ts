@@ -94,6 +94,7 @@ export interface ProjectSessionService {
   getProjectTree: () => Project | undefined
   refreshProjectTree: () => Promise<Project | undefined>
   openEditor: (input: ProjectSessionOpenEditorInput) => Promise<KclManager>
+  openFile: (input: ProjectSessionOpenEditorInput) => Promise<KclManager>
   closeEditor: (input: ProjectSessionEntryPathInput) => void
   closeAllEditors: () => void
   createFile: (input: ProjectSessionFileWriteInput) => Promise<string>

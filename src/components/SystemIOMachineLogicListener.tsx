@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
@@ -17,6 +18,7 @@ import {
 } from '@src/lib/paths'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
+import { reportRejection } from '@src/lib/trap'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -30,10 +32,12 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { routerService } from '@src/registry/contracts/router'
 import { useEffect } from 'react'
-import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
+  useSignals()
   const { settings, systemIOActor, registry } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
@@ -43,15 +47,15 @@ export function SystemIOMachineLogicListener() {
   const hasListedProjects = useHasListedProjects()
   const lastOperation = useLastOperation()
 
-  const navigate = useNavigate()
-  const navigation = useNavigation()
   const settingsValues = settings.useSettings()
   const lsp = registry.get(lspService)
+  const session = registry.get(projectSession)
+  const router = registry.get(routerService)
   const defaultDirectoryLibraryPath =
     getDefaultDirectoryProjectLibraryPath(
       settingsValues.app.libraries.current
     ) || ''
-  const { pathname } = useLocation()
+  const { pathname } = router.location.value
 
   function safestNavigateToFile({
     requestedPath,
@@ -64,7 +68,7 @@ export function SystemIOMachineLogicListener() {
   }) {
     if (
       !shouldNavigateToRequestedPath({
-        currentPathname: navigation.location?.pathname ?? pathname,
+        currentPathname: pathname,
         onboardingStatus: settingsValues.app.onboardingStatus.current,
         requestedPath,
       })
@@ -117,6 +121,20 @@ export function SystemIOMachineLogicListener() {
 
     kclManager.isExecuting = false
 
+    const currentProject = session.getProject()
+    if (
+      requestedFilePathWithExtension &&
+      requestedProjectDirectory &&
+      currentProject?.path === requestedProjectDirectory
+    ) {
+      session
+        .openFile({
+          path: requestedFilePathWithExtension,
+          editor: kclManager,
+        })
+        .catch(reportRejection)
+    }
+
     const url = new URL(location.href)
     url.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     if (
@@ -126,7 +144,7 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''), {
+    void router.navigate(requestedPath + (search ? `?${search}` : ''), {
       replace: requestedPath.includes(String(PATHS.ONBOARDING)),
     })
   }

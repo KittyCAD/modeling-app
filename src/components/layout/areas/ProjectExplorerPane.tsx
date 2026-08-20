@@ -23,13 +23,12 @@ import {
 } from '@src/lib/layout'
 import {
   getEXTNoPeriod,
+  getParentAbsolutePath,
   isExtensionARelevantExtension,
-  parentPathRelativeToProject,
 } from '@src/lib/paths'
+import { navigateToProjectFile } from '@src/lib/projectSessionNavigation'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
-import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -37,13 +36,15 @@ import toast from 'react-hot-toast'
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { commands, systemIOActor, layout } = app
+  const { commands, layout } = app
   const session = app.registry.get(projectSession)
   const project = session.project.value
   const projectTree = session.projectTree.value
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const projectDirectoryPath = useProjectDirectoryPath()
+  const projectDirectoryPath = project?.path
+    ? getParentAbsolutePath(project.path)
+    : ''
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const file = project?.executingFileEntry.value
@@ -112,11 +113,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
         const extension = getEXTNoPeriod(filename)
@@ -137,16 +133,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       ) {
         // Leaving any open text file for the KCL editor.
         clearActiveTextFile()
-        const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
+          navigateToProjectFile({ app, filePath: entry.path }).catch(
+            reportRejection
+          )
         }
 
         if (modelingMachineState.matches('Sketch')) {
@@ -202,12 +193,11 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       commands,
+      app,
       modelingActor,
       modelingMachineState,
       modelingSend,
       openCodeEditorPaneIfClosed,
-      projectDirectoryPath,
-      systemIOActor,
       wasmInstance,
     ]
   )

@@ -7,7 +7,7 @@ import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, stripTrailingRouterSubRoute } from '@src/lib/paths'
 import {
   canRevealInFileExplorer,
   revealInFileExplorer,
@@ -55,9 +55,10 @@ export const AllSettingsFields = forwardRef(
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
-      const filteredPathname = location.pathname
-        .replace(PATHS.FILE, '')
-        .replace(PATHS.SETTINGS, '')
+      const filteredPathname = stripTrailingRouterSubRoute(
+        location.pathname,
+        PATHS.SETTINGS
+      ).replace(PATHS.FILE, '')
       const lastSlashIndex = filteredPathname.lastIndexOf(
         // This is slicing off any remaining browser path segments,
         // so we don't use window.electron.sep here

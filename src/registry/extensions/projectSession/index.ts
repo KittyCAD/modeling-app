@@ -152,6 +152,20 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       () => runProjectMutation(operation, targetPath, run, options)
     )
 
+  const openProjectFile = (input: ProjectSessionOpenEditorInput) =>
+    runProjectMutation(
+      'open-editor',
+      input.path,
+      (currentProject) =>
+        currentProject.openEditor(
+          input.path,
+          input.editor,
+          input.code,
+          input.isExecuting
+        ),
+      { refreshProjectTree: false }
+    )
+
   const serviceImpl: ProjectSessionService = {
     project,
     projectTree,
@@ -168,19 +182,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     },
     getProjectTree: () => projectTree.value,
     refreshProjectTree,
-    openEditor: (input: ProjectSessionOpenEditorInput) =>
-      runProjectMutation(
-        'open-editor',
-        input.path,
-        (currentProject) =>
-          currentProject.openEditor(
-            input.path,
-            input.editor,
-            input.code,
-            input.isExecuting
-          ),
-        { refreshProjectTree: false }
-      ),
+    openEditor: openProjectFile,
+    openFile: openProjectFile,
     closeEditor: (input: ProjectSessionEntryPathInput) => {
       setMutation({
         pending: true,

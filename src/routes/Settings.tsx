@@ -12,7 +12,7 @@ import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
 import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
 import { useApp } from '@src/lib/boot'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, stripTrailingRouterSubRoute } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { platform } from '@src/lib/utils'
 import {
@@ -47,7 +47,9 @@ export const Settings = () => {
     if (document.activeElement instanceof HTMLInputElement) {
       document.activeElement.blur()
     }
-    void navigate(location.pathname.replace(PATHS.SETTINGS, ''))
+    void navigate(
+      stripTrailingRouterSubRoute(location.pathname, PATHS.SETTINGS)
+    )
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
