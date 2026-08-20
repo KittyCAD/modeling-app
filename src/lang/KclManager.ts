@@ -189,6 +189,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { FsOperationQueueService } from '@src/registry/contracts/fsOperationQueue'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -361,6 +362,34 @@ interface ZDSProjectFilePatchInput {
   }[]
 }
 
+/**
+ * Narrow filesystem mutation surface supplied by projectSession.
+ *
+ * ZDSProject owns project-level mutation semantics, but the actual filesystem
+ * effects run through the registry queue for ordering and journaling.
+ */
+export type ZDSProjectFileSystemOperations = Pick<
+  FsOperationQueueService,
+  'cp' | 'mkdir' | 'rename' | 'rm' | 'writeFile'
+>
+
+const createUnconfiguredProjectFileSystemOperationsError = () =>
+  new Error('Project filesystem operations are not configured.')
+
+const unconfiguredProjectFileSystemOperations: ZDSProjectFileSystemOperations =
+  {
+    cp: () =>
+      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
+    mkdir: () =>
+      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
+    rename: () =>
+      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
+    rm: () =>
+      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
+    writeFile: () =>
+      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
+  }
+
 const normalizeProjectPathForComparison = (path: string) =>
   fsZds.resolve(path).replace(/\\/g, '/')
 
@@ -393,6 +422,8 @@ export class ZDSProject {
   }))
 
   private fileWatcherId = uuidv4()
+  private fileSystemOperations: ZDSProjectFileSystemOperations =
+    unconfiguredProjectFileSystemOperations
 
   constructor(
     public projectIORefSignal: Signal<Project>,
@@ -404,6 +435,12 @@ export class ZDSProject {
       this.fileWatcherId,
       this.onUpdateFromDisk
     )
+  }
+
+  setFileSystemOperations(
+    fileSystemOperations: ZDSProjectFileSystemOperations
+  ) {
+    this.fileSystemOperations = fileSystemOperations
   }
 
   /** Clean up resources and watchers for Project */
@@ -698,16 +735,20 @@ export class ZDSProject {
   }
 
   private async movePath(sourcePath: string, targetPath: string) {
-    await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+    const fileSystemOperations = this.fileSystemOperations
+
+    await fileSystemOperations.mkdir(fsZds.dirname(targetPath), {
+      recursive: true,
+    })
     try {
-      await fsZds.rename(sourcePath, targetPath)
+      await fileSystemOperations.rename(sourcePath, targetPath)
       return
     } catch {
       // Fall back to copy/remove for cases like cross-device moves.
     }
 
-    await fsZds.cp(sourcePath, targetPath, { recursive: true })
-    await fsZds.rm(sourcePath, { recursive: true })
+    await fileSystemOperations.cp(sourcePath, targetPath, { recursive: true })
+    await fileSystemOperations.rm(sourcePath, { recursive: true })
   }
 
   async refreshProjectTree() {
@@ -747,8 +788,14 @@ export class ZDSProject {
       return Promise.reject(new Error(`File already exists: ${input.path}`))
     }
 
-    await fsZds.mkdir(fsZds.dirname(input.path), { recursive: true })
-    await fsZds.writeFile(input.path, await this.getFileWriteContents(input))
+    const fileSystemOperations = this.fileSystemOperations
+    await fileSystemOperations.mkdir(fsZds.dirname(input.path), {
+      recursive: true,
+    })
+    await fileSystemOperations.writeFile(
+      input.path,
+      await this.getFileWriteContents(input)
+    )
     return input.path
   }
 
@@ -762,7 +809,7 @@ export class ZDSProject {
       return Promise.reject(new Error(`Folder already exists: ${input.path}`))
     }
 
-    await fsZds.mkdir(input.path, { recursive: true })
+    await this.fileSystemOperations.mkdir(input.path, { recursive: true })
     return input.path
   }
 
@@ -781,7 +828,7 @@ export class ZDSProject {
       return Promise.reject(new Error(`Path already exists: ${input.newPath}`))
     }
 
-    await fsZds.rename(input.oldPath, input.newPath)
+    await this.fileSystemOperations.rename(input.oldPath, input.newPath)
     this.rewriteProjectEntryPaths(input.oldPath, input.newPath)
     return input.newPath
   }
@@ -792,7 +839,7 @@ export class ZDSProject {
       return Promise.reject(outsideProjectError)
     }
 
-    await fsZds.rm(input.path, { recursive: true })
+    await this.fileSystemOperations.rm(input.path, { recursive: true })
     this.closeProjectEntryEditors(input.path)
     this.forgetProjectEntryFiles(input.path)
     return input.path
@@ -806,7 +853,7 @@ export class ZDSProject {
       return Promise.reject(outsideProjectError)
     }
 
-    await fsZds.cp(input.sourcePath, input.targetPath, {
+    await this.fileSystemOperations.cp(input.sourcePath, input.targetPath, {
       recursive: true,
       force: false,
     })
@@ -849,7 +896,7 @@ export class ZDSProject {
 
     for (const file of input.files) {
       if (file.contents === null) {
-        await fsZds.rm(file.path)
+        await this.fileSystemOperations.rm(file.path)
       } else {
         await this.writeFile({
           path: file.path,

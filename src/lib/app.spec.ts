@@ -28,6 +28,7 @@ import { billingService } from '@src/registry/contracts/billing'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -299,7 +300,8 @@ describe('project system', () => {
     try {
       session.setProject({
         projectIORefSignal: signal(mockProject),
-      } as NonNullable<ReturnType<typeof session.getProject>>)
+        setFileSystemOperations: vi.fn(),
+      } as unknown as NonNullable<ReturnType<typeof session.getProject>>)
       app.singletons.kclManager.modelingState = {
         matches: (state: string) => state === 'sketchSolveMode',
       } as unknown as NonNullable<KclManager['modelingState']>
@@ -922,6 +924,8 @@ describe('project system', () => {
 
       const openedProject = await app.openProject(project)
       const session = app.registry.get(projectSession)
+      const queue = app.registry.get(fsOperationQueue)
+      queue.clearJournal()
 
       await session.writeFile({
         path: createdPath,
@@ -954,6 +958,24 @@ describe('project system', () => {
       await expect(fsZds.readFile(renamedPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
+      expect(queue.getJournal()).toEqual([
+        expect.objectContaining({
+          kind: 'mkdir',
+          status: 'completed',
+          targetPath: fsZds.dirname(createdPath),
+        }),
+        expect.objectContaining({
+          kind: 'write-file',
+          status: 'completed',
+          targetPath: createdPath,
+        }),
+        expect.objectContaining({
+          kind: 'rename',
+          sourcePath: createdPath,
+          status: 'completed',
+          targetPath: renamedPath,
+        }),
+      ])
       expect(session.projectTree.value?.children).toEqual(
         expect.arrayContaining([
           expect.objectContaining({

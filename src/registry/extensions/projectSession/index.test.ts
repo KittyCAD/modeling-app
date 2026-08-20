@@ -3,7 +3,6 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
-import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -47,6 +46,7 @@ describe('project session extension', () => {
       openEditor: vi.fn(async () => ({}) as KclManager),
       closeEditor: vi.fn(),
       closeAllEditors: vi.fn(),
+      setFileSystemOperations: vi.fn(),
       createFile: vi.fn(async ({ path }: { path: string }) => path),
       writeFile: vi.fn(async ({ path }: { path: string }) => path),
       createFolder: vi.fn(async ({ path }: { path: string }) => path),
@@ -81,6 +81,17 @@ describe('project session extension', () => {
 
     projectSession.setProject(project)
 
+    const injectedFileSystemOperations =
+      project.mocks.setFileSystemOperations.mock.calls[0]?.[0]
+    expect(injectedFileSystemOperations).toEqual(
+      expect.objectContaining({
+        cp: expect.any(Function),
+        mkdir: expect.any(Function),
+        rename: expect.any(Function),
+        rm: expect.any(Function),
+        writeFile: expect.any(Function),
+      })
+    )
     expect(projectSession.getProject()).toBe(project)
     expect(projectSession.project.value).toBe(project)
     expect(projectSession.getProjectTree()).toBe(
@@ -246,20 +257,6 @@ describe('project session extension', () => {
     })
     expect(project.mocks.refreshProjectTree).toHaveBeenCalledTimes(9)
     expect(projectSession.projectTree.value?.name).toBe('bracket-fresh')
-    expect(registry?.get(fsOperationQueue).getJournal()).toEqual([
-      expect.objectContaining({ kind: 'create-file', status: 'completed' }),
-      expect.objectContaining({ kind: 'write-file', status: 'completed' }),
-      expect.objectContaining({ kind: 'create-folder', status: 'completed' }),
-      expect.objectContaining({ kind: 'rename-entry', status: 'completed' }),
-      expect.objectContaining({ kind: 'copy-entry', status: 'completed' }),
-      expect.objectContaining({ kind: 'move-entry', status: 'completed' }),
-      expect.objectContaining({ kind: 'delete-entry', status: 'completed' }),
-      expect.objectContaining({ kind: 'archive-entry', status: 'completed' }),
-      expect.objectContaining({
-        kind: 'apply-file-patch',
-        status: 'completed',
-      }),
-    ])
     expect(projectSession.mutation.value).toEqual({
       pending: false,
       operation: 'apply-file-patch',
