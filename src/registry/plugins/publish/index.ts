@@ -3,13 +3,14 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { PublishButton } from '@src/components/PublishButton'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement } from 'react'
 
 function PublishHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
 
-  if (!app.projectSignal.value) {
+  if (!app.registry.get(projectSession).project.value) {
     return null
   }
 

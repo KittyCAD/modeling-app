@@ -13,12 +13,15 @@ import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd, project, registry } = useApp()
+  const app = useApp()
+  const { commands: cmd, registry } = app
+  const project = registry.get(projectSession).project.value
   const keymap = registry.optional(keymapService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
