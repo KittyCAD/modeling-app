@@ -14061,6 +14061,73 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_shared_endpoint_arc_tangency_is_constraint_order_independent_issue_11370() {
+        clear_mem_cache().await;
+        let source_template = r#"
+sketch001 = sketch(on = XY) {
+  arc1 = arc(start = [var 0mm, var -10mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  arc2 = arc(start = [var 10mm, var 0mm], end = [var 20mm, var 10mm], center = [var 20mm, var 0mm])
+
+$CONSTRAINT_ORDER
+
+  fixed([arc1.center, [0mm, 0mm]])
+  fixed([arc1.start, [0mm, -10mm]])
+  fixed([arc1.end, [10mm, 0mm]])
+  fixed([arc2.center, [5mm, 0mm]])
+  fixed([arc2.end, [5mm, 5mm]])
+}
+"#;
+        let mut baseline_solutions: Option<Vec<f64>> = None;
+
+        for (order_name, constraint_order) in [
+            (
+                "tangent first",
+                "  tangent([arc1, arc2])\n  coincident([arc1.end, arc2.start])",
+            ),
+            (
+                "coincident first",
+                "  coincident([arc1.end, arc2.start])\n  tangent([arc1, arc2])",
+            ),
+        ] {
+            let source = source_template.replace("$CONSTRAINT_ORDER", constraint_order);
+            let program = Program::parse_no_errs(&source).unwrap();
+            let mock_ctx = ExecutorContext::new_mock(None).await;
+            let outcome = mock_ctx
+                .run_mock(
+                    &program,
+                    &MockConfig {
+                        use_prev_memory: false,
+                        ..Default::default()
+                    },
+                )
+                .await
+                .unwrap();
+
+            assert!(outcome.issues.is_empty(), "{order_name}: {:#?}", outcome.issues);
+            let solutions = outcome
+                .var_solutions
+                .iter()
+                .map(|(_, _, number)| number.value)
+                .collect::<Vec<_>>();
+            if let Some(baseline_solutions) = &baseline_solutions {
+                assert_eq!(solutions.len(), baseline_solutions.len());
+                for (solution, baseline) in solutions.iter().zip(baseline_solutions) {
+                    assert!(
+                        (solution - baseline).abs() < 1e-9,
+                        "{order_name}: expected {baseline}, got {solution}"
+                    );
+                }
+            } else {
+                baseline_solutions = Some(solutions);
+            }
+
+            mock_ctx.close().await;
+        }
+
+        clear_mem_cache().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_point_midpoint() {
         let initial_source = "\
 sketch(on = XY) {

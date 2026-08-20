@@ -2734,6 +2734,7 @@ impl Node<SketchBlock> {
         ctx: &ExecutorContext,
     ) -> Result<KclValue, KclError> {
         let range = SourceRange::from(self);
+        crate::std::constraints::resolve_pending_arc_arc_tangencies(&mut sketch_block_state, exec_state)?;
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
