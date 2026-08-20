@@ -2371,7 +2371,7 @@ mod tests {
         assert!(!artifact.code_ref.node_path.is_empty());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn nested_import_preserves_inner_error_and_backtrace() {
         // The imported modules live in an in-memory file system under a
         // synthetic project directory, so parallel tests share no on-disk
