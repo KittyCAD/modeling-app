@@ -5224,53 +5224,29 @@ fn only_sketch_block(
         );
         return only_sketch_block_from_range(ast, sketch_block_ref.range, edit_kind);
     };
-    let mut found = false;
-    for item in ast.body.iter_mut() {
-        match item {
-            ast::BodyItem::ImportStatement(_) => {}
-            ast::BodyItem::ExpressionStatement(node) => {
-                // Check the statement.
-                if let Some(node_path) = &node.node_path
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-                // Check the expression.
-                if let Some(node_path) = node.expression.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::VariableDeclaration(node) => {
-                if let Some(node_path) = node.declaration.init.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::TypeDeclaration(_) => {}
-            ast::BodyItem::ReturnStatement(node) => {
-                if let Some(node_path) = node.argument.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
+    struct MarkSketchBlockBeingEdited<'a> {
+        target_node_path: &'a ast::NodePath,
     }
+
+    impl Visitor for MarkSketchBlockBeingEdited<'_> {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+            if let NodeMut::SketchBlock(sketch_block) = node
+                && sketch_block.node_path.as_ref() == Some(self.target_node_path)
+            {
+                sketch_block.is_being_edited = true;
+                return TraversalReturn::new_break(());
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut<'_>) {}
+    }
+
+    let mut marker = MarkSketchBlockBeingEdited { target_node_path };
+    let found = dfs_mut(ast, &mut marker).is_break();
     if !found {
         return Err(KclError::refactor(format!(
             "Sketch block node path not found in AST: {sketch_block_ref:?}, edit_kind={edit_kind:?}"
@@ -14809,6 +14785,118 @@ sketch(on = offsetPlane(XY, offset = width)) {
         assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_nested_in_pipe() {
+        clear_mem_cache().await;
+        let source = r#"
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+  |> translate(x = 2mm)
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected piped sketch object")
+            .id;
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+        assert!(
+            scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .any(|object| matches!(&object.kind, ObjectKind::Segment { .. })),
+            "Expected the piped sketch's segments to be present in sketch mode"
+        );
+
+        clear_mem_cache().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_issue_9409_edit_sketch_nested_in_if_with_var_feedback() {
+        clear_mem_cache().await;
+        let source = r#"
+useFirstProfile = true
+
+profile = if useFirstProfile {
+  sketch(on = XY) {
+    line1 = line(start = [0mm, 0mm], end = [var 20mm, var 10mm])
+  }
+} else {
+  sketch(on = XY) {
+    line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])
+  }
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object =
+            find_first_sketch_object(&frontend.scene_graph).expect("Expected active branch's sketch object");
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch
+            .segments
+            .get(1)
+            .expect("Expected the active branch's line end point");
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 30.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 15.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (source_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert!(
+            source_delta
+                .text
+                .contains("line1 = line(start = [0mm, 0mm], end = [var 30mm, var 15mm])"),
+            "Expected the active branch's dragged variables to be updated:\n{}",
+            source_delta.text
+        );
+        assert!(
+            source_delta
+                .text
+                .contains("line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])"),
+            "Expected the inactive branch to remain unchanged:\n{}",
+            source_delta.text
+        );
+
+        clear_mem_cache().await;
         mock_ctx.close().await;
     }
 
