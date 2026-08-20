@@ -7,15 +7,15 @@ import {
 import { signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
 import {
-  type ProjectSessionRegistryService,
-  projectSessionService,
+  projectSession,
+  type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 
 export const projectSessionExtension = defineRegistryItemFactory(() => {
   const project = signal<ZDSProject | undefined>(undefined)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
 
-  const serviceImpl: ProjectSessionRegistryService = {
+  const serviceImpl: ProjectSessionService = {
     project,
     currentProjectLibraryId,
     getProject: () => project.value,
@@ -34,7 +34,7 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'project-session-extension',
-      providesServices: [provideService(projectSessionService, serviceImpl)],
+      providesServices: [provideService(projectSession, serviceImpl)],
     }),
   }
 }, 'project-session-extension')

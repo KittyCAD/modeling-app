@@ -74,8 +74,8 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import {
-  type ProjectSessionRegistryService,
-  projectSessionService,
+  projectSession,
+  type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 import {
   type SettingsRegistryService,
@@ -177,8 +177,8 @@ export interface AppSubsystems {
 }
 
 export class App implements AppSubsystems {
-  private get projectSession(): ProjectSessionRegistryService {
-    return this.registry.get(projectSessionService)
+  private get projectSession(): ProjectSessionService {
+    return this.registry.get(projectSession)
   }
   public get projectSignal(): Signal<ZDSProject | undefined> {
     return this.projectSession.project
