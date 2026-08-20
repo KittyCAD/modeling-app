@@ -1784,16 +1784,23 @@ impl ExecutorContext {
             }
             ModuleRepr::Foreign(_, Some((imported, _))) => Ok(imported.clone()),
             ModuleRepr::Foreign(geom, cached) => {
+                let caller_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
                 let result = super::import::send_to_engine(geom.clone(), exec_state, self)
                     .await
                     .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                let module_artifacts = std::mem::replace(&mut exec_state.mod_local.artifacts, caller_artifacts);
 
                 match result {
                     Ok(val) => {
-                        *cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
+                        *cached = Some((val.clone(), module_artifacts));
                         Ok(val)
                     }
-                    Err(e) => Err(e),
+                    Err(e) => {
+                        // Preserve the failed command in the caller's error artifacts, matching
+                        // the behavior before foreign module artifact states were isolated.
+                        exec_state.mod_local.artifacts.extend(module_artifacts);
+                        Err(e)
+                    }
                 }
             }
             ModuleRepr::Dummy => unreachable!(),

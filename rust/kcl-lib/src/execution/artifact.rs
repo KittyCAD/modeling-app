@@ -67,7 +67,8 @@ pub struct ArtifactCommand {
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
     /// without an engine command, in which case, we would make this field
-    /// optional.
+    /// optional. Imported file commands retain paths and format but omit raw
+    /// file bytes after the command has been sent to the engine.
     pub command: ModelingCmd,
     /// Extra artifact identity needed when an engine clone represents a KCL
     /// solid whose body artifact ID differs from its engine entity ID.
@@ -260,6 +261,7 @@ fn merge_artifacts(old: &mut Artifact, new: Artifact) -> Option<Artifact> {
         Artifact::EdgeCut(a) => merge_edge_cut(a, new),
         Artifact::EdgeCutEdge(_) => Some(new),
         Artifact::Helix(a) => merge_helix(a, new),
+        Artifact::ImportedGeometry(_) => Some(new),
         Artifact::GdtAnnotation(a) => merge_gdt_annotation(a, new),
         // One `view::named` call supplies every field, so nothing accumulates.
         // Replacing wholesale keeps `show_ids`/`hide_ids` exactly as that call
@@ -974,6 +976,10 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
         }),
+        Artifact::ImportedGeometry(source) => Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
+        }),
         Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
@@ -1340,6 +1346,12 @@ fn artifacts_to_update(
     let cmd = &artifact_command.command;
 
     match cmd {
+        ModelingCmd::ImportFiles(_) => {
+            return Ok(vec![Artifact::ImportedGeometry(ImportedGeometryArtifact {
+                id,
+                code_ref,
+            })]);
+        }
         ModelingCmd::MakePlane(_) => {
             if range.is_synthetic() {
                 return Ok(Vec::new());
