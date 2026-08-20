@@ -707,6 +707,8 @@ type OpValueProps = {
   type?: Operation['type']
   variableName?: string
   valueDetail?: { calculated: OpKclValue; display: string }
+  /** A named view is described by the name it declares, not by its variable. */
+  isNamedView?: boolean
 }
 
 /**
@@ -714,7 +716,7 @@ type OpValueProps = {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationItemWrapper = memo(
+export const OperationItemWrapper = memo(
   ({
     icon,
     name,
@@ -722,6 +724,7 @@ const OperationItemWrapper = memo(
     variableName,
     visibilityToggle,
     valueDetail,
+    isNamedView,
     menuItems,
     errors,
     customSuffix,
@@ -747,9 +750,11 @@ const OperationItemWrapper = memo(
         size={size}
         LabelSecondary={
           <>
-            {variableName && valueDetail ? (
+            {valueDetail ? (
               <>
-                <span className="text-sm">{variableName}</span>
+                {variableName ? (
+                  <span className="text-sm">{variableName}</span>
+                ) : null}
                 <code
                   data-testid="value-detail"
                   className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
@@ -778,12 +783,32 @@ const OperationItemWrapper = memo(
   }
 )
 
-function VariableTooltipContents({
+export function namedViewTooltipText({
+  name,
+  valueDetail,
+  variableName,
+}: {
+  name: string
+  valueDetail: { calculated: OpKclValue; display: string }
+  variableName?: string
+}): string {
+  const viewName = getOperationCalculatedDisplay(valueDetail.calculated)
+  const declaration = variableName ? `, declared as ${variableName}` : ''
+
+  return `${name} "${viewName}"${declaration}`
+}
+
+export function VariableTooltipContents({
   variableName,
   valueDetail,
   name,
   type,
+  isNamedView,
 }: OpValueProps) {
+  if (isNamedView && valueDetail) {
+    return <>{namedViewTooltipText({ name, valueDetail, variableName })}</>
+  }
+
   return variableName && valueDetail ? (
     <div className="flex flex-col gap-2">
       <p>
@@ -973,6 +998,8 @@ const OperationItem = ({
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])
+
+  const isNamedView = item.type === 'StdLibCall' && item.name === 'view::named'
 
   const variableName = useMemo(() => {
     // Module-owned ModuleInstance operations have a nodePath relative to their
@@ -1450,6 +1477,7 @@ const OperationItem = ({
       type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
+      isNamedView={isNamedView}
       customSuffix={
         item.type === 'ModuleInstance' && item.glob ? (
           <span className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
@@ -1470,6 +1498,7 @@ const OperationItem = ({
               valueDetail={valueDetail}
               name={name}
               type={item.type}
+              isNamedView={isNamedView}
             />
           </Tooltip>
         )
