@@ -792,6 +792,7 @@ describe('zookeeperManagerMachine', () => {
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
+        engineApiCallId: 'engine-api-call-id',
       })
 
       await waitFor(actor, (state) =>
@@ -802,21 +803,24 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.sentPayloads).toStrictEqual([
-        JSON.stringify({
-          type: 'system',
-          command: 'continue',
-        }),
-        JSON.stringify({
-          type: 'project_context',
-          project_name: 'zoo-project',
-          current_files: {
-            'main.kcl': Array.from(new TextEncoder().encode('cube()')),
-            'notes.txt': Array.from(new TextEncoder().encode('notes')),
-          },
-          active_file: 'newFile.kcl',
-        }),
-      ])
+      expect(ws.sentPayloads).toHaveLength(2)
+      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+        type: 'system',
+        command: 'continue',
+      })
+      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+        type: 'project_context',
+        correlation_id: expect.stringMatching(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+        ),
+        engine_api_call_id: 'engine-api-call-id',
+        project_name: 'zoo-project',
+        current_files: {
+          'main.kcl': Array.from(new TextEncoder().encode('cube()')),
+          'notes.txt': Array.from(new TextEncoder().encode('notes')),
+        },
+        active_file: 'newFile.kcl',
+      })
 
       actor.stop()
     })

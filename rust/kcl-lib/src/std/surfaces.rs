@@ -85,6 +85,19 @@ async fn inner_is_equal_body_type(
     args: Args,
     expected: BodyType,
 ) -> Result<bool, KclError> {
+    if args.ctx.no_engine_commands().await {
+        // In mock execution, we can't query the surface type and know it for real.
+        // So just give a best-effort attempt to figure out the surface/solid type.
+        return if let Some(body_type) = surface.best_guess_body_type {
+            Ok(expected == body_type)
+        } else {
+            // No body type known, so we don't know whether this is true or false.
+            // Best effort guess is false.
+            // Hopefully shouldn't matter to mock execution.
+            Ok(false)
+        };
+    }
+
     let meta = ModelingCmdMeta::from_args(exec_state, &args);
     let cmd = ModelingCmd::from(mcmd::Solid3dGetBodyType::builder().object_id(surface.id).build());
 
@@ -140,7 +153,7 @@ pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 }
 
 async fn inner_delete_face(
-    body: Solid,
+    mut body: Solid,
     tagged_faces: Option<Vec<FaceTag>>,
     face_indices: Option<Vec<u32>>,
     exec_state: &mut ExecState,
@@ -237,6 +250,10 @@ async fn inner_delete_face(
     };
 
     // Return the same body, it just has fewer faces.
+    // And it's _probably_ a polysurface now, because if it was a solid before,
+    // it's _probably_ a surface after some required face was deleted and the volume
+    // is no longer closed. If it was a surface before, it's still a surface.
+    body.best_guess_body_type = Some(BodyType::Surface);
     Ok(body)
 }
 
@@ -343,6 +360,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         value_id: id,
         topology_id: id,
         pattern_source_artifact_id: None,
+        best_guess_body_type: Some(BodyType::Surface),
         artifact_id: id.into(),
         value: vec![],
         faces: Default::default(),
@@ -412,6 +430,7 @@ async fn inner_join(
             value_id: body_out_id,
             topology_id: body_out_id,
             pattern_source_artifact_id: None,
+            best_guess_body_type: None,
             artifact_id: body_out_id.into(),
             value: vec![],
             faces: Default::default(),
@@ -431,5 +450,52 @@ async fn inner_join(
             std::slice::from_ref(&solid),
         );
         Ok(solid)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_body_type_queries_use_locally_known_type() {
+        let code = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+solidSketch = sketch(on = XY) {
+  profile = circle(
+    start = [var 5mm, var 0mm],
+    center = [var 0mm, var 0mm],
+  )
+}
+solid = extrude(
+  region(segments = [solidSketch.profile]),
+  length = 5mm,
+  bodyType = "solid",
+)
+
+surfaceSketch = sketch(on = XY) {
+  profile = circle(
+    start = [var 20mm, var 0mm],
+    center = [var 15mm, var 0mm],
+  )
+}
+surface = extrude(
+  region(segments = [surfaceSketch.profile]),
+  length = 5mm,
+  bodyType = "surface",
+)
+
+assertIs(isSolid(solid))
+assertIs(!isSurface(solid))
+assertIs(isSurface(surface))
+assertIs(!isSolid(surface))
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        result.unwrap();
     }
 }

@@ -78,6 +78,8 @@ type MlCopilotProjectContextRequest = Extract<
   { type: 'project_context' }
 > & {
   active_file?: string
+  correlation_id?: string
+  engine_api_call_id?: string
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -288,6 +290,7 @@ export type ZookeeperManagerEvents =
       projectName: string
       projectFiles: FileMeta[]
       activeFile?: string
+      engineApiCallId?: string
     }
   | {
       type: ZookeeperManagerTransitions.ResponseReceive
@@ -1391,6 +1394,7 @@ export const zookeeperManagerMachine = setup({
 
       const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
+        ...createZookeeperCorrelation(event.engineApiCallId),
         project_name: event.projectName,
         current_files: filesAsByteArrays,
         ...(event.activeFile ? { active_file: event.activeFile } : {}),
