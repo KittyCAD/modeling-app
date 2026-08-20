@@ -1,10 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
-import {
-  ONBOARDING_PROJECT_NAME,
-  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
-} from '@src/lib/constants'
+import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
@@ -13,7 +10,7 @@ import {
   legacyDesktopOnboardingPathAliases,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths, webSafePathSplit } from '@src/lib/paths'
+import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -28,11 +25,7 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import {
-  type RouteObject,
-  useLocation,
-  useSearchParams,
-} from 'react-router-dom'
+import { type RouteObject, useSearchParams } from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -64,39 +57,11 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop/conclusion': <OnboardingConclusion />,
 }
 
-function getProjectNameFromFileRoute(pathname: string) {
-  const fileRoutePrefix = `${PATHS.FILE}/`
-  if (!pathname.startsWith(fileRoutePrefix)) {
-    return undefined
-  }
-
-  const fileRoute = pathname.slice(fileRoutePrefix.length)
-  const onboardingIndex = fileRoute.indexOf(PATHS.ONBOARDING)
-  const encodedFilePath =
-    onboardingIndex === -1 ? fileRoute : fileRoute.slice(0, onboardingIndex)
-
-  try {
-    const pathSegments = webSafePathSplit(
-      decodeURIComponent(encodedFilePath).replaceAll('\\', '/')
-    ).filter(Boolean)
-    return pathSegments.at(-2)
-  } catch {
-    return undefined
-  }
-}
-
 function useOnboardingProjectIO() {
   useSignals()
-  const location = useLocation()
   const { registry, systemIOActor } = useApp()
   const currentProjectName = registry.get(projectSession).project.value?.name
-  return {
-    projectName:
-      getProjectNameFromFileRoute(location.pathname) ??
-      currentProjectName ??
-      ONBOARDING_PROJECT_NAME,
-    systemIOActor,
-  }
+  return { projectName: currentProjectName, systemIOActor }
 }
 
 function Welcome() {
@@ -108,6 +73,9 @@ function Welcome() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
@@ -148,6 +116,9 @@ function Scene() {
 
   // Things that happen when we load this route
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Create if necessary and navigate to the `blank.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
@@ -292,6 +263,9 @@ function FeatureTreePane() {
 
   // navigate to the "generated" file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
@@ -422,6 +396,9 @@ function PromptToEdit() {
   // Open the zookeeper pane
   // Navigate to the sample file
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     systemIOActor.send({
       type: SystemIOMachineEvents.navigateToFile,
       data: {
@@ -538,6 +515,9 @@ function PromptToEditResult() {
   useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   useEffect(() => {
+    if (!projectName) {
+      return
+    }
     // Navigate to the `main.kcl` file
     systemIOActor.send({
       type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
