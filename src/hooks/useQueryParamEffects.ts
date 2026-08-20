@@ -106,8 +106,7 @@ export function useQueryParamEffects() {
     searchParams.has(CMD_GROUP_QUERY_PARAM)
 
   function getCurrentCloudLibraryPath() {
-    const currentProject =
-      session.project.value?.projectIORefSignal.value
+    const currentProject = session.project.value?.projectIORefSignal.value
     return currentProject?.libraryType === CLOUD_PROJECT_LIBRARY_TYPE
       ? currentProject.libraryPath
       : undefined
@@ -344,7 +343,7 @@ export function useQueryParamEffects() {
       let cancelled = false
       pendingWebLayoutProjectCreation ??= createFreshWebLayoutProject(
         app,
-        projectSession
+        session
       )
 
       void pendingWebLayoutProjectCreation

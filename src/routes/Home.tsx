@@ -654,7 +654,7 @@ const Home = () => {
                     void acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      projectSession,
+                      projectSession: session,
                     }).catch(reportOnboardingStartFailure)
                   }}
                   className={`${sidebarButtonClasses} !text-primary flex-1`}
