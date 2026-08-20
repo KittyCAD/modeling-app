@@ -792,10 +792,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         currentProject.archiveEntry(input)
       ),
     restoreEntry: (input: ProjectSessionRestoreEntryInput) =>
-      runProjectMutation(
-        'restore-entry',
-        input.targetPath,
-        (currentProject) => currentProject.restoreEntry(input)
+      runProjectMutation('restore-entry', input.targetPath, (currentProject) =>
+        currentProject.restoreEntry(input)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
       runProjectMutation(
