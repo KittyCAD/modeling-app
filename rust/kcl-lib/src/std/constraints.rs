@@ -4475,30 +4475,17 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
         TangentCase::CircularCircular(circular0, circular1) => {
             if circular0.end.is_some() && circular1.end.is_some() {
-                let shared_constraint = {
-                    let Some(sketch_state) = exec_state.sketch_block() else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "tangent() can only be used inside a sketch block".to_owned(),
-                            vec![range],
-                        )));
-                    };
-                    shared_arc_tangent_constraint(circular0, circular1, &sketch_state.solver_constraints, range)?
-                };
                 let Some(sketch_state) = exec_state.sketch_block_mut() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "tangent() can only be used inside a sketch block".to_owned(),
                         vec![range],
                     )));
                 };
-                if let Some(constraint) = shared_constraint {
-                    sketch_state.solver_constraints.push(constraint);
-                } else {
-                    sketch_state.pending_arc_arc_tangencies.push(PendingArcArcTangency {
-                        circular0,
-                        circular1,
-                        range,
-                    });
-                }
+                sketch_state.pending_arc_arc_tangencies.push(PendingArcArcTangency {
+                    circular0,
+                    circular1,
+                    range,
+                });
             } else {
                 let next_var_id = exec_state
                     .sketch_block()
