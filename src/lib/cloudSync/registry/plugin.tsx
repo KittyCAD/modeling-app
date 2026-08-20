@@ -1,6 +1,5 @@
 import { Popover } from '@headlessui/react'
 import {
-  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
@@ -21,30 +20,29 @@ import {
   CloudSyncErrorDialogHost,
   openCloudConflictDialog,
   openCloudSyncErrorDialog,
-  useCloudSyncProjectConflicts,
   useCloudSyncProjectConflict,
+  useCloudSyncProjectConflicts,
 } from '@src/components/CloudConflictDialog'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import {
   type CloudSyncProjectMetadataIndexEntry,
   type CloudSyncStatus,
-  type ProjectManifest,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
   duplicateRemoteCloudProject,
   getCloudSyncProjectModifiedTime,
+  type ProjectManifest,
   type RemoteProjectSummary,
   renameRemoteCloudProject,
   retryCloudSync,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
 } from '@src/lib/cloudSync'
+import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import {
   getCloudProjectLibraryMaterializationDirectoryPath,
   normalizePathForSync,
 } from '@src/lib/cloudSync/paths'
-import { localProjectManifestMatchesBase } from '@src/lib/cloudSync/localManifest'
 import {
   type CloudProjectLocalManifestComparison,
   classifyCloudProjectDuplicateRisk,
@@ -54,7 +52,6 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
-import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
@@ -91,24 +88,19 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import {
-  type ProjectLibrarySettingsDetailsProps,
+  type ProjectLibraryHomeSummaryProps,
   type ProjectLibraryRealization,
+  type ProjectLibrarySettingsDetailsProps,
   type ProjectLibraryTypeContribution,
   projectLibraryRealizationsValueSpec,
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
-import { settingsService } from '@src/registry/contracts/settings'
-import {
-  nullableStatusBarItem,
-  statusBarGlobalItemsValueSpec,
-} from '@src/registry/contracts/statusBar'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { Fragment, useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 
@@ -218,151 +210,345 @@ export function getCloudSyncStatusBarPresentation(
   }
 }
 
-function CloudSyncStatusBarItem() {
+type CloudSyncLibraryProjectIssue = {
+  projectPath: string
+  projectName: string
+  message?: string
+  occurredAt?: string
+}
+
+type CloudSyncConflictMetadata = Pick<
+  CloudSyncProjectMetadataIndexEntry,
+  'localProjectPath' | 'projectName'
+>
+
+function normalizeOptionalProjectPath(projectPath: string | undefined) {
+  return projectPath ? normalizePathForSync(projectPath) : undefined
+}
+
+function getCloudSyncLibraryProjectPathSet(
+  projects: ProjectLibraryHomeSummaryProps['projects']
+) {
+  return new Set(
+    projects
+      .map((project) => normalizeOptionalProjectPath(project.localProjectPath))
+      .filter((projectPath): projectPath is string => Boolean(projectPath))
+  )
+}
+
+function getCloudSyncLibraryProjectByPath(
+  projects: ProjectLibraryHomeSummaryProps['projects']
+) {
+  return new Map(
+    projects
+      .map((project) => {
+        const projectPath = normalizeOptionalProjectPath(
+          project.localProjectPath
+        )
+        return projectPath ? ([projectPath, project] as const) : undefined
+      })
+      .filter((entry): entry is readonly [string, (typeof projects)[number]] =>
+        Boolean(entry)
+      )
+  )
+}
+
+function cloudSyncStatusAppliesToLibrary(
+  status: CloudSyncStatus,
+  libraryProjectPaths: ReadonlySet<string>
+) {
+  const statusProjectPath = normalizeOptionalProjectPath(
+    status.activeProjectPath ?? status.scopedProjectPath
+  )
+
+  return !statusProjectPath || libraryProjectPaths.has(statusProjectPath)
+}
+
+function getCloudSyncLibraryConflictIssues(
+  projects: ProjectLibraryHomeSummaryProps['projects'],
+  conflictMetadataList: readonly CloudSyncConflictMetadata[] | undefined
+) {
+  const libraryProjectPaths = getCloudSyncLibraryProjectPathSet(projects)
+  const conflictIssuesByPath = new Map<string, CloudSyncLibraryProjectIssue>()
+
+  for (const project of projects) {
+    const projectPath = normalizeOptionalProjectPath(project.localProjectPath)
+    if (!projectPath || !project.conflict) {
+      continue
+    }
+
+    conflictIssuesByPath.set(projectPath, {
+      projectPath: project.localProjectPath ?? projectPath,
+      projectName: getHomeProjectDisplayName(project),
+    })
+  }
+
+  for (const metadata of conflictMetadataList ?? []) {
+    const projectPath = normalizeOptionalProjectPath(metadata.localProjectPath)
+    if (!projectPath || !libraryProjectPaths.has(projectPath)) {
+      continue
+    }
+
+    conflictIssuesByPath.set(projectPath, {
+      projectPath: metadata.localProjectPath,
+      projectName: metadata.projectName,
+    })
+  }
+
+  return Array.from(conflictIssuesByPath.values()).toSorted((left, right) =>
+    left.projectName.localeCompare(right.projectName)
+  )
+}
+
+function getCloudSyncLibraryFailureIssues(
+  projects: ProjectLibraryHomeSummaryProps['projects'],
+  status: CloudSyncStatus
+) {
+  const projectsByPath = getCloudSyncLibraryProjectByPath(projects)
+  const failureIssuesByPath = new Map<string, CloudSyncLibraryProjectIssue>()
+
+  for (const project of projects) {
+    const projectPath = normalizeOptionalProjectPath(project.localProjectPath)
+    if (!projectPath || !project.syncFailure) {
+      continue
+    }
+
+    failureIssuesByPath.set(projectPath, {
+      projectPath: project.localProjectPath ?? projectPath,
+      projectName: getHomeProjectDisplayName(project),
+      message: project.syncFailure.message,
+      occurredAt: project.syncFailure.at,
+    })
+  }
+
+  const activeProjectPath = normalizeOptionalProjectPath(
+    status.activeProjectPath
+  )
+  const activeProject = activeProjectPath
+    ? projectsByPath.get(activeProjectPath)
+    : undefined
+  if (status.lastFailure && activeProjectPath && activeProject) {
+    failureIssuesByPath.set(activeProjectPath, {
+      projectPath: activeProject.localProjectPath ?? activeProjectPath,
+      projectName: getHomeProjectDisplayName(activeProject),
+      message: status.lastFailure,
+      occurredAt: status.lastFailureAt,
+    })
+  }
+
+  return Array.from(failureIssuesByPath.values()).toSorted((left, right) =>
+    left.projectName.localeCompare(right.projectName)
+  )
+}
+
+function getCloudSyncLibraryPresentationStatus({
+  status,
+  projects,
+  conflictIssues,
+  failureIssues,
+}: {
+  status: CloudSyncStatus
+  projects: ProjectLibraryHomeSummaryProps['projects']
+  conflictIssues: readonly CloudSyncLibraryProjectIssue[]
+  failureIssues: readonly CloudSyncLibraryProjectIssue[]
+}): CloudSyncStatus {
+  const libraryProjectPaths = getCloudSyncLibraryProjectPathSet(projects)
+  const statusAppliesToLibrary = cloudSyncStatusAppliesToLibrary(
+    status,
+    libraryProjectPaths
+  )
+
+  if (
+    conflictIssues.length > 0 ||
+    (status.state === 'conflict' && statusAppliesToLibrary)
+  ) {
+    return { ...status, state: 'conflict' }
+  }
+
+  if (
+    failureIssues.length > 0 ||
+    (status.state === 'failed' && statusAppliesToLibrary)
+  ) {
+    return { ...status, state: 'failed' }
+  }
+
+  if (
+    statusAppliesToLibrary &&
+    (status.state === 'syncing' || status.pendingCount > 0)
+  ) {
+    return status
+  }
+
+  return {
+    ...status,
+    state: 'idle',
+    pendingCount: 0,
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureKind: undefined,
+    lastFailureAt: undefined,
+  }
+}
+
+function CloudSyncLibraryHomeSummary({
+  projects,
+}: ProjectLibraryHomeSummaryProps) {
   useSignals()
-  const location = useLocation()
   const status = cloudSyncStatus.value
-  const activeProjectPath = status.activeProjectPath
-  const conflictMetadata = useCloudSyncProjectConflict(activeProjectPath)
   const conflictMetadataList = useCloudSyncProjectConflicts()
   if (!status.enabled) {
     return null
   }
 
-  const presentation = getCloudSyncStatusBarPresentation(status)
-  const isHomeRoute = location.pathname.startsWith(PATHS.HOME)
-  const isFileRoute = location.pathname.startsWith(PATHS.FILE)
-  const canInspectConflict =
-    status.state === 'conflict' &&
-    isFileRoute &&
-    activeProjectPath &&
-    conflictMetadata?.conflict
-  const shouldListConflicts = status.state === 'conflict' && isHomeRoute
-
-  const statusBarButtonContent = (
-    <>
-      <ActionIcon
-        icon={presentation.icon}
-        iconClassName={presentation.iconClassName}
-        bgClassName="bg-transparent dark:bg-transparent"
-        size="sm"
-      />
-      <span>{presentation.label}</span>
-      <Tooltip>{presentation.tooltip}</Tooltip>
-    </>
+  const conflictIssues = getCloudSyncLibraryConflictIssues(
+    projects,
+    conflictMetadataList
   )
+  const failureIssues = getCloudSyncLibraryFailureIssues(projects, status)
+  const presentationStatus = getCloudSyncLibraryPresentationStatus({
+    status,
+    projects,
+    conflictIssues,
+    failureIssues,
+  })
+  const presentation = getCloudSyncStatusBarPresentation(presentationStatus)
+  const isConflict = presentationStatus.state === 'conflict'
+  const isFailure = presentationStatus.state === 'failed'
+  const hasProblem = isConflict || isFailure
+  const statusButtonClassName =
+    'm-0 inline-flex h-6 flex-none items-center gap-1.5 rounded border !border-transparent bg-transparent px-1.5 py-0 text-xs font-medium leading-none text-primary hover:!border-primary hover:bg-primary/10 focus:!border-primary focus:bg-primary/10 focus:outline-none'
 
-  const blockedClassName =
-    status.state === 'conflict'
-      ? 'text-warn-80 dark:text-warn-40'
-      : presentation.isBlocked
-        ? 'text-destroy-80 dark:text-destroy-40'
-        : ''
-  const statusBarClassName = `${defaultStatusBarItemClassNames} ${blockedClassName}`
-
-  return shouldListConflicts ? (
-    <Popover className="relative flex items-stretch">
-      <Popover.Button as={Fragment}>
-        <button
-          className={statusBarClassName}
-          data-testid="cloud-sync-status"
-          type="button"
-        >
-          {statusBarButtonContent}
-        </button>
+  return (
+    <Popover className="relative flex flex-none">
+      <Popover.Button
+        className={statusButtonClassName}
+        data-testid="cloud-library-sync-status"
+      >
+        <ActionIcon
+          icon={presentation.icon}
+          iconClassName={presentation.iconClassName}
+          bgClassName="bg-transparent dark:bg-transparent"
+          size="sm"
+        />
+        <span>{presentation.label}</span>
       </Popover.Button>
-      <Popover.Panel as={Fragment}>
-        <div
-          className="absolute left-0 bottom-full z-20 mb-1 flex w-72 max-w-[calc(100vw-1rem)] flex-col gap-1 rounded border border-chalkboard-30 bg-chalkboard-10 p-2 text-xs shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90"
-          data-testid="cloud-conflict-list"
-        >
-          <div className="px-2 py-1 font-bold text-chalkboard-100 dark:text-chalkboard-10">
-            Projects with cloud conflicts
+      <Popover.Panel
+        className="absolute right-0 top-full z-20 mt-1 flex w-80 max-w-[calc(100vw-1rem)] flex-col gap-2 rounded border border-chalkboard-30 bg-chalkboard-10 p-2 text-xs shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90"
+        data-testid="cloud-library-sync-popover"
+      >
+        <div className="px-2 py-1 font-bold text-chalkboard-100 dark:text-chalkboard-10">
+          Cloud sync
+        </div>
+        {!hasProblem && (
+          <p
+            className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30"
+            data-testid="cloud-library-sync-message"
+          >
+            {presentation.tooltip}
+          </p>
+        )}
+        {isConflict && (
+          <div
+            className="flex flex-col gap-1"
+            data-testid="cloud-conflict-list"
+          >
+            <div className="px-2 py-1 font-medium text-warn-90 dark:text-warn-10">
+              Projects with cloud conflicts
+            </div>
+            {conflictMetadataList === undefined &&
+            conflictIssues.length === 0 ? (
+              <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
+                Loading conflicted projects...
+              </p>
+            ) : conflictIssues.length > 0 ? (
+              conflictIssues.map((issue) => (
+                <button
+                  key={issue.projectPath}
+                  type="button"
+                  className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
+                  onClick={() =>
+                    openCloudConflictDialog({
+                      projectPath: issue.projectPath,
+                      projectName: issue.projectName,
+                    })
+                  }
+                >
+                  {issue.projectName}
+                </button>
+              ))
+            ) : (
+              <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
+                No conflicted projects found in this library.
+              </p>
+            )}
           </div>
-          {conflictMetadataList === undefined ? (
-            <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40">
-              Loading conflicted projects...
-            </p>
-          ) : conflictMetadataList.length > 0 ? (
-            conflictMetadataList.map((metadata) => (
+        )}
+        {isFailure && (
+          <div
+            className="flex flex-col gap-1"
+            data-testid="cloud-sync-failure-list"
+          >
+            <div className="px-2 py-1 font-medium text-destroy-80 dark:text-destroy-10">
+              Projects with sync errors
+            </div>
+            {failureIssues.length > 0 ? (
+              failureIssues.map((issue) => (
+                <button
+                  key={issue.projectPath}
+                  type="button"
+                  className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
+                  onClick={() =>
+                    openCloudSyncErrorDialog({
+                      title: presentation.label,
+                      message:
+                        issue.message ||
+                        'Cloud sync failed without a reported error message.',
+                      projectName: issue.projectName,
+                      occurredAt: issue.occurredAt,
+                    })
+                  }
+                >
+                  {issue.projectName}
+                </button>
+              ))
+            ) : (
               <button
-                key={metadata.localProjectPath}
                 type="button"
                 className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
                 onClick={() =>
-                  openCloudConflictDialog({
-                    projectPath: metadata.localProjectPath,
-                    projectName: metadata.projectName,
+                  openCloudSyncErrorDialog({
+                    title: presentation.label,
+                    message:
+                      status.lastFailure ||
+                      'Cloud sync failed without a reported error message.',
+                    occurredAt: status.lastFailureAt,
                   })
                 }
               >
-                {metadata.projectName}
+                View sync error
               </button>
-            ))
-          ) : (
-            <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40">
-              No conflicted projects found.
-            </p>
-          )}
-        </div>
+            )}
+          </div>
+        )}
+        <button
+          type="button"
+          className="mt-1 flex items-center gap-2 rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
+          data-testid="cloud-library-sync-retry"
+          onClick={() => {
+            retryCloudSync()
+          }}
+        >
+          <ActionIcon
+            icon="refresh"
+            bgClassName="!bg-transparent dark:!bg-transparent"
+            size="sm"
+          />
+          Retry cloud sync
+        </button>
       </Popover.Panel>
     </Popover>
-  ) : (
-    <button
-      type="button"
-      className={statusBarClassName}
-      data-testid="cloud-sync-status"
-      onClick={() => {
-        if (canInspectConflict && activeProjectPath) {
-          openCloudConflictDialog({
-            projectPath: activeProjectPath,
-          })
-          return
-        }
-        retryCloudSync()
-      }}
-    >
-      {statusBarButtonContent}
-    </button>
   )
 }
-
-const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
-  const settings = ctx.services.signal(settingsService)
-  const userFeatures = ctx.services.signal(userFeaturesService)
-
-  const statusBarItem = computed(() =>
-    nullableStatusBarItem(
-      settings.value &&
-        userFeatures.value &&
-        userFeaturesContextHas(
-          userFeatures.value.context.value,
-          OPFS_CLOUD_FEATURE_FLAG,
-          false
-        ) &&
-        cloudSyncStatus.value.enabled
-        ? {
-            id: 'cloud-sync',
-            component: CloudSyncStatusBarItem,
-            scopes: ['home'],
-            order: 2,
-          }
-        : null
-    )
-  )
-
-  return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.status-bar-item',
-      provides: [provide(statusBarGlobalItemsValueSpec, statusBarItem)],
-    }),
-  }
-}, 'cloud-sync.status-bar-item')
-
-const cloudSyncStatusBarItemContribution = defineRegistryItem({
-  id: 'cloud-sync.status-bar-item-contribution',
-  uses: [cloudSyncStatusBarItem],
-})
 
 function cloudSyncStatusAppliesToProject(
   status: CloudSyncStatus,
@@ -1034,6 +1220,7 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
     defaultSetting: getDefaultCloudProjectLibrarySetting(),
     newLibrarySetting: getDefaultCloudProjectLibrarySetting(),
     settingsDetails: CloudProjectLibrarySettingsDetails,
+    homeSummary: CloudSyncLibraryHomeSummary,
     operations: {
       createProject: {
         // Creating a project only needs the local library folder, so it stays
@@ -1295,7 +1482,6 @@ export const cloudSyncPlugin = createZdsPlugin({
     cloudSyncDialogAppHeaderItem,
     cloudSyncProjectBreadcrumbBadge,
     cloudSyncProjectMenuItem,
-    cloudSyncStatusBarItemContribution,
     cloudSyncCloudProjectRelationships,
   ],
   defaultSetting: 'off',
