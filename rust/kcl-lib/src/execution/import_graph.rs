@@ -36,8 +36,10 @@ pub(crate) type Universe = HashMap<String, DependencyInfo>;
 /// Imported modules are executed in dependency order, so a leaf can fail
 /// before its parents execute and naturally unwind. The universe still holds
 /// each module's importing statement, which lets us reconstruct that chain.
-/// `exec_module_from_ast` already adds the immediate import site, so this starts
-/// with its parent.
+/// Every per-module error path in the eager loop already ranges the error at
+/// the immediate import site (`exec_module_from_ast` for KCL modules,
+/// `send_to_engine` for foreign ones, and the not-found internal error), so
+/// this starts with its parent.
 pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId, universe: &Universe) -> KclError {
     let Some((immediate_import, _, _, _)) = universe
         .values()
@@ -45,9 +47,13 @@ pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId,
     else {
         return error;
     };
+    // Guard against malformed universes. Import cycles are rejected before
+    // modules execute, but this runs on an error path where the failure mode
+    // would be an infinite loop, so don't rely on that invariant here.
+    let mut visited = std::collections::HashSet::from([module_id]);
     module_id = SourceRange::from(immediate_import).module_id();
 
-    while module_id != ModuleId::default() {
+    while module_id != ModuleId::default() && visited.insert(module_id) {
         let Some((import_stmt, _, _, _)) = universe
             .values()
             .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
@@ -301,6 +307,72 @@ mod tests {
             },
             ModuleRepr::Kcl(program, None),
         )
+    }
+
+    /// A universe entry for `filename` imported by a statement located in
+    /// `importer`.
+    fn dependency_info(filename: &str, module_id: ModuleId, importer: ModuleId) -> DependencyInfo {
+        (
+            AstNode::new(
+                ImportStatement {
+                    selector: ImportSelector::None { alias: None },
+                    path: ImportPath::Kcl {
+                        filename: filename.into(),
+                    },
+                    visibility: Default::default(),
+                    digest: None,
+                },
+                0,
+                filename.len(),
+                importer,
+            ),
+            module_id,
+            ModulePath::Local {
+                value: filename.into(),
+                original_import_path: None,
+            },
+            ModuleRepr::Dummy,
+        )
+    }
+
+    #[test]
+    fn add_import_backtrace_walks_ancestors_to_root() {
+        let root = ModuleId::default();
+        let mid = ModuleId::from_usize(1);
+        let leaf = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert("mid.kcl".to_owned(), dependency_info("mid.kcl", mid, root));
+        universe.insert("leaf.kcl".to_owned(), dependency_info("leaf.kcl", leaf, mid));
+
+        let error = KclError::new_semantic(KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![SourceRange::new(0, 1, leaf)],
+        ));
+        let error = add_import_backtrace(error, leaf, &universe);
+
+        // The leaf's own import site is added by the per-module error path,
+        // so only the ancestor (mid.kcl's import in the root) is added here.
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, [Some("import mid.kcl".to_owned()), None]);
+        assert_eq!(error.source_ranges().first().map(|range| range.module_id()), Some(root));
+    }
+
+    #[test]
+    fn add_import_backtrace_terminates_on_cyclic_universe() {
+        // A universe that claims module 1 was imported from module 2 and vice
+        // versa never reaches the root. Import cycles are rejected before
+        // execution, but a malformed universe must not hang this error path.
+        let a = ModuleId::from_usize(1);
+        let b = ModuleId::from_usize(2);
+        let mut universe = HashMap::new();
+        universe.insert("a.kcl".to_owned(), dependency_info("a.kcl", a, b));
+        universe.insert("b.kcl".to_owned(), dependency_info("b.kcl", b, a));
+
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![SourceRange::new(0, 1, a)]));
+        let error = add_import_backtrace(error, a, &universe);
+
+        // Each module's import location is added at most once.
+        assert!(error.source_ranges().len() <= 3);
     }
 
     #[tokio::test]
