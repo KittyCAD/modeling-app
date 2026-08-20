@@ -54,7 +54,7 @@ Its properties are:
 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
-NOTE: Currently, revolved bodies don't support being scaled in a non-uniform
+**NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
 way (i.e. scaled differently along each axis).
 
 ### Arguments

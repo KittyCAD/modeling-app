@@ -32,7 +32,7 @@ Revolve occurs around a local sketch axis rather than a global axis.
 You can provide more than one sketch to revolve, and they will all be
 revolved around the same axis.
 
-NOTE: Currently, revolved bodies don't support being scaled in a non-uniform
+**NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
 way (i.e. scaled differently along each axis).
 
 ### Arguments
