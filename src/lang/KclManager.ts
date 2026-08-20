@@ -13,6 +13,10 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import {
+  ensureDefaultKclVersionOnBlankMain,
+  isMainKclPath,
+} from '@src/lang/project'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -43,6 +47,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
@@ -658,6 +663,13 @@ const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
+
+function notifyDefaultKclVersionSeeded() {
+  toast.success(
+    `Set project to use the default version (KCL ${DEFAULT_KCL_VERSION}).`,
+    { duration: 5_000 }
+  )
+}
 
 const modelingMachineAnnotation = Annotation.define<boolean>()
 export const modelingMachineEvent = modelingMachineAnnotation.of(true)
@@ -3788,6 +3800,10 @@ export class KclManager extends File {
       return
     }
 
+    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+      return
+    }
+
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
@@ -3867,6 +3883,43 @@ export class KclManager extends File {
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }
+  }
+
+  /**
+   * When the user clears `main.kcl`, seed the editor with the default KCL
+   * version to prevent them from implicitly falling back to a legacy version.
+   */
+  private async seedDefaultKclVersionOnBlankMain(
+    requestedDocumentVersion: number
+  ): Promise<boolean> {
+    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+      return false
+    }
+
+    const wasmInstance = await this.wasmInstancePromise
+    if (typeof wasmInstance === 'string') {
+      return false
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return false
+    }
+
+    const currentCode = this.code
+    const seeded = ensureDefaultKclVersionOnBlankMain(
+      this.path,
+      currentCode,
+      wasmInstance
+    )
+    if (err(seeded) || seeded === currentCode) {
+      return false
+    }
+
+    this.updateCodeEditor(seeded, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    notifyDefaultKclVersionSeeded()
+    return true
   }
 
   async updateEditorWithAstAndWriteToFile(
