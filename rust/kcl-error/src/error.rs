@@ -91,6 +91,7 @@ impl KclErrorDetails {
             .map(|s| BacktraceItem {
                 source_range: *s,
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             })
             .collect();
         KclErrorDetails {
@@ -292,6 +293,7 @@ impl KclError {
             .map(|s| BacktraceItem {
                 source_range: *s,
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             })
             .collect();
         e.source_ranges = source_ranges;
@@ -308,6 +310,7 @@ impl KclError {
         e.backtrace.push(BacktraceItem {
             source_range,
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         });
         e.source_ranges.push(source_range);
 
@@ -327,10 +330,12 @@ impl KclError {
         let e = new.details_mut();
         if let Some(item) = e.backtrace.last_mut() {
             item.fn_name = Some(format!("import {import_path}"));
+            item.kind = BacktraceItemKind::Import;
         }
         e.backtrace.push(BacktraceItem {
             source_range,
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         });
         e.source_ranges.push(source_range);
 
@@ -346,6 +351,20 @@ impl KclError {
 pub struct BacktraceItem {
     pub source_range: SourceRange,
     pub fn_name: Option<String>,
+    #[serde(default)]
+    pub kind: BacktraceItemKind,
+}
+
+/// What kind of execution step a backtrace frame records.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum BacktraceItemKind {
+    /// A function call.
+    #[default]
+    Call,
+    /// An import of a module whose execution failed.
+    Import,
 }
 
 impl std::fmt::Display for BacktraceItem {
@@ -379,6 +398,7 @@ impl From<CompilationIssue> for KclErrorDetails {
         let backtrace = vec![BacktraceItem {
             source_range: err.source_range,
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }];
         KclErrorDetails {
             source_ranges: vec![err.source_range],
@@ -403,5 +423,49 @@ impl From<pyo3::PyErr> for KclError {
 impl From<KclError> for pyo3::PyErr {
     fn from(error: KclError) -> Self {
         pyo3::exceptions::PyException::new_err(error.to_string())
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ModuleId;
+
+    #[test]
+    fn add_import_location_marks_the_imported_frame() {
+        let inner = SourceRange::new(0, 1, ModuleId::from_usize(1));
+        let import_site = SourceRange::new(5, 9, ModuleId::default());
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![inner]))
+            .add_import_location("part.kcl", import_site);
+
+        let backtrace = error.backtrace();
+        assert_eq!(backtrace.len(), 2);
+        assert_eq!(backtrace[0].fn_name.as_deref(), Some("import part.kcl"));
+        assert_eq!(backtrace[0].kind, BacktraceItemKind::Import);
+        assert_eq!(backtrace[0].source_range, inner);
+        assert_eq!(backtrace[1].fn_name, None);
+        assert_eq!(backtrace[1].kind, BacktraceItemKind::Call);
+        assert_eq!(backtrace[1].source_range, import_site);
+        assert_eq!(error.source_ranges(), vec![inner, import_site]);
+    }
+
+    #[test]
+    fn add_unwind_location_keeps_call_kind() {
+        let inner = SourceRange::new(0, 1, ModuleId::default());
+        let call_site = SourceRange::new(5, 9, ModuleId::default());
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![inner]))
+            .add_unwind_location(Some("f".to_owned()), call_site);
+
+        let backtrace = error.backtrace();
+        assert_eq!(backtrace.len(), 2);
+        assert_eq!(backtrace[0].fn_name.as_deref(), Some("f"));
+        assert_eq!(backtrace[0].kind, BacktraceItemKind::Call);
+        assert_eq!(backtrace[1].kind, BacktraceItemKind::Call);
+    }
+
+    #[test]
+    fn backtrace_item_kind_defaults_to_call_in_serde() {
+        // Payloads serialized before the kind field existed must still parse.
+        let item: BacktraceItem = serde_json::from_str(r#"{"sourceRange":[0,1,0],"fnName":null}"#).unwrap();
+        assert_eq!(item.kind, BacktraceItemKind::Call);
     }
 }

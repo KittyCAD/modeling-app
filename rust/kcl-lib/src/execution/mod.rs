@@ -2418,6 +2418,19 @@ mod tests {
                     .collect::<Vec<_>>(),
                 [Some("import broken.kcl"), Some("import assembly.kcl"), None]
             );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
 
             let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
             assert!(report.filename.ends_with("broken.kcl"));
@@ -2503,6 +2516,20 @@ mod tests {
                     .map(|frame| frame.fn_name.as_deref())
                     .collect::<Vec<_>>(),
                 [Some("inner"), Some("outer"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
             );
 
             let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();

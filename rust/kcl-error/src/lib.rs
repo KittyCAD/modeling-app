@@ -1,4 +1,5 @@
 pub use error::BacktraceItem;
+pub use error::BacktraceItemKind;
 pub use error::IsRetryable;
 pub use error::KclError;
 pub use error::KclErrorDetails;
