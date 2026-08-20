@@ -3,10 +3,9 @@ import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import { EditorView } from 'codemirror'
-import type { ActorRefFrom } from 'xstate'
+import toast from 'react-hot-toast'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -50,12 +49,12 @@ export const fsArchiveFile = (props: FSEffectProps) => h(archiveFile.of(props))
 export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
 
 /**
- * Builder function to provide necessary system dependencies for the
- * FS history extension. This is where FS un/redo editor events
- * actually call systemIO APIs.
+ * Builder function to provide necessary system dependencies for the FS history
+ * extension. This is where FS un/redo editor events apply project-session file
+ * operations.
  */
 export function buildFSHistoryExtension(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  projectSession: ProjectSessionService,
   kclManager: KclManager
 ) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
@@ -65,17 +64,7 @@ export function buildFSHistoryExtension(
       }
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
-          const type = e.is(moveFile)
-            ? SystemIOMachineEvents.moveRecursive
-            : SystemIOMachineEvents.moveRecursiveAndNavigate
-
-          systemIOActor.send({
-            type,
-            data: {
-              ...e.value,
-              successMessage: getSuccessMessage(e, tr),
-            },
-          })
+          void applyFsHistoryEffect(projectSession, e, tr)
         }
       }
     }
@@ -97,6 +86,37 @@ export function buildFSHistoryExtension(
         effects: [fsEffectCompartment.reconfigure([])],
       },
       { shouldForwardToLocalHistory: false }
+    )
+  }
+}
+
+async function applyFsHistoryEffect(
+  projectSession: ProjectSessionService,
+  effect: StateEffect<unknown>,
+  transaction: Transaction
+) {
+  try {
+    if (effect.is(restoreFile)) {
+      await projectSession.restoreEntry({
+        archivedPath: effect.value.src,
+        targetPath: effect.value.target,
+      })
+    } else if (effect.is(archiveFile)) {
+      await projectSession.archiveEntry({
+        path: effect.value.src,
+        archivedPath: effect.value.target,
+      })
+    } else if (effect.is(moveFile)) {
+      await projectSession.moveEntry({
+        sourcePath: effect.value.src,
+        targetPath: effect.value.target,
+      })
+    }
+    toast.success(getSuccessMessage(effect, transaction))
+  } catch (error) {
+    console.error(error)
+    toast.error(
+      error instanceof Error ? error.message : 'File history operation failed.'
     )
   }
 }
