@@ -252,7 +252,7 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
 })
 
 test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
-  test('Center on selection from menu, disable interaction in sketch mode', async ({
+  test('Center on selection from menu, allow interaction in sketch mode', async ({
     context,
     page,
     homePage,
@@ -325,7 +325,7 @@ test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
       })
     })
 
-    await test.step(`Gizmo should be disabled when in sketch mode`, async () => {
+    await test.step(`Gizmo should be enabled when in sketch mode`, async () => {
       const exitSketchButton = page.getByRole('button', {
         name: 'Exit sketch',
       })
@@ -340,7 +340,7 @@ test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
         name: 'right view',
       })
       await expect(buttonToTest).toBeVisible()
-      await expect(buttonToTest).toBeDisabled()
+      await expect(buttonToTest).toBeEnabled()
     })
   })
 })

@@ -1,9 +1,8 @@
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useSingletons } from '@src/lib/boot'
 import { useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import { AxisNames } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { ColorRepresentation, Intersection } from 'three'
@@ -26,36 +25,13 @@ import {
 } from 'three'
 
 export default function AxisGizmo() {
-  const { settings } = useApp()
   const { kclManager } = useSingletons()
-  const { state: modelingState } = useModelingContext()
-  const settingsValues = settings.useSettings()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
-  const disableOrbitRef = useRef(false)
   const isPointerOverRef = useRef(false)
   const isHoverRefreshPausedRef = useRef(false)
-
-  // Temporary fix for #4040:
-  // Disable gizmo orbiting in sketch mode
-  // This effect updates disableOrbitRef whenever the user
-  // toggles between Sketch mode and 3D mode
-  useEffect(() => {
-    disableOrbitRef.current =
-      modelingState.matches('Sketch') &&
-      !settingsValues.app.allowOrbitInSketchMode.current
-    if (wrapperRef.current) {
-      wrapperRef.current.style.filter = disableOrbitRef.current
-        ? 'grayscale(100%)'
-        : 'none'
-      wrapperRef.current.style.cursor = disableOrbitRef.current
-        ? 'not-allowed'
-        : 'auto'
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState, settingsValues.app.allowOrbitInSketchMode.current])
 
   useEffect(() => {
     if (!canvasRef.current || !wrapperRef.current) {
@@ -91,21 +67,16 @@ export default function AxisGizmo() {
       renderGizmoScene(gizmoAxisPairs, renderer, scene, camera)
     }
     const doRayCast = (mouse: Vector2) => {
-      // If orbits are disabled, skip click logic
-      if (!disableOrbitRef.current) {
-        updateRayCaster(
-          raycasterObjects,
-          raycaster,
-          mouse,
-          camera,
-          raycasterIntersect,
-          renderer,
-          scene,
-          gizmoAxisPairs
-        )
-      } else {
-        resetRayCast()
-      }
+      updateRayCaster(
+        raycasterObjects,
+        raycaster,
+        mouse,
+        camera,
+        raycasterIntersect,
+        renderer,
+        scene,
+        gizmoAxisPairs
+      )
     }
     const updateHoverAtMouse = (mouse: Vector2) => {
       if (isHoverRefreshPausedRef.current) {
@@ -149,7 +120,6 @@ export default function AxisGizmo() {
     const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
-      disableOrbitRef,
       isPointerOverRef,
       updateHoverAtMouse,
       resetRayCast,
@@ -196,7 +166,7 @@ export default function AxisGizmo() {
     <div
       ref={wrapperRef}
       aria-label="View orientation gizmo"
-      data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
+      data-testid="gizmo"
       className="relative grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
     >
       <canvas ref={canvasRef} />
@@ -467,7 +437,6 @@ const quaternionsEqual = (
 const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection | null>,
-  disableOrbitRef: MutableRefObject<boolean>,
   isPointerOverRef: MutableRefObject<boolean>,
   updateHoverAtMouse: (mouse: Vector2) => void,
   resetRayCast: () => void,
@@ -489,8 +458,7 @@ const initializeMouseEvents = (
   }
 
   const handleClick = () => {
-    // If orbits are disabled, skip click logic
-    if (disableOrbitRef.current || !raycasterIntersect.current) {
+    if (!raycasterIntersect.current) {
       return
     }
     const axisName = raycasterIntersect.current.object.name as AxisNames

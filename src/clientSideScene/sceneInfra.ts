@@ -7,6 +7,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
+  Plane,
   Raycaster,
   Scene,
   Vector2,
@@ -484,7 +485,7 @@ export class SceneInfra {
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
-    intersection: Intersection
+    intersection?: Intersection
   } | null => {
     // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
@@ -497,23 +498,36 @@ export class SceneInfra {
       this.scene.children,
       true
     )
-    if (!planeIntersects.length) {
-      return null
-    }
-
-    // Find the intersection with the raycastable (or sketch) plane
+    // Find the intersection with the finite raycastable plane mesh first.
     const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!raycastablePlaneIntersection) {
-      return {
-        intersection: planeIntersects[0],
-      }
+    const raycastablePlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
+    if (!raycastablePlane) {
+      return planeIntersects.length
+        ? { intersection: planeIntersects[0] }
+        : null
     }
-    const planePosition = raycastablePlaneIntersection.object.position
-    const inversePlaneQuaternion =
-      raycastablePlaneIntersection.object.quaternion.clone().invert()
-    const intersectPoint = raycastablePlaneIntersection.point
+
+    // The mesh is finite. At grazing camera angles the cursor can leave its
+    // projected extent, so use the equivalent infinite mathematical plane.
+    const planePosition = raycastablePlane.position
+    const planeQuaternion = raycastablePlane.quaternion
+    const inversePlaneQuaternion = planeQuaternion.clone().invert()
+    const intersectPoint =
+      raycastablePlaneIntersection?.point.clone() ??
+      this.planeRaycaster.ray.intersectPlane(
+        new Plane().setFromNormalAndCoplanarPoint(
+          new Vector3(0, 0, 1).applyQuaternion(planeQuaternion),
+          planePosition
+        ),
+        new Vector3()
+      )
+    if (!intersectPoint) {
+      return planeIntersects.length
+        ? { intersection: planeIntersects[0] }
+        : null
+    }
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)
@@ -531,7 +545,7 @@ export class SceneInfra {
     return {
       twoD,
       threeD: intersectPoint.divideScalar(this._baseUnitMultiplier),
-      intersection: planeIntersects[0],
+      intersection: raycastablePlaneIntersection ?? planeIntersects[0],
     }
   }
 
@@ -793,7 +807,13 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (event.button !== 0) {
+    if (
+      event.button !== 0 ||
+      // If camControls claims the event for some interaction,
+      // we ignore this event for sketch interaction.
+      // Eg. option + left drag in "Trackpad Friendly" navigation mode.
+      this.camControls.getInteractionType(event) !== 'none'
+    ) {
       return
     }
 
