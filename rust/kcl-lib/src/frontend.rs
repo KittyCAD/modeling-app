@@ -7362,30 +7362,6 @@ fn issue_source_range(error: &KclError) -> SourceRange {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn issue_source_range_prefers_top_level_module() {
-        use kcl_error::ModuleId;
-
-        let top = SourceRange::new(10, 20, ModuleId::default());
-        let imported = SourceRange::new(0, 5, ModuleId::from_usize(7));
-
-        // Innermost frame is in an imported module; the diagnostic should
-        // land on the innermost top-level range instead.
-        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new(
-            "boom".to_owned(),
-            vec![imported, top],
-        ));
-        assert_eq!(super::issue_source_range(&error), top);
-
-        // No top-level range at all: fall back to the innermost one.
-        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![imported]));
-        assert_eq!(super::issue_source_range(&error), imported);
-
-        // No ranges: synthetic.
-        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![]));
-        assert_eq!(super::issue_source_range(&error), SourceRange::synthetic());
-    }
-
     use std::sync;
 
     use super::*;
@@ -7445,6 +7421,30 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn issue_source_range_prefers_top_level_module() {
+        use kcl_error::ModuleId;
+
+        let top = SourceRange::new(10, 20, ModuleId::default());
+        let imported = SourceRange::new(0, 5, ModuleId::from_usize(7));
+
+        // Innermost frame is in an imported module; the diagnostic should
+        // land on the innermost top-level range instead.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![imported, top],
+        ));
+        assert_eq!(super::issue_source_range(&error), top);
+
+        // No top-level range at all: fall back to the innermost one.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![imported]));
+        assert_eq!(super::issue_source_range(&error), imported);
+
+        // No ranges: synthetic.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![]));
+        assert_eq!(super::issue_source_range(&error), SourceRange::synthetic());
     }
 
     #[test]
