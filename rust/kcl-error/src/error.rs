@@ -223,54 +223,8 @@ impl KclError {
         }
     }
 
-    pub fn source_ranges(&self) -> Vec<SourceRange> {
-        match &self {
-            KclError::Lexical { details: e } => e.source_ranges.clone(),
-            KclError::Syntax { details: e } => e.source_ranges.clone(),
-            KclError::Semantic { details: e } => e.source_ranges.clone(),
-            KclError::ImportCycle { details: e } => e.source_ranges.clone(),
-            KclError::Argument { details: e } => e.source_ranges.clone(),
-            KclError::Type { details: e } => e.source_ranges.clone(),
-            KclError::UserDefined { details: e } => e.source_ranges.clone(),
-            KclError::Io { details: e } => e.source_ranges.clone(),
-            KclError::Unexpected { details: e } => e.source_ranges.clone(),
-            KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
-            KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
-            KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
-            KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
-            KclError::Refactor { details: e } => e.source_ranges.clone(),
-            KclError::Engine { details: e } => e.source_ranges.clone(),
-            KclError::EngineHangup { details: e, .. } => e.source_ranges.clone(),
-            KclError::EngineInternal { details: e } => e.source_ranges.clone(),
-            KclError::Internal { details: e } => e.source_ranges.clone(),
-        }
-    }
-
-    /// Get the inner error message.
-    pub fn message(&self) -> &str {
-        match &self {
-            KclError::Lexical { details: e } => &e.message,
-            KclError::Syntax { details: e } => &e.message,
-            KclError::Semantic { details: e } => &e.message,
-            KclError::ImportCycle { details: e } => &e.message,
-            KclError::Argument { details: e } => &e.message,
-            KclError::Type { details: e } => &e.message,
-            KclError::UserDefined { details: e } => &e.message,
-            KclError::Io { details: e } => &e.message,
-            KclError::Unexpected { details: e } => &e.message,
-            KclError::ValueAlreadyDefined { details: e } => &e.message,
-            KclError::UndefinedValue { details: e, .. } => &e.message,
-            KclError::InvalidExpression { details: e } => &e.message,
-            KclError::MaxCallStack { details: e } => &e.message,
-            KclError::Refactor { details: e } => &e.message,
-            KclError::Engine { details: e } => &e.message,
-            KclError::EngineHangup { details: e, .. } => &e.message,
-            KclError::EngineInternal { details: e } => &e.message,
-            KclError::Internal { details: e } => &e.message,
-        }
-    }
-
-    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+    /// The error details shared by every variant.
+    pub fn details(&self) -> &KclErrorDetails {
         match self {
             KclError::Lexical { details: e }
             | KclError::Syntax { details: e }
@@ -289,13 +243,13 @@ impl KclError {
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => e.backtrace.clone(),
+            | KclError::Internal { details: e } => e,
         }
     }
 
-    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
-        let mut new = self.clone();
-        match &mut new {
+    /// Mutable access to the error details shared by every variant.
+    pub fn details_mut(&mut self) -> &mut KclErrorDetails {
+        match self {
             KclError::Lexical { details: e }
             | KclError::Syntax { details: e }
             | KclError::Semantic { details: e }
@@ -313,52 +267,49 @@ impl KclError {
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => {
-                e.backtrace = source_ranges
-                    .iter()
-                    .map(|s| BacktraceItem {
-                        source_range: *s,
-                        fn_name: None,
-                    })
-                    .collect();
-                e.source_ranges = source_ranges;
-            }
+            | KclError::Internal { details: e } => e,
         }
+    }
+
+    pub fn source_ranges(&self) -> Vec<SourceRange> {
+        self.details().source_ranges.clone()
+    }
+
+    /// Get the inner error message.
+    pub fn message(&self) -> &str {
+        &self.details().message
+    }
+
+    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+        self.details().backtrace.clone()
+    }
+
+    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+        let mut new = self.clone();
+        let e = new.details_mut();
+        e.backtrace = source_ranges
+            .iter()
+            .map(|s| BacktraceItem {
+                source_range: *s,
+                fn_name: None,
+            })
+            .collect();
+        e.source_ranges = source_ranges;
 
         new
     }
 
     pub fn add_unwind_location(&self, last_fn_name: Option<String>, source_range: SourceRange) -> Self {
         let mut new = self.clone();
-        match &mut new {
-            KclError::Lexical { details: e }
-            | KclError::Syntax { details: e }
-            | KclError::Semantic { details: e }
-            | KclError::ImportCycle { details: e }
-            | KclError::Argument { details: e }
-            | KclError::Type { details: e }
-            | KclError::UserDefined { details: e }
-            | KclError::Io { details: e }
-            | KclError::Unexpected { details: e }
-            | KclError::ValueAlreadyDefined { details: e }
-            | KclError::UndefinedValue { details: e, .. }
-            | KclError::InvalidExpression { details: e }
-            | KclError::MaxCallStack { details: e }
-            | KclError::Refactor { details: e }
-            | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e, .. }
-            | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => {
-                if let Some(item) = e.backtrace.last_mut() {
-                    item.fn_name = last_fn_name;
-                }
-                e.backtrace.push(BacktraceItem {
-                    source_range,
-                    fn_name: None,
-                });
-                e.source_ranges.push(source_range);
-            }
+        let e = new.details_mut();
+        if let Some(item) = e.backtrace.last_mut() {
+            item.fn_name = last_fn_name;
         }
+        e.backtrace.push(BacktraceItem {
+            source_range,
+            fn_name: None,
+        });
+        e.source_ranges.push(source_range);
 
         new
     }
@@ -370,35 +321,15 @@ impl KclError {
     /// primary and renders the preceding ranges as related context.
     pub fn add_import_location(&self, import_name: String, source_range: SourceRange) -> Self {
         let mut new = self.clone();
-        match &mut new {
-            KclError::Lexical { details: e }
-            | KclError::Syntax { details: e }
-            | KclError::Semantic { details: e }
-            | KclError::ImportCycle { details: e }
-            | KclError::Argument { details: e }
-            | KclError::Type { details: e }
-            | KclError::UserDefined { details: e }
-            | KclError::Io { details: e }
-            | KclError::Unexpected { details: e }
-            | KclError::ValueAlreadyDefined { details: e }
-            | KclError::UndefinedValue { details: e, .. }
-            | KclError::InvalidExpression { details: e }
-            | KclError::MaxCallStack { details: e }
-            | KclError::Refactor { details: e }
-            | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e, .. }
-            | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => {
-                e.backtrace.insert(
-                    0,
-                    BacktraceItem {
-                        source_range,
-                        fn_name: Some(import_name),
-                    },
-                );
-                e.source_ranges.insert(0, source_range);
-            }
-        }
+        let e = new.details_mut();
+        e.backtrace.insert(
+            0,
+            BacktraceItem {
+                source_range,
+                fn_name: Some(import_name),
+            },
+        );
+        e.source_ranges.insert(0, source_range);
 
         new
     }
