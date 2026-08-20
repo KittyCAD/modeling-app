@@ -134,7 +134,14 @@ export function kclErrorsToDiagnostics(
             // The top-level doesn't have a name.
             break
           }
-          const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+          // Import frames are already labeled like `import foo.kcl`;
+          // rendering call parens only makes sense for function frames.
+          const name =
+            item.kind === 'import'
+              ? (item.fnName ?? '(import)')
+              : item.fnName
+                ? `${item.fnName}()`
+                : '(anonymous)'
           backtraceLines.push(name)
         }
         // If the backtrace is only one line, it's not helpful to show.
