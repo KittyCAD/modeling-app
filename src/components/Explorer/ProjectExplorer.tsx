@@ -41,7 +41,7 @@ import {
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
-import { projectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -180,8 +180,8 @@ export const ProjectExplorer = ({
 }) => {
   useSignals()
   const { commands, registry, systemIOActor } = useApp()
-  const projectSession = registry.get(projectSessionService)
-  const projectSessionMutation = projectSession.mutation.value
+  const session = registry.get(projectSession)
+  const projectSessionMutation = session.mutation.value
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -789,7 +789,7 @@ export const ProjectExplorer = ({
               })
 
               const arrayBuffer = await file.arrayBuffer()
-              await projectSession.writeFile({
+              await session.writeFile({
                 path: destinationPath,
                 contents: new Uint8Array(arrayBuffer),
                 overwrite: false,
@@ -815,13 +815,7 @@ export const ProjectExplorer = ({
         }
       }
     },
-    [
-      readOnly,
-      project.path,
-      wasmInstance,
-      projectSession,
-      setFileTreeMutationPending,
-    ]
+    [readOnly, project.path, wasmInstance, session, setFileTreeMutationPending]
   )
 
   const handleDragOverTarget = useCallback(
@@ -931,7 +925,7 @@ export const ProjectExplorer = ({
       if (result && result.src && result.target) {
         void runFileTreeMutation({
           mutation: () =>
-            projectSession.copyEntry({
+            session.copyEntry({
               sourcePath: result.src,
               targetPath: result.target,
             }),
@@ -1039,7 +1033,7 @@ export const ProjectExplorer = ({
 
             void runFileTreeMutation({
               mutation: async () => {
-                const { archivedPath } = await projectSession.archiveEntry({
+                const { archivedPath } = await session.archiveEntry({
                   path: src,
                 })
                 kclManager.addGlobalHistoryEvent(
@@ -1119,7 +1113,7 @@ export const ProjectExplorer = ({
                 const { src, target } = result
                 void runFileTreeMutation({
                   mutation: async () => {
-                    await projectSession.moveEntry({
+                    await session.moveEntry({
                       sourcePath: src,
                       targetPath: target,
                     })
@@ -1176,7 +1170,7 @@ export const ProjectExplorer = ({
                   )
                   void runFileTreeMutation({
                     mutation: () =>
-                      projectSession.createFolder({
+                      session.createFolder({
                         path: requestedAbsolutePath,
                       }),
                     successMessage: `Folder ${requestedName} written successfully`,
@@ -1207,7 +1201,7 @@ export const ProjectExplorer = ({
                       )
                     void runFileTreeMutation({
                       mutation: () =>
-                        projectSession.renameEntry({
+                        session.renameEntry({
                           oldPath,
                           newPath,
                         }),
@@ -1225,7 +1219,7 @@ export const ProjectExplorer = ({
                   } else {
                     void runFileTreeMutation({
                       mutation: () =>
-                        projectSession.renameEntry({
+                        session.renameEntry({
                           oldPath,
                           newPath,
                         }),
@@ -1265,7 +1259,7 @@ export const ProjectExplorer = ({
                 )
                 void runFileTreeMutation({
                   mutation: () =>
-                    projectSession.createFile({
+                    session.createFile({
                       path: requestedAbsolutePath,
                     }),
                   successMessage: 'Successfully created 1 file',
@@ -1285,7 +1279,7 @@ export const ProjectExplorer = ({
                 // so non-KCL files (.md, .txt, ...) don't get KCL boilerplate.
                 void runFileTreeMutation({
                   mutation: () =>
-                    projectSession.createFile({
+                    session.createFile({
                       path: requestedAbsolutePath,
                     }),
                   successMessage: `File ${fileName} written successfully`,
@@ -1318,7 +1312,7 @@ export const ProjectExplorer = ({
               )
               void runFileTreeMutation({
                 mutation: () =>
-                  projectSession.renameEntry({
+                  session.renameEntry({
                     oldPath: requestedAbsoluteFilePathWithExtension,
                     newPath,
                   }),
