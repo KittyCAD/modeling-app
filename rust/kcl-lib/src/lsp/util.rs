@@ -37,7 +37,9 @@ pub fn get_line_before(pos: Position, rope: &Rope) -> Option<String> {
 /// [TextDocumentItem]'s `.text` field.
 pub trait IntoDiagnostic {
     /// Convert the traited object to a vector of [lsp_types::Diagnostic].
-    fn to_lsp_diagnostics(&self, text: &str) -> Vec<Diagnostic>;
+    /// `uri` is the document the diagnostics are published under, used to
+    /// locate related information in the top-level file.
+    fn to_lsp_diagnostics(&self, text: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic>;
 
     /// Get the severity of the diagnostic.
     fn severity(&self) -> tower_lsp::lsp_types::DiagnosticSeverity;

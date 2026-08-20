@@ -272,21 +272,8 @@ impl KclErrorWithOutputs {
         let kcl_source = source.source;
 
         // Label outer frames with their backtrace names so the chain reads
-        // like a backtrace; fall back to the filename. Some errors carry
-        // ranges without matching frames (e.g. hand-built details), so only
-        // trust the backtrace when it lines up.
+        // like a backtrace; fall back to the filename.
         let backtrace = self.error.backtrace();
-        let frame_label = |index: usize| -> Option<String> {
-            if backtrace.len() != source_ranges.len() {
-                return None;
-            }
-            let frame = &backtrace[index];
-            let name = frame.fn_name.as_ref()?;
-            match frame.kind {
-                BacktraceItemKind::Import => Some(name.clone()),
-                BacktraceItemKind::Call => Some(format!("in {name}()")),
-            }
-        };
 
         let mut primary_labels = vec![miette::LabeledSpan::new_with_span(
             Some(filename.clone()),
@@ -298,7 +285,7 @@ impl KclErrorWithOutputs {
             let keep = source_range.module_id() == primary_module_id
                 && !kept_ranges.iter().any(|kept| ranges_overlap(*kept, source_range));
             let source = module_source(source_range.module_id());
-            let label = frame_label(index).unwrap_or_else(|| source.path.to_string());
+            let label = frame_label(&backtrace, source_ranges.len(), index).unwrap_or_else(|| source.path.to_string());
             if keep {
                 primary_labels.push(miette::LabeledSpan::new_with_span(
                     Some(label),
@@ -326,6 +313,23 @@ impl KclErrorWithOutputs {
     }
 }
 
+/// The display label for backtrace frame `index`, derived from the frame's
+/// name: `in someFunction()` for calls, the `import <path>` label for
+/// imports. Some errors carry source ranges without matching frames (e.g.
+/// hand-built details), so the backtrace is only trusted when it lines up
+/// with the source ranges.
+fn frame_label(backtrace: &[BacktraceItem], ranges_len: usize, index: usize) -> Option<String> {
+    if backtrace.len() != ranges_len {
+        return None;
+    }
+    let frame = &backtrace[index];
+    let name = frame.fn_name.as_ref()?;
+    match frame.kind {
+        BacktraceItemKind::Import => Some(name.clone()),
+        BacktraceItemKind::Call => Some(format!("in {name}()")),
+    }
+}
+
 /// Whether two source ranges cover any common source text.
 ///
 /// Equal ranges count as overlapping even when empty so that repeated frames
@@ -350,54 +354,74 @@ impl IsRetryable for KclErrorWithOutputs {
 }
 
 impl IntoDiagnostic for KclErrorWithOutputs {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+    fn to_lsp_diagnostics(&self, code: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
         let message = self.error.get_message();
         let source_ranges = self.error.source_ranges();
+        if source_ranges.is_empty() {
+            return Vec::new();
+        }
 
-        source_ranges
-            .into_iter()
-            .map(|source_range| {
-                let source = self.source_files.get(&source_range.module_id()).cloned().or_else(|| {
-                    self.filenames
-                        .get(&source_range.module_id())
-                        .cloned()
-                        .map(|path| ModuleSource {
-                            source: code.to_string(),
-                            path,
-                        })
-                });
+        // The caller publishes these diagnostics under the top-level
+        // document's URI, so the diagnostic range must be a top-level range
+        // converted against the top-level source; imported offsets would
+        // point at unrelated text. Source ranges are ordered innermost
+        // first: anchor at the innermost top-level range and attach every
+        // other frame as related information located in its own module.
+        let primary_index = source_ranges.iter().position(|range| range.module_id().is_top_level());
+        let primary_range = primary_index.map(|index| source_ranges[index]).unwrap_or_default();
 
-                let related_information = source.and_then(|source| {
+        let backtrace = self.error.backtrace();
+        let related_information: Vec<tower_lsp::lsp_types::DiagnosticRelatedInformation> = source_ranges
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| Some(*index) != primary_index)
+            .filter_map(|(index, source_range)| {
+                // Top-level frames belong to the document these diagnostics
+                // are published under; its path in `filenames` is the virtual
+                // main module, so only the caller knows the real URI.
+                let location = if source_range.module_id().is_top_level() {
+                    tower_lsp::lsp_types::Location {
+                        uri: uri.clone(),
+                        range: source_range.to_lsp_range(code),
+                    }
+                } else {
+                    let source = self.source_files.get(&source_range.module_id()).cloned().or_else(|| {
+                        self.filenames
+                            .get(&source_range.module_id())
+                            .cloned()
+                            .map(|path| ModuleSource {
+                                source: code.to_string(),
+                                path,
+                            })
+                    })?;
                     let mut filename = source.path.to_string();
                     if !filename.starts_with("file://") {
                         filename = format!("file:///{}", filename.trim_start_matches("/"));
                     }
-
-                    url::Url::parse(&filename).ok().map(|uri| {
-                        vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
-                            location: tower_lsp::lsp_types::Location {
-                                uri,
-                                range: source_range.to_lsp_range(&source.source),
-                            },
-                            message: message.to_string(),
-                        }]
-                    })
-                });
-
-                Diagnostic {
-                    range: source_range.to_lsp_range(code),
-                    severity: Some(self.severity()),
-                    code: None,
-                    // TODO: this is neat we can pass a URL to a help page here for this specific error.
-                    code_description: None,
-                    source: Some("kcl".to_string()),
-                    related_information,
-                    message: message.clone(),
-                    tags: None,
-                    data: None,
-                }
+                    tower_lsp::lsp_types::Location {
+                        uri: url::Url::parse(&filename).ok()?,
+                        range: source_range.to_lsp_range(&source.source),
+                    }
+                };
+                Some(tower_lsp::lsp_types::DiagnosticRelatedInformation {
+                    location,
+                    message: frame_label(&backtrace, source_ranges.len(), index).unwrap_or_else(|| message.clone()),
+                })
             })
-            .collect()
+            .collect();
+
+        vec![Diagnostic {
+            range: primary_range.to_lsp_range(code),
+            severity: Some(self.severity()),
+            code: None,
+            // TODO: this is neat we can pass a URL to a help page here for this specific error.
+            code_description: None,
+            source: Some("kcl".to_string()),
+            related_information: (!related_information.is_empty()).then_some(related_information),
+            message,
+            tags: None,
+            data: None,
+        }]
     }
 
     fn severity(&self) -> DiagnosticSeverity {
@@ -566,7 +590,7 @@ pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: Comp
 }
 
 impl IntoDiagnostic for KclError {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+    fn to_lsp_diagnostics(&self, code: &str, _uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
         let message = self.get_message();
         let source_ranges = self.source_ranges();
 
@@ -612,11 +636,56 @@ mod tests {
             vec![SourceRange::new(0, 1, ModuleId::from_usize(9))],
         )));
 
-        let diagnostics = error.to_lsp_diagnostics("x");
+        let diagnostics = error.to_lsp_diagnostics("x", &"file:///test.kcl".try_into().unwrap());
 
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].message, "semantic: boom");
         assert_eq!(diagnostics[0].related_information, None);
+    }
+
+    #[test]
+    fn lsp_diagnostics_anchor_at_top_level_and_relate_imported_frames() {
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        // The failing expression is on line 2 of the imported file, so a
+        // range converted against the wrong source lands on the wrong line.
+        let imported_code = "// comment\nexport brokenValue = missingName + 1\n";
+        let imported_module = ModuleId::from_usize(1);
+        let missing_name_start = imported_code.find("missingName").unwrap();
+        let imported_range = SourceRange::new(missing_name_start, missing_name_start + 11, imported_module);
+        let import_stmt_range = SourceRange::new(0, 41, ModuleId::default());
+
+        let error = KclError::new_semantic(KclErrorDetails::new(
+            "`missingName` is not defined".to_owned(),
+            vec![imported_range],
+        ))
+        .add_import_location("assembly.kcl", import_stmt_range);
+        let mut error = KclErrorWithOutputs::no_outputs(error);
+        error.source_files.insert(
+            imported_module,
+            ModuleSource {
+                source: imported_code.to_owned(),
+                path: ModulePath::Local {
+                    value: "/project/assembly.kcl".into(),
+                    original_import_path: None,
+                },
+            },
+        );
+
+        let diagnostics = error.to_lsp_diagnostics(main_code, &"file:///project/main.kcl".try_into().unwrap());
+
+        // One diagnostic, anchored at the import statement in the top-level
+        // file (line 0), not at imported offsets.
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].range.start.line, 0);
+        assert_eq!(diagnostics[0].range.end.line, 0);
+
+        // The imported frame is related information located in its own file,
+        // with the range computed against that file's source.
+        let related = diagnostics[0].related_information.as_ref().unwrap();
+        assert_eq!(related.len(), 1);
+        assert!(related[0].location.uri.as_str().ends_with("assembly.kcl"));
+        assert_eq!(related[0].location.range.start.line, 1);
+        assert_eq!(related[0].message, "import assembly.kcl");
     }
 
     fn report_for(ranges: Vec<SourceRange>) -> ReportWithOutputs {
