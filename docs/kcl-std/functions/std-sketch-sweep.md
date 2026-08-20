@@ -40,13 +40,13 @@ swept along the same path.
 | `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
+| `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Removed as of KCL 3.0 and later. | No |
 | `translateProfileToPath` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. | No |
-| `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false. | No |
+| `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to the value of `translateProfileToPath`. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
-| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | What version of the sweeping algorithm to use (leave unspecified or use 0 to use the default algorithm). | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | What version of the sweeping algorithm to use. On KCL version 2.0 and lower, this defaults to 1. On KCL version 3.0 and greater, this defaults to 2. 0 means unspecified, the Zoo engine will choose an algorithm version. | No |
 
 ### Returns
 
