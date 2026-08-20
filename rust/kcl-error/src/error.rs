@@ -316,23 +316,23 @@ impl KclError {
 
     /// Add the statement that imported the module containing this error.
     ///
-    /// `import_path` is the path as written in the import statement; the
-    /// backtrace frame is labeled `import <path>`.
+    /// `import_path` is the path as written in the import statement.
     ///
-    /// Import locations are prepended so the original, deepest source range
-    /// remains last. KCL's diagnostic renderer treats the last source range as
-    /// primary and renders the preceding ranges as related context.
+    /// This mirrors how [`KclError::add_unwind_location`] records function
+    /// calls, keeping source ranges ordered innermost first: the current last
+    /// frame (the imported module's code) is labeled `import <path>`, and the
+    /// import statement's own location is appended as the new outermost frame.
     pub fn add_import_location(&self, import_path: &str, source_range: SourceRange) -> Self {
         let mut new = self.clone();
         let e = new.details_mut();
-        e.backtrace.insert(
-            0,
-            BacktraceItem {
-                source_range,
-                fn_name: Some(format!("import {import_path}")),
-            },
-        );
-        e.source_ranges.insert(0, source_range);
+        if let Some(item) = e.backtrace.last_mut() {
+            item.fn_name = Some(format!("import {import_path}"));
+        }
+        e.backtrace.push(BacktraceItem {
+            source_range,
+            fn_name: None,
+        });
+        e.source_ranges.push(source_range);
 
         new
     }

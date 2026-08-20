@@ -247,11 +247,13 @@ impl KclErrorWithOutputs {
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
-        let mut source_ranges = self.error.source_ranges();
+        let mut source_ranges = self.error.source_ranges().into_iter();
 
-        // Pop off the first source range to get the filename.
+        // Source ranges are ordered innermost first, so the first one is where
+        // the error actually occurred. Report it as primary; the outer frames
+        // (callers and import sites) become related reports below.
         let first_source_range = source_ranges
-            .pop()
+            .next()
             .ok_or_else(|| anyhow::anyhow!("No source ranges found"))?;
 
         let source = self
@@ -399,12 +401,13 @@ impl miette::Diagnostic for ReportWithOutputs {
     }
 
     fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
-        // Source ranges can span modules when an imported module fails. This
-        // report's source text belongs to the deepest (last) range, so only
-        // render labels from that module here; the other modules are emitted as
-        // related reports below.
+        // Source ranges can span modules when an error unwinds out of an
+        // imported module or a function defined in one. This report's source
+        // text belongs to the innermost (first) range, so only render labels
+        // from that module here; the other modules are emitted as related
+        // reports below.
         let source_ranges = self.error.error.source_ranges();
-        let primary_module_id = source_ranges.last().map(|range| range.module_id());
+        let primary_module_id = source_ranges.first().map(|range| range.module_id());
         let iter = source_ranges
             .into_iter()
             .filter(move |range| Some(range.module_id()) == primary_module_id)

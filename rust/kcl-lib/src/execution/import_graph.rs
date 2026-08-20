@@ -344,17 +344,32 @@ mod tests {
         universe.insert("mid.kcl".to_owned(), dependency_info("mid.kcl", mid, root));
         universe.insert("leaf.kcl".to_owned(), dependency_info("leaf.kcl", leaf, mid));
 
+        // The per-module error path has already recorded the leaf's own
+        // import site by the time add_import_backtrace runs.
         let error = KclError::new_semantic(KclErrorDetails::new(
             "boom".to_owned(),
             vec![SourceRange::new(0, 1, leaf)],
-        ));
+        ))
+        .add_import_location("leaf.kcl", SourceRange::new(0, 8, mid));
         let error = add_import_backtrace(error, leaf, &universe);
 
-        // The leaf's own import site is added by the per-module error path,
-        // so only the ancestor (mid.kcl's import in the root) is added here.
+        // Only the ancestor (mid.kcl's import in the root) is added here,
+        // completing the innermost-first chain.
         let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
-        assert_eq!(fn_names, [Some("import mid.kcl".to_owned()), None]);
-        assert_eq!(error.source_ranges().first().map(|range| range.module_id()), Some(root));
+        assert_eq!(
+            fn_names,
+            [
+                Some("import leaf.kcl".to_owned()),
+                Some("import mid.kcl".to_owned()),
+                None
+            ]
+        );
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [leaf, mid, root]);
     }
 
     #[test]

@@ -2416,7 +2416,7 @@ mod tests {
                     .iter()
                     .map(|frame| frame.fn_name.as_deref())
                     .collect::<Vec<_>>(),
-                [Some("import assembly.kcl"), Some("import broken.kcl"), None]
+                [Some("import broken.kcl"), Some("import assembly.kcl"), None]
             );
 
             let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
@@ -2427,7 +2427,7 @@ mod tests {
                     .iter()
                     .map(|related| related.filename.as_str())
                     .collect::<Vec<_>>(),
-                [main_path.to_string(), assembly_path.to_string()]
+                [assembly_path.to_string(), main_path.to_string()]
             );
 
             let rendered = format!("{:?}", miette::Report::new(report));
@@ -2435,6 +2435,92 @@ mod tests {
             assert!(rendered.contains("assembly.kcl"));
             assert!(rendered.contains("main.kcl"));
             assert!(rendered.contains("export brokenValue = missingName + 1"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_error_across_import_keeps_backtrace_innermost_first() {
+        // A function defined in an imported module fails when the importing
+        // module calls it: function frames and the import frame must stay in
+        // one innermost-first chain.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-fn-error");
+        let main_path = project_dir.join("main.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        let files = [
+            (
+                project_dir.join("helper.kcl").to_string(),
+                b"export fn inner() { return missingName }\nexport fn outer() { return inner() }\n".to_vec(),
+            ),
+            (
+                project_dir.join("assembly.kcl").to_string(),
+                b"import outer from \"helper.kcl\"\n\nexport assemblyValue = outer()\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir.clone()),
+            current_file: Some(main_path),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            assert!(
+                matches!(&error.error, KclError::UndefinedValue { .. }),
+                "expected UndefinedValue, got {:#?}",
+                error.error
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("inner"), Some("outer"), Some("import assembly.kcl"), None]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("helper.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    project_dir.join("helper.kcl").to_string(),
+                    project_dir.join("assembly.kcl").to_string(),
+                    project_dir.join("main.kcl").to_string()
+                ]
+            );
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("return missingName"));
             assert!(!rendered.contains("Failed to read contents"));
         };
 
