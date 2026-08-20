@@ -4796,7 +4796,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to intersect.",
+        "docs": "The solids to intersect. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5772,7 +5772,7 @@ export default {
     "preferredName": "patternCircular3d",
     "qualName": "std::solid::patternCircular3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5780,8 +5780,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to pattern.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to pattern.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5918,7 +5918,7 @@ export default {
     "preferredName": "patternLinear3d",
     "qualName": "std::solid::patternLinear3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5926,8 +5926,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5981,7 +5981,7 @@ export default {
     "preferredName": "patternTransform",
     "qualName": "std::solid::patternTransform",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5989,8 +5989,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -6804,7 +6804,7 @@ export default {
       {
         "name": "x",
         "ty": "number(_)",
-        "docs": "The scale factor for the x axis.",
+        "docs": "The dimensionless scale factor for the x axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6814,7 +6814,7 @@ export default {
       {
         "name": "y",
         "ty": "number(_)",
-        "docs": "The scale factor for the y axis.",
+        "docs": "The dimensionless scale factor for the y axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6824,7 +6824,7 @@ export default {
       {
         "name": "z",
         "ty": "number(_)",
-        "docs": "The scale factor for the z axis.",
+        "docs": "The dimensionless scale factor for the z axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6844,7 +6844,7 @@ export default {
       {
         "name": "factor",
         "ty": "number(_)",
-        "docs": "If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
+        "docs": "If given, scale the solid by this dimensionless factor. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -8239,7 +8239,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 1+]",
-        "docs": "The solids to use as the base to subtract from.",
+        "docs": "The solids to use as the base to subtract from. These solids are consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8249,7 +8249,7 @@ export default {
       {
         "name": "tools",
         "ty": "[Solid]",
-        "docs": "The solids to subtract.",
+        "docs": "The solids to subtract. These tool solids are also consumed by this operation.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -8650,7 +8650,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to union.",
+        "docs": "The solids to union. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,

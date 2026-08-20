@@ -1298,6 +1298,14 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Body type known from the KCL operation that created this value.
+    ///
+    /// Mock execution cannot query the engine for this, so retain it when it
+    /// is known locally. Procedural operations whose result depends on engine
+    /// topology may leave it unset.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.

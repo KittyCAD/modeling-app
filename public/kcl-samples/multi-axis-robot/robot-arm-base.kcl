@@ -1,7 +1,7 @@
 // Robot Arm Base
 
 // Set Units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Import Constants
 import * from "globals.kcl"
@@ -94,7 +94,7 @@ sketch004 = sketch(on = XY) {
   ])
   radius(circle2) == .4
 }
-region001 = region(point = [0in, -5.4999016in], sketch = sketch004)
+region001 = region(segments = [sketch004.line1, sketch004.line2])
 hidden001 = hide(sketch004)
 sketch001 = extrude(region001, length = basePlateThickness)
 
@@ -115,12 +115,12 @@ chamfer001 = chamfer(
   sketch001,
   tags = [
     getCommonEdge(faces = [
-      region001.tags.line2,
-      region001.tags.line1
+      region001.tags.line1,
+      region001.tags.line2
     ]),
     getCommonEdge(faces = [
-      region001.tags.line3,
-      region001.tags.line1
+      region001.tags.line2,
+      region001.tags.line3
     ]),
     getCommonEdge(faces = [
       region001.tags.line3,
@@ -128,7 +128,7 @@ chamfer001 = chamfer(
     ]),
     getCommonEdge(faces = [
       region001.tags.line4,
-      region001.tags.line2
+      region001.tags.line1
     ])
   ],
   length = 1,
