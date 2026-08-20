@@ -56,6 +56,7 @@ export const ZookeeperConversationPane = (props: {
   user?: ZookeeperConversationPaneUser
   showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
+  isPaneVisible?: boolean
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -608,6 +609,26 @@ export const ZookeeperConversationPane = (props: {
   const isLoadingAttachments =
     !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const wasPromptRunningRef = useRef(false)
+  const billingCallbacksRef = useRef({
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+  })
+  billingCallbacksRef.current = {
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+  }
+
+  useEffect(
+    () => () => {
+      if (!wasPromptRunningRef.current) {
+        return
+      }
+      wasPromptRunningRef.current = false
+      billingCallbacksRef.current.sendBillingUsageEnded()
+      billingCallbacksRef.current.sendBillingUpdate()
+    },
+    []
+  )
 
   useEffect(() => {
     if (isPromptRunning === wasPromptRunningRef.current) {
@@ -684,6 +705,7 @@ export const ZookeeperConversationPane = (props: {
       onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}
       modeScopeKey={props.theProject?.path}
+      isPaneVisible={props.isPaneVisible}
     />
   )
 }

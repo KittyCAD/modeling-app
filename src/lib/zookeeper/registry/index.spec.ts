@@ -15,6 +15,7 @@ import {
   type LayoutService,
   LayoutType,
 } from '@src/lib/layout/types'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import {
   layoutAreaLibraryValueSpec,
   layoutService,
@@ -72,7 +73,7 @@ function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
 }
 
 describe('zookeeper plugin', () => {
-  it('contributes the conversation pane and credits status item', async () => {
+  it('contributes the session host, conversation pane, and credits', async () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
@@ -87,6 +88,9 @@ describe('zookeeper plugin', () => {
       .find((candidate) => candidate.id === 'zookeeper')
 
     expect(plugin).toBeDefined()
+    expect(
+      registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+    ).toContain('zookeeper.runtime-host')
     expect(
       registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
     ).toMatchObject({
@@ -103,7 +107,7 @@ describe('zookeeper plugin', () => {
     ).not.toContain('zookeeper-credits')
   })
 
-  it('removes zookeeper UI contributions when disabled', async () => {
+  it('removes and restores zookeeper contributions when toggled', async () => {
     const { default: zookeeper } = await import('.')
     const layoutSignal = signal(zookeeperPaneLayout())
     const registry = new Registry()
@@ -130,5 +134,17 @@ describe('zookeeper plugin', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
+    expect(
+      registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+    ).not.toContain('zookeeper.runtime-host')
+
+    registry.get(plugin.service).enable()
+
+    expect(
+      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
+    ).toBeDefined()
+    expect(
+      registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+    ).toContain('zookeeper.runtime-host')
   })
 })

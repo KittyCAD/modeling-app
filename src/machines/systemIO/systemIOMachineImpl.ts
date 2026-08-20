@@ -784,6 +784,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
+            requestedProjectPath?: string
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
@@ -813,6 +814,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             input.onFileSystemSuccess?.()
 
             const project = input.context.app.project
+            const projectIsCurrent =
+              input.requestedProjectPath === undefined ||
+              input.requestedProjectPath === project?.path
             const requestedRelativePath = normalizeKCLFileDeletePath(
               input.requestedFileNameWithExtension
             )
@@ -825,12 +829,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               ? fsZds.join(project.path, input.requestedFileNameWithExtension)
               : ''
             const shouldNavigate =
-              !project ||
-              project.name !== input.requestedProjectName ||
-              project.executingPath !== requestedAbsolutePath ||
-              deletesRequestedFile
+              projectIsCurrent &&
+              (!project ||
+                project.name !== input.requestedProjectName ||
+                project.executingPath !== requestedAbsolutePath ||
+                deletesRequestedFile)
 
-            if (!shouldNavigate) {
+            if (projectIsCurrent && !shouldNavigate) {
               input.onSuccess?.()
             }
 
@@ -844,7 +849,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               // several of these bulk writes back-to-back. Sharing a toast id
               // collapses the otherwise-identical success toasts into one.
               toastId: ZOOKEEPER_FILE_WRITE_TOAST_ID,
-              ...(shouldNavigate && input.onSuccess
+              ...(projectIsCurrent && shouldNavigate && input.onSuccess
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
             }

@@ -694,6 +694,28 @@ describe('ZookeeperConversationPane', () => {
     expect(sendBillingUpdate).toHaveBeenCalledTimes(1)
   })
 
+  test('ends active billing when the Zookeeper runtime is disposed', () => {
+    const zookeeperManagerActor = createStatefulPromptActor(false)
+    const sendBillingUpdate = vi.fn()
+    const sendBillingUsageStarted = vi.fn()
+    const sendBillingUsageEnded = vi.fn()
+    const { unmount } = renderPane({
+      zookeeperManagerActor,
+      sendBillingUpdate,
+      sendBillingUsageStarted,
+      sendBillingUsageEnded,
+    })
+
+    act(() => {
+      zookeeperManagerActor.setAwaitingResponse(true)
+    })
+
+    unmount()
+
+    expect(sendBillingUsageEnded).toHaveBeenCalledTimes(1)
+    expect(sendBillingUpdate).toHaveBeenCalledTimes(1)
+  })
+
   test('uses the server default mode when no project setting is set', () => {
     renderPane({
       zookeeperManagerActor: createFakeActor({

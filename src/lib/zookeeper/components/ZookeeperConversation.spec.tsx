@@ -1281,6 +1281,48 @@ describe('ZookeeperConversation', () => {
       ).not.toBeInTheDocument()
     })
 
+    test('closes screenshot annotation when the pane is hidden', () => {
+      const conversationProps = {
+        isLoading: false,
+        conversation: { exchanges: [] },
+        onProcess: vi.fn(),
+        onClickClearChat: vi.fn(),
+        onReconnect: vi.fn(),
+        onCancel: vi.fn(),
+        needsReconnect: false,
+        hasPromptCompleted: true,
+        contexts: [],
+        isProcessing: false,
+        queue: [],
+        onRemoveFromQueue: vi.fn(),
+        onSteer: vi.fn(),
+      }
+      const { rerender } = render(
+        <>
+          <ZookeeperConversation {...conversationProps} isPaneVisible />
+          <TestEngineSceneStreamLayers />
+        </>
+      )
+
+      fireEvent.click(
+        screen.getByTestId('ml-ephant-annotate-screenshot-button')
+      )
+      expect(
+        screen.getByTestId('viewport-annotation-overlay')
+      ).toBeInTheDocument()
+
+      rerender(
+        <>
+          <ZookeeperConversation {...conversationProps} isPaneVisible={false} />
+          <TestEngineSceneStreamLayers />
+        </>
+      )
+
+      expect(
+        screen.queryByTestId('viewport-annotation-overlay')
+      ).not.toBeInTheDocument()
+    })
+
     test('adds annotated viewport screenshot as an attachment', async () => {
       const OriginalImage = globalThis.Image
       class MockImage {

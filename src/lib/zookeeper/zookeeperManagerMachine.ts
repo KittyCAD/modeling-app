@@ -1896,3 +1896,15 @@ export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
 export const ZookeeperManagerReactContext = createActorContext(
   zookeeperManagerMachine
 )
+
+/**
+ * Stop a project-owned Zookeeper session and close its live transport.
+ *
+ * XState does not run root exit actions when an actor is stopped directly, so
+ * runtime owners must close the resolved socket before stopping the actor.
+ * Connecting sockets are still closed by the setup actor's abort handler.
+ */
+export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  actor.stop()
+}
