@@ -4,6 +4,7 @@ import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
   createZookeeperCorrelation,
+  isZookeeperWebSocketMessageTooLarge,
   type MlCopilotModeOption,
   ZookeeperConversationToMarkdown,
   type ZookeeperManagerContext,
@@ -18,6 +19,7 @@ import {
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
+  ZOOKEEPER_WEBSOCKET_MESSAGE_LIMIT_BYTES,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -112,10 +114,53 @@ type SetupActorInput = {
   event: Extract<ZookeeperManagerEvents, { type: ZookeeperManagerStates.Setup }>
   context: ZookeeperManagerContext
 }
+type MessageSendEvent = Extract<
+  ZookeeperManagerEvents,
+  { type: ZookeeperManagerTransitions.MessageSend }
+>
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
 const billingError = 'no API credits available'
+
+// Serializing each 255 byte as a JSON number plus a comma expands this 16 MiB
+// file to slightly more than the 64 MiB websocket limit.
+const projectFileWithOversizedJsonPayload = (): FileMeta => ({
+  type: 'other',
+  relPath: 'asset.bin',
+  data: new Blob([new Uint8Array(16 * 2 ** 20).fill(255)]),
+})
+
+const startTestManager = async (conversation: Conversation) => {
+  const ws: TestWebSocket = new TestSocket() as TestWebSocket
+  const machine = zookeeperManagerMachine.provide({
+    actors: {
+      [ZookeeperManagerStates.Setup]: fromPromise<
+        Partial<ZookeeperManagerContext>,
+        SetupActorInput
+      >(async () => ({
+        ws,
+        conversation,
+        conversationId: 'conversation-id',
+      })),
+    },
+  })
+  const actor = createActor(machine, {
+    input: {
+      apiToken: '',
+    },
+  }).start()
+
+  actor.send({
+    type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+    refParentSend: vi.fn(),
+  })
+  await waitFor(actor, (state) =>
+    state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+  )
+
+  return { actor, ws }
+}
 
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
@@ -133,6 +178,28 @@ describe('createZookeeperCorrelation', () => {
     expect(createZookeeperCorrelation(undefined)).not.toHaveProperty(
       'engine_api_call_id'
     )
+  })
+})
+
+describe('isZookeeperWebSocketMessageTooLarge', () => {
+  it('measures JSON number-byte expansion in UTF-8 bytes', () => {
+    expect(ZOOKEEPER_WEBSOCKET_MESSAGE_LIMIT_BYTES).toBe(64 * 2 ** 20)
+
+    const rawFileBytes = [255, 255]
+    const serializedMessage = JSON.stringify({
+      current_files: { 'asset.bin': rawFileBytes },
+      prompt: '\u{1F4A9}',
+    })
+    const encodedSize = new Blob([serializedMessage]).size
+
+    expect(encodedSize).toBeGreaterThan(serializedMessage.length)
+    expect(encodedSize).toBeGreaterThan(rawFileBytes.length)
+    expect(
+      isZookeeperWebSocketMessageTooLarge(serializedMessage, encodedSize - 1)
+    ).toBe(true)
+    expect(
+      isZookeeperWebSocketMessageTooLarge(serializedMessage, encodedSize)
+    ).toBe(false)
   })
 })
 
@@ -278,6 +345,72 @@ describe('zookeeperManagerMachine', () => {
 
       expect(actor.getSnapshot().context.defaultMode).toBe('standard')
       expect(actor.getSnapshot().context.modeOptions).toStrictEqual(modeOptions)
+
+      actor.stop()
+    })
+  })
+
+  describe('MessageSend', () => {
+    it('does not send a JSON-encoded prompt larger than 64 MiB', async () => {
+      const { reports } = stubClientErrorFetch()
+      const { actor, ws } = await startTestManager({ exchanges: [] })
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      const messageSendEvent: MessageSendEvent = {
+        type: ZookeeperManagerTransitions.MessageSend,
+        prompt: 'Use this binary asset',
+        projectForPromptOutput: {
+          name: 'zoo-project',
+        } as MessageSendEvent['projectForPromptOutput'],
+        applicationProjectDirectory: '/projects',
+        fileSelectedDuringPrompting: {
+          entry: {
+            path: '/projects/zoo-project/main.kcl',
+            name: 'main.kcl',
+            children: null,
+          },
+          content: '',
+        },
+        projectFiles: [projectFileWithOversizedJsonPayload()],
+        selections: null,
+        artifactGraph: new Map(),
+        kclManager: {} as MessageSendEvent['kclManager'],
+        engineCommandManager: {
+          apiCallId: undefined,
+        } as MessageSendEvent['engineCommandManager'],
+        wasmInstance: {} as MessageSendEvent['wasmInstance'],
+      }
+
+      const messageStarted = waitFor(actor, (state) =>
+        state.matches({
+          [ZookeeperManagerStates.Ready]: {
+            [ZookeeperManagerStates.Request]:
+              ZookeeperManagerTransitions.MessageSend,
+          },
+        })
+      )
+      actor.send(messageSendEvent)
+      await messageStarted
+      await waitFor(actor, (state) =>
+        state.matches({
+          [ZookeeperManagerStates.Ready]: {
+            [ZookeeperManagerStates.Request]: S.Await,
+          },
+        })
+      )
+
+      expect(ws.sentPayloads).toHaveLength(0)
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(reports[0]?.message).toContain(
+        'project files are too large to send'
+      )
 
       actor.stop()
     })
@@ -821,6 +954,47 @@ describe('zookeeperManagerMachine', () => {
         },
         active_file: 'newFile.kcl',
       })
+
+      actor.stop()
+    })
+
+    it('does not resume with JSON-encoded project context larger than 64 MiB', async () => {
+      const { reports } = stubClientErrorFetch()
+      const interruptedConversation: Conversation = {
+        exchanges: [
+          {
+            request: {
+              type: 'user',
+              content: 'make me a sandwich',
+            },
+            responses: [],
+            deltasAggregated: '',
+          },
+        ],
+      }
+      const { actor, ws } = await startTestManager(interruptedConversation)
+
+      const continueStarted = waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.ContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [projectFileWithOversizedJsonPayload()],
+      })
+      await continueStarted
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      expect(ws.sentPayloads).toHaveLength(0)
+      expect(actor.getSnapshot().context.awaitingResponse).toBe(false)
+      expect(actor.getSnapshot().context.conversation).toBe(
+        interruptedConversation
+      )
+      expect(reports[0]?.message).toContain(
+        'project files are too large to send'
+      )
 
       actor.stop()
     })

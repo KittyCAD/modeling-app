@@ -212,9 +212,40 @@ export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
 export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
+export const ZOOKEEPER_WEBSOCKET_MESSAGE_LIMIT_BYTES = 64 * 2 ** 20
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
+
+class ZookeeperProjectTooLargeError extends Error {
+  constructor() {
+    super(ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON)
+    this.name = 'ZookeeperProjectTooLargeError'
+  }
+}
+
+export function isZookeeperWebSocketMessageTooLarge(
+  serializedMessage: string,
+  messageLimitBytes = ZOOKEEPER_WEBSOCKET_MESSAGE_LIMIT_BYTES
+): boolean {
+  return new Blob([serializedMessage]).size > messageLimitBytes
+}
+
+function serializeZookeeperWebSocketMessage(message: object): string | Error {
+  const serializedMessage = JSON.stringify(message)
+  return isZookeeperWebSocketMessageTooLarge(serializedMessage)
+    ? new ZookeeperProjectTooLargeError()
+    : serializedMessage
+}
+
+function isProjectTooLargeErrorEvent(event: unknown): boolean {
+  return (
+    typeof event === 'object' &&
+    event !== null &&
+    'error' in event &&
+    event.error instanceof ZookeeperProjectTooLargeError
+  )
+}
 
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
@@ -676,6 +707,7 @@ export const zookeeperManagerMachine = setup({
   guards: {
     canRetrySetup: ({ context }) =>
       context.setupAttempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+    isProjectTooLargeError: ({ event }) => isProjectTooLargeErrorEvent(event),
   },
   actions: {
     toastError: ({ event, context }) => {
@@ -1332,7 +1364,10 @@ export const zookeeperManagerMachine = setup({
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
-      context.ws.send(JSON.stringify(request))
+      const serializedRequest = serializeZookeeperWebSocketMessage(request)
+      if (isErr(serializedRequest)) return Promise.reject(serializedRequest)
+
+      context.ws.send(serializedRequest)
 
       const conversation: Conversation = {
         exchanges: Array.from(context.conversation.exchanges),
@@ -1408,8 +1443,14 @@ export const zookeeperManagerMachine = setup({
         command: 'continue',
       }
 
+      const serializedProjectContext = serializeZookeeperWebSocketMessage(
+        requestProjectContext
+      )
+      if (isErr(serializedProjectContext))
+        return Promise.reject(serializedProjectContext)
+
       context.ws.send(JSON.stringify(requestContinue))
-      context.ws.send(JSON.stringify(requestProjectContext))
+      context.ws.send(serializedProjectContext)
 
       return {
         awaitingResponse: true,
@@ -1619,7 +1660,14 @@ export const zookeeperManagerMachine = setup({
             }),
           ],
         },
-        onError: { target: S.Await, actions: ['toastError'] },
+        onError: [
+          {
+            guard: 'isProjectTooLargeError',
+            target: ZookeeperManagerStates.Ready,
+            actions: ['toastError'],
+          },
+          { target: S.Await, actions: ['toastError'] },
+        ],
       },
     },
     [ZookeeperManagerStates.Ready]: {
