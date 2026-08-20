@@ -403,11 +403,9 @@ impl miette::Diagnostic for ReportWithOutputs {
         // report's source text belongs to the deepest (last) range, so only
         // render labels from that module here; the other modules are emitted as
         // related reports below.
-        let primary_module_id = self.error.error.source_ranges().last().map(|range| range.module_id());
-        let iter = self
-            .error
-            .error
-            .source_ranges()
+        let source_ranges = self.error.error.source_ranges();
+        let primary_module_id = source_ranges.last().map(|range| range.module_id());
+        let iter = source_ranges
             .into_iter()
             .filter(move |range| Some(range.module_id()) == primary_module_id)
             .map(miette::SourceSpan::from)
