@@ -1,11 +1,15 @@
+import { signal } from '@preact/signals-core'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import {
   type FileExplorerEntry,
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
+import type { ZDSProject } from '@src/lang/KclManager'
+import { app } from '@src/lib/boot'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   PROJECT_EXPLORER_COMMAND_IDS,
   defaultKeymap,
@@ -77,12 +81,30 @@ const PROJECT_TEMPLATE: Project = {
 }
 let project: Project = PROJECT_TEMPLATE
 
+function createFakeOpenedProject(projectTree: Project) {
+  const projectIORefSignal = signal(projectTree)
+  const mocks = {
+    createFile: vi.fn(async ({ path }: { path: string }) => path),
+    refreshProjectTree: vi.fn(async () => projectIORefSignal.value),
+  }
+  return {
+    path: projectTree.path,
+    name: projectTree.name,
+    projectIORefSignal,
+    ...mocks,
+    mocks,
+  } as unknown as ZDSProject & { mocks: typeof mocks }
+}
+
 describe('ProjectExplorer', () => {
   beforeEach(() => {
     // reset the project before each test
     project = JSON.parse(JSON.stringify(PROJECT_TEMPLATE))
+    app.registry.get(projectSession).clearProject()
   })
   afterEach(() => {
+    app.registry.get(projectSession).clearProject()
+    vi.restoreAllMocks()
     cleanup()
   })
   it('should render no rows', () => {
@@ -845,6 +867,55 @@ describe('ProjectExplorer', () => {
       .closest('[role="treeitem"]')
     expect(activeFolder.nextElementSibling).toBe(contextMenuFileRow)
     expect(contextMenuFileRow).toHaveAttribute('aria-level', '2')
+  })
+  it('should create files through the project session service', async () => {
+    addPlaceHoldersForNewFileAndFolder(project.children, project.path)
+    const openedProject = createFakeOpenedProject(project)
+    app.registry.get(projectSession).setProject(openedProject)
+    const systemIOSend = vi.spyOn(app.systemIOActor, 'send')
+
+    const { rerender } = render(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={-1}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    rerender(
+      <ProjectExplorer
+        wasmInstance={wasmInstance}
+        project={project}
+        file={oneFile}
+        createFilePressed={performance.now()}
+        createFolderPressed={-1}
+        refreshExplorerPressed={-1}
+        collapsePressed={-1}
+        onRowClicked={(row: FileExplorerEntry, index: number) => {}}
+        onRowEnter={(row: FileExplorerEntry, index: number) => {}}
+        readOnly={false}
+        canNavigate={true}
+      />
+    )
+
+    const renameField = screen.getByTestId('file-rename-field')
+    fireEvent.change(renameField, { target: { value: 'notes.txt' } })
+    fireEvent.keyUp(renameField, { key: 'Enter' })
+
+    await waitFor(() => {
+      expect(openedProject.mocks.createFile).toHaveBeenCalledWith({
+        path: `/${applicationDirectory}/${projectName}/notes.txt`,
+      })
+    })
+    expect(systemIOSend).not.toHaveBeenCalled()
   })
   it('should render a placefolder for a folder when create folder is pressed', () => {
     const mainFile = createFile('main.kcl')
