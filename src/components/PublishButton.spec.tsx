@@ -11,10 +11,11 @@ vi.mock('@src/hooks/useProjectStatus', () => ({
 
 import { PublishButton } from '@src/components/PublishButton'
 import type { App } from '@src/lib/app'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 function createApp() {
-  return {
-    projectSignal: {
+  const projectSessionValue = {
+    project: {
       value: {
         projectIORefSignal: {
           value: {
@@ -23,6 +24,9 @@ function createApp() {
         },
       },
     },
+  }
+
+  return {
     auth: {
       useAuthState: () => ({ matches: () => false }),
       useToken: () => 'token-123',
@@ -39,6 +43,8 @@ function createApp() {
       },
     },
     registry: {
+      get: (service: unknown) =>
+        service === projectSession ? projectSessionValue : undefined,
       optional: () => undefined,
     },
   } as unknown as App

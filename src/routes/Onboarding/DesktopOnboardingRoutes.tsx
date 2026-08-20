@@ -89,8 +89,7 @@ function useOnboardingProjectIO() {
   useSignals()
   const location = useLocation()
   const { registry, systemIOActor } = useApp()
-  const currentProjectName = registry.get(projectSession).project.value
-    ?.name
+  const currentProjectName = registry.get(projectSession).project.value?.name
   return {
     projectName:
       getProjectNameFromFileRoute(location.pathname) ??

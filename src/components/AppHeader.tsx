@@ -40,8 +40,9 @@ export const AppHeader = ({
   const lsp = app.registry.get(lspService)
   const navigate = useNavigate()
   const user = auth.useUser()
-  const executingPath = app.registry.get(projectSession).project.value
-    ?.executingPathSignal.value?.value
+  const executingPath =
+    app.registry.get(projectSession).project.value?.executingPathSignal.value
+      ?.value
   const absoluteFilePath = executingPath
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined
