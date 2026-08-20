@@ -20,10 +20,9 @@ KCL Argument error
       
         × argument: This function requires a parameter y, but you haven't
         │ passed it one.
-         ╭─[1:7]
-       1 │ ╭─▶ fn add(x, y) {
-       2 │ │     return x + y
-       3 │ ├─▶ }
-         · ╰──── tests/kw_fn_too_few_args/input.kcl
+         ╭─[5:9]
        4 │
+       5 │ three = add(x = 1)
+         ·         ─────┬────
+         ·              ╰── tests/kw_fn_too_few_args/input.kcl
          ╰────
