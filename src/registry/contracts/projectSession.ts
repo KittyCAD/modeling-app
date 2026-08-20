@@ -9,7 +9,7 @@ import type { ZDSProject } from '@src/lang/KclManager'
  * `App.projectSignal`, and the selected project-library id. The legacy App
  * fields delegate to this service while call sites are migrated.
  */
-export interface ProjectSessionRegistryService {
+export interface ProjectSessionService {
   readonly project: Signal<ZDSProject | undefined>
   readonly currentProjectLibraryId: Signal<string | undefined>
   getProject: () => ZDSProject | undefined
@@ -20,8 +20,7 @@ export interface ProjectSessionRegistryService {
 }
 
 export const projectSessionContract = defineContract({
-  projectSessionService:
-    defineService<ProjectSessionRegistryService>('project-session'),
+  projectSession: defineService<ProjectSessionService>('project-session'),
 })
 
-export const { projectSessionService } = projectSessionContract
+export const { projectSession } = projectSessionContract

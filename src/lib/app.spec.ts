@@ -29,7 +29,7 @@ import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import { projectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -268,7 +268,7 @@ describe('project system', () => {
       )
       const registryBilling = app.registry.get(billingService)
       const registryRustContext = app.registry.get(rustContextService)
-      const registryProjectSession = app.registry.get(projectSessionService)
+      const registryProjectSession = app.registry.get(projectSession)
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)

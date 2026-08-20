@@ -1,6 +1,6 @@
 import { Registry } from '@kittycad/registry'
 import type { ZDSProject } from '@src/lang/KclManager'
-import { projectSessionService } from '@src/registry/contracts/projectSession'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it } from 'vitest'
 
@@ -16,44 +16,40 @@ describe('project session extension', () => {
     registry = new Registry()
     registry.configure([projectSessionRegistryItem])
 
-    const projectSession = registry.get(projectSessionService)
+    const session = registry.get(projectSession)
     const project = { name: 'bracket' } as ZDSProject
 
-    expect(projectSession.getProject()).toBeUndefined()
-    expect(projectSession.project.value).toBeUndefined()
+    expect(session.getProject()).toBeUndefined()
+    expect(session.project.value).toBeUndefined()
 
-    projectSession.setProject(project)
+    session.setProject(project)
 
-    expect(projectSession.getProject()).toBe(project)
-    expect(projectSession.project.value).toBe(project)
+    expect(session.getProject()).toBe(project)
+    expect(session.project.value).toBe(project)
 
-    projectSession.clearProject()
+    session.clearProject()
 
-    expect(projectSession.getProject()).toBeUndefined()
-    expect(projectSession.project.value).toBeUndefined()
+    expect(session.getProject()).toBeUndefined()
+    expect(session.project.value).toBeUndefined()
   })
 
   it('tracks the current project library id', () => {
     registry = new Registry()
     registry.configure([projectSessionRegistryItem])
 
-    const projectSession = registry.get(projectSessionService)
+    const session = registry.get(projectSession)
 
-    expect(projectSession.getCurrentProjectLibraryId()).toBeUndefined()
-    expect(projectSession.currentProjectLibraryId.value).toBeUndefined()
+    expect(session.getCurrentProjectLibraryId()).toBeUndefined()
+    expect(session.currentProjectLibraryId.value).toBeUndefined()
 
-    projectSession.setCurrentProjectLibraryId('directory:projects')
+    session.setCurrentProjectLibraryId('directory:projects')
 
-    expect(projectSession.getCurrentProjectLibraryId()).toBe(
-      'directory:projects'
-    )
-    expect(projectSession.currentProjectLibraryId.value).toBe(
-      'directory:projects'
-    )
+    expect(session.getCurrentProjectLibraryId()).toBe('directory:projects')
+    expect(session.currentProjectLibraryId.value).toBe('directory:projects')
 
-    projectSession.setCurrentProjectLibraryId(undefined)
+    session.setCurrentProjectLibraryId(undefined)
 
-    expect(projectSession.getCurrentProjectLibraryId()).toBeUndefined()
-    expect(projectSession.currentProjectLibraryId.value).toBeUndefined()
+    expect(session.getCurrentProjectLibraryId()).toBeUndefined()
+    expect(session.currentProjectLibraryId.value).toBeUndefined()
   })
 })
