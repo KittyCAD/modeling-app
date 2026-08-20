@@ -4,7 +4,6 @@ import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -147,7 +146,7 @@ describe('project command config', () => {
     ])
   })
 
-  it('creates project directories from project titles', () => {
+  it('requires a project library target when creating projects', () => {
     const systemIOActor = createSystemIOActor()
     const commands = createProjectCommands({
       systemIOActor,
@@ -161,13 +160,7 @@ describe('project command config', () => {
       name: ' My Cool Project! ',
     })
 
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.createProject,
-      data: {
-        requestedProjectName: 'my-cool-project',
-        requestedProjectTitle: 'My Cool Project!',
-      },
-    })
+    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('creates projects through the selected library target', () => {
@@ -333,7 +326,7 @@ describe('project command config', () => {
     ])
   })
 
-  it('labels existing project options by title while submitting directory names', () => {
+  it('keeps legacy project directory options for opening projects only', () => {
     const systemIOActor = createSystemIOActor([
       createProject({
         name: 'bracket-directory',
@@ -362,23 +355,13 @@ describe('project command config', () => {
         isCurrent: false,
       },
     ])
-    expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([
-      {
-        name: 'Display Bracket',
-        value: 'bracket-directory',
-        isCurrent: false,
-      },
-    ])
-    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
-      {
-        name: 'Display Bracket',
-        value: 'bracket-directory',
-        isCurrent: false,
-      },
-    ])
+    expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([])
+    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual(
+      []
+    )
   })
 
-  it('renames project titles without replacing the project directory identifier', () => {
+  it('requires a home project action target when renaming projects', () => {
     const systemIOActor = createSystemIOActor([
       createProject({
         name: 'bracket-directory',
@@ -412,14 +395,7 @@ describe('project command config', () => {
       newName: 'Retitled Bracket',
     })
 
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.renameProject,
-      data: {
-        projectName: 'bracket-directory',
-        requestedProjectName: 'Retitled Bracket',
-        redirect: true,
-      },
-    })
+    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('uses home project entries for project command options', () => {
@@ -745,11 +721,11 @@ describe('project command config', () => {
       enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
     })
-    const renameCommand = commands.find(
-      (command) => command.name === 'Rename project'
+    const openCommand = commands.find(
+      (command) => command.name === 'Open project'
     )
 
-    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
+    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
         name: 'Display Bracket',
         value: 'bracket-directory',
