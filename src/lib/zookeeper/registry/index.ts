@@ -3,6 +3,7 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import {
@@ -11,14 +12,21 @@ import {
   type Layout,
   LayoutType,
 } from '@src/lib/layout/types'
+import { attachZookeeperProjectRuntime } from '@src/lib/zookeeper/projectRuntime'
+import { zookeeperService } from '@src/lib/zookeeper/registry/contract'
+import { createZookeeperService } from '@src/lib/zookeeper/service'
+import { authService } from '@src/registry/contracts/auth'
 import {
   layoutAreaLibraryValueSpec,
   layoutService,
 } from '@src/registry/contracts/layout'
+import { projectSessionService } from '@src/registry/contracts/projectSession'
+import { settingsService } from '@src/registry/contracts/settings'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement, lazy, Suspense } from 'react'
 
@@ -125,11 +133,42 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
   }
 }, 'zookeeper.credits-status-bar-item')
 
+const zookeeperRuntimeService = defineRegistryItemFactory((ctx) => {
+  const auth = ctx.services.get(authService)
+  const projectSession = ctx.services.signal(projectSessionService)
+  const settings = ctx.services.signal(settingsService)
+  const systemIO = ctx.services.signal(systemIOService)
+  const service = createZookeeperService({
+    getApiToken: () => auth.token.value,
+  })
+  const disposeProjectRuntime = attachZookeeperProjectRuntime({
+    service,
+    projectSession,
+    settings,
+    systemIO,
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'zookeeper.runtime-service',
+      providesServices: [provideService(zookeeperService, service)],
+      dispose: () => {
+        disposeProjectRuntime()
+        service.dispose()
+      },
+    }),
+  }
+}, 'zookeeper.runtime-service')
+
 const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',
   description: 'AI-assisted modeling conversation and project editing tools.',
-  items: [zookeeperLayoutArea, zookeeperCreditsStatusBarItem],
+  items: [
+    zookeeperRuntimeService,
+    zookeeperLayoutArea,
+    zookeeperCreditsStatusBarItem,
+  ],
   defaultSetting: 'core',
 })
 

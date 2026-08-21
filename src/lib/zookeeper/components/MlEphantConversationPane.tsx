@@ -1,29 +1,25 @@
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { reportRejection } from '@src/lib/trap'
 import {
   MlEphantConversation,
   type QueuedMessage,
 } from '@src/lib/zookeeper/components/MlEphantConversation'
 import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
-import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
-import type { FileEntry, Project } from '@src/lib/project'
-import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { reportRejection } from '@src/lib/trap'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
-import {
-  MlEphantManagerStates,
-  MlEphantManagerTransitions,
+import type {
+  MlCopilotModeId,
+  MlEphantManagerActor,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
-import type { MlCopilotModeId } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
 type MlEphantConversationPaneUser = {
@@ -38,7 +34,8 @@ const awaitingResponseSelector = (
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
-  conversationStore: ZookeeperConversationStore
+  clearChat: () => Promise<void>
+  reconnect: () => void
   kclManager: KclManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
@@ -59,14 +56,7 @@ export const MlEphantConversationPane = (props: {
   )
   const [queue, setQueue] = useState<QueuedMessage[]>([])
   const isSubmittingFromQueue = useRef(false)
-  const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
-  const savedProjectConversationLookupLoaded = useRef(false)
-  const savedProjectConversationId = useRef<string | undefined>(undefined)
-  const loaderFileRef = useRef(props.loaderFile)
-  useEffect(() => {
-    loaderFileRef.current = props.loaderFile
-  })
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -148,12 +138,7 @@ export const MlEphantConversationPane = (props: {
   const needsReconnect = abruptlyClosed
 
   const onReconnect = () => {
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.CacheSetupAndConnect,
-      refParentSend: props.mlEphantManagerActor.send,
-      conversationId:
-        props.mlEphantManagerActor.getSnapshot().context.conversationId,
-    })
+    props.reconnect()
   }
 
   const onCancel = () => {
@@ -254,204 +239,10 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
-    let closedConversation = props.mlEphantManagerActor
-      .getSnapshot()
-      .matches(S.Await)
-    let clearedConversationMapping = true
-    let startedFreshConversation = false
-    // biome-ignore lint/style/useConst: cleanup can run through actor callbacks before subscription assignment completes.
-    let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
-
-    const cleanupSubscriptions = () => {
-      sub?.unsubscribe()
-    }
-
-    const startFreshConversation = () => {
-      if (startedFreshConversation) {
-        return
-      }
-      startedFreshConversation = true
-      props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: props.mlEphantManagerActor.send,
-        conversationId: undefined,
-      })
-      cleanupSubscriptions()
-    }
-
-    const maybeStartFreshConversation = () => {
-      if (!closedConversation || !clearedConversationMapping) {
-        return
-      }
-      startFreshConversation()
-    }
-
-    isClearingChat.current = true
     steeredId.current = null
     setQueue([])
-    const projectId = props.settings.meta.id.current
-    if (projectId !== undefined && projectId !== uuidNIL) {
-      clearedConversationMapping = false
-      void props.conversationStore
-        .deleteProjectConversationId(projectId)
-        .catch(reportRejection)
-        .finally(() => {
-          savedProjectConversationLookupLoaded.current = true
-          savedProjectConversationId.current = undefined
-          clearedConversationMapping = true
-          maybeStartFreshConversation()
-        })
-    }
-    sub = props.mlEphantManagerActor.subscribe((next) => {
-      if (!next.matches(S.Await)) {
-        return
-      }
-
-      closedConversation = true
-      maybeStartFreshConversation()
-    })
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-
-    if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
-      closedConversation = true
-      maybeStartFreshConversation()
-    }
+    void props.clearChat().catch(reportRejection)
   }
-
-  const tryToGetExchanges = () => {
-    if (isClearingChat.current) {
-      return
-    }
-
-    if (!savedProjectConversationLookupLoaded.current) {
-      return
-    }
-    if (props.settings.meta.id.current === uuidNIL) {
-      return
-    }
-
-    const conversationId = savedProjectConversationId.current
-
-    if (conversationId === uuidNIL) {
-      return
-    }
-
-    // We can now reliably use the saved project conversation lookup.
-    // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-    if (
-      props.theProject !== undefined &&
-      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
-    ) {
-      props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        refParentSend: props.mlEphantManagerActor.send,
-        conversationId,
-      })
-    }
-  }
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: this actor coordination effect intentionally tracks project identity, matching the existing eslint suppression below.
-  useEffect(() => {
-    const subscriptionMlEphantManagerActor =
-      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
-        const isProcessing =
-          (mlEphantManagerActorSnapshot.matches({
-            [MlEphantManagerStates.Ready]: {
-              [MlEphantManagerStates.Request]: S.Await,
-            },
-          }) || mlEphantManagerActorSnapshot.value === S.Await) === false
-
-        const { context } = mlEphantManagerActorSnapshot
-
-        if (
-          isClearingChat.current &&
-          context.conversationId !== undefined &&
-          context.conversation !== undefined
-        ) {
-          isClearingChat.current = false
-        }
-
-        if (
-          mlEphantManagerActorSnapshot.matches(
-            MlEphantManagerStates.WaitForContinueCheck
-          ) &&
-          props.theProject !== undefined
-        ) {
-          const project: Project = props.theProject
-
-          const currentLoaderFile = loaderFileRef.current
-          void collectProjectFiles({
-            selectedFileContents: props.kclManager.code,
-            selectedFilePath: props.kclManager.path,
-            fileNames: props.kclManager.execState.filenames,
-            projectContext: project,
-          }).then((projectFiles) => {
-            props.mlEphantManagerActor.send({
-              type: MlEphantManagerStates.ContinueCheck,
-              projectName: project.name,
-              projectFiles,
-              activeFile: currentLoaderFile
-                ? activeFileRelativeToProject({
-                    currentFileEntry: currentLoaderFile,
-                    applicationProjectDirectory:
-                      props.settings.app.projectDirectory.current,
-                  })
-                : undefined,
-            })
-          })
-          return
-        }
-
-        if (isProcessing) {
-          return
-        }
-
-        if (context.conversation !== undefined) {
-          return
-        }
-
-        tryToGetExchanges()
-      })
-
-    savedProjectConversationLookupLoaded.current = false
-    savedProjectConversationId.current = undefined
-    const projectId = props.settings.meta.id.current
-    let canceled = false
-    if (projectId === undefined) {
-      savedProjectConversationLookupLoaded.current = true
-      tryToGetExchanges()
-    } else if (projectId !== uuidNIL) {
-      void props.conversationStore
-        .getProjectConversationId(projectId)
-        .then((conversationId) => {
-          if (canceled) {
-            return
-          }
-          savedProjectConversationLookupLoaded.current = true
-          savedProjectConversationId.current = conversationId
-          tryToGetExchanges()
-        })
-        .catch((error: unknown) => {
-          if (canceled) {
-            return
-          }
-          savedProjectConversationLookupLoaded.current = true
-          savedProjectConversationId.current = undefined
-          reportRejection(error)
-          tryToGetExchanges()
-        })
-    }
-
-    tryToGetExchanges()
-
-    return () => {
-      canceled = true
-      subscriptionMlEphantManagerActor.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.settings.meta.id.current, props.theProject?.path])
 
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
