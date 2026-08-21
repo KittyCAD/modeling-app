@@ -1,4 +1,5 @@
 import { Switch } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import {
   ContextMenu,
   ContextMenuDivider,
@@ -497,12 +498,14 @@ function PaneButton({
   childIndex: number
   onChange: (checked: boolean) => void
 }) {
+  useSignals()
   const platform = usePlatform()
   const { areaLibrary } = useLayoutState()
   const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(side))}Width`
   const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
   const resolvedAreaType =
     pane.type === LayoutType.Simple ? areaLibrary[pane.areaType] : undefined
+  const icon = resolvedAreaType?.getIcon?.(isActiveIndex) ?? pane.icon
   useHotkeys(
     resolvedAreaType?.shortcut || '',
     () => {
@@ -530,7 +533,11 @@ function PaneButton({
         style={{ [buttonBorderWidthProp]: '2px' }}
         data-testid={`${pane.id}-pane-button`}
       >
-        <CustomIcon name={pane.icon} className="w-5 h-5" aria-hidden />
+        <CustomIcon
+          name={icon}
+          className={`w-5 h-5 ${icon === 'loading' ? 'animate-spin' : ''}`}
+          aria-hidden
+        />
         <span className="sr-only">{pane.label}</span>
       </Switch>
       <Tooltip

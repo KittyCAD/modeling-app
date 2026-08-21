@@ -28,10 +28,19 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       )
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
-      await expect(copilot.placeHolderResponse).not.toBeVisible({
+
+      const paneButton = page.getByTestId('ttc-pane-button')
+      const spinner = paneButton.locator('[aria-label="loading"]')
+      await expect(spinner).not.toBeVisible()
+
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await expect(spinner).toBeVisible()
+      await expect(spinner).not.toBeVisible({
         timeout: 30_000,
       })
 
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(copilot.placeHolderResponse).not.toBeVisible()
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await expect(editor.codeContent).toContainText('sketch')

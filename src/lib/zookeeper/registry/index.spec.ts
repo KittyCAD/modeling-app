@@ -1,8 +1,8 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { type Signal, signal } from '@preact/signals-core'
 import {
@@ -15,6 +15,7 @@ import {
   type LayoutService,
   LayoutType,
 } from '@src/lib/layout/types'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import {
   layoutAreaLibraryValueSpec,
@@ -91,11 +92,16 @@ describe('zookeeper plugin', () => {
     expect(
       registry.get(appHeaderItemsValueSpec).map((item) => item.id)
     ).toContain('zookeeper.runtime-host')
-    expect(
-      registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]
-    ).toMatchObject({
+    const zookeeperArea = registry.get(layoutAreaLibraryValueSpec)[
+      AreaType.Zookeeper
+    ]
+    expect(zookeeperArea).toMatchObject({
       shortcut: 'Ctrl + T',
     })
+    zookeeperPromptRunningSignal.value = true
+    expect(zookeeperArea?.getIcon?.(false)).toBe('loading')
+    expect(zookeeperArea?.getIcon?.(true)).toBeUndefined()
+    zookeeperPromptRunningSignal.value = false
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toContain('zookeeper-credits')
