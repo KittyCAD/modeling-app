@@ -270,17 +270,11 @@ pub struct EditConstraintOptions {
 }
 
 #[derive(Debug, Clone)]
-struct SolidAstReference {
-    variable_name: String,
-    output_index: Option<usize>,
-}
-
-#[derive(Debug, Clone)]
 pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
-    /// Lightweight map from engine solid IDs to their latest KCL references.
-    solid_references: HashMap<Uuid, SolidAstReference>,
+    /// Lightweight map from engine solid IDs to their latest KCL access expressions.
+    solid_references: HashMap<Uuid, ast::Expr>,
     /// Stores the last known freedom value for each point object.
     /// This allows us to preserve freedom values when freedom analysis isn't run.
     point_freedom_cache: HashMap<ObjectId, Freedom>,
@@ -5192,7 +5186,7 @@ fn only_sketch_block(
 fn sketch_on_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     scene_graph: &SceneGraph,
-    solid_references: &HashMap<Uuid, SolidAstReference>,
+    solid_references: &HashMap<Uuid, ast::Expr>,
     on: &Plane,
 ) -> Result<ast::Expr, KclError> {
     match on {
@@ -5223,7 +5217,7 @@ fn sketch_on_ast_expr(
 fn solid_references_from_variables(
     ast: &ast::Node<ast::Program>,
     variables: &IndexMap<String, KclValueView>,
-) -> HashMap<Uuid, SolidAstReference> {
+) -> HashMap<Uuid, ast::Expr> {
     let mut references = HashMap::new();
 
     // In-place operations such as shell reuse their input solid's engine ID.
@@ -5237,40 +5231,35 @@ fn solid_references_from_variables(
             continue;
         };
 
-        match value {
-            KclValueView::Solid { value } => {
-                references.insert(
-                    value.id,
-                    SolidAstReference {
-                        variable_name: name.clone(),
-                        output_index: None,
-                    },
-                );
-            }
-            KclValueView::Tuple { value } | KclValueView::HomArray { value } => {
-                for (output_index, entry) in value.iter().enumerate() {
-                    if let KclValueView::Solid { value } = entry {
-                        references.insert(
-                            value.id,
-                            SolidAstReference {
-                                variable_name: name.clone(),
-                                output_index: Some(output_index),
-                            },
-                        );
-                    }
-                }
-            }
-            _ => {}
-        }
+        collect_solid_references(value, ast_name_expr(name.clone()), &mut references);
     }
 
     references
 }
 
-fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, SolidAstReference>, solid_id: Uuid) -> Option<ast::Expr> {
-    let reference = solid_references.get(&solid_id)?;
-    let solid_expr = ast_name_expr(reference.variable_name.clone());
-    Some(indexed_solid_expr_for_sweep_output(solid_expr, reference.output_index))
+fn collect_solid_references(value: &KclValueView, expr: ast::Expr, references: &mut HashMap<Uuid, ast::Expr>) {
+    match value {
+        KclValueView::Solid { value } => {
+            references.insert(value.id, expr);
+        }
+        KclValueView::Tuple { value } | KclValueView::HomArray { value } => {
+            for (index, entry) in value.iter().enumerate() {
+                collect_solid_references(entry, create_index_expression(expr.clone(), index), references);
+            }
+        }
+        KclValueView::Object { value, .. } => {
+            let mut fields = value.iter().collect::<Vec<_>>();
+            fields.sort_unstable_by_key(|(name, _)| *name);
+            for (name, entry) in fields {
+                collect_solid_references(entry, create_member_expression(expr.clone(), name), references);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, ast::Expr>, solid_id: Uuid) -> Option<ast::Expr> {
+    solid_references.get(&solid_id).cloned()
 }
 
 fn sketch_face_of_scene_object_ast_expr(
@@ -14341,6 +14330,169 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
         let face_source = source_from_ast(&ast);
         let new_source = format!("{face_source}sketch002 = sketch(on = face001) {{\n}}\n");
         insta::assert_snapshot!("test_new_sketch_on_primitive_index_face", new_source);
+
+        let program = Program::parse(&new_source).unwrap().0.unwrap();
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_patterned_primitive_index_face() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(
+  region(point = [0mm, 0mm], sketch = baseSketch),
+  length = 5mm
+)
+
+pattern001 = patternLinear3d(
+  baseBody,
+  instances = 3,
+  distance = 20mm,
+  axis = X
+)";
+        let expected_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(region(point = [0mm, 0mm], sketch = baseSketch), length = 5mm)
+
+pattern001 = patternLinear3d(
+  baseBody,
+  instances = 3,
+  distance = 20mm,
+  axis = X,
+)
+face001 = faceOf(pattern001[1], face = faceId(pattern001[1], index = 1))
+sketch001 = sketch(on = face001) {
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let solid_id = match outcome.variables.get("pattern001") {
+            Some(KclValueView::HomArray { value }) => match value.get(1) {
+                Some(KclValueView::Solid { value }) => value.id,
+                value => panic!("expected pattern001[1] to be a solid, got {value:?}"),
+            },
+            value => panic!("expected pattern001 to be an array, got {value:?}"),
+        };
+        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables);
+
+        let mut ast = program.ast;
+        let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &scene_graph,
+            &solid_references,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 1 }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let face_source = source_from_ast(&ast);
+        let new_source = format!("{face_source}sketch001 = sketch(on = face001) {{\n}}\n");
+        assert_eq!(new_source, expected_source);
+
+        let program = Program::parse(&new_source).unwrap().0.unwrap();
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_nested_patterned_primitive_index_face() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(
+  region(point = [0mm, 0mm], sketch = baseSketch),
+  length = 5mm
+)
+
+patternResult = {
+  bodies = patternLinear3d(
+    baseBody,
+    instances = 3,
+    distance = 20mm,
+    axis = X
+  )
+}";
+        let expected_source = "\
+@settings(kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  circle(center = [0mm, 0mm], start = [0, 5mm])
+}
+
+baseBody = extrude(region(point = [0mm, 0mm], sketch = baseSketch), length = 5mm)
+
+patternResult = {
+  bodies = patternLinear3d(
+    baseBody,
+    instances = 3,
+    distance = 20mm,
+    axis = X,
+  )
+}
+face001 = faceOf(patternResult.bodies[1], face = faceId(patternResult.bodies[1], index = 1))
+sketch001 = sketch(on = face001) {
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let solid_id = match outcome.variables.get("patternResult") {
+            Some(KclValueView::Object { value, .. }) => match value.get("bodies") {
+                Some(KclValueView::HomArray { value }) => match value.get(1) {
+                    Some(KclValueView::Solid { value }) => value.id,
+                    value => panic!("expected patternResult.bodies[1] to be a solid, got {value:?}"),
+                },
+                value => panic!("expected patternResult.bodies to be an array, got {value:?}"),
+            },
+            value => panic!("expected patternResult to be an object, got {value:?}"),
+        };
+        let solid_references = solid_references_from_variables(&program.ast, &outcome.variables);
+
+        let mut ast = program.ast;
+        let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &scene_graph,
+            &solid_references,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 1 }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let face_source = source_from_ast(&ast);
+        let new_source = format!("{face_source}sketch001 = sketch(on = face001) {{\n}}\n");
+        assert_eq!(new_source, expected_source);
 
         let program = Program::parse(&new_source).unwrap().0.unwrap();
         ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
