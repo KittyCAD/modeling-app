@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // project title
 projectTitle = "cubic lattice ball and stick model"

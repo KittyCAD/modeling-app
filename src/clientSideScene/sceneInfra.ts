@@ -565,6 +565,26 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
+    try {
+      await this.processMouseMove(mouseEvent)
+    } catch (error) {
+      console.error('[canvas mousemove] processing failed', error)
+      return Promise.reject(error)
+    } finally {
+      if (this.mouseMoveThrottling) {
+        this._processingMouseMove = false
+        const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
+        if (lastUnprocessedMouseEvent) {
+          // Another mousemove happened during the time this callback was processing
+          // -> process that event now
+          this._lastUnprocessedMouseEvent = undefined
+          void this.onMouseMove(lastUnprocessedMouseEvent)
+        }
+      }
+    }
+  }
+
+  private processMouseMove = async (mouseEvent: MouseEvent) => {
     this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
@@ -716,17 +736,6 @@ export class SceneInfra {
           })
           if (!this.selected) this.updateMouseState({ type: 'idle' })
         }
-      }
-    }
-
-    if (this.mouseMoveThrottling) {
-      this._processingMouseMove = false
-      const lastUnprocessedMouseEvent = this._lastUnprocessedMouseEvent
-      if (lastUnprocessedMouseEvent) {
-        // Another mousemove happened during the time this callback was processing
-        // -> process that event now
-        this._lastUnprocessedMouseEvent = undefined
-        void this.onMouseMove(lastUnprocessedMouseEvent)
       }
     }
   }

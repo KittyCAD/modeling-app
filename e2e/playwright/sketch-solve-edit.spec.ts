@@ -1895,32 +1895,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
 
     await applyConstraintStep({
-      label: 'horizontal length',
-      select: async () => {
-        await clickMidpoint('46', '47')
-      },
-      apply: async () => {
-        await page.getByTestId('HorizontalDistance').click()
-      },
-      assertChanged: (code) => {
-        expect((code.match(/horizontalDistance\(/g) ?? []).length).toBe(1)
-      },
-    })
-
-    await applyConstraintStep({
-      label: 'vertical length',
-      select: async () => {
-        await clickMidpoint('49', '50')
-      },
-      apply: async () => {
-        await page.getByTestId('VerticalDistance').click()
-      },
-      assertChanged: (code) => {
-        expect((code.match(/verticalDistance\(/g) ?? []).length).toBe(1)
-      },
-    })
-
-    await applyConstraintStep({
       label: 'construction',
       select: async () => {
         await clickMidpoint('52', '53')

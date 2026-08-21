@@ -34,6 +34,8 @@ This is part of sketch v1 and is deprecated in favor of
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 5])
@@ -62,6 +64,8 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 fn squareHoleSketch() {
   squareSketch = startSketchOn(-XZ)
     |> startProfile(at = [-1, -1])

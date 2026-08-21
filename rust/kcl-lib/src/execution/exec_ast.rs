@@ -4946,7 +4946,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -5092,7 +5092,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -5235,7 +5235,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5330,7 +5330,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -5469,7 +5469,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5651,7 +5651,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5984,7 +5984,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::HorizontalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -6096,7 +6096,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::VerticalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)

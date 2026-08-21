@@ -1,7 +1,12 @@
+import fs from 'fs'
 import path from 'path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+const bracket = fs.readFileSync(
+  path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
@@ -345,13 +350,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     page,
     homePage,
     scene,
-    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    const [clickCenter] = scene.makeMouseHelpers(0.45, 0.45, {
+    const [clickBracket] = scene.makeMouseHelpers(0.45, 0.45, {
       format: 'ratio',
     })
-    const [clickTowardsBottom] = scene.makeMouseHelpers(0.5, 0.9, {
+    const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
       format: 'ratio',
     })
     await page.addInitScript((initialCode) => {
@@ -361,35 +365,32 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await homePage.goToModelingScene()
     await scene.settled()
 
-    const line = page.getByText(
-      'xLine(length = -shelfMountLength, tag = $seg03)'
-    )
+    const laterCode = page.getByText('finalBracket = hole::holes(')
     const menuItems = page.locator('[data-testid="view-controls-menu"] button')
     const viewKclSourceCodeOption = menuItems.filter({
       hasText: 'View KCL source code',
     })
 
-    await test.step('Empty scene should have disabled "View KCL source code"', async () => {
-      await clickTowardsBottom({ shouldRightClick: true })
-
-      // Verify context menu appears
+    await test.step('Empty scene has disabled "View KCL source code"', async () => {
+      await clickEmptyScene({ shouldRightClick: true })
       await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-
-      // "View KCL source code" should be disabled in empty scene
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeDisabled()
       await page.keyboard.press('Escape')
     })
 
-    await test.step('Right click on bracket sample leads to the right place in code', async () => {
-      await expect(line).not.toBeInViewport()
-      await clickCenter()
+    await test.step('Right click on bracket navigates to its source', async () => {
+      await expect(laterCode).not.toBeInViewport()
+      await clickBracket()
       await expect(page.getByText('1 face')).toBeVisible()
-      await clickCenter({ shouldRightClick: true })
+      await clickBracket({ shouldRightClick: true })
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeEnabled()
       await viewKclSourceCodeOption.click()
-      await expect(line).toBeVisible()
+      await expect(page.locator('.cm-activeLine')).toBeVisible()
+      await expect(page.locator('.cm-activeLine')).not.toContainText(
+        'Shelf Bracket'
+      )
     })
   })
 

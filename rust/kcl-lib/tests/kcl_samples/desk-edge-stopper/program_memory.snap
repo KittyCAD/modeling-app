@@ -79,10 +79,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5241,
-            "end": 5248,
+            "commentStart": 5259,
+            "end": 5266,
             "moduleId": 0,
-            "start": 5241,
+            "start": 5259,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -110,10 +110,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 5241,
-              "end": 5248,
+              "commentStart": 5259,
+              "end": 5266,
               "moduleId": 0,
-              "start": 5241,
+              "start": 5259,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -206,10 +206,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3094,
-            "end": 3099,
+            "commentStart": 3112,
+            "end": 3117,
             "moduleId": 0,
-            "start": 3094,
+            "start": 3112,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -220,10 +220,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3164,
-            "end": 3169,
+            "commentStart": 3182,
+            "end": 3187,
             "moduleId": 0,
-            "start": 3164,
+            "start": 3182,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -234,10 +234,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 3295,
+            "end": 3300,
             "moduleId": 0,
-            "start": 3277,
+            "start": 3295,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -248,10 +248,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3390,
-            "end": 3395,
+            "commentStart": 3408,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3390,
+            "start": 3408,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -262,10 +262,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3502,
-            "end": 3507,
+            "commentStart": 3520,
+            "end": 3525,
             "moduleId": 0,
-            "start": 3502,
+            "start": 3520,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -276,10 +276,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3615,
-            "end": 3620,
+            "commentStart": 3633,
+            "end": 3638,
             "moduleId": 0,
-            "start": 3615,
+            "start": 3633,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -290,10 +290,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3728,
-            "end": 3733,
+            "commentStart": 3746,
+            "end": 3751,
             "moduleId": 0,
-            "start": 3728,
+            "start": 3746,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -304,10 +304,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3841,
-            "end": 3846,
+            "commentStart": 3859,
+            "end": 3864,
             "moduleId": 0,
-            "start": 3841,
+            "start": 3859,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -318,10 +318,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3954,
-            "end": 3959,
+            "commentStart": 3972,
+            "end": 3977,
             "moduleId": 0,
-            "start": 3954,
+            "start": 3972,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -332,10 +332,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4066,
-            "end": 4072,
+            "commentStart": 4084,
+            "end": 4090,
             "moduleId": 0,
-            "start": 4066,
+            "start": 4084,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -357,10 +357,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.00000000006505811401169924
             ],
             "tag": {
-              "commentStart": 3094,
-              "end": 3099,
+              "commentStart": 3112,
+              "end": 3117,
               "moduleId": 0,
-              "start": 3094,
+              "start": 3112,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -381,10 +381,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.00000000006505811338144842
             ],
             "tag": {
-              "commentStart": 3164,
-              "end": 3169,
+              "commentStart": 3182,
+              "end": 3187,
               "moduleId": 0,
-              "start": 3164,
+              "start": 3182,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -405,10 +405,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 3295,
+              "end": 3300,
               "moduleId": 0,
-              "start": 3277,
+              "start": 3295,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -429,10 +429,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3390,
-              "end": 3395,
+              "commentStart": 3408,
+              "end": 3413,
               "moduleId": 0,
-              "start": 3390,
+              "start": 3408,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -453,10 +453,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.499999999869885
             ],
             "tag": {
-              "commentStart": 3502,
-              "end": 3507,
+              "commentStart": 3520,
+              "end": 3525,
               "moduleId": 0,
-              "start": 3502,
+              "start": 3520,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -477,10 +477,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.499999999869885
             ],
             "tag": {
-              "commentStart": 3615,
-              "end": 3620,
+              "commentStart": 3633,
+              "end": 3638,
               "moduleId": 0,
-              "start": 3615,
+              "start": 3633,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -501,10 +501,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.499999999869885
             ],
             "tag": {
-              "commentStart": 3728,
-              "end": 3733,
+              "commentStart": 3746,
+              "end": 3751,
               "moduleId": 0,
-              "start": 3728,
+              "start": 3746,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -525,10 +525,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.499999999869885
             ],
             "tag": {
-              "commentStart": 3841,
-              "end": 3846,
+              "commentStart": 3859,
+              "end": 3864,
               "moduleId": 0,
-              "start": 3841,
+              "start": 3859,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -549,10 +549,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -4.999999999577121
             ],
             "tag": {
-              "commentStart": 3954,
-              "end": 3959,
+              "commentStart": 3972,
+              "end": 3977,
               "moduleId": 0,
-              "start": 3954,
+              "start": 3972,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -573,10 +573,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -4.999999999625915
             ],
             "tag": {
-              "commentStart": 4066,
-              "end": 4072,
+              "commentStart": 4084,
+              "end": 4090,
               "moduleId": 0,
-              "start": 4066,
+              "start": 4084,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -700,10 +700,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3094,
-            "end": 3099,
+            "commentStart": 3112,
+            "end": 3117,
             "moduleId": 0,
-            "start": 3094,
+            "start": 3112,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -714,10 +714,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3164,
-            "end": 3169,
+            "commentStart": 3182,
+            "end": 3187,
             "moduleId": 0,
-            "start": 3164,
+            "start": 3182,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -728,10 +728,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 3295,
+            "end": 3300,
             "moduleId": 0,
-            "start": 3277,
+            "start": 3295,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -742,10 +742,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3390,
-            "end": 3395,
+            "commentStart": 3408,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3390,
+            "start": 3408,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -756,10 +756,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3502,
-            "end": 3507,
+            "commentStart": 3520,
+            "end": 3525,
             "moduleId": 0,
-            "start": 3502,
+            "start": 3520,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -770,10 +770,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3615,
-            "end": 3620,
+            "commentStart": 3633,
+            "end": 3638,
             "moduleId": 0,
-            "start": 3615,
+            "start": 3633,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -784,10 +784,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3728,
-            "end": 3733,
+            "commentStart": 3746,
+            "end": 3751,
             "moduleId": 0,
-            "start": 3728,
+            "start": 3746,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -798,10 +798,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3841,
-            "end": 3846,
+            "commentStart": 3859,
+            "end": 3864,
             "moduleId": 0,
-            "start": 3841,
+            "start": 3859,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -812,10 +812,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3954,
-            "end": 3959,
+            "commentStart": 3972,
+            "end": 3977,
             "moduleId": 0,
-            "start": 3954,
+            "start": 3972,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -826,10 +826,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4066,
-            "end": 4072,
+            "commentStart": 4084,
+            "end": 4090,
             "moduleId": 0,
-            "start": 4066,
+            "start": 4084,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -851,10 +851,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.00000000006505811401169924
             ],
             "tag": {
-              "commentStart": 3094,
-              "end": 3099,
+              "commentStart": 3112,
+              "end": 3117,
               "moduleId": 0,
-              "start": 3094,
+              "start": 3112,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -875,10 +875,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               0.00000000006505811338144842
             ],
             "tag": {
-              "commentStart": 3164,
-              "end": 3169,
+              "commentStart": 3182,
+              "end": 3187,
               "moduleId": 0,
-              "start": 3164,
+              "start": 3182,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -899,10 +899,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 3295,
+              "end": 3300,
               "moduleId": 0,
-              "start": 3277,
+              "start": 3295,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -923,10 +923,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               20.5
             ],
             "tag": {
-              "commentStart": 3390,
-              "end": 3395,
+              "commentStart": 3408,
+              "end": 3413,
               "moduleId": 0,
-              "start": 3390,
+              "start": 3408,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -947,10 +947,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.499999999869885
             ],
             "tag": {
-              "commentStart": 3502,
-              "end": 3507,
+              "commentStart": 3520,
+              "end": 3525,
               "moduleId": 0,
-              "start": 3502,
+              "start": 3520,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -971,10 +971,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               25.499999999869885
             ],
             "tag": {
-              "commentStart": 3615,
-              "end": 3620,
+              "commentStart": 3633,
+              "end": 3638,
               "moduleId": 0,
-              "start": 3615,
+              "start": 3633,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -995,10 +995,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.499999999869885
             ],
             "tag": {
-              "commentStart": 3728,
-              "end": 3733,
+              "commentStart": 3746,
+              "end": 3751,
               "moduleId": 0,
-              "start": 3728,
+              "start": 3746,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -1019,10 +1019,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               45.499999999869885
             ],
             "tag": {
-              "commentStart": 3841,
-              "end": 3846,
+              "commentStart": 3859,
+              "end": 3864,
               "moduleId": 0,
-              "start": 3841,
+              "start": 3859,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -1043,10 +1043,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -4.999999999577121
             ],
             "tag": {
-              "commentStart": 3954,
-              "end": 3959,
+              "commentStart": 3972,
+              "end": 3977,
               "moduleId": 0,
-              "start": 3954,
+              "start": 3972,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -1067,10 +1067,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               -4.999999999625915
             ],
             "tag": {
-              "commentStart": 4066,
-              "end": 4072,
+              "commentStart": 4084,
+              "end": 4090,
               "moduleId": 0,
-              "start": 4066,
+              "start": 4084,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -2413,10 +2413,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     0.00000000006505811401169924
                   ],
                   "tag": {
-                    "commentStart": 3094,
-                    "end": 3099,
+                    "commentStart": 3112,
+                    "end": 3117,
                     "moduleId": 0,
-                    "start": 3094,
+                    "start": 3112,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2437,10 +2437,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     0.00000000006505811338144842
                   ],
                   "tag": {
-                    "commentStart": 3164,
-                    "end": 3169,
+                    "commentStart": 3182,
+                    "end": 3187,
                     "moduleId": 0,
-                    "start": 3164,
+                    "start": 3182,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2461,10 +2461,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     20.5
                   ],
                   "tag": {
-                    "commentStart": 3277,
-                    "end": 3282,
+                    "commentStart": 3295,
+                    "end": 3300,
                     "moduleId": 0,
-                    "start": 3277,
+                    "start": 3295,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2485,10 +2485,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     20.5
                   ],
                   "tag": {
-                    "commentStart": 3390,
-                    "end": 3395,
+                    "commentStart": 3408,
+                    "end": 3413,
                     "moduleId": 0,
-                    "start": 3390,
+                    "start": 3408,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2509,10 +2509,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     25.499999999869885
                   ],
                   "tag": {
-                    "commentStart": 3502,
-                    "end": 3507,
+                    "commentStart": 3520,
+                    "end": 3525,
                     "moduleId": 0,
-                    "start": 3502,
+                    "start": 3520,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2533,10 +2533,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     25.499999999869885
                   ],
                   "tag": {
-                    "commentStart": 3615,
-                    "end": 3620,
+                    "commentStart": 3633,
+                    "end": 3638,
                     "moduleId": 0,
-                    "start": 3615,
+                    "start": 3633,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2557,10 +2557,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     45.499999999869885
                   ],
                   "tag": {
-                    "commentStart": 3728,
-                    "end": 3733,
+                    "commentStart": 3746,
+                    "end": 3751,
                     "moduleId": 0,
-                    "start": 3728,
+                    "start": 3746,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -2581,10 +2581,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     45.499999999869885
                   ],
                   "tag": {
-                    "commentStart": 3841,
-                    "end": 3846,
+                    "commentStart": 3859,
+                    "end": 3864,
                     "moduleId": 0,
-                    "start": 3841,
+                    "start": 3859,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -2605,10 +2605,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     -4.999999999577121
                   ],
                   "tag": {
-                    "commentStart": 3954,
-                    "end": 3959,
+                    "commentStart": 3972,
+                    "end": 3977,
                     "moduleId": 0,
-                    "start": 3954,
+                    "start": 3972,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -2629,10 +2629,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     -4.999999999625915
                   ],
                   "tag": {
-                    "commentStart": 4066,
-                    "end": 4072,
+                    "commentStart": 4084,
+                    "end": 4090,
                     "moduleId": 0,
-                    "start": 4066,
+                    "start": 4084,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -2761,10 +2761,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.00000000006505811401169924
           ],
           "tag": {
-            "commentStart": 3094,
-            "end": 3099,
+            "commentStart": 3112,
+            "end": 3117,
             "moduleId": 0,
-            "start": 3094,
+            "start": 3112,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2785,10 +2785,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.00000000006505811338144842
           ],
           "tag": {
-            "commentStart": 3164,
-            "end": 3169,
+            "commentStart": 3182,
+            "end": 3187,
             "moduleId": 0,
-            "start": 3164,
+            "start": 3182,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2809,10 +2809,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 3295,
+            "end": 3300,
             "moduleId": 0,
-            "start": 3277,
+            "start": 3295,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2833,10 +2833,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "tag": {
-            "commentStart": 3390,
-            "end": 3395,
+            "commentStart": 3408,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3390,
+            "start": 3408,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2857,10 +2857,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.499999999869885
           ],
           "tag": {
-            "commentStart": 3502,
-            "end": 3507,
+            "commentStart": 3520,
+            "end": 3525,
             "moduleId": 0,
-            "start": 3502,
+            "start": 3520,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2881,10 +2881,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.499999999869885
           ],
           "tag": {
-            "commentStart": 3615,
-            "end": 3620,
+            "commentStart": 3633,
+            "end": 3638,
             "moduleId": 0,
-            "start": 3615,
+            "start": 3633,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2905,10 +2905,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.499999999869885
           ],
           "tag": {
-            "commentStart": 3728,
-            "end": 3733,
+            "commentStart": 3746,
+            "end": 3751,
             "moduleId": 0,
-            "start": 3728,
+            "start": 3746,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -2929,10 +2929,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.499999999869885
           ],
           "tag": {
-            "commentStart": 3841,
-            "end": 3846,
+            "commentStart": 3859,
+            "end": 3864,
             "moduleId": 0,
-            "start": 3841,
+            "start": 3859,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -2953,10 +2953,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -4.999999999577121
           ],
           "tag": {
-            "commentStart": 3954,
-            "end": 3959,
+            "commentStart": 3972,
+            "end": 3977,
             "moduleId": 0,
-            "start": 3954,
+            "start": 3972,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -2977,10 +2977,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -4.999999999625915
           ],
           "tag": {
-            "commentStart": 4066,
-            "end": 4072,
+            "commentStart": 4084,
+            "end": 4090,
             "moduleId": 0,
-            "start": 4066,
+            "start": 4084,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -3103,10 +3103,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.00000000006505811401169924
           ],
           "tag": {
-            "commentStart": 3094,
-            "end": 3099,
+            "commentStart": 3112,
+            "end": 3117,
             "moduleId": 0,
-            "start": 3094,
+            "start": 3112,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3127,10 +3127,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             0.00000000006505811338144842
           ],
           "tag": {
-            "commentStart": 3164,
-            "end": 3169,
+            "commentStart": 3182,
+            "end": 3187,
             "moduleId": 0,
-            "start": 3164,
+            "start": 3182,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3151,10 +3151,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 3295,
+            "end": 3300,
             "moduleId": 0,
-            "start": 3277,
+            "start": 3295,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3175,10 +3175,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             20.5
           ],
           "tag": {
-            "commentStart": 3390,
-            "end": 3395,
+            "commentStart": 3408,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3390,
+            "start": 3408,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3199,10 +3199,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.499999999869885
           ],
           "tag": {
-            "commentStart": 3502,
-            "end": 3507,
+            "commentStart": 3520,
+            "end": 3525,
             "moduleId": 0,
-            "start": 3502,
+            "start": 3520,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3223,10 +3223,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             25.499999999869885
           ],
           "tag": {
-            "commentStart": 3615,
-            "end": 3620,
+            "commentStart": 3633,
+            "end": 3638,
             "moduleId": 0,
-            "start": 3615,
+            "start": 3633,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3247,10 +3247,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.499999999869885
           ],
           "tag": {
-            "commentStart": 3728,
-            "end": 3733,
+            "commentStart": 3746,
+            "end": 3751,
             "moduleId": 0,
-            "start": 3728,
+            "start": 3746,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -3271,10 +3271,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             45.499999999869885
           ],
           "tag": {
-            "commentStart": 3841,
-            "end": 3846,
+            "commentStart": 3859,
+            "end": 3864,
             "moduleId": 0,
-            "start": 3841,
+            "start": 3859,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -3295,10 +3295,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -4.999999999577121
           ],
           "tag": {
-            "commentStart": 3954,
-            "end": 3959,
+            "commentStart": 3972,
+            "end": 3977,
             "moduleId": 0,
-            "start": 3954,
+            "start": 3972,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -3319,10 +3319,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             -4.999999999625915
           ],
           "tag": {
-            "commentStart": 4066,
-            "end": 4072,
+            "commentStart": 4084,
+            "end": 4090,
             "moduleId": 0,
-            "start": 4066,
+            "start": 4084,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -3451,10 +3451,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 5241,
-            "end": 5248,
+            "commentStart": 5259,
+            "end": 5266,
             "moduleId": 0,
-            "start": 5241,
+            "start": 5259,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3537,10 +3537,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5241,
-            "end": 5248,
+            "commentStart": 5259,
+            "end": 5266,
             "moduleId": 0,
-            "start": 5241,
+            "start": 5259,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3568,10 +3568,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 5241,
-              "end": 5248,
+              "commentStart": 5259,
+              "end": 5266,
               "moduleId": 0,
-              "start": 5241,
+              "start": 5259,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3659,10 +3659,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5241,
-            "end": 5248,
+            "commentStart": 5259,
+            "end": 5266,
             "moduleId": 0,
-            "start": 5241,
+            "start": 5259,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3690,10 +3690,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 5241,
-              "end": 5248,
+              "commentStart": 5259,
+              "end": 5266,
               "moduleId": 0,
-              "start": 5241,
+              "start": 5259,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3962,10 +3962,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 5241,
-                    "end": 5248,
+                    "commentStart": 5259,
+                    "end": 5266,
                     "moduleId": 0,
-                    "start": 5241,
+                    "start": 5259,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4194,10 +4194,10 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 5241,
-            "end": 5248,
+            "commentStart": 5259,
+            "end": 5266,
             "moduleId": 0,
-            "start": 5241,
+            "start": 5259,
             "type": "TagDeclarator",
             "value": "circle1"
           },

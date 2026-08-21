@@ -4524,6 +4524,44 @@ w = f() + f()
         assert_eq!(actual_instances, expected_instances);
     }
 
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_subtract() {
+        // Run this KCL file, in mock execution.
+        let code = kcl_input!("repro_mock_subtract");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = match ctx.run_mock(&program, &MockConfig::default()).await {
+            Ok(x) => x,
+            Err(e) => {
+                let error = e.error;
+                panic!("{error}");
+            }
+        };
+
+        // Get the variable we're interested in, from KCL program memory.
+        let subtracted_parts = result
+            .variables
+            .get("subtractedParts")
+            .expect("no variable called 'subtracted_parts' found");
+        let subtracted_parts = match subtracted_parts {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+
+        // Validate the variable.
+        // from the KCL, there's 2 parts being subtracted from.
+        let expected_number_of_parts = 2;
+        let actual_number_of_parts = subtracted_parts.len();
+        assert_eq!(actual_number_of_parts, expected_number_of_parts);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
         let code = "s = sketch(on = XY) {

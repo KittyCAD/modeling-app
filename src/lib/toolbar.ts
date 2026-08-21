@@ -2523,38 +2523,6 @@ export function buildToolbarConfig(
             state.context.sketchSolveToolName === 'dimensionTool',
         },
         {
-          id: 'HorizontalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'HorizontalDistance',
-              keepSelection,
-            }),
-          icon: 'horizontalDimension',
-          status: 'available',
-          title: 'Horizontal Distance',
-          description: 'Constrain horizontal distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
-        },
-        {
-          id: 'VerticalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'VerticalDistance',
-              keepSelection,
-            }),
-          icon: 'verticalDimension',
-          status: 'available',
-          title: 'Vertical Distance',
-          description: 'Constrain vertical distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
-        },
-        {
           id: 'construction',
           command: TOOLBAR_COMMAND_IDS.sketchSolve.construction,
           onClick: ({ modelingSend, keepSelection }) =>
