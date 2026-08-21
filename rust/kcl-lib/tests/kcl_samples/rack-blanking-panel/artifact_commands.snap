@@ -765,7 +765,6 @@ description: Artifact commands rack-blanking-panel.kcl
           "[uuid]"
         ],
         "separate_bodies": false,
-        "use_legacy": true,
         "tolerance": 0.0000001
       }
     }
