@@ -296,11 +296,126 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_cut_edges",
+        "object_id": "[uuid]",
+        "edge_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
+        ],
+        "cut_type": {
+          "fillet": {
+            "radius": 6.0,
+            "second_length": null
+          }
+        },
+        "tolerance": 0.0000001,
+        "strategy": "automatic",
+        "extra_face_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 49.0
         },
         "x_axis": {
           "x": 1.0,
@@ -312,9 +427,23 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 60.0,
+        "size": 100.0,
         "clobber": false,
-        "hide": true
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
       }
     },
     {
@@ -356,8 +485,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.499999988999996,
-          "y": -11.999999999999998,
+          "x": 76.0,
+          "y": 44.0,
           "z": 0.0
         }
       }
@@ -378,8 +507,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.500000011000004,
-            "y": -11.999999999999998,
+            "x": 88.0,
+            "y": 35.666666667,
             "z": 0.0
           },
           "relative": false
@@ -395,8 +524,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.500000011000004,
-            "y": 13.000000000000002,
+            "x": 88.0,
+            "y": 19.0,
             "z": 0.0
           },
           "relative": false
@@ -412,8 +541,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.499999988999996,
-            "y": 13.000000000000002,
+            "x": 76.0,
+            "y": 10.666666667,
             "z": 0.0
           },
           "relative": false
@@ -429,8 +558,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.499999988999996,
-            "y": -11.999999999999998,
+            "x": 76.0,
+            "y": 44.0,
             "z": 0.0
           },
           "relative": false
@@ -472,7 +601,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 4.0,
+        "distance": -4.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -525,25 +654,224 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 84.5,
+          "y": 27.333333333,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 82.0,
+            "y": 27.333333333
+          },
+          "radius": 2.5,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
         "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 76.0,
-                "y": -44.0,
-                "z": 45.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": -4.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_cut_edges",
+        "object_id": "[uuid]",
+        "edge_ids": [
+          "[uuid]",
+          "[uuid]"
+        ],
+        "cut_type": {
+          "fillet": {
+            "radius": 2.5,
+            "second_length": null
           }
+        },
+        "tolerance": 0.0000001,
+        "strategy": "automatic",
+        "extra_face_ids": [
+          "[uuid]"
         ]
       }
     },
@@ -559,7 +887,476 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
             {
               "translate": {
                 "x": 0.0,
-                "y": 63.0,
+                "y": -54.666666666666664,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -76.0,
+          "y": 44.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -88.0,
+            "y": 35.666666667,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -88.0,
+            "y": 19.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -76.0,
+            "y": 10.666666667,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -76.0,
+            "y": 44.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": -4.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -79.5,
+          "y": 27.333333333,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -82.0,
+            "y": 27.333333333
+          },
+          "radius": 2.5,
+          "start": {
+            "unit": "radians",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.283185307179586
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": -4.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_cut_edges",
+        "object_id": "[uuid]",
+        "edge_ids": [
+          "[uuid]",
+          "[uuid]"
+        ],
+        "cut_type": {
+          "fillet": {
+            "radius": 2.5,
+            "second_length": null
+          }
+        },
+        "tolerance": 0.0000001,
+        "strategy": "automatic",
+        "extra_face_ids": [
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": [
+          [
+            {
+              "translate": {
+                "x": 0.0,
+                "y": -54.666666666666664,
                 "z": 0.0
               },
               "scale": {
@@ -593,19 +1390,19 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0.0,
+          "x": -52.0,
           "y": 0.0,
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -631,9 +1428,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -651,8 +1448,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.499999988999996,
-          "y": -11.999999999999998,
+          "x": -44.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -673,8 +1470,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.500000011000004,
-            "y": -11.999999999999998,
+            "x": -44.0,
+            "y": 4.0,
             "z": 0.0
           },
           "relative": false
@@ -690,8 +1487,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.500000011000004,
-            "y": 13.000000000000002,
+            "x": -40.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -707,25 +1504,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.499999988999996,
-            "y": 13.000000000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -5.499999988999996,
-            "y": -11.999999999999998,
+            "x": -44.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -755,9 +1535,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -767,7 +1547,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 4.0,
+        "distance": 104.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -805,81 +1585,6 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -88.0,
-                "y": -44.0,
-                "z": 45.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": 0.0,
-                "y": 63.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
       }
     },
     {
@@ -888,19 +1593,19 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "command": {
         "type": "make_plane",
         "origin": {
-          "x": 0.0,
+          "x": -52.0,
           "y": 0.0,
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -926,9 +1631,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -946,8 +1651,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -51.500001673356515,
-          "y": -1.500000000000002,
+          "x": 44.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -968,8 +1673,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 52.49999832664348,
-            "y": -1.500000000000002,
+            "x": 44.0,
+            "y": 4.0,
             "z": 0.0
           },
           "relative": false
@@ -985,8 +1690,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 52.49999832664348,
-            "y": 2.4999999999999996,
+            "x": 40.0,
+            "y": 4.0,
             "z": 0.0
           },
           "relative": false
@@ -1002,8 +1707,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -51.500001673356515,
-            "y": 2.4999999999999996,
+            "x": 40.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -1019,8 +1724,8 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -51.500001673356515,
-            "y": -1.500000000000002,
+            "x": 44.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -1050,9 +1755,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -1062,7 +1767,7 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 4.0,
+        "distance": 104.0,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1115,51 +1820,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -52.0,
-                "y": -44.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
+        "hidden": true
       }
     },
     {
@@ -1175,186 +1838,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -51.500001673356515,
-          "y": -1.500000000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 52.49999832664348,
-            "y": -1.500000000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 52.49999832664348,
-            "y": 2.4999999999999996,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -51.500001673356515,
-            "y": 2.4999999999999996,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -51.500001673356515,
-            "y": -1.500000000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "create_region",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
-        "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 4.0,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "hidden": true
       }
     },
     {
@@ -1370,145 +1856,9 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -52.0,
-                "y": 40.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.8509804,
-          "g": 0.8509804,
-          "b": 0.8509804,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {

@@ -2461,54 +2461,6 @@ description: Operations executed propeller.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "edges": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Object",
-                "value": {
-                  "sideFaces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "outerCircle",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hubEnd",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              },
-              {
-                "type": "Object",
-                "value": {
-                  "sideFaces": {
-                    "type": "Array",
-                    "value": [
-                      {
-                        "type": "TagIdentifier",
-                        "value": "outerCircle",
-                        "artifact_id": "[uuid]"
-                      },
-                      {
-                        "type": "TagIdentifier",
-                        "value": "hubStart",
-                        "artifact_id": "[uuid]"
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
         "radius": {
           "value": {
             "type": "Number",
@@ -2518,6 +2470,22 @@ description: Operations executed propeller.kcl
               "len": "in",
               "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
           },
           "sourceRange": []
         }

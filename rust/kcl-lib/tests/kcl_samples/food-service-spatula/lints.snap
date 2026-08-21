@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Lints hand-trolley.kcl
+description: Lints food-service-spatula.kcl
 ---
 [
   {
@@ -13,9 +13,9 @@ description: Lints hand-trolley.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1515,
-      1845,
-      3
+      3867,
+      4135,
+      0
     ],
     "overridden": false,
     "suggestion": null
@@ -30,9 +30,9 @@ description: Lints hand-trolley.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1449,
-      1779,
-      4
+      5166,
+      5413,
+      0
     ],
     "overridden": false,
     "suggestion": null

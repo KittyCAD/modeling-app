@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Lints hand-trolley.kcl
+description: Lints gridfinity-baseplate-magnets.kcl
 ---
 [
   {
@@ -13,9 +13,9 @@ description: Lints hand-trolley.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1515,
-      1845,
-      3
+      7773,
+      8288,
+      0
     ],
     "overridden": false,
     "suggestion": null
@@ -30,9 +30,9 @@ description: Lints hand-trolley.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1449,
-      1779,
-      4
+      11655,
+      12214,
+      0
     ],
     "overridden": false,
     "suggestion": null

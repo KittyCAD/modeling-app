@@ -15,14 +15,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -48,9 +48,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -68,8 +68,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -12.699999949199999,
-          "y": -38.099999733299974,
+          "x": 1524.0,
+          "y": 0.0,
           "z": 0.0
         }
       }
@@ -90,24 +90,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.099999999999994,
-            "y": -38.099999809499984,
+            "x": -1524.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.0999999619,
-          "y": -38.09999992379999,
-          "z": 0.0
         }
       }
     },
@@ -120,24 +107,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.09999993649999,
-            "y": 63.49999992379999,
+            "x": -1524.0,
+            "y": 304.79999999999995,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.09999992379999,
-          "y": 63.49999980949998,
-          "z": 0.0
         }
       }
     },
@@ -150,24 +124,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999872999992,
-            "y": 63.49999973329997,
+            "x": 0.0,
+            "y": 1015.4528710206,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -12.699999885699993,
-          "y": 63.499999695199975,
-          "z": 0.0
         }
       }
     },
@@ -180,8 +141,25 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999911099995,
-            "y": -38.099999695199976,
+            "x": 1524.0,
+            "y": 304.79999999999995,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 1524.0,
+            "y": 0.0,
             "z": 0.0
           },
           "relative": false
@@ -211,9 +189,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -223,7 +201,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 1219.1999999999998,
+        "distance": 50.8,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -261,41 +239,6 @@ description: Artifact commands truss-structure.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": -1524.0,
-                "z": -1219.1999999999998
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
       }
     },
     {
@@ -309,14 +252,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -342,9 +285,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -362,8 +305,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -12.699999949199999,
-          "y": -38.099999733299974,
+          "x": 1422.3999999999999,
+          "y": 101.6,
           "z": 0.0
         }
       }
@@ -384,24 +327,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.099999999999994,
-            "y": -38.099999809499984,
+            "x": 50.8,
+            "y": 101.6,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.0999999619,
-          "y": -38.09999992379999,
-          "z": 0.0
         }
       }
     },
@@ -414,24 +344,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.09999993649999,
-            "y": 63.49999992379999,
+            "x": 50.8,
+            "y": 913.8528710206,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.09999992379999,
-          "y": 63.49999980949998,
-          "z": 0.0
         }
       }
     },
@@ -444,24 +361,11 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999872999992,
-            "y": 63.49999973329997,
+            "x": 1422.3999999999999,
+            "y": 274.26528710459996,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -12.699999885699993,
-          "y": 63.499999695199975,
-          "z": 0.0
         }
       }
     },
@@ -474,8 +378,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999911099995,
-            "y": -38.099999695199976,
+            "x": 1422.3999999999999,
+            "y": 101.6,
             "z": 0.0
           },
           "relative": false
@@ -505,9 +409,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -517,7 +421,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 1219.1999999999998,
+        "distance": 50.8,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -555,41 +459,6 @@ description: Artifact commands truss-structure.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 1422.3999999999999,
-                "z": -1219.1999999999998
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
       }
     },
     {
@@ -603,14 +472,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -636,9 +505,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -656,8 +525,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -12.699999974600034,
-          "y": -1511.2999548805394,
+          "x": -1422.3999999999999,
+          "y": 101.6,
           "z": 0.0
         }
       }
@@ -678,8 +547,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540006,
-            "y": -1511.2999548805394,
+            "x": -50.8,
+            "y": 101.6,
             "z": 0.0
           },
           "relative": false
@@ -695,8 +564,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540006,
-            "y": 1536.7000451194601,
+            "x": -50.8,
+            "y": 913.8528710206,
             "z": 0.0
           },
           "relative": false
@@ -712,8 +581,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999974600034,
-            "y": 1536.7000451194601,
+            "x": -1422.3999999999999,
+            "y": 274.26528710459996,
             "z": 0.0
           },
           "relative": false
@@ -729,8 +598,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.699999974600034,
-            "y": -1511.2999548805394,
+            "x": -1422.3999999999999,
+            "y": 101.6,
             "z": 0.0
           },
           "relative": false
@@ -760,9 +629,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -772,7 +641,271 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 101.6,
+        "distance": 50.8,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_subtract",
+        "target_ids": [
+          "[uuid]"
+        ],
+        "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 2.54,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 100.0,
+        "clobber": false,
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 25.4,
+          "y": 355.59999999999997,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 575.3261314129999,
+            "y": 673.0999999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 690.427220362,
+            "y": 619.4274807513999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 25.4,
+            "y": 235.4738360618,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 25.4,
+            "y": 355.59999999999997,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 45.72,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -825,26 +958,186 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -25.4,
+          "y": 355.59999999999997,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -575.3261314129999,
+            "y": 673.0999999999999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -690.427220362,
+            "y": 619.4274807513999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -25.4,
+            "y": 235.4738360618,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -25.4,
+            "y": 355.59999999999997,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
         "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": -1524.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 45.72,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
       }
     },
     {
@@ -855,7 +1148,7 @@ description: Artifact commands truss-structure.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 2.54
         },
         "x_axis": {
           "x": 1.0,
@@ -867,9 +1160,23 @@ description: Artifact commands truss-structure.kcl
           "y": 1.0,
           "z": 0.0
         },
-        "size": 60.0,
+        "size": 100.0,
         "clobber": false,
-        "hide": true
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
       }
     },
     {
@@ -911,8 +1218,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -12.69999997460002,
-          "y": -850.8999548805373,
+          "x": 0.0,
+          "y": -1524.0,
           "z": 0.0
         }
       }
@@ -933,8 +1240,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540001,
-            "y": -850.8999548805373,
+            "x": 48.26,
+            "y": -1524.0,
             "z": 0.0
           },
           "relative": false
@@ -950,8 +1257,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540001,
-            "y": 876.3000451194624,
+            "x": 48.26,
+            "y": -1447.8,
             "z": 0.0
           },
           "relative": false
@@ -967,8 +1274,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.69999997460002,
-            "y": 876.3000451194624,
+            "x": 0.0,
+            "y": -1447.8,
             "z": 0.0
           },
           "relative": false
@@ -984,8 +1291,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.69999997460002,
-            "y": -850.8999548805373,
+            "x": 0.0,
+            "y": -1524.0,
             "z": 0.0
           },
           "relative": false
@@ -1027,7 +1334,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 101.6,
+        "distance": -1221.74,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1080,92 +1387,6 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": -1524.0,
-                "z": 203.2
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": {
-              "property": {
-                "x": 0.0,
-                "y": -25.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -1192,8 +1413,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -12.69999997460002,
-          "y": -850.8999548805373,
+          "x": 0.0,
+          "y": 1524.0,
           "z": 0.0
         }
       }
@@ -1214,8 +1435,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540001,
-            "y": -850.8999548805373,
+            "x": 48.26,
+            "y": 1524.0,
             "z": 0.0
           },
           "relative": false
@@ -1231,8 +1452,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000002540001,
-            "y": 876.3000451194624,
+            "x": 48.26,
+            "y": 1447.8,
             "z": 0.0
           },
           "relative": false
@@ -1248,8 +1469,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.69999997460002,
-            "y": 876.3000451194624,
+            "x": 0.0,
+            "y": 1447.8,
             "z": 0.0
           },
           "relative": false
@@ -1265,8 +1486,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -12.69999997460002,
-            "y": -850.8999548805373,
+            "x": 0.0,
+            "y": 1524.0,
             "z": 0.0
           },
           "relative": false
@@ -1308,7 +1529,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 101.6,
+        "distance": -1221.74,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -1352,700 +1573,16 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 889.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": null,
-            "rotate_rpy": {
-              "property": {
-                "x": 0.0,
-                "y": 25.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -12.699999949199999,
-          "y": -38.099999733299974,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 38.099999999999994,
-            "y": -38.099999809499984,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.0999999619,
-          "y": -38.09999992379999,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 38.09999993649999,
-            "y": 63.49999992379999,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.09999992379999,
-          "y": 63.49999980949998,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -12.699999872999992,
-            "y": 63.49999973329997,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -12.699999885699993,
-          "y": 63.499999695199975,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -12.699999911099995,
-            "y": -38.099999695199976,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
-        "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 711.1999999999999,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": 0.0,
-                "y": -50.8,
-                "z": 101.6
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": -2133.6,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ],
-          [
-            {
-              "translate": {
-                "x": -4267.2,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": -2133.6,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ],
-          [
-            {
-              "translate": {
-                "x": -4267.2,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": -2133.6,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ],
-          [
-            {
-              "translate": {
-                "x": -4267.2,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": -2133.6,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ],
-          [
-            {
-              "translate": {
-                "x": -4267.2,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
-        "transform": [],
-        "transforms": [
-          [
-            {
-              "translate": {
-                "x": -2133.6,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ],
-          [
-            {
-              "translate": {
-                "x": -4267.2,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "rotation": {
-                "axis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "angle": {
-                  "unit": "degrees",
-                  "value": 0.0
-                },
-                "origin": {
-                  "type": "local"
-                }
-              },
-              "replicate": true
-            }
-          ]
-        ]
+        "type": "boolean_union",
+        "solid_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
       }
     },
     {
@@ -2128,14 +1665,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -2161,9 +1698,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -2181,8 +1718,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2146.2999505879397,
-          "y": -38.10000000000005,
+          "x": 0.0,
+          "y": 990.0528710206,
           "z": 0.0
         }
       }
@@ -2203,8 +1740,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": -38.10000000000005,
+            "x": 34.5303266974,
+            "y": 973.9511152637999,
             "z": 0.0
           },
           "relative": false
@@ -2220,8 +1757,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": 63.50000000000004,
+            "x": 34.5303266974,
+            "y": 935.8511152637999,
             "z": 0.0
           },
           "relative": false
@@ -2237,8 +1774,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": 63.50000000000004,
+            "x": 0.0,
+            "y": 951.9528710206,
             "z": 0.0
           },
           "relative": false
@@ -2254,8 +1791,42 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": -38.10000000000005,
+            "x": -34.5303266974,
+            "y": 935.8511152637999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -34.5303266974,
+            "y": 973.9511152637999,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 0.0,
+            "y": 990.0528710206,
             "z": 0.0
           },
           "relative": false
@@ -2285,9 +1856,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": 1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -2297,7 +1868,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 101.6,
+        "distance": -2082.7999999999997,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -2341,34 +1912,39 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
         "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -4267.2,
-                "y": -50.8,
-                "z": 812.8
+          [
+            {
+              "translate": {
+                "x": -2133.6,
+                "y": 0.0,
+                "z": 0.0
               },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
         ]
       }
     },
@@ -2383,14 +1959,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": -1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -2416,9 +1992,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": -1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -2436,8 +2012,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2146.2999505879397,
-          "y": -38.10000000000005,
+          "x": -1511.3,
+          "y": 292.09999999999997,
           "z": 0.0
         }
       }
@@ -2458,8 +2034,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": -38.10000000000005,
+            "x": -1511.3,
+            "y": 241.29999999999998,
             "z": 0.0
           },
           "relative": false
@@ -2475,8 +2051,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": 63.50000000000004,
+            "x": -1435.1,
+            "y": 241.29999999999998,
             "z": 0.0
           },
           "relative": false
@@ -2492,8 +2068,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": 63.50000000000004,
+            "x": -1435.1,
+            "y": 292.09999999999997,
             "z": 0.0
           },
           "relative": false
@@ -2509,122 +2085,12 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": -38.10000000000005,
+            "x": -1511.3,
+            "y": 292.09999999999997,
             "z": 0.0
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
-        "intersection_index": -1,
-        "curve_clockwise": false,
-        "version": "V1"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": 101.6,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "set_object_transform",
-        "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -4267.2,
-                "y": -1524.0,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
       }
     },
     {
@@ -2638,14 +2104,14 @@ description: Artifact commands truss-structure.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": -1.0,
           "z": 0.0
         },
         "y_axis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": 0.0,
+          "z": 1.0
         },
         "size": 60.0,
         "clobber": false,
@@ -2671,9 +2137,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": -1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -2691,8 +2157,8 @@ description: Artifact commands truss-structure.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2146.2999505879397,
-          "y": -38.10000000000005,
+          "x": 1524.0,
+          "y": 292.09999999999997,
           "z": 0.0
         }
       }
@@ -2713,8 +2179,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": -38.10000000000005,
+            "x": 1524.0,
+            "y": 241.29999999999998,
             "z": 0.0
           },
           "relative": false
@@ -2730,8 +2196,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 2171.70004941206,
-            "y": 63.50000000000004,
+            "x": 1447.8,
+            "y": 241.29999999999998,
             "z": 0.0
           },
           "relative": false
@@ -2747,8 +2213,8 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": 63.50000000000004,
+            "x": 1447.8,
+            "y": 292.09999999999997,
             "z": 0.0
           },
           "relative": false
@@ -2764,12 +2230,25 @@ description: Artifact commands truss-structure.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2146.2999505879397,
-            "y": -38.10000000000005,
+            "x": 1524.0,
+            "y": 292.09999999999997,
             "z": 0.0
           },
           "relative": false
         }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2795,9 +2274,9 @@ description: Artifact commands truss-structure.kcl
         "animated": false,
         "adjust_camera": false,
         "planar_normal": {
-          "x": 0.0,
+          "x": -1.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 0.0
         }
       }
     },
@@ -2807,7 +2286,7 @@ description: Artifact commands truss-structure.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": 101.6,
+        "distance": 2082.7999999999997,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
@@ -2851,6 +2330,148 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": -1.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 2082.7999999999997,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": [
+          [
+            {
+              "translate": {
+                "x": -2133.6,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_linear_pattern_transform",
+        "entity_id": "[uuid]",
+        "transform": [],
+        "transforms": [
+          [
+            {
+              "translate": {
+                "x": -2133.6,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "rotation": {
+                "axis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "angle": {
+                  "unit": "degrees",
+                  "value": 0.0
+                },
+                "origin": {
+                  "type": "local"
+                }
+              },
+              "replicate": true
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -2860,383 +2481,81 @@ description: Artifact commands truss-structure.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "set_object_transform",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "transforms": [
-          {
-            "translate": {
-              "property": {
-                "x": -4267.2,
-                "y": 1422.3999999999999,
-                "z": 0.0
-              },
-              "set": false,
-              "origin": {
-                "type": "local"
-              }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
-          }
-        ]
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "object_set_material_params_pbr",
+        "type": "object_visible",
         "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.72156864,
-          "g": 0.72156864,
-          "b": 0.72156864,
-          "a": 1.0
-        },
-        "metalness": 0.0,
-        "roughness": 0.01,
-        "ambient_occlusion": 0.0
+        "hidden": true
       }
     }
   ]

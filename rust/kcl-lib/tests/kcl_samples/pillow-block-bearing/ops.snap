@@ -95,7 +95,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.08,
+                "value": 1.084375,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -104,7 +104,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.0,
+                "value": 0.001,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -121,7 +121,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.98,
+                "value": 0.975,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -130,7 +130,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.0,
+                "value": 0.001,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -147,7 +147,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.19,
+                "value": 1.19375,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -156,7 +156,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.0,
+                "value": 0.001,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -208,7 +208,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.19,
+                "value": 0.975,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -217,7 +217,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.0,
+                "value": 0.001,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -234,7 +234,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.98,
+                "value": 1.19375,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -243,7 +243,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.0,
+                "value": 0.001,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -320,50 +320,6 @@ description: Operations executed pillow-block-bearing.kcl
           {
             "type": "SketchBlockBodyItem",
             "index": 2
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 3
           },
           {
             "type": "ExpressionStatementExpr"
@@ -682,7 +638,7 @@ description: Operations executed pillow-block-bearing.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 12
+        "sketchId": 11
       },
       "nodePath": {
         "steps": [
@@ -711,7 +667,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.08,
+                "value": 1.084375,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -720,7 +676,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.01,
+                "value": 0.013531647,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -737,7 +693,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.03,
+                "value": 1.0296875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -746,7 +702,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.108253175,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -763,7 +719,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.14,
+                "value": 1.1390625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -772,7 +728,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.108253175,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -824,7 +780,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.14,
+                "value": 1.1390625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -833,7 +789,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.14,
+                "value": 0.135596925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -850,7 +806,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.14,
+                "value": 1.1390625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -859,7 +815,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.108253175,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -955,7 +911,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.03,
+                "value": 1.0296875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -964,7 +920,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.14,
+                "value": 0.135596925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -981,7 +937,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.14,
+                "value": 1.1390625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -990,7 +946,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.14,
+                "value": 0.135596925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1086,7 +1042,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.03,
+                "value": 1.0296875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1095,7 +1051,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.108253175,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1112,7 +1068,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.03,
+                "value": 1.0296875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1121,7 +1077,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.14,
+                "value": 0.135596925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1473,7 +1429,7 @@ description: Operations executed pillow-block-bearing.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 30
+        "sketchId": 29
       },
       "nodePath": {
         "steps": [
@@ -1502,7 +1458,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.08,
+                "value": 1.084375,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1528,7 +1484,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.11,
+                "value": 1.11171875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1585,7 +1541,7 @@ description: Operations executed pillow-block-bearing.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 35
+        "sketchId": 34
       },
       "nodePath": {
         "steps": [
@@ -1614,7 +1570,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.24162738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1623,7 +1579,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.45,
+                "value": 0.450007615,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1640,7 +1596,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.2425,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1701,7 +1657,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.95,
+                "value": 0.94912738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1710,7 +1666,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.45,
+                "value": 0.450007615,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1727,7 +1683,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.24162738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1736,7 +1692,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.45,
+                "value": 0.450007615,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1832,7 +1788,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.95,
+                "value": 0.94912738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1841,7 +1797,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.105,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1858,7 +1814,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.95,
+                "value": 0.94912738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1867,7 +1823,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.45,
+                "value": 0.450007615,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1963,7 +1919,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.92412738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1972,7 +1928,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.105,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1989,7 +1945,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.95,
+                "value": 0.94912738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -1998,7 +1954,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.105,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2094,7 +2050,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.917232629,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2120,7 +2076,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.92412738,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2129,7 +2085,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.11,
+                "value": 0.105,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2225,7 +2181,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.2425,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2251,7 +2207,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.917232629,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2531,7 +2487,7 @@ description: Operations executed pillow-block-bearing.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 60
+        "sketchId": 59
       },
       "nodePath": {
         "steps": [
@@ -2560,7 +2516,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.93,
+                "value": 0.925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2569,7 +2525,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2586,7 +2542,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.88,
+                "value": 0.875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2595,7 +2551,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2647,7 +2603,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.94,
+                "value": 0.935352762,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2656,7 +2612,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.06,
+                "value": 0.063637033,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2673,7 +2629,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.93,
+                "value": 0.925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2682,7 +2638,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2778,7 +2734,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.99,
+                "value": 0.985352762,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2787,7 +2743,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.06,
+                "value": 0.063637033,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2804,7 +2760,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.94,
+                "value": 0.935352762,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2813,7 +2769,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.06,
+                "value": 0.063637033,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2909,7 +2865,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.0,
+                "value": 0.995705524,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2918,7 +2874,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2935,7 +2891,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.99,
+                "value": 0.985352762,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -2944,7 +2900,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.06,
+                "value": 0.063637033,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3040,7 +2996,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.31,
+                "value": 1.3125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3049,7 +3005,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3066,7 +3022,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.0,
+                "value": 0.995705524,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3075,7 +3031,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3171,7 +3127,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.31,
+                "value": 1.3125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3180,7 +3136,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.53,
+                "value": 0.525,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3197,7 +3153,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.31,
+                "value": 1.3125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3206,7 +3162,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3302,7 +3258,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.2425,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3311,7 +3267,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.53,
+                "value": 0.525,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3328,7 +3284,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.31,
+                "value": 1.3125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3337,7 +3293,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.53,
+                "value": 0.525,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3433,7 +3389,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.235081597,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3459,7 +3415,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.2425,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3468,7 +3424,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.53,
+                "value": 0.525,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3564,7 +3520,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.93,
+                "value": 0.925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3590,7 +3546,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 1.24,
+                "value": 1.235081597,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3695,7 +3651,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.915836091,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3704,7 +3660,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.63,
+                "value": 0.625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3721,7 +3677,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.93,
+                "value": 0.925,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3826,7 +3782,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.88,
+                "value": 0.875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3835,7 +3791,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.63,
+                "value": 0.625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3852,7 +3808,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.92,
+                "value": 0.915836091,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3861,7 +3817,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.63,
+                "value": 0.625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3957,7 +3913,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.88,
+                "value": 0.875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3966,7 +3922,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.03,
+                "value": 0.025,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3983,7 +3939,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 0.88,
+                "value": 0.875,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -3992,7 +3948,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 0.63,
+                "value": 0.625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4629,7 +4585,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 3.06,
+                "value": 3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4638,7 +4594,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -2.06,
+                "value": -2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4655,7 +4611,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -3.06,
+                "value": -3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4664,7 +4620,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -2.06,
+                "value": -2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4716,7 +4672,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 3.06,
+                "value": 3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4725,7 +4681,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 2.06,
+                "value": 2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4742,7 +4698,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 3.06,
+                "value": 3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4751,7 +4707,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -2.06,
+                "value": -2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4847,7 +4803,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -3.06,
+                "value": -3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4856,7 +4812,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 2.06,
+                "value": 2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4873,7 +4829,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 3.06,
+                "value": 3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4882,7 +4838,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 2.06,
+                "value": 2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4978,7 +4934,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -3.06,
+                "value": -3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -4987,7 +4943,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": -2.06,
+                "value": -2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5004,7 +4960,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": -3.06,
+                "value": -3.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5013,7 +4969,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 2.06,
+                "value": 2.0625,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5227,6 +5183,76 @@ description: Operations executed pillow-block-bearing.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 0.125,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
@@ -5259,7 +5285,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 2.5,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5268,7 +5294,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 1.5,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5285,7 +5311,7 @@ description: Operations executed pillow-block-bearing.kcl
             "value": [
               {
                 "type": "SketchVar",
-                "value": 2.875,
+                "value": 1.3125,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5294,7 +5320,7 @@ description: Operations executed pillow-block-bearing.kcl
               },
               {
                 "type": "SketchVar",
-                "value": 1.5,
+                "value": 0.0,
                 "ty": {
                   "in": null,
                   "type": "Known",
@@ -5367,13 +5393,6 @@ description: Operations executed pillow-block-bearing.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          },
-          {
-            "type": "CallKwUnlabeledArg"
           }
         ]
       },
@@ -5409,17 +5428,13 @@ description: Operations executed pillow-block-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
           }
         ]
       },
@@ -5427,7 +5442,7 @@ description: Operations executed pillow-block-bearing.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "patternCircular3d",
+      "name": "subtract",
       "unlabeledArg": {
         "value": {
           "type": "Solid",
@@ -5438,18 +5453,284 @@ description: Operations executed pillow-block-bearing.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "arcDegrees": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
           "value": {
             "type": "Number",
-            "value": 360.0,
+            "value": 0.5,
             "ty": {
-              "degrees": null,
-              "type": "Known",
-              "type": "Angle"
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockArgs"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 23
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -2.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -2.125,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "segments": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": -0.1875,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
         "axis": {
           "value": {
             "type": "Object",
@@ -5468,7 +5749,7 @@ description: Operations executed pillow-block-bearing.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 0.0,
+                    "value": 1.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -5477,7 +5758,7 @@ description: Operations executed pillow-block-bearing.kcl
                   },
                   {
                     "type": "Number",
-                    "value": 1.0,
+                    "value": 0.0,
                     "ty": {
                       "type": "Default",
                       "len": "mm",
@@ -5522,56 +5803,26 @@ description: Operations executed pillow-block-bearing.kcl
           },
           "sourceRange": []
         },
-        "center": {
+        "distance": {
           "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
+            "type": "Number",
+            "value": 3.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
           "sourceRange": []
         },
         "instances": {
           "value": {
             "type": "Number",
-            "value": 4.0,
+            "value": 2.0,
             "ty": {
               "type": "Known",
               "type": "Count"
             }
-          },
-          "sourceRange": []
-        },
-        "rotateDuplicates": {
-          "value": {
-            "type": "Bool",
-            "value": false
           },
           "sourceRange": []
         }
@@ -5580,7 +5831,147 @@ description: Operations executed pillow-block-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Object",
+            "value": {
+              "direction": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 1.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              },
+              "origin": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "distance": {
+          "value": {
+            "type": "Number",
+            "value": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5646,7 +6037,572 @@ description: Operations executed pillow-block-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "offsetPlane",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 0.3125,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockArgs"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 28
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -2.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -2.3125,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -1.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "segments": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": -0.3125,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Object",
+            "value": {
+              "direction": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 1.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              },
+              "origin": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "distance": {
+          "value": {
+            "type": "Number",
+            "value": 3.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Object",
+            "value": {
+              "direction": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 1.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              },
+              "origin": {
+                "type": "Array",
+                "value": [
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  },
+                  {
+                    "type": "Number",
+                    "value": 0.0,
+                    "ty": {
+                      "type": "Default",
+                      "len": "mm",
+                      "angle": "degrees"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "distance": {
+          "value": {
+            "type": "Number",
+            "value": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5687,7 +6643,7 @@ description: Operations executed pillow-block-bearing.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 8
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5698,32 +6654,6 @@ description: Operations executed pillow-block-bearing.kcl
           {
             "type": "PipeBodyItem",
             "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
