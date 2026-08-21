@@ -94,6 +94,89 @@ describe('testing parseProjectRoute', () => {
     })
   })
 
+  it('should parse a nested file relative to the active project directory', async () => {
+    const defaultProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'local-projects'
+    )
+    const activeProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Zoo',
+      'personal'
+    )
+    const config = {
+      settings: {
+        project: {
+          directory: defaultProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(activeProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, { activeProjectPath: projectPath })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should prefer the most specific candidate project directory', async () => {
+    const outerProjectDirectory = absolutePath('home', 'somebody', 'projects')
+    const nestedProjectDirectory = fsZds.join(outerProjectDirectory, 'client')
+    const config = {
+      settings: {
+        project: {
+          directory: outerProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(nestedProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, {
+        candidateProjectDirectories: [
+          outerProjectDirectory,
+          nestedProjectDirectory,
+        ],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should keep the active project when it contains a nested library', async () => {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const projectPath = fsZds.join(projectDirectory, 'assembly')
+    const nestedLibraryPath = fsZds.join(projectPath, 'vendor')
+    const route = fsZds.join(nestedLibraryPath, 'parts', 'bolt.kcl')
+    const config = {
+      settings: {
+        project: {
+          directory: projectDirectory,
+        },
+      },
+    }
+    expect(
+      parseProjectRoute(config, route, {
+        activeProjectPath: projectPath,
+        candidateProjectDirectories: [nestedLibraryPath],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
   it('should prefer the default directory library over the legacy project directory', async () => {
     const libraryProjectDirectory = absolutePath(
       'home',

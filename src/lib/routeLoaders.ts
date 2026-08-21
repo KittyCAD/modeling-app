@@ -17,11 +17,10 @@ import {
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibrarySetting,
-  isPathInDirectoryProjectLibrary,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
@@ -201,8 +200,22 @@ export const fileLoader =
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
     const appSettings = await loadRouteSettings(app, wasmInstance)
+    const currentProjectPath = app.project?.projectIORefSignal.value.path
+    const targetLibraryPath = params.id
+      ? (
+          await getProjectLibraryOwnership(
+            appSettings.settings.app.libraries?.current ?? [],
+            params.id
+          )
+        )?.libraryPath
+      : undefined
     const projectPathData = params.id
-      ? parseProjectRoute(appSettings.configuration, params.id)
+      ? parseProjectRoute(appSettings.configuration, params.id, {
+          activeProjectPath: currentProjectPath,
+          candidateProjectDirectories: targetLibraryPath
+            ? [targetLibraryPath]
+            : [],
+        })
       : undefined
 
     if (!projectPathData) {
@@ -211,11 +224,7 @@ export const fileLoader =
       )
     }
 
-    const settings = await loadRouteSettings(
-      app,
-      wasmInstance,
-      projectPathData.projectPath
-    )
+    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
@@ -303,16 +312,9 @@ export const fileLoader =
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir =
-      getDefaultDirectoryProjectLibraryPath(
-        settings.settings.app.libraries?.current
-      ) ?? ''
-    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
-      project.path,
-      appProjectDir
-    )
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
+    const requestedProjectDirectoryPath =
+      projectRef.projectIORefSignal.value.libraryPath ??
+      getParentAbsolutePath(project.path)
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
