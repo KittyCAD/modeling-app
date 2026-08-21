@@ -231,30 +231,10 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          # Caching is handled by the Namespace cache volume below. Running both
-          # would cache the same content twice, once through GitHub's cache API
-          # and once on the volume.
-          cache: false
+          cache-workspaces: rust
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
-      - name: Rust cache on the Namespace volume
-        # Pilot for migrating Rust caching off the GitHub Actions cache. The
-        # repository is at its 10 GB GitHub cache quota with roughly 940
-        # entries, so entries are evicted within minutes of being written. This
-        # profile has a 100 GB Namespace cache volume that nothing currently
-        # uses.
-        #
-        # Paths are listed explicitly rather than using `cache: rust`. The
-        # mode-to-path mapping is resolved on the runner, not in the action, so
-        # it cannot be checked before running, and this workspace is at `rust/`
-        # rather than the repository root.
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: |
-            rust/target
-            ~/.cargo/registry
-            ~/.cargo/git
       - name: build
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
