@@ -8,7 +8,6 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
-import { isDesktop } from '@src/lib/isDesktop'
 import { isErr } from '@src/lib/trap'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -52,6 +51,27 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
   if (result instanceof Error) {
     toast.error(result.message)
   }
+}
+
+function resolveCommandArgumentValue(
+  context: CommandBarContext,
+  argConfig: CommandArgument<unknown>,
+  argName: string
+) {
+  const value = context.argumentsToSubmit[argName]
+  if (typeof value !== 'function') {
+    return value
+  }
+
+  try {
+    return value(context, argConfig.machineActor?.getSnapshot().context)
+  } catch {
+    return value
+  }
+}
+
+function commandArgumentValueIsMissing(value: unknown) {
+  return value === undefined || value === null || value === ''
 }
 
 export type CommandBarInput = {
@@ -252,8 +272,13 @@ export const commandBarMachine = setup({
             (argIsRequired ||
               argConfig.prepopulate ||
               argConfig.skip === false) &&
-            (!context.argumentsToSubmit.hasOwnProperty(argName) ||
-              context.argumentsToSubmit[argName] === undefined ||
+            (!Object.prototype.hasOwnProperty.call(
+              context.argumentsToSubmit,
+              argName
+            ) ||
+              commandArgumentValueIsMissing(
+                resolveCommandArgumentValue(context, argConfig, argName)
+              ) ||
               (rejectedArg &&
                 typeof rejectedArg === 'object' &&
                 'name' in rejectedArg &&
@@ -392,10 +417,10 @@ export const commandBarMachine = setup({
             : !argConfig.required)
       )
     },
-    // Only for add-kcl-file-to-project on web
+    // Allows add-kcl-file-to-project entry points with prefilled hidden args
+    // to submit once the user picks the visible source/sample arguments.
     'All required arguments provided': ({ context }) => {
-      if (isDesktop()) return false
-      const { selectedCommand, argumentsToSubmit } = context
+      const { selectedCommand } = context
       if (
         selectedCommand?.name !== 'add-kcl-file-to-project' ||
         !selectedCommand?.args
@@ -414,8 +439,8 @@ export const commandBarMachine = setup({
               ? argConfig.required(context)
               : argConfig.required
           if (!isRequired) return true
-          const value = argumentsToSubmit[argName]
-          return value !== undefined && value !== null && value !== ''
+          const value = resolveCommandArgumentValue(context, argConfig, argName)
+          return !commandArgumentValueIsMissing(value)
         }
       )
     },

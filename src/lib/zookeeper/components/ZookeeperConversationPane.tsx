@@ -23,7 +23,7 @@ import {
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { collectProjectFiles } from '@src/lib/projectFiles'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'

@@ -41,8 +41,7 @@ import {
   ExpectedSystemIOError,
   reportSystemIOError,
   type SystemIOErrorRisk,
-} from '@src/machines/systemIO/errorReporting'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
+} from '@src/lib/systemIOErrorReporting'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 import {
@@ -61,6 +60,15 @@ import {
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+
+const DIRECTORY_PROJECT_OPERATION_LABELS = {
+  createProject: 'create project',
+  duplicateProject: 'duplicate project',
+  renameProject: 'rename project',
+  deleteProject: 'delete project',
+  moveProjectTo: 'move recursive',
+  readProjects: 'read folders from project directory',
+} as const
 
 function areProjectLibrariesEqual(
   left: readonly ProjectLibrary[],
@@ -172,6 +180,10 @@ async function readConfiguredProjectLibraryRealizations({
 
 const PROJECT_LIBRARY_WATCH_DEBOUNCE_MS = 750
 const PROJECT_LIBRARY_WATCH_SETTLED_RESCAN_MS = 3000
+const projectLibraryRealizationsStatus = signal({
+  pending: false,
+  hasLoaded: false,
+})
 
 type ProjectLibraryWatchTarget = {
   path: string
@@ -369,6 +381,23 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
       )
     }
 
+    const updateStatus = () => {
+      const pending = Array.from(scanStates.values()).some(
+        (state) => state.abortController !== undefined
+      )
+      const hasLoaded =
+        currentLibraryIds.length === 0 ||
+        currentLibraryIds.every((libraryId) => {
+          const state = scanStates.get(libraryId)
+          return Boolean(state && state.abortController === undefined)
+        })
+
+      projectLibraryRealizationsStatus.value = {
+        pending,
+        hasLoaded,
+      }
+    }
+
     const scanLibrary = (
       library: ProjectLibrary,
       libraryType: ProjectLibraryTypeContribution | undefined,
@@ -406,6 +435,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           input,
           realizations: [],
         })
+        updateStatus()
         return
       }
 
@@ -421,6 +451,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           : [],
       }
       scanStates.set(library.id, state)
+      updateStatus()
 
       void readConfiguredProjectLibraryRealizations({
         library,
@@ -438,6 +469,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
 
         state.abortController = undefined
         state.realizations = nextRealizations
+        updateStatus()
         updateRealizations()
       })
     }
@@ -467,6 +499,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
         libraries.forEach((library) => {
           scanLibrary(library, typeById.get(library.type), invalidation)
         })
+        updateStatus()
         updateRealizations()
       })
     })
@@ -484,6 +517,7 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
           for (const state of scanStates.values()) {
             state.abortController?.abort()
           }
+          updateStatus()
           disposeConfiguredProjectLibraryRealizationsEffect?.()
         },
       }),
@@ -496,6 +530,7 @@ const projectLibraryRealizationsRegistryService = defineRegistryItem({
   id: 'project-libraries.realizations-service',
   providesServices: [
     provideService(projectLibraryRealizationsService, {
+      status: projectLibraryRealizationsStatus,
       invalidate: invalidateProjectLibraryRealizations,
       watchConfiguredLibraries: ({ libraries }) =>
         watchConfiguredProjectLibraries({
@@ -574,23 +609,23 @@ function withReportedDirectoryProjectOperations(
   return {
     ...operations,
     createProject: report(operations.createProject, {
-      operation: SystemIOMachineActors.createProject,
+      operation: DIRECTORY_PROJECT_OPERATION_LABELS.createProject,
       risk: 'write',
     }),
     duplicateProject: report(operations.duplicateProject, {
-      operation: SystemIOMachineActors.duplicateProject,
+      operation: DIRECTORY_PROJECT_OPERATION_LABELS.duplicateProject,
       risk: 'write',
     }),
     renameProject: report(operations.renameProject, {
-      operation: SystemIOMachineActors.renameProject,
+      operation: DIRECTORY_PROJECT_OPERATION_LABELS.renameProject,
       risk: 'write',
     }),
     deleteProject: report(operations.deleteProject, {
-      operation: SystemIOMachineActors.deleteProject,
+      operation: DIRECTORY_PROJECT_OPERATION_LABELS.deleteProject,
       risk: 'destructive',
     }),
     moveProjectTo: report(operations.moveProjectTo, {
-      operation: SystemIOMachineActors.moveRecursive,
+      operation: DIRECTORY_PROJECT_OPERATION_LABELS.moveProjectTo,
       risk: 'destructive',
     }),
   }
@@ -605,7 +640,7 @@ function reportDirectoryProjectStatFailures({
 }) {
   reportSystemIOError({
     error,
-    operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+    operation: DIRECTORY_PROJECT_OPERATION_LABELS.readProjects,
     risk: 'read',
     source: 'DirectoryProjectLibrary',
     dedupeKey:
@@ -792,7 +827,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
             }
 
             return runReportedDirectoryProjectOperation({
-              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+              operation: DIRECTORY_PROJECT_OPERATION_LABELS.readProjects,
               risk: 'read',
               run: async () => {
                 const projects = await readProjectsFromProjectDirectory({

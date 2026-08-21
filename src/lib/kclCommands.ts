@@ -35,8 +35,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import { listAllImportFilesWithinProject } from '@src/lib/projectTree'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -45,7 +44,6 @@ interface KclCommandConfig {
     providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
-  systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
   settings: {
@@ -202,17 +200,19 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const context = commandProps.systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(
               commandProps.wasmInstance
             )
-            if (projectName && sep) {
-              const importableFiles = listAllImportFilesWithinProject(context, {
-                projectFolderName: projectName,
-                importExtensions: relevantFiles,
-              })
+            if (projectName && sep && commandProps.project) {
+              const importableFiles = listAllImportFilesWithinProject(
+                { folders: [commandProps.project] },
+                {
+                  projectFolderName: projectName,
+                  importExtensions: relevantFiles,
+                }
+              )
               importableFiles.forEach((file) => {
                 providedOptions.push({
                   name: file.replaceAll(sep, '/'),

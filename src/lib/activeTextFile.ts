@@ -4,7 +4,7 @@ import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { reportRejection } from '@src/lib/trap'
-import { reportSystemIOError } from '@src/machines/systemIO/errorReporting'
+import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 
 /**
  * A non-KCL text file (e.g. Markdown or plain text) opened for editing in the

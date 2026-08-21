@@ -3,14 +3,13 @@ import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { ContextFrom } from 'xstate'
 
 function createProject({
   name,
@@ -30,18 +29,6 @@ function createProject({
     directory_count: 0,
     default_file: `/projects/${name}/main.kcl`,
   }
-}
-
-function createSystemIOActor(folders: Project[] = []) {
-  return {
-    getSnapshot: () => ({
-      context: {
-        defaultProjectFolderName: 'untitled',
-        folders,
-      },
-    }),
-    send: vi.fn(),
-  } as unknown as ActorRefFrom<typeof systemIOMachine>
 }
 
 function createLibrary(
@@ -121,7 +108,6 @@ function projectOptions(
 describe('project command config', () => {
   it('keeps project directory mutation commands disabled by default on web', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: false,
     })
 
@@ -132,14 +118,14 @@ describe('project command config', () => {
 
   it('enables project directory mutation commands for supported runtimes', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: true,
     })
 
     expect(commands.map((command) => command.name)).toEqual([
       'Open project',
       'Create project',
-      'Move project',
+      'Duplicate project',
+      'Move to library',
       'Delete project',
       'Rename project',
       'Import file from URL',
@@ -147,9 +133,7 @@ describe('project command config', () => {
   })
 
   it('requires a project library target when creating projects', () => {
-    const systemIOActor = createSystemIOActor()
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
     })
     const createCommand = commands.find(
@@ -160,17 +144,15 @@ describe('project command config', () => {
       name: ' My Cool Project! ',
     })
 
-    expect(systemIOActor.send).not.toHaveBeenCalled()
+    expect(createCommand?.onSubmit).toBeDefined()
   })
 
   it('creates projects through the selected library target', () => {
-    const systemIOActor = createSystemIOActor()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProject = {
       run: vi.fn(),
     }
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
@@ -193,17 +175,14 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('creates projects through the only library target when the picker is hidden', async () => {
-    const systemIOActor = createSystemIOActor()
     const library = createLibrary('client-projects', 'Client Projects')
     const createProjectOperation = {
       run: vi.fn(async () => createProject({ name: 'client-gear' })),
     }
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
@@ -232,12 +211,10 @@ describe('project command config', () => {
       requestedProjectName: 'client-gear',
       requestedProjectTitle: 'Client Gear!',
     })
-    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('defaults create project to the current library context', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: true,
       getCurrentProjectLibraryId: () => 'client-projects',
       getCreateProjectLibraryTargets: () => [
@@ -280,7 +257,6 @@ describe('project command config', () => {
 
   it('shows a prepopulated library picker when creating into multiple libraries', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
@@ -326,15 +302,8 @@ describe('project command config', () => {
     ])
   })
 
-  it('keeps legacy project directory options for opening projects only', () => {
-    const systemIOActor = createSystemIOActor([
-      createProject({
-        name: 'bracket-directory',
-        title: 'Display Bracket',
-      }),
-    ])
+  it('does not expose project directory options without home project entries', () => {
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
     })
 
@@ -348,13 +317,7 @@ describe('project command config', () => {
       (command) => command.name === 'Rename project'
     )
 
-    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
-      {
-        name: 'Display Bracket',
-        value: 'bracket-directory',
-        isCurrent: false,
-      },
-    ])
+    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([])
     expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([])
     expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual(
       []
@@ -362,14 +325,7 @@ describe('project command config', () => {
   })
 
   it('requires a home project action target when renaming projects', () => {
-    const systemIOActor = createSystemIOActor([
-      createProject({
-        name: 'bracket-directory',
-        title: 'Display Bracket',
-      }),
-    ])
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
     })
     const renameCommand = commands.find(
@@ -388,14 +344,12 @@ describe('project command config', () => {
           oldName: 'bracket-directory',
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
-    ).toBe('Display Bracket')
+    ).toBe('bracket-directory')
 
     renameCommand?.onSubmit({
       oldName: 'bracket-directory',
       newName: 'Retitled Bracket',
     })
-
-    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('uses home project entries for project command options', () => {
@@ -407,12 +361,6 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor([
-        createProject({
-          name: 'default-project',
-          title: 'Default Project',
-        }),
-      ]),
       enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket',
       getHomeProjectActions: () => createHomeProjectActions(),
@@ -452,7 +400,6 @@ describe('project command config', () => {
   })
 
   it('opens, renames, and deletes home project entries through project actions', async () => {
-    const systemIOActor = createSystemIOActor()
     const homeProject = createHomeProject({
       id: 'local:/client-projects/bracket',
       title: 'Client Bracket',
@@ -462,7 +409,6 @@ describe('project command config', () => {
     })
     const homeProjectActions = createHomeProjectActions()
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
@@ -499,7 +445,6 @@ describe('project command config', () => {
         'Updated Client Bracket'
       )
       expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
-      expect(systemIOActor.send).not.toHaveBeenCalled()
     } finally {
       window.location.hash = ''
     }
@@ -520,7 +465,6 @@ describe('project command config', () => {
       deleteRemoteOnDelete: false,
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
@@ -550,7 +494,6 @@ describe('project command config', () => {
   })
 
   it('moves home project entries to a selected library through project actions', async () => {
-    const systemIOActor = createSystemIOActor()
     const sourceLibrary = createLibrary('client-projects', 'Client Projects')
     const targetLibrary = createLibrary(
       'cloud-personal',
@@ -577,26 +520,17 @@ describe('project command config', () => {
       })),
     })
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
     const moveCommand = commands.find(
-      (command) => command.name === 'Move project'
+      (command) => command.name === 'Move to library'
     )
-    const projectArg = moveCommand?.args?.project as unknown as {
-      hidden: (context: {
-        argumentsToSubmit: Record<string, unknown>
-      }) => boolean
-    }
     const libraryArg = moveCommand?.args?.library as unknown as {
       defaultValue: (
         context: ContextFrom<typeof commandBarMachine>
       ) => string | undefined
-      hidden: (context: {
-        argumentsToSubmit: Record<string, unknown>
-      }) => boolean
       options: (context: {
         argumentsToSubmit: Record<string, unknown>
       }) => CommandArgumentOption<string>[]
@@ -629,37 +563,6 @@ describe('project command config', () => {
         },
       } as unknown as ContextFrom<typeof commandBarMachine>)
     ).toBe('cloud-personal')
-    expect(
-      projectArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: targetLibrary.id,
-        },
-      })
-    ).toBe(true)
-    expect(
-      libraryArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: targetLibrary.id,
-        },
-      })
-    ).toBe(true)
-    expect(
-      projectArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-        },
-      })
-    ).toBe(false)
-    expect(
-      libraryArg.hidden({
-        argumentsToSubmit: {
-          project: homeProject.id,
-          library: 'unknown-library',
-        },
-      })
-    ).toBe(false)
 
     await moveCommand?.onSubmit({
       project: homeProject.id,
@@ -670,7 +573,6 @@ describe('project command config', () => {
       homeProject,
       targetLibrary.id
     )
-    expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
   it('defaults home project rename titles from the selected entry', () => {
@@ -682,7 +584,6 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
       enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
@@ -706,20 +607,25 @@ describe('project command config', () => {
   })
 
   it('marks the current project directory option as current', () => {
-    const systemIOActor = createSystemIOActor([
-      createProject({
-        name: 'bracket-directory',
-        title: 'Display Bracket',
-      }),
-      createProject({
-        name: 'other-directory',
-        title: 'Other Project',
-      }),
-    ])
+    const bracketProject = createHomeProject({
+      id: 'local:/projects/bracket-directory',
+      title: 'Display Bracket',
+      localProjectName: 'bracket-directory',
+      localProjectPath: '/projects/bracket-directory',
+      libraryIds: ['default-projects'],
+    })
+    const otherProject = createHomeProject({
+      id: 'local:/projects/other-directory',
+      title: 'Other Project',
+      localProjectName: 'other-directory',
+      localProjectPath: '/projects/other-directory',
+      libraryIds: ['default-projects'],
+    })
     const commands = createProjectCommands({
-      systemIOActor,
       enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
+      getHomeProjectActions: () => createHomeProjectActions(),
+      getHomeProjectEntries: () => [bracketProject, otherProject],
     })
     const openCommand = commands.find(
       (command) => command.name === 'Open project'
@@ -728,12 +634,12 @@ describe('project command config', () => {
     expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
         name: 'Display Bracket',
-        value: 'bracket-directory',
+        value: 'local:/projects/bracket-directory',
         isCurrent: true,
       },
       {
         name: 'Other Project',
-        value: 'other-directory',
+        value: 'local:/projects/other-directory',
         isCurrent: false,
       },
     ])

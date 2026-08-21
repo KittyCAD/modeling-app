@@ -23,35 +23,108 @@ import {
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import type { FileEntry } from '@src/lib/project'
+import {
+  navigateToProject,
+  navigateToProjectFile,
+} from '@src/lib/projectSessionNavigation'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/lib/projectTree'
+import type { RequestedKCLFile } from '@src/lib/projectFiles'
+import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
+import { waitFor } from 'xstate'
+
+const ADD_FILE_TO_PROJECT_COMMAND = {
+  name: 'add-kcl-file-to-project',
+  groupId: 'application',
+} as const
+
+function getHomeProjectFileEntries(app: App): FileEntry[] {
+  return app.registry.get(homeProjectEntriesValueSpec).flatMap((project) => {
+    const name = project.localProjectName ?? project.name
+    const path = project.localProjectPath ?? name
+    if (!name || !path) {
+      return []
+    }
+
+    return [
+      {
+        name,
+        path,
+        children: [],
+      },
+    ]
+  })
+}
+
+function findHomeProjectEntryForCommandValue(app: App, value: unknown) {
+  if (typeof value !== 'string') {
+    return undefined
+  }
+
+  return app.registry
+    .get(homeProjectEntriesValueSpec)
+    .find(
+      (project) =>
+        project.id === value ||
+        project.localProjectName === value ||
+        project.localProjectPath === value ||
+        project.name === value
+    )
+}
+
+function getHomeProjectOptions(app: App) {
+  const currentProject = app.registry.get(projectSession).getProject()
+  const currentProjectName = currentProject?.name
+
+  const projects = app.registry.get(homeProjectEntriesValueSpec)
+  const options = projects.map((project) => ({
+    name: getHomeProjectDisplayName(project),
+    value: project.id,
+    isCurrent:
+      project.name === currentProjectName ||
+      project.localProjectName === currentProjectName,
+  }))
+  const currentProjectHasOption = projects.some(
+    (project) =>
+      project.localProjectPath === currentProject?.path ||
+      project.localProjectName === currentProject?.name ||
+      project.name === currentProject?.name
+  )
+
+  if (currentProject && !currentProjectHasOption) {
+    options.push({
+      name: currentProject.name,
+      value: currentProject.name,
+      isCurrent: true,
+    })
+  }
+
+  return options
+}
 
 function onSubmitKCLSampleCreation({
+  app,
   sample,
   uniqueNameIfNeeded,
-  systemIOActor,
   isProjectNew,
 }: {
+  app: App
   sample: string
   uniqueNameIfNeeded: string
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
   isProjectNew: boolean
 }) {
   void downloadKclSample(sample, {
     assetUrlPrefix: isDesktop() ? '.' : '',
   })
-    .then(({ requestedProjectName: projectPathPart, initialProject }) => {
+    .then(async ({ requestedProjectName: projectPathPart, initialProject }) => {
       const requestedFiles: RequestedKCLFile[] = initialProject.files.map(
         (file) => ({
           requestedCode: new TextDecoder().decode(file.requestedData),
@@ -66,8 +139,9 @@ function onSubmitKCLSampleCreation({
       if (!isProjectNew) {
         requestedFiles.forEach((requestedFile) => {
           const subDirectoryName = projectPathPart
+          const projectTree = app.registry.get(projectSession).getProjectTree()
           const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
-            systemIOActor.getSnapshot().context,
+            { folders: projectTree ? [projectTree] : [] },
             { projectFolderName: requestedFile.requestedProjectName }
           )
           const uniqueSubDirectoryName = getUniqueProjectName(
@@ -81,25 +155,22 @@ function onSubmitKCLSampleCreation({
         })
       }
 
-      if (requestedFiles.length === 1) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: requestedFiles[0].requestedProjectName,
-            requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
-            requestedCode: requestedFiles[0].requestedCode,
-          },
+      const session = app.registry.get(projectSession)
+      const result = await session.createKclFiles({
+        files: requestedFiles,
+        requestedProjectName: uniqueNameIfNeeded,
+      })
+      toast.success(result.message)
+
+      if (requestedFiles.length === 1 && result.filePath) {
+        await navigateToProjectFile({
+          app,
+          filePath: result.filePath,
         })
       } else {
-        /**
-         * Bulk create the assembly and navigate to the project
-         */
-        systemIOActor.send({
-          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-          data: {
-            files: requestedFiles,
-            requestedProjectName: uniqueNameIfNeeded,
-          },
+        navigateToProject({
+          app,
+          projectPath: result.projectRoot,
         })
       }
     })
@@ -130,11 +201,20 @@ export function createApplicationCommands({
          * KCL samples
          */
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.systemIOActor.getSnapshot().context.folders
+        const session = app.registry.get(projectSession)
+        const folders = getHomeProjectFileEntries(app)
         const isProjectNew = !!data.newProjectName
-        const requestedProjectName = data.newProjectName || data.projectName
+        const existingProject = findHomeProjectEntryForCommandValue(
+          app,
+          data.projectName
+        )
+        const requestedProjectName =
+          data.newProjectName ||
+          existingProject?.localProjectName ||
+          existingProject?.name ||
+          data.projectName
         const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, folders ?? [])
+          ? getUniqueProjectName(requestedProjectName, folders)
           : requestedProjectName
 
         if (data.source === 'kcl-samples') {
@@ -143,9 +223,9 @@ export function createApplicationCommands({
             toast.error("Couldn't find KCL sample.")
           } else {
             onSubmitKCLSampleCreation({
+              app,
               sample: data.sample,
               uniqueNameIfNeeded,
-              systemIOActor: app.systemIOActor,
               isProjectNew,
             })
           }
@@ -171,37 +251,56 @@ export function createApplicationCommands({
                 return
               }
 
-              app.systemIOActor.send({
-                type: SystemIOMachineEvents.importFileFromURL,
-                data: {
+              session
+                .createKclFiles({
                   requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileNameWithExtension: fileNameWithExtension,
-                  requestedCode: fr.result,
-                },
-              })
+                  files: [
+                    {
+                      requestedProjectName: uniqueNameIfNeeded,
+                      requestedFileName: fileNameWithExtension,
+                      requestedCode: fr.result,
+                    },
+                  ],
+                })
+                .then(async (result) => {
+                  toast.success(result.message)
+                  if (result.filePath) {
+                    await navigateToProjectFile({
+                      app,
+                      filePath: result.filePath,
+                    })
+                  }
+                })
+                .catch(() => toast.error(error))
             } else {
               if (!(fr.result instanceof ArrayBuffer)) {
                 toast.error(error)
                 return
               }
 
-              const projectDirectoryPath =
-                app.systemIOActor.getSnapshot().context.projectDirectoryPath
               const fileData = new Uint8Array(fr.result)
 
-              getNextFileName({
-                entryName: fileNameWithExtension,
-                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
-                wasmInstance,
-                preserveUnknownExtension: true,
-              })
-                .then(({ path }) => {
-                  return fsZds.writeFile(path, fileData)
-                })
-                .then(() => {
-                  app.systemIOActor.send({
-                    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+              session
+                .getDefaultProjectDirectoryPath()
+                .then((projectDirectoryPath) =>
+                  getNextFileName({
+                    entryName: fileNameWithExtension,
+                    baseDir: joinOSPaths(
+                      projectDirectoryPath,
+                      uniqueNameIfNeeded
+                    ),
+                    wasmInstance,
+                    preserveUnknownExtension: true,
                   })
+                )
+                .then(({ path }) => {
+                  return session.writeFileAtPath({
+                    path,
+                    contents: fileData,
+                  })
+                })
+                .then((path) => {
+                  toast.success(`Successfully imported ${fsZds.basename(path)}`)
                 })
                 .catch(() => toast.error(error))
             }
@@ -295,11 +394,12 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: () => app.registry.get(projectSession).getProject()?.name,
-        options: (_, _context) => {
-          const { folders } = app.systemIOActor.getSnapshot().context
-          return getProjectDirectoryOptions(folders)
-        },
+        defaultValue: () =>
+          findHomeProjectEntryForCommandValue(
+            app,
+            app.registry.get(projectSession).getProject()?.path
+          )?.id ?? app.registry.get(projectSession).getProject()?.name,
+        options: () => getHomeProjectOptions(app),
       },
       newProjectName: {
         inputType: 'string',
@@ -353,10 +453,7 @@ export function createApplicationCommands({
     hideFromSearch: true,
     onSubmit: (data) => {
       if (data) {
-        const folders = app.systemIOActor.getSnapshot().context.folders
-        if (!folders) {
-          return
-        }
+        const folders = getHomeProjectFileEntries(app)
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
@@ -373,9 +470,9 @@ export function createApplicationCommands({
           folders
         )
         onSubmitKCLSampleCreation({
+          app,
           sample: data.sample,
           uniqueNameIfNeeded,
-          systemIOActor: app.systemIOActor,
           isProjectNew: true,
         })
       }
@@ -636,20 +733,49 @@ export function createApplicationCommands({
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(
-  settingsActor: SettingsActorType,
-  commandBarActor: CommandBarActorType
+  _settingsActor: SettingsActorType,
+  commandBarActor: CommandBarActorType,
+  currentProjectOptionValue?: string
 ) {
-  const currentProject = settingsActor.getSnapshot().context.currentProject
-  commandBarActor.send({
+  const event = {
     type: 'Find and select command',
     data: {
-      name: 'add-kcl-file-to-project',
-      groupId: 'application',
+      ...ADD_FILE_TO_PROJECT_COMMAND,
       argDefaultValues: {
         method: 'existingProject',
-        projectName: currentProject?.name,
+        ...(currentProjectOptionValue
+          ? { projectName: currentProjectOptionValue }
+          : {}),
         ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
       },
     },
-  })
+  } as const
+  const hasCommand = () =>
+    commandBarActor
+      .getSnapshot()
+      .context.commands.some(
+        (command) =>
+          command.name === ADD_FILE_TO_PROJECT_COMMAND.name &&
+          command.groupId === ADD_FILE_TO_PROJECT_COMMAND.groupId
+      )
+
+  if (hasCommand()) {
+    commandBarActor.send(event)
+    return
+  }
+
+  void waitFor(
+    commandBarActor,
+    (snapshot) =>
+      snapshot.context.commands.some(
+        (command) =>
+          command.name === ADD_FILE_TO_PROJECT_COMMAND.name &&
+          command.groupId === ADD_FILE_TO_PROJECT_COMMAND.groupId
+      ),
+    { timeout: 5000 }
+  )
+    .then(() => {
+      commandBarActor.send(event)
+    })
+    .catch(() => undefined)
 }

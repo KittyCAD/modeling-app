@@ -25,6 +25,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   acceptOnboarding,
   reportOnboardingStartFailure,
@@ -46,11 +47,11 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const app = useApp()
-    const { settings, layout, userFeatures } = app
+    const { settings, layout, registry, userFeatures } = useApp()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
+    const session = registry.get(projectSession)
     const userFeaturesContext = userFeatures.useContext()
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
@@ -74,9 +75,9 @@ export const AllSettingsFields = forwardRef(
 
     function restartOnboarding() {
       return acceptOnboarding({
-        app,
         onboardingStatus: onboardingStartPath,
         navigate,
+        projectSession: session,
       })
     }
 

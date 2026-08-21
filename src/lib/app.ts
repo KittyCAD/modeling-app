@@ -35,7 +35,7 @@ import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import { type SystemIOActor } from '@src/machines/systemIO/utils'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -392,8 +392,10 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            systemIOActor: this.systemIOActor,
             enableProjectDirectoryCommands,
+            getDefaultProjectFolderName: () =>
+              this.settings.actor.getSnapshot().context.projects
+                .defaultProjectName.current,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCurrentProjectLibraryId: () =>
@@ -403,6 +405,7 @@ export class App implements AppSubsystems {
               this.registry.get(homeProjectActionsService),
             getHomeProjectEntries: () =>
               this.registry.get(homeProjectEntriesValueSpec),
+            getProjectSession: () => this.registry.get(projectSession),
           }).map(provideCommand),
         ],
       }),

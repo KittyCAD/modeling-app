@@ -13,7 +13,7 @@ import { webSafePathSplit } from '@src/lib/paths'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
-import type { RequestedProjectFile } from '@src/machines/systemIO/utils'
+import type { RequestedProjectFile } from '@src/lib/projectFiles'
 
 const DEFAULT_IMPORTED_PROJECT_NAME = 'shared-project'
 const PROJECT_DOWNLOAD_FORMAT = 'zip'

@@ -126,4 +126,63 @@ describe('commandBarMachine', () => {
 
     actor.stop()
   })
+
+  it('asks for a skipped required argument when its dynamic default is empty', async () => {
+    const command = {
+      name: 'Import file from URL',
+      groupId: 'projects',
+      needsReview: true,
+      onSubmit: vi.fn(),
+      args: {
+        method: {
+          inputType: 'options',
+          required: true,
+          skip: true,
+          options: [{ name: 'Existing project', value: 'existingProject' }],
+        },
+        projectName: {
+          inputType: 'options',
+          required: (context) =>
+            context.argumentsToSubmit.method === 'existingProject',
+          skip: true,
+          defaultValue: () => undefined,
+          options: [],
+        },
+        code: {
+          inputType: 'text',
+          required: true,
+          skip: true,
+        },
+      },
+    } satisfies Command
+
+    const actor = createActor(commandBarMachine, {
+      input: {
+        commands: [command],
+        wasmInstancePromise: Promise.resolve({} as ModuleType),
+        machineManager: {} as MachineManager,
+      },
+    }).start()
+
+    actor.send({
+      type: 'Find and select command',
+      data: {
+        name: command.name,
+        groupId: command.groupId,
+        argDefaultValues: {
+          method: 'existingProject',
+          code: 'extrusionDistance = 12',
+        },
+      },
+    })
+
+    await vi.waitFor(() => {
+      expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
+    })
+    expect(actor.getSnapshot().context.currentArgument?.name).toBe(
+      'projectName'
+    )
+
+    actor.stop()
+  })
 })

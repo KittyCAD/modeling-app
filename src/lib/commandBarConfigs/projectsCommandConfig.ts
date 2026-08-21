@@ -7,17 +7,11 @@ import {
 } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import {
-  getProjectDirectoryOptions,
-  getProjectDisplayName,
-  getProjectOptionNameFromDirectoryName,
-} from '@src/lib/projectDisplayName'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
@@ -26,8 +20,9 @@ import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
 } from '@src/registry/contracts/projectLibraries'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type { ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
   'Create project': {
     name: string
@@ -36,6 +31,9 @@ export type ProjectsCommandSchema = {
   'Move project': {
     project: string
     library: string
+  }
+  'Duplicate project': {
+    project: string
   }
   'Import file from URL': {
     name: string
@@ -54,6 +52,9 @@ export interface CreateProjectLibraryTarget {
 }
 
 type HomeProjectCommandAction = 'open' | 'rename' | 'delete' | 'moveToLibrary'
+type HomeProjectCommandActionWithDuplicate =
+  | HomeProjectCommandAction
+  | 'duplicate'
 
 interface HomeProjectCommandTarget {
   actions: HomeProjectActionsService
@@ -64,44 +65,38 @@ function defaultEnableProjectDirectoryCommands() {
   return typeof window !== 'undefined' && Boolean(window.electron)
 }
 
+function isAbsoluteProjectPath(value: string) {
+  return value.startsWith(fsZds.sep) || /^[A-Za-z]:[\\/]/.test(value)
+}
+
 export function createProjectCommands({
-  systemIOActor,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
+  getDefaultProjectFolderName,
   getCurrentProjectDirectoryName,
   getCurrentProjectLibraryId,
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
+  getProjectSession,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
+  getDefaultProjectFolderName?: () => string | undefined
   getCurrentProjectDirectoryName?: () => string | undefined
   getCurrentProjectLibraryId?: () => string | undefined
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
+  getProjectSession?: () => ProjectSessionService | undefined
 }) {
-  /**
-   * Helper functions instead of importing these due to circular deps.
-   * unable to resolve this in a cleaner way at the moment.
-   * This is safe in terms of logic but visually ugly.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
-   */
-  const folderSnapshot = () => {
-    const { folders } = systemIOActor.getSnapshot().context
-    return folders
-  }
-
-  const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
-    return defaultProjectFolderName
-  }
+  const defaultProjectFolderNameSnapshot = () =>
+    getDefaultProjectFolderName?.() ?? 'project'
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
   const createProjectTargetsSnapshot = () => getCreateProjectLibraryTargets?.()
   const homeProjectActionsSnapshot = () => getHomeProjectActions?.()
   const homeProjectEntriesSnapshot = () => getHomeProjectEntries?.()
+  const projectSessionSnapshot = () => getProjectSession?.()
 
   const isCurrentHomeProject = (project: HomeProjectEntry) => {
     const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
@@ -114,12 +109,14 @@ export function createProjectCommands({
 
   const canUseHomeProjectAction = (
     actions: HomeProjectActionsService,
-    action: HomeProjectCommandAction,
+    action: HomeProjectCommandActionWithDuplicate,
     project: HomeProjectEntry
   ) => {
     switch (action) {
       case 'open':
         return actions.canOpen(project)
+      case 'duplicate':
+        return actions.canDuplicate(project)
       case 'rename':
         return actions.canRename(project)
       case 'delete':
@@ -130,7 +127,7 @@ export function createProjectCommands({
   }
 
   const homeProjectCommandTargets = (
-    action: HomeProjectCommandAction
+    action: HomeProjectCommandActionWithDuplicate
   ): HomeProjectCommandTarget[] | undefined => {
     const actions = homeProjectActionsSnapshot()
     const entries = homeProjectEntriesSnapshot()
@@ -145,19 +142,23 @@ export function createProjectCommands({
 
   const selectedHomeProjectTarget = (
     value: unknown,
-    action: HomeProjectCommandAction
+    action: HomeProjectCommandActionWithDuplicate
   ) => {
     if (typeof value !== 'string') {
       return undefined
     }
 
     return homeProjectCommandTargets(action)?.find(
-      ({ project }) => project.id === value
+      ({ project }) =>
+        project.id === value ||
+        project.localProjectName === value ||
+        project.localProjectPath === value ||
+        project.name === value
     )
   }
 
   const homeProjectOptions = (
-    action: HomeProjectCommandAction
+    action: HomeProjectCommandActionWithDuplicate
   ): CommandArgumentOption<string>[] | undefined =>
     homeProjectCommandTargets(action)?.map(({ project }) => ({
       name: getHomeProjectDisplayName(project),
@@ -165,16 +166,10 @@ export function createProjectCommands({
       isCurrent: isCurrentHomeProject(project),
     }))
 
-  const projectOptions = (action: HomeProjectCommandAction) => {
+  const projectOptions = (action: HomeProjectCommandActionWithDuplicate) => {
     const options = homeProjectOptions(action)
     if (options) {
       return options
-    }
-
-    if (action === 'open') {
-      return getProjectDirectoryOptions(folderSnapshot(), {
-        defaultValue: currentProjectDirectoryNameSnapshot(),
-      })
     }
 
     return []
@@ -189,10 +184,31 @@ export function createProjectCommands({
       return getHomeProjectDisplayName(target.project)
     }
 
-    return getProjectOptionNameFromDirectoryName({
-      projects: folderSnapshot(),
-      directoryName: String(value ?? ''),
-    })
+    return String(value ?? '')
+  }
+
+  const importProjectOptions = () =>
+    (homeProjectEntriesSnapshot() ?? [])
+      .filter(
+        (project) =>
+          project.readWriteAccess &&
+          Boolean(project.localProjectName || project.name)
+      )
+      .map((project) => ({
+        name: getHomeProjectDisplayName(project),
+        value: project.id,
+        isCurrent: isCurrentHomeProject(project),
+      }))
+
+  const defaultImportProjectId = () => {
+    const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
+    return (
+      (homeProjectEntriesSnapshot() ?? []).find(
+        (project) =>
+          project.localProjectName === currentProjectDirectoryName ||
+          project.name === currentProjectDirectoryName
+      )?.id ?? currentProjectDirectoryName
+    )
   }
 
   const navigateToProjectFile = (filePath: string) => {
@@ -319,9 +335,17 @@ export function createProjectCommands({
           })
         }
 
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
+        const projectSession = projectSessionSnapshot()
+        if (!projectSession || typeof record.name !== 'string') {
+          toast.error('Select a project that can be opened.')
+          return
+        }
+
+        return projectSession.getDefaultProjectDirectoryPath().then((root) => {
+          const projectPath = isAbsoluteProjectPath(record.name)
+            ? record.name
+            : fsZds.join(root, record.name)
+          navigateToProjectFile(projectPath)
         })
       }
     },
@@ -330,6 +354,35 @@ export function createProjectCommands({
         required: true,
         inputType: 'options',
         options: () => projectOptions('open'),
+      },
+    },
+  }
+
+  const duplicateProjectCommand: Command = {
+    icon: 'folder',
+    name: 'Duplicate project',
+    displayName: 'Duplicate project',
+    description: 'Duplicate a project',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (!record) {
+        return
+      }
+
+      const target = selectedHomeProjectTarget(record.project, 'duplicate')
+      if (!target) {
+        toast.error('Select a project that can be duplicated.')
+        return
+      }
+
+      return target.actions.duplicate(target.project)
+    },
+    args: {
+      project: {
+        inputType: 'options',
+        required: true,
+        options: () => projectOptions('duplicate'),
       },
     },
   }
@@ -565,12 +618,7 @@ export function createProjectCommands({
             return getHomeProjectDisplayName(target.project)
           }
 
-          const folder = folderSnapshot()?.find(
-            (item) => item.name === projectDirectoryName
-          )
-          return folder
-            ? getProjectDisplayName(folder)
-            : projectDirectoryName || defaultProjectFolderNameSnapshot()
+          return projectDirectoryName || defaultProjectFolderNameSnapshot()
         },
       },
     },
@@ -584,14 +632,37 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
-            requestedProjectName: record.projectName,
-            requestedCode: record.code,
-            requestedFileNameWithExtension: record.name,
-          },
-        })
+        const projectSession = projectSessionSnapshot()
+        if (!projectSession) {
+          toast.error('Unable to import the file without a project session.')
+          return
+        }
+
+        const target = selectedHomeProjectTarget(record.projectName, 'open')
+        const requestedProjectName =
+          record.method === 'existingProject'
+            ? (target?.project.localProjectName ??
+              target?.project.name ??
+              record.projectName)
+            : undefined
+
+        return projectSession
+          .createKclFiles({
+            requestedProjectName,
+            files: [
+              {
+                requestedProjectName,
+                requestedFileName: record.name,
+                requestedCode: record.code ?? '',
+              },
+            ],
+          })
+          .then((result) => {
+            toast.success(result.message)
+            if (result.filePath) {
+              navigateToProjectFile(result.filePath)
+            }
+          })
       }
     },
     args: {
@@ -621,10 +692,10 @@ export function createProjectCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, _context) => {
-          return getProjectDirectoryOptions(folderSnapshot(), {
-            defaultValue: currentProjectDirectoryNameSnapshot(),
-          })
+        options: importProjectOptions,
+        defaultValue: defaultImportProjectId,
+        valueSummary(value) {
+          return projectDisplayNameFromCommandValue(value, 'open')
         },
       },
       name: {
@@ -643,11 +714,16 @@ export function createProjectCommands({
       },
     },
     reviewMessage(commandBarContext) {
+      const projectName = projectDisplayNameFromCommandValue(
+        commandBarContext.argumentsToSubmit.projectName,
+        'open'
+      )
+
       return isDesktop()
         ? `Will add the contents from URL to a new ${
             commandBarContext.argumentsToSubmit.method === 'newProject'
               ? 'project with file main.kcl'
-              : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`
+              : `file within the project "${projectName}"`
           } named "${
             commandBarContext.argumentsToSubmit.name
           }", and set default units to "${
@@ -661,6 +737,7 @@ export function createProjectCommands({
     ? [
         openProjectCommand,
         createProjectCommand,
+        duplicateProjectCommand,
         moveToLibraryCommand,
         deleteProjectCommand,
         renameProjectCommand,

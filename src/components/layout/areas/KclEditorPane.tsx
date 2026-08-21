@@ -286,10 +286,9 @@ export const KclEditorMenu = () => {
 const KclEditorKclMenu = () => {
   useSignals()
   const app = useApp()
-  const { commands, settings } = app
+  const { commands } = app
   const { kclManager } = useSingletons()
   const platform = usePlatform()
-  const settingsActor = settings.actor
   const keymap = app.registry.optional(keymapService)
   const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
   const currentScopes = keymap?.getCurrentScopes()
@@ -380,8 +379,6 @@ const KclEditorKclMenu = () => {
         <button
           type="button"
           onClick={() => {
-            const currentProject =
-              settingsActor.getSnapshot().context.currentProject
             commands.send({
               type: 'Find and select command',
               data: {
@@ -389,7 +386,6 @@ const KclEditorKclMenu = () => {
                 groupId: 'application',
                 argDefaultValues: {
                   method: 'existingProject',
-                  projectName: currentProject?.name,
                 },
               },
             })

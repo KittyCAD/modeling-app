@@ -3,12 +3,12 @@ import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   type UserFeaturesContext,
   UserFeaturesState,
   UserFeaturesTransition,
 } from '@src/machines/userFeaturesMachine'
+import { projectLibraryRealizationsService } from '@src/registry/contracts/projectLibraries'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 function setWebRuntime() {
@@ -56,6 +56,7 @@ function createFakeActor<TSnapshot>(initialSnapshot: TSnapshot) {
 
 function createAppWithWebHomeFeature(enabled: boolean) {
   const closeProject = vi.fn()
+  const invalidateProjectLibraryRealizations = vi.fn()
   const authActor = createFakeActor(
     createFakeSnapshot('loggedIn', { token: 'token' })
   )
@@ -72,8 +73,12 @@ function createAppWithWebHomeFeature(enabled: boolean) {
       actor: userFeaturesActor,
       send: vi.fn(),
     },
-    systemIOActor: {
-      send: vi.fn(),
+    registry: {
+      optional: vi.fn((service) =>
+        service === projectLibraryRealizationsService
+          ? { invalidate: invalidateProjectLibraryRealizations }
+          : undefined
+      ),
     },
     closeProject,
     settings: {
@@ -87,6 +92,7 @@ function createAppWithWebHomeFeature(enabled: boolean) {
     app,
     authActor,
     closeProject,
+    invalidateProjectLibraryRealizations,
     userFeaturesActor,
   }
 }
@@ -109,14 +115,13 @@ describe('route loaders', () => {
   })
 
   it('loads Home project state without touching the demo-project flow', () => {
-    const { app, closeProject } = createAppWithWebHomeFeature(true)
+    const { app, closeProject, invalidateProjectLibraryRealizations } =
+      createAppWithWebHomeFeature(true)
 
     const result = loadHomeProjects(app)
 
     expect(result).toEqual({})
-    expect(app.systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
+    expect(invalidateProjectLibraryRealizations).toHaveBeenCalled()
     expect(closeProject).toHaveBeenCalled()
     expect(app.settings.actor.send).toHaveBeenCalledWith({
       type: 'clear.project',

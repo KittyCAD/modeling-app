@@ -13,7 +13,10 @@ export type ProjectSessionMutationOperation =
   | 'open-editor'
   | 'close-editor'
   | 'close-all-editors'
+  | 'create-project-kcl-files'
+  | 'import-project-files'
   | 'create-file'
+  | 'write-file-at-path'
   | 'write-file'
   | 'create-folder'
   | 'rename-entry'
@@ -82,6 +85,49 @@ export interface ProjectSessionApplyFilePatchInput {
   readonly files: readonly ProjectSessionFilePatchEntry[]
 }
 
+export interface ProjectSessionKclProjectFile {
+  readonly requestedProjectName?: string
+  readonly requestedFileName: string
+  readonly requestedCode: string
+}
+
+export interface ProjectSessionCreateKclFilesInput {
+  readonly projectDirectoryPath?: string
+  readonly requestedProjectName?: string
+  readonly requestedProjectTitle?: string
+  readonly files: readonly ProjectSessionKclProjectFile[]
+  readonly override?: boolean
+  readonly useReservedProjectName?: boolean
+}
+
+export interface ProjectSessionImportedProjectFile {
+  readonly requestedProjectName?: string
+  readonly requestedFileName: string
+  readonly requestedData: Uint8Array<ArrayBuffer>
+}
+
+export interface ProjectSessionImportProjectFilesInput {
+  readonly projectDirectoryPath?: string
+  readonly requestedProjectName: string
+  readonly files: readonly ProjectSessionImportedProjectFile[]
+  readonly requestedFileNameWithExtension?: string
+}
+
+export interface ProjectSessionWriteFileAtPathInput {
+  readonly path: string
+  readonly contents: string | Uint8Array<ArrayBuffer>
+  readonly overwrite?: boolean
+}
+
+export interface ProjectSessionProjectFilesResult {
+  readonly projectDirectoryPath: string
+  readonly projectName: string
+  readonly projectRoot: string
+  readonly fileName?: string
+  readonly filePath?: string
+  readonly message: string
+}
+
 /**
  * Owns the currently opened project session.
  *
@@ -99,11 +145,22 @@ export interface ProjectSessionService {
   setProject: (project: ZDSProject | undefined) => void
   clearProject: () => void
   getProjectTree: () => Project | undefined
+  getDefaultProjectDirectoryPath: () => Promise<string>
+  waitForIdle: () => Promise<void>
   refreshProjectTree: () => Promise<Project | undefined>
   openEditor: (input: ProjectSessionOpenEditorInput) => Promise<KclManager>
   openFile: (input: ProjectSessionOpenEditorInput) => Promise<KclManager>
   closeEditor: (input: ProjectSessionEntryPathInput) => void
   closeAllEditors: () => void
+  createKclFiles: (
+    input: ProjectSessionCreateKclFilesInput
+  ) => Promise<ProjectSessionProjectFilesResult>
+  importProjectFiles: (
+    input: ProjectSessionImportProjectFilesInput
+  ) => Promise<ProjectSessionProjectFilesResult>
+  writeFileAtPath: (
+    input: ProjectSessionWriteFileAtPathInput
+  ) => Promise<string>
   createFile: (input: ProjectSessionFileWriteInput) => Promise<string>
   writeFile: (input: ProjectSessionFileWriteInput) => Promise<string>
   createFolder: (input: ProjectSessionEntryPathInput) => Promise<string>

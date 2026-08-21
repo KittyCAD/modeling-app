@@ -12,7 +12,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -38,14 +37,11 @@ import {
   joinRouterPaths,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import {
-  DEFAULT_PROJECT_LIBRARY_ID,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-} from '@src/lib/projectLibraries'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import toast from 'react-hot-toast'
 
 // Get the 1-indexed step number of the current onboarding step
@@ -73,6 +69,33 @@ const preferredWorkflowPaneMap: Record<
 
 let rememberedOnboardingWorkflowPreference: OnboardingWorkflowPreference | null =
   null
+let onboardingStatusPersistenceQueue: Promise<void> = Promise.resolve()
+let onboardingStatusPersistenceVersion = 0
+
+function queueOnboardingStatusPersistence(
+  settings: ReturnType<typeof useApp>['settings'],
+  value: OnboardingStatus,
+  options: { priority?: boolean } = {}
+) {
+  const version = ++onboardingStatusPersistenceVersion
+  const waitForPrevious = options.priority
+    ? Promise.resolve()
+    : onboardingStatusPersistenceQueue.catch(() => undefined)
+  const persist = waitForPrevious.then(async () => {
+    await waitFor(settings.actor, (state) => state.matches('idle'))
+    if (version !== onboardingStatusPersistenceVersion) {
+      return
+    }
+    settings.send({
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value },
+    })
+    await waitFor(settings.actor, (state) => state.matches('idle'))
+  })
+
+  onboardingStatusPersistenceQueue = persist.catch(reportRejection)
+  return persist
+}
 
 export function consumeRememberedOnboardingWorkflowPanes():
   | DefaultLayoutPaneID[]
@@ -125,10 +148,9 @@ export function useNextClick(newStatus: OnboardingStatus) {
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
     }
-    settings.send({
-      type: 'set.app.onboardingStatus',
-      data: { level: 'user', value: newStatus },
-    })
+    void queueOnboardingStatusPersistence(settings, newStatus).catch(
+      reportRejection
+    )
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
     void navigate(targetRoute, { replace: true })
   }, [filePath, newStatus, navigate, settings])
@@ -144,24 +166,16 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      waitFor(settings.actor, (state) => state.matches('idle'))
-        .then(() => {
-          settings.send({
-            type: 'set.app.onboardingStatus',
-            data: { level: 'user', value: dismissalType },
-          })
-          return waitFor(settings.actor, (state) => state.matches('idle'))
-        })
-        .then(() => {
-          void navigate(PATHS.HOME, { replace: true })
-          toast.success(
-            'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
-            {
-              duration: 5_000,
-            }
-          )
-        })
-        .catch(reportRejection)
+      void queueOnboardingStatusPersistence(settings, dismissalType, {
+        priority: true,
+      }).catch(reportRejection)
+      void navigate(PATHS.HOME, { replace: true })
+      toast.success(
+        'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
+        {
+          duration: 5_000,
+        }
+      )
     },
     [settings, navigate]
   )
@@ -317,8 +331,8 @@ export function OnboardingButtons({
 }
 
 export interface OnboardingUtilDeps {
-  app: Pick<App, 'getCreateProjectLibraryTargets'>
   onboardingStatus: OnboardingStatus
+  projectSession: ProjectSessionService
   navigate: NavigateFunction
 }
 
@@ -328,46 +342,20 @@ async function createOnboardingProject(
   deps: OnboardingUtilDeps,
   onboardingStatus: OnboardingStatus
 ) {
-  const targets = deps.app.getCreateProjectLibraryTargets()
-  const isDesktopApp = typeof window !== 'undefined' && Boolean(window.electron)
-  const preferredLibraryId = isDesktopApp
-    ? DEFAULT_PROJECT_LIBRARY_ID
-    : PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-  const projectLibraryTarget =
-    targets.find((target) => target.library.id === preferredLibraryId) ??
-    (isDesktopApp
-      ? targets.find(
-          (target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-        )
-      : undefined) ??
-    targets[0]
-
-  if (!projectLibraryTarget) {
-    return Promise.reject(
-      new Error('No writable project library is available for onboarding.')
-    )
-  }
-
-  const initialKclFile = coldPlateParts[0]
-  const project = await projectLibraryTarget.createProject.run({
-    library: projectLibraryTarget.library,
+  const result = await deps.projectSession.createKclFiles({
+    files: coldPlateParts.map((part) => ({
+      requestedProjectName: ONBOARDING_PROJECT_NAME,
+      ...part,
+    })),
+    override: true,
     requestedProjectName: ONBOARDING_PROJECT_NAME,
     requestedProjectTitle: ONBOARDING_PROJECT_NAME,
-    // Write the tutorial before cloud enrollment can observe a blank project.
-    initialKclFile: {
-      fileName: initialKclFile.requestedFileName,
-      code: initialKclFile.requestedCode,
-    },
   })
-
-  if (!project?.default_file) {
-    return Promise.reject(new Error('Unable to create the onboarding project.'))
-  }
 
   await deps.navigate(
     joinRouterPaths(
       PATHS.FILE,
-      safeEncodeForRouterPaths(project.default_file),
+      safeEncodeForRouterPaths(result.projectRoot),
       PATHS.ONBOARDING,
       onboardingStatus
     )

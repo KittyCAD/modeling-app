@@ -1,10 +1,3 @@
-import type { CreateProjectLibraryTarget } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import {
-  DEFAULT_PROJECT_LIBRARY_ID,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-  type ProjectLibrary,
-} from '@src/lib/projectLibraries'
-import type { Project } from '@src/lib/project'
 import type { OnboardingPath, OnboardingStatus } from '@src/lib/onboardingPaths'
 import {
   acceptOnboarding,
@@ -15,174 +8,125 @@ import {
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-const originalElectron = window.electron
+vi.mock('@src/hooks/useAbsoluteFilePath', () => ({
+  useAbsoluteFilePath: vi.fn(() => '/projects/tutorial-project/main.kcl'),
+}))
 
-function setDesktop(isDesktop: boolean) {
-  Object.defineProperty(window, 'electron', {
-    configurable: true,
-    value: isDesktop ? {} : undefined,
-  })
-}
-
-function createProject(defaultFile: string): Project {
-  const path = defaultFile.slice(0, defaultFile.lastIndexOf('/'))
-  return {
-    metadata: null,
-    kcl_file_count: 1,
-    directory_count: 0,
-    default_file: defaultFile,
-    path,
-    name: path.slice(path.lastIndexOf('/') + 1),
-    children: null,
-    readWriteAccess: true,
-  }
-}
-
-function createTarget({
-  id,
-  path,
-  result,
-}: {
-  id: string
-  path: string
-  result: Project | Promise<Project>
-}) {
-  const library: ProjectLibrary = {
-    id,
-    title: id,
-    path,
-    type: id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID ? 'cloud' : 'directory',
-    order: 0,
-  }
-  const run = vi.fn(() => result)
-  const target: CreateProjectLibraryTarget = {
-    library,
-    createProject: { run },
-  }
-  return { run, target }
-}
+vi.mock('@src/lib/boot', () => ({
+  useApp: vi.fn(() => ({
+    settings: {
+      send: vi.fn(),
+    },
+  })),
+}))
 
 function createOnboardingDeps(
-  targets: CreateProjectLibraryTarget[],
+  result:
+    | Awaited<
+        ReturnType<OnboardingUtilDeps['projectSession']['createKclFiles']>
+      >
+    | Promise<
+        Awaited<
+          ReturnType<OnboardingUtilDeps['projectSession']['createKclFiles']>
+        >
+      > = {
+    projectDirectoryPath: '/projects',
+    projectName: 'tutorial-project',
+    projectRoot: '/projects/tutorial-project',
+    fileName: 'main.kcl',
+    filePath: '/projects/tutorial-project/main.kcl',
+    message: 'Successfully created 1 file',
+  },
   navigate = vi.fn()
-): OnboardingUtilDeps {
+): {
+  createKclFiles: ReturnType<typeof vi.fn>
+  deps: OnboardingUtilDeps
+} {
+  const createKclFiles = vi.fn(() => result)
   return {
-    app: { getCreateProjectLibraryTargets: () => targets },
-    onboardingStatus: 'dismissed',
-    navigate,
+    createKclFiles,
+    deps: {
+      onboardingStatus: 'dismissed',
+      navigate,
+      projectSession: {
+        createKclFiles,
+      } as unknown as OnboardingUtilDeps['projectSession'],
+    },
   }
 }
-
-afterEach(() => {
-  Object.defineProperty(window, 'electron', {
-    configurable: true,
-    value: originalElectron,
-  })
-})
 
 describe('Onboarding utility functions', () => {
   describe('acceptOnboarding', () => {
-    it.each([
-      {
-        name: 'web Personal Cloud',
-        desktop: false,
-        ids: [DEFAULT_PROJECT_LIBRARY_ID, PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-        selectedId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        defaultFile:
-          '/documents/zoo-design-studio-projects/tutorial-project/main.kcl',
-      },
-      {
-        name: 'desktop directory',
-        desktop: true,
-        ids: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID, DEFAULT_PROJECT_LIBRARY_ID],
-        selectedId: DEFAULT_PROJECT_LIBRARY_ID,
-        defaultFile: '/projects/tutorial-project-1/main.kcl',
-      },
-      {
-        name: 'cloud-only desktop',
-        desktop: true,
-        ids: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-        selectedId: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        defaultFile: '/cloud/tutorial-project/main.kcl',
-      },
-      {
-        name: 'directory-only web fallback',
-        desktop: false,
-        ids: [DEFAULT_PROJECT_LIBRARY_ID],
-        selectedId: DEFAULT_PROJECT_LIBRARY_ID,
-        defaultFile: '/projects/tutorial-project/main.kcl',
-      },
-    ])('creates the tutorial through $name', async (testCase) => {
-      setDesktop(testCase.desktop)
-      const targets = testCase.ids.map((id) =>
-        createTarget({
-          id,
-          path: id === DEFAULT_PROJECT_LIBRARY_ID ? '/projects' : '/cloud',
-          result: createProject(testCase.defaultFile),
-        })
-      )
-      const selected = targets.find(
-        ({ target }) => target.library.id === testCase.selectedId
-      )
+    it('creates the tutorial through project session', async () => {
       const navigate = vi.fn()
+      const { createKclFiles, deps } = createOnboardingDeps(undefined, navigate)
 
-      await acceptOnboarding(
-        createOnboardingDeps(
-          targets.map(({ target }) => target),
-          navigate
-        )
-      )
+      await acceptOnboarding(deps)
 
-      expect(selected?.run).toHaveBeenCalledWith({
-        library: selected?.target.library,
+      expect(createKclFiles).toHaveBeenCalledWith({
+        files: expect.arrayContaining([
+          expect.objectContaining({
+            requestedFileName: 'main.kcl',
+            requestedCode: expect.stringContaining('plateLength = 10'),
+            requestedProjectName: 'tutorial-project',
+          }),
+        ]),
+        override: true,
         requestedProjectName: 'tutorial-project',
         requestedProjectTitle: 'tutorial-project',
-        initialKclFile: {
-          fileName: 'main.kcl',
-          code: expect.stringContaining('plateLength = 10'),
-        },
       })
-      for (const unselected of targets.filter(
-        ({ target }) => target.library.id !== testCase.selectedId
-      )) {
-        expect(unselected.run).not.toHaveBeenCalled()
-      }
       expect(navigate).toHaveBeenCalledWith(
-        `/file/${encodeURIComponent(testCase.defaultFile)}/onboarding/desktop`
+        `/file/${encodeURIComponent('/projects/tutorial-project')}/onboarding/desktop`
       )
     })
 
-    it('fails without overwriting when no writable library is available', async () => {
-      setDesktop(false)
+    it('propagates project session creation failures', async () => {
+      const { deps } = createOnboardingDeps(
+        Promise.reject(new Error('No writable project library'))
+      )
 
-      await expect(acceptOnboarding(createOnboardingDeps([]))).rejects.toThrow(
+      await expect(acceptOnboarding(deps)).rejects.toThrow(
         'No writable project library'
       )
     })
 
     it('shares an in-flight replay instead of creating the same suffix twice', async () => {
-      setDesktop(false)
-      let resolveProject: ((project: Project) => void) | undefined
-      const projectPromise = new Promise<Project>((resolve) => {
+      let resolveProject:
+        | ((
+            project: Awaited<
+              ReturnType<OnboardingUtilDeps['projectSession']['createKclFiles']>
+            >
+          ) => void)
+        | undefined
+      const projectPromise = new Promise<
+        Awaited<
+          ReturnType<OnboardingUtilDeps['projectSession']['createKclFiles']>
+        >
+      >((resolve) => {
         resolveProject = resolve
       })
-      const cloud = createTarget({
-        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-        path: '/cloud',
-        result: projectPromise,
-      })
       const navigate = vi.fn()
-      const deps = createOnboardingDeps([cloud.target], navigate)
+      const { createKclFiles, deps } = createOnboardingDeps(
+        projectPromise,
+        navigate
+      )
 
       const firstStart = acceptOnboarding(deps)
       const secondStart = acceptOnboarding(deps)
 
       expect(secondStart).toBe(firstStart)
-      expect(cloud.run).toHaveBeenCalledOnce()
+      expect(createKclFiles).toHaveBeenCalledOnce()
 
-      resolveProject?.(createProject('/cloud/tutorial-project/main.kcl'))
+      resolveProject?.({
+        projectDirectoryPath: '/projects',
+        projectName: 'tutorial-project',
+        projectRoot: '/projects/tutorial-project',
+        fileName: 'main.kcl',
+        filePath: '/projects/tutorial-project/main.kcl',
+        message: 'Successfully created 1 file',
+      })
       await Promise.all([firstStart, secondStart])
       expect(navigate).toHaveBeenCalledOnce()
     })

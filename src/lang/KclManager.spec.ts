@@ -13,7 +13,7 @@ const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
 }))
 
-vi.mock('@src/machines/systemIO/errorReporting', () => ({
+vi.mock('@src/lib/systemIOErrorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 vi.mock('react-hot-toast', () => ({

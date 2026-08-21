@@ -32,16 +32,12 @@ import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { lspService } from '@src/lang/lsp/registry/contract'
-import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -53,7 +49,6 @@ import {
   TutorialRequestToast,
   useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
@@ -68,8 +63,9 @@ if (window.electron) {
 export function OpenedProject() {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, layout, systemIOActor, registry } = app
-  const project = registry.get(projectSession).project.value
+  const { auth, billing, settings, layout, registry } = app
+  const session = registry.get(projectSession)
+  const project = session.project.value
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -81,8 +77,6 @@ export function OpenedProject() {
   const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lastOperation = useLastOperation()
-  const projects = useFolders()
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
@@ -97,37 +91,10 @@ export function OpenedProject() {
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  // Handle our project folder disappearing (Go back to Projects listing)
-  useEffect(() => {
-    if (systemIOState !== SystemIOMachineStates.idle) {
-      return
-    }
-
-    if (
-      projects &&
-      projects.length > 0 &&
-      projects.every((p: Project) => p.name !== projectName) &&
-      [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation) === false
-    ) {
-      void navigate(PATHS.HOME)
-    }
-
-    if (projects && projects.length === 0) {
-      void navigate(PATHS.HOME)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation, systemIOState])
-
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
   useEffect(() => {
-    if (systemIOState !== 'idle') {
+    if (session.mutation.value.pending) {
       return
     }
     if (
@@ -158,7 +125,13 @@ export function OpenedProject() {
         }
       })
       .catch(reportRejection)
-  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
+  }, [
+    session.mutation.value.pending,
+    kclManager,
+    modelingState,
+    modelingSend,
+    settingsActor,
+  ])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
@@ -219,10 +192,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
-            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             accountUrl: withSiteBaseURL('/account'),
+            projectSession: session,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -240,6 +213,7 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
+    projectSession,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,

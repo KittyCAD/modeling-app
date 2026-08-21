@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { Signal } from '@preact/signals-core'
 import type { Project } from '@src/lib/project'
 import type { DuplicateProjectResult } from '@src/lib/projectDuplication'
 import type {
@@ -113,7 +114,17 @@ export type ProjectLibraryRealizationWatchOptions = {
   libraries: readonly ProjectLibrary[]
 }
 
+export interface ProjectLibraryRealizationsStatus {
+  readonly pending: boolean
+  readonly hasLoaded: boolean
+}
+
 export interface ProjectLibraryRealizationsService {
+  /**
+   * Loading state for configured library discovery. Home uses this instead of
+   * depending on a global file-system actor state.
+   */
+  readonly status: Signal<ProjectLibraryRealizationsStatus>
   /**
    * Refreshes configured realization discovery. Prefer passing `libraryId`
    * whenever the caller knows which library changed.

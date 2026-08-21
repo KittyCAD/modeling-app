@@ -1,5 +1,4 @@
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   UserFeaturesState,
   UserFeaturesTransition,
@@ -9,6 +8,7 @@ import {
   type SubscribableActor,
   waitForActorSnapshot,
 } from '@src/machines/utils'
+import { projectLibraryRealizationsService } from '@src/registry/contracts/projectLibraries'
 
 export const WEB_HOME_FEATURE_GATE_TIMEOUT_MS = 5000
 
@@ -31,10 +31,12 @@ type WebHomeApp = {
 }
 
 type HomeLoaderApp = {
-  systemIOActor: {
-    send: (event: {
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory
-    }) => void
+  registry?: {
+    optional: (service: typeof projectLibraryRealizationsService) =>
+      | {
+          invalidate: () => void
+        }
+      | undefined
   }
   closeProject: () => void
   settings: {
@@ -95,9 +97,7 @@ export async function webHomeRouteEnabled(app: WebHomeApp) {
 }
 
 export function loadHomeProjects(app: HomeLoaderApp) {
-  app.systemIOActor.send({
-    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-  })
+  app.registry?.optional(projectLibraryRealizationsService)?.invalidate()
   app.closeProject()
   app.settings.actor.send({
     type: 'clear.project',
