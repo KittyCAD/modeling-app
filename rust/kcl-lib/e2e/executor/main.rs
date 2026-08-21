@@ -22,7 +22,9 @@ macro_rules! kcl_input {
 
 pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> String {
     let path = format!("e2e/executor/outputs/{test_name}.png");
-    twenty_twenty::assert_image(&path, result, MIN_DIFF);
+    if let Err(err) = twenty_twenty::try_assert_image(&path, result, MIN_DIFF) {
+        panic!("Image assertion failed for test {test_name}: {err}");
+    }
 
     path
 }

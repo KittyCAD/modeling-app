@@ -1775,14 +1775,19 @@ mod test {
             if eg.1.norun {
                 return;
             }
-            twenty_twenty::assert_image(
+            if let Err(err) = twenty_twenty::try_assert_image(
                 format!(
                     "tests/outputs/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
                 &result.image,
                 0.99,
-            );
+            ) {
+                panic!(
+                    "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
+                    source_path.display()
+                );
+            }
             // Doc generation omits the model viewer for a `no3d` example, so
             // writing its glTF would produce a file no page can ever link to.
             // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
