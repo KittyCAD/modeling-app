@@ -34,7 +34,10 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
@@ -315,12 +318,22 @@ export const fileLoader =
     const requestedProjectDirectoryPath =
       projectRef.projectIORefSignal.value.libraryPath ??
       getParentAbsolutePath(project.path)
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
+    const systemIOSnapshot = app.systemIOActor.getSnapshot()
+    // Same-directory file navigation should not restart SystemIO's own
+    // post-mutation folder refresh.
+    const shouldSyncProjectDirectory =
+      requestedProjectDirectoryPath !==
+        systemIOSnapshot.context.projectDirectoryPath ||
+      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
+        systemIOSnapshot.context.folders === undefined)
+    if (shouldSyncProjectDirectory) {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: {
+          requestedProjectDirectoryPath,
+        },
+      })
+    }
 
     const projectData: IndexLoaderData = {
       code: editor.code,
