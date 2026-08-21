@@ -2,10 +2,6 @@
 //!
 //! KCL is written in Rust. This crate contains the compiler tooling (e.g. parser, lexer, code generation),
 //! the standard library implementation, a LSP implementation, generator for the docs, and more.
-// TEMPORARY: remove before merging. This line exists only to make the
-// `rust/**` path filter match, so build-wasm compiles instead of downloading
-// main's artifact, which is the only way to exercise its cache step in this
-// pull request.
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
