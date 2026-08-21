@@ -7,6 +7,62 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
+  test('Command palette scopes Home, modeling, editor, and Settings commands', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await expect(page.getByPlaceholder('Search projects')).toBeVisible()
+
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    const command = (name: string) =>
+      page.getByRole('option', { name, exact: false })
+    const telemetryCommand = command('Go to Telemetry')
+    const resetViewCommand = command('Reset view')
+    const formatCodeCommand = command('Format Code')
+    const extrudeCommand = command('Pull a sketch into 3D')
+    const settingsHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
+    })
+    const openCommandPalette = async () => {
+      await page.keyboard.press('ControlOrMeta+K')
+      await expect(cmdSearchBar).toBeFocused()
+    }
+
+    await openCommandPalette()
+    await expect(telemetryCommand).toBeVisible()
+    await expect(resetViewCommand).toHaveCount(0)
+    await page.keyboard.press('Escape')
+
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.clickNoWhere()
+
+    await openCommandPalette()
+    await expect(resetViewCommand).toBeVisible()
+    await expect(extrudeCommand).toBeVisible()
+    await page.keyboard.press('Escape')
+
+    await page.locator('.cm-content').click()
+    await openCommandPalette()
+    await expect(formatCodeCommand).toBeVisible()
+    await expect(resetViewCommand).toHaveCount(0)
+    await page.keyboard.press('Escape')
+
+    await page.getByRole('link', { name: 'Settings' }).last().click()
+    await expect(settingsHeading).toBeVisible()
+    await openCommandPalette()
+    await expect(command('Settings · app · theme')).toBeVisible()
+    await expect(resetViewCommand).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await expect(settingsHeading).toBeVisible()
+    await expect(cmdSearchBar).not.toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(settingsHeading).not.toBeVisible()
+  })
+
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
@@ -409,6 +465,19 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     await page.mouse.click(700, 200)
     await expect(toolbar.exitSketchBtn).toBeVisible()
+
+    await page.keyboard.press('ControlOrMeta+K')
+    await expect(page.getByPlaceholder('Search commands')).toBeFocused()
+    await expect(
+      page.getByRole('option', { name: 'Reset view', exact: false })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('option', {
+        name: 'Pull a sketch into 3D',
+        exact: false,
+      })
+    ).toHaveCount(0)
+    await page.keyboard.press('Escape')
 
     // Switch between sketch tools via the command bar
     if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {

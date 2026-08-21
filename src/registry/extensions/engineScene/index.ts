@@ -16,6 +16,7 @@ import {
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type KeymapItem,
+  FILE_KEYMAP_SCOPES,
   MODE_MODELING_KEYMAP_SCOPE,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
@@ -44,6 +45,7 @@ export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
 } as const)
 
 const captureScreenshotCommand: Command = {
+  scopes: FILE_KEYMAP_SCOPES,
   id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -55,6 +57,7 @@ const captureScreenshotCommand: Command = {
 }
 
 const openMeasureToolCommand: Command = {
+  scopes: [MODE_MODELING_KEYMAP_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   name: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -72,7 +75,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  scopes: openMeasureToolCommand.scopes,
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }

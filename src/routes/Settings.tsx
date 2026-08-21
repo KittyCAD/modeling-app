@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
+import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
@@ -16,6 +17,7 @@ import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { platform } from '@src/lib/utils'
 import {
+  SETTINGS_KEYMAP_SCOPE,
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
@@ -91,7 +93,7 @@ export const Settings = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusSettings,
-          ['settings-open'],
+          [SETTINGS_KEYMAP_SCOPE],
           app.registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -103,10 +105,10 @@ export const Settings = () => {
       return
     }
 
-    keymap.applyScope('settings-open')
+    keymap.applyScope(SETTINGS_KEYMAP_SCOPE)
 
     return () => {
-      keymap.removeScope('settings-open')
+      keymap.removeScope(SETTINGS_KEYMAP_SCOPE)
     }
   }, [keymap])
 
@@ -161,6 +163,7 @@ export const Settings = () => {
             data-testid="settings-dialog-panel"
             className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
           >
+            <CommandBar />
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">

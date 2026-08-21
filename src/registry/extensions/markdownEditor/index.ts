@@ -153,12 +153,14 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
   },
 ]
 
+const MARKDOWN_EDITOR_SCOPES = [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE] as const
+
 const markdownEditorKeymapItems: readonly KeymapItem[] =
   markdownEditorKeymaps.map((keymap) => ({
     id: keymap.id,
     title: keymap.title,
     source: MARKDOWN_EDITOR_KEYMAP_SOURCE,
-    scopes: [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
+    scopes: MARKDOWN_EDITOR_SCOPES,
     keystrokes: keymap.keystrokes,
     command: keymap.command,
     hidden: keymap.hidden,
@@ -173,6 +175,7 @@ const markdownEditorCommands: readonly Command[] = Object.values(
 
   return {
     id: commandId,
+    scopes: MARKDOWN_EDITOR_SCOPES,
     name: commandId,
     groupId: MARKDOWN_EDITOR_COMMAND_GROUP_ID,
     displayName: keymap?.title ?? commandId,

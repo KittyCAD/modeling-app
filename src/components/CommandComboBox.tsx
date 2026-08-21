@@ -1,6 +1,6 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
@@ -17,7 +17,6 @@ function CommandComboBox({
   placeholder?: string
 }) {
   const [query, setQuery] = useState('')
-  const [filteredOptions, setFilteredOptions] = useState<typeof options>()
   const { commands } = useApp()
 
   const defaultOption =
@@ -35,16 +34,18 @@ function CommandComboBox({
     [options]
   )
 
-  const fuse = new Fuse(sortedOptions, {
-    keys: ['displayName', 'name', 'description'],
-    threshold: 0.3,
-    ignoreLocation: true,
-  })
+  const filteredOptions = useMemo(() => {
+    if (query.length === 0) {
+      return sortedOptions
+    }
 
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : sortedOptions)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    return new Fuse(sortedOptions, {
+      keys: ['displayName', 'name', 'description'],
+      threshold: 0.3,
+      ignoreLocation: true,
+    })
+      .search(query)
+      .map((result) => result.item)
   }, [query, sortedOptions])
 
   function handleSelection(command: Command) {
@@ -80,12 +81,12 @@ function CommandComboBox({
           autoFocus
         />
       </div>
-      {filteredOptions?.length ? (
+      {filteredOptions.length ? (
         <Combobox.Options
           static
           className="overflow-y-auto max-h-96 cursor-pointer"
         >
-          {filteredOptions?.map((option) => (
+          {filteredOptions.map((option) => (
             <Combobox.Option
               key={option.groupId + option.name + (option.displayName || '')}
               value={option}

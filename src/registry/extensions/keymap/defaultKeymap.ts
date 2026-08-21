@@ -3,26 +3,24 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { getDeleteKeys } from '@src/lib/utils'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
-  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  COMMAND_PALETTE_OPEN_KEYMAP_SCOPE,
+  FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+  FILE_KEYMAP_SCOPES,
   HOME_KEYMAP_SCOPE,
   type KeymapDocument,
+  keymapValueSpec,
   MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  keymapValueSpec,
+  SETTINGS_KEYMAP_SCOPE,
+  SKETCH_KEYMAP_SCOPES,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
 
 const BASE_KEYMAP_SOURCE = 'Base'
-const FILE_KEYMAP_SCOPES = [
-  MODE_MODELING_KEYMAP_SCOPE,
-  MODE_SKETCHING_KEYMAP_SCOPE,
-  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-]
 
 export const PROJECT_EXPLORER_COMMAND_IDS = {
   arrowLeft: 'project-explorer.arrow-left',
@@ -74,14 +72,14 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'command-palette.close',
       title: 'Close command palette',
-      scopes: ['cmd-palette-open'],
+      scopes: [COMMAND_PALETTE_OPEN_KEYMAP_SCOPE],
       keystrokes: ['mod+k'],
       command: 'zds.commandPalette.close',
     },
     {
       id: 'command-palette.close-slash',
       title: 'Close command palette',
-      scopes: ['cmd-palette-open'],
+      scopes: [COMMAND_PALETTE_OPEN_KEYMAP_SCOPE],
       keystrokes: ['mod+/'],
       command: 'zds.commandPalette.close',
       hidden: true,
@@ -96,7 +94,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'settings.project',
       title: 'Project settings',
-      scopes: ['settings-open'],
+      scopes: [SETTINGS_KEYMAP_SCOPE],
       keystrokes: ['p'],
       command: 'zds.settings.tab',
       arguments: {
@@ -106,7 +104,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'settings.user',
       title: 'User settings',
-      scopes: ['settings-open'],
+      scopes: [SETTINGS_KEYMAP_SCOPE],
       keystrokes: ['u'],
       command: 'zds.settings.tab',
       arguments: {
@@ -116,7 +114,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'settings.focus-search',
       title: 'Focus settings search',
-      scopes: ['settings-open'],
+      scopes: [SETTINGS_KEYMAP_SCOPE],
       keystrokes: ['ctrl+.'],
       command: APP_COMMAND_IDS.search.focusSettings,
     },
@@ -173,7 +171,7 @@ export const defaultKeymap: KeymapDocument = {
           {
             id: 'editor.format',
             title: 'Format code',
-            scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+            scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
             keystrokes: ['alt+shift+f'],
             command: APP_COMMAND_IDS.editor.format,
           },
@@ -182,7 +180,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'editor.convert-to-variable',
       title: 'Convert to variable',
-      scopes: FILE_KEYMAP_SCOPES,
+      scopes: FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
       keystrokes: ['ctrl+shift+c'],
       command: APP_COMMAND_IDS.editor.convertToVariable,
     },
@@ -203,11 +201,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'modeling.select-all-in-current-sketch',
       title: 'Select all in current sketch',
-      scopes: [
-        MODE_SKETCHING_KEYMAP_SCOPE,
-        MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
-        MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
-      ],
+      scopes: SKETCH_KEYMAP_SCOPES,
       keystrokes: ['mod+a'],
       command: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
     },

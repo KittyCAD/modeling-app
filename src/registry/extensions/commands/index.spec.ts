@@ -10,11 +10,29 @@ import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
+  commandKey,
   commandSystemService,
+  getEffectiveCommandScopeSet,
+  isCommandAvailable,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import {
+  DEFAULT_KEYMAP_SCOPES,
+  FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+  FILE_KEYMAP_SCOPES,
+  GLOBAL_KEYMAP_SCOPES,
+  getKeymapItemScopes,
+  HOME_KEYMAP_SCOPE,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  SETTINGS_KEYMAP_SCOPE,
+  SKETCH_KEYMAP_SCOPES,
+} from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension } from '.'
 import { APP_COMMAND_IDS, appCommands } from './appCommands'
@@ -42,10 +60,17 @@ function createCommandBarContext({
   return context
 }
 
+function commandIds(
+  groups: Readonly<Record<string, Readonly<Record<string, string>>>>
+) {
+  return Object.values(groups).flatMap((group) => Object.values(group))
+}
+
 describe('commands extension', () => {
   it('syncs registry command contributions into the command system service', () => {
     const commandsSlot = new Slot()
     const command: Command = {
+      scopes: GLOBAL_KEYMAP_SCOPES,
       groupId: 'test',
       name: 'test-command',
       needsReview: false,
@@ -86,20 +111,115 @@ describe('commands extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('provides toolbar commands for keymap-backed tool selection', () => {
-    expect(toolbarCommands.map((command) => command.id)).toContain(
-      TOOLBAR_COMMAND_IDS.sketchSolve.vertical
+  it('provides a toolbar command for every toolbar command id', () => {
+    expect(toolbarCommands.map((command) => command.id).toSorted()).toEqual(
+      commandIds(TOOLBAR_COMMAND_IDS).toSorted()
     )
   })
 
   it('provides an app command for every app command id', () => {
-    const appCommandIds = Object.values(APP_COMMAND_IDS).flatMap((group) =>
-      Object.values(group)
+    expect(appCommands.map((command) => command.id).toSorted()).toEqual(
+      commandIds(APP_COMMAND_IDS).toSorted()
+    )
+  })
+
+  it('keeps app and toolbar default keybindings within command availability', () => {
+    const staticCommandIds = [
+      ...commandIds(APP_COMMAND_IDS),
+      ...commandIds(TOOLBAR_COMMAND_IDS),
+    ]
+    const staticCommandPrefixes = [
+      ...new Set(
+        staticCommandIds.map((id) => id.slice(0, id.lastIndexOf('.') + 1))
+      ),
+    ]
+    const commandsByKey = new Map(
+      [...appCommands, ...toolbarCommands].map((command) => [
+        commandKey(command),
+        command,
+      ])
+    )
+    const staticBindings = defaultKeymap.bindings.filter((binding) =>
+      staticCommandPrefixes.some((prefix) => binding.command.startsWith(prefix))
     )
 
-    expect(appCommands.map((command) => command.id).toSorted()).toEqual(
-      appCommandIds.toSorted()
-    )
+    for (const binding of staticBindings) {
+      const command = commandsByKey.get(binding.command)
+      expect(
+        command,
+        `Default keybinding ${binding.id} targets missing static command ${binding.command}`
+      ).toBeDefined()
+      if (!command) {
+        continue
+      }
+
+      const unavailableScopes = getKeymapItemScopes(binding).filter(
+        (scope) =>
+          !isCommandAvailable(
+            command,
+            getEffectiveCommandScopeSet([scope], DEFAULT_KEYMAP_SCOPES)
+          )
+      )
+      expect(
+        unavailableScopes,
+        `Default keybinding ${binding.id} exceeds ${binding.command} availability`
+      ).toEqual([])
+    }
+  })
+
+  it.each([
+    [APP_COMMAND_IDS.editor.undo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.editor.redo, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.editor.format, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [
+      APP_COMMAND_IDS.editor.convertToVariable,
+      FILE_AND_CODE_EDITOR_KEYMAP_SCOPES,
+    ],
+    [APP_COMMAND_IDS.editor.render, FILE_AND_CODE_EDITOR_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.deleteSelection, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.toggleSnapToGrid, FILE_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.modeling.selectAllInCurrentSketch, SKETCH_KEYMAP_SCOPES],
+    [APP_COMMAND_IDS.search.focusProjects, [HOME_KEYMAP_SCOPE]],
+    [APP_COMMAND_IDS.search.focusSettings, [SETTINGS_KEYMAP_SCOPE]],
+  ] as const)('scopes representative app command %s', (commandId, scopes) => {
+    expect(
+      appCommands.find((command) => command.id === commandId)?.scopes
+    ).toEqual(scopes)
+  })
+
+  it('scopes toolbar command families to their owning mode', () => {
+    expect(
+      toolbarCommands.find(
+        (command) => command.id === TOOLBAR_COMMAND_IDS.modeling.sketch
+      )?.scopes
+    ).toEqual([MODE_MODELING_KEYMAP_SCOPE])
+    expect(
+      toolbarCommands.find(
+        (command) => command.id === TOOLBAR_COMMAND_IDS.sketching.exit
+      )?.scopes
+    ).toEqual([MODE_SKETCHING_KEYMAP_SCOPE, MODE_SKETCH_NO_FACE_KEYMAP_SCOPE])
+    expect(
+      toolbarCommands
+        .filter(
+          (command) =>
+            command.id?.startsWith('zds.toolbar.sketchLegacy.') &&
+            command.id !== TOOLBAR_COMMAND_IDS.sketching.exit
+        )
+        .every(
+          (command) =>
+            command.scopes.length === 1 &&
+            command.scopes[0] === MODE_SKETCHING_KEYMAP_SCOPE
+        )
+    ).toBe(true)
+    expect(
+      toolbarCommands
+        .filter((command) => command.id?.startsWith('zds.toolbar.sketch.'))
+        .every(
+          (command) =>
+            command.scopes.length === 1 &&
+            command.scopes[0] === MODE_SKETCH_SOLVE_KEYMAP_SCOPE
+        )
+    ).toBe(true)
   })
 
   it('exposes view commands with command palette metadata', () => {
@@ -115,12 +235,14 @@ describe('commands extension', () => {
           displayName: 'Center camera on selection',
           description: 'Center the camera on the current selection.',
           icon: 'camera',
+          scopes: FILE_KEYMAP_SCOPES,
         }),
         expect.objectContaining({
           id: APP_COMMAND_IDS.view.reset,
           displayName: 'Reset view',
           description: 'Restore the default camera position and view.',
           icon: 'refresh',
+          scopes: FILE_KEYMAP_SCOPES,
         }),
       ])
     )

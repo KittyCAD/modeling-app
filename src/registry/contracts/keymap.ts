@@ -10,16 +10,37 @@ import { type Platform, isArray } from '@src/lib/utils'
 export const BASE_KEYMAP_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
 export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE = 'code-editor-not-focused'
+export const EDITABLE_FOCUSED_KEYMAP_SCOPE = 'editable-focused'
 export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
 export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
 export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
 export const HOME_KEYMAP_SCOPE = 'home'
+export const COMMAND_PALETTE_OPEN_KEYMAP_SCOPE = 'cmd-palette-open'
+export const SETTINGS_KEYMAP_SCOPE = 'settings-open'
 export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE = 'project-explorer.focused'
 export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
   'project-explorer.renaming'
 export const KEYMAP_SCHEMA_VERSION = 1
 export const USER_KEYMAP_SOURCE = 'User'
+
+export const GLOBAL_KEYMAP_SCOPES = [BASE_KEYMAP_SCOPE] as const
+
+export const SKETCH_KEYMAP_SCOPES = [
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+] as const
+
+export const FILE_KEYMAP_SCOPES = [
+  MODE_MODELING_KEYMAP_SCOPE,
+  ...SKETCH_KEYMAP_SCOPES,
+] as const
+
+export const FILE_AND_CODE_EDITOR_KEYMAP_SCOPES = [
+  ...FILE_KEYMAP_SCOPES,
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+] as const
 
 export type KeymapArguments =
   | null
@@ -36,6 +57,101 @@ export type KeymapScope = {
   group?: string
   userEditable?: boolean
 }
+
+const KEYMAP_CONTEXT_SCOPE_GROUP = 'context'
+const KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP = 'project-explorer'
+
+export const DEFAULT_KEYMAP_SCOPES: readonly KeymapScope[] = [
+  {
+    id: BASE_KEYMAP_SCOPE,
+    displayName: 'Base',
+    priority: 0,
+    userEditable: false,
+  },
+  {
+    id: COMMAND_PALETTE_OPEN_KEYMAP_SCOPE,
+    displayName: 'Command palette open',
+    priority: 2000,
+    userEditable: false,
+  },
+  {
+    id: SETTINGS_KEYMAP_SCOPE,
+    displayName: 'Settings open',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1900,
+    userEditable: false,
+  },
+  {
+    id: HOME_KEYMAP_SCOPE,
+    displayName: 'Home',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 50,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor not focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 10,
+    userEditable: false,
+  },
+  {
+    id: MODE_MODELING_KEYMAP_SCOPE,
+    displayName: 'Modeling mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCHING_KEYMAP_SCOPE,
+    displayName: 'Legacy sketch mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 200,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+    displayName: 'Sketch no face mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 210,
+    userEditable: false,
+  },
+  {
+    id: MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+    displayName: 'Sketch mode',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 220,
+    userEditable: false,
+  },
+  {
+    id: CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Code editor focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1000,
+    userEditable: false,
+  },
+  {
+    id: EDITABLE_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Editable control focused',
+    group: KEYMAP_CONTEXT_SCOPE_GROUP,
+    priority: 1100,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
+    displayName: 'Project explorer focused',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 100,
+    userEditable: false,
+  },
+  {
+    id: PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
+    displayName: 'Project explorer renaming',
+    group: KEYMAP_PROJECT_EXPLORER_SCOPE_GROUP,
+    priority: 200,
+    userEditable: false,
+  },
+]
 
 export type KeymapBinding = {
   command: string
@@ -86,6 +202,8 @@ export type KeymapMatch =
   | { type: 'none' }
   | { type: 'prefix' }
   | { type: 'full'; item: KeymapItem }
+
+export type KeymapItemAvailability = (item: KeymapItem) => boolean
 
 export type KeymapSource = 'global' | 'codeMirror'
 
@@ -367,10 +485,14 @@ export function createKeymapTree(items: readonly KeymapItem[]): KeymapTree {
   return { items, root }
 }
 
-export function getKeymapItemScopes(item: KeymapBinding) {
-  const scopes = [
-    ...new Set(item.scopes?.map((scope) => scope.trim()).filter(Boolean)),
+export function normalizeKeymapScopeIds(scopes: readonly string[] | undefined) {
+  return [
+    ...new Set((scopes ?? []).map((scope) => scope.trim()).filter(Boolean)),
   ]
+}
+
+export function getKeymapItemScopes(item: Pick<KeymapBinding, 'scopes'>) {
+  const scopes = normalizeKeymapScopeIds(item.scopes)
   const nonBaseScopes = scopes.filter((scope) => scope !== BASE_KEYMAP_SCOPE)
 
   return nonBaseScopes.length > 0 ? nonBaseScopes : [BASE_KEYMAP_SCOPE]
@@ -658,7 +780,8 @@ export function matchKeymapKeystrokes(
   tree: KeymapTree,
   scopes: readonly string[],
   keystrokes: readonly string[],
-  keymapScopes: readonly KeymapScope[] = []
+  keymapScopes: readonly KeymapScope[] = [],
+  isItemAvailable: KeymapItemAvailability = () => true
 ): KeymapMatch {
   const normalizedKeystrokes = keystrokes.map(normalizeKeymapChord)
   const activeScopes = getEffectiveKeymapScopes(scopes, keymapScopes)
@@ -667,18 +790,18 @@ export function matchKeymapKeystrokes(
   let node = tree.root
   for (const chord of normalizedKeystrokes) {
     const child = node.children.get(chord)
-    if (!child || !nodeHasActiveItems(child, activeScopeSet)) {
+    if (!child || !nodeHasActiveItems(child, activeScopeSet, isItemAvailable)) {
       return { type: 'none' }
     }
     node = child
   }
 
-  const item = getActiveKeymapItem(node.items, activeScopes)
+  const item = getActiveKeymapItem(node.items, activeScopes, isItemAvailable)
   if (item) {
     return { type: 'full', item }
   }
 
-  if (nodeHasActiveItems(node, activeScopeSet)) {
+  if (nodeHasActiveItems(node, activeScopeSet, isItemAvailable)) {
     return { type: 'prefix' }
   }
 
@@ -687,31 +810,39 @@ export function matchKeymapKeystrokes(
 
 function nodeHasActiveItems(
   node: KeymapTreeNode,
-  activeScopes: ReadonlySet<string>
+  activeScopes: ReadonlySet<string>,
+  isItemAvailable: KeymapItemAvailability
 ): boolean {
   return (
-    node.items.some((item) => isKeymapItemActive(item, activeScopes)) ||
+    node.items.some(
+      (item) => isItemAvailable(item) && isKeymapItemActive(item, activeScopes)
+    ) ||
     [...node.children.values()].some((child) =>
-      nodeHasActiveItems(child, activeScopes)
+      nodeHasActiveItems(child, activeScopes, isItemAvailable)
     )
   )
 }
 
 function getActiveKeymapItem(
   items: readonly KeymapItem[],
-  activeScopes: readonly string[]
+  activeScopes: readonly string[],
+  isItemAvailable: KeymapItemAvailability
 ) {
   for (const scope of [...activeScopes].toReversed()) {
-    const item = items.find((candidate) =>
-      isKeymapItemActiveForScope(candidate, scope)
+    const item = items.find(
+      (candidate) =>
+        isItemAvailable(candidate) &&
+        isKeymapItemActiveForScope(candidate, scope)
     )
     if (item) {
       return item
     }
   }
 
-  return items.find((item) =>
-    isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE)
+  return items.find(
+    (item) =>
+      isItemAvailable(item) &&
+      isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE)
   )
 }
 

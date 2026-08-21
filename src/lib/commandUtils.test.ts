@@ -1,5 +1,6 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
 import { sortCommands } from '@src/lib/commandUtils'
+import { GLOBAL_KEYMAP_SCOPES } from '@src/registry/contracts/keymap'
 import { describe, expect, it } from 'vitest'
 
 function commandWithDisabled(
@@ -9,6 +10,7 @@ function commandWithDisabled(
 ): CommandWithDisabledState {
   return {
     command: {
+      scopes: GLOBAL_KEYMAP_SCOPES,
       name,
       groupId,
       needsReview: false,

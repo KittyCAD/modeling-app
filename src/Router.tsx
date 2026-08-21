@@ -27,9 +27,24 @@ import {
   RouterProvider,
   createBrowserRouter,
   createHashRouter,
+  matchPath,
+  useLocation,
 } from 'react-router-dom'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
+const settingsRoutePatterns = [
+  PATHS.HOME_SETTINGS,
+  `${PATHS.LIBRARY}/:libraryId${PATHS.SETTINGS}`,
+  `${PATHS.FILE}/:id${PATHS.SETTINGS}`,
+]
+
+function RouteCommandBar() {
+  const { pathname } = useLocation()
+  const settingsIsOpen = settingsRoutePatterns.some((pattern) =>
+    matchPath(pattern, pathname)
+  )
+  return settingsIsOpen ? null : <CommandBar />
+}
 
 /**
  * All routes in the app, used in src/lib/index.tsx
@@ -73,7 +88,7 @@ export const Router = () => {
                     <ModelingMachineProvider>
                       <Outlet />
                       <OpenedProject />
-                      <CommandBar />
+                      <RouteCommandBar />
                     </ModelingMachineProvider>
                   </Suspense>
                 </ModelingPageProvider>
@@ -111,7 +126,7 @@ export const Router = () => {
                 <>
                   <Outlet />
                   <Home />
-                  <CommandBar />
+                  <RouteCommandBar />
                 </>
               ),
               id: PATHS.HOME,
@@ -144,7 +159,7 @@ export const Router = () => {
                 <>
                   <Outlet />
                   <Home />
-                  <CommandBar />
+                  <RouteCommandBar />
                 </>
               ),
               id: PATHS.LIBRARY,
