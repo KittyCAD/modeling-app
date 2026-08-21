@@ -100,13 +100,9 @@ hubBlank = extrude(
 )
 hubRounded = fillet(
   hubBlank,
-  edges = [
-    {
-      sideFaces = [hubRegion.tags.outerCircle, hubEnd]
-    },
-    {
-      sideFaces = [hubRegion.tags.outerCircle, hubStart]
-    }
+  tags = [
+    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubEnd]),
+    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubStart])
   ],
   radius = hubThickness / 6,
 )

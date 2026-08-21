@@ -12,12 +12,12 @@ handleThickness = 0.65
 
 // Upper ring of the metal structure
 sketch001 = sketch(on = XZ) {
-  line1 = line(start = [var 2.21in, var 5.7in], end = [var 2.31in, var 5.7in])
-  line2 = line(start = [var 2.31in, var 5.7in], end = [var 2.31in, var 6.45in])
+  line1 = line(start = [var 2.205in, var 5.7in], end = [var 2.305in, var 5.7in])
+  line2 = line(start = [var 2.305in, var 5.7in], end = [var 2.305in, var 6.45in])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var 2.31in, var 6.45in], end = [var 2.21in, var 6.45in])
+  line3 = line(start = [var 2.305in, var 6.45in], end = [var 2.205in, var 6.45in])
   coincident([line2.end, line3.start])
-  line4 = line(start = [var 2.21in, var 6.45in], end = [var 2.21in, var 5.7in])
+  line4 = line(start = [var 2.205in, var 6.45in], end = [var 2.205in, var 5.7in])
   coincident([line3.end, line4.start])
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
@@ -33,36 +33,36 @@ supportsPlane = {
 
 // Cross section of the metal supports
 sketch002 = sketch(on = supportsPlane) {
-  line1 = line(start = [var 2.21in, var 5.7in], end = [var 2.31in, var 5.7in])
-  line2 = line(start = [var 2.31in, var 5.7in], end = [var 2.31in, var 0.5in])
+  line1 = line(start = [var 2.205in, var 5.7in], end = [var 2.305in, var 5.7in])
+  line2 = line(start = [var 2.305in, var 5.7in], end = [var 2.305in, var 0.5in])
   coincident([line1.end, line2.start])
-  arc3 = arc(start = [var 2.31in, var 0.5in], end = [var 2.33in, var 0.37in], center = [var 2.61in, var 0.5in])
+  arc3 = arc(start = [var 2.305in, var 0.5in], end = [var 2.333107664in, var 0.373214521in], center = [var 2.605in, var 0.5in])
   coincident([line2.end, arc3.start])
-  line4 = line(start = [var 2.33in, var 0.37in], end = [var 2.63in, var -0.15in])
+  line4 = line(start = [var 2.333107664in, var 0.373214521in], end = [var 2.633107664in, var -0.146400721in])
   coincident([arc3.end, line4.start])
-  arc5 = arc(start = [var 1.81in, var -0.97in], end = [var 2.63in, var -0.15in], center = [var 2.11in, var -0.45in])
+  arc5 = arc(start = [var 1.813492422in, var -0.966015963in], end = [var 2.633107664in, var -0.146400721in], center = [var 2.113492422in, var -0.446400721in])
   coincident([line4.end, arc5.end])
-  line6 = line(start = [var 1.81in, var -0.97in], end = [var 0.49in, var -0.2in])
+  line6 = line(start = [var 1.813492422in, var -0.966015963in], end = [var 0.486713854in, var -0.2in])
   coincident([arc5.start, line6.start])
-  arc7 = arc(start = [var 0.49in, var -0.2in], end = [var 0.24in, var -0.13in], center = [var 0.24in, var -0.63in])
+  arc7 = arc(start = [var 0.486713854in, var -0.2in], end = [var 0.236713854in, var -0.133012702in], center = [var 0.236713854in, var -0.633012702in])
   coincident([line6.end, arc7.start])
-  line8 = line(start = [var 0.24in, var -0.13in], end = [var 0.1in, var -0.13in])
+  line8 = line(start = [var 0.236713854in, var -0.133012702in], end = [var 0.1in, var -0.133012702in])
   coincident([arc7.end, line8.start])
-  line9 = line(start = [var 0.1in, var -0.13in], end = [var 0.1in, var -0.03in])
+  line9 = line(start = [var 0.1in, var -0.133012702in], end = [var 0.1in, var -0.033012702in])
   coincident([line8.end, line9.start])
-  line10 = line(start = [var 0.1in, var -0.03in], end = [var 0.27in, var -0.03in])
+  line10 = line(start = [var 0.1in, var -0.033012702in], end = [var 0.271713854in, var -0.033012702in])
   coincident([line9.end, line10.start])
-  arc11 = arc(start = [var 0.57in, var -0.11in], end = [var 0.27in, var -0.03in], center = [var 0.27in, var -0.63in])
+  arc11 = arc(start = [var 0.571713854in, var -0.11339746in], end = [var 0.271713854in, var -0.033012702in], center = [var 0.271713854in, var -0.633012702in])
   coincident([line10.end, arc11.end])
-  line12 = line(start = [var 0.57in, var -0.11in], end = [var 1.87in, var -0.86in])
+  line12 = line(start = [var 0.571713854in, var -0.11339746in], end = [var 1.868181532in, var -0.861913423in])
   coincident([arc11.start, line12.start])
-  arc13 = arc(start = [var 1.87in, var -0.86in], end = [var 2.55in, var -0.18in], center = [var 2.12in, var -0.43in])
+  arc13 = arc(start = [var 1.868181532in, var -0.861913423in], end = [var 2.551194234in, var -0.178900721in], center = [var 2.118181532in, var -0.428900721in])
   coincident([line12.end, arc13.start])
-  line14 = line(start = [var 2.55in, var -0.18in], end = [var 2.27in, var 0.31in])
+  line14 = line(start = [var 2.551194234in, var -0.178900721in], end = [var 2.268694234in, var 0.310403632in])
   coincident([arc13.end, line14.start])
-  arc15 = arc(start = [var 2.21in, var 0.56in], end = [var 2.27in, var 0.31in], center = [var 2.81in, var 0.56in])
+  arc15 = arc(start = [var 2.212478907in, var 0.563974589in], end = [var 2.268694234in, var 0.310403632in], center = [var 2.812478907in, var 0.563974589in])
   coincident([line14.end, arc15.end])
-  line16 = line(start = [var 2.21in, var 0.56in], end = [var 2.21in, var 5.7in])
+  line16 = line(start = [var 2.212478907in, var 0.563974589in], end = [var 2.205in, var 5.7in])
   coincident([arc15.start, line16.start])
 }
 region002 = region(segments = [sketch002.line1, sketch002.line2])
@@ -78,79 +78,164 @@ metalSupports = extrude(region002, length = 0.75)
 
 // Cross plate
 sketch003 = sketch(on = offsetPlane(XY, offset = 1)) {
-  circle1 = circle(start = [var 2.06in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 2.055in, var 0in], center = [var 0in, var 0in])
 }
 region003 = region(segments = [sketch003.circle1])
 crossPlate = extrude(region003, length = 0.050)
   |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
 
+// Cross plate slot pattern profile
+crossPlateSlotSketch = sketch(on = offsetPlane(XY, offset = 1.05)) {
+  line1 = line(start = [var 0.3in, var 0.17in], end = [var 0.3in, var 1.37in])
+  arc2 = arc(start = [var 1.339230485in, var -0.43in], end = [var 0.3in, var 1.37in], center = [var 0.3in, var 0.17in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 1.339230485in, var -0.43in], end = [var 0.3in, var 0.17in])
+  coincident([arc2.start, line3.start])
+}
+crossPlateSlotRegion = region(segments = [
+  crossPlateSlotSketch.line1,
+  crossPlateSlotSketch.arc2
+])
+crossPlateSlotCut = extrude(crossPlateSlotRegion, length = -0.050)
+crossPlateSlotsCut = patternCircular3d(
+  crossPlateSlotCut,
+  center = [0, 0, 0],
+  axis = Z,
+  instances = 3,
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+crossPlateFinished = subtract(crossPlate, tools = crossPlateSlotsCut)
+
 // Filter screen
 sketch004 = sketch(on = XZ) {
-  line1 = line(start = [var 0.15in, var 1.11in], end = [var 2.01in, var 1.11in])
-  line2 = line(start = [var 2.01in, var 1.11in], end = [var 2.14in, var 1.19in])
+  line1 = line(start = [var 0.15in, var 1.11in], end = [var 2.005in, var 1.11in])
+  line2 = line(start = [var 2.005in, var 1.11in], end = [var 2.135in, var 1.185055535in])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var 2.14in, var 1.19in], end = [var 2.16in, var 1.14in])
+  line3 = line(start = [var 2.135in, var 1.185055535in], end = [var 2.16in, var 1.141754265in])
   coincident([line2.end, line3.start])
-  line4 = line(start = [var 2.16in, var 1.14in], end = [var 2.03in, var 1.07in])
+  line4 = line(start = [var 2.16in, var 1.141754265in], end = [var 2.03in, var 1.06669873in])
   coincident([line3.end, line4.start])
-  line5 = line(start = [var 2.03in, var 1.07in], end = [var 0.15in, var 1.07in])
+  line5 = line(start = [var 2.03in, var 1.06669873in], end = [var 0.15in, var 1.06669873in])
   coincident([line4.end, line5.start])
-  line6 = line(start = [var 0.15in, var 1.07in], end = [var 0.15in, var 1.11in])
+  line6 = line(start = [var 0.15in, var 1.06669873in], end = [var 0.15in, var 1.11in])
   coincident([line5.end, line6.start])
 }
 region004 = region(segments = [sketch004.line1, sketch004.line2])
 filterScreen = revolve(region004, axis = Y)
   |> appearance(color = "#a8a8a8", metalness = 70, roughness = 30)
 
-// Plunger and stem
-sketch005 = sketch(on = XZ) {
-  line1 = line(start = [var 0in, var 1in], end = [var 0.08in, var 1in])
-  line2 = line(start = [var 0.08in, var 1in], end = [var 0.08in, var 10.97in])
+// Plunger stem. The legacy profile self-touches where the knob returns to the
+// stem, so model the two closed regions separately and unite the revolutions.
+plungerRodSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0.1in, var 1in], end = [var 0.2in, var 1in])
+  line2 = line(start = [var 0.2in, var 1in], end = [var 0.05in, var 0.973550953in])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var 0.08in, var 10.97in], end = [var 0in, var 10.97in])
+  line3 = line(start = [var 0.05in, var 0.973550953in], end = [var 0.05in, var 10.323550953in])
   coincident([line2.end, line3.start])
-  line4 = line(start = [var 0in, var 10.97in], end = [var 0in, var 1in])
+  line4 = line(start = [var 0.05in, var 10.323550953in], end = [var 0.1in, var 1in])
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
 }
-region005 = region(segments = [
-  sketch005.line1,
-  sketch005.line2,
-  sketch005.line3,
-  sketch005.line4
+plungerRodRegion = region(segments = [
+  plungerRodSketch.line1,
+  plungerRodSketch.line2
 ])
-plungerStem = revolve(region005, axis = Y)
+plungerRod = revolve(plungerRodRegion, axis = Y)
+  |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)
+
+plungerKnobSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0.049in, var 10.322550953in], end = [var 0.049in, var 10.973550953in])
+  line2 = line(start = [var 0.049in, var 10.973550953in], end = [var 0.65in, var 10.973550953in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.65in, var 10.973550953in], end = [var 0.65in, var 10.923550953in])
+  coincident([line2.end, line3.start])
+  knobArc = controlPointSpline(points = [
+    [var 0.65in, var 10.923550953in],
+    [var 0.65in, var 10.592180103in],
+    [var 0.381370850in, var 10.323550953in],
+    [var 0.05in, var 10.323550953in]
+  ])
+  line4 = line(start = [var 0.05in, var 10.323550953in], end = [var 0.051in, var 10.322550953in])
+  coincident([knobArc.controls[3], line4.start])
+  line5 = line(start = [var 0.051in, var 10.322550953in], end = [var 0.049in, var 10.322550953in])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+}
+plungerKnobRegion = region(segments = [
+  plungerKnobSketch.line1,
+  plungerKnobSketch.line2
+])
+plungerKnob = revolve(plungerKnobRegion, axis = Y)
   |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)
 
 // Spiral plate
 sketch006 = sketch(on = offsetPlane(XY, offset = 1.12)) {
-  circle1 = circle(start = [var 1.97in, var 0in], center = [var 0in, var 0in])
+  circle1 = circle(start = [var 1.965in, var 0in], center = [var 0in, var 0in])
 }
 region006 = region(segments = [sketch006.circle1])
-spiralPlate = extrude(region006, length = 0.050)
+spiralPlateBlank = extrude(region006, length = 0.050)
+sketch007 = sketch(on = offsetPlane(XY, offset = 1.12)) {
+  circle1 = circle(start = [var 0.15in, var 0in], center = [var 0in, var 0in])
+}
+region007 = region(segments = [sketch007.circle1])
+spiralBore = extrude(region007, length = 0.050)
+spiralPlate = subtract(spiralPlateBlank, tools = [spiralBore])
+
+// Pattern holes in the spiral plate (large radius)
+spiralLargeHoleSketch = sketch(on = offsetPlane(XY, offset = 1.17)) {
+  circle1 = circle(start = [var 1.7in, var 0in], center = [var 1.4in, var 0in])
+}
+spiralLargeHoleRegion = region(segments = [spiralLargeHoleSketch.circle1])
+spiralLargeHole = extrude(spiralLargeHoleRegion, length = -0.050)
+spiralPlateLargeHoles = patternCircular3d(
+  spiralLargeHole,
+  center = [0, 0, 0],
+  axis = Z,
+  instances = 8,
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+
+// Pattern holes in the spiral plate (small radius)
+spiralSmallHoleSketch = sketch(on = offsetPlane(XY, offset = 1.17)) {
+  circle1 = circle(start = [var 0.8in, var 0in], center = [var 0.6in, var 0in])
+}
+spiralSmallHoleRegion = region(segments = [spiralSmallHoleSketch.circle1])
+spiralSmallHole = extrude(spiralSmallHoleRegion, length = -0.050)
+spiralPlateSmallHoles = patternCircular3d(
+  spiralSmallHole,
+  center = [0, 0, 0],
+  axis = Z,
+  instances = 4,
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+spiralPlateWithLargeHoles = subtract(spiralPlate, tools = spiralPlateLargeHoles)
+spiralPlateFinished = subtract(spiralPlateWithLargeHoles, tools = spiralPlateSmallHoles)
 
 // Revolve a glass carafe body
-sketch009 = sketch(on = XZ) {
-  line1 = line(start = [var 0in, var 0in], end = [var 1.71in, var 0in])
-  arc2 = arc(start = [var 1.71in, var 0in], end = [var 2.21in, var 0.5in], center = [var 1.71in, var 0.5in])
+sketch010 = sketch(on = XZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var 1.705in, var 0in])
+  arc2 = arc(start = [var 1.705in, var 0in], end = [var 2.205in, var 0.5in], center = [var 1.705in, var 0.5in])
   coincident([line1.end, arc2.start])
-  line3 = line(start = [var 2.21in, var 0.5in], end = [var 2.21in, var 7.02in])
+  line3 = line(start = [var 2.205in, var 0.5in], end = [var 2.205in, var 7.02in])
   coincident([arc2.end, line3.start])
-  line4 = line(start = [var 2.21in, var 7.02in], end = [var 2.22in, var 7.02in])
+  line4 = line(start = [var 2.205in, var 7.02in], end = [var 2.215in, var 7.02in])
   coincident([line3.end, line4.start])
-  arc5 = arc(start = [var 2.22in, var 7.02in], end = [var 2.07in, var 7.17in], center = [var 2.22in, var 7.17in])
+  arc5 = arc(start = [var 2.215in, var 7.02in], end = [var 2.065in, var 7.17in], center = [var 2.215in, var 7.17in])
   coincident([line4.end, arc5.start])
-  line6 = line(start = [var 2.07in, var 7.17in], end = [var 2.06in, var 0.55in])
+  line6 = line(start = [var 2.065in, var 7.17in], end = [var 2.065in, var 0.55in])
   coincident([arc5.end, line6.start])
-  arc7 = arc(start = [var 1.56in, var 0.05in], end = [var 2.06in, var 0.55in], center = [var 1.56in, var 0.55in])
+  arc7 = arc(start = [var 1.565in, var 0.05in], end = [var 2.065in, var 0.55in], center = [var 1.565in, var 0.55in])
   coincident([line6.end, arc7.end])
-  line8 = line(start = [var 1.56in, var 0.05in], end = [var 0in, var 0.05in])
+  line8 = line(start = [var 1.565in, var 0.05in], end = [var 0in, var 0.05in])
   coincident([arc7.start, line8.start])
   line9 = line(start = [var 0in, var 0.05in], end = [var 0in, var 0in])
   coincident([line8.end, line9.start])
 }
-region007 = region(segments = [sketch009.line1, sketch009.arc2])
-carafe = revolve(region007, axis = Y)
+region008 = region(segments = [sketch010.line1, sketch010.arc2])
+carafe = revolve(region008, axis = Y)
   |> appearance(
        color = "#ffffff",
        metalness = 5,
@@ -159,34 +244,38 @@ carafe = revolve(region007, axis = Y)
      )
 
 // Draw and revolve the lid
-sketch010 = sketch(on = XZ) {
-  line1 = line(start = [var 0.2in, var 6.62in], end = [var 2.11in, var 6.62in])
-  line2 = line(start = [var 2.11in, var 6.62in], end = [var 2.11in, var 7.32in])
+sketch011 = sketch(on = XZ) {
+  line1 = line(start = [var 0.2in, var 6.62in], end = [var 2.105in, var 6.62in])
+  line2 = line(start = [var 2.105in, var 6.62in], end = [var 2.105in, var 7.32in])
   coincident([line1.end, line2.start])
-  line3 = line(start = [var 2.11in, var 7.32in], end = [var 2.4in, var 7.32in])
+  line3 = line(start = [var 2.105in, var 7.32in], end = [var 2.405in, var 7.32in])
   coincident([line2.end, line3.start])
-  line4 = line(start = [var 2.4in, var 7.32in], end = [var 2.4in, var 7.72in])
+  line4 = line(start = [var 2.405in, var 7.32in], end = [var 2.405in, var 7.72in])
   coincident([line3.end, line4.start])
-  line5 = line(start = [var 2.4in, var 7.72in], end = [var 2.38in, var 7.74in])
+  line5 = line(start = [var 2.405in, var 7.72in], end = [var 2.385in, var 7.74in])
   coincident([line4.end, line5.start])
-  line6 = line(start = [var 2.38in, var 7.74in], end = [var 0.08in, var 8.74in])
-  coincident([line5.end, line6.start])
+  lidCrown = controlPointSpline(points = [
+    [var 2.385in, var 7.74in],
+    [var 2.085in, var 7.74in],
+    [var 2.826in, var 8.74in],
+    [var 0.08in, var 8.74in]
+  ])
   line7 = line(start = [var 0.08in, var 8.74in], end = [var 0.2in, var 6.62in])
-  coincident([line6.end, line7.start])
+  coincident([lidCrown.controls[3], line7.start])
   coincident([line7.end, line1.start])
 }
-region008 = region(segments = [sketch010.line1, sketch010.line2])
-lid = revolve(region008, axis = Y)
+region009 = region(segments = [sketch011.line1, sketch011.line2])
+lid = revolve(region009, axis = Y)
   |> appearance(color = "#f93706", metalness = 60, roughness = 30)
 
 // Draw and extrude handle
-sketch011 = sketch(on = offsetPlane(XZ, offset = handleThickness / 2)) {
+sketch012 = sketch(on = offsetPlane(XZ, offset = handleThickness / 2)) {
   line1 = line(start = [var 2.3in, var 6.4in], end = [var 2.86in, var 6.4in])
-  arc2 = arc(start = [var 4.1in, var 5.26in], end = [var 2.86in, var 6.4in], center = [var 2.86in, var 5.16in])
+  arc2 = arc(start = [var 4.1in, var 5.26in], end = [var 2.86in, var 6.4in], center = [var 2.86in, var 5.155614035in])
   coincident([line1.end, arc2.end])
-  arc3 = arc(start = [var 4.17in, var 1.6in], end = [var 4.1in, var 5.26in], center = [var -24.04in, var 2.89in])
+  arc3 = arc(start = [var 4.17in, var 1.6in], end = [var 4.1in, var 5.26in], center = [var -24.039664516in, var 2.891140296in])
   coincident([arc2.start, arc3.end])
-  arc4 = arc(start = [var 3.13in, var 0.61in], end = [var 4.17in, var 1.6in], center = [var 3.13in, var 1.65in])
+  arc4 = arc(start = [var 3.13in, var 0.61in], end = [var 4.17in, var 1.6in], center = [var 3.133645156in, var 1.647433372in])
   coincident([arc3.start, arc4.end])
   line5 = line(start = [var 3.13in, var 0.61in], end = [var 2.27in, var 0.61in])
   coincident([arc4.start, line5.start])
@@ -194,17 +283,17 @@ sketch011 = sketch(on = offsetPlane(XZ, offset = handleThickness / 2)) {
   coincident([line5.end, line6.start])
   line7 = line(start = [var 2.27in, var 1.04in], end = [var 3in, var 1.02in])
   coincident([line6.end, line7.start])
-  arc8 = arc(start = [var 3in, var 1.02in], end = [var 3.63in, var 1.6in], center = [var 3.02in, var 1.63in])
+  arc8 = arc(start = [var 3in, var 1.02in], end = [var 3.63in, var 1.6in], center = [var 3.016818807in, var 1.633886468in])
   coincident([line7.end, arc8.start])
-  arc9 = arc(start = [var 3.63in, var 1.6in], end = [var 3.56in, var 5.15in], center = [var -20.05in, var 2.91in])
+  arc9 = arc(start = [var 3.63in, var 1.6in], end = [var 3.56in, var 5.15in], center = [var -20.051648714in, var 2.908728054in])
   coincident([arc8.end, arc9.start])
-  arc10 = arc(start = [var 3.56in, var 5.15in], end = [var 2.72in, var 5.88in], center = [var 2.76in, var 5.07in])
+  arc10 = arc(start = [var 3.56in, var 5.15in], end = [var 2.72in, var 5.88in], center = [var 2.756516675in, var 5.073731517in])
   coincident([arc9.end, arc10.start])
   line11 = line(start = [var 2.72in, var 5.88in], end = [var 2.3in, var 5.88in])
   coincident([arc10.end, line11.start])
   line12 = line(start = [var 2.3in, var 5.88in], end = [var 2.3in, var 6.4in])
   coincident([line11.end, line12.start])
 }
-region009 = region(segments = [sketch011.line1, sketch011.arc2])
-handle = extrude(region009, length = -handleThickness)
+region010 = region(segments = [sketch012.line1, sketch012.arc2])
+handle = extrude(region010, length = -handleThickness)
   |> appearance(color = "#0d0d0d", metalness = 10, roughness = 80)

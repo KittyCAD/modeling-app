@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 2.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 
 // Import parameters
 import * from "parameters.kcl"

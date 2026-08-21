@@ -1,69 +1,181 @@
 // Mounting bracket for the Focusrite Scarlett Solo audio interface
-// A 3D-printable under-desk cradle with four screw tabs and retention lips.
+// This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
 // Categories: Maker
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 
-fn unitBox(xSize, ySize, zSize) {
-  unitSketch = sketch(on = XY) {
-    line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-    line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
-    coincident([line1.end, line2.start])
-    line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
-    coincident([line2.end, line3.start])
-    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
-    coincident([line3.end, line4.start])
-    coincident([line4.end, line1.start])
-    horizontal(line1)
-    vertical(line2)
-    horizontal(line3)
-    vertical(line4)
-    distance([line1.start, line1.end]) == xSize
-    distance([line2.start, line2.end]) == ySize
-  }
-  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
-  hide(unitSketch)
-  return body
-}
+radius = 6.0
+width = 144.0
+length = 80.0
+depth = 45.0
+thk = 4
+holeDiam = 5
+tabLength = 25
+tabWidth = 12
+tabThk = 4
 
 bodySketch = sketch(on = XZ) {
   line1 = line(start = [var -76mm, var 49mm], end = [var -76mm, var -4mm])
   line2 = line(start = [var -76mm, var -4mm], end = [var 76mm, var -4mm])
-  coincident([line1.end, line2.start])
   line3 = line(start = [var 76mm, var -4mm], end = [var 76mm, var 49mm])
-  coincident([line2.end, line3.start])
   line4 = line(start = [var 76mm, var 49mm], end = [var 72mm, var 49mm])
-  coincident([line3.end, line4.start])
   line5 = line(start = [var 72mm, var 49mm], end = [var 72mm, var 0mm])
-  coincident([line4.end, line5.start])
   line6 = line(start = [var 72mm, var 0mm], end = [var -72mm, var 0mm])
-  coincident([line5.end, line6.start])
   line7 = line(start = [var -72mm, var 0mm], end = [var -72mm, var 49mm])
-  coincident([line6.end, line7.start])
   line8 = line(start = [var -72mm, var 49mm], end = [var -76mm, var 49mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
 }
-bracketBody = extrude(region(segments = [bodySketch.line1, bodySketch.line2]), length = 88, symmetric = true)
+bodyRegion = region(segments = [bodySketch.line1, bodySketch.line2])
+bodyBlank = extrude(bodyRegion, length = length + 2 * thk, symmetric = true)
+bracketBody = fillet(
+  bodyBlank,
+  radius = radius,
+  tags = [
+    getCommonEdge(faces = [
+      bodyRegion.tags.line6,
+      bodyRegion.tags.line7
+    ]),
+    getCommonEdge(faces = [
+      bodyRegion.tags.line1,
+      bodyRegion.tags.line2
+    ]),
+    getCommonEdge(faces = [
+      bodyRegion.tags.line2,
+      bodyRegion.tags.line3
+    ]),
+    getCommonEdge(faces = [
+      bodyRegion.tags.line5,
+      bodyRegion.tags.line6
+    ])
+  ],
+)
 
-rightTab = unitBox(xSize = 12, ySize = 25, zSize = 4)
-  |> translate(x = 76, y = -44, z = 45)
-  |> patternLinear3d(instances = 2, distance = 63, axis = [0, 1, 0])
-leftTab = unitBox(xSize = 12, ySize = 25, zSize = 4)
-  |> translate(x = -88, y = -44, z = 45)
-  |> patternLinear3d(instances = 2, distance = 63, axis = [0, 1, 0])
+tabPlane = offsetPlane(XY, offset = depth + thk)
 
-frontRetention = unitBox(xSize = 104, ySize = 4, zSize = 4)
-  |> translate(x = -52, y = -44, z = 0)
-backRetention = unitBox(xSize = 104, ySize = 4, zSize = 4)
-  |> translate(x = -52, y = 40, z = 0)
+rightTabSketch = sketch(on = tabPlane) {
+  line1 = line(start = [var 76mm, var 44mm], end = [var 88mm, var 35.666666667mm])
+  line2 = line(start = [var 88mm, var 35.666666667mm], end = [var 88mm, var 19mm])
+  line3 = line(start = [var 88mm, var 19mm], end = [var 76mm, var 10.666666667mm])
+  line4 = line(start = [var 76mm, var 10.666666667mm], end = [var 76mm, var 44mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+rightTabRegion = region(segments = [
+  rightTabSketch.line1,
+  rightTabSketch.line2
+])
+rightTabBlank = extrude(rightTabRegion, length = -tabThk)
+rightHoleSketch = sketch(on = tabPlane) {
+  hole = circle(start = [var 84.5mm, var 27.333333333mm], center = [var 82mm, var 27.333333333mm])
+}
+rightHole = extrude(region(segments = [rightHoleSketch.hole]), length = -tabThk)
+rightTabCut = subtract(rightTabBlank, tools = [rightHole])
+rightTab = fillet(
+  rightTabCut,
+  radius = holeDiam / 2,
+  tags = [
+    getCommonEdge(faces = [
+      rightTabRegion.tags.line1,
+      rightTabRegion.tags.line2
+    ]),
+    getCommonEdge(faces = [
+      rightTabRegion.tags.line2,
+      rightTabRegion.tags.line3
+    ])
+  ],
+)
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
-[
-  bracketBody,
-  rightTab,
-  leftTab,
-  frontRetention,
-  backRetention
-]
-  |> appearance(color = "#d9d9d9")
+leftTabSketch = sketch(on = tabPlane) {
+  line1 = line(start = [var -76mm, var 44mm], end = [var -88mm, var 35.666666667mm])
+  line2 = line(start = [var -88mm, var 35.666666667mm], end = [var -88mm, var 19mm])
+  line3 = line(start = [var -88mm, var 19mm], end = [var -76mm, var 10.666666667mm])
+  line4 = line(start = [var -76mm, var 10.666666667mm], end = [var -76mm, var 44mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+leftTabRegion = region(segments = [
+  leftTabSketch.line1,
+  leftTabSketch.line2
+])
+leftTabBlank = extrude(leftTabRegion, length = -tabThk)
+leftHoleSketch = sketch(on = tabPlane) {
+  hole = circle(start = [var -79.5mm, var 27.333333333mm], center = [var -82mm, var 27.333333333mm])
+}
+leftHole = extrude(region(segments = [leftHoleSketch.hole]), length = -tabThk)
+leftTabCut = subtract(leftTabBlank, tools = [leftHole])
+leftTab = fillet(
+  leftTabCut,
+  radius = holeDiam / 2,
+  tags = [
+    getCommonEdge(faces = [
+      leftTabRegion.tags.line1,
+      leftTabRegion.tags.line2
+    ]),
+    getCommonEdge(faces = [
+      leftTabRegion.tags.line2,
+      leftTabRegion.tags.line3
+    ])
+  ],
+)
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
+
+retPlane = {
+  origin = { x = -width / 2 + 20, y = 0, z = 0 },
+  xAxis = { x = 0, y = 1, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+  zAxis = { x = 1, y = 0, z = 0 }
+}
+
+frontRetentionSketch = sketch(on = retPlane) {
+  line1 = line(start = [var -44mm, var 0mm], end = [var -44mm, var 4mm])
+  line2 = line(start = [var -44mm, var 4mm], end = [var -40mm, var 0mm])
+  line3 = line(start = [var -40mm, var 0mm], end = [var -44mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+frontRetention = extrude(
+  region(segments = [
+    frontRetentionSketch.line1,
+    frontRetentionSketch.line2
+  ]),
+  length = width - 40,
+)
+
+backRetentionSketch = sketch(on = retPlane) {
+  line1 = line(start = [var 44mm, var 0mm], end = [var 44mm, var 4mm])
+  line2 = line(start = [var 44mm, var 4mm], end = [var 40mm, var 4mm])
+  line3 = line(start = [var 40mm, var 4mm], end = [var 40mm, var 0mm])
+  line4 = line(start = [var 40mm, var 0mm], end = [var 44mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+backRetention = extrude(
+  region(segments = [
+    backRetentionSketch.line1,
+    backRetentionSketch.line2
+  ]),
+  length = width - 40,
+)
+
 hide(bodySketch)
+hide(rightTabSketch)
+hide(rightHoleSketch)
+hide(leftTabSketch)
+hide(leftHoleSketch)
+hide(frontRetentionSketch)
+hide(backRetentionSketch)

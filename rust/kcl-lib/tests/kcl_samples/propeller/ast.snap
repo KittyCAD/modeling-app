@@ -5570,7 +5570,7 @@ description: Result of parsing propeller.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "edges",
+                  "name": "tags",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -5578,25 +5578,18 @@ description: Result of parsing propeller.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "properties": [
+                      "arguments": [
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "key": {
+                          "type": "LabeledArg",
+                          "label": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "sideFaces",
+                            "name": "faces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "moduleId": 0,
-                          "start": 0,
-                          "type": "ObjectProperty",
-                          "value": {
+                          "arg": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -5698,30 +5691,44 @@ description: Result of parsing propeller.kcl
                           }
                         }
                       ],
-                      "start": 0,
-                      "type": "ObjectExpression",
-                      "type": "ObjectExpression"
-                    },
-                    {
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "getCommonEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "properties": [
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    {
+                      "arguments": [
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "key": {
+                          "type": "LabeledArg",
+                          "label": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "sideFaces",
+                            "name": "faces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "moduleId": 0,
-                          "start": 0,
-                          "type": "ObjectProperty",
-                          "value": {
+                          "arg": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -5823,9 +5830,30 @@ description: Result of parsing propeller.kcl
                           }
                         }
                       ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "getCommonEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
                       "start": 0,
-                      "type": "ObjectExpression",
-                      "type": "ObjectExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
                     }
                   ],
                   "end": 0,

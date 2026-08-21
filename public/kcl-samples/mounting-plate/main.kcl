@@ -77,31 +77,23 @@ plateWithHoles = subtract(
 part = fillet(
   plateWithHoles,
   radius = filletRadius,
-  edges = [
-    {
-      sideFaces = [
-        plateRegion.tags.bottomEdge,
-        plateRegion.tags.rightEdge
-      ]
-    },
-    {
-      sideFaces = [
-        plateRegion.tags.leftEdge,
-        plateRegion.tags.bottomEdge
-      ]
-    },
-    {
-      sideFaces = [
-        plateRegion.tags.leftEdge,
-        plateRegion.tags.topEdge
-      ]
-    },
-    {
-      sideFaces = [
-        plateRegion.tags.rightEdge,
-        plateRegion.tags.topEdge
-      ]
-    }
+  tags = [
+    getCommonEdge(faces = [
+      plateRegion.tags.bottomEdge,
+      plateRegion.tags.rightEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.leftEdge,
+      plateRegion.tags.bottomEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.leftEdge,
+      plateRegion.tags.topEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.rightEdge,
+      plateRegion.tags.topEdge
+    ])
   ],
 )
 
