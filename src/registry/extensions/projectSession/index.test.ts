@@ -78,6 +78,9 @@ describe('project session extension', () => {
         async ({ targetPath }: { targetPath: string }) => targetPath
       ),
       archiveEntry: vi.fn(async () => ({ archivedPath: '/archive/main.kcl' })),
+      restoreEntry: vi.fn(
+        async ({ targetPath }: { targetPath: string }) => targetPath
+      ),
       applyFilePatch: vi.fn(async () => undefined),
     }
     return {
@@ -279,6 +282,10 @@ describe('project session extension', () => {
       path: '/projects/bracket/parts/copy.kcl',
     })
     await projectSession.archiveEntry({ path: '/projects/bracket/new.kcl' })
+    await projectSession.restoreEntry({
+      archivedPath: '/archive/main.kcl',
+      targetPath: '/projects/bracket/main.kcl',
+    })
     await projectSession.applyFilePatch({
       files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
     })
@@ -311,10 +318,14 @@ describe('project session extension', () => {
     expect(project.mocks.archiveEntry).toHaveBeenCalledWith({
       path: '/projects/bracket/new.kcl',
     })
+    expect(project.mocks.restoreEntry).toHaveBeenCalledWith({
+      archivedPath: '/archive/main.kcl',
+      targetPath: '/projects/bracket/main.kcl',
+    })
     expect(project.mocks.applyFilePatch).toHaveBeenCalledWith({
       files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
     })
-    expect(project.mocks.refreshProjectTree).toHaveBeenCalledTimes(9)
+    expect(project.mocks.refreshProjectTree).toHaveBeenCalledTimes(10)
     expect(projectSession.projectTree.value?.name).toBe('bracket-fresh')
     expect(projectSession.mutation.value).toEqual({
       pending: false,

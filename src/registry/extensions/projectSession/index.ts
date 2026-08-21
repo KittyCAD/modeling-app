@@ -22,6 +22,7 @@ import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { keymapService } from '@src/registry/contracts/keymap'
 import {
   type ProjectSessionApplyFilePatchInput,
+  type ProjectSessionArchiveEntryInput,
   type ProjectSessionEntryCopyMoveInput,
   type ProjectSessionEntryPathInput,
   type ProjectSessionEntryRenameInput,
@@ -29,6 +30,7 @@ import {
   type ProjectSessionMutationOperation,
   type ProjectSessionMutationState,
   type ProjectSessionOpenEditorInput,
+  type ProjectSessionRestoreEntryInput,
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
@@ -214,7 +216,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       }
 
       const disposeFSHistory = buildFSHistoryExtension(
-        systemIOActor,
+        serviceImpl,
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
@@ -467,9 +469,15 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       runProjectMutation('move-entry', input.targetPath, (currentProject) =>
         currentProject.moveEntry(input)
       ),
-    archiveEntry: (input: ProjectSessionEntryPathInput) =>
+    archiveEntry: (input: ProjectSessionArchiveEntryInput) =>
       runProjectMutation('archive-entry', input.path, (currentProject) =>
         currentProject.archiveEntry(input)
+      ),
+    restoreEntry: (input: ProjectSessionRestoreEntryInput) =>
+      runProjectMutation(
+        'restore-entry',
+        input.targetPath,
+        (currentProject) => currentProject.restoreEntry(input)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
       runProjectMutation(
