@@ -544,7 +544,8 @@ export function getDimensionDistanceType(
   mousePoint: Coords2d,
   distanceContext: DimensionDistanceDraftContext
 ): DimensionDistanceType {
-  // Axis-specific distances involving lines are under-specified in KCL.
+  // HorizontalDistance and VerticalDistance apply only to point pairs.
+  // Use Distance for point-line and line-line dimensions.
   if (
     distanceContext.kind === 'pointLine' ||
     distanceContext.kind === 'lineLine'
