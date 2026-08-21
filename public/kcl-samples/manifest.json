@@ -805,12 +805,39 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
+    "multipleFiles": false,
+    "title": "Vented Manhole Cover",
+    "description": "A cast-iron cover with traffic-safe ventilation slots and a side pick hole.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "modular-shelf-grid/main.kcl",
     "multipleFiles": false,
     "title": "Modular Shelf Grid",
     "description": "A parametric, grid-based shelving system for layout prototyping and modular storage design.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Mounting Plate",
+    "description": "A flat support plate with four mounting holes, a center opening, and rounded vertical corners.",
     "files": [
       "main.kcl"
     ]
@@ -1100,6 +1127,19 @@
     "multipleFiles": false,
     "title": "Spinning Highrise Tower",
     "description": "A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Fasteners"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
+    "multipleFiles": false,
+    "title": "Split Washer (Flat Version)",
+    "description": "A flat split washer is a small metal ring with a gap that helps keep a fastener from loosening under vibration.",
     "files": [
       "main.kcl"
     ]

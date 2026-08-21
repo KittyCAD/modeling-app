@@ -1,0 +1,168 @@
+// Vented Manhole Cover
+// A cast-iron cover with traffic-safe ventilation slots and a side pick hole.
+// Categories: Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+coverDiameter = 22 + 3 / 4
+edgeThickness = 1 + 3 / 4
+slotWidth = 0.5
+pickHoleLength = 1
+pickHoleWidth = 2
+pickHoleDepth = 1 + 1 / 8
+
+coverSketch = sketch(on = XY) {
+  coverCircle = circle(start = [var 11.375in, var 0in], center = [var 0in, var 0in])
+  coincident([coverCircle.center, ORIGIN])
+  horizontal([coverCircle.center, coverCircle.start])
+  diameter(coverCircle) == coverDiameter
+}
+coverRegion = region(segments = [coverSketch.coverCircle])
+coverBlank = extrude(coverRegion, length = edgeThickness, symmetric = true)
+
+fn slotCutter(start, length, width, depth) {
+  radius = width / 2
+  straightLength = length - radius
+  directionX = cos(125deg)
+  directionY = sin(125deg)
+  normalX = cos(35deg)
+  normalY = sin(35deg)
+  point0 = start
+  point1 = [
+    start[0] + straightLength * directionX,
+    start[1] + straightLength * directionY
+  ]
+  point2 = [
+    point1[0] + width * normalX,
+    point1[1] + width * normalY
+  ]
+  point3 = [
+    start[0] + width * normalX,
+    start[1] + width * normalY
+  ]
+  cap1Center = [
+    point1[0] + radius * normalX,
+    point1[1] + radius * normalY
+  ]
+  cap2Center = [
+    start[0] + radius * normalX,
+    start[1] + radius * normalY
+  ]
+
+  slotSketch = sketch(on = XY) {
+    side1 = line(start = [var 0in, var 0in], end = [var -1in, var 1in])
+    cap1 = arc(start = [var -0.5in, var 1.5in], end = [var -1in, var 1in], center = [var -0.75in, var 1.25in])
+    side2 = line(start = [var -0.5in, var 1.5in], end = [var 0.5in, var 0.5in])
+    cap2 = arc(start = [var 0in, var 0in], end = [var 0.5in, var 0.5in], center = [var 0.25in, var 0.25in])
+    coincident([side1.end, cap1.end])
+    coincident([cap1.start, side2.start])
+    coincident([side2.end, cap2.end])
+    coincident([cap2.start, side1.start])
+    fixed([side1.start, point0])
+    fixed([side1.end, point1])
+    fixed([cap1.center, cap1Center])
+    fixed([cap1.start, point2])
+    fixed([side2.end, point3])
+    fixed([cap2.center, cap2Center])
+  }
+  slotRegion = region(segments = [slotSketch.side1, slotSketch.cap1])
+  slotBody = extrude(slotRegion, length = depth, symmetric = true)
+  hide(slotSketch)
+  return slotBody
+}
+
+slot1 = slotCutter(
+  start = [5.67437, -8.539703],
+  length = 20.5,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot2 = slotCutter(
+  start = [3.568886, -9.673446],
+  length = 19.954,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot3 = slotCutter(
+  start = [1.114006, -10.3082],
+  length = 18.166,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot4 = slotCutter(
+  start = [-1.814767, -10.266164],
+  length = 14.737,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot5 = slotCutter(
+  start = [7.46, -6.949],
+  length = 19.954,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot6 = slotCutter(
+  start = [8.8960, -4.8592],
+  length = 18.166,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot7 = slotCutter(
+  start = [9.8581, -2.0927],
+  length = 14.737,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot8 = slotCutter(
+  start = [-5.779208, -8.745042],
+  length = 7.6974,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+slot9 = slotCutter(
+  start = [9.7847, 2.1529],
+  length = 7.6974,
+  width = slotWidth,
+  depth = edgeThickness + 0.2,
+)
+ventedCover = subtract(
+  coverBlank,
+  tools = [
+    slot1,
+    slot2,
+    slot3,
+    slot4,
+    slot5,
+    slot6,
+    slot7,
+    slot8,
+    slot9
+  ],
+)
+
+pickHoleSketch = sketch(on = offsetPlane(YZ, offset = coverDiameter / 2)) {
+  topEdge = line(start = [var -1in, var 0.975in], end = [var 1in, var 0.975in])
+  rightEdge = line(start = [var 1in, var 0.975in], end = [var 1in, var -0.15in])
+  bottomEdge = line(start = [var 1in, var -0.15in], end = [var -1in, var -0.15in])
+  leftEdge = line(start = [var -1in, var -0.15in], end = [var -1in, var 0.975in])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+  vertical(leftEdge)
+  horizontalDistance([topEdge.start, topEdge.end]) == pickHoleWidth
+  verticalDistance([rightEdge.end, rightEdge.start]) == pickHoleDepth
+  horizontalDistance([ORIGIN, topEdge.start]) == -pickHoleWidth / 2
+  verticalDistance([ORIGIN, topEdge.start]) == edgeThickness / 2 + 0.1
+}
+pickHoleRegion = region(segments = [
+  pickHoleSketch.topEdge,
+  pickHoleSketch.rightEdge
+])
+pickHole = extrude(pickHoleRegion, length = -pickHoleLength)
+manhole = subtract(ventedCover, tools = [pickHole])
+
+hide([coverSketch, pickHoleSketch])
