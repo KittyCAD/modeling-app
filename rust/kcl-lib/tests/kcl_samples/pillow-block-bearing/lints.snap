@@ -13,8 +13,8 @@ description: Lints pillow-block-bearing.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1348,
-      1633,
+      1432,
+      1717,
       3
     ],
     "overridden": false,

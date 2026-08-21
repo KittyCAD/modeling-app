@@ -7734,6 +7734,93 @@ description: Operations executed hand-trolley.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -3.67,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -3.295,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -7808,288 +7895,6 @@ description: Operations executed hand-trolley.kcl
           {
             "type": "ProgramBodyItem",
             "index": 20
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": 10.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 229
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "circle",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -3.67,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -3.295,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 22
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.02,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "symmetric": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 23
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8188,7 +7993,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 21
           },
           {
             "type": "ExpressionStatementExpr"
@@ -8201,13 +8006,13 @@ description: Operations executed hand-trolley.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 234
+        "sketchId": 232
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8281,7 +8086,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8331,7 +8136,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8380,7 +8185,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8420,7 +8225,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8439,13 +8244,13 @@ description: Operations executed hand-trolley.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 239
+        "sketchId": 237
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8519,7 +8324,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8606,7 +8411,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8653,7 +8458,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8737,7 +8542,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8784,7 +8589,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8868,7 +8673,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8915,7 +8720,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9025,7 +8830,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9072,7 +8877,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9156,7 +8961,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9203,7 +9008,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9313,7 +9118,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9360,7 +9165,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9444,7 +9249,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9491,7 +9296,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9601,7 +9406,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9648,7 +9453,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9732,7 +9537,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9779,7 +9584,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9889,7 +9694,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9936,7 +9741,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10020,7 +9825,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10067,7 +9872,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10151,7 +9956,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10198,7 +10003,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10282,7 +10087,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10329,7 +10134,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10413,7 +10218,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10460,7 +10265,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10544,7 +10349,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10591,7 +10396,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10675,7 +10480,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10722,7 +10527,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10806,7 +10611,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10853,7 +10658,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10963,7 +10768,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11010,7 +10815,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11094,7 +10899,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11141,7 +10946,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11251,7 +11056,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11298,7 +11103,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11382,7 +11187,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11429,7 +11234,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11539,7 +11344,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11586,7 +11391,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11670,7 +11475,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11717,7 +11522,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11801,7 +11606,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11848,7 +11653,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11899,7 +11704,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -11983,7 +11788,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12023,7 +11828,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12042,13 +11847,13 @@ description: Operations executed hand-trolley.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 347
+        "sketchId": 345
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12122,7 +11927,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12235,7 +12040,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12282,7 +12087,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12392,7 +12197,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12439,7 +12244,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12549,7 +12354,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12596,7 +12401,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12680,7 +12485,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12727,7 +12532,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12837,7 +12642,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12884,7 +12689,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -12994,7 +12799,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13041,7 +12846,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13151,7 +12956,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13198,7 +13003,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13282,7 +13087,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13329,7 +13134,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13413,7 +13218,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13460,7 +13265,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13511,7 +13316,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13595,7 +13400,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13658,7 +13463,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -13784,7 +13589,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 35
+            "index": 31
           },
           {
             "type": "ExpressionStatementExpr"
@@ -13893,7 +13698,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 36
+            "index": 32
           },
           {
             "type": "ExpressionStatementExpr"
@@ -22132,6 +21937,93 @@ description: Operations executed hand-trolley.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -3.67,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -3.295,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -22206,288 +22098,6 @@ description: Operations executed hand-trolley.kcl
           {
             "type": "ProgramBodyItem",
             "index": 20
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": 10.0,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 229
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "circle",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -3.67,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -3.295,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "in": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 22
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.02,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "symmetric": {
-          "value": {
-            "type": "Bool",
-            "value": true
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 23
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22586,7 +22196,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -22726,7 +22336,7 @@ description: Operations executed hand-trolley.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 22
           },
           {
             "type": "ExpressionStatementExpr"

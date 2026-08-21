@@ -2448,9 +2448,856 @@ description: Result of parsing wing-spar.kcl
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hole1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "79mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 79.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "9mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 9.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "62mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 62.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "9mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 9.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hole2",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "132mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 132.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "10mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 10.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "113mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 113.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "10mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 10.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hole3",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "181mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 181.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "9mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 9.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "164mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 164.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "9mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 9.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hole4",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "239mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 239.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "5mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 5.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "228mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 228.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "5mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 5.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hole5",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "start",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "266.5mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 266.5
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.5mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.5
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "260mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 260.0
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3.5mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.5
+                                },
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "SketchVar",
+                                "type": "SketchVar"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
                 }
               ],
               "moduleId": 0,
+              "non_code_meta": {
+                "nonCodeNodes": {
+                  "10": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": []
+              },
               "start": 0,
               "type": "Block"
             },
@@ -2644,7 +3491,7 @@ description: Result of parsing wing-spar.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "ribBlank",
+            "name": "rib",
             "start": 0,
             "type": "Identifier"
           },
@@ -2722,2233 +3569,6 @@ description: Result of parsing wing-spar.kcl
                 "end": 0,
                 "moduleId": 0,
                 "name": "region001",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHole1",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "foilThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "offsetPlane",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": {
-                    "argument": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "XZ",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "operator": "-",
-                    "start": 0,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  }
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "circle1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "start",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "79mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 79.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "9mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        },
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "center",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "62mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 62.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "9mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHole2",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "foilThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "offsetPlane",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": {
-                    "argument": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "XZ",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "operator": "-",
-                    "start": 0,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  }
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "circle1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "start",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "132mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 132.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "10mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        },
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "center",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "113mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 113.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "10mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHole3",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "foilThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "offsetPlane",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": {
-                    "argument": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "XZ",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "operator": "-",
-                    "start": 0,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  }
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "circle1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "start",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "181mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 181.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "9mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        },
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "center",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "164mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 164.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "9mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHole4",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "foilThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "offsetPlane",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": {
-                    "argument": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "XZ",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "operator": "-",
-                    "start": 0,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  }
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "circle1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "start",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "239mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 239.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "5mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        },
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "center",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "228mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 228.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "5mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHole5",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "offset",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "foilThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "offsetPlane",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": {
-                    "argument": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "XZ",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    },
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "operator": "-",
-                    "start": 0,
-                    "type": "UnaryExpression",
-                    "type": "UnaryExpression"
-                  }
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
-                {
-                  "commentStart": 0,
-                  "declaration": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "id": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "circle1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "init": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "start",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "266.5mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 266.5
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "3.5mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.5
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        },
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "center",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "260mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 260.0
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "initial": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "raw": "3.5mm",
-                                  "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.5
-                                },
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "SketchVar",
-                                "type": "SketchVar"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "circle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "VariableDeclarator"
-                  },
-                  "end": 0,
-                  "kind": "const",
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "VariableDeclaration",
-                  "type": "VariableDeclaration"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "ribHoleCutters",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "length",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "argument": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "foilThickness",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "operator": "-",
-                  "start": 0,
-                  "type": "UnaryExpression",
-                  "type": "UnaryExpression"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "extrude",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "commentStart": 0,
-              "elements": [
-                {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "segments",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "ribHole1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "circle1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "moduleId": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "region",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": null
-                },
-                {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "segments",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "ribHole2",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "circle1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "moduleId": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "region",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": null
-                },
-                {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "segments",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "ribHole3",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "circle1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "moduleId": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "region",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": null
-                },
-                {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "segments",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "ribHole4",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "circle1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "moduleId": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "region",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": null
-                },
-                {
-                  "arguments": [
-                    {
-                      "type": "LabeledArg",
-                      "label": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "segments",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "arg": {
-                        "commentStart": 0,
-                        "elements": [
-                          {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "moduleId": 0,
-                            "object": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "ribHole5",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "property": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "circle1",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
-                        ],
-                        "end": 0,
-                        "moduleId": 0,
-                        "start": 0,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      }
-                    }
-                  ],
-                  "callee": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "region",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "CallExpressionKw",
-                  "type": "CallExpressionKw",
-                  "unlabeled": null
-                }
-              ],
-              "end": 0,
-              "moduleId": 0,
-              "start": 0,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rib",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tools",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "ribHoleCutters",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "subtract",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "ribBlank",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -22997,7 +21617,7 @@ description: Result of parsing wing-spar.kcl
             }
           }
         ],
-        "12": [
+        "13": [
           {
             "commentStart": 0,
             "end": 0,
@@ -23009,7 +21629,7 @@ description: Result of parsing wing-spar.kcl
             }
           }
         ],
-        "20": [
+        "16": [
           {
             "commentStart": 0,
             "end": 0,
@@ -23021,7 +21641,7 @@ description: Result of parsing wing-spar.kcl
             }
           }
         ],
-        "23": [
+        "19": [
           {
             "commentStart": 0,
             "end": 0,
@@ -23033,19 +21653,7 @@ description: Result of parsing wing-spar.kcl
             }
           }
         ],
-        "26": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "31": [
+        "24": [
           {
             "commentStart": 0,
             "end": 0,

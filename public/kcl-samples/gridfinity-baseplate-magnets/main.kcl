@@ -119,53 +119,40 @@ magnetBaseSketch = sketch(on = XY) {
   vertical(leftEdge)
   distance([bottomEdge.start, bottomEdge.end]) == binLength
   distance([rightEdge.start, rightEdge.end]) == binLength
-}
-magnetBaseRegion = region(segments = [
-  magnetBaseSketch.bottomEdge,
-  magnetBaseSketch.rightEdge
-])
 
-magnetCenterSketch = sketch(on = XY) {
-  line1 = line(start = [var 2.85mm, var 13mm], end = [var 2.85mm, var 29mm])
-  line2 = line(start = [var 2.85mm, var 29mm], end = [var 9.75mm, var 29mm])
-  arc3 = arc(start = [var 9.75mm, var 29mm], end = [var 13mm, var 32.25mm], center = [var 9.75mm, var 32.25mm])
-  line4 = line(start = [var 13mm, var 32.25mm], end = [var 13mm, var 39.15mm])
-  line5 = line(start = [var 13mm, var 39.15mm], end = [var 29mm, var 39.15mm])
-  line6 = line(start = [var 29mm, var 39.15mm], end = [var 29mm, var 32.25mm])
-  arc7 = arc(start = [var 29mm, var 32.25mm], end = [var 32.25mm, var 29mm], center = [var 32.25mm, var 32.25mm])
-  line8 = line(start = [var 32.25mm, var 29mm], end = [var 39.15mm, var 29mm])
-  line9 = line(start = [var 39.15mm, var 29mm], end = [var 39.15mm, var 13mm])
-  line10 = line(start = [var 39.15mm, var 13mm], end = [var 32.25mm, var 13mm])
-  arc11 = arc(start = [var 32.25mm, var 13mm], end = [var 29mm, var 9.75mm], center = [var 32.25mm, var 9.75mm])
-  line12 = line(start = [var 29mm, var 9.75mm], end = [var 29mm, var 2.85mm])
-  line13 = line(start = [var 29mm, var 2.85mm], end = [var 13mm, var 2.85mm])
-  line14 = line(start = [var 13mm, var 2.85mm], end = [var 13mm, var 9.75mm])
-  arc15 = arc(start = [var 13mm, var 9.75mm], end = [var 9.75mm, var 13mm], center = [var 9.75mm, var 9.75mm])
-  line16 = line(start = [var 9.75mm, var 13mm], end = [var 2.85mm, var 13mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, arc3.start])
-  coincident([arc3.end, line4.start])
-  coincident([line4.end, line5.start])
-  coincident([line5.end, line6.start])
-  coincident([line6.end, arc7.start])
-  coincident([arc7.end, line8.start])
-  coincident([line8.end, line9.start])
-  coincident([line9.end, line10.start])
-  coincident([line10.end, arc11.start])
-  coincident([arc11.end, line12.start])
-  coincident([line12.end, line13.start])
-  coincident([line13.end, line14.start])
-  coincident([line14.end, arc15.start])
-  coincident([arc15.end, line16.start])
-  coincident([line16.end, line1.start])
-}
-magnetCenterRegion = region(segments = [
-  magnetCenterSketch.line1,
-  magnetCenterSketch.line2
-])
-magnetCenterCut = extrude(magnetCenterRegion, length = -magDepth)
+  centerLine1 = line(start = [var 2.85mm, var 13mm], end = [var 2.85mm, var 29mm])
+  centerLine2 = line(start = [var 2.85mm, var 29mm], end = [var 9.75mm, var 29mm])
+  centerArc3 = arc(start = [var 9.75mm, var 29mm], end = [var 13mm, var 32.25mm], center = [var 9.75mm, var 32.25mm])
+  centerLine4 = line(start = [var 13mm, var 32.25mm], end = [var 13mm, var 39.15mm])
+  centerLine5 = line(start = [var 13mm, var 39.15mm], end = [var 29mm, var 39.15mm])
+  centerLine6 = line(start = [var 29mm, var 39.15mm], end = [var 29mm, var 32.25mm])
+  centerArc7 = arc(start = [var 29mm, var 32.25mm], end = [var 32.25mm, var 29mm], center = [var 32.25mm, var 32.25mm])
+  centerLine8 = line(start = [var 32.25mm, var 29mm], end = [var 39.15mm, var 29mm])
+  centerLine9 = line(start = [var 39.15mm, var 29mm], end = [var 39.15mm, var 13mm])
+  centerLine10 = line(start = [var 39.15mm, var 13mm], end = [var 32.25mm, var 13mm])
+  centerArc11 = arc(start = [var 32.25mm, var 13mm], end = [var 29mm, var 9.75mm], center = [var 32.25mm, var 9.75mm])
+  centerLine12 = line(start = [var 29mm, var 9.75mm], end = [var 29mm, var 2.85mm])
+  centerLine13 = line(start = [var 29mm, var 2.85mm], end = [var 13mm, var 2.85mm])
+  centerLine14 = line(start = [var 13mm, var 2.85mm], end = [var 13mm, var 9.75mm])
+  centerArc15 = arc(start = [var 13mm, var 9.75mm], end = [var 9.75mm, var 13mm], center = [var 9.75mm, var 9.75mm])
+  centerLine16 = line(start = [var 9.75mm, var 13mm], end = [var 2.85mm, var 13mm])
+  coincident([centerLine1.end, centerLine2.start])
+  coincident([centerLine2.end, centerArc3.start])
+  coincident([centerArc3.end, centerLine4.start])
+  coincident([centerLine4.end, centerLine5.start])
+  coincident([centerLine5.end, centerLine6.start])
+  coincident([centerLine6.end, centerArc7.start])
+  coincident([centerArc7.end, centerLine8.start])
+  coincident([centerLine8.end, centerLine9.start])
+  coincident([centerLine9.end, centerLine10.start])
+  coincident([centerLine10.end, centerArc11.start])
+  coincident([centerArc11.end, centerLine12.start])
+  coincident([centerLine12.end, centerLine13.start])
+  coincident([centerLine13.end, centerLine14.start])
+  coincident([centerLine14.end, centerArc15.start])
+  coincident([centerArc15.end, centerLine16.start])
+  coincident([centerLine16.end, centerLine1.start])
 
-magnetBoreSketch = sketch(on = XY) {
   bore1 = circle(start = [var 11.25mm, var 8mm], center = [var 8mm, var 8mm])
   bore2 = circle(start = [var 37.25mm, var 8mm], center = [var 34mm, var 8mm])
   bore3 = circle(start = [var 37.25mm, var 34mm], center = [var 34mm, var 34mm])
@@ -175,22 +162,12 @@ magnetBoreSketch = sketch(on = XY) {
   radius(bore3) == magOuterDiam / 2
   radius(bore4) == magOuterDiam / 2
 }
-magnetBore1 = extrude(region(segments = [magnetBoreSketch.bore1]), length = -magDepth)
-magnetBore2 = extrude(region(segments = [magnetBoreSketch.bore2]), length = -magDepth)
-magnetBore3 = extrude(region(segments = [magnetBoreSketch.bore3]), length = -magDepth)
-magnetBore4 = extrude(region(segments = [magnetBoreSketch.bore4]), length = -magDepth)
+magnetBaseRegion = region(segments = [
+  magnetBaseSketch.bottomEdge,
+  magnetBaseSketch.rightEdge
+])
 
-magnetLayerBlank = extrude(magnetBaseRegion, length = -magDepth)
-magnetLayerCut = subtract(
-  magnetLayerBlank,
-  tools = [
-    magnetCenterCut,
-    magnetBore1,
-    magnetBore2,
-    magnetBore3,
-    magnetBore4
-  ],
-)
+magnetLayerCut = extrude(magnetBaseRegion, length = -magDepth)
 magnetLayer = fillet(
   magnetLayerCut,
   radius = cornerRadius,
@@ -230,52 +207,45 @@ lowerMagnetBaseSketch = sketch(on = offsetPlane(XY, offset = -magDepth)) {
   coincident([rightEdge.end, topEdge.start])
   coincident([topEdge.end, leftEdge.start])
   coincident([leftEdge.end, bottomEdge.start])
+
+  centerLine1 = line(start = [var 2.85mm, var 13mm], end = [var 2.85mm, var 29mm])
+  centerLine2 = line(start = [var 2.85mm, var 29mm], end = [var 9.75mm, var 29mm])
+  centerArc3 = arc(start = [var 9.75mm, var 29mm], end = [var 13mm, var 32.25mm], center = [var 9.75mm, var 32.25mm])
+  centerLine4 = line(start = [var 13mm, var 32.25mm], end = [var 13mm, var 39.15mm])
+  centerLine5 = line(start = [var 13mm, var 39.15mm], end = [var 29mm, var 39.15mm])
+  centerLine6 = line(start = [var 29mm, var 39.15mm], end = [var 29mm, var 32.25mm])
+  centerArc7 = arc(start = [var 29mm, var 32.25mm], end = [var 32.25mm, var 29mm], center = [var 32.25mm, var 32.25mm])
+  centerLine8 = line(start = [var 32.25mm, var 29mm], end = [var 39.15mm, var 29mm])
+  centerLine9 = line(start = [var 39.15mm, var 29mm], end = [var 39.15mm, var 13mm])
+  centerLine10 = line(start = [var 39.15mm, var 13mm], end = [var 32.25mm, var 13mm])
+  centerArc11 = arc(start = [var 32.25mm, var 13mm], end = [var 29mm, var 9.75mm], center = [var 32.25mm, var 9.75mm])
+  centerLine12 = line(start = [var 29mm, var 9.75mm], end = [var 29mm, var 2.85mm])
+  centerLine13 = line(start = [var 29mm, var 2.85mm], end = [var 13mm, var 2.85mm])
+  centerLine14 = line(start = [var 13mm, var 2.85mm], end = [var 13mm, var 9.75mm])
+  centerArc15 = arc(start = [var 13mm, var 9.75mm], end = [var 9.75mm, var 13mm], center = [var 9.75mm, var 9.75mm])
+  centerLine16 = line(start = [var 9.75mm, var 13mm], end = [var 2.85mm, var 13mm])
+  coincident([centerLine1.end, centerLine2.start])
+  coincident([centerLine2.end, centerArc3.start])
+  coincident([centerArc3.end, centerLine4.start])
+  coincident([centerLine4.end, centerLine5.start])
+  coincident([centerLine5.end, centerLine6.start])
+  coincident([centerLine6.end, centerArc7.start])
+  coincident([centerArc7.end, centerLine8.start])
+  coincident([centerLine8.end, centerLine9.start])
+  coincident([centerLine9.end, centerLine10.start])
+  coincident([centerLine10.end, centerArc11.start])
+  coincident([centerArc11.end, centerLine12.start])
+  coincident([centerLine12.end, centerLine13.start])
+  coincident([centerLine13.end, centerLine14.start])
+  coincident([centerLine14.end, centerArc15.start])
+  coincident([centerArc15.end, centerLine16.start])
+  coincident([centerLine16.end, centerLine1.start])
 }
 lowerMagnetBaseRegion = region(segments = [
   lowerMagnetBaseSketch.bottomEdge,
   lowerMagnetBaseSketch.rightEdge
 ])
-lowerMagnetCenterSketch = sketch(on = offsetPlane(XY, offset = -magDepth)) {
-  line1 = line(start = [var 2.85mm, var 13mm], end = [var 2.85mm, var 29mm])
-  line2 = line(start = [var 2.85mm, var 29mm], end = [var 9.75mm, var 29mm])
-  arc3 = arc(start = [var 9.75mm, var 29mm], end = [var 13mm, var 32.25mm], center = [var 9.75mm, var 32.25mm])
-  line4 = line(start = [var 13mm, var 32.25mm], end = [var 13mm, var 39.15mm])
-  line5 = line(start = [var 13mm, var 39.15mm], end = [var 29mm, var 39.15mm])
-  line6 = line(start = [var 29mm, var 39.15mm], end = [var 29mm, var 32.25mm])
-  arc7 = arc(start = [var 29mm, var 32.25mm], end = [var 32.25mm, var 29mm], center = [var 32.25mm, var 32.25mm])
-  line8 = line(start = [var 32.25mm, var 29mm], end = [var 39.15mm, var 29mm])
-  line9 = line(start = [var 39.15mm, var 29mm], end = [var 39.15mm, var 13mm])
-  line10 = line(start = [var 39.15mm, var 13mm], end = [var 32.25mm, var 13mm])
-  arc11 = arc(start = [var 32.25mm, var 13mm], end = [var 29mm, var 9.75mm], center = [var 32.25mm, var 9.75mm])
-  line12 = line(start = [var 29mm, var 9.75mm], end = [var 29mm, var 2.85mm])
-  line13 = line(start = [var 29mm, var 2.85mm], end = [var 13mm, var 2.85mm])
-  line14 = line(start = [var 13mm, var 2.85mm], end = [var 13mm, var 9.75mm])
-  arc15 = arc(start = [var 13mm, var 9.75mm], end = [var 9.75mm, var 13mm], center = [var 9.75mm, var 9.75mm])
-  line16 = line(start = [var 9.75mm, var 13mm], end = [var 2.85mm, var 13mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, arc3.start])
-  coincident([arc3.end, line4.start])
-  coincident([line4.end, line5.start])
-  coincident([line5.end, line6.start])
-  coincident([line6.end, arc7.start])
-  coincident([arc7.end, line8.start])
-  coincident([line8.end, line9.start])
-  coincident([line9.end, line10.start])
-  coincident([line10.end, arc11.start])
-  coincident([arc11.end, line12.start])
-  coincident([line12.end, line13.start])
-  coincident([line13.end, line14.start])
-  coincident([line14.end, arc15.start])
-  coincident([arc15.end, line16.start])
-  coincident([line16.end, line1.start])
-}
-lowerMagnetCenterRegion = region(segments = [
-  lowerMagnetCenterSketch.line1,
-  lowerMagnetCenterSketch.line2
-])
-lowerMagnetBaseBlank = extrude(lowerMagnetBaseRegion, length = -magDepth)
-lowerMagnetCenterCut = extrude(lowerMagnetCenterRegion, length = -magDepth)
-lowerMagnetBaseCut = subtract(lowerMagnetBaseBlank, tools = [lowerMagnetCenterCut])
+lowerMagnetBaseCut = extrude(lowerMagnetBaseRegion, length = -magDepth)
 lowerMagnetBase = fillet(
   lowerMagnetBaseCut,
   radius = cornerRadius,
@@ -308,8 +278,5 @@ lowerMagnetBases = patternLinear3d(
 
 hide([
   magnetBaseSketch,
-  magnetCenterSketch,
-  magnetBoreSketch,
-  lowerMagnetBaseSketch,
-  lowerMagnetCenterSketch
+  lowerMagnetBaseSketch
 ])

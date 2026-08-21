@@ -1232,154 +1232,6 @@ description: Operations executed wing-spar.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 12
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 31
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -1441,7 +1293,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1454,75 +1306,7 @@ description: Operations executed wing-spar.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 36
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1596,7 +1380,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1609,75 +1393,7 @@ description: Operations executed wing-spar.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 15
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 41
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 15
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1751,7 +1467,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1764,75 +1480,7 @@ description: Operations executed wing-spar.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 16
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 46
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 16
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1906,7 +1554,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1919,75 +1567,7 @@ description: Operations executed wing-spar.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "offsetPlane",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "offset": {
-          "value": {
-            "type": "Number",
-            "value": -8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockArgs"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 51
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2061,7 +1641,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2074,7 +1654,7 @@ description: Operations executed wing-spar.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2101,44 +1681,7 @@ description: Operations executed wing-spar.kcl
               {
                 "type": "Segment",
                 "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          },
-          {
-            "type": "ArrayElement",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
+              },
               {
                 "type": "Segment",
                 "artifact_id": "[uuid]"
@@ -2152,143 +1695,13 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          },
-          {
-            "type": "ArrayElement",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          },
-          {
-            "type": "ArrayElement",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          },
-          {
-            "type": "ArrayElement",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          },
-          {
-            "type": "ArrayElement",
-            "index": 4
           }
         ]
       },
@@ -2299,39 +1712,10 @@ description: Operations executed wing-spar.kcl
       "name": "extrude",
       "unlabeledArg": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       },
@@ -2353,75 +1737,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 19
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2509,7 +1825,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2525,13 +1841,13 @@ description: Operations executed wing-spar.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 56
+        "sketchId": 46
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2605,7 +1921,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2718,7 +2034,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2765,7 +2081,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2849,7 +2165,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2896,7 +2212,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3006,7 +2322,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3053,7 +2369,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3137,7 +2453,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3184,7 +2500,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3294,7 +2610,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3341,7 +2657,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3425,7 +2741,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3472,7 +2788,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3556,7 +2872,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3603,7 +2919,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3687,7 +3003,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3734,7 +3050,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3844,7 +3160,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3891,7 +3207,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3975,7 +3291,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4022,7 +3338,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4132,7 +3448,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4179,7 +3495,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4263,7 +3579,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4310,7 +3626,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4420,7 +3736,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4467,7 +3783,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4551,7 +3867,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4598,7 +3914,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4682,7 +3998,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4729,7 +4045,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4780,7 +4096,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4822,7 +4138,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4838,13 +4154,13 @@ description: Operations executed wing-spar.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 127
+        "sketchId": 117
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4918,7 +4234,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5031,7 +4347,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5078,7 +4394,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5162,7 +4478,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5209,7 +4525,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5319,7 +4635,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5366,7 +4682,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5450,7 +4766,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5497,7 +4813,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5607,7 +4923,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5654,7 +4970,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5738,7 +5054,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5785,7 +5101,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5869,7 +5185,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5916,7 +5232,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6000,7 +5316,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6047,7 +5363,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6157,7 +5473,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6204,7 +5520,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6288,7 +5604,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6335,7 +5651,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6445,7 +5761,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6492,7 +5808,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6576,7 +5892,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6623,7 +5939,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6733,7 +6049,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6780,7 +6096,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6864,7 +6180,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6911,7 +6227,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6995,7 +6311,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7042,7 +6358,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7093,7 +6409,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -7135,6 +6451,1394 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 188
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -24.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -24.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -24.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 17.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 17.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 17.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 4
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 17.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -169.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 6
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -169.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 12.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -169.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 8
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -169.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -6.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -6.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -6.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -164.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "arc",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -6.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -29.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -1.8,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -24.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 14
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "segments": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": -10.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "patternLinear3d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "axis": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": -1.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 0.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "distance": {
+          "value": {
+            "type": "Number",
+            "value": 169.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "instances": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 225
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
             "index": 26
           },
           {
@@ -7148,1394 +7852,6 @@ description: Operations executed wing-spar.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 198
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -24.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -24.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "arc",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -24.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 17.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 2
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 17.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 17.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "arc",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 17.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -169.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 6
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -169.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 12.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -169.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 8
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "arc",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -169.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -6.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 10
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -6.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -6.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -164.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 12
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "arc",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -6.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -29.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -1.8,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -24.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 14
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 29
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -10.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 29
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "patternLinear3d",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "axis": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "distance": {
-          "value": {
-            "type": "Number",
-            "value": 169.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "instances": {
-          "value": {
-            "type": "Number",
-            "value": 4.0,
-            "ty": {
-              "type": "Known",
-              "type": "Count"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 30
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 31
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 235
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 33
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "line",
       "unlabeledArg": null,
@@ -8597,7 +7913,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8710,7 +8026,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8757,7 +8073,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8841,7 +8157,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8888,7 +8204,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8998,7 +8314,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9045,7 +8361,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9129,7 +8445,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9176,7 +8492,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9286,7 +8602,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9333,7 +8649,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9417,7 +8733,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9464,7 +8780,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9574,7 +8890,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9621,7 +8937,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9672,7 +8988,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9717,7 +9033,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9805,7 +9121,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 35
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9867,7 +9183,7 @@ description: Operations executed wing-spar.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 36
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"

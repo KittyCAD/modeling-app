@@ -68,17 +68,16 @@ rightTabSketch = sketch(on = tabPlane) {
   coincident([line2.end, line3.start])
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
+  mountingHole = circle(start = [var 84.5mm, var 27.333333333mm], center = [var 82mm, var 27.333333333mm])
 }
-rightTabRegion = region(segments = [
-  rightTabSketch.line1,
-  rightTabSketch.line2
-])
-rightTabBlank = extrude(rightTabRegion, length = -tabThk)
-rightHoleSketch = sketch(on = tabPlane) {
-  hole = circle(start = [var 84.5mm, var 27.333333333mm], center = [var 82mm, var 27.333333333mm])
-}
-rightHole = extrude(region(segments = [rightHoleSketch.hole]), length = -tabThk)
-rightTabCut = subtract(rightTabBlank, tools = [rightHole])
+rightTabRegion = region(
+  segments = [
+    rightTabSketch.line1,
+    rightTabSketch.line2
+  ],
+  direction = CW,
+)
+rightTabCut = extrude(rightTabRegion, length = -tabThk)
 rightTab = fillet(
   rightTabCut,
   radius = holeDiam / 2,
@@ -104,17 +103,16 @@ leftTabSketch = sketch(on = tabPlane) {
   coincident([line2.end, line3.start])
   coincident([line3.end, line4.start])
   coincident([line4.end, line1.start])
+  mountingHole = circle(start = [var -79.5mm, var 27.333333333mm], center = [var -82mm, var 27.333333333mm])
 }
-leftTabRegion = region(segments = [
-  leftTabSketch.line1,
-  leftTabSketch.line2
-])
-leftTabBlank = extrude(leftTabRegion, length = -tabThk)
-leftHoleSketch = sketch(on = tabPlane) {
-  hole = circle(start = [var -79.5mm, var 27.333333333mm], center = [var -82mm, var 27.333333333mm])
-}
-leftHole = extrude(region(segments = [leftHoleSketch.hole]), length = -tabThk)
-leftTabCut = subtract(leftTabBlank, tools = [leftHole])
+leftTabRegion = region(
+  segments = [
+    leftTabSketch.line1,
+    leftTabSketch.line2
+  ],
+  direction = CCW,
+)
+leftTabCut = extrude(leftTabRegion, length = -tabThk)
 leftTab = fillet(
   leftTabCut,
   radius = holeDiam / 2,
@@ -174,8 +172,6 @@ backRetention = extrude(
 
 hide(bodySketch)
 hide(rightTabSketch)
-hide(rightHoleSketch)
 hide(leftTabSketch)
-hide(leftHoleSketch)
 hide(frontRetentionSketch)
 hide(backRetentionSketch)

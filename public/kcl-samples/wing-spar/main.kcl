@@ -48,36 +48,15 @@ ribProfile = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
     ],
   )
   coincident([arc5.end, arc6.end])
+
+  hole1 = circle(start = [var 79mm, var 9mm], center = [var 62mm, var 9mm])
+  hole2 = circle(start = [var 132mm, var 10mm], center = [var 113mm, var 10mm])
+  hole3 = circle(start = [var 181mm, var 9mm], center = [var 164mm, var 9mm])
+  hole4 = circle(start = [var 239mm, var 5mm], center = [var 228mm, var 5mm])
+  hole5 = circle(start = [var 266.5mm, var 3.5mm], center = [var 260mm, var 3.5mm])
 }
 region001 = region(segments = [ribProfile.line1, ribProfile.arc2])
-ribBlank = extrude(region001, length = -foilThickness)
-
-ribHole1 = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
-  circle1 = circle(start = [var 79mm, var 9mm], center = [var 62mm, var 9mm])
-}
-ribHole2 = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
-  circle1 = circle(start = [var 132mm, var 10mm], center = [var 113mm, var 10mm])
-}
-ribHole3 = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
-  circle1 = circle(start = [var 181mm, var 9mm], center = [var 164mm, var 9mm])
-}
-ribHole4 = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
-  circle1 = circle(start = [var 239mm, var 5mm], center = [var 228mm, var 5mm])
-}
-ribHole5 = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
-  circle1 = circle(start = [var 266.5mm, var 3.5mm], center = [var 260mm, var 3.5mm])
-}
-ribHoleCutters = extrude(
-  [
-    region(segments = [ribHole1.circle1]),
-    region(segments = [ribHole2.circle1]),
-    region(segments = [ribHole3.circle1]),
-    region(segments = [ribHole4.circle1]),
-    region(segments = [ribHole5.circle1])
-  ],
-  length = -foilThickness,
-)
-rib = subtract(ribBlank, tools = ribHoleCutters)
+rib = extrude(region001, length = -foilThickness)
 ribSketch = patternLinear3d(
   rib,
   instances = nSections,

@@ -751,24 +751,57 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
-      "name": "region",
+      "name": "line",
       "unlabeledArg": null,
       "labeledArgs": {
-        "segments": {
+        "end": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
+                "type": "SketchVar",
+                "value": -55.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
               },
               {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -25.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
               }
             ]
           },
@@ -779,48 +812,19 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 7
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 3.5,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
           },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
           {
-            "type": "ProgramBodyItem",
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
             "index": 8
           },
           {
@@ -834,115 +838,6 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 20
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -55.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -25.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "arc",
       "unlabeledArg": null,
@@ -1030,358 +925,26 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "line",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -25.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -55.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "arc",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -25.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 0.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "end": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -25.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": -25.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": -5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 5
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
             "index": 6
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -1389,27 +952,67 @@ description: Operations executed food-service-spatula.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
+      "name": "line",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -25.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -55.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1422,34 +1025,96 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 7
+            "index": 10
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
-      "name": "region",
+      "name": "arc",
       "unlabeledArg": null,
       "labeledArgs": {
-        "segments": {
+        "center": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
+                "type": "SketchVar",
+                "value": -25.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
               },
               {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
+                "type": "SketchVar",
+                "value": 0.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "end": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -25.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -25.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": -5.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
               }
             ]
           },
@@ -1460,7 +1125,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1469,64 +1134,10 @@ description: Operations executed food-service-spatula.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 3.5,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
+            "type": "SketchBlockBody"
           },
           {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 40
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
+            "type": "SketchBlockBodyItem",
             "index": 11
           },
           {
@@ -1534,6 +1145,182 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 13
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 14
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 15
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -1601,7 +1388,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1614,7 +1401,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1714,7 +1501,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1727,7 +1514,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 1
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1801,7 +1588,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1814,7 +1601,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 2
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1914,157 +1701,69 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 5
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
             "index": 6
           },
           {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 20
+          },
+          {
             "type": "ExpressionStatementExpr"
           }
         ]
@@ -2093,7 +1792,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2106,7 +1805,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 7
+            "index": 21
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2116,108 +1815,88 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 12
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
+      "name": "coincident",
       "unlabeledArg": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 3.5,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 22
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 60
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
       },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 23
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -2285,7 +1964,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2298,7 +1977,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2398,7 +2077,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2411,7 +2090,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 1
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2485,7 +2164,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2498,7 +2177,7 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 2
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2598,157 +2277,69 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 5
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "coincident",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
             "index": 6
           },
           {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 27
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 28
+          },
+          {
             "type": "ExpressionStatementExpr"
           }
         ]
@@ -2777,7 +2368,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2790,7 +2381,95 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 7
+            "index": 29
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 30
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "coincident",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 31
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2828,16 +2507,13 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
           }
         ]
       },
@@ -2873,63 +2549,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              },
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 15
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2987,7 +2607,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3027,7 +2647,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3046,13 +2666,13 @@ description: Operations executed food-service-spatula.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 80
+        "sketchId": 74
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3126,7 +2746,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3213,7 +2833,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3300,7 +2920,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3387,7 +3007,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3474,7 +3094,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3561,7 +3181,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3608,7 +3228,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3652,7 +3272,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3696,7 +3316,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3740,7 +3360,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3784,7 +3404,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3828,7 +3448,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3879,7 +3499,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3921,7 +3541,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3979,7 +3599,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3995,13 +3615,13 @@ description: Operations executed food-service-spatula.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 106
+        "sketchId": 100
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4075,7 +3695,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4188,7 +3808,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4275,7 +3895,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4388,7 +4008,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4475,7 +4095,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4588,7 +4208,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4675,7 +4295,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4788,7 +4408,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4835,7 +4455,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4879,7 +4499,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4923,7 +4543,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4967,7 +4587,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5011,7 +4631,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5055,7 +4675,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5099,7 +4719,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5143,7 +4763,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5194,7 +4814,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5239,7 +4859,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5255,13 +4875,13 @@ description: Operations executed food-service-spatula.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 144
+        "sketchId": 138
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5335,7 +4955,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5448,7 +5068,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5535,7 +5155,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5648,7 +5268,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5695,7 +5315,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5739,7 +5359,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5783,7 +5403,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5827,7 +5447,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5878,7 +5498,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5930,7 +5550,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5974,7 +5594,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -6044,7 +5664,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 21
           },
           {
             "type": "ExpressionStatementExpr"
@@ -6082,7 +5702,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 22
           },
           {
             "type": "ExpressionStatementExpr"
@@ -6112,7 +5732,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 23
           },
           {
             "type": "ExpressionStatementExpr"
@@ -6138,7 +5758,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 24
           },
           {
             "type": "ExpressionStatementExpr"
@@ -6164,7 +5784,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 25
           },
           {
             "type": "ExpressionStatementExpr"
@@ -6190,85 +5810,7 @@ description: Operations executed food-service-spatula.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 34
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 35
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 36
+            "index": 26
           },
           {
             "type": "ExpressionStatementExpr"

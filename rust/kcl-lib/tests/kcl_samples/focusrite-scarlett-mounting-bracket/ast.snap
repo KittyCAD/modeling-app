@@ -5405,349 +5405,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rightTabRegion",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "segments",
-                  "start": 0,
-                  "type": "Identifier"
                 },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "computed": false,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "rightTabSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "computed": false,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "rightTabSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line2",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "region",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": null
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rightTabBlank",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "length",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "argument": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "tabThk",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "operator": "-",
-                  "start": 0,
-                  "type": "UnaryExpression",
-                  "type": "UnaryExpression"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "extrude",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "rightTabRegion",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rightHoleSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tabPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
                 {
                   "commentStart": 0,
                   "declaration": {
@@ -5757,7 +5415,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "hole",
+                      "name": "mountingHole",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -5946,7 +5604,199 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "rightHole",
+            "name": "rightTabRegion",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "segments",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "rightTabSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "rightTabSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "direction",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "CW",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "region",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "rightTabCut",
             "start": 0,
             "type": "Identifier"
           },
@@ -6015,167 +5865,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "arguments": [
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "segments",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "elements": [
-                      {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "rightHoleSketch",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "hole",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
-                    ],
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  }
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "region",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "rightTabCut",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tools",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "rightHole",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
@@ -6184,30 +5873,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "subtract",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "rightTabBlank",
+                "name": "rightTabRegion",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -8283,349 +7949,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
-                }
-              ],
-              "moduleId": 0,
-              "start": 0,
-              "type": "Block"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "SketchBlock",
-            "type": "SketchBlock"
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "leftTabRegion",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "segments",
-                  "start": 0,
-                  "type": "Identifier"
                 },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "commentStart": 0,
-                      "computed": false,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "leftTabSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line1",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "computed": false,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "leftTabSketch",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "property": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "line2",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "region",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": null
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "leftTabBlank",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "length",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "argument": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "tabThk",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "operator": "-",
-                  "start": 0,
-                  "type": "UnaryExpression",
-                  "type": "UnaryExpression"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "extrude",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "leftTabRegion",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "leftHoleSketch",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "on",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tabPlane",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              }
-            ],
-            "body": {
-              "commentStart": 0,
-              "end": 0,
-              "items": [
                 {
                   "commentStart": 0,
                   "declaration": {
@@ -8635,7 +7959,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "hole",
+                      "name": "mountingHole",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -8824,7 +8148,199 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "leftHole",
+            "name": "leftTabRegion",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "segments",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "leftTabSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "leftTabSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "direction",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "CCW",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "region",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name"
+            },
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "start": 0,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "leftTabCut",
             "start": 0,
             "type": "Identifier"
           },
@@ -8893,167 +8409,6 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "arguments": [
-                {
-                  "type": "LabeledArg",
-                  "label": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "segments",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "arg": {
-                    "commentStart": 0,
-                    "elements": [
-                      {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "leftHoleSketch",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "hole",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      }
-                    ],
-                    "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  }
-                }
-              ],
-              "callee": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "region",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name"
-              },
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "leftTabCut",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "tools",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "elements": [
-                    {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "leftHole",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  ],
-                  "end": 0,
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ArrayExpression",
-                  "type": "ArrayExpression"
-                }
-              }
-            ],
-            "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
@@ -9062,30 +8417,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "subtract",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "leftTabBlank",
+                "name": "leftTabRegion",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -13308,111 +12640,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": "rightHoleSketch",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "hide",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
               "name": "leftTabSketch",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "hide",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "leftHoleSketch",
               "start": 0,
               "type": "Identifier"
             },
@@ -13686,7 +12914,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             }
           }
         ],
-        "20": [
+        "17": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13698,7 +12926,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             }
           }
         ],
-        "27": [
+        "21": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13710,7 +12938,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             }
           }
         ],
-        "28": [
+        "22": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13722,7 +12950,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             }
           }
         ],
-        "30": [
+        "24": [
           {
             "commentStart": 0,
             "end": 0,
@@ -13734,7 +12962,7 @@ description: Result of parsing focusrite-scarlett-mounting-bracket.kcl
             }
           }
         ],
-        "32": [
+        "26": [
           {
             "commentStart": 0,
             "end": 0,

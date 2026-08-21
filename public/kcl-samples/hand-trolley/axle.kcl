@@ -153,16 +153,11 @@ brackets = extrude(region005, length = 0.75 * tubeDiameter, symmetric = true)
 
 // Model a bearing for the axle on each bracket
 sketch006 = sketch(on = offsetPlane(YZ, offset = frameWidth / 2)) {
-  circle1 = circle(start = [var -3.17in, var 5in], center = [var -3.67in, var 5in])
+  outerCircle = circle(start = [var -3.17in, var 5in], center = [var -3.67in, var 5in])
+  innerCircle = circle(start = [var -3.295in, var 5in], center = [var -3.67in, var 5in])
 }
-region006 = region(segments = [sketch006.circle1])
-bearingOuter = extrude(region006, length = tubeDiameter, symmetric = true)
-sketch007 = sketch(on = offsetPlane(YZ, offset = frameWidth / 2)) {
-  circle1 = circle(start = [var -3.295in, var 5in], center = [var -3.67in, var 5in])
-}
-region007 = region(segments = [sketch007.circle1])
-bearingInner = extrude(region007, length = tubeDiameter + 0.02, symmetric = true)
-axlebearing = subtract(bearingOuter, tools = [bearingInner])
+region006 = region(segments = [sketch006.outerCircle])
+axlebearing = extrude(region006, length = tubeDiameter, symmetric = true)
 
 patternLinear3d(
   [brackets, axlebearing],

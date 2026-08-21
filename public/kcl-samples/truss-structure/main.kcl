@@ -15,52 +15,35 @@ topFrameSketch = sketch(on = YZ) {
   coincident([line3.end, line4.start])
   coincident([line4.end, line5.start])
   coincident([line5.end, line1.start])
-}
-topFrameBlank = extrude(
-  region(segments = [
-    topFrameSketch.line1,
-    topFrameSketch.line2
-  ]),
-  length = 2,
-)
 
-rightOpeningSketch = sketch(on = YZ) {
-  line1 = line(start = [var 56in, var 4in], end = [var 2in, var 4in])
-  line2 = line(start = [var 2in, var 4in], end = [var 2in, var 35.978459489in])
-  line3 = line(start = [var 2in, var 35.978459489in], end = [var 56in, var 10.797845949in])
-  line4 = line(start = [var 56in, var 10.797845949in], end = [var 56in, var 4in])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-}
-rightOpening = extrude(
-  region(segments = [
-    rightOpeningSketch.line1,
-    rightOpeningSketch.line2
-  ]),
-  length = 2,
-)
+  rightOpening1 = line(start = [var 56in, var 4in], end = [var 2in, var 4in])
+  rightOpening2 = line(start = [var 2in, var 4in], end = [var 2in, var 35.978459489in])
+  rightOpening3 = line(start = [var 2in, var 35.978459489in], end = [var 56in, var 10.797845949in])
+  rightOpening4 = line(start = [var 56in, var 10.797845949in], end = [var 56in, var 4in])
+  coincident([rightOpening1.end, rightOpening2.start])
+  coincident([rightOpening2.end, rightOpening3.start])
+  coincident([rightOpening3.end, rightOpening4.start])
+  coincident([rightOpening4.end, rightOpening1.start])
 
-leftOpeningSketch = sketch(on = YZ) {
-  line1 = line(start = [var -56in, var 4in], end = [var -2in, var 4in])
-  line2 = line(start = [var -2in, var 4in], end = [var -2in, var 35.978459489in])
-  line3 = line(start = [var -2in, var 35.978459489in], end = [var -56in, var 10.797845949in])
-  line4 = line(start = [var -56in, var 10.797845949in], end = [var -56in, var 4in])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
+  leftOpening1 = line(start = [var -56in, var 4in], end = [var -2in, var 4in])
+  leftOpening2 = line(start = [var -2in, var 4in], end = [var -2in, var 35.978459489in])
+  leftOpening3 = line(start = [var -2in, var 35.978459489in], end = [var -56in, var 10.797845949in])
+  leftOpening4 = line(start = [var -56in, var 10.797845949in], end = [var -56in, var 4in])
+  coincident([leftOpening1.end, leftOpening2.start])
+  coincident([leftOpening2.end, leftOpening3.start])
+  coincident([leftOpening3.end, leftOpening4.start])
+  coincident([leftOpening4.end, leftOpening1.start])
 }
-leftOpening = extrude(
-  region(segments = [
-    leftOpeningSketch.line1,
-    leftOpeningSketch.line2
-  ]),
+topFrame = extrude(
+  region(
+    segments = [
+      topFrameSketch.line1,
+      topFrameSketch.line2
+    ],
+    direction = CW,
+  ),
   length = 2,
 )
-topFrameCut1 = subtract(topFrameBlank, tools = [rightOpening])
-topFrame = subtract(topFrameCut1, tools = [leftOpening])
 
 sparPlane = offsetPlane(YZ, offset = .1)
 rightSparSketch = sketch(on = sparPlane) {
@@ -204,8 +187,6 @@ sideBeam = extrude(
   |> patternLinear3d(instances = 2, distance = 84, axis = [-1, 0, 0])
 
 hide(topFrameSketch)
-hide(rightOpeningSketch)
-hide(leftOpeningSketch)
 hide(rightSparSketch)
 hide(leftSparSketch)
 hide(leftLegSketch)

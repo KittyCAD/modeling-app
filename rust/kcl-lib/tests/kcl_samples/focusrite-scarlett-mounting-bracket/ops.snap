@@ -2078,6 +2078,93 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "sourceRange": []
     },
     {
+      "type": "StdLibCall",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 82.0,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 27.333333333,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": 84.5,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 27.333333333,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "GroupEnd"
     },
     {
@@ -2085,6 +2172,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
         "segments": {
           "value": {
             "type": "Array",
@@ -2161,241 +2255,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 52
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "circle",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "center": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 82.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 27.333333333,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "start": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "SketchVar",
-                "value": 84.5,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              },
-              {
-                "type": "SketchVar",
-                "value": 27.333333333,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 17
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -4.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 19
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "fillet",
       "unlabeledArg": {
@@ -2441,7 +2300,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2533,7 +2392,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 17
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2553,13 +2412,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 56
+        "sketchId": 55
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2633,7 +2492,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2720,7 +2579,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2807,7 +2666,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2894,7 +2753,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2941,7 +2800,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2985,7 +2844,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3029,7 +2888,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3073,7 +2932,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3090,111 +2949,6 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           },
           {
             "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 22
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -4.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 23
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "SketchBlock",
-        "sketchId": 73
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -3262,7 +3016,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3275,7 +3029,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           },
           {
             "type": "SketchBlockBodyItem",
-            "index": 0
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3295,10 +3049,21 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "ccw"
+          },
+          "sourceRange": []
+        },
         "segments": {
           "value": {
             "type": "Array",
             "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              },
               {
                 "type": "Segment",
                 "artifact_id": "[uuid]"
@@ -3312,16 +3077,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
           }
         ]
       },
@@ -3357,51 +3119,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 26
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3459,7 +3177,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3551,7 +3269,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3571,13 +3289,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 78
+        "sketchId": 76
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3651,7 +3369,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3738,7 +3456,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3825,7 +3543,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3872,7 +3590,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3916,7 +3634,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3960,7 +3678,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4011,7 +3729,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4056,7 +3774,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4072,13 +3790,13 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 92
+        "sketchId": 90
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4152,7 +3870,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4239,7 +3957,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4326,7 +4044,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4413,7 +4131,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4460,7 +4178,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4504,7 +4222,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4548,7 +4266,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4592,7 +4310,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4643,7 +4361,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4688,7 +4406,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4717,7 +4435,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 27
           },
           {
             "type": "ExpressionStatementExpr"
@@ -4743,7 +4461,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 28
           },
           {
             "type": "ExpressionStatementExpr"
@@ -4769,7 +4487,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 35
+            "index": 29
           },
           {
             "type": "ExpressionStatementExpr"
@@ -4795,7 +4513,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 36
+            "index": 30
           },
           {
             "type": "ExpressionStatementExpr"
@@ -4821,59 +4539,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 37
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 38
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "hide",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 39
+            "index": 31
           },
           {
             "type": "ExpressionStatementExpr"
