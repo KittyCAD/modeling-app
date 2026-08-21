@@ -3562,8 +3562,9 @@ function scheduleRemoteIndexSync(delay = 0) {
   scheduleSync(delay)
 }
 
-// With no opened project, Home syncs the full cloud index. App.openProject()
-// passes ownership context so file-route status and retries stay project-local.
+// With no opened project, Home syncs the full cloud index.
+// projectSession.openProject() passes ownership context so file-route status
+// and retries stay project-local.
 export function setCloudSyncOpenedProject(
   openedProject?: CloudSyncOpenedProject
 ) {

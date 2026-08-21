@@ -5,7 +5,11 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
+import {
+  getInitialDefaultDir,
+  getProjectInfo,
+  isPathNotFoundError,
+} from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
   getParentAbsolutePath,
@@ -40,6 +44,7 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
@@ -230,7 +235,7 @@ export const fileLoader =
         try {
           await fsZds.stat(currentFilePath)
         } catch (e) {
-          if (e === 'ENOENT') {
+          if (isPathNotFoundError(e)) {
             fileExists = false
           }
         }
@@ -286,16 +291,22 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
+    const session = app.registry.get(projectSession)
+    await session.openProject(project)
+    const openFilePath =
+      currentFilePath ||
+      project.default_file ||
+      fsZds.join(project.path, PROJECT_ENTRYPOINT)
+    const editor = await session.openEditor({
+      path: openFilePath,
+      editor: app.singletons.kclManager,
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined
-    )
+      code:
+        window.electron?.process.env.NODE_ENV === 'test'
+          ? kclManager.localStoragePersistCode()
+          : undefined,
+    })
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
@@ -324,8 +335,8 @@ export const fileLoader =
       code: editor.code,
       project,
       file: {
-        name: currentFileName || '',
-        path: currentFilePath || '',
+        name: currentFileName || fsZds.basename(openFilePath),
+        path: openFilePath,
         children: [],
       },
     }

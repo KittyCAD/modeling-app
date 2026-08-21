@@ -6,9 +6,8 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
-import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
+import { KclManager } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -21,8 +20,6 @@ import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
-import type { Project } from '@src/lib/project'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
@@ -35,17 +32,10 @@ import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
-import {
-  buildZookeeperHistoryExtension,
-  type PreparedZookeeperPatchFileReplay,
-} from '@src/lib/zookeeper/editorPlugin'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+import { type SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
@@ -54,7 +44,6 @@ import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -100,28 +89,6 @@ const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
   registryOverrides?: readonly RegistryItem[]
-}
-
-function zookeeperReplayChangesProjectFileSet(
-  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
-) {
-  return replayFiles.some(
-    (replayFile) =>
-      replayFile.previousContent === null || replayFile.nextContent === null
-  )
-}
-
-function getZookeeperReplayFallbackFilePath(
-  project: ZDSProject,
-  deletedPaths: Set<string>
-) {
-  const defaultFile = project.projectIORefSignal.value.default_file
-  const candidates = [
-    defaultFile,
-    ...project.files.map((file) => file.path),
-  ].filter((path, index, paths) => paths.indexOf(path) === index)
-
-  return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -255,6 +222,9 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
+    this.unsubscribeFromSettings = this.settings.actor.subscribe(
+      this.onSettingsUpdate
+    )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
   }
@@ -325,123 +295,13 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  private setCloudSyncOpenedProject(project?: Project) {
-    this.registry.get(cloudSyncService).setOpenedProject(
-      project
-        ? {
-            projectPath: project.path,
-            ...(project.libraryPath
-              ? { libraryPath: project.libraryPath }
-              : {}),
-            ...(project.libraryType
-              ? { libraryType: project.libraryType }
-              : {}),
-          }
-        : undefined
-    )
-  }
-
-  async openProject(projectIORef: Project) {
-    this.disposeProjectHistoryExtensions?.()
-    const session = this.registry.get(projectSession)
-    const ownedProject = await projectWithLibraryOwnership(
-      projectIORef,
-      this.settings.get().app.libraries.current
-    )
-    const projectIORefSignal = signal(ownedProject)
-    const openedProject = await ZDSProject.open(
-      projectIORefSignal,
-      this,
-      session
-    )
-    session.setProject(openedProject)
-    this.setCloudSyncOpenedProject(ownedProject)
-
-    // These extensions make global project operations un/redoable.
-    this.disposeProjectHistoryExtensions = effect(() => {
-      const project = session.project.value
-      const executingEditor = project?.executingEditor.value
-      if (!project || !executingEditor) {
-        return
-      }
-
-      const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
-        executingEditor
-      )
-      const disposeZookeeperHistory = buildZookeeperHistoryExtension({
-        kclManager: executingEditor,
-        onCurrentFileDelete: async (deletedPaths) => {
-          const fallbackPath = getZookeeperReplayFallbackFilePath(
-            project,
-            deletedPaths
-          )
-          if (!fallbackPath) {
-            return Promise.reject(
-              new Error(
-                'Cannot replay this Zookeeper edit because no fallback KCL file is available.'
-              )
-            )
-          }
-
-          await project.openEditor(fallbackPath, executingEditor)
-        },
-        onActiveFileRestore: async (restoredPath, restoredContents) => {
-          await project.openEditor(
-            restoredPath,
-            executingEditor,
-            restoredContents
-          )
-        },
-        onProjectFilesReplay: async (replayFiles) => {
-          await project.syncReplayedFilesToRust(replayFiles)
-          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
-          }
-        },
-      })
-
-      return () => {
-        disposeFSHistory()
-        disposeZookeeperHistory()
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = {
-          ...foundProject,
-          ...(projectIORefSignal.value.libraryPath
-            ? { libraryPath: projectIORefSignal.value.libraryPath }
-            : {}),
-          ...(projectIORefSignal.value.libraryType
-            ? { libraryType: projectIORefSignal.value.libraryType }
-            : {}),
-        }
-      }
-    })
-
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
-    return openedProject
-  }
   private unsubscribeFromSettings: Subscription | undefined = undefined
-  private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   dispose() {
     this.closeProject()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
+    this.unsubscribeFromSettings?.unsubscribe()
+    this.unsubscribeFromSettings = undefined
     this.systemIOActor.stop()
     this.settings.actor.stop()
     this.commands.actor.stop()
@@ -452,13 +312,7 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
-    this.disposeProjectHistoryExtensions?.()
-    this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.unsubscribeFromSettings = undefined
     const session = this.registry.get(projectSession)
-    this.setCloudSyncOpenedProject(undefined)
-    session.getProject()?.close()
     session.clearProject()
   }
 
