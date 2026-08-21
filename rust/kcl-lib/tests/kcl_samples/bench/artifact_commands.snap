@@ -68,8 +68,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.819999999999794,
-          "y": 21.20000000015442,
+          "x": -16.820000000013945,
+          "y": 21.1999999999939,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -16.95000000009,
-            "y": 19.930000000156035,
+            "x": -16.950000000102893,
+            "y": 19.929999999995477,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.949999948129026,
-          "y": 19.929999994829572,
+          "x": -16.949999948791422,
+          "y": 19.929999994735596,
           "z": 0.0
         }
       }
@@ -120,42 +120,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -4.166986861520405,
-            "y": 18.61962731833946
+            "x": -4.166986861056344,
+            "y": 18.619627313216327
           },
-          "radius": 12.850000004813195,
+          "radius": 12.850000006446626,
           "start": {
             "unit": "degrees",
-            "value": 174.14711608681637
+            "value": 174.14711606502138
           },
           "end": {
             "unit": "degrees",
-            "value": 203.6250234326386
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -23.452600903265978,
-            "y": 10.183538715166492
-          },
-          "radius": 8.199999996998852,
-          "start": {
-            "unit": "degrees",
-            "value": 23.627446984956826
-          },
-          "end": {
-            "unit": "degrees",
-            "value": -33.3129722986759
+            "value": 203.6250234108801
           },
           "relative": false
         }
@@ -168,8 +143,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.599999971450103,
-          "y": 5.6799999812520925,
+          "x": -16.6,
+          "y": 5.68,
           "z": 0.0
         }
       }
@@ -183,17 +158,55 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 7.80491267211201,
-            "y": -10.352474534848376
+            "x": -23.4533259745947,
+            "y": 10.183600146772445
           },
-          "radius": 29.20000000426899,
+          "radius": 8.200639682126218,
           "start": {
             "unit": "degrees",
-            "value": 146.69763299962267
+            "value": -33.31054870037029
           },
           "end": {
             "unit": "degrees",
-            "value": 153.73327348926662
+            "value": 23.625023410880065
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -16.6,
+          "y": 5.68,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 7.746065950667628,
+            "y": -10.318793373496689
+          },
+          "radius": 29.13232425815179,
+          "start": {
+            "unit": "degrees",
+            "value": 146.6894512996297
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 153.74145655306015
           },
           "relative": false
         }
@@ -208,25 +221,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -19.629999999964042,
-            "y": -0.029999999949188876,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -13.589999999871873,
-            "y": -0.029999999857564342,
+            "x": -19.629999999953913,
+            "y": -0.02999999995418827,
             "z": 0.0
           },
           "relative": false
@@ -242,8 +238,25 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.909999999834837,
-            "y": 7.840000000280859,
+            "x": -13.589999999861739,
+            "y": -0.029999999862564807,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -6.909999999824702,
+            "y": 7.840000000275858,
             "z": 0.0
           },
           "relative": false
@@ -257,8 +270,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 10.059999999945022,
-          "y": 8.50999999994965,
+          "x": 10.059999999945822,
+          "y": 8.509999999950075,
           "z": 0.0
         }
       }
@@ -272,17 +285,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1.8826990965677535,
-            "y": 0.38149156774272797
+            "x": 1.882699096576074,
+            "y": 0.381491567735587
           },
           "radius": 11.529999973843614,
           "start": {
             "unit": "degrees",
-            "value": 44.8285522497799
+            "value": 44.8285522498329
           },
           "end": {
             "unit": "degrees",
-            "value": 139.69333988304967
+            "value": 139.69333988303572
           },
           "relative": false
         }
@@ -295,8 +308,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 10.059999999936132,
-          "y": 8.509999999945114,
+          "x": 10.05999999993773,
+          "y": 8.509999999945961,
           "z": 0.0
         }
       }
@@ -310,8 +323,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 17.33999999992724,
-            "y": 0.03999999994057446,
+            "x": 17.33999999992964,
+            "y": 0.03999999994184843,
             "z": 0.0
           },
           "relative": false
@@ -327,8 +340,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.31999999990946,
-            "y": 0.03999999993149991,
+            "x": 23.319999999913456,
+            "y": 0.039999999933622375,
             "z": 0.0
           },
           "relative": false
@@ -344,8 +357,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.020000000038564,
-            "y": 3.049999999985865,
+            "x": 22.0200000000412,
+            "y": 3.0499999999875578,
             "z": 0.0
           },
           "relative": false
@@ -359,46 +372,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 22.44999999997683,
-          "y": 18.360000000018108,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 38.683824346844965,
-            "y": 10.243014925569
-          },
-          "radius": 18.149999989636314,
-          "start": {
-            "unit": "degrees",
-            "value": 153.43474298538715
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 203.34766047638564
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 22.449999964325997,
-          "y": 18.360000017850204,
+          "x": 22.449999999966888,
+          "y": 18.360000000016555,
           "z": 0.0
         }
       }
@@ -412,51 +387,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.6960402456424788,
-            "y": 29.937358216351186
+            "x": 38.68382434563786,
+            "y": 10.243014939298229
           },
-          "radius": 25.880000004982136,
+          "radius": 18.149999982424905,
           "start": {
             "unit": "degrees",
-            "value": -26.573641357100954
+            "value": 153.4347430224661
           },
           "end": {
             "unit": "degrees",
-            "value": -5.137284280707068
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 27.429999997300172,
-            "y": 43.97999999263573,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 29.209999991818144,
-            "y": 45.13000000113929,
-            "z": 0.0
+            "value": 203.3476605176857
           },
           "relative": false
         }
@@ -469,8 +410,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 29.209998386805253,
-          "y": 45.13000247390429,
+          "x": 22.449999999966888,
+          "y": 18.360000000016555,
           "z": 0.0
         }
       }
@@ -484,32 +425,19 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 27.33711244671641,
-            "y": 48.01546618543457
+            "x": -0.7156434039844584,
+            "y": 29.942925712893565
           },
-          "radius": 3.440000374293665,
+          "radius": 25.90002321213365,
           "start": {
             "unit": "degrees",
-            "value": -57.01335551741283
+            "value": -26.565256977533892
           },
           "end": {
             "unit": "degrees",
-            "value": 172.0709988636944
+            "value": -5.145668077978409
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 23.930000004790745,
-          "y": 48.4899999953228,
-          "z": 0.0
         }
       }
     },
@@ -522,8 +450,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 22.010000003098444,
-            "y": 48.69999999355351,
+            "x": 27.42999999731912,
+            "y": 43.97999999263357,
             "z": 0.0
           },
           "relative": false
@@ -539,8 +467,8 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 18.269999999942208,
-            "y": 22.15999998998277,
+            "x": 29.209999991824226,
+            "y": 45.130000001138704,
             "z": 0.0
           },
           "relative": false
@@ -554,8 +482,8 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.130000001677558,
-          "y": 19.48000000160873,
+          "x": 29.20999838681196,
+          "y": 45.13000247390256,
           "z": 0.0
         }
       }
@@ -569,17 +497,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 15.189788561592113,
-            "y": 22.589425220497453
+            "x": 27.337112448306005,
+            "y": 48.01546618646033
           },
-          "radius": 3.1099999780961163,
+          "radius": 3.4400003742937324,
           "start": {
             "unit": "degrees",
-            "value": -91.10155730430827
+            "value": -57.01335554884445
           },
           "end": {
             "unit": "degrees",
-            "value": -7.936689398343687
+            "value": 172.07099885119294
           },
           "relative": false
         }
@@ -592,9 +520,43 @@ description: Artifact commands bench.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -16.81999999998533,
-          "y": 21.200000000315008,
+          "x": 23.930000008175774,
+          "y": 48.4899999988613,
           "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 22.010000008175773,
+            "y": 48.6999999988613,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 18.27000000817577,
+            "y": 22.159999998861302,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -607,17 +569,42 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 23.007307139917817,
-            "y": 463.41011491087494
+            "x": 15.185268977298998,
+            "y": 22.59472217796592
           },
-          "radius": 444.0000001387689,
+          "radius": 3.11521249770534,
           "start": {
             "unit": "degrees",
-            "value": -95.14641425837938
+            "value": -8.021701196586262
           },
           "end": {
             "unit": "degrees",
-            "value": -91.01657688115637
+            "value": -91.01657440327074
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 23.007287961665877,
+            "y": 463.4101164984816
+          },
+          "radius": 444.0,
+          "start": {
+            "unit": "degrees",
+            "value": -91.01657440327075
+          },
+          "end": {
+            "unit": "degrees",
+            "value": -95.14641177512559
           },
           "relative": false
         }
