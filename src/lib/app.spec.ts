@@ -791,7 +791,7 @@ describe('project system', () => {
     }
   })
 
-  it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
+  it('refreshes the project session tree after Zookeeper undo and redo changes the file set', async () => {
     const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
@@ -818,6 +818,7 @@ describe('project system', () => {
       const openedProject = await app.registry
         .get(projectSession)
         .openProject(project)
+      const session = app.registry.get(projectSession)
       const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
 
@@ -842,17 +843,23 @@ describe('project system', () => {
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
+      expect(send).not.toHaveBeenCalledWith({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
+      expect(
+        session.projectTree.value?.children?.map((child) => child.name) ?? []
+      ).not.toContain('created.kcl')
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
       send.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
+      expect(send).not.toHaveBeenCalledWith({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
+      expect(
+        session.projectTree.value?.children?.map((child) => child.name) ?? []
+      ).toContain('created.kcl')
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
