@@ -1851,7 +1851,24 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem).await
+        self.inner_run(program, exec_state, preserve_mem)
+            .await
+            .map_err(|mut error| {
+                // Engine rejections of async commands (e.g. foreign imports)
+                // surface after module execution, so they miss the import
+                // frames the eager loop attaches. Without a top-level range
+                // the frontend cannot anchor the error in the root file;
+                // rebuild the ancestry from the outermost range's module.
+                let source_ranges = error.error.source_ranges();
+                if !source_ranges.is_empty()
+                    && !source_ranges.iter().any(|range| range.module_id().is_top_level())
+                    && let Some(outermost) = source_ranges.last()
+                {
+                    error.error =
+                        import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+                }
+                error
+            })
     }
 
     /// Get the universe & universe map of the program.

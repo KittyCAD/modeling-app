@@ -41,19 +41,37 @@ pub(crate) type Universe = HashMap<String, DependencyInfo>;
 /// labeled `send_to_engine` failure for foreign ones, and the not-found
 /// internal error, which ranges the error at the import site), so this
 /// starts with its parent.
-pub(crate) fn add_import_backtrace(mut error: KclError, mut module_id: ModuleId, universe: &Universe) -> KclError {
+pub(crate) fn add_import_backtrace(error: KclError, module_id: ModuleId, universe: &Universe) -> KclError {
     let Some((immediate_import, _, _, _)) = universe
         .values()
         .find(|(_, candidate_id, _, _)| *candidate_id == module_id)
     else {
         return error;
     };
+    let parent = SourceRange::from(immediate_import).module_id();
+    walk_import_ancestry(error, parent, universe, std::collections::HashSet::from([module_id]))
+}
+
+/// Add the import statements of `module_id` and its ancestors to an error
+/// whose frames end inside that module, starting with `module_id`'s own
+/// import statement.
+///
+/// Unlike [`add_import_backtrace`], this does not assume any import frame has
+/// been recorded yet. Use it for errors that surface outside module
+/// execution, like engine rejections of async commands.
+pub(crate) fn add_import_backtrace_from(error: KclError, module_id: ModuleId, universe: &Universe) -> KclError {
+    walk_import_ancestry(error, module_id, universe, std::collections::HashSet::new())
+}
+
+fn walk_import_ancestry(
+    mut error: KclError,
+    mut module_id: ModuleId,
+    universe: &Universe,
     // Guard against malformed universes. Import cycles are rejected before
     // modules execute, but this runs on an error path where the failure mode
     // would be an infinite loop, so don't rely on that invariant here.
-    let mut visited = std::collections::HashSet::from([module_id]);
-    module_id = SourceRange::from(immediate_import).module_id();
-
+    mut visited: std::collections::HashSet<ModuleId>,
+) -> KclError {
     while module_id != ModuleId::default() && visited.insert(module_id) {
         let Some((import_stmt, _, _, _)) = universe
             .values()
@@ -411,6 +429,35 @@ mod tests {
             .map(|range| range.module_id())
             .collect();
         assert_eq!(modules, [assembly, assembly, root]);
+    }
+
+    #[test]
+    fn add_import_backtrace_from_records_own_import_first() {
+        // A deferred engine error (e.g. an async foreign import rejection)
+        // carries only a range inside the module; nothing has recorded any
+        // import frame yet.
+        let root = ModuleId::default();
+        let assembly = ModuleId::from_usize(1);
+        let mut universe = HashMap::new();
+        universe.insert(
+            "assembly.kcl".to_owned(),
+            dependency_info("assembly.kcl", assembly, root),
+        );
+
+        let error = KclError::new_engine(KclErrorDetails::new(
+            "Import failed".to_owned(),
+            vec![SourceRange::new(0, 18, assembly)],
+        ));
+        let error = add_import_backtrace_from(error, assembly, &universe);
+
+        let fn_names: Vec<_> = error.backtrace().into_iter().map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, [Some("import assembly.kcl".to_owned()), None]);
+        let modules: Vec<_> = error
+            .source_ranges()
+            .into_iter()
+            .map(|range| range.module_id())
+            .collect();
+        assert_eq!(modules, [assembly, root]);
     }
 
     #[test]
