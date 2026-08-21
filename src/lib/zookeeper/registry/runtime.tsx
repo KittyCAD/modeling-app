@@ -6,7 +6,11 @@ import {
 import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type {
+  createZookeeperManagerActor,
+  stopZookeeperManagerActor,
+  ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -40,10 +44,10 @@ type ActiveZookeeperSession = Readonly<{
   stop: () => void
 }>
 
-type ZookeeperManagerModule = Pick<
-  typeof import('@src/lib/zookeeper/zookeeperManagerMachine'),
-  'createZookeeperManagerActor' | 'stopZookeeperManagerActor'
->
+type ZookeeperManagerModule = {
+  createZookeeperManagerActor: typeof createZookeeperManagerActor
+  stopZookeeperManagerActor: typeof stopZookeeperManagerActor
+}
 
 const loadZookeeperManager = (): Promise<ZookeeperManagerModule> =>
   import('@src/lib/zookeeper/zookeeperManagerMachine')
