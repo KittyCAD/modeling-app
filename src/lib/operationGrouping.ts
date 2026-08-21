@@ -163,7 +163,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
-  isNotHideOperation,
+  isNotFeatureTreeImplementationDetail,
 ]
 
 /**
@@ -232,8 +232,10 @@ function isNotGroupEnd(ops: Operation[]): Operation[] {
 }
 
 /**
- * A filter to exclude `hide()` operations from a list of operations.
+ * A filter to exclude implementation-detail operations from the feature tree.
  */
-function isNotHideOperation(ops: Operation[]): Operation[] {
-  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+function isNotFeatureTreeImplementationDetail(ops: Operation[]): Operation[] {
+  return ops.filter(
+    (op) => !(op.type === 'StdLibCall' && ['hide', 'region'].includes(op.name))
+  )
 }
