@@ -3,6 +3,7 @@ mod chained_profiles;
 mod default_plane;
 mod deprecated_edge_stdlib;
 mod legacy_angle;
+mod legacy_angle_to_parallel;
 mod offset_plane;
 
 pub use camel_case::Z0001;
@@ -16,5 +17,7 @@ pub use deprecated_edge_stdlib::Z0006;
 pub use deprecated_edge_stdlib::lint_deprecated_edge_stdlib_in_fillet_chamfer;
 pub use legacy_angle::Z0007;
 pub use legacy_angle::lint_legacy_angle;
+pub use legacy_angle_to_parallel::Z0008;
+pub use legacy_angle_to_parallel::lint_legacy_angle_to_parallel;
 pub use offset_plane::Z0003;
 pub use offset_plane::lint_should_be_offset_plane;

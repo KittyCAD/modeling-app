@@ -1,6 +1,11 @@
 import { join } from 'node:path'
-import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
+import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { resolveRefactorLintActions } from '@src/lang/lintRefactorActions'
+import {
+  convertLegacyAngleToAngleDimension,
+  convertLegacyAngleToParallel,
+} from '@src/lang/modifyAst/angle'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Program, SourceRange } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -79,5 +84,105 @@ describe('convertLegacyAngleToAngleDimension', () => {
       'angleDimension(lines = [line1, line2], sector = 1) == 60deg'
     )
     expect(code).not.toContain('inverse')
+  })
+})
+
+describe('convertLegacyAngleToParallel', () => {
+  it('replaces the entire angle equality with a parallel constraint', () => {
+    const ast = assertParse(
+      `sketch(on = XY) {
+  angle([line1, line2]) == 360deg
+}`,
+      instance
+    )
+    const result = convertLegacyAngleToParallel(ast, legacyAngleRange(ast))
+    if (err(result)) throw result
+    const code = recast(result, instance)
+    if (err(code)) throw code
+
+    expect(code).toContain('parallel([line1, line2])')
+    expect(code).not.toContain('360deg')
+    expect(code).not.toContain('angle(')
+  })
+
+  it('supports an angle call on the right side of the equality', () => {
+    const ast = assertParse(
+      `sketch(on = XY) {
+  0deg == angle([line1, line2])
+}`,
+      instance
+    )
+    const statement = ast.body[0]
+    if (statement.type !== 'ExpressionStatement')
+      throw new Error('Expected sketch')
+    const sketch = statement.expression
+    if (sketch.type !== 'SketchBlock') throw new Error('Expected sketch block')
+    const constraint = sketch.body.items[0]
+    if (
+      constraint.type !== 'ExpressionStatement' ||
+      constraint.expression.type !== 'BinaryExpression' ||
+      constraint.expression.right.type !== 'CallExpressionKw'
+    ) {
+      throw new Error('Expected angle constraint')
+    }
+    const angle = constraint.expression.right
+    const result = convertLegacyAngleToParallel(ast, [
+      angle.start,
+      angle.end,
+      angle.moduleId,
+    ])
+    if (err(result)) throw result
+    const code = recast(result, instance)
+    if (err(code)) throw code
+
+    expect(code).toContain('parallel([line1, line2])')
+  })
+
+  it('does not convert angleDimension', () => {
+    const ast = assertParse(
+      `sketch(on = XY) {
+  angleDimension(
+    lines = [line1, line2],
+    sector = 3,
+    inverse = true,
+    labelPosition = [10mm, 11mm],
+  ) == 360deg
+}`,
+      instance
+    )
+    const result = convertLegacyAngleToParallel(ast, legacyAngleRange(ast))
+
+    expect(result).toBeInstanceOf(Error)
+  })
+
+  it('provides the separate parallel-angle lint action', async () => {
+    const sourceCode = `sketch(on = XY) {
+  angle([line1, line2]) == 180deg
+}`
+    const ast = assertParse(sourceCode, instance)
+    const sourceRange = legacyAngleRange(ast)
+    const lint: Discovered = {
+      finding: {
+        code: 'Z0008',
+        title: 'Legacy angle constraint can be converted to parallel',
+        description: '',
+        experimental: false,
+        family: 'simplify',
+      },
+      description: '',
+      pos: sourceRange,
+      overridden: false,
+      suggestion: null,
+    }
+    const result = await resolveRefactorLintActions({
+      lint,
+      ast,
+      sourceCode,
+      instance,
+      shouldShowZ0005: false,
+      legacyAngleRefactorMetadata: [],
+    })
+
+    expect(result.actions?.[0]?.name).toBe('Convert to parallel')
   })
 })
