@@ -328,6 +328,130 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it('clears stale file navigation when archiving the active file navigates back to the project', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async ({ input }) => ({
+                  message: 'Archived successfully',
+                  requestedAbsolutePath: '',
+                  requestedProjectName: input.requestedProjectName ?? '',
+                  target: input.target,
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'fileToDelete.kcl',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.context.requestedFileName.file === 'fileToDelete.kcl'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+            data: {
+              src: '/projects/demo-project/fileToDelete.kcl',
+              target: '/projects/demo-project/.archive/fileToDelete.kcl',
+              requestedProjectName: 'demo-project',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context.requestedProjectName).toEqual({
+            name: 'demo-project',
+          })
+          expect(actor.getSnapshot().context.requestedFileName).toEqual({
+            project: NO_PROJECT_DIRECTORY,
+            file: NO_PROJECT_DIRECTORY,
+          })
+        } finally {
+          actor.stop()
+        }
+      })
+      it('clears stale file navigation when deleting the active file navigates back to the project', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+                async ({ input }) => ({
+                  message: 'File deleted successfully',
+                  requestedPath: input.requestedPath,
+                  requestedProjectName: input.requestedProjectName ?? '',
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: 'demo-project',
+              requestedFileName: 'fileToDelete.kcl',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.context.requestedFileName.file === 'fileToDelete.kcl'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
+            data: {
+              requestedPath: '/projects/demo-project/fileToDelete.kcl',
+              requestedProjectName: 'demo-project',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.lastOperation ===
+                SystemIOMachineStates.deletingFileOrFolderAndNavigate
+          )
+
+          expect(actor.getSnapshot().context.requestedProjectName).toEqual({
+            name: 'demo-project',
+          })
+          expect(actor.getSnapshot().context.requestedFileName).toEqual({
+            project: NO_PROJECT_DIRECTORY,
+            file: NO_PROJECT_DIRECTORY,
+          })
+        } finally {
+          actor.stop()
+        }
+      })
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {
