@@ -1,3 +1,4 @@
+use ahash::HashSet;
 use anyhow::Result;
 use ezpz::CircleSide;
 use ezpz::Constraint as SolverConstraint;
@@ -382,17 +383,17 @@ fn points_are_constrained_coincident(
 ) -> bool {
     let target = datum_point_key(point_b);
     let mut pending = vec![point_a];
-    let mut visited = Vec::new();
+    let mut visited = HashSet::default();
 
     while let Some(point) = pending.pop() {
         let point_key = datum_point_key(point);
         if point_key == target {
             return true;
         }
-        if visited.contains(&point_key) {
+        if !visited.insert(point_key) {
+            // It was already visited.
             continue;
         }
-        visited.push(point_key);
 
         for constraint in constraints {
             let SolverConstraint::PointsCoincident(lhs, rhs) = constraint else {
