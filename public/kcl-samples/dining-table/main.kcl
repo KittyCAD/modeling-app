@@ -6,7 +6,7 @@
 // PARAMETERS
 // ──────────────
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 tableHeight = 750
 apronTopElevation = tableHeight

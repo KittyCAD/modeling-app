@@ -83,10 +83,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1247,
+                "end": 1252,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1247,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -97,10 +97,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1317,
+                "end": 1322,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -111,10 +111,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1428,
+                "end": 1433,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1428,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -125,10 +125,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1539,
+                "end": 1544,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1539,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -150,10 +150,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1247,
+                  "end": 1252,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1247,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -174,10 +174,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1317,
+                  "end": 1322,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -198,10 +198,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1428,
+                  "end": 1433,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1428,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -222,10 +222,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1539,
+                  "end": 1544,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1539,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -325,10 +325,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1247,
+                "end": 1252,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1247,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -339,10 +339,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1317,
+                "end": 1322,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -353,10 +353,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1428,
+                "end": 1433,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1428,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -367,10 +367,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1539,
+                "end": 1544,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1539,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -392,10 +392,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1247,
+                  "end": 1252,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1247,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -416,10 +416,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1317,
+                  "end": 1322,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -440,10 +440,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1428,
+                  "end": 1433,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1428,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -464,10 +464,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1539,
+                  "end": 1544,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1539,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -567,10 +567,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1247,
+                "end": 1252,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1247,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -581,10 +581,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1317,
+                "end": 1322,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -595,10 +595,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1428,
+                "end": 1433,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1428,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -609,10 +609,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1539,
+                "end": 1544,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1539,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -634,10 +634,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1247,
+                  "end": 1252,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1247,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -658,10 +658,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1317,
+                  "end": 1322,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -682,10 +682,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1428,
+                  "end": 1433,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1428,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -706,10 +706,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1539,
+                  "end": 1544,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1539,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -809,10 +809,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1234,
+                "commentStart": 1247,
+                "end": 1252,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1247,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -823,10 +823,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1299,
-                "end": 1304,
+                "commentStart": 1317,
+                "end": 1322,
                 "moduleId": 0,
-                "start": 1299,
+                "start": 1317,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -837,10 +837,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1410,
-                "end": 1415,
+                "commentStart": 1428,
+                "end": 1433,
                 "moduleId": 0,
-                "start": 1410,
+                "start": 1428,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -851,10 +851,10 @@ description: Variables in memory after executing rectangle-table.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1521,
-                "end": 1526,
+                "commentStart": 1539,
+                "end": 1544,
                 "moduleId": 0,
-                "start": 1521,
+                "start": 1539,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -876,10 +876,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1234,
+                  "commentStart": 1247,
+                  "end": 1252,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1247,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -900,10 +900,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1299,
-                  "end": 1304,
+                  "commentStart": 1317,
+                  "end": 1322,
                   "moduleId": 0,
-                  "start": 1299,
+                  "start": 1317,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -924,10 +924,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   40.0
                 ],
                 "tag": {
-                  "commentStart": 1410,
-                  "end": 1415,
+                  "commentStart": 1428,
+                  "end": 1433,
                   "moduleId": 0,
-                  "start": 1410,
+                  "start": 1428,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -948,10 +948,10 @@ description: Variables in memory after executing rectangle-table.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 1521,
-                  "end": 1526,
+                  "commentStart": 1539,
+                  "end": 1544,
                   "moduleId": 0,
-                  "start": 1521,
+                  "start": 1539,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -1552,10 +1552,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1229,
-                    "end": 1234,
+                    "commentStart": 1247,
+                    "end": 1252,
                     "moduleId": 0,
-                    "start": 1229,
+                    "start": 1247,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1576,10 +1576,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1299,
-                    "end": 1304,
+                    "commentStart": 1317,
+                    "end": 1322,
                     "moduleId": 0,
-                    "start": 1299,
+                    "start": 1317,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1600,10 +1600,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     40.0
                   ],
                   "tag": {
-                    "commentStart": 1410,
-                    "end": 1415,
+                    "commentStart": 1428,
+                    "end": 1433,
                     "moduleId": 0,
-                    "start": 1410,
+                    "start": 1428,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1624,10 +1624,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1521,
-                    "end": 1526,
+                    "commentStart": 1539,
+                    "end": 1544,
                     "moduleId": 0,
-                    "start": 1521,
+                    "start": 1539,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1741,10 +1741,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 466,
-            "end": 471,
+            "commentStart": 484,
+            "end": 489,
             "moduleId": 0,
-            "start": 466,
+            "start": 484,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1765,10 +1765,10 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "tag": {
-            "commentStart": 538,
-            "end": 543,
+            "commentStart": 556,
+            "end": 561,
             "moduleId": 0,
-            "start": 538,
+            "start": 556,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1789,10 +1789,10 @@ description: Variables in memory after executing rectangle-table.kcl
             1500.0
           ],
           "tag": {
-            "commentStart": 654,
-            "end": 659,
+            "commentStart": 672,
+            "end": 677,
             "moduleId": 0,
-            "start": 654,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1813,10 +1813,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 769,
-            "end": 774,
+            "commentStart": 787,
+            "end": 792,
             "moduleId": 0,
-            "start": 769,
+            "start": 787,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1915,10 +1915,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1939,10 +1939,10 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 1299,
-            "end": 1304,
+            "commentStart": 1317,
+            "end": 1322,
             "moduleId": 0,
-            "start": 1299,
+            "start": 1317,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1963,10 +1963,10 @@ description: Variables in memory after executing rectangle-table.kcl
             40.0
           ],
           "tag": {
-            "commentStart": 1410,
-            "end": 1415,
+            "commentStart": 1428,
+            "end": 1433,
             "moduleId": 0,
-            "start": 1410,
+            "start": 1428,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1987,10 +1987,10 @@ description: Variables in memory after executing rectangle-table.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1521,
-            "end": 1526,
+            "commentStart": 1539,
+            "end": 1544,
             "moduleId": 0,
-            "start": 1521,
+            "start": 1539,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2103,10 +2103,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 466,
-            "end": 471,
+            "commentStart": 484,
+            "end": 489,
             "moduleId": 0,
-            "start": 466,
+            "start": 484,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2117,10 +2117,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 538,
-            "end": 543,
+            "commentStart": 556,
+            "end": 561,
             "moduleId": 0,
-            "start": 538,
+            "start": 556,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2131,10 +2131,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 654,
-            "end": 659,
+            "commentStart": 672,
+            "end": 677,
             "moduleId": 0,
-            "start": 654,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2145,10 +2145,10 @@ description: Variables in memory after executing rectangle-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 769,
-            "end": 774,
+            "commentStart": 787,
+            "end": 792,
             "moduleId": 0,
-            "start": 769,
+            "start": 787,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2170,10 +2170,10 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 466,
-              "end": 471,
+              "commentStart": 484,
+              "end": 489,
               "moduleId": 0,
-              "start": 466,
+              "start": 484,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2194,10 +2194,10 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "tag": {
-              "commentStart": 538,
-              "end": 543,
+              "commentStart": 556,
+              "end": 561,
               "moduleId": 0,
-              "start": 538,
+              "start": 556,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2218,10 +2218,10 @@ description: Variables in memory after executing rectangle-table.kcl
               1500.0
             ],
             "tag": {
-              "commentStart": 654,
-              "end": 659,
+              "commentStart": 672,
+              "end": 677,
               "moduleId": 0,
-              "start": 654,
+              "start": 672,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2242,10 +2242,10 @@ description: Variables in memory after executing rectangle-table.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 769,
-              "end": 774,
+              "commentStart": 787,
+              "end": 792,
               "moduleId": 0,
-              "start": 769,
+              "start": 787,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2868,10 +2868,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 466,
-                    "end": 471,
+                    "commentStart": 484,
+                    "end": 489,
                     "moduleId": 0,
-                    "start": 466,
+                    "start": 484,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2892,10 +2892,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     1500.0
                   ],
                   "tag": {
-                    "commentStart": 538,
-                    "end": 543,
+                    "commentStart": 556,
+                    "end": 561,
                     "moduleId": 0,
-                    "start": 538,
+                    "start": 556,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2916,10 +2916,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     1500.0
                   ],
                   "tag": {
-                    "commentStart": 654,
-                    "end": 659,
+                    "commentStart": 672,
+                    "end": 677,
                     "moduleId": 0,
-                    "start": 654,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2940,10 +2940,10 @@ description: Variables in memory after executing rectangle-table.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 769,
-                    "end": 774,
+                    "commentStart": 787,
+                    "end": 792,
                     "moduleId": 0,
-                    "start": 769,
+                    "start": 787,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
