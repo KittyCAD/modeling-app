@@ -1,9 +1,3 @@
-import { join } from 'path'
-import path from 'path'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import * as fsp from 'fs/promises'
-
 import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
@@ -20,8 +14,12 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
+import * as fsp from 'fs/promises'
+import path, { join } from 'path'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -297,7 +295,9 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
@@ -323,7 +323,9 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
@@ -339,7 +341,9 @@ test.describe(
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const projectDirLink = page.getByText('Loaded from')
+        const projectDirLink = page.getByTestId(
+          'project-directory-settings-link'
+        )
 
         await test.step('Wait for project view', async () => {
           await expect(projectDirLink).toBeVisible()

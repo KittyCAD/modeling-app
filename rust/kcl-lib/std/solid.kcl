@@ -735,6 +735,9 @@ export fn hollow(
 ///
 ///    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 ///
+/// **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+/// way (i.e. scaled differently along each axis).
+///
 /// ```kcl,legacySketch
 /// // Each instance will be shifted along the X axis.
 /// fn transform(@id) {
@@ -1286,8 +1289,10 @@ export fn intersect(
 /// // This is the equivalent of: subtract([part001], tools=[part002])
 /// subtractedPart = part001 - part002
 /// ```
+///
+/// **Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
 /// ```kcl,legacySketch
-/// @settings(defaultLengthUnit = in)
+/// @settings(defaultLengthUnit = in, kclVersion = 1.0)
 /// 
 /// height = 2.5
 /// width = 2.5
@@ -1562,7 +1567,11 @@ export fn subtract(
 ///     )
 /// ```
 ///
+/// **Legacy KCL 1 example:** The next pipe example uses deprecated `subtract2d`.
+///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// // Color the result of a sweep.
 ///
 /// // Create a path for the sweep.

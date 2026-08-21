@@ -127,7 +127,7 @@ async fn inner_scale(
             .build();
         let transforms = vec![transform];
         exec_state
-            .batch_modeling_cmd(
+            .send_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::SetObjectTransform::builder()

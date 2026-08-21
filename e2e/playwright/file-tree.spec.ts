@@ -1,14 +1,13 @@
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import * as nodeFsP from 'fs/promises'
-
 import {
   createProject,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as nodeFsP from 'fs/promises'
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -1119,7 +1118,9 @@ test(
     })
 
     await test.step('Check the app is back on the home view', async () => {
-      const projectsDirLink = page.getByText('Loaded from')
+      const projectsDirLink = page.getByTestId(
+        'project-directory-settings-link'
+      )
       await expect(projectsDirLink).toBeVisible()
     })
   }
