@@ -2,7 +2,7 @@
 // Sketch-solve reconstruction with matching feature order
 // Categories: Manufacturing, Automotive, Aerospace, Construction
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 
 // model parameters
 halfBracketWidth = 20
@@ -71,34 +71,28 @@ bracketBodySolid = extrude(
 )
 
 // Step 3: Add fillets
-insideBendFillet = fillet(
-  bracketBodySolid,
-  tags = getCommonEdge(faces = [
-    outlineRegion.tags.line5,
-    outlineRegion.tags.line4
-  ]),
-  radius = insideBendRadius,
-)
-
-outsideBendFillet = fillet(
-  insideBendFillet,
-  tags = getCommonEdge(faces = [
-    outlineRegion.tags.line1,
-    outlineRegion.tags.line2
-  ]),
-  radius = insideBendRadius + sheetMetalThickness,
-)
-
 freeEndCornerFillets = fillet(
-  outsideBendFillet,
-  tags = [
-    edgeId(outsideBendFillet, closestTo = [2mm, 20mm, 70mm]),
-    edgeId(outsideBendFillet, closestTo = [2mm, -20mm, 70mm]),
-    edgeId(outsideBendFillet, closestTo = [170mm, 20mm, 2mm]),
-    edgeId(outsideBendFillet, closestTo = [170mm, -20mm, 2mm])
+  bracketBodySolid,
+  edges = [
+    {
+      sideFaces = [outlineRegion.tags.line2, capStart]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line2, capEnd]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line5, capStart]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line5, capEnd]
+    }
   ],
-  radius = halfBracketWidth,
+  radius = halfBracketWidth - 0.01mm,
 )
+
+insideBendFillet = fillet(freeEndCornerFillets, tags = edgeId(freeEndCornerFillets, closestTo = [170mm, 0mm, 4mm]), radius = insideBendRadius)
+
+outsideBendFillet = fillet(insideBendFillet, tags = edgeId(insideBendFillet, closestTo = [0mm, 0mm, 70mm]), radius = insideBendRadius + sheetMetalThickness)
 
 // Step 4: Countersunk tab hole via subtractive feature
 tabHolePlane = {
@@ -199,7 +193,7 @@ countersinkCutter = loft([
   countersinkBottomRegion
 ])
 
-bracketWithCountersunkHole = subtract([freeEndCornerFillets], tools = [countersinkCutter])
+bracketWithCountersunkHole = subtract([outsideBendFillet], tools = [countersinkCutter])
 hiddenTabHoleSketch = hide(tabHoleSketch)
 hiddenCountersinkTopSketch = hide(countersinkTopSketch)
 hiddenCountersinkBottomSketch = hide(countersinkBottomSketch)

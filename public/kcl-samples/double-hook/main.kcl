@@ -2,7 +2,7 @@
 // Parametric double hook swept from a 5 mm circular section.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Driving dimensions
 sectionDiameter = 5mm

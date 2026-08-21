@@ -1850,22 +1850,103 @@ description: Operations executed bracket-with-slot.kcl
         "sourceRange": []
       },
       "labeledArgs": {
-        "radius": {
+        "edges": {
           "value": {
-            "type": "Number",
-            "value": 8.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "line2",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "line2",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capEnd",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "line5",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capStart",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "line5",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "capEnd",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
           },
           "sourceRange": []
         },
-        "tags": {
+        "radius": {
           "value": {
-            "type": "Uuid",
-            "value": "[uuid]"
+            "type": "Number",
+            "value": 19.99,
+            "ty": {
+              "mm": null,
+              "type": "Known",
+              "type": "Length"
+            }
           },
           "sourceRange": []
         }
@@ -1902,7 +1983,7 @@ description: Operations executed bracket-with-slot.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 12.0,
+            "value": 8.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -1951,7 +2032,7 @@ description: Operations executed bracket-with-slot.kcl
         "radius": {
           "value": {
             "type": "Number",
-            "value": 20.0,
+            "value": 12.0,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -1962,25 +2043,8 @@ description: Operations executed bracket-with-slot.kcl
         },
         "tags": {
           "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              }
-            ]
+            "type": "Uuid",
+            "value": "[uuid]"
           },
           "sourceRange": []
         }
