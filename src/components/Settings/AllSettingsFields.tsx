@@ -1,5 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import type { Feature } from '@kittycad/lib'
+import { useSignals } from '@preact/signals-react/runtime'
+import { ProjectTitleSettingsSection } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -46,6 +48,7 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
+    useSignals()
     const app = useApp()
     const { settings, layout, userFeatures } = app
     const location = useLocation()
@@ -54,6 +57,9 @@ export const AllSettingsFields = forwardRef(
     const userFeaturesContext = userFeatures.useContext()
     const hasFeature = (feature: Feature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
+    const currentProject =
+      app.projectSignal.value?.projectIORefSignal.value ??
+      settings.actor.getSnapshot().context.currentProject
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
         .replace(PATHS.FILE, '')
@@ -98,6 +104,14 @@ export const AllSettingsFields = forwardRef(
                 >
                   {formatSettingsLabel(category)}
                 </h2>
+                {category === 'meta' &&
+                  searchParamTab === 'project' &&
+                  currentProject && (
+                    <ProjectTitleSettingsSection
+                      project={currentProject}
+                      service={settings.projectTitle}
+                    />
+                  )}
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
                     shouldShowSettingInput(item[1], searchParamTab, hasFeature)

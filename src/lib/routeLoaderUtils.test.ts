@@ -110,7 +110,6 @@ describe('route loaders', () => {
 
   it('loads Home project state without touching the demo-project flow', () => {
     const { app, closeProject } = createAppWithWebHomeFeature(true)
-
     const result = loadHomeProjects(app)
 
     expect(result).toEqual({})

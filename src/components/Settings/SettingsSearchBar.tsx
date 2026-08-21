@@ -8,6 +8,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { PROJECT_TITLE_SETTING_ID } from '@src/components/Settings/ProjectTitleSettingsSection'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { settingsSearchFocusRequest } from '@src/lib/searchFocusRequests'
@@ -79,6 +80,17 @@ export function SettingsSearchBar({
   )
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
+      ...(hasOpenProject
+        ? [
+            {
+              category: 'Meta',
+              name: PROJECT_TITLE_SETTING_ID,
+              description: 'The name shown for this project.',
+              displayName: 'Title',
+              level: 'project' as const,
+            },
+          ]
+        : []),
       ...Object.entries(settingsValues).flatMap(
         ([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {

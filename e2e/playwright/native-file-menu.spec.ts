@@ -38,7 +38,6 @@ test.describe(
   () => {
     test('Design menu actions target only the clicked BrowserWindow', async ({
       tronApp,
-      cmdBar,
       homePage,
       nativeMenu,
       page,
@@ -168,14 +167,6 @@ test.describe(
         await nativeMenu.click('File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
-      })
-      await test.step('Home.Edit.Rename project', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await nativeMenu.click('Edit.Rename project')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Rename project')
       })
       await test.step('Home.Edit.Delete project', async () => {
         await page.reload()
@@ -328,11 +319,6 @@ test.describe(
       await test.step('Modeling.Edit.Format code', async () => {
         await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Format code')
-      })
-      await test.step('Modeling.Edit.Rename project', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('Edit.Rename project')
-        await cmdBar.expectCommandName('Rename project')
       })
       await test.step('Modeling.Edit.Delete project', async () => {
         await page.waitForTimeout(250)

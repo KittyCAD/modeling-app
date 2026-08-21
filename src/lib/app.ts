@@ -22,8 +22,9 @@ import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -222,6 +223,9 @@ export class App implements AppSubsystems {
   private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
+  private disposeProjectTitleSync: (() => void) | undefined
+  private disposeProjectTitleUpdates: (() => void) | undefined
+  private projectLibraryRefreshPending = false
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -265,6 +269,32 @@ export class App implements AppSubsystems {
     )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
+
+    let handledProjectTitleUpdate = this.settings.projectTitle.updates.value
+    this.disposeProjectTitleUpdates = effect(() => {
+      const projectTitleUpdate = this.settings.projectTitle.updates.value
+      if (projectTitleUpdate === handledProjectTitleUpdate) {
+        return
+      }
+      handledProjectTitleUpdate = projectTitleUpdate
+      if (!projectTitleUpdate) {
+        return
+      }
+
+      const openedProject = this.project?.projectIORefSignal
+      if (openedProject?.value.path === projectTitleUpdate.projectPath) {
+        openedProject.value = {
+          ...openedProject.value,
+          title: projectTitleUpdate.title,
+        }
+      }
+
+      if (this.project) {
+        this.projectLibraryRefreshPending = true
+      } else {
+        invalidateProjectLibraryRealizations()
+      }
+    })
   }
 
   /**
@@ -351,6 +381,7 @@ export class App implements AppSubsystems {
 
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
+    this.disposeProjectTitleSync?.()
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
@@ -432,6 +463,19 @@ export class App implements AppSubsystems {
       }
     })
 
+    this.disposeProjectTitleSync = effect(() => {
+      const currentProject = projectIORefSignal.value
+      if (
+        this.settings.actor.getSnapshot().context.currentProject !==
+        currentProject
+      ) {
+        this.settings.actor.send({
+          type: 'sync.project',
+          project: currentProject,
+        })
+      }
+    })
+
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -442,6 +486,8 @@ export class App implements AppSubsystems {
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   dispose() {
     this.closeProject()
+    this.disposeProjectTitleUpdates?.()
+    this.disposeProjectTitleUpdates = undefined
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
     this.systemIOActor.stop()
@@ -456,11 +502,17 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
+    this.disposeProjectTitleSync?.()
+    this.disposeProjectTitleSync = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
+    if (this.projectLibraryRefreshPending) {
+      this.projectLibraryRefreshPending = false
+      invalidateProjectLibraryRealizations()
+    }
   }
 
   syncUserFeaturesFromAuth = (

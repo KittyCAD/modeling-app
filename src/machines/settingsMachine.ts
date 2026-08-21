@@ -12,12 +12,14 @@ import {
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
+import { createProjectTitleCommand } from '@src/lib/commandBarConfigs/projectTitleCommandConfig'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
 } from '@src/lib/commandBarConfigs/settingsCommandConfig'
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
+import type { ProjectTitleService } from '@src/lib/projectTitle'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -51,6 +53,7 @@ export type SettingsActorDepsType = {
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
   projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
   extensionSettings: ResolvedExtensionSettings
+  projectTitleCommand?: ProjectTitleService
   wasmInstancePromise: Promise<ModuleType>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
@@ -86,6 +89,7 @@ export const settingsMachine = setup({
           }
         }
       | { type: 'load.project'; project: Project }
+      | { type: 'sync.project'; project: Project }
       | { type: 'reload.settings' }
       | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
@@ -107,6 +111,7 @@ export const settingsMachine = setup({
         currentProject,
         defaultProjectLibraries: _defaultProjectLibraries,
         extensionSettings,
+        projectTitleCommand: _projectTitleCommand,
         wasmInstancePromise,
         commandBarActor: _c,
         ...settings
@@ -220,6 +225,7 @@ export const settingsMachine = setup({
         settings: SettingsType
         actor: AnyActorRef
         commandBarActor: ActorRefFrom<typeof commandBarMachine>
+        projectTitleCommand?: ProjectTitleService
       }
     >(({ input, receive }) => {
       // If the user wants to hide the settings commands
@@ -229,8 +235,8 @@ export const settingsMachine = setup({
       }
       let commands: Command[] = []
 
-      const updateCommands = (newSettings: SettingsType) =>
-        settingsWithCommandConfigs(newSettings)
+      const updateCommands = (newSettings: SettingsType) => {
+        const settingsCommands = settingsWithCommandConfigs(newSettings)
           .map((type) =>
             createSettingsCommand({
               type,
@@ -238,6 +244,16 @@ export const settingsMachine = setup({
             })
           )
           .filter((c) => c !== null)
+        const projectTitleCommand = createProjectTitleCommand({
+          getCurrentProject: () =>
+            input.actor.getSnapshot().context.currentProject,
+          service: input.projectTitleCommand,
+        })
+
+        return projectTitleCommand
+          ? [...settingsCommands, projectTitleCommand]
+          : settingsCommands
+      }
 
       const addCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
         actor.send({
@@ -318,6 +334,10 @@ export const settingsMachine = setup({
     clearCurrentProject: assign(({ context }) => {
       return { ...context, currentProject: undefined }
     }),
+    syncCurrentProject: assign(({ context, event }) => ({
+      currentProject:
+        event.type === 'sync.project' ? event.project : context.currentProject,
+    })),
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
 
@@ -400,14 +420,24 @@ export const settingsMachine = setup({
         settings: getOnlySettingsFromContext(context),
         actor: self,
         commandBarActor: context.commandBarActor,
+        projectTitleCommand: context.projectTitleCommand,
       }),
     },
   ],
+  on: {
+    'sync.project': {
+      actions: ['syncCurrentProject'],
+    },
+  },
   states: {
     idle: {
       entry: ['setThemeClass', 'sendThemeToWatcher'],
 
       on: {
+        'sync.project': {
+          actions: ['syncCurrentProject'],
+        },
+
         '*': {
           target: 'persisting settings',
           actions: ['setSettingAtLevel', 'toastSuccess'],
@@ -714,6 +744,7 @@ export function getOnlySettingsFromContext(
     defaultProjectLibraries: _defaultProjectLibraries,
     projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
     extensionSettings: _extensionSettings,
+    projectTitleCommand: _projectTitleCommand,
     wasmInstancePromise: _w,
     ...settings
   } = s

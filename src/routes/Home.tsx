@@ -490,19 +490,6 @@ const Home = () => {
           name: 'Open project',
         },
       })
-    } else if (data.menuLabel === 'Edit.Rename project') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commands.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Rename project',
-          argDefaultValues: {
-            oldName: currentProject?.name,
-            newName: currentProject?.name,
-          },
-        },
-      })
     } else if (data.menuLabel === 'Edit.Delete project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commands.send({

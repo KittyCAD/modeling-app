@@ -28,11 +28,6 @@ export const projectEditRole = (
     label: 'Edit',
     submenu: [
       {
-        label: 'Rename Project',
-        id: 'Edit.Rename project',
-        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
-      },
-      {
         label: 'Delete Project',
         id: 'Edit.Delete project',
         click: sendMenuAction(mainWindow, 'Edit.Delete project'),
@@ -90,11 +85,6 @@ export const modelingEditRole = (
         click: sendMenuAction(mainWindow, 'Edit.Format code'),
       },
       { type: 'separator' },
-      {
-        label: 'Rename Project',
-        id: 'Edit.Rename project',
-        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
-      },
       {
         label: 'Delete Project',
         id: 'Edit.Delete project',
