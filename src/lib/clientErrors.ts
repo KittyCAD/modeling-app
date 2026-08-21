@@ -29,7 +29,6 @@ export enum ClientErrorCode {
   EngineDisconnect = 'engine_disconnect',
   LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
-  ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',
