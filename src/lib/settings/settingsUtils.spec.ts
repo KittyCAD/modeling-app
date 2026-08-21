@@ -11,7 +11,10 @@ import {
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
-import { createLayoutWithMetadata } from '@src/lib/layout/utils'
+import {
+  LATEST_LAYOUT_VERSION,
+  createLayoutWithMetadata,
+} from '@src/lib/layout/utils'
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   getDefaultCloudProjectLibrarySetting,
@@ -414,7 +417,9 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v3')
+    expect(parsedPayload.layout?.configs?.default.version).toBe(
+      LATEST_LAYOUT_VERSION
+    )
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )

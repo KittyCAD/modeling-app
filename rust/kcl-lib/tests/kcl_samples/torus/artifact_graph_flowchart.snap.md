@@ -1,25 +1,25 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[255, 352, 0]<br>Consumed: false"]
+    2["Path<br>[273, 370, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[285, 350, 0]"]
+    3["Segment<br>[303, 368, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path4 [Path]
-    4["Path Region<br>[366, 402, 0]<br>Consumed: true"]
+    4["Path Region<br>[384, 420, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    5["Segment<br>[366, 402, 0]"]
+    5["Segment<br>[384, 420, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  1["Plane<br>[255, 352, 0]"]
+  1["Plane<br>[273, 370, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  6["Sweep Revolve<br>[454, 497, 0]<br>Consumed: false"]
+  6["Sweep Revolve<br>[472, 515, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   7[Wall]
     %% face_code_ref=Missing NodePath
   8["SweepEdge Adjacent"]
-  9["SketchBlock<br>[255, 352, 0]"]
+  9["SketchBlock<br>[273, 370, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 4

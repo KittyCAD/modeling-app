@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing import_nested_runtime_error.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `missingName` is not defined
+   ╭────
+ 1 │ export brokenValue = missingName + 1
+   ·                      ─────┬─────
+   ·                           ╰── tests/import_nested_runtime_error/broken.kcl
+   ╰────
+  ├─▶ KCL UndefinedValue error
+  │   
+  │     × undefined value: `missingName` is not defined
+  │      ╭─[1:1]
+  │    1 │ import brokenValue from "broken.kcl"
+  │      · ──────────────────┬─────────────────
+  │      ·                   ╰── import assembly.kcl
+  │    2 │
+  │      ╰────
+  ╰─▶ KCL UndefinedValue error
+      
+        × undefined value: `missingName` is not defined
+         ╭─[3:1]
+       2 │ // message and a backtrace through each import site.
+       3 │ import assemblyValue from "assembly.kcl"
+         · ────────────────────┬───────────────────
+         ·                     ╰── tests/import_nested_runtime_error/input.kcl
+       4 │
+         ╰────

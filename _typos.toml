@@ -15,7 +15,6 @@ extend-exclude = [
   "**/*.snap",
   "packages/codemirror-lang-kcl/test/all.test.ts",
   "public/kcl-samples",
-  "public/kcl-samples-legacy",
   "public/sketch-solve-samples",
   "rust/kcl-lib/expected-bindings",
   "rust/kcl-lib/tests/kcl_samples",

@@ -33,7 +33,7 @@ and `front` two different views. Four names are rejected:
 - a name of nothing but whitespace, which displays as nothing;
 - a name that starts or ends with whitespace, which a reader cannot see but
   the exact comparison above counts;
-- `KCL Default`, which is reserved for the view of the scene generated on
+- `Default View`, which is reserved for the view of the scene generated on
   successful execution of the program.
 
 `baseline` and `except` together decide what the view shows. You start from a
@@ -100,7 +100,7 @@ hide(boss)
 
 // 1. Everything visible.
 //
-// This is NOT the same as `KCL Default`, the view of the scene generated on
+// This is NOT the same as `Default View`, the view of the scene generated on
 // successful execution of the program. A `Show` baseline shows every object
 // the program built, including the boss that `hide(boss)` took out of that
 // scene.
