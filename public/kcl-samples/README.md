@@ -178,6 +178,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![pipe-flange-assembly](screenshots/pipe-flange-assembly.png)](pipe-flange-assembly/main.kcl)
 #### [pipe-straight](pipe-straight/main.kcl) ([screenshot](screenshots/pipe-straight.png))
 [![pipe-straight](screenshots/pipe-straight.png)](pipe-straight/main.kcl)
+#### [pipe-with-bend](pipe-with-bend/main.kcl) ([screenshot](screenshots/pipe-with-bend.png))
+[![pipe-with-bend](screenshots/pipe-with-bend.png)](pipe-with-bend/main.kcl)
 #### [planetary-gearset](planetary-gearset/main.kcl) ([screenshot](screenshots/planetary-gearset.png))
 [![planetary-gearset](screenshots/planetary-gearset.png)](planetary-gearset/main.kcl)
 #### [propeller](propeller/main.kcl) ([screenshot](screenshots/propeller.png))
