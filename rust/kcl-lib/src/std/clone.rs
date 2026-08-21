@@ -467,6 +467,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::artifact::SweepSubType;
     use pretty_assertions::assert_eq;
     use pretty_assertions::assert_ne;
 
@@ -640,8 +641,44 @@ clonedLoft = clone(lofted)
             panic!("Expected a cloned solid loft");
         };
 
+        assert_eq!(lofted.topology_id(), lofted.id);
+        assert_eq!(lofted.original_id(), lofted.id);
+        assert_eq!(lofted.artifact_id, lofted.id.into());
+
         assert_ne!(lofted.id, cloned_loft.id);
+        assert_ne!(lofted.artifact_id, cloned_loft.artifact_id);
+        assert_eq!(cloned_loft.topology_id(), cloned_loft.id);
+        assert_eq!(cloned_loft.original_id(), cloned_loft.id);
+        assert_eq!(cloned_loft.artifact_id, cloned_loft.id.into());
+
+        let loft_sketch = lofted.sketch().expect("Expected loft to retain its base sketch");
+        let cloned_sketch = cloned_loft
+            .sketch()
+            .expect("Expected cloned loft to retain its base sketch");
+        for (path, cloned_path) in loft_sketch.paths.iter().zip(cloned_sketch.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
+        }
+
         assert!(!cloned_loft.value.is_empty());
+        for (surface, cloned_surface) in lofted.value.iter().zip(cloned_loft.value.iter()) {
+            assert_ne!(surface.get_id(), cloned_surface.get_id());
+            assert_eq!(surface.get_tag(), cloned_surface.get_tag());
+        }
+
+        let Some(Artifact::Sweep(source_sweep)) = result.artifact_graph.get(&lofted.artifact_id) else {
+            panic!("Expected the source loft to be represented by a sweep artifact");
+        };
+        assert_eq!(source_sweep.sub_type, SweepSubType::Loft);
+
+        let Some(Artifact::Sweep(cloned_sweep)) = result.artifact_graph.get(&cloned_loft.artifact_id) else {
+            panic!("Expected the cloned loft to be represented by a sweep artifact");
+        };
+        assert_eq!(cloned_sweep.sub_type, SweepSubType::Loft);
+        assert_eq!(cloned_sweep.source_sweep_id, Some(lofted.artifact_id));
+        assert_eq!(cloned_sweep.path_id, cloned_loft.id.into());
+        assert!(!cloned_sweep.consumed);
+
         ctx.close().await;
     }
 
