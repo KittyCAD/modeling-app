@@ -1289,8 +1289,10 @@ export fn intersect(
 /// // This is the equivalent of: subtract([part001], tools=[part002])
 /// subtractedPart = part001 - part002
 /// ```
+///
+/// **Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
 /// ```kcl,legacySketch
-/// @settings(defaultLengthUnit = in)
+/// @settings(defaultLengthUnit = in, kclVersion = 1.0)
 /// 
 /// height = 2.5
 /// width = 2.5
@@ -1565,7 +1567,11 @@ export fn subtract(
 ///     )
 /// ```
 ///
+/// **Legacy KCL 1 example:** The next pipe example uses deprecated `subtract2d`.
+///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// // Color the result of a sweep.
 ///
 /// // Create a path for the sweep.
@@ -1620,8 +1626,10 @@ export fn appearance(
   /// Color of the new material, a hex string like '#ff0000'.
   color: string,
   /// Metalness of the new material, a percentage like 95.7.
+  @(includeInSnippet = true)
   metalness?: number(Count),
   /// Roughness of the new material, a percentage like 95.7.
+  @(includeInSnippet = true)
   roughness?: number(Count),
   /// Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent.
   opacity?: number(Count),

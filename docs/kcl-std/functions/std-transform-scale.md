@@ -39,6 +39,8 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
 way (i.e. scaled differently along each axis).
 
+**Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -58,6 +60,8 @@ way (i.e. scaled differently along each axis).
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Scale a pipe.
 
 // Create a path for the sweep.

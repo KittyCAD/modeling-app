@@ -22,6 +22,9 @@ circle(
 This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
+
+**Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -62,6 +65,8 @@ example = extrude(exampleSketch, length = 5)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-15, 0])
   |> line(end = [30, 0])

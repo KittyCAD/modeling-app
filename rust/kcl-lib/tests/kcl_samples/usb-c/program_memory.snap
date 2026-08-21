@@ -177,10 +177,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5832,
-            "end": 5839,
+            "commentStart": 5850,
+            "end": 5857,
             "moduleId": 0,
-            "start": 5832,
+            "start": 5850,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -208,10 +208,10 @@ description: Variables in memory after executing usb-c.kcl
             ],
             "radius": 1.9,
             "tag": {
-              "commentStart": 5832,
-              "end": 5839,
+              "commentStart": 5850,
+              "end": 5857,
               "moduleId": 0,
-              "start": 5832,
+              "start": 5850,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -719,10 +719,10 @@ description: Variables in memory after executing usb-c.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5360,
-                    "end": 5365,
+                    "commentStart": 5378,
+                    "end": 5383,
                     "moduleId": 0,
-                    "start": 5360,
+                    "start": 5378,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -749,10 +749,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 21.999827271918868,
                   "tag": {
-                    "commentStart": 5433,
-                    "end": 5437,
+                    "commentStart": 5451,
+                    "end": 5455,
                     "moduleId": 0,
-                    "start": 5433,
+                    "start": 5451,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -773,10 +773,10 @@ description: Variables in memory after executing usb-c.kcl
                     9.379946518865395
                   ],
                   "tag": {
-                    "commentStart": 5578,
-                    "end": 5583,
+                    "commentStart": 5596,
+                    "end": 5601,
                     "moduleId": 0,
-                    "start": 5578,
+                    "start": 5596,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -910,10 +910,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3247,
-            "end": 3252,
+            "commentStart": 3265,
+            "end": 3270,
             "moduleId": 0,
-            "start": 3247,
+            "start": 3265,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -924,10 +924,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3366,
-            "end": 3370,
+            "commentStart": 3384,
+            "end": 3388,
             "moduleId": 0,
-            "start": 3366,
+            "start": 3384,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -938,10 +938,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3546,
-            "end": 3551,
+            "commentStart": 3564,
+            "end": 3569,
             "moduleId": 0,
-            "start": 3546,
+            "start": 3564,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -952,10 +952,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3666,
-            "end": 3670,
+            "commentStart": 3684,
+            "end": 3688,
             "moduleId": 0,
-            "start": 3666,
+            "start": 3684,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -966,10 +966,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3843,
-            "end": 3848,
+            "commentStart": 3861,
+            "end": 3866,
             "moduleId": 0,
-            "start": 3843,
+            "start": 3861,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -980,10 +980,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3963,
-            "end": 3967,
+            "commentStart": 3981,
+            "end": 3985,
             "moduleId": 0,
-            "start": 3963,
+            "start": 3981,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -994,10 +994,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1008,10 +1008,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4265,
-            "end": 4269,
+            "commentStart": 4283,
+            "end": 4287,
             "moduleId": 0,
-            "start": 4265,
+            "start": 4283,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1022,10 +1022,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4448,
-            "end": 4453,
+            "commentStart": 4466,
+            "end": 4471,
             "moduleId": 0,
-            "start": 4448,
+            "start": 4466,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1047,10 +1047,10 @@ description: Variables in memory after executing usb-c.kcl
               -2.7926805077037278
             ],
             "tag": {
-              "commentStart": 3247,
-              "end": 3252,
+              "commentStart": 3265,
+              "end": 3270,
               "moduleId": 0,
-              "start": 3247,
+              "start": 3265,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1077,10 +1077,10 @@ description: Variables in memory after executing usb-c.kcl
             ],
             "radius": 1.6000000041514548,
             "tag": {
-              "commentStart": 3366,
-              "end": 3370,
+              "commentStart": 3384,
+              "end": 3388,
               "moduleId": 0,
-              "start": 3366,
+              "start": 3384,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -1101,10 +1101,10 @@ description: Variables in memory after executing usb-c.kcl
               -1.1927779888527936
             ],
             "tag": {
-              "commentStart": 3546,
-              "end": 3551,
+              "commentStart": 3564,
+              "end": 3569,
               "moduleId": 0,
-              "start": 3546,
+              "start": 3564,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1131,10 +1131,10 @@ description: Variables in memory after executing usb-c.kcl
             ],
             "radius": 1.600000002170055,
             "tag": {
-              "commentStart": 3666,
-              "end": 3670,
+              "commentStart": 3684,
+              "end": 3688,
               "moduleId": 0,
-              "start": 3666,
+              "start": 3684,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1155,10 +1155,10 @@ description: Variables in memory after executing usb-c.kcl
               2.9873940918676616
             ],
             "tag": {
-              "commentStart": 3843,
-              "end": 3848,
+              "commentStart": 3861,
+              "end": 3866,
               "moduleId": 0,
-              "start": 3843,
+              "start": 3861,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1185,10 +1185,10 @@ description: Variables in memory after executing usb-c.kcl
             ],
             "radius": 1.600000000108401,
             "tag": {
-              "commentStart": 3963,
-              "end": 3967,
+              "commentStart": 3981,
+              "end": 3985,
               "moduleId": 0,
-              "start": 3963,
+              "start": 3981,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1209,10 +1209,10 @@ description: Variables in memory after executing usb-c.kcl
               1.3247264844396784
             ],
             "tag": {
-              "commentStart": 4143,
-              "end": 4148,
+              "commentStart": 4161,
+              "end": 4166,
               "moduleId": 0,
-              "start": 4143,
+              "start": 4161,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1239,10 +1239,10 @@ description: Variables in memory after executing usb-c.kcl
             ],
             "radius": 1.6000000021431813,
             "tag": {
-              "commentStart": 4265,
-              "end": 4269,
+              "commentStart": 4283,
+              "end": 4287,
               "moduleId": 0,
-              "start": 4265,
+              "start": 4283,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1263,10 +1263,10 @@ description: Variables in memory after executing usb-c.kcl
               -2.79268050619641
             ],
             "tag": {
-              "commentStart": 4448,
-              "end": 4453,
+              "commentStart": 4466,
+              "end": 4471,
               "moduleId": 0,
-              "start": 4448,
+              "start": 4466,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2755,10 +2755,10 @@ description: Variables in memory after executing usb-c.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3089,
-                    "end": 3094,
+                    "commentStart": 3107,
+                    "end": 3112,
                     "moduleId": 0,
-                    "start": 3089,
+                    "start": 3107,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2779,10 +2779,10 @@ description: Variables in memory after executing usb-c.kcl
                     -2.7926805077037278
                   ],
                   "tag": {
-                    "commentStart": 3247,
-                    "end": 3252,
+                    "commentStart": 3265,
+                    "end": 3270,
                     "moduleId": 0,
-                    "start": 3247,
+                    "start": 3265,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2809,10 +2809,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 1.6000000041514548,
                   "tag": {
-                    "commentStart": 3366,
-                    "end": 3370,
+                    "commentStart": 3384,
+                    "end": 3388,
                     "moduleId": 0,
-                    "start": 3366,
+                    "start": 3384,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -2833,10 +2833,10 @@ description: Variables in memory after executing usb-c.kcl
                     -1.1927779888527936
                   ],
                   "tag": {
-                    "commentStart": 3546,
-                    "end": 3551,
+                    "commentStart": 3564,
+                    "end": 3569,
                     "moduleId": 0,
-                    "start": 3546,
+                    "start": 3564,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2863,10 +2863,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 1.600000002170055,
                   "tag": {
-                    "commentStart": 3666,
-                    "end": 3670,
+                    "commentStart": 3684,
+                    "end": 3688,
                     "moduleId": 0,
-                    "start": 3666,
+                    "start": 3684,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -2887,10 +2887,10 @@ description: Variables in memory after executing usb-c.kcl
                     2.9873940918676616
                   ],
                   "tag": {
-                    "commentStart": 3843,
-                    "end": 3848,
+                    "commentStart": 3861,
+                    "end": 3866,
                     "moduleId": 0,
-                    "start": 3843,
+                    "start": 3861,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2917,10 +2917,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 1.600000000108401,
                   "tag": {
-                    "commentStart": 3963,
-                    "end": 3967,
+                    "commentStart": 3981,
+                    "end": 3985,
                     "moduleId": 0,
-                    "start": 3963,
+                    "start": 3981,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -2941,10 +2941,10 @@ description: Variables in memory after executing usb-c.kcl
                     1.3247264844396784
                   ],
                   "tag": {
-                    "commentStart": 4143,
-                    "end": 4148,
+                    "commentStart": 4161,
+                    "end": 4166,
                     "moduleId": 0,
-                    "start": 4143,
+                    "start": 4161,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2971,10 +2971,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 1.6000000021431813,
                   "tag": {
-                    "commentStart": 4265,
-                    "end": 4269,
+                    "commentStart": 4283,
+                    "end": 4287,
                     "moduleId": 0,
-                    "start": 4265,
+                    "start": 4283,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -2995,10 +2995,10 @@ description: Variables in memory after executing usb-c.kcl
                     -2.79268050619641
                   ],
                   "tag": {
-                    "commentStart": 4448,
-                    "end": 4453,
+                    "commentStart": 4466,
+                    "end": 4471,
                     "moduleId": 0,
-                    "start": 4448,
+                    "start": 4466,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -3145,10 +3145,10 @@ description: Variables in memory after executing usb-c.kcl
             -1.3
           ],
           "tag": {
-            "commentStart": 901,
-            "end": 906,
+            "commentStart": 919,
+            "end": 924,
             "moduleId": 0,
-            "start": 901,
+            "start": 919,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3169,10 +3169,10 @@ description: Variables in memory after executing usb-c.kcl
             -1.3
           ],
           "tag": {
-            "commentStart": 981,
-            "end": 986,
+            "commentStart": 999,
+            "end": 1004,
             "moduleId": 0,
-            "start": 981,
+            "start": 999,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3193,10 +3193,10 @@ description: Variables in memory after executing usb-c.kcl
             1.3
           ],
           "tag": {
-            "commentStart": 1098,
-            "end": 1103,
+            "commentStart": 1116,
+            "end": 1121,
             "moduleId": 0,
-            "start": 1098,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3217,10 +3217,10 @@ description: Variables in memory after executing usb-c.kcl
             1.3
           ],
           "tag": {
-            "commentStart": 1215,
-            "end": 1220,
+            "commentStart": 1233,
+            "end": 1238,
             "moduleId": 0,
-            "start": 1215,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3327,10 +3327,10 @@ description: Variables in memory after executing usb-c.kcl
             -0.4
           ],
           "tag": {
-            "commentStart": 2388,
-            "end": 2393,
+            "commentStart": 2406,
+            "end": 2411,
             "moduleId": 0,
-            "start": 2388,
+            "start": 2406,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3351,10 +3351,10 @@ description: Variables in memory after executing usb-c.kcl
             -0.4
           ],
           "tag": {
-            "commentStart": 2468,
-            "end": 2473,
+            "commentStart": 2486,
+            "end": 2491,
             "moduleId": 0,
-            "start": 2468,
+            "start": 2486,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3375,10 +3375,10 @@ description: Variables in memory after executing usb-c.kcl
             0.4
           ],
           "tag": {
-            "commentStart": 2585,
-            "end": 2590,
+            "commentStart": 2603,
+            "end": 2608,
             "moduleId": 0,
-            "start": 2585,
+            "start": 2603,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3399,10 +3399,10 @@ description: Variables in memory after executing usb-c.kcl
             0.4
           ],
           "tag": {
-            "commentStart": 2702,
-            "end": 2707,
+            "commentStart": 2720,
+            "end": 2725,
             "moduleId": 0,
-            "start": 2702,
+            "start": 2720,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3501,10 +3501,10 @@ description: Variables in memory after executing usb-c.kcl
             -2.7926805077037278
           ],
           "tag": {
-            "commentStart": 3247,
-            "end": 3252,
+            "commentStart": 3265,
+            "end": 3270,
             "moduleId": 0,
-            "start": 3247,
+            "start": 3265,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3531,10 +3531,10 @@ description: Variables in memory after executing usb-c.kcl
           ],
           "radius": 1.6000000041514548,
           "tag": {
-            "commentStart": 3366,
-            "end": 3370,
+            "commentStart": 3384,
+            "end": 3388,
             "moduleId": 0,
-            "start": 3366,
+            "start": 3384,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -3555,10 +3555,10 @@ description: Variables in memory after executing usb-c.kcl
             -1.1927779888527936
           ],
           "tag": {
-            "commentStart": 3546,
-            "end": 3551,
+            "commentStart": 3564,
+            "end": 3569,
             "moduleId": 0,
-            "start": 3546,
+            "start": 3564,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3585,10 +3585,10 @@ description: Variables in memory after executing usb-c.kcl
           ],
           "radius": 1.600000002170055,
           "tag": {
-            "commentStart": 3666,
-            "end": 3670,
+            "commentStart": 3684,
+            "end": 3688,
             "moduleId": 0,
-            "start": 3666,
+            "start": 3684,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3609,10 +3609,10 @@ description: Variables in memory after executing usb-c.kcl
             2.9873940918676616
           ],
           "tag": {
-            "commentStart": 3843,
-            "end": 3848,
+            "commentStart": 3861,
+            "end": 3866,
             "moduleId": 0,
-            "start": 3843,
+            "start": 3861,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3639,10 +3639,10 @@ description: Variables in memory after executing usb-c.kcl
           ],
           "radius": 1.600000000108401,
           "tag": {
-            "commentStart": 3963,
-            "end": 3967,
+            "commentStart": 3981,
+            "end": 3985,
             "moduleId": 0,
-            "start": 3963,
+            "start": 3981,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -3663,10 +3663,10 @@ description: Variables in memory after executing usb-c.kcl
             1.3247264844396784
           ],
           "tag": {
-            "commentStart": 4143,
-            "end": 4148,
+            "commentStart": 4161,
+            "end": 4166,
             "moduleId": 0,
-            "start": 4143,
+            "start": 4161,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3693,10 +3693,10 @@ description: Variables in memory after executing usb-c.kcl
           ],
           "radius": 1.6000000021431813,
           "tag": {
-            "commentStart": 4265,
-            "end": 4269,
+            "commentStart": 4283,
+            "end": 4287,
             "moduleId": 0,
-            "start": 4265,
+            "start": 4283,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -3717,10 +3717,10 @@ description: Variables in memory after executing usb-c.kcl
             -2.79268050619641
           ],
           "tag": {
-            "commentStart": 4448,
-            "end": 4453,
+            "commentStart": 4466,
+            "end": 4471,
             "moduleId": 0,
-            "start": 4448,
+            "start": 4466,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3849,10 +3849,10 @@ description: Variables in memory after executing usb-c.kcl
           ],
           "radius": 1.9,
           "tag": {
-            "commentStart": 5832,
-            "end": 5839,
+            "commentStart": 5850,
+            "end": 5857,
             "moduleId": 0,
-            "start": 5832,
+            "start": 5850,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3935,10 +3935,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 901,
-            "end": 906,
+            "commentStart": 919,
+            "end": 924,
             "moduleId": 0,
-            "start": 901,
+            "start": 919,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3949,10 +3949,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 981,
-            "end": 986,
+            "commentStart": 999,
+            "end": 1004,
             "moduleId": 0,
-            "start": 981,
+            "start": 999,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3963,10 +3963,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1098,
-            "end": 1103,
+            "commentStart": 1116,
+            "end": 1121,
             "moduleId": 0,
-            "start": 1098,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3977,10 +3977,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1215,
-            "end": 1220,
+            "commentStart": 1233,
+            "end": 1238,
             "moduleId": 0,
-            "start": 1215,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3991,10 +3991,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1538,
-            "end": 1550,
+            "commentStart": 1556,
+            "end": 1568,
             "moduleId": 0,
-            "start": 1538,
+            "start": 1556,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -4005,10 +4005,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1513,
-            "end": 1523,
+            "commentStart": 1531,
+            "end": 1541,
             "moduleId": 0,
-            "start": 1513,
+            "start": 1531,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -4040,10 +4040,10 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 901,
-              "end": 906,
+              "commentStart": 919,
+              "end": 924,
               "moduleId": 0,
-              "start": 901,
+              "start": 919,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4064,10 +4064,10 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 981,
-              "end": 986,
+              "commentStart": 999,
+              "end": 1004,
               "moduleId": 0,
-              "start": 981,
+              "start": 999,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4088,10 +4088,10 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1098,
-              "end": 1103,
+              "commentStart": 1116,
+              "end": 1121,
               "moduleId": 0,
-              "start": 1098,
+              "start": 1116,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4112,10 +4112,10 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1215,
-              "end": 1220,
+              "commentStart": 1233,
+              "end": 1238,
               "moduleId": 0,
-              "start": 1215,
+              "start": 1233,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4281,10 +4281,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 901,
-            "end": 906,
+            "commentStart": 919,
+            "end": 924,
             "moduleId": 0,
-            "start": 901,
+            "start": 919,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4295,10 +4295,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 981,
-            "end": 986,
+            "commentStart": 999,
+            "end": 1004,
             "moduleId": 0,
-            "start": 981,
+            "start": 999,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4309,10 +4309,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1098,
-            "end": 1103,
+            "commentStart": 1116,
+            "end": 1121,
             "moduleId": 0,
-            "start": 1098,
+            "start": 1116,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4323,10 +4323,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1215,
-            "end": 1220,
+            "commentStart": 1233,
+            "end": 1238,
             "moduleId": 0,
-            "start": 1215,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4337,10 +4337,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1538,
-            "end": 1550,
+            "commentStart": 1556,
+            "end": 1568,
             "moduleId": 0,
-            "start": 1538,
+            "start": 1556,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -4351,10 +4351,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1513,
-            "end": 1523,
+            "commentStart": 1531,
+            "end": 1541,
             "moduleId": 0,
-            "start": 1513,
+            "start": 1531,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -4386,10 +4386,10 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 901,
-              "end": 906,
+              "commentStart": 919,
+              "end": 924,
               "moduleId": 0,
-              "start": 901,
+              "start": 919,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4410,10 +4410,10 @@ description: Variables in memory after executing usb-c.kcl
               -1.3
             ],
             "tag": {
-              "commentStart": 981,
-              "end": 986,
+              "commentStart": 999,
+              "end": 1004,
               "moduleId": 0,
-              "start": 981,
+              "start": 999,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4434,10 +4434,10 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1098,
-              "end": 1103,
+              "commentStart": 1116,
+              "end": 1121,
               "moduleId": 0,
-              "start": 1098,
+              "start": 1116,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4458,10 +4458,10 @@ description: Variables in memory after executing usb-c.kcl
               1.3
             ],
             "tag": {
-              "commentStart": 1215,
-              "end": 1220,
+              "commentStart": 1233,
+              "end": 1238,
               "moduleId": 0,
-              "start": 1215,
+              "start": 1233,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5144,10 +5144,10 @@ description: Variables in memory after executing usb-c.kcl
                     -1.3
                   ],
                   "tag": {
-                    "commentStart": 901,
-                    "end": 906,
+                    "commentStart": 919,
+                    "end": 924,
                     "moduleId": 0,
-                    "start": 901,
+                    "start": 919,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5168,10 +5168,10 @@ description: Variables in memory after executing usb-c.kcl
                     -1.3
                   ],
                   "tag": {
-                    "commentStart": 981,
-                    "end": 986,
+                    "commentStart": 999,
+                    "end": 1004,
                     "moduleId": 0,
-                    "start": 981,
+                    "start": 999,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5192,10 +5192,10 @@ description: Variables in memory after executing usb-c.kcl
                     1.3
                   ],
                   "tag": {
-                    "commentStart": 1098,
-                    "end": 1103,
+                    "commentStart": 1116,
+                    "end": 1121,
                     "moduleId": 0,
-                    "start": 1098,
+                    "start": 1116,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5216,10 +5216,10 @@ description: Variables in memory after executing usb-c.kcl
                     1.3
                   ],
                   "tag": {
-                    "commentStart": 1215,
-                    "end": 1220,
+                    "commentStart": 1233,
+                    "end": 1238,
                     "moduleId": 0,
-                    "start": 1215,
+                    "start": 1233,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5828,10 +5828,10 @@ description: Variables in memory after executing usb-c.kcl
                     -0.4
                   ],
                   "tag": {
-                    "commentStart": 2388,
-                    "end": 2393,
+                    "commentStart": 2406,
+                    "end": 2411,
                     "moduleId": 0,
-                    "start": 2388,
+                    "start": 2406,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5852,10 +5852,10 @@ description: Variables in memory after executing usb-c.kcl
                     -0.4
                   ],
                   "tag": {
-                    "commentStart": 2468,
-                    "end": 2473,
+                    "commentStart": 2486,
+                    "end": 2491,
                     "moduleId": 0,
-                    "start": 2468,
+                    "start": 2486,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5876,10 +5876,10 @@ description: Variables in memory after executing usb-c.kcl
                     0.4
                   ],
                   "tag": {
-                    "commentStart": 2585,
-                    "end": 2590,
+                    "commentStart": 2603,
+                    "end": 2608,
                     "moduleId": 0,
-                    "start": 2585,
+                    "start": 2603,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5900,10 +5900,10 @@ description: Variables in memory after executing usb-c.kcl
                     0.4
                   ],
                   "tag": {
-                    "commentStart": 2702,
-                    "end": 2707,
+                    "commentStart": 2720,
+                    "end": 2725,
                     "moduleId": 0,
-                    "start": 2702,
+                    "start": 2720,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -6140,10 +6140,10 @@ description: Variables in memory after executing usb-c.kcl
                   ],
                   "radius": 1.9,
                   "tag": {
-                    "commentStart": 5832,
-                    "end": 5839,
+                    "commentStart": 5850,
+                    "end": 5857,
                     "moduleId": 0,
-                    "start": 5832,
+                    "start": 5850,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -6232,10 +6232,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2388,
-            "end": 2393,
+            "commentStart": 2406,
+            "end": 2411,
             "moduleId": 0,
-            "start": 2388,
+            "start": 2406,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6246,10 +6246,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2468,
-            "end": 2473,
+            "commentStart": 2486,
+            "end": 2491,
             "moduleId": 0,
-            "start": 2468,
+            "start": 2486,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -6260,10 +6260,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2585,
-            "end": 2590,
+            "commentStart": 2603,
+            "end": 2608,
             "moduleId": 0,
-            "start": 2585,
+            "start": 2603,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6274,10 +6274,10 @@ description: Variables in memory after executing usb-c.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2702,
-            "end": 2707,
+            "commentStart": 2720,
+            "end": 2725,
             "moduleId": 0,
-            "start": 2702,
+            "start": 2720,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -6299,10 +6299,10 @@ description: Variables in memory after executing usb-c.kcl
               -0.4
             ],
             "tag": {
-              "commentStart": 2388,
-              "end": 2393,
+              "commentStart": 2406,
+              "end": 2411,
               "moduleId": 0,
-              "start": 2388,
+              "start": 2406,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6323,10 +6323,10 @@ description: Variables in memory after executing usb-c.kcl
               -0.4
             ],
             "tag": {
-              "commentStart": 2468,
-              "end": 2473,
+              "commentStart": 2486,
+              "end": 2491,
               "moduleId": 0,
-              "start": 2468,
+              "start": 2486,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -6347,10 +6347,10 @@ description: Variables in memory after executing usb-c.kcl
               0.4
             ],
             "tag": {
-              "commentStart": 2585,
-              "end": 2590,
+              "commentStart": 2603,
+              "end": 2608,
               "moduleId": 0,
-              "start": 2585,
+              "start": 2603,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6371,10 +6371,10 @@ description: Variables in memory after executing usb-c.kcl
               0.4
             ],
             "tag": {
-              "commentStart": 2702,
-              "end": 2707,
+              "commentStart": 2720,
+              "end": 2725,
               "moduleId": 0,
-              "start": 2702,
+              "start": 2720,
               "type": "TagDeclarator",
               "value": "line4"
             },
