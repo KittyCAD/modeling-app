@@ -947,6 +947,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Propeller",
+    "description": "A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Computer Hardware"
     ],
     "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
