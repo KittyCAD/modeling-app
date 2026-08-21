@@ -54,8 +54,6 @@ features = [
 
 [dev-dependencies]
 anyhow.workspace = true
-pretty_assertions = "1.4.1"
-wasm-bindgen-test = "0.3.65"
 
 [lints]
 workspace = true
