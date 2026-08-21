@@ -8,6 +8,7 @@ import type {
 import type { Project } from '@src/lib/project'
 
 export type ProjectSessionMutationOperation =
+  | 'open-project'
   | 'refresh-project-tree'
   | 'open-editor'
   | 'close-editor'
@@ -83,6 +84,7 @@ export interface ProjectSessionService {
   readonly mutation: Signal<ProjectSessionMutationState>
   getProject: () => ZDSProject | undefined
   getFileSystemOperations: () => ZDSProjectFileSystemOperations
+  openProject: (project: Project) => Promise<ZDSProject>
   setProject: (project: ZDSProject | undefined) => void
   clearProject: () => void
   getProjectTree: () => Project | undefined

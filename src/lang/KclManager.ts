@@ -162,7 +162,6 @@ import {
 import { requestWriteToFile } from '@src/editor/plugins/write'
 import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
 import {
@@ -316,6 +315,21 @@ interface SystemDeps {
   keymap?: KeymapService
 }
 
+/**
+ * Runtime collaborators needed to open project editors and hydrate project
+ * files. The project session service owns this wiring so ZDSProject does not
+ * need to depend on the App shell directly.
+ */
+export interface ZDSProjectRuntime {
+  wasmPromise: Promise<ModuleType>
+  settings: SettingsActorType
+  commandBar: CommandBarActorType
+  engineCommandManager: ConnectionManager
+  rustContext: RustContext
+  userFeatures: UserFeaturesSettleService
+  keymap?: KeymapService
+}
+
 export enum KclManagerEvents {
   LongExecution = 'long-execution',
 }
@@ -410,7 +424,7 @@ export class ZDSProject {
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App,
+    private projectRuntime: ZDSProjectRuntime,
     fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
   ) {
     this.fileSystemOperations =
@@ -435,10 +449,14 @@ export class ZDSProject {
   /** Open a project, with the option to open an initial editor too */
   static async open(
     projectRef: Signal<Project>,
-    app: App,
+    projectRuntime: ZDSProjectRuntime,
     fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
   ) {
-    return new ZDSProject(projectRef, app, fileSystemOperationProvider)
+    return new ZDSProject(
+      projectRef,
+      projectRuntime,
+      fileSystemOperationProvider
+    )
   }
 
   get executingPath() {
@@ -494,12 +512,13 @@ export class ZDSProject {
     }
 
     const systemDeps: SystemDeps = {
-      wasmInstancePromise: this.app.wasmPromise,
-      commandBar: this.app.commands.actor,
-      settings: this.app.settings.actor,
-      engineCommandManager: this.app.engineCommandManager,
-      rustContext: this.app.rustContext,
-      userFeatures: this.app.userFeatures,
+      wasmInstancePromise: this.projectRuntime.wasmPromise,
+      commandBar: this.projectRuntime.commandBar,
+      settings: this.projectRuntime.settings,
+      engineCommandManager: this.projectRuntime.engineCommandManager,
+      rustContext: this.projectRuntime.rustContext,
+      userFeatures: this.projectRuntime.userFeatures,
+      keymap: this.projectRuntime.keymap,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -545,7 +564,8 @@ export class ZDSProject {
     // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
     newEditor
       .updateTheme(
-        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
+        getSettingsFromActorContext(this.projectRuntime.settings).app.theme
+          .current
       )
       .catch(reportRejection)
 
@@ -664,7 +684,7 @@ export class ZDSProject {
       return new Uint8Array(File.encoder.encode(textContents))
     }
 
-    const wasmInstance = await this.app.wasmPromise
+    const wasmInstance = await this.projectRuntime.wasmPromise
     const configuration = await readAppSettingsFile(wasmInstance)
     if (err(configuration)) {
       return Promise.reject(configuration)
@@ -746,7 +766,7 @@ export class ZDSProject {
   async refreshProjectTree() {
     const refreshedProject = await getProjectInfo(
       this.path,
-      await this.app.wasmPromise
+      await this.projectRuntime.wasmPromise
     )
     const currentProject = this.projectIORefSignal.value
     const ownedProject = {

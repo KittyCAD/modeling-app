@@ -4,12 +4,25 @@ import {
   defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import { effect, signal, type Signal } from '@preact/signals-core'
+import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import { ZDSProject, type ZDSProjectRuntime } from '@src/lang/KclManager'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import type { Project } from '@src/lib/project'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import {
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { commandSystemService } from '@src/registry/contracts/commands'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import {
   type FsOperationBatch,
   fsOperationQueue,
 } from '@src/registry/contracts/fsOperationQueue'
+import { keymapService } from '@src/registry/contracts/keymap'
 import {
   type ProjectSessionApplyFilePatchInput,
   type ProjectSessionEntryCopyMoveInput,
@@ -22,7 +35,34 @@ import {
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
+import { settingsService } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import fsOperationQueueRegistryItem from '@src/registry/extensions/fsOperationQueue'
+import type { Subscription } from 'xstate'
+
+function zookeeperReplayChangesProjectFileSet(
+  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+) {
+  return replayFiles.some(
+    (replayFile) =>
+      replayFile.previousContent === null || replayFile.nextContent === null
+  )
+}
+
+function getZookeeperReplayFallbackFilePath(
+  project: ZDSProject,
+  deletedPaths: Set<string>
+) {
+  const defaultFile = project.projectIORefSignal.value.default_file
+  const candidates = [
+    defaultFile,
+    ...project.files.map((file) => file.path),
+  ].filter((path, index, paths) => paths.indexOf(path) === index)
+
+  return candidates.find((path) => path && !deletedPaths.has(path))
+}
 
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
@@ -30,6 +70,9 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   const mutation = signal<ProjectSessionMutationState>({ pending: false })
   let disposeProjectTreeSync: (() => void) | undefined
+  let disposeProjectHistoryExtensions: (() => void) | undefined
+  let projectFoldersSubscription: Subscription | undefined
+  let seededCloudSyncOpenedProject = false
 
   const setMutation = ({
     pending,
@@ -51,6 +94,48 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       return new Error('No project is currently open.')
     }
     return currentProject
+  }
+
+  const setCloudSyncOpenedProject = (nextProject?: Project) => {
+    ctx.services.get(cloudSyncService).setOpenedProject(
+      nextProject
+        ? {
+            projectPath: nextProject.path,
+            ...(nextProject.libraryPath
+              ? { libraryPath: nextProject.libraryPath }
+              : {}),
+            ...(nextProject.libraryType
+              ? { libraryType: nextProject.libraryType }
+              : {}),
+          }
+        : undefined
+    )
+    seededCloudSyncOpenedProject = Boolean(nextProject)
+  }
+
+  const clearCloudSyncOpenedProject = () => {
+    if (!seededCloudSyncOpenedProject) {
+      return
+    }
+    setCloudSyncOpenedProject(undefined)
+  }
+
+  const createProjectRuntime = (): ZDSProjectRuntime => {
+    const wasmPromise =
+      ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
+    const settings = ctx.services.get(settingsService)
+    const commands = ctx.services.get(commandSystemService)
+
+    return {
+      wasmPromise,
+      settings: settings.actor,
+      commandBar: commands.actor,
+      engineCommandManager: ctx.services.get(engineConnectionService).manager,
+      rustContext: ctx.services.get(rustContextService).context,
+      userFeatures: ctx.services.get(userFeaturesService),
+      keymap: ctx.services.get(keymapService),
+    }
   }
 
   const syncProjectTree = () => {
@@ -93,6 +178,127 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         operation: 'refresh-project-tree',
         lastTargetPath: currentProject.path,
       })
+    }
+  }
+
+  const watchSystemIOProjectTree = (projectIORefSignal: Signal<Project>) => {
+    projectFoldersSubscription?.unsubscribe()
+    projectFoldersSubscription = ctx.services
+      .get(systemIOService)
+      .actor.subscribe(({ context }) => {
+        const foundProject = (context.folders ?? []).find(
+          (candidate) =>
+            candidate.name === projectIORefSignal.value.name &&
+            candidate.path === projectIORefSignal.value.path
+        )
+        if (foundProject && projectIORefSignal.value !== foundProject) {
+          projectIORefSignal.value = {
+            ...foundProject,
+            ...(projectIORefSignal.value.libraryPath
+              ? { libraryPath: projectIORefSignal.value.libraryPath }
+              : {}),
+            ...(projectIORefSignal.value.libraryType
+              ? { libraryType: projectIORefSignal.value.libraryType }
+              : {}),
+          }
+        }
+      })
+  }
+
+  const watchProjectHistoryExtensions = () => {
+    const systemIOActor = ctx.services.get(systemIOService).actor
+
+    disposeProjectHistoryExtensions?.()
+    disposeProjectHistoryExtensions = effect(() => {
+      const currentProject = project.value
+      const executingEditor = currentProject?.executingEditor.value
+      if (!currentProject || !executingEditor) {
+        return
+      }
+
+      const disposeFSHistory = buildFSHistoryExtension(
+        systemIOActor,
+        executingEditor
+      )
+      const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+        kclManager: executingEditor,
+        onCurrentFileDelete: async (deletedPaths) => {
+          const fallbackPath = getZookeeperReplayFallbackFilePath(
+            currentProject,
+            deletedPaths
+          )
+          if (!fallbackPath) {
+            return Promise.reject(
+              new Error(
+                'Cannot replay this Zookeeper edit because no fallback KCL file is available.'
+              )
+            )
+          }
+
+          await currentProject.openEditor(fallbackPath, executingEditor)
+        },
+        onActiveFileRestore: async (restoredPath, restoredContents) => {
+          await currentProject.openEditor(
+            restoredPath,
+            executingEditor,
+            restoredContents
+          )
+        },
+        onProjectFilesReplay: async (replayFiles) => {
+          await currentProject.syncReplayedFilesToRust(replayFiles)
+          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
+            systemIOActor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+          }
+        },
+      })
+
+      return () => {
+        disposeFSHistory()
+        disposeZookeeperHistory()
+      }
+    })
+  }
+
+  const openProject = async (projectIORef: Project) => {
+    serviceImpl.clearProject()
+    setMutation({
+      pending: true,
+      operation: 'open-project',
+      targetPath: projectIORef.path,
+      lastTargetPath: mutation.value.lastTargetPath,
+    })
+
+    try {
+      const ownedProject = await projectWithLibraryOwnership(
+        projectIORef,
+        ctx.services.get(settingsService).get().app.libraries.current
+      )
+      const projectIORefSignal = signal(ownedProject)
+      const openedProject = await ZDSProject.open(
+        projectIORefSignal,
+        createProjectRuntime(),
+        serviceImpl
+      )
+      serviceImpl.setProject(openedProject)
+      setCloudSyncOpenedProject(ownedProject)
+      watchProjectHistoryExtensions()
+      watchSystemIOProjectTree(projectIORefSignal)
+      setMutation({
+        pending: false,
+        operation: 'open-project',
+        lastTargetPath: openedProject.path,
+      })
+      return openedProject
+    } catch (error) {
+      serviceImpl.clearProject()
+      setMutation({
+        pending: false,
+        operation: 'open-project',
+        lastTargetPath: projectIORef.path,
+      })
+      return Promise.reject(error)
     }
   }
 
@@ -167,13 +373,20 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     mutation,
     getProject: () => project.value,
     getFileSystemOperations: () => ctx.services.get(fsOperationQueue),
+    openProject,
     setProject: (nextProject) => {
       project.value = nextProject
       watchProjectTree(nextProject)
     },
     clearProject: () => {
+      disposeProjectHistoryExtensions?.()
+      disposeProjectHistoryExtensions = undefined
+      projectFoldersSubscription?.unsubscribe()
+      projectFoldersSubscription = undefined
+      project.value?.close?.()
       project.value = undefined
       watchProjectTree(undefined)
+      clearCloudSyncOpenedProject()
     },
     getProjectTree: () => projectTree.value,
     refreshProjectTree,
@@ -284,8 +497,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       id: 'project-session-extension',
       providesServices: [provideService(projectSession, serviceImpl)],
       dispose: () => {
-        disposeProjectTreeSync?.()
-        disposeProjectTreeSync = undefined
+        serviceImpl.clearProject()
       },
     }),
   }
