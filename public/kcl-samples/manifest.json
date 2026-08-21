@@ -231,6 +231,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Maker"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
+    "multipleFiles": false,
+    "title": "Clock",
+    "description": "A clock with roman numerals",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Automotive"
     ],
     "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
@@ -798,6 +811,19 @@
     "multipleFiles": false,
     "title": "M4 Heat-Set Insert",
     "description": "Simplified M4 heat-set threaded insert with stepped outer retention features, a tapered lead-in section, and a plain inner bore for envelope and fit modeling.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
+    "multipleFiles": false,
+    "title": "Vented Manhole Cover",
+    "description": "A cast-iron cover with traffic-safe ventilation slots and a side pick hole.",
     "files": [
       "main.kcl"
     ]
