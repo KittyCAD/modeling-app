@@ -19,6 +19,8 @@ import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { err, reportRejection } from '@src/lib/trap'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { StateFrom } from 'xstate'
 
 export type ActivationTarget =
   | { kind: 'kclDefault' } // `kclDefault` is computed, so it carries no artifact.
@@ -27,6 +29,15 @@ export type ActivationTarget =
 export function hasNamedViewsUi(): boolean {
   return (
     window.app?.userFeatures.has(NAMED_VIEWS_UI_FEATURE_FLAG, false) ?? false
+  )
+}
+
+export function isSketchSessionOpen(
+  state: StateFrom<typeof modelingMachine> | null | undefined
+): boolean {
+  return (
+    state?.matches('Sketch') === true ||
+    state?.matches('sketchSolveMode') === true
   )
 }
 
@@ -248,7 +259,8 @@ function reapplyContext(kclManager: KclManager): {
     active === null ||
     !hasNamedViewsUi() ||
     !kclManager.engineCommandManager.isReady ||
-    kclManager.errors.length > 0
+    kclManager.errors.length > 0 ||
+    isSketchSessionOpen(kclManager.modelingState)
   ) {
     return null
   }
