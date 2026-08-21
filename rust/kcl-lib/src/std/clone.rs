@@ -676,7 +676,11 @@ clonedLoft = clone(lofted)
         };
         assert_eq!(cloned_sweep.sub_type, SweepSubType::Loft);
         assert_eq!(cloned_sweep.source_sweep_id, Some(lofted.artifact_id));
-        assert_eq!(cloned_sweep.path_id, cloned_loft.id.into());
+        assert_ne!(cloned_sweep.path_id, source_sweep.path_id);
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_sweep.path_id),
+            Some(Artifact::Path(path)) if path.sweep_id == Some(cloned_loft.artifact_id)
+        ));
         assert!(!cloned_sweep.consumed);
 
         ctx.close().await;
