@@ -300,7 +300,9 @@ export const fileLoader =
     })
     await waitFor(settingsActor, (state) => state.matches('idle'))
 
-    const projectRef = await app.openProject(project)
+    const projectRef = await app.registry
+      .get(projectSession)
+      .openProject(project)
     const editor = await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
