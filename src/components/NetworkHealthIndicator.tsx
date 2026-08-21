@@ -3,9 +3,9 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { ConnectingTypeGroup } from '@src/lib/engineConnection/utils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import type { ConnectingTypeGroup } from '@src/lib/engineConnection/utils'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Strong',
@@ -72,14 +72,15 @@ const overallConnectionStateIcon = {
 } as const
 
 export const useNetworkHealthStatus = (): StatusBarItemType => {
-  const { overallState } = useNetworkContext()
+  const { overallState, fps } = useNetworkContext()
+  const fpsLabel = fps === undefined ? '' : `, ${fps} FPS`
 
   return {
     id: 'network-health',
     'data-testid': `network-toggle-${
       overallState === NetworkHealthState.Ok ? 'ok' : 'other'
     }`,
-    label: `Network health (${NETWORK_HEALTH_TEXT[overallState]})`,
+    label: `Network health (${NETWORK_HEALTH_TEXT[overallState]}${fpsLabel})`,
     hideLabel: true,
     element: 'popover',
     className: overallConnectionStateColor[overallState].icon,
@@ -98,6 +99,7 @@ function NetworkHealthPopoverContent() {
     ping,
     setHasCopied,
     hasCopied,
+    fps,
   } = useNetworkContext()
 
   return (
@@ -127,6 +129,19 @@ function NetworkHealthPopoverContent() {
           className={`font-bold text-xs uppercase px-2 py-1 rounded-sm ${overallConnectionStateColor[overallState].icon}`}
         >
           {ping ?? 'N/A'}
+        </p>
+      </div>
+      <div className="flex items-center justify-between p-2 rounded-t-sm">
+        <h2
+          className={`text-xs font-sans font-normal ${overallConnectionStateColor[overallState].icon}`}
+        >
+          FPS
+        </h2>
+        <p
+          data-testid="network-fps"
+          className={`font-bold text-xs uppercase px-2 py-1 rounded-sm ${overallConnectionStateColor[overallState].icon}`}
+        >
+          {fps ?? 'N/A'}
         </p>
       </div>
       <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">

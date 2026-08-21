@@ -5,9 +5,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { mark } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -15,6 +12,9 @@ import {
   type ManagerTearDown,
   toRTCSessionDescriptionInit,
 } from '@src/lib/engineConnection/utils'
+import { mark } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { reportRejection } from '@src/lib/trap'
 
 /**
  * 4 different event listeners to clean up
@@ -94,7 +94,8 @@ export const createOnWebSocketMessage = ({
   setSdpAnswer,
   initiateConnectionExclusive,
   addIceCandidate,
-  webrtcStatsCollector,
+  collectClientMetrics,
+  updateFramesPerSecondFromClientMetrics,
   sdpAnswerResolve,
   sdpAnswerReject,
   setApiCallId,
@@ -109,7 +110,8 @@ export const createOnWebSocketMessage = ({
   setSdpAnswer: (answer: RTCSessionDescriptionInit) => void
   initiateConnectionExclusive: () => Promise<unknown>
   addIceCandidate: (candidate: RTCIceCandidateInit) => void
-  webrtcStatsCollector: () => (() => Promise<ClientMetrics>) | undefined
+  collectClientMetrics: () => Promise<ClientMetrics> | undefined
+  updateFramesPerSecondFromClientMetrics: (clientMetrics: ClientMetrics) => void
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
@@ -172,7 +174,7 @@ export const createOnWebSocketMessage = ({
 
     // Message is successful, lets process the websocket message
     switch (resp.type) {
-      case 'pong':
+      case 'pong': {
         const pong = Date.now()
         setPong(pong)
         dispatchEvent(
@@ -182,7 +184,8 @@ export const createOnWebSocketMessage = ({
         )
         setPing(undefined)
         break
-      case 'modeling_session_data':
+      }
+      case 'modeling_session_data': {
         const apiCallId = resp.data.session.api_call_id
         setApiCallId(apiCallId)
         mark('code/apiCallId', {
@@ -201,8 +204,9 @@ export const createOnWebSocketMessage = ({
         })
 
         break
+      }
       // Only fires on successful authentication.
-      case 'ice_server_info':
+      case 'ice_server_info': {
         const iceServers = resp.data.ice_servers
         // Now that we have some ICE servers it makes sense
         // to start initializing the RTCPeerConnection. RTCPeerConnection
@@ -329,7 +333,8 @@ export const createOnWebSocketMessage = ({
             disconnectAll()
           })
         break
-      case 'sdp_answer':
+      }
+      case 'sdp_answer': {
         const answer = resp.data.answer
         if (!answer || answer.type === 'unspecified') {
           return
@@ -360,18 +365,20 @@ export const createOnWebSocketMessage = ({
         // Make sure we attempt to connect when we do.
         initiateConnectionExclusive().catch(reportRejection)
         break
-      case 'trickle_ice':
+      }
+      case 'trickle_ice': {
         const candidate = resp.data.candidate
         addIceCandidate(candidate)
         break
-      case 'metrics_request':
+      }
+      case 'metrics_request': {
         /**
-         * Gotcha, metrics_request can be called before the webrtcStatsCollector
+         * Gotcha, metrics_request can be called before the WebRTC stats collector
          * is initialized from the ice_server_info workflow. This means we need to drop these requests
          * until the function is initialized
          */
-        const collector = webrtcStatsCollector()
-        if (!collector) {
+        const clientMetricsPromise = collectClientMetrics()
+        if (!clientMetricsPromise) {
           EngineDebugger.addLog({
             label: 'onWebSocketMessage',
             message:
@@ -384,8 +391,9 @@ export const createOnWebSocketMessage = ({
         // which is an event within this switch case so it is not easy
         // to have this be a sync workflow? You could have two onMessageHandlers
         // once the other one is created but that could be more confusing.
-        collector()
+        clientMetricsPromise
           .then((clientMetrics) => {
+            updateFramesPerSecondFromClientMetrics(clientMetrics)
             send({
               type: 'metrics_response',
               metrics: clientMetrics,
@@ -396,6 +404,7 @@ export const createOnWebSocketMessage = ({
           })
 
         break
+      }
     }
   }
 

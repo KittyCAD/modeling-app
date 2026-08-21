@@ -32,7 +32,11 @@ export interface NetworkStatus {
   setHasCopied: (b: boolean) => void
   hasCopied: boolean
   ping: undefined | number
+  fps: undefined | number
 }
+
+const hasIssue = (i: [ConnectingType, boolean | undefined]) =>
+  i[1] === undefined ? i[1] : !i[1]
 
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
@@ -49,12 +53,11 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
   )
   const [pingRaw, setPingRaw] = useState<undefined | number>(undefined)
   const [pingEMA, setPingEMA] = useState<undefined | number>(undefined)
+  const [fpsRaw, setFpsRaw] = useState<undefined | number>(undefined)
+  const [fpsEMA, setFpsEMA] = useState<undefined | number>(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<IErrorType | undefined>(undefined)
-
-  const hasIssue = (i: [ConnectingType, boolean | undefined]) =>
-    i[1] === undefined ? i[1] : !i[1]
 
   const [issues, setIssues] = useState<
     Record<ConnectingTypeGroup, boolean | undefined>
@@ -66,29 +69,54 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
 
   const [hasIssues, setHasIssues] = useState<boolean | undefined>(undefined)
   useEffect(() => {
-    if (immediateState.type === EngineConnectionStateType.Disconnecting) {
+    if (
+      immediateState.type === EngineConnectionStateType.Disconnecting ||
+      immediateState.type === EngineConnectionStateType.Disconnected
+    ) {
       // Reset our running average.
       setPingRaw(undefined)
       setPingEMA(undefined)
+      setFpsRaw(undefined)
+      setFpsEMA(undefined)
     }
   }, [immediateState])
 
   useEffect(() => {
-    if (!pingRaw) return
+    if (!pingRaw) {
+      return
+    }
 
     // We use an exponential running average to smooth out ping values.
     const pingDataPointsToConsider = 10
     const multiplier = 2 / (pingDataPointsToConsider + 1)
-    let pingEMANext = ((pingEMA ?? 0) + pingRaw) / 2
-    pingEMANext = pingEMANext * multiplier + (pingEMA ?? 0) * (1 - multiplier)
-    setPingEMA(pingEMANext)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    setPingEMA((currentPingEMA) => {
+      let pingEMANext = ((currentPingEMA ?? 0) + pingRaw) / 2
+      pingEMANext =
+        pingEMANext * multiplier + (currentPingEMA ?? 0) * (1 - multiplier)
+      return pingEMANext
+    })
   }, [pingRaw])
+
+  useEffect(() => {
+    if (fpsRaw === undefined) {
+      return
+    }
+
+    // We use an exponential running average to smooth out short frame drops.
+    const fpsDataPointsToConsider = 5
+    const multiplier = 2 / (fpsDataPointsToConsider + 1)
+    setFpsEMA((currentFpsEMA) =>
+      currentFpsEMA === undefined
+        ? fpsRaw
+        : fpsRaw * multiplier + currentFpsEMA * (1 - multiplier)
+    )
+  }, [fpsRaw])
 
   useEffect(() => {
     // We consider ping longer than 3 frames as weak
     const WEAK_PING = 16.6 * 3
     const OK_PING = 16.6 * 2
+    const WEAK_FPS = 24
 
     // A is used in the literature to specify the "window" of switching
     const A = 1.25
@@ -103,6 +131,8 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
       nextOverallState = NetworkHealthState.Disconnected
     } else if (hasIssues || hasIssues === undefined) {
       nextOverallState = NetworkHealthState.Issue
+    } else if (fpsEMA !== undefined && fpsEMA < WEAK_FPS) {
+      nextOverallState = NetworkHealthState.Weak
     } else if (pingEMA && pingEMA < THRESHOLD_GOOD) {
       nextOverallState = NetworkHealthState.Ok
     } else if (pingEMA && pingEMA > THRESHOLD_WEAK) {
@@ -111,10 +141,12 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
       nextOverallState = NetworkHealthState.Ok
     }
 
-    if (nextOverallState === overallState) return
+    if (nextOverallState === overallState) {
+      return
+    }
 
     setOverallState(nextOverallState)
-  }, [hasIssues, internetConnected, pingEMA, overallState])
+  }, [fpsEMA, hasIssues, internetConnected, pingEMA, overallState])
 
   useEffect(() => {
     const offlineCallback = () => {
@@ -169,6 +201,14 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
       setPingRaw(state)
     }
 
+    const onFramesPerSecondChange = ({
+      detail: state,
+    }: CustomEvent<number | undefined>) => {
+      setFpsRaw(
+        typeof state === 'number' && Number.isFinite(state) ? state : undefined
+      )
+    }
+
     const onConnectionStateChange = ({
       detail: engineConnectionState,
     }: CustomEvent) => {
@@ -183,7 +223,9 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
           const groups = Object.values(nextSteps)
           for (const group of groups) {
             for (const step of group) {
-              if (step[0] !== engineConnectionState.value.type) continue
+              if (step[0] !== engineConnectionState.value.type) {
+                continue
+              }
               step[1] = true
             }
           }
@@ -237,6 +279,10 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
+      connection.addEventListener(
+        EngineConnectionEvents.FramesPerSecondChanged,
+        onFramesPerSecondChange as EventListener
+      )
     }
 
     engineCommandManager?.addEventListener(
@@ -260,6 +306,10 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
+      engineCommandManager?.connection?.removeEventListener(
+        EngineConnectionEvents.FramesPerSecondChanged,
+        onFramesPerSecondChange as EventListener
+      )
     }
   }, [engineCommandManager])
 
@@ -274,5 +324,6 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     setHasCopied,
     hasCopied,
     ping: pingEMA !== undefined ? Math.trunc(pingEMA) : pingEMA,
+    fps: fpsEMA !== undefined ? Math.round(fpsEMA) : fpsEMA,
   }
 }
