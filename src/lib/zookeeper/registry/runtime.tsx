@@ -6,6 +6,7 @@ import {
 import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
@@ -19,17 +20,163 @@ const ZookeeperConversationPaneWrapper = lazy(async () => {
   return { default: ZookeeperConversationPaneWrapper }
 })
 
-type ZookeeperPortalRuntime = ReturnType<typeof createZookeeperPortalRuntime>
+type ZookeeperRuntime = ReturnType<typeof createZookeeperRuntime>
 
-export function createZookeeperPortalRuntime() {
+type ZookeeperSessionScope = Readonly<{
+  apiToken: string
+  projectPath: string
+}>
+
+type ZookeeperSession = Readonly<{
+  actor: ZookeeperManagerActor
+  generation: number
+  isCurrent: () => boolean
+  scope: ZookeeperSessionScope
+}>
+
+type ActiveZookeeperSession = Readonly<{
+  actor: ZookeeperManagerActor
+  stop: () => void
+}>
+
+type ZookeeperManagerModule = Pick<
+  typeof import('@src/lib/zookeeper/zookeeperManagerMachine'),
+  'createZookeeperManagerActor' | 'stopZookeeperManagerActor'
+>
+
+const loadZookeeperManager = (): Promise<ZookeeperManagerModule> =>
+  import('@src/lib/zookeeper/zookeeperManagerMachine')
+
+function scopesMatch(
+  left: ZookeeperSessionScope | undefined,
+  right: ZookeeperSessionScope | undefined
+) {
+  return (
+    left?.apiToken === right?.apiToken &&
+    left?.projectPath === right?.projectPath
+  )
+}
+
+// The registry owns the actor and transport. The portal remains a temporary
+// bridge for the React-based file, history, reconnect, queue, and billing hooks.
+export function createZookeeperRuntime(
+  loadManager: () => Promise<ZookeeperManagerModule> = loadZookeeperManager
+) {
   const paneNode = signal<HTMLDivElement | undefined>(undefined)
   const paneProps = signal<AreaTypeComponentProps | undefined>(undefined)
+  const session = signal<ZookeeperSession | undefined>(undefined)
   let portalHost: HTMLDivElement | undefined
+  let currentScope: ZookeeperSessionScope | undefined
+  let retainedScope: ZookeeperSessionScope | undefined
+  let sessionGeneration = 0
+  let activeSession: ActiveZookeeperSession | undefined
+  let attachedHosts = 0
+  let hostGeneration = 0
   let disposed = false
+
+  const clearActiveSession = () => {
+    const previousSession = activeSession
+    activeSession = undefined
+    session.value = undefined
+    previousSession?.stop()
+  }
+
+  const updateScope = async (scope: ZookeeperSessionScope | undefined) => {
+    if (disposed || scopesMatch(retainedScope, scope)) {
+      return
+    }
+
+    retainedScope = scope
+    const generation = ++sessionGeneration
+    clearActiveSession()
+    if (!scope) {
+      return
+    }
+
+    try {
+      const manager = await loadManager()
+      if (
+        disposed ||
+        generation !== sessionGeneration ||
+        !scopesMatch(retainedScope, scope)
+      ) {
+        return
+      }
+
+      const actor = manager.createZookeeperManagerActor(scope.apiToken)
+      activeSession = {
+        actor,
+        stop: () => manager.stopZookeeperManagerActor(actor),
+      }
+      session.value = {
+        actor,
+        generation,
+        isCurrent: () =>
+          !disposed &&
+          attachedHosts > 0 &&
+          generation === sessionGeneration &&
+          activeSession?.actor === actor,
+        scope,
+      }
+    } catch (error: unknown) {
+      if (disposed || generation !== sessionGeneration) {
+        return
+      }
+      retainedScope = undefined
+      console.error('Failed to start the Zookeeper session.', error)
+    }
+  }
+
+  const reconcileScope = () => {
+    if (attachedHosts === 0) {
+      return updateScope(undefined)
+    }
+    if (!currentScope || paneNode.peek()) {
+      return updateScope(currentScope)
+    }
+    if (!scopesMatch(retainedScope, currentScope)) {
+      return updateScope(undefined)
+    }
+    return Promise.resolve()
+  }
 
   return {
     paneNode,
     paneProps,
+    session,
+    attachHost() {
+      if (disposed) {
+        return () => undefined
+      }
+
+      attachedHosts += 1
+      hostGeneration += 1
+      let attached = true
+
+      return () => {
+        if (!attached || disposed) {
+          return
+        }
+        attached = false
+        attachedHosts -= 1
+        const releaseGeneration = ++hostGeneration
+        if (attachedHosts > 0) {
+          return
+        }
+
+        queueMicrotask(() => {
+          if (
+            disposed ||
+            attachedHosts > 0 ||
+            releaseGeneration !== hostGeneration
+          ) {
+            return
+          }
+          currentScope = undefined
+          void updateScope(undefined)
+        })
+      }
+    },
     attachPane(node: HTMLDivElement) {
       if (disposed) {
         return () => undefined
@@ -39,6 +186,7 @@ export function createZookeeperPortalRuntime() {
       if (portalHost) {
         node.append(portalHost)
       }
+      void reconcileScope()
 
       return () => {
         if (paneNode.peek() !== node) {
@@ -53,19 +201,28 @@ export function createZookeeperPortalRuntime() {
         paneProps.value = props
       }
     },
+    syncScope(scope: ZookeeperSessionScope | undefined) {
+      currentScope = scope
+      return reconcileScope()
+    },
     getPortalHost() {
       if (!portalHost) {
         portalHost = document.createElement('div')
         portalHost.className = 'flex flex-1 min-w-0 min-h-0'
         portalHost.dataset.zookeeperRuntimeHost = ''
-        if (paneNode.peek()) {
-          paneNode.peek()?.append(portalHost)
-        }
+        paneNode.peek()?.append(portalHost)
       }
       return portalHost
     },
     dispose() {
+      if (disposed) {
+        return
+      }
       disposed = true
+      currentScope = undefined
+      retainedScope = undefined
+      sessionGeneration += 1
+      clearActiveSession()
       paneNode.value = undefined
       paneProps.value = undefined
       portalHost?.remove()
@@ -79,7 +236,7 @@ function ZookeeperPaneOutlet({
   layout,
   onClose,
   runtime,
-}: AreaTypeComponentProps & { runtime: ZookeeperPortalRuntime }) {
+}: AreaTypeComponentProps & { runtime: ZookeeperRuntime }) {
   const outletRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
@@ -100,45 +257,31 @@ function ZookeeperPaneOutlet({
 function ZookeeperPortalHost({
   app,
   runtime,
-}: AppHeaderItemProps & { runtime: ZookeeperPortalRuntime }) {
+}: AppHeaderItemProps & { runtime: ZookeeperRuntime }) {
   useSignals()
   const token = app.auth.useToken()
   const project = app.project?.projectIORefSignal.value
   const projectPath = project?.path
-  const [scope, setScope] = useState<
-    { apiToken: string; projectPath: string } | undefined
-  >()
   const paneIsAttached = runtime.paneNode.value !== undefined
   const paneProps = runtime.paneProps.value
+  const session = runtime.session.value
   const [portalHost] = useState(() => runtime.getPortalHost())
-  const scopeMatchesCurrentProject =
-    scope !== undefined &&
-    scope.projectPath === projectPath &&
-    scope.apiToken === token
 
   useLayoutEffect(() => {
-    if (!projectPath || !token) {
-      setScope(undefined)
-      return
-    }
+    const releaseHost = runtime.attachHost()
+    void runtime.syncScope(
+      projectPath && token ? { apiToken: token, projectPath } : undefined
+    )
+    return releaseHost
+  }, [projectPath, runtime, token])
 
-    setScope((previous) => {
-      const matches =
-        previous?.projectPath === projectPath && previous.apiToken === token
-      if (matches || (!paneIsAttached && previous === undefined)) {
-        return previous
-      }
-      if (!paneIsAttached) {
-        return undefined
-      }
-      return {
-        apiToken: token,
-        projectPath,
-      }
-    })
-  }, [paneIsAttached, projectPath, token])
-
-  if (!scopeMatchesCurrentProject || !scope || !paneProps || !project) {
+  if (
+    !session ||
+    session.scope.projectPath !== projectPath ||
+    session.scope.apiToken !== token ||
+    !paneProps ||
+    !project
+  ) {
     return null
   }
 
@@ -147,17 +290,19 @@ function ZookeeperPortalHost({
       <ZookeeperConversationPaneWrapper
         {...paneProps}
         isPaneVisible={paneIsAttached}
+        isSessionCurrent={session.isCurrent}
         theProject={project}
+        zookeeperManagerActor={session.actor}
       />
     </Suspense>,
     portalHost,
-    `zookeeper-session-${scope.projectPath}`
+    `zookeeper-session-${session.generation}`
   )
 }
 
 export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
   () => {
-    const runtime = createZookeeperPortalRuntime()
+    const runtime = createZookeeperRuntime()
 
     const PaneOutlet = (props: AreaTypeComponentProps) => (
       <ZookeeperPaneOutlet {...props} runtime={runtime} />
@@ -185,7 +330,6 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
             appHeaderItemsValueSpec,
             {
               id: 'zookeeper.runtime-host',
-              order: 1000,
               Component: PortalHost,
             },
             { key: 'zookeeper.runtime-host' }

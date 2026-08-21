@@ -3,6 +3,7 @@ import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
+  createZookeeperManagerActor,
   createZookeeperCorrelation,
   type MlCopilotModeOption,
   ZookeeperConversationToMarkdown,
@@ -161,6 +162,15 @@ describe('zookeeperManagerMachine', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     ControllableSetupWebSocket.instances = []
+  })
+
+  it('creates a started manager actor', () => {
+    const actor = createZookeeperManagerActor('api-token')
+
+    expect(actor.getSnapshot().status).toBe('active')
+    expect(actor.getSnapshot().context.apiToken).toBe('api-token')
+
+    stopZookeeperManagerActor(actor)
   })
 
   afterEach(() => {

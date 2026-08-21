@@ -353,7 +353,6 @@ const createPaneElement = ({
             },
           } as any
         }
-        sendModeling={vi.fn() as any}
         sendBillingUpdate={sendBillingUpdate}
         sendBillingUsageStarted={sendBillingUsageStarted}
         sendBillingUsageEnded={sendBillingUsageEnded}
@@ -895,7 +894,6 @@ describe('ZookeeperConversationPane', () => {
               },
             } as any
           }
-          sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
           sendBillingUsageStarted={vi.fn()}
           sendBillingUsageEnded={vi.fn()}

@@ -22,12 +22,6 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import {
-  ZookeeperConversationToMarkdown,
-  type ZookeeperManagerActor,
-  ZookeeperManagerReactContext,
-  stopZookeeperManagerActor,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
@@ -35,6 +29,10 @@ import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
@@ -99,54 +97,21 @@ function getZookeeperChangedFilePreviousCode(
 export function ZookeeperConversationPaneWrapper(
   props: AreaTypeComponentProps & {
     isPaneVisible?: boolean
-    theProject?: Project
-  }
-) {
-  const { auth } = useApp()
-  const token = auth.useToken()
-
-  return (
-    <ZookeeperManagerReactContext.Provider
-      options={{
-        input: {
-          apiToken: token,
-        },
-      }}
-    >
-      <ZookeeperConversationPaneInner {...props} />
-    </ZookeeperManagerReactContext.Provider>
-  )
-}
-
-function ZookeeperConversationPaneInner(
-  props: AreaTypeComponentProps & {
-    isPaneVisible?: boolean
-    theProject?: Project
+    isSessionCurrent: () => boolean
+    theProject: Project
+    zookeeperManagerActor: ZookeeperManagerActor
   }
 ) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, project, systemIOActor } = app
+  const { auth, billing, debug, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
-  const {
-    context: contextModeling,
-    send: sendModeling,
-    theProject,
-  } = useModelingContext()
+  const { context: contextModeling } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
-  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
-  const componentIsMounted = useRef(true)
-
-  useLayoutEffect(() => {
-    componentIsMounted.current = true
-    return () => {
-      componentIsMounted.current = false
-      stopZookeeperManagerActor(zookeeperManagerActor)
-    }
-  }, [zookeeperManagerActor])
+  const { zookeeperManagerActor } = props
 
   useEffect(() => {
     const updatePromptRunning = (
@@ -165,17 +130,18 @@ function ZookeeperConversationPaneInner(
   }, [zookeeperManagerActor])
 
   useEffect(() => {
-    if (!IS_STAGING_OR_DEBUG) return
+    if (!IS_STAGING_OR_DEBUG) {
+      return
+    }
 
-    app.debug.zookeeperManagerActor = zookeeperManagerActor
+    debug.zookeeperManagerActor = zookeeperManagerActor
 
     return () => {
-      if (app.debug.zookeeperManagerActor === zookeeperManagerActor) {
-        delete app.debug.zookeeperManagerActor
+      if (debug.zookeeperManagerActor === zookeeperManagerActor) {
+        delete debug.zookeeperManagerActor
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
-  }, [])
+  }, [debug, zookeeperManagerActor])
 
   const {
     beginPendingZookeeperHistoryWrite,
@@ -196,7 +162,7 @@ function ZookeeperConversationPaneInner(
       const requestProjectIsCurrent = () =>
         app.project?.path === requestProjectPath
       const requestIsCurrent = () =>
-        componentIsMounted.current && requestProjectIsCurrent()
+        props.isSessionCurrent() && requestProjectIsCurrent()
       const activeFilePath =
         requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
       const payload = prepareZookeeperNewFileRequest({
@@ -417,7 +383,7 @@ function ZookeeperConversationPaneInner(
                                   shouldAddToHistory: false,
                                   shouldClearHistory:
                                     !shouldRecordZookeeperHistory ||
-                                    !componentIsMounted.current,
+                                    !props.isSessionCurrent(),
                                   shouldExecute: true,
                                   shouldResetCamera: true,
                                   shouldWriteToDisk:
@@ -474,7 +440,13 @@ function ZookeeperConversationPaneInner(
         icon="sparkles"
         title="Zookeeper"
         onClose={props.onClose}
-        Menu={ZookeeperConversationMenu}
+        Menu={
+          props.isPaneVisible === false ? undefined : (
+            <ZookeeperConversationMenu
+              zookeeperManagerActor={zookeeperManagerActor}
+            />
+          )
+        }
       />
       <ZookeeperConversationPane
         {...{
@@ -482,7 +454,6 @@ function ZookeeperConversationPaneInner(
           conversationStore: zookeeperConversationStore,
           kclManager,
           contextModeling,
-          sendModeling,
           sendBillingUpdate: () => {
             billing.send({
               type: BillingTransition.Update,
@@ -499,7 +470,7 @@ function ZookeeperConversationPaneInner(
               type: BillingTransition.UsageEnded,
             })
           },
-          theProject: props.theProject ?? theProject.current,
+          theProject: props.theProject,
           loaderFile,
           settings: settingsValues,
           user,
@@ -1068,9 +1039,11 @@ function useFlushZookeeperHistoryOnResponseEnd(
   ])
 }
 
-export const ZookeeperConversationMenu = () => {
-  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
-
+const ZookeeperConversationMenu = ({
+  zookeeperManagerActor,
+}: {
+  zookeeperManagerActor: ZookeeperManagerActor
+}) => {
   return (
     <HeaderMenu>
       <Menu.Item>

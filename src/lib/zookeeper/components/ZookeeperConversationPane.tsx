@@ -4,7 +4,6 @@ import {
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
@@ -47,7 +46,6 @@ export const ZookeeperConversationPane = (props: {
   kclManager: KclManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
-  sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
   sendBillingUsageStarted: () => void
   sendBillingUsageEnded: () => void
