@@ -3,6 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import {
@@ -19,6 +20,7 @@ import {
   activateNamedView,
   activeViewSignal,
   isSameView,
+  isSketchSessionOpen,
   moduleKeyOf,
 } from '@src/lib/kclNamedViewActivation'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
@@ -87,6 +89,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const cannotReachEngine = useReliesOnEngine(
     kclManager.isExecutingSignal.value ?? false
   )
+  const { state: modelingState } = useModelingContext()
+  const inSketchMode = isSketchSessionOpen(modelingState)
 
   const rows = viewRows(
     listNamedViews({
@@ -114,7 +118,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
             <li key={row.key} className="px-1 py-0.5">
               <RowItemWithIconMenuAndToggle
                 isSelected={isSameView(row.identity, active)}
-                disabled={cannotReachEngine}
+                disabled={cannotReachEngine || inSketchMode}
                 data-testid="named-view-row"
                 data-active={isSameView(row.identity, active)}
                 onClick={() => {

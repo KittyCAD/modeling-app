@@ -119,6 +119,12 @@ async function writeProject(dir: string) {
  * that the switcher is absent, which stops being true at that point.
  */
 test.describe('KCL named views, feature flag off', { tag: '@desktop' }, () => {
+  // The switcher's absence is only meaningful when the flag is off. The harness
+  // mocks `/user/features` and returns exactly the flags a spec declares, so
+  // this empty list states that precondition here rather than leaving it to the
+  // fixture default. Granting the flag on the Zoo org cannot reach this test.
+  test.use({ userFeatures: [] })
+
   test('the view switcher has no rail button and no pane', async ({
     homePage,
     scene,
