@@ -1,10 +1,8 @@
-import {
-  type ClientMetrics,
-  type WebSocketRequest,
+import type {
+  ClientMetrics,
+  WebSocketRequest,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { reportRejection } from '@src/lib/trap'
 import type { Connection } from '@src/lib/engineConnection/connection'
 import type {
   IEventListenerTracked,
@@ -15,6 +13,8 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
+import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,
@@ -263,9 +263,9 @@ export function createWebrtcStatsCollector({
         .then((stats) => {
           const metrics: ClientMetrics = {}
 
-          stats.forEach((report, id) => {
+          stats.forEach((report) => {
             if (report.type === 'candidate-pair') {
-              if (report.state == 'succeeded') {
+              if (report.state === 'succeeded') {
                 const rtt = report.currentRoundTripTime
                 metrics.rtc_stun_rtt_sec = rtt
               }
@@ -300,7 +300,10 @@ export function createWebrtcStatsCollector({
 
           resolve(metrics)
         })
-        .catch(reportRejection)
+        .catch((error) => {
+          reportRejection(error)
+          reject(error)
+        })
     })
   }
 

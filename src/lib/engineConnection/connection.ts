@@ -4,10 +4,11 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
+import {
+  FPS_TRACKER_INTERVAL_MS,
+  type FpsTrackerSample,
+  getFramesPerSecondFromClientMetrics,
+} from '@src/lib/engineConnection/fpsTracker'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -37,6 +38,11 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { reportRejection } from '@src/lib/trap'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -58,6 +64,10 @@ export class Connection extends EventTarget {
     pong: number | undefined
   }
   private _pingIntervalId: ReturnType<typeof setInterval> | undefined
+  private _fpsIntervalId: ReturnType<typeof setInterval> | undefined
+  private _fpsTrackerSample: FpsTrackerSample | undefined
+  private _clientMetricsCollectionPromise: Promise<ClientMetrics> | undefined
+  private _lastPublishedFramesPerSecond: number | undefined
   timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined
 
   peerConnection: RTCPeerConnection | undefined
@@ -186,9 +196,11 @@ export class Connection extends EventTarget {
         }
       }
 
-      if (!('resp' in message)) return
+      if (!('resp' in message)) {
+        return
+      }
 
-      let resp = message.resp
+      const resp = message.resp
 
       // If there's no body to the response, we can bail here.
       if (!resp || !resp.type) {
@@ -259,6 +271,94 @@ export class Connection extends EventTarget {
     })
     clearInterval(this._pingIntervalId)
     this._pingIntervalId = undefined
+  }
+
+  startFpsTracker() {
+    if (this._fpsIntervalId !== undefined) {
+      return
+    }
+
+    const collectFramesPerSecond = () => {
+      const clientMetricsPromise = this.collectClientMetrics()
+      if (!clientMetricsPromise) {
+        return
+      }
+
+      void clientMetricsPromise
+        .then((clientMetrics) => {
+          if (this._fpsIntervalId === undefined) {
+            return
+          }
+
+          this.updateFramesPerSecondFromClientMetrics(clientMetrics)
+        })
+        .catch(reportRejection)
+    }
+
+    this._fpsIntervalId = setInterval(
+      collectFramesPerSecond,
+      FPS_TRACKER_INTERVAL_MS
+    )
+    collectFramesPerSecond()
+  }
+
+  stopFpsTracker() {
+    clearInterval(this._fpsIntervalId)
+    this._fpsIntervalId = undefined
+    this._fpsTrackerSample = undefined
+    this._clientMetricsCollectionPromise = undefined
+    this._lastPublishedFramesPerSecond = undefined
+  }
+
+  collectClientMetrics() {
+    const collector = this.webrtcStatsCollector
+    if (!collector) {
+      return undefined
+    }
+
+    if (this._clientMetricsCollectionPromise) {
+      return this._clientMetricsCollectionPromise
+    }
+
+    const clientMetricsPromise = collector()
+    const trackedClientMetricsPromise = clientMetricsPromise.finally(() => {
+      if (
+        this._clientMetricsCollectionPromise === trackedClientMetricsPromise
+      ) {
+        this._clientMetricsCollectionPromise = undefined
+      }
+    })
+
+    this._clientMetricsCollectionPromise = trackedClientMetricsPromise
+
+    return trackedClientMetricsPromise
+  }
+
+  updateFramesPerSecondFromClientMetrics(clientMetrics: ClientMetrics) {
+    if (this._fpsIntervalId === undefined) {
+      return
+    }
+
+    const { framesPerSecond, sample } = getFramesPerSecondFromClientMetrics({
+      metrics: clientMetrics,
+      previousSample: this._fpsTrackerSample,
+      timestampMs: Date.now(),
+    })
+    this._fpsTrackerSample = sample
+
+    const roundedFramesPerSecond =
+      framesPerSecond === undefined ? undefined : Math.round(framesPerSecond)
+
+    if (roundedFramesPerSecond === this._lastPublishedFramesPerSecond) {
+      return
+    }
+
+    this._lastPublishedFramesPerSecond = roundedFramesPerSecond
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.FramesPerSecondChanged, {
+        detail: roundedFramesPerSecond,
+      })
+    )
   }
 
   /**
@@ -619,7 +719,9 @@ export class Connection extends EventTarget {
       setSdpAnswer: this.setSdpAnswer.bind(this),
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
-      webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
+      collectClientMetrics: this.collectClientMetrics.bind(this),
+      updateFramesPerSecondFromClientMetrics:
+        this.updateFramesPerSecondFromClientMetrics.bind(this),
       sdpAnswerResolve: this.deferredSdpAnswer.resolve,
       sdpAnswerReject: this.deferredSdpAnswer.reject,
       setApiCallId: (apiCallId) => {
@@ -692,6 +794,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.webrtcStatsCollector = webrtcStatsCollector
+    this.startFpsTracker()
   }
 
   setUnreliableDataChannel(channel: RTCDataChannel) {
@@ -732,6 +835,7 @@ export class Connection extends EventTarget {
     this.disconnectUnreliableDataChannel()
     this.disconnectPeerConnection()
     // Function generated from createPeerConnection workflow
+    this.stopFpsTracker()
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()
     this.stopPingPong()

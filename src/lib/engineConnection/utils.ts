@@ -199,6 +199,9 @@ export enum EngineConnectionEvents {
   // Fires for each ping-pong success or failure.
   PingPongChanged = 'ping-pong-changed', // (state: PingPongState) => void
 
+  // Fires when the engine media stream has a new measured frames-per-second value.
+  FramesPerSecondChanged = 'frames-per-second-changed', // (state: number | undefined) => void
+
   // For now, this is only used by the NetworkHealthIndicator.
   // We can eventually use it for more, but one step at a time.
   ConnectionStateChanged = 'connection-state-changed', // (state: EngineConnectionState) => void
