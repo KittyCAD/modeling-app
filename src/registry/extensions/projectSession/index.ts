@@ -6,7 +6,7 @@ import {
 } from '@kittycad/registry'
 import { effect, signal, type Signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { ZDSProject, type ZDSProjectRuntime } from '@src/lang/KclManager'
+import type { ZDSProject, ZDSProjectRuntime } from '@src/lang/KclManager'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type { Project } from '@src/lib/project'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
@@ -262,7 +262,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const openProject = async (projectIORef: Project) => {
-    serviceImpl.clearProject()
     setMutation({
       pending: true,
       operation: 'open-project',
@@ -271,11 +270,36 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     })
 
     try {
+      const currentProject = project.value
+      if (currentProject?.path === projectIORef.path) {
+        const currentProjectIORef = currentProject.projectIORefSignal.value
+        const reseededProject = {
+          ...projectIORef,
+          ...(currentProjectIORef.libraryPath
+            ? { libraryPath: currentProjectIORef.libraryPath }
+            : {}),
+          ...(currentProjectIORef.libraryType
+            ? { libraryType: currentProjectIORef.libraryType }
+            : {}),
+        }
+        currentProject.projectIORefSignal.value = reseededProject
+        syncProjectTree()
+        setCloudSyncOpenedProject(reseededProject)
+        setMutation({
+          pending: false,
+          operation: 'open-project',
+          lastTargetPath: currentProject.path,
+        })
+        return currentProject
+      }
+
+      serviceImpl.clearProject()
       const ownedProject = await projectWithLibraryOwnership(
         projectIORef,
         ctx.services.get(settingsService).get().app.libraries.current
       )
       const projectIORefSignal = signal(ownedProject)
+      const { ZDSProject } = await import('@src/lang/KclManager')
       const openedProject = await ZDSProject.open(
         projectIORefSignal,
         createProjectRuntime(),

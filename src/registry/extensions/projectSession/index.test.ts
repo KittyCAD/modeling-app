@@ -1,11 +1,21 @@
-import { Registry } from '@kittycad/registry'
+import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
+import {
+  cloudSyncService,
+  type CloudSyncRegistryService,
+} from '@src/registry/contracts/cloudSync'
 import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
 describe('project session extension', () => {
   let registry: Registry | undefined
@@ -15,10 +25,20 @@ describe('project session extension', () => {
     registry = undefined
   })
 
-  function configureProjectSession() {
+  function configureProjectSession(
+    extraItems: Parameters<Registry['configure']>[0] = []
+  ) {
     registry = new Registry()
-    registry.configure([projectSessionRegistryItem])
+    registry.configure([...extraItems, projectSessionRegistryItem])
     return registry.get(projectSession)
+  }
+
+  function createCloudSyncService() {
+    return {
+      setOpenedProject: vi.fn(),
+    } as unknown as CloudSyncRegistryService & {
+      setOpenedProject: ReturnType<typeof vi.fn>
+    }
   }
 
   async function flushMicrotasks() {
@@ -150,6 +170,43 @@ describe('project session extension', () => {
         writeFile: expect.any(Function),
       })
     )
+  })
+
+  it('reuses the opened project when opening the same project path', async () => {
+    const cloudSync = createCloudSyncService()
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test-cloud-sync',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+    ])
+    const projectTree = {
+      ...createProjectTree(),
+      libraryPath: '/projects',
+    }
+    const project = createFakeProject(projectTree)
+    projectSession.setProject(project)
+
+    const reseededProject = {
+      ...createProjectTree(),
+      title: 'Bracket',
+      default_file: '/projects/bracket/other.kcl',
+    }
+    const openedProject = await projectSession.openProject(reseededProject)
+
+    expect(openedProject).toBe(project)
+    expect(project.mocks.closeAllEditors).not.toHaveBeenCalled()
+    expect(project.projectIORefSignal.value).toEqual(
+      expect.objectContaining({
+        title: 'Bracket',
+        default_file: '/projects/bracket/other.kcl',
+        libraryPath: '/projects',
+      })
+    )
+    expect(cloudSync.setOpenedProject).toHaveBeenCalledWith({
+      projectPath: '/projects/bracket',
+      libraryPath: '/projects',
+    })
   })
 
   it('refreshes the hydrated project tree through the opened project', async () => {
