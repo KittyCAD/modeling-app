@@ -4320,7 +4320,7 @@ w = f() + f()
         // Get the variable we're interested in, from KCL program memory.
         let subtracted_parts = result
             .variables
-            .get("subtracted_parts")
+            .get("subtractedParts")
             .expect("no variable called 'subtracted_parts' found");
         let subtracted_parts = match subtracted_parts {
             KclValueView::Solid { .. } => {
