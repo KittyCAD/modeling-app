@@ -415,8 +415,14 @@ function CloudSyncLibraryHomeSummary({
   const isConflict = presentationStatus.state === 'conflict'
   const isFailure = presentationStatus.state === 'failed'
   const hasProblem = isConflict || isFailure
-  const statusButtonClassName =
-    'm-0 inline-flex h-6 flex-none items-center gap-1.5 rounded border !border-transparent bg-transparent px-1.5 py-0 text-xs font-medium leading-none text-primary hover:!border-primary hover:bg-primary/10 focus:!border-primary focus:bg-primary/10 focus:outline-none'
+  const statusButtonBaseClassName =
+    'm-0 inline-flex h-6 flex-none items-center gap-1.5 rounded border border-transparent px-1.5 py-0 text-xs font-medium leading-none focus:outline-none'
+  const statusButtonToneClassName = isConflict
+    ? 'bg-warn-80/10 text-warn-80 hover:border-warn-80 focus:border-warn-80 dark:bg-warn-10/10 dark:text-warn-10 dark:hover:border-warn-10 dark:focus:border-warn-10'
+    : isFailure
+      ? 'bg-destroy-80/10 text-destroy-80 hover:border-destroy-80 focus:border-destroy-80 dark:bg-destroy-10/10 dark:text-destroy-10 dark:hover:border-destroy-10 dark:focus:border-destroy-10'
+      : 'bg-transparent text-primary hover:border-primary hover:bg-primary/10 focus:border-primary focus:bg-primary/10'
+  const statusButtonClassName = `${statusButtonBaseClassName} ${statusButtonToneClassName}`
 
   return (
     <Popover className="relative flex flex-none">

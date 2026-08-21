@@ -552,7 +552,15 @@ describe('cloud sync library home summary', () => {
         </>
       )
 
-      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
+      const statusButton = screen.getByTestId('cloud-library-sync-status')
+      expect(statusButton).toHaveClass(
+        'bg-warn-80/10',
+        'text-warn-80',
+        'hover:border-warn-80',
+        'focus:border-warn-80'
+      )
+
+      fireEvent.click(statusButton)
       fireEvent.click(await screen.findByRole('button', { name: 'Simple Box' }))
       expect(
         await screen.findByTestId('cloud-conflict-dialog')
@@ -574,6 +582,56 @@ describe('cloud sync library home summary', () => {
       )
       expect(cloudConflictDialogMocks.dialogProjectPaths).not.toContain(
         '/some/path/other'
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('uses destroy styling for library sync failure status', () => {
+    const projectPath = projectWellFormed.path
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    const registry = new Registry()
+
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      const HomeSummary = cloudLibraryType?.homeSummary
+      expect(HomeSummary).toBeDefined()
+      if (!HomeSummary) {
+        return
+      }
+
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      const project = {
+        ...homeProjectEntryFromProject(projectWellFormed),
+        id: `local:${projectPath}`,
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        syncFailure: {
+          message: 'Cloud sync cannot upload local changes.',
+          at: new Date(now).toISOString(),
+        },
+      } satisfies HomeProjectEntry
+      renderWithRouter(
+        <HomeSummary library={cloudLibrary} projects={[project]} />
+      )
+
+      expect(screen.getByTestId('cloud-library-sync-status')).toHaveClass(
+        'bg-destroy-80/10',
+        'text-destroy-80',
+        'hover:border-destroy-80',
+        'focus:border-destroy-80'
       )
     } finally {
       registry[Symbol.dispose]()
