@@ -1001,7 +1001,26 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((file) => file.asRustApiFile()))
+    const files = await Promise.all(
+      this.files.map(async (file): Promise<ApiFile | undefined> => {
+        try {
+          return await file.asRustApiFile()
+        } catch (error) {
+          if (isPathNotFoundError(error)) {
+            return undefined
+          }
+          return Promise.reject(error)
+        }
+      })
+    )
+    const existingFiles = files.filter((file): file is ApiFile => Boolean(file))
+
+    if (existingFiles.length !== this.files.length) {
+      const existingFilePaths = new Set(existingFiles.map((file) => file.path))
+      this.files = this.files.filter((file) => existingFilePaths.has(file.path))
+    }
+
+    return existingFiles
   }
 
   /**
