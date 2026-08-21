@@ -1,8 +1,4 @@
-import type {
-  ApiObject,
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
@@ -68,12 +64,6 @@ type ConstraintToolInput = {
   initialSelectionIds: SketchSolveSelectionId[]
   initialObjects: ApiObject[]
   toolVariant?: string
-}
-
-type ConstraintToolApplyResult = {
-  kclSource: SourceDelta
-  sceneGraphDelta: SceneGraphDelta
-  checkpointId?: number | null
 }
 
 type ParentSketchSolveEvent =
@@ -923,28 +913,13 @@ export function createConstraintToolMachine({
           }
         }) => {
           const settings = jsAppSettings(input.rustContext.settingsActor)
-          let latestResult: ConstraintToolApplyResult | undefined
-
-          for (const [
-            index,
-            payload,
-          ] of input.pendingApply.payloads.entries()) {
-            latestResult = await input.rustContext.addConstraint(
-              0,
-              input.sketchId,
-              payload,
-              settings,
-              index === input.pendingApply.payloads.length - 1
-            )
-          }
-
-          if (!latestResult) {
-            return Promise.reject(
-              new Error('No constraint payloads were prepared for apply')
-            )
-          }
-
-          return latestResult
+          return input.rustContext.addConstraints(
+            0,
+            input.sketchId,
+            input.pendingApply.payloads,
+            settings,
+            true
+          )
         }
       ),
     },

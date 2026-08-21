@@ -1,8 +1,4 @@
-import type {
-  ApiObject,
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type RustContext from '@src/lib/rustContext'
 import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
@@ -12,7 +8,7 @@ import {
 import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 
 type ConstraintMutationResult = Awaited<
-  ReturnType<RustContext['addConstraint']>
+  ReturnType<RustContext['addConstraints']>
 >
 
 export type ConstraintToolbarActionResult =
@@ -39,9 +35,9 @@ export async function applyOrEquipConstraintToolFromToolbar({
   toolName: ConstraintToolName
   selectedIds: readonly SketchSolveSelectionId[]
   objects: readonly ApiObject[]
-  rustContext: Pick<RustContext, 'addConstraint'>
+  rustContext: Pick<RustContext, 'addConstraints'>
   sketchId: number
-  settings: Parameters<RustContext['addConstraint']>[3]
+  settings: Parameters<RustContext['addConstraints']>[3]
   equipConstraintTool: (toolName: ConstraintToolName) => void
 }): Promise<ConstraintToolbarActionResult> {
   const preparedApply = getConstraintToolPreparedApply(
@@ -58,23 +54,13 @@ export async function applyOrEquipConstraintToolFromToolbar({
     }
   }
 
-  let result:
-    | {
-        kclSource: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-        checkpointId?: number | null
-      }
-    | undefined
-
-  for (const [index, payload] of preparedApply.payloads.entries()) {
-    result = await rustContext.addConstraint(
-      0,
-      sketchId,
-      payload,
-      settings,
-      index === preparedApply.payloads.length - 1
-    )
-  }
+  const result = await rustContext.addConstraints(
+    0,
+    sketchId,
+    preparedApply.payloads,
+    settings,
+    true
+  )
 
   return {
     type: 'applied',

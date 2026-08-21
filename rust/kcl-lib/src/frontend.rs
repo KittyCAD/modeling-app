@@ -1407,78 +1407,14 @@ impl SketchApi for FrontendState {
         // Save the original state as a backup - we'll restore it if anything fails
         let original_program = self.program.clone();
         let original_scene_graph = self.scene_graph.clone();
+        let original_solid_references = self.solid_references.clone();
+        let original_point_freedom_cache = self.point_freedom_cache.clone();
 
         let mut new_ast = self.program.ast.clone();
-        let sketch_block_ref = match constraint {
-            Constraint::Coincident(coincident) => self
-                .add_coincident(sketch, coincident, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Distance(distance) => self
-                .add_distance(sketch, distance, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::EqualRadius(equal_radius) => self
-                .add_equal_radius(sketch, equal_radius, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Fixed(fixed) => self
-                .add_fixed_constraints(sketch, fixed.points, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::HorizontalDistance(distance) => self
-                .add_horizontal_distance(sketch, distance, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::VerticalDistance(distance) => self
-                .add_vertical_distance(sketch, distance, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Horizontal(horizontal) => self
-                .add_horizontal(sketch, horizontal, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::LinesEqualLength(lines_equal_length) => self
-                .add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Midpoint(midpoint) => self
-                .add_midpoint(sketch, midpoint, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Parallel(parallel) => self
-                .add_parallel(sketch, parallel, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Perpendicular(perpendicular) => self
-                .add_perpendicular(sketch, perpendicular, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Radius(radius) => self
-                .add_radius(sketch, radius, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Diameter(diameter) => self
-                .add_diameter(sketch, diameter, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Symmetric(symmetric) => self
-                .add_symmetric(sketch, symmetric, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Vertical(vertical) => self
-                .add_vertical(sketch, vertical, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Angle(lines_at_angle) => self
-                .add_angle(sketch, lines_at_angle, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-            Constraint::Tangent(tangent) => self
-                .add_tangent(sketch, tangent, &mut new_ast)
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?,
-        };
+        let sketch_block_ref = self
+            .add_constraint_to_ast(sketch, constraint, &mut new_ast)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let result = self
             .execute_after_add_constraint(ctx, sketch, sketch_block_ref, &mut new_ast)
@@ -1488,6 +1424,53 @@ impl SketchApi for FrontendState {
         if result.is_err() {
             self.program = original_program;
             self.scene_graph = original_scene_graph;
+            self.solid_references = original_solid_references;
+            self.point_freedom_cache = original_point_freedom_cache;
+        }
+
+        result
+    }
+
+    async fn add_constraints(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraints: Vec<Constraint>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        if constraints.is_empty() {
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                "At least one constraint is required".to_owned(),
+            )));
+        }
+
+        let original_program = self.program.clone();
+        let original_scene_graph = self.scene_graph.clone();
+        let original_solid_references = self.solid_references.clone();
+        let original_point_freedom_cache = self.point_freedom_cache.clone();
+        let mut new_ast = self.program.ast.clone();
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        for constraint in constraints {
+            if let Err(error) = self.add_constraint_to_ast(sketch, constraint, &mut new_ast).await {
+                self.program = original_program;
+                self.scene_graph = original_scene_graph;
+                self.solid_references = original_solid_references;
+                self.point_freedom_cache = original_point_freedom_cache;
+                return Err(KclErrorWithOutputs::no_outputs(error));
+            }
+        }
+
+        let result = self
+            .execute_after_add_constraints(ctx, sketch, sketch_block_ref, &mut new_ast)
+            .await;
+
+        if result.is_err() {
+            self.program = original_program;
+            self.scene_graph = original_scene_graph;
+            self.solid_references = original_solid_references;
+            self.point_freedom_cache = original_point_freedom_cache;
         }
 
         result
@@ -1961,6 +1944,35 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    async fn add_constraint_to_ast(
+        &mut self,
+        sketch: ObjectId,
+        constraint: Constraint,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        match constraint {
+            Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, new_ast).await,
+            Constraint::Distance(distance) => self.add_distance(sketch, distance, new_ast).await,
+            Constraint::EqualRadius(equal_radius) => self.add_equal_radius(sketch, equal_radius, new_ast).await,
+            Constraint::Fixed(fixed) => self.add_fixed_constraints(sketch, fixed.points, new_ast).await,
+            Constraint::HorizontalDistance(distance) => self.add_horizontal_distance(sketch, distance, new_ast).await,
+            Constraint::VerticalDistance(distance) => self.add_vertical_distance(sketch, distance, new_ast).await,
+            Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, new_ast).await,
+            Constraint::LinesEqualLength(lines_equal_length) => {
+                self.add_lines_equal_length(sketch, lines_equal_length, new_ast).await
+            }
+            Constraint::Midpoint(midpoint) => self.add_midpoint(sketch, midpoint, new_ast).await,
+            Constraint::Parallel(parallel) => self.add_parallel(sketch, parallel, new_ast).await,
+            Constraint::Perpendicular(perpendicular) => self.add_perpendicular(sketch, perpendicular, new_ast).await,
+            Constraint::Radius(radius) => self.add_radius(sketch, radius, new_ast).await,
+            Constraint::Diameter(diameter) => self.add_diameter(sketch, diameter, new_ast).await,
+            Constraint::Symmetric(symmetric) => self.add_symmetric(sketch, symmetric, new_ast).await,
+            Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, new_ast).await,
+            Constraint::Angle(lines_at_angle) => self.add_angle(sketch, lines_at_angle, new_ast).await,
+            Constraint::Tangent(tangent) => self.add_tangent(sketch, tangent, new_ast).await,
+        }
+    }
+
     pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> ExecResult<SetProgramOutcome> {
         self.program = program.clone();
 
@@ -4701,6 +4713,48 @@ impl FrontendState {
             new_graph: self.scene_graph_for_ui(),
             invalidates_ids: false,
             new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
+    async fn execute_after_add_constraints(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch_id: ObjectId,
+        sketch_block_ref: AstNodeRef,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        let previous_object_count = self.scene_graph.objects.len();
+        let new_source = source_from_ast(new_ast);
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding constraints",
+            "No AST produced after adding constraints",
+        )?;
+
+        let mut truncated_program = new_program.clone();
+        only_sketch_block(&mut truncated_program.ast, &sketch_block_ref, ChangeKind::Add)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let outcome = ctx
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode(sketch_id))
+            .await?;
+
+        self.program = new_program;
+        let outcome = self.update_state_after_exec(outcome, true);
+        let src_delta = self.commit_var_solutions_to_program(&outcome, "adding constraints")?;
+        let new_objects = self
+            .scene_graph
+            .objects
+            .iter()
+            .skip(previous_object_count)
+            .filter_map(|object| matches!(&object.kind, ObjectKind::Constraint { .. }).then_some(object.id))
+            .collect();
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph_for_ui(),
+            invalidates_ids: false,
+            new_objects,
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
@@ -10966,6 +11020,130 @@ sketch(on = XY) {
         }
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraints_rolls_back_entire_batch_when_one_is_invalid() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
+  arc(start = [var 15, var 0], end = [var 10, var 5], center = [var 10, var 0])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_ids = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter(|id| {
+                matches!(
+                    frontend.scene_graph.objects[id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .collect::<Vec<_>>();
+        let arc_id = sketch
+            .segments
+            .iter()
+            .copied()
+            .find(|id| {
+                matches!(
+                    frontend.scene_graph.objects[id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Arc(_)
+                    }
+                )
+            })
+            .unwrap();
+
+        let constraints = vec![
+            Constraint::Coincident(Coincident {
+                segments: vec![line_ids[0].into(), line_ids[1].into()],
+            }),
+            Constraint::Coincident(Coincident {
+                segments: vec![line_ids[0].into(), arc_id.into()],
+            }),
+        ];
+        let result = frontend
+            .add_constraints(&mock_ctx, version, sketch_id, constraints)
+            .await;
+
+        assert!(result.is_err(), "Expected the invalid second constraint to fail");
+        assert_eq!(frontend.program.original_file_contents, initial_source);
+        let sketch_after = expect_sketch(find_first_sketch_object(&frontend.scene_graph).unwrap());
+        assert!(
+            sketch_after.constraints.is_empty(),
+            "No constraint from the failed batch should remain"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_constraints_applies_all_constraints_in_one_batch() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
+  line3 = line(start = [var 0, var 10], end = [var 10, var 10])
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let line_ids = expect_sketch(sketch_object)
+            .segments
+            .iter()
+            .copied()
+            .filter(|id| {
+                matches!(
+                    frontend.scene_graph.objects[id.0].kind,
+                    ObjectKind::Segment {
+                        segment: Segment::Line(_)
+                    }
+                )
+            })
+            .collect::<Vec<_>>();
+        let constraints = line_ids[1..]
+            .iter()
+            .map(|line_id| {
+                Constraint::Coincident(Coincident {
+                    segments: vec![line_ids[0].into(), (*line_id).into()],
+                })
+            })
+            .collect();
+
+        let (source_delta, scene_delta) = frontend
+            .add_constraints(&mock_ctx, version, sketch_id, constraints)
+            .await
+            .unwrap();
+
+        assert_eq!(source_delta.text.matches("coincident(").count(), 2);
+        assert_eq!(scene_delta.new_objects.len(), 2);
+        assert!(
+            scene_delta
+                .new_objects
+                .iter()
+                .all(|id| matches!(scene_delta.new_graph.objects[id.0].kind, ObjectKind::Constraint { .. }))
+        );
+
         mock_ctx.close().await;
     }
 
