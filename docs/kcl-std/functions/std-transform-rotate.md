@@ -49,6 +49,8 @@ So, in the context of a 3D model:
 When rotating a part around an axis, you specify the axis of rotation and the angle of
 rotation.
 
+**Legacy KCL 1 examples:** The pipe examples below use deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -69,6 +71,8 @@ rotation.
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Rotate a pipe with roll, pitch, and yaw.
 
 // Create a path for the sweep.
@@ -107,6 +111,8 @@ sweepSketch = startSketchOn(XY)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Rotate a pipe with just roll.
 
 // Create a path for the sweep.
@@ -145,6 +151,8 @@ sweepSketch = startSketchOn(XY)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Rotate a pipe about a named axis with an angle.
 
 // Create a path for the sweep.
@@ -207,6 +215,8 @@ cube
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Rotate a pipe about a raw axis with an angle.
 
 // Create a path for the sweep.
