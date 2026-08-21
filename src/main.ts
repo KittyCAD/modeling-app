@@ -54,6 +54,7 @@ import {
   parseElectronLifecycleReportStore,
   serializeElectronLifecycleReportStore,
 } from '@src/lib/electronLifecycle'
+import { ElectronRendererRecovery } from '@src/lib/electronRendererRecovery'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -127,6 +128,7 @@ configureSystemCertificates()
 
 let mainWindow: BrowserWindow | null = null
 let isInstallingUpdate = false
+let isQuitting = false
 /** All Electron windows will share this WASM module */
 const initPromise = initialiseWasmNode()
 let electronLifecycleReportSequence = 0
@@ -368,6 +370,9 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   newWindow.on('responsive', () => {
     rendererUnresponsiveReported = false
   })
+  newWindow.webContents.on('did-finish-load', () => {
+    rendererUnresponsiveReported = false
+  })
 
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
@@ -445,6 +450,62 @@ const menuActions = {
   },
 }
 const windowMenuManager = new WindowMenuManager(menuActions)
+
+const electronRendererRecovery = new ElectronRendererRecovery<BrowserWindow>({
+  canRecover: () => !isQuitting && !isInstallingUpdate,
+  defer: (callback) => {
+    // Electron 40 emits render-process-gone from inside Chromium teardown.
+    // Navigating on that stack can CHECK-crash the browser process.
+    setImmediate(callback)
+  },
+  log: (event) => {
+    if (event.action === 'recovery-failed') {
+      console.error('Electron renderer recovery failed', event)
+      return
+    }
+    console.warn('Electron renderer recovery', event)
+  },
+  prompt: async () => {
+    const { response } = await dialog.showMessageBox({
+      type: 'error',
+      title: 'Zoo Design Studio needs attention',
+      message: 'Zoo Design Studio could not recover from a window failure.',
+      detail:
+        'A diagnostic report was saved. Restart Zoo Design Studio to recover, or quit and reopen it later.',
+      buttons: ['Restart Zoo Design Studio', 'Quit', 'Not Now'],
+      defaultId: 0,
+      cancelId: 2,
+      noLink: true,
+    })
+
+    if (response === 0) {
+      return 'restart'
+    }
+    if (response === 1) {
+      return 'quit'
+    }
+    return 'dismiss'
+  },
+  quitApp: () => {
+    isQuitting = true
+    app.quit()
+  },
+  reload: (targetWindow) => {
+    deviceFlowSessions.abort(targetWindow)
+    windowMenuManager.clearWindow(targetWindow)
+    targetWindow.webContents.reload()
+  },
+  restartApp: () => {
+    isQuitting = true
+    app.relaunch()
+    app.exit(0)
+  },
+})
+
+app.on('before-quit', () => {
+  isQuitting = true
+  electronRendererRecovery.stop()
+})
 
 function sendToAllWindows(channel: string, ...args: unknown[]) {
   for (const browserWindow of BrowserWindow.getAllWindows()) {
@@ -536,14 +597,19 @@ function queueElectronLifecycleReport(report: ElectronLifecycleReport) {
 app.on('render-process-gone', (_event, webContents, details) => {
   if (details.reason === 'clean-exit') return
 
+  const targetWindow = BrowserWindow.fromWebContents(webContents)
+
   queueElectronLifecycleReport({
-    ...createElectronLifecycleReportBase(
-      BrowserWindow.fromWebContents(webContents)
-    ),
+    ...createElectronLifecycleReportBase(targetWindow),
     eventType: 'render-process-gone',
     exitCode: details.exitCode,
     reason: details.reason,
   })
+
+  if (!targetWindow || targetWindow.webContents !== webContents) {
+    return
+  }
+  electronRendererRecovery.handleRenderProcessGone(targetWindow, details.reason)
 })
 
 app.on('child-process-gone', (_event, details) => {
