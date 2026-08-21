@@ -4276,6 +4276,32 @@ w = f() + f()
         };
     }
 
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_pattern_circular_number() {
+        let code = kcl_input!("repro_mock_pattern_circular");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let copies = result
+            .variables
+            .get("copies")
+            .expect("no variable called 'copies' found");
+        let value = match copies {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+        let actual_instances = value.len();
+        let expected_instances = 10; // from the KCL `instances = `
+        assert_eq!(actual_instances, expected_instances);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_then_add_extrude_then_mock_again() {
         let code = "s = sketch(on = XY) {
