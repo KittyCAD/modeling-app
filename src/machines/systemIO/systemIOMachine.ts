@@ -2031,10 +2031,6 @@ export const systemIOMachine = setup({
                     .output.requestedProjectName,
                 }
               },
-              requestedFileName: () => ({
-                project: NO_PROJECT_DIRECTORY,
-                file: NO_PROJECT_DIRECTORY,
-              }),
             }),
             SystemIOMachineActions.toastSuccess,
           ],
@@ -2128,10 +2124,6 @@ export const systemIOMachine = setup({
                     .output.requestedProjectName,
                 }
               },
-              requestedFileName: () => ({
-                project: NO_PROJECT_DIRECTORY,
-                file: NO_PROJECT_DIRECTORY,
-              }),
             }),
             SystemIOMachineActions.toastSuccess,
           ],

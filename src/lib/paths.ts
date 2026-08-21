@@ -65,6 +65,23 @@ function getRelativePathIfContained(
   return relativePath
 }
 
+export function normalizeFilesystemPathForComparison(path: string): string {
+  const hasWindowsSeparator = path.includes('\\')
+  const normalizedPath = path.replace(/\\/g, '/').replace(/\/+$/g, '')
+  const hasWindowsDrive = /^[a-zA-Z]:\//.test(normalizedPath)
+
+  return hasWindowsSeparator || hasWindowsDrive
+    ? normalizedPath.toLowerCase()
+    : normalizedPath
+}
+
+function areFilesystemPathsEqual(left: string, right: string): boolean {
+  return (
+    normalizeFilesystemPathForComparison(left) ===
+    normalizeFilesystemPathForComparison(right)
+  )
+}
+
 export const PATHS = {
   INDEX: '/',
   HOME,
@@ -184,7 +201,7 @@ export function parseProjectRoute(
     }
   }
 
-  if (projectPath !== id) {
+  if (!areFilesystemPathsEqual(projectPath, id)) {
     currentFileName = fsZds.basename(id)
     currentFilePath = id
   }
