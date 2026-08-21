@@ -36,6 +36,7 @@ import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+import { handleZookeeperAttachmentMessage } from '@src/lib/zookeeper/zookeeperAttachments'
 import {
   type KittyCadLibFile,
   constructZookeeperUserPromptRequest,
@@ -881,6 +882,7 @@ export const zookeeperManagerMachine = setup({
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
+        queryParams.set('replay_attachment_mode', 'metadata_only')
       }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
@@ -1065,6 +1067,8 @@ export const zookeeperManagerMachine = setup({
               }
               return
             }
+
+            if (handleZookeeperAttachmentMessage(ws, response)) return
 
             if (!isMlCopilotServerMessage(response)) return
 

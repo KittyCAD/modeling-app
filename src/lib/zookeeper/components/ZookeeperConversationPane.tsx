@@ -1,3 +1,4 @@
+import type { MlCopilotFile } from '@kittycad/lib'
 import {
   ZookeeperConversation,
   type QueuedMessage,
@@ -16,6 +17,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
 import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { fetchZookeeperAttachment } from '@src/lib/zookeeper/zookeeperAttachments'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   ZookeeperManagerStates,
@@ -119,6 +121,15 @@ export const ZookeeperConversationPane = (props: {
     props.settings.app.zookeeperMode.project ??
     props.settings.app.zookeeperMode.user ??
     defaultMode
+
+  const onFetchAttachment = useCallback(
+    (file: MlCopilotFile) =>
+      fetchZookeeperAttachment(
+        props.zookeeperManagerActor.getSnapshot().context.ws,
+        file
+      ),
+    [props.zookeeperManagerActor]
+  )
 
   if (
     props.zookeeperManagerActor.getSnapshot().matches(S.Await) &&
@@ -684,6 +695,7 @@ export const ZookeeperConversationPane = (props: {
       onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}
       modeScopeKey={props.theProject?.path}
+      onFetchAttachment={onFetchAttachment}
     />
   )
 }
