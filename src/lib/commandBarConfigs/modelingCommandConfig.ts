@@ -9,7 +9,7 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
-import type { Artifact, PathToNode } from '@src/lang/wasm'
+import type { PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -17,6 +17,7 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
+  CommandSelectionType,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -106,10 +107,10 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
 
 // For all transforms and boolean commands
 const objectsTypesAndFilters: {
-  selectionTypes: Artifact['type'][]
+  selectionTypes: CommandSelectionType[]
   selectionFilter: EntityType[]
 } = {
-  selectionTypes: ['path', 'sweep', 'compositeSolid'],
+  selectionTypes: ['path', 'pathRegion', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
 }
 
@@ -1165,10 +1166,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         cylinder: {
           ...objectsTypesAndFilters,
-          selectionTypes: [
-            ...objectsTypesAndFilters.selectionTypes,
-            'pathRegion',
-          ],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
