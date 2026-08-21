@@ -534,6 +534,7 @@ struct PatternTransformResume {
 enum PatternGeometry {
     Solids(Vec<crate::execution::Solid>),
     Sketches(Vec<crate::execution::Sketch>),
+    ImportedGeometry(crate::execution::ImportedGeometry),
 }
 
 /// Argument-evaluation state for a call: mirrors the argument loop of
@@ -1932,15 +1933,21 @@ async fn resumable_entry(
             return resume_drive(Feed::Callback(Some(initial)), konts, exec_state, ctx).await;
         }
         crate::std::ResumableKind::PatternTransform => {
-            let (solids, instances, transform, use_original) =
+            let (geometry, instances, transform, use_original) =
                 crate::std::patterns::pattern_transform_parse_args(&args, exec_state)?;
             crate::std::patterns::pattern_check_instances(instances, source_range)?;
+            let geometry = match geometry {
+                crate::std::patterns::Patternable3d::Solids(solids) => PatternGeometry::Solids(solids),
+                crate::std::patterns::Patternable3d::ImportedGeometry(geometry) => {
+                    PatternGeometry::ImportedGeometry(geometry)
+                }
+            };
             ResumeState::PatternTransform(PatternTransformResume {
                 transform,
                 instances,
                 next_i: 1,
                 transforms: Vec::with_capacity(usize::try_from(instances).unwrap_or_default()),
-                geometry: PatternGeometry::Solids(solids),
+                geometry,
                 use_original: use_original.unwrap_or_default(),
                 source_range,
                 node_path,
@@ -2049,6 +2056,9 @@ async fn resume_step(
                 PatternGeometry::Sketches(_) => crate::std::patterns::transforms_from_callback_value::<
                     crate::execution::Sketch,
                 >(value, p.source_range, exec_state)?,
+                PatternGeometry::ImportedGeometry(_) => crate::std::patterns::transforms_from_callback_value::<
+                    crate::execution::ImportedGeometry,
+                >(value, p.source_range, exec_state)?,
             };
             p.transforms.push(transforms);
             p.next_i += 1;
@@ -2118,6 +2128,24 @@ async fn resume_next(
                         )
                         .await?;
                         KclValue::from(out)
+                    }
+                    PatternGeometry::ImportedGeometry(geometry) => {
+                        let out =
+                            crate::std::patterns::execute_pattern_transform::<crate::execution::ImportedGeometry>(
+                                p.transforms,
+                                vec![geometry],
+                                p.use_original,
+                                exec_state,
+                                &p.args,
+                            )
+                            .await?;
+                        KclValue::from(
+                            out.into_iter()
+                                .map(|geometry| {
+                                    crate::execution::GeometryWithImportedGeometry::ImportedGeometry(Box::new(geometry))
+                                })
+                                .collect::<Vec<_>>(),
+                        )
                     }
                 };
                 Ok(ResumeOutcome::Control(Control::Apply(Applied::Value(value))))

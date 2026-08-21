@@ -102,6 +102,9 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Maker"
+    ],
     "pathFromProjectDirectoryToFirstFile": "blend-tutorial/main.kcl",
     "multipleFiles": false,
     "title": "Blend Trim Operations",
@@ -538,6 +541,9 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Manufacturing"
+    ],
     "pathFromProjectDirectoryToFirstFile": "gdt-tutorial/main.kcl",
     "multipleFiles": false,
     "title": "GD&T Basics in Zoo Design Studio",
@@ -857,6 +863,10 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "pipe-elbow-90deg/main.kcl",
     "multipleFiles": false,
     "title": "90 Degree Pipe Elbow",
@@ -1194,6 +1204,62 @@
     "multipleFiles": false,
     "title": "Surgical Drill Guide",
     "description": "A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Construction",
+      "Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-frame/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A box frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Framing Rail",
+    "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rectangle/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A rectangular frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-shelf/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame with Shelf",
+    "description": "A box frame with interior shelf made up of T-slotted rails",
     "files": [
       "main.kcl"
     ]

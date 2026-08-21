@@ -54,6 +54,8 @@ describe('renameRemoteCloudProject', () => {
         return jsonResponse({
           id: remoteProjectId,
           title: 'Bracket',
+          description: 'Existing description',
+          category_ids: ['existing-category'],
           revision: 'rev-1',
           entrypoint_path: 'nested/part.kcl',
         })

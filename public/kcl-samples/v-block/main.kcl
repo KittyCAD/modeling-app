@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 vBlockLength = 1 + 1 / 4

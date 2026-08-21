@@ -159,7 +159,12 @@ describe('ZookeeperConversation', () => {
     expect(clearChatButton).toHaveClass('!bg-chalkboard-10')
     expect(
       clearChatButton.querySelector('svg[aria-label="trash"]')?.parentElement
-    ).toHaveClass('bg-chalkboard-20', 'dark:bg-chalkboard-80')
+    ).toHaveClass(
+      'bg-chalkboard-20',
+      'dark:bg-chalkboard-80',
+      '!bg-transparent',
+      'ml-1'
+    )
 
     fireEvent.click(reconnectButton)
     fireEvent.click(clearChatButton)
@@ -185,6 +190,52 @@ describe('ZookeeperConversation', () => {
       screen.queryByRole('button', { name: 'Clear chat' })
     ).not.toBeInTheDocument()
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
+  })
+
+  test('shows billing recovery without offering to clear the chat', () => {
+    const billingError = 'no API credits available'
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        connectionError={billingError}
+        connectionFailed={true}
+        canClearChat={true}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={true}
+        contexts={[]}
+        disabled={true}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveClass('border-ml-green', 'bg-ml-green/10')
+    expect(alert).toHaveTextContent("You're out of Zookeeper credits.")
+    expect(alert).toHaveTextContent('Enable pay as you go')
+    expect(
+      screen.queryByRole('button', { name: 'Clear chat' })
+    ).not.toBeInTheDocument()
+    const billingLink = screen.getByRole('link', { name: 'Upgrade' })
+    expect(billingLink).toHaveAttribute(
+      'href',
+      withSiteBaseURL('/account/billing')
+    )
+    expect(
+      billingLink.querySelector('svg[aria-label="link"]')?.parentElement
+    ).toHaveClass('!bg-transparent', 'ml-1')
+    const reconnectButton = screen.getByRole('button', { name: 'Reconnect' })
+    expect(reconnectButton).toBeEnabled()
+    expect(
+      reconnectButton.querySelector('svg[aria-label="refresh"]')?.parentElement
+    ).toHaveClass('!bg-transparent', 'ml-1')
   })
 
   test('shows setup progress while loading a conversation', () => {

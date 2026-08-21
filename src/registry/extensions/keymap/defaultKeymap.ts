@@ -673,20 +673,6 @@ export const defaultKeymap: KeymapDocument = {
       command: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
     },
     {
-      id: 'toolbar.sketch.horizontal-distance',
-      title: 'Horizontal Distance',
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-      keystrokes: ['alt+d'],
-      command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-    },
-    {
-      id: 'toolbar.sketch.vertical-distance',
-      title: 'Vertical Distance',
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-      keystrokes: ['shift+d'],
-      command: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-    },
-    {
       id: 'toolbar.sketch.construction',
       title: 'Construction',
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],

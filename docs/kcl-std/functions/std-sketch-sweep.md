@@ -32,6 +32,8 @@ extrusion.
 You can provide more than one sketch to sweep, and they will all be
 swept along the same path.
 
+**Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -56,6 +58,8 @@ swept along the same path.
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Create a pipe using a sweep.
 
 // Create a path for the sweep.

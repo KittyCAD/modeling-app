@@ -4472,6 +4472,13 @@ function getHideOperationArtifactIds(op: Operation): string[] {
   return artifactIdsInOpValue(value)
 }
 
+/** Returns every artifact id the used in the program as an argument to `hide()`*/
+export function hiddenArtifactIdsFromOperations(
+  operations: Operation[]
+): Set<string> {
+  return new Set(operations.flatMap(getHideOperationArtifactIds))
+}
+
 export function getHideOpByArtifactId(
   ops: Operation[],
   searchId: string

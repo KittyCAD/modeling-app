@@ -519,6 +519,8 @@ export const ZookeeperConversationPane = (props: {
               type: ZookeeperManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
+              engineApiCallId:
+                props.contextModeling.engineCommandManager.apiCallId,
               activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
                     currentFileEntry: currentLoaderFile,

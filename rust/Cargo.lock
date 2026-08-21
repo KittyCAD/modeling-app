@@ -1065,9 +1065,9 @@ checksum = "e1d926b4d407d372f141f93bb444696142c29d32962ccbd3531117cf3aa0bfa9"
 
 [[package]]
 name = "either"
-version = "1.15.0"
+version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+checksum = "9e5e8f6c15a24b9a3ee5efec809ccd006d3b30e8b3bb63c39af737c7f87daa1d"
 
 [[package]]
 name = "embedded-io"
@@ -2350,7 +2350,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "indexmap 2.14.0",
  "kcl-error",
@@ -2369,7 +2369,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.177"
+version = "0.1.178"
 dependencies = [
  "anyhow",
  "clap",
@@ -2380,7 +2380,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2389,7 +2389,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.177"
+version = "0.1.178"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2399,7 +2399,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "miette",
  "pyo3",
@@ -2412,7 +2412,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "anyhow",
  "clap",
@@ -2433,7 +2433,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.177"
+version = "0.1.178"
 dependencies = [
  "anyhow",
  "clap",
@@ -2453,7 +2453,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2543,7 +2543,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.177"
+version = "0.3.178"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2560,7 +2560,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "logos",
  "proptest",
@@ -2568,7 +2568,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.177"
+version = "0.2.178"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2581,7 +2581,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.177"
+version = "0.1.178"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2594,7 +2594,6 @@ dependencies = [
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
- "pretty_assertions",
  "rayon",
  "serde",
  "serde_json",
@@ -2605,16 +2604,15 @@ dependencies = [
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
- "wasm-bindgen-test",
  "wasm-streams",
  "web-sys",
 ]
 
 [[package]]
 name = "kittycad"
-version = "0.4.14"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7973e7ac46b7d00b4cce721d6c414a602447ddff305126ddea8cf43144832d97"
+checksum = "09e616688e500d5d2273d98a80bdbeb2b9c783e217efb693e83ebfb70def7209"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2658,9 +2656,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.222"
+version = "0.2.223"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "429353fb14439ab30767213d09f81edb56f9313c3ede8e095deaaaf840f6ab83"
+checksum = "33ad6e0e6eca617f1d28ff79ae7c97260d68ec7be0b263d0144c701f31a144c5"
 dependencies = [
  "anyhow",
  "bon",
@@ -2944,16 +2942,6 @@ checksum = "f7c44f8e672c00fe5308fa235f821cb4198414e1c77935c1ab6948d3fd78550e"
 dependencies = [
  "mime",
  "unicase",
-]
-
-[[package]]
-name = "minicov"
-version = "0.3.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4869b6a491569605d66d3952bcdf03df789e5b536e5f0cf7758a7f08a55ae24d"
-dependencies = [
- "cc",
- "walkdir",
 ]
 
 [[package]]
@@ -3256,9 +3244,9 @@ dependencies = [
 
 [[package]]
 name = "numpy"
-version = "0.28.0"
+version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "778da78c64ddc928ebf5ad9df5edf0789410ff3bdbf3619aed51cd789a6af1e2"
+checksum = "6a5b15d63a5ff39e378daed0e1340d3a5964703ea9712eb09a0dc66fade996f4"
 dependencies = [
  "libc",
  "ndarray",
@@ -3848,9 +3836,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.28.3"
+version = "0.29.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91fd8e38a3b50ed1167fb981cd6fd60147e091784c427b8f7183a7ee32c31c12"
+checksum = "4688ddedf473e32662b9b067670129a8afb8c18e351482c70d62ba4a88171e8b"
 dependencies = [
  "libc",
  "once_cell",
@@ -3863,18 +3851,18 @@ dependencies = [
 
 [[package]]
 name = "pyo3-build-config"
-version = "0.28.3"
+version = "0.29.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e368e7ddfdeb98c9bca7f8383be1648fd84ab466bf2bc015e94008db6d35611e"
+checksum = "f41027e41b4bd03f6e60f9f417fe24a6341a6bb744edd62b6f709f2a52ea30e9"
 dependencies = [
  "target-lexicon",
 ]
 
 [[package]]
 name = "pyo3-ffi"
-version = "0.28.3"
+version = "0.29.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f29e10af80b1f7ccaf7f69eace800a03ecd13e883acfacc1e5d0988605f651e"
+checksum = "e591a95526fead067432c3b3a33fc74770b87b1e04e73671090d9c2055a2b327"
 dependencies = [
  "libc",
  "pyo3-build-config",
@@ -3882,9 +3870,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros"
-version = "0.28.3"
+version = "0.29.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df6e520eff47c45997d2fc7dd8214b25dd1310918bbb2642156ef66a67f29813"
+checksum = "73225868fc1cd84eef2c3c230ddb91273bf1de46aeb8a4248da76d32a0924a1c"
 dependencies = [
  "proc-macro2",
  "pyo3-macros-backend",
@@ -3894,22 +3882,21 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros-backend"
-version = "0.28.3"
+version = "0.29.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4cdc218d835738f81c2338f822078af45b4afdf8b2e33cbb5916f108b813acb"
+checksum = "571575aa3749fa6216757dd47d2a3e7ef360f329a40f0666a9fbd14889024952"
 dependencies = [
  "heck",
  "proc-macro2",
- "pyo3-build-config",
  "quote",
  "syn 2.0.119",
 ]
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.22.3"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1242a6080f45edcfaf3be3b9968914dd47a408c5590aea22770b978f7c36ffa7"
+checksum = "a267ea4da9a831f534def7f1d8e14f581d5640d3e5af6527072724f216f4dbbf"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3933,9 +3920,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.22.3"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd9a73abe6f57890e657c265b86805637138f83203e1a56bc156078abf215e36"
+checksum = "6573423a5e8cc43ec7565eccccbc2dd35e1fc9032d9ca404afab875429eb8cf0"
 dependencies = [
  "heck",
  "indexmap 2.14.0",
@@ -6123,45 +6110,6 @@ checksum = "a93e946af942b58934c604527337bad9ae33ba1d5c6900bbb41c2c07c2364a93"
 dependencies = [
  "unicode-ident",
 ]
-
-[[package]]
-name = "wasm-bindgen-test"
-version = "0.3.65"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1138411301a026d6662dc44e7076a74dbaa76a369312275eea5dee4d7dc68c7c"
-dependencies = [
- "async-trait",
- "cast",
- "js-sys",
- "libm",
- "minicov",
- "nu-ansi-term",
- "num-traits 0.2.19",
- "oorandom",
- "serde",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "wasm-bindgen-test-macro",
- "wasm-bindgen-test-shared",
-]
-
-[[package]]
-name = "wasm-bindgen-test-macro"
-version = "0.3.65"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "186ddfe8383ba7ae7927bae3bb7343fd1f03ba2dbaf1474410f0d831131c269b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "wasm-bindgen-test-shared"
-version = "0.2.115"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f032e076ceb8d36d5921c6cef5bf447f2ca2bbd5439ce1683d68d1c99cc2be16"
 
 [[package]]
 name = "wasm-encoder"

@@ -175,6 +175,19 @@ export function distance2d(a: Coords2d, b: Coords2d): number {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
+export function distancePointToLine2d(
+  point: Coords2d,
+  line: LineCoords
+): number | null {
+  const direction = subVec(line[1], line[0])
+  const lineLength = length2d(direction)
+  if (lineLength === 0) {
+    return null
+  }
+
+  return Math.abs(cross2d(subVec(point, line[0]), direction) / lineLength)
+}
+
 export function length2d(a: Coords2d): number {
   return Math.sqrt(a[0] * a[0] + a[1] * a[1])
 }

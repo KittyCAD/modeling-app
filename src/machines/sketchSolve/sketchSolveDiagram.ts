@@ -13,7 +13,11 @@ import {
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import { type LineCoords, distance2d, linesAreParallel } from '@src/lib/utils2d'
+import {
+  distance2d,
+  distancePointToLine2d,
+  linesAreParallel,
+} from '@src/lib/utils2d'
 import type {
   DefaultPlane,
   ExtrudeFacePlane,
@@ -62,11 +66,11 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
-import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import {
   type ConstraintToolName,
   constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
+import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
@@ -155,19 +159,6 @@ function getCircularCoords(
   }
 }
 
-function pointToLineDistance(point: Coords2d, line: LineCoords) {
-  const dx = line[1][0] - line[0][0]
-  const dy = line[1][1] - line[0][1]
-  const length = Math.hypot(dx, dy)
-  if (length === 0) {
-    return null
-  }
-
-  return Math.abs(
-    ((point[0] - line[0][0]) * dy - (point[1] - line[0][1]) * dx) / length
-  )
-}
-
 function pointToCircularDistance(
   point: Coords2d,
   circular: { center: Coords2d; radius: number }
@@ -194,11 +185,11 @@ function getCurrentDistanceBetweenSelections(
   const secondCircular = getCircularCoords(objects, secondObject)
 
   if (point1 && secondLine) {
-    return pointToLineDistance(point1, secondLine)
+    return distancePointToLine2d(point1, secondLine)
   }
 
   if (firstLine && point2) {
-    return pointToLineDistance(point2, firstLine)
+    return distancePointToLine2d(point2, firstLine)
   }
 
   if (point1 && secondCircular) {
@@ -210,14 +201,20 @@ function getCurrentDistanceBetweenSelections(
   }
 
   if (firstLine && secondCircular) {
-    const centerDistance = pointToLineDistance(secondCircular.center, firstLine)
+    const centerDistance = distancePointToLine2d(
+      secondCircular.center,
+      firstLine
+    )
     return centerDistance === null
       ? null
       : Math.abs(centerDistance - secondCircular.radius)
   }
 
   if (firstCircular && secondLine) {
-    const centerDistance = pointToLineDistance(firstCircular.center, secondLine)
+    const centerDistance = distancePointToLine2d(
+      firstCircular.center,
+      secondLine
+    )
     return centerDistance === null
       ? null
       : Math.abs(centerDistance - firstCircular.radius)
@@ -232,84 +229,10 @@ function getCurrentDistanceBetweenSelections(
   }
 
   if (firstLine && secondLine && linesAreParallel(firstLine, secondLine)) {
-    return pointToLineDistance(firstLine[0], secondLine)
+    return distancePointToLine2d(firstLine[0], secondLine)
   }
 
   return null
-}
-
-async function addAxisDistanceConstraint(
-  context: SketchSolveContext,
-  self: SolveActionArgs['self'],
-  axis: 'horizontal' | 'vertical',
-  providedDistance?: number,
-  keepSelection = false
-) {
-  let segmentsToConstrain = [...context.selectedIds]
-  if (
-    segmentsToConstrain.length === 1 &&
-    typeof segmentsToConstrain[0] === 'number'
-  ) {
-    const first =
-      context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
-        segmentsToConstrain[0]
-      ]
-    if (isLineSegment(first)) {
-      segmentsToConstrain = [first.kind.segment.start, first.kind.segment.end]
-    }
-  }
-  const currentSelections = segmentsToConstrain
-    .map((id) =>
-      id === ORIGIN_TARGET
-        ? ORIGIN_TARGET
-        : context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
-    )
-    .filter(Boolean)
-  let distance =
-    providedDistance !== undefined
-      ? providedDistance
-      : DEFAULT_DISTANCE_FALLBACK
-  const units = baseUnitToNumericSuffix(
-    context.kclManager.fileSettings.defaultLengthUnit
-  )
-  // Calculate distance between two points if both are point segments
-  if (currentSelections.length === 2 && providedDistance === undefined) {
-    const first = currentSelections[0]
-    const second = currentSelections[1]
-    const point1 = getSelectionPointCoords(first)
-    const point2 = getSelectionPointCoords(second)
-    if (point1 && point2) {
-      const signedDistance =
-        axis === 'horizontal'
-          ? roundOff(point2[0] - point1[0])
-          : roundOff(point2[1] - point1[1])
-
-      if (signedDistance < 0) {
-        segmentsToConstrain = [segmentsToConstrain[1], segmentsToConstrain[0]]
-        distance = -signedDistance
-      } else {
-        distance = signedDistance
-      }
-    }
-  }
-  const result = await context.rustContext.addConstraint(
-    0,
-    context.sketchId,
-    {
-      type: axis === 'horizontal' ? 'HorizontalDistance' : 'VerticalDistance',
-      distance: { value: distance, units },
-      points: segmentsToConstrain.map(
-        (id): ConstraintSegment => (id === ORIGIN_TARGET ? 'ORIGIN' : id)
-      ),
-      source: {
-        expr: distance.toString(),
-        is_literal: true,
-      },
-    },
-    jsAppSettings(context.kclManager.systemDeps.settings),
-    true
-  )
-  sendToolbarConstraintOutcome(self, result, keepSelection)
 }
 
 function getPreparedApplyForConstraintTool(
@@ -362,7 +285,10 @@ export const sketchSolveMachine = setup({
     },
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
-      return { pendingToolName: event.data.tool }
+      return {
+        pendingToolName: event.data.tool,
+        pendingToolKeepSelection: event.keepSelection ?? false,
+      }
     }),
     'constrain draft line': ({ context, event }) => {
       assertEvent(event, 'equip tool')
@@ -429,6 +355,15 @@ export const sketchSolveMachine = setup({
       selectionCoordinates: {},
       duringAreaSelectIds: [],
     }),
+    'clear selection after tool completion': assign(({ context }) =>
+      context.keepSelectionAfterToolCompletion
+        ? { duringAreaSelectIds: [] }
+        : {
+            selectedIds: [],
+            selectionCoordinates: {},
+            duringAreaSelectIds: [],
+          }
+    ),
     'toggle non-visual constraints': assign(({ context }) => ({
       showNonVisualConstraints: !context.showNonVisualConstraints,
     })),
@@ -441,6 +376,7 @@ export const sketchSolveMachine = setup({
     'clear child tool': assign({
       sketchSolveToolName: null,
       childTool: undefined,
+      keepSelectionAfterToolCompletion: false,
     }),
     'update selected ids': assign(updateSelectedIds),
     'update selected ids from code selection': assign(
@@ -476,6 +412,7 @@ export const sketchSolveMachine = setup({
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
+      keepSelectionAfterToolCompletion: false,
       selectedIds: [],
       selectionCoordinates: {},
       duringAreaSelectIds: [],
@@ -576,6 +513,23 @@ export const sketchSolveMachine = setup({
               const second = currentSelections[1]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               const secondObject = second === ORIGIN_TARGET ? undefined : second
+              const firstSupportsPlacement =
+                first === ORIGIN_TARGET ||
+                isLineSegment(firstObject) ||
+                isPointSegment(firstObject)
+              const secondSupportsPlacement =
+                second === ORIGIN_TARGET ||
+                isLineSegment(secondObject) ||
+                isPointSegment(secondObject)
+              if (firstSupportsPlacement && secondSupportsPlacement) {
+                sendToActorIfActive(self, {
+                  type: 'equip tool',
+                  data: { tool: 'dimensionTool' },
+                  keepSelection,
+                })
+                return
+              }
+
               const currentDistance = getCurrentDistanceBetweenSelections(
                 first,
                 second,
@@ -583,38 +537,6 @@ export const sketchSolveMachine = setup({
               )
               if (currentDistance !== null) {
                 distance = roundOff(currentDistance)
-              } else if (
-                isLineSegment(firstObject) &&
-                isLineSegment(secondObject)
-              ) {
-                sendToActorIfActive(self, {
-                  type: 'equip tool',
-                  data: { tool: 'dimensionTool' },
-                  keepSelection,
-                })
-                return
-              } else if (
-                isPointSegment(firstObject) &&
-                isPointSegment(secondObject)
-              ) {
-                // the units of these points will have already been normalized to the user's default units
-                // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
-                const point1 = {
-                  x: firstObject.kind.segment.position.x,
-                  y: firstObject.kind.segment.position.y,
-                }
-                const point2 = {
-                  x: secondObject.kind.segment.position.x,
-                  y: secondObject.kind.segment.position.y,
-                }
-                const distanceResult = distanceBetweenPoint2DExpr(
-                  point1,
-                  point2,
-                  await context.kclManager.wasmInstancePromise
-                )
-                if (!(distanceResult instanceof Error)) {
-                  distance = roundOff(distanceResult.distance)
-                }
               } else {
                 const point1 = getSelectionPointCoords(first)
                 const point2 = getSelectionPointCoords(second)
@@ -722,7 +644,7 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Distance',
                 distance: { value: distance, units },
-                points: pointsForDistance,
+                segments: pointsForDistance,
                 source: {
                   expr: distance.toString(),
                   is_literal: true,
@@ -732,38 +654,6 @@ export const sketchSolveMachine = setup({
               true
             )
             sendToolbarConstraintOutcome(self, result, keepSelection)
-          }
-        )
-      },
-    },
-    HorizontalDistance: {
-      actions: ({ self, context, event }) => {
-        void runSketchSolveToolbarAction(
-          'add a horizontal distance constraint',
-          async () => {
-            await addAxisDistanceConstraint(
-              context,
-              self,
-              'horizontal',
-              undefined,
-              event.keepSelection ?? false
-            )
-          }
-        )
-      },
-    },
-    VerticalDistance: {
-      actions: ({ self, context, event }) => {
-        void runSketchSolveToolbarAction(
-          'add a vertical distance constraint',
-          async () => {
-            await addAxisDistanceConstraint(
-              context,
-              self,
-              'vertical',
-              undefined,
-              event.keepSelection ?? false
-            )
           }
         )
       },
@@ -1086,7 +976,7 @@ export const sketchSolveMachine = setup({
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
           actions: [
-            'clear selection',
+            'clear selection after tool completion',
             'update selected code highlight',
             'refresh selection styling',
             'clear child tool',

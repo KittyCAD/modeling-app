@@ -932,6 +932,18 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   })
 }
 
+export async function mockClientErrorReports(context: BrowserContext) {
+  await context.unroute('**/user/client-errors')
+  await context.route('**/user/client-errors', async (route) => {
+    // Keep intentionally simulated failures from polluting real dev telemetry.
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({}),
+    })
+  })
+}
+
 // settingsOverrides may need to be augmented to take more generic items,
 // but we'll be strict for now
 export async function setup(
