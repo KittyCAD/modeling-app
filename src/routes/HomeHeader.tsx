@@ -11,7 +11,7 @@ import {
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
-import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
+import { ProjectLibraryIcon } from '@src/routes/ProjectLibraryIcon'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -69,16 +69,12 @@ export function HomeHeader({
             )}
             <div className="flex items-center gap-3">
               {library && (
-                <span
-                  className="grid h-12 w-12 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
+                <ProjectLibraryIcon
+                  library={library}
+                  className="h-12 w-12 flex-none rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
+                  iconClassName="h-7 w-7"
                   data-testid="project-library-details-icon"
-                >
-                  <CustomIcon
-                    name={getProjectLibraryIconName(library)}
-                    className="h-7 w-7"
-                    aria-hidden="true"
-                  />
-                </span>
+                />
               )}
               <h1 className="text-3xl font-bold">{title}</h1>
             </div>

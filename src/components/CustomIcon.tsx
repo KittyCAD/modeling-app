@@ -1137,6 +1137,23 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  git: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="git"
+    >
+      <path d="M5.5 5V15" stroke="currentColor" />
+      <path
+        d="M14.5 5V7.5C14.5 9.70914 12.7091 11.5 10.5 11.5H5.5"
+        stroke="currentColor"
+      />
+      <circle cx="5.5" cy="5" r="1.75" fill="currentColor" />
+      <circle cx="5.5" cy="15" r="1.75" fill="currentColor" />
+      <circle cx="14.5" cy="5" r="1.75" fill="currentColor" />
+    </svg>
+  ),
   helix: (
     <svg
       viewBox="0 0 20 20"
