@@ -11,7 +11,7 @@ vi.mock('@src/lib/clientErrors', () => ({
 
 import { createOnWebSocketMessage } from '@src/lib/engineConnection/websocketConnection'
 
-const createMessageHandler = () =>
+const createMessageHandler = (cloudProjectId?: string) =>
   createOnWebSocketMessage({
     disconnectAll: vi.fn(),
     setPong: vi.fn(),
@@ -27,10 +27,11 @@ const createMessageHandler = () =>
     sdpAnswerResolve: vi.fn(),
     sdpAnswerReject: vi.fn(),
     setApiCallId: vi.fn(),
+    getCloudProjectId: () => cloudProjectId,
   })
 
-const dispatchFailureMessage = (message: string) => {
-  createMessageHandler()(
+const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
+  createMessageHandler(cloudProjectId)(
     new MessageEvent('message', {
       data: JSON.stringify({
         success: false,
@@ -40,29 +41,17 @@ const dispatchFailureMessage = (message: string) => {
   )
 }
 
-const setCloudProjectId = (cloudProjectId?: string) => {
-  window.app = {
-    project: {
-      projectIORefSignal: {
-        value: {
-          cloudProjectId,
-        },
-      },
-    },
-  } as Window['app']
-}
-
 describe('createOnWebSocketMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
-    setCloudProjectId('cloud-project-123')
   })
 
   it('reports backend Engine disconnect failures with the cloud project ID', () => {
     dispatchFailureMessage(
-      'modeling connection interrupted; please reconnect and retry'
+      'modeling connection interrupted; please reconnect and retry',
+      'cloud-project-123'
     )
 
     expect(reportClientError).toHaveBeenCalledOnce()
@@ -78,8 +67,6 @@ describe('createOnWebSocketMessage', () => {
   })
 
   it('reports backend Engine disconnect failures for local-only projects', () => {
-    setCloudProjectId()
-
     dispatchFailureMessage(
       'modeling connection interrupted; please reconnect and retry'
     )

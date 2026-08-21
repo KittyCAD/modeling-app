@@ -20,11 +20,6 @@ import { reportRejection } from '@src/lib/trap'
 const MODELING_BACKEND_DISCONNECTED_MESSAGE =
   'modeling connection interrupted; please reconnect and retry'
 
-const getCloudProjectId = () =>
-  typeof window === 'undefined'
-    ? undefined
-    : window.app?.project?.projectIORefSignal.value.cloudProjectId
-
 /**
  * 4 different event listeners to clean up
  * onWebSocketOpen
@@ -107,6 +102,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerResolve,
   sdpAnswerReject,
   setApiCallId,
+  getCloudProjectId,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -122,6 +118,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
+  getCloudProjectId: () => string | undefined
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
