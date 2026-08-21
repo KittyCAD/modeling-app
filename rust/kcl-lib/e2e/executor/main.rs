@@ -1,6 +1,7 @@
 mod cache;
 
 use kcl_lib::BacktraceItem;
+use kcl_lib::BacktraceItemKind;
 use kcl_lib::ExecError;
 use kcl_lib::ModuleId;
 use kcl_lib::SourceRange;
@@ -453,6 +454,7 @@ model = cube"#;
         vec![BacktraceItem {
             source_range: SourceRange::new(0, 18, ModuleId::default()),
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }]
     );
 }
@@ -539,6 +541,7 @@ model = cube"#;
         vec![BacktraceItem {
             source_range: SourceRange::new(32, 70, ModuleId::default()),
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }]
     );
 }
@@ -1725,11 +1728,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 111, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 111, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1756,11 +1761,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1787,11 +1794,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 110, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 110, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1818,11 +1827,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(70, 112, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1849,11 +1860,13 @@ extrusion = extrude(sketch001, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(66, 116, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(66, 116, ModuleId::default()),
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1880,11 +1893,13 @@ extrusion = extrude(sketch001, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(66, 117, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(66, 117, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1913,11 +1928,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 130, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 130, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1946,11 +1963,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 132, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 132, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -1979,11 +1998,13 @@ example = extrude(exampleSketch, length = 10)
         vec![
             BacktraceItem {
                 source_range: SourceRange::new(95, 133, ModuleId::default()),
-                fn_name: Some("angledLine".to_owned())
+                fn_name: Some("angledLine".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(95, 133, ModuleId::default()),
-                fn_name: None
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
             }
         ]
     );
@@ -2019,14 +2040,17 @@ someFunction('INVALID')
             BacktraceItem {
                 source_range: SourceRange::new(46, 55, ModuleId::default()),
                 fn_name: Some("startSketchOn".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(32, 56, ModuleId::default()),
                 fn_name: Some("someFunction".to_owned()),
+                kind: BacktraceItemKind::Call,
             },
             BacktraceItem {
                 source_range: SourceRange::new(60, 83, ModuleId::default()),
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             },
         ]
     );

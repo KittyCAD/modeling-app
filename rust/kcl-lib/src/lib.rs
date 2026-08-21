@@ -94,6 +94,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
+pub use errors::BacktraceItemKind;
 pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
