@@ -1168,7 +1168,7 @@ mod sync {
             ],
         });
         let distance = Constraint::Distance(crate::frontend::sketch::Distance {
-            points: vec![
+            segments: vec![
                 crate::frontend::sketch::ConstraintSegment::Segment(ObjectId(2)),
                 crate::frontend::sketch::ConstraintSegment::Origin(crate::frontend::sketch::OriginLiteral::Origin),
             ],
@@ -1200,7 +1200,7 @@ mod sync {
         else {
             panic!("expected distance rewrite");
         };
-        let rewritten_distance_ids: Vec<ObjectId> = rewritten_distance.point_ids().collect();
+        let rewritten_distance_ids: Vec<ObjectId> = rewritten_distance.segment_ids().collect();
         assert!(rewritten_distance_ids.contains(&ObjectId(202)));
 
         let Some(Constraint::Tangent(rewritten_tangent)) = rewrite_constraint_with_map(&tangent, &rewrite_map) else {
@@ -4075,7 +4075,7 @@ sketch001 = sketch(on = YZ) {
             | crate::frontend::sketch::Constraint::HorizontalDistance(distance)
             | crate::frontend::sketch::Constraint::VerticalDistance(distance) => {
                 assert!(
-                    !distance.point_ids().any(|id| large_spline.1.controls.contains(&id)),
+                    !distance.segment_ids().any(|id| large_spline.1.controls.contains(&id)),
                     "Tail-trimmed spline should not keep point distance constraints on controls, got KCL:\n{}",
                     result.kcl_code
                 );
