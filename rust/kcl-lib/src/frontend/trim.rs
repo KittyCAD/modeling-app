@@ -3248,23 +3248,6 @@ async fn execute_trim_flow(
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }
 
-        // Prefer the requested sketch so multi-sketch tests exercise the same
-        // active-sketch boundary as the app.
-        let actual_sketch_id = initial_scene_graph
-            .objects
-            .iter()
-            .find(|obj| obj.id == sketch_id && matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
-            .map(|obj| obj.id)
-            .or(initial_scene_graph.sketch_mode)
-            .or_else(|| {
-                initial_scene_graph
-                    .objects
-                    .iter()
-                    .find(|obj| matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
-                    .map(|obj| obj.id)
-            })
-            .unwrap_or(sketch_id);
-
         let version = Version(0);
         let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
             new_graph: initial_scene_graph,
@@ -3283,7 +3266,7 @@ async fn execute_trim_flow(
             &mut frontend,
             &mock_ctx,
             version,
-            actual_sketch_id,
+            sketch_id,
         )
         .await?;
 

@@ -1462,7 +1462,7 @@ sketch(on = YZ) {
 
     // This should at least parse and set up the frontend without errors
     // The actual trim might not work yet if operations aren't fully implemented
-    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(0)).await;
+    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(1)).await;
 
     // For now, just verify it doesn't panic
     // Once operations are fully implemented, we can add assertions
@@ -3555,29 +3555,21 @@ async fn test_trim_rect_diagonal_corner_reconnects_line5_endpoints() {
 #[tokio::test]
 /// Issue #13165: geometry from another sketch must not terminate a trim in the active sketch.
 async fn test_trim_ignores_intersections_from_other_sketches() {
-    let base_kcl_code = r#"rectangleSketch = sketch(on = YZ) {
+    let base_kcl_code = r#"circleSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+}
+
+rectangleSketch = sketch(on = YZ) {
   line(start = [var -4mm, var 3mm], end = [var 4mm, var 3mm])
   line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
   line(start = [var 4mm, var -3mm], end = [var -4mm, var -3mm])
   line(start = [var -4mm, var -3mm], end = [var -4mm, var 3mm])
 }
-
-circleSketch = sketch(on = YZ) {
-  circle1 = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
-}
 "#;
 
-    let objects = get_objects_from_kcl(base_kcl_code).await;
-    let circle_sketch_id = objects
-        .iter()
-        .find(|object| {
-            object.label == "circleSketch" && matches!(object.kind, crate::frontend::api::ObjectKind::Sketch(_))
-        })
-        .expect("circle sketch should exist")
-        .id;
     let trim_points = vec![Coords2d { x: 1.0, y: 6.0 }, Coords2d { x: 1.0, y: 4.0 }];
 
-    let result = execute_trim_flow(base_kcl_code, &trim_points, circle_sketch_id)
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
         .await
         .expect("trim flow failed");
     let objects = get_objects_from_kcl(&result.kcl_code).await;
