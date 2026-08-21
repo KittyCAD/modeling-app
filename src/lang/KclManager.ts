@@ -913,6 +913,14 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  /**
+   * Counts the executions that rebuilt the engine scene.
+   *
+   * Sketch-solve syncs and mock executions replace `execState` without sending
+   * an engine command.  A consumer that must act only on a rebuilt scene
+   * subscribes here rather than to `execStateSignal`.
+   */
+  private _engineSceneGeneration = signal(0)
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1256,6 +1264,9 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+  get engineSceneGenerationSignal() {
+    return this._engineSceneGeneration
   }
   get pendingFeatureTreeSourceSelection() {
     return this._pendingFeatureTreeSourceSelection.value
@@ -2549,6 +2560,7 @@ export class KclManager extends File {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
+    this._engineSceneGeneration.value += 1
     this.dispatchUpdateOperations(
       getOperationsForCurrentFile({
         operationsByModule: execState.operations,

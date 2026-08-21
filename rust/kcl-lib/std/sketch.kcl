@@ -405,7 +405,11 @@ export fn rectangle(
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
+/// **Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
+///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-15, 0])
 ///   |> line(end = [30, 0])
@@ -945,6 +949,9 @@ export fn extrude(
 ///
 /// You can provide more than one sketch to revolve, and they will all be
 /// revolved around the same axis.
+///
+/// **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+/// way (i.e. scaled differently along each axis).
 ///
 /// ```kcl,legacySketch
 /// part001 = startSketchOn(XY)
@@ -1523,7 +1530,11 @@ export fn polygon(
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
+/// **Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// // Create a pipe using a sweep.
 ///
 /// // Create a path for the sweep.
@@ -2986,6 +2997,8 @@ export fn bezierCurve(
 /// [sketch-solve](/docs/kcl-std/modules/std-solver).
 ///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 5])
@@ -2999,6 +3012,8 @@ export fn bezierCurve(
 /// ```
 ///
 /// ```kcl,legacySketch
+/// @settings(kclVersion = 1.0)
+///
 /// fn squareHoleSketch() {
 ///   squareSketch = startSketchOn(-XZ)
 ///     |> startProfile(at = [-1, -1])
@@ -3348,6 +3363,14 @@ export fn faceOf(
 /// To make a fallback point move with a parametric sketch, consider creating a
 /// construction point in the sketch and constraining it into place. You can then
 /// refer to that point to create the region.
+///
+/// Operations such as `extrude`, `revolve`, and `sweep` consume the region
+/// passed to them. Each region can be used by only one consuming operation. To
+/// reuse the same profile, call `region(...)` again with the original sketch
+/// segments instead of cloning the sketch. For example, create
+/// `firstRegion = region(segments = [profile.circle])` and
+/// `secondRegion = region(segments = [profile.circle])`, then pass each region
+/// to a different consuming operation.
 ///
 /// ```kcl,sketchSolve
 /// @settings(kclVersion = 2.0)

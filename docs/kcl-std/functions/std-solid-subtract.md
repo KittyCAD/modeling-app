@@ -28,6 +28,10 @@ operation. Assign the returned solid or solids to a new variable and use that
 result for subsequent operations. For multiple cuts, pass each `subtract`
 result into the next call instead of reusing the original base solid.
 
+
+
+**Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -118,7 +122,7 @@ subtractedPart = part001 - part002
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 height = 2.5
 width = 2.5

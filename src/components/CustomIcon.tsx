@@ -440,6 +440,22 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  caretLeft: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="caret left"
+    >
+      <title>caret left</title>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8.70709 10.0001L12.3536 6.35352L11.6465 5.64642L7.64642 9.64655L7.64643 10.3537L11.6465 14.3535L12.3536 13.6464L8.70709 10.0001Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   caretUp: (
     <svg
       viewBox="0 0 20 20"

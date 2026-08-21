@@ -27,6 +27,8 @@ To translate around the global scene coordinate system, use `global = true`.
 Translate is really useful for sketches if you want to move a sketch
 and then rotate it using the `rotate` function to create a loft.
 
+**Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -46,6 +48,8 @@ and then rotate it using the `rotate` function to create a loft.
 ### Examples
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Move a pipe.
 
 // Create a path for the sweep.

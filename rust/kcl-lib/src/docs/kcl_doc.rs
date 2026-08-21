@@ -1010,6 +1010,8 @@ impl ArgData {
                     "angle" => "180deg",
                     "arcDegrees" => "360deg",
                     "sector" => "1",
+                    "metalness" => "90",
+                    "roughness" => "50",
                     _ => "10",
                 };
                 Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
@@ -1045,7 +1047,7 @@ impl ArgData {
 
             Some("string") => {
                 if self.name == "color" {
-                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#da4333\"")))
                 } else {
                     Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
                 }
