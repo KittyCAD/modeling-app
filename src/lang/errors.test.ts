@@ -1,3 +1,4 @@
+import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 import type { KCLError } from '@src/lang/errors'
 import { kclErrorsToDiagnostics, toUtf8, toUtf16 } from '@src/lang/errors'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
@@ -240,6 +241,110 @@ describe('test kclErrToDiagnostic', () => {
         to: 41,
         message:
           '`missingName` is not defined\n\nBacktrace:\ninner()\nouter()\nimport assembly.kcl',
+        severity: 'error',
+      },
+    ])
+  })
+
+  // A recursive function whose backtrace has `namedFrames` frames named `f`,
+  // ending at the unnamed top-level call.
+  const recursiveSourceCode =
+    'fn f(@n) {\n  assert(n, isGreaterThan = 0)\n  return f(n - 1)\n}\n\nf(40)\n'
+  function recursiveError(namedFrames: number): KCLError {
+    const recursiveCallSite: BacktraceItem = {
+      sourceRange: [51, 59, 0],
+      fnName: 'f',
+      kind: 'call',
+    }
+    return {
+      name: '',
+      message: '',
+      kind: 'user_defined',
+      msg: 'assert failed',
+      sourceRange: [13, 41, 0],
+      kclBacktrace: [
+        { sourceRange: [13, 41, 0], fnName: 'f', kind: 'call' },
+        ...Array(namedFrames - 1).fill(recursiveCallSite),
+        { sourceRange: [63, 68, 0], fnName: null, kind: 'call' },
+      ],
+      nonFatal: [],
+      variables: {},
+      operations: emptyOperationsByModule(),
+      artifactGraph: defaultArtifactGraph(),
+      filenames: {},
+      defaultPlanes: null,
+    }
+  }
+  // Every recursive frame repeats the same call site, so it produces one
+  // deduped hint, plus one for the top-level call.
+  const recursiveHints = [
+    {
+      from: 51,
+      to: 59,
+      message: 'Part of the error backtrace',
+      severity: 'hint',
+    },
+    {
+      from: 63,
+      to: 68,
+      message: 'Part of the error backtrace',
+      severity: 'hint',
+    },
+  ]
+
+  it('shows a 30-frame backtrace in full', () => {
+    const diagnostics = kclErrorsToDiagnostics(
+      [recursiveError(30)],
+      recursiveSourceCode
+    )
+    expect(diagnostics).toEqual([
+      ...recursiveHints,
+      {
+        from: 13,
+        to: 41,
+        message: `assert failed\n\nBacktrace:\n${Array(30).fill('f()').join('\n')}`,
+        severity: 'error',
+      },
+    ])
+  })
+
+  it('elides the middle of a backtrace just over the limit', () => {
+    const diagnostics = kclErrorsToDiagnostics(
+      [recursiveError(31)],
+      recursiveSourceCode
+    )
+    const lines = [
+      ...Array(15).fill('f()'),
+      '(1 frame omitted)',
+      ...Array(15).fill('f()'),
+    ]
+    expect(diagnostics).toEqual([
+      ...recursiveHints,
+      {
+        from: 13,
+        to: 41,
+        message: `assert failed\n\nBacktrace:\n${lines.join('\n')}`,
+        severity: 'error',
+      },
+    ])
+  })
+
+  it('elides the middle of a deep backtrace', () => {
+    const diagnostics = kclErrorsToDiagnostics(
+      [recursiveError(40)],
+      recursiveSourceCode
+    )
+    const lines = [
+      ...Array(15).fill('f()'),
+      '(10 frames omitted)',
+      ...Array(15).fill('f()'),
+    ]
+    expect(diagnostics).toEqual([
+      ...recursiveHints,
+      {
+        from: 13,
+        to: 41,
+        message: `assert failed\n\nBacktrace:\n${lines.join('\n')}`,
         severity: 'error',
       },
     ])
