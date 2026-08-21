@@ -4534,7 +4534,9 @@ w = f() + f()
         let code = kcl_input!("repro_mock_subtract");
         let ctx = ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = match ctx.run_mock(&program, &MockConfig::default()).await {
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let result = match result {
             Ok(x) => x,
             Err(e) => {
                 let error = e.error;
