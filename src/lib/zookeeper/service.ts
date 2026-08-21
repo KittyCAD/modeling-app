@@ -14,13 +14,16 @@ import type {
 } from '@src/lib/zookeeper/registry/contract'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { BillingTransition } from '@src/machines/billingMachine'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
+import type { BillingRegistryService } from '@src/registry/contracts/billing'
 import { NIL as uuidNIL } from 'uuid'
 import { createActor } from 'xstate'
 
 type CreateZookeeperServiceArgs = {
   getApiToken: () => string
+  getBilling?: () => BillingRegistryService | undefined
   conversationStore?: ZookeeperConversationStore
   actor?: MlEphantManagerActor
 }
@@ -49,6 +52,7 @@ function actorIsIdleForSetup(actor: MlEphantManagerActor) {
 
 export function createZookeeperService({
   getApiToken,
+  getBilling = () => undefined,
   conversationStore = zookeeperConversationStore,
   actor: providedActor,
 }: CreateZookeeperServiceArgs): ZookeeperService {
@@ -56,7 +60,7 @@ export function createZookeeperService({
     providedActor ??
     createActor(mlEphantManagerMachine, {
       input: {
-        apiToken: getApiToken(),
+        apiToken: '',
       },
     }).start()
   const showManualConnect = signal(false)
@@ -72,17 +76,27 @@ export function createZookeeperService({
   let clearChatOperationGeneration = 0
   let continueCheckGeneration: number | undefined
   let lastSavedConversationId = actor.getSnapshot().context.conversationId
+  let lastAwaitingResponse = actor.getSnapshot().context.awaitingResponse
   let reconnectTimeout: ReturnType<typeof setTimeout> | undefined
 
   const syncApiToken = () => {
+    const apiToken = getApiToken()
+    if (!apiToken) {
+      return false
+    }
+
     actor.send({
       type: MlEphantManagerTransitions.SetApiToken,
-      apiToken: getApiToken(),
+      apiToken,
     })
+    return true
   }
 
   const sendCacheSetupAndConnect = (conversationId: string | undefined) => {
-    syncApiToken()
+    if (!syncApiToken()) {
+      return
+    }
+
     actor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: actor.send,
@@ -306,6 +320,36 @@ export function createZookeeperService({
       .catch(reportRejection)
   }
 
+  const syncBillingUsage = (
+    snapshot: ReturnType<MlEphantManagerActor['getSnapshot']>
+  ) => {
+    const isAwaitingResponse = snapshot.context.awaitingResponse
+    if (isAwaitingResponse === lastAwaitingResponse) {
+      return
+    }
+
+    lastAwaitingResponse = isAwaitingResponse
+    const billing = getBilling()
+    if (billing === undefined) {
+      return
+    }
+
+    if (isAwaitingResponse) {
+      billing.send({
+        type: BillingTransition.UsageStarted,
+      })
+      return
+    }
+
+    billing.send({
+      type: BillingTransition.UsageEnded,
+    })
+    billing.send({
+      type: BillingTransition.Update,
+      apiToken: getApiToken(),
+    })
+  }
+
   const scheduleReconnectIfNeeded = () => {
     const snapshot = actor.getSnapshot()
     const shouldReconnect =
@@ -330,6 +374,7 @@ export function createZookeeperService({
   }
 
   const actorSubscription = actor.subscribe((snapshot) => {
+    syncBillingUsage(snapshot)
     saveProjectConversationId(snapshot)
     maybeSendContinueCheck(snapshot)
 

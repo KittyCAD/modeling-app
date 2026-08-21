@@ -46,6 +46,7 @@ import {
   type AuthRegistryService,
   authService,
 } from '@src/registry/contracts/auth'
+import { billingService } from '@src/registry/contracts/billing'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
@@ -506,6 +507,10 @@ export class App implements AppSubsystems {
           ),
           provideService(systemIOService, {
             actor: this.systemIOActor,
+          }),
+          provideService(billingService, {
+            actor: this.billing.actor,
+            send: this.billing.send,
           }),
         ],
       }),

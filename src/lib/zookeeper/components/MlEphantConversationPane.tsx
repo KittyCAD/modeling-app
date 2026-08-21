@@ -40,9 +40,6 @@ export const MlEphantConversationPane = (props: {
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
-  sendBillingUpdate: () => void
-  sendBillingUsageStarted: () => void
-  sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
@@ -174,12 +171,7 @@ export const MlEphantConversationPane = (props: {
     setQueue((prev) => prev.filter((msg) => msg.id !== id))
   }, [])
 
-  const {
-    sendBillingUpdate,
-    sendBillingUsageEnded,
-    sendBillingUsageStarted,
-    mlEphantManagerActor,
-  } = props
+  const { mlEphantManagerActor } = props
   const onSteer = useCallback(
     (id: string) => {
       // Mark the message to be processed next without reordering the queue.
@@ -261,29 +253,6 @@ export const MlEphantConversationPane = (props: {
   const userBlockedOnPaymentReason = props.user?.block_message
   const isLoadingAttachments =
     !attachmentsLoadedForCurrentPrompt && conversation !== undefined
-  const wasPromptRunningRef = useRef(false)
-
-  useEffect(() => {
-    if (isPromptRunning === wasPromptRunningRef.current) {
-      return
-    }
-
-    wasPromptRunningRef.current = isPromptRunning
-
-    if (isPromptRunning) {
-      sendBillingUsageStarted()
-      return
-    }
-
-    sendBillingUsageEnded()
-    sendBillingUpdate()
-  }, [
-    isPromptRunning,
-    sendBillingUpdate,
-    sendBillingUsageEnded,
-    sendBillingUsageStarted,
-  ])
-
   return (
     <MlEphantConversation
       isLoading={conversation === undefined}

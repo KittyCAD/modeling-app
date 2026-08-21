@@ -1,5 +1,5 @@
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeAll, describe, expect, test, vi } from 'vitest'
 
@@ -117,54 +117,6 @@ const createFakeActor = ({
   }
 }
 
-const createStatefulPromptActor = (awaitingResponse = false) => {
-  let snapshot: FakeMlEphantSnapshot = {
-    value: 'ready',
-    context: {
-      abruptlyClosed: false,
-      awaitingResponse,
-      attachmentsLoadedForCurrentPrompt: true,
-      conversation: completedConversation,
-      conversationId: 'conversation-id',
-      defaultMode: undefined,
-      modeOptions: undefined,
-    },
-    matches: (state: unknown) => state === snapshot.value,
-  }
-  const listeners = new Set<(next: FakeMlEphantSnapshot) => void>()
-
-  const actor = {
-    getSnapshot: () => snapshot,
-    subscribe: (listener?: (next: FakeMlEphantSnapshot) => void) => {
-      if (listener !== undefined) {
-        listeners.add(listener)
-      }
-      return {
-        unsubscribe: () => {
-          if (listener !== undefined) {
-            listeners.delete(listener)
-          }
-        },
-      }
-    },
-    send: vi.fn(),
-    setAwaitingResponse: (nextAwaitingResponse: boolean) => {
-      snapshot = {
-        ...snapshot,
-        context: {
-          ...snapshot.context,
-          awaitingResponse: nextAwaitingResponse,
-        },
-      }
-      for (const listener of listeners) {
-        listener(snapshot)
-      }
-    },
-  }
-
-  return actor
-}
-
 const renderPane = ({
   mlEphantManagerActor = createFakeActor(),
   clearChat = vi.fn(async () => undefined),
@@ -181,9 +133,6 @@ const renderPane = ({
     artifactGraph: {},
   } as unknown as MlEphantConversationPaneProps['kclManager'],
   loaderFile = undefined,
-  sendBillingUpdate = vi.fn(),
-  sendBillingUsageStarted = vi.fn(),
-  sendBillingUsageEnded = vi.fn(),
 }: {
   mlEphantManagerActor?: FakeMlEphantActor
   clearChat?: () => Promise<void>
@@ -198,9 +147,6 @@ const renderPane = ({
   }
   kclManager?: MlEphantConversationPaneProps['kclManager']
   loaderFile?: MlEphantConversationPaneProps['loaderFile']
-  sendBillingUpdate?: () => void
-  sendBillingUsageStarted?: () => void
-  sendBillingUsageEnded?: () => void
 } = {}) => {
   return render(
     <MemoryRouter>
@@ -223,9 +169,6 @@ const renderPane = ({
         sendModeling={
           vi.fn() as unknown as MlEphantConversationPaneProps['sendModeling']
         }
-        sendBillingUpdate={sendBillingUpdate}
-        sendBillingUsageStarted={sendBillingUsageStarted}
-        sendBillingUsageEnded={sendBillingUsageEnded}
         settings={
           {
             meta: {
@@ -288,39 +231,6 @@ describe('MlEphantConversationPane', () => {
     } finally {
       warnSpy.mockRestore()
     }
-  })
-
-  test('syncs billing when prompt processing finishes', () => {
-    const mlEphantManagerActor = createStatefulPromptActor(false)
-    const sendBillingUpdate = vi.fn()
-    const sendBillingUsageStarted = vi.fn()
-    const sendBillingUsageEnded = vi.fn()
-
-    renderPane({
-      mlEphantManagerActor,
-      sendBillingUpdate,
-      sendBillingUsageStarted,
-      sendBillingUsageEnded,
-    })
-
-    expect(sendBillingUpdate).not.toHaveBeenCalled()
-    expect(sendBillingUsageStarted).not.toHaveBeenCalled()
-    expect(sendBillingUsageEnded).not.toHaveBeenCalled()
-
-    act(() => {
-      mlEphantManagerActor.setAwaitingResponse(true)
-    })
-
-    expect(sendBillingUsageStarted).toHaveBeenCalledTimes(1)
-    expect(sendBillingUpdate).not.toHaveBeenCalled()
-    expect(sendBillingUsageEnded).not.toHaveBeenCalled()
-
-    act(() => {
-      mlEphantManagerActor.setAwaitingResponse(false)
-    })
-
-    expect(sendBillingUsageEnded).toHaveBeenCalledTimes(1)
-    expect(sendBillingUpdate).toHaveBeenCalledTimes(1)
   })
 
   test('uses the server default mode when no project setting is set', () => {

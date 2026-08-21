@@ -12,7 +12,6 @@ import {
   MlEphantConversationToMarkdown,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { zookeeperService } from '@src/lib/zookeeper/registry/contract'
-import { BillingTransition } from '@src/machines/billingMachine'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { useEffect } from 'react'
 
@@ -23,11 +22,10 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
 function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings } = app
+  const { auth, settings } = app
   const { kclManager: fallbackKclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
-  const token = auth.useToken()
   const {
     context: contextModeling,
     send: sendModeling,
@@ -80,22 +78,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
         kclManager={kclManager}
         contextModeling={contextModeling}
         sendModeling={sendModeling}
-        sendBillingUpdate={() => {
-          billing.send({
-            type: BillingTransition.Update,
-            apiToken: token,
-          })
-        }}
-        sendBillingUsageStarted={() => {
-          billing.send({
-            type: BillingTransition.UsageStarted,
-          })
-        }}
-        sendBillingUsageEnded={() => {
-          billing.send({
-            type: BillingTransition.UsageEnded,
-          })
-        }}
         theProject={project}
         loaderFile={loaderFile}
         settings={settingsValues}

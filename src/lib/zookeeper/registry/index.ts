@@ -16,6 +16,7 @@ import { attachZookeeperProjectRuntime } from '@src/lib/zookeeper/projectRuntime
 import { zookeeperService } from '@src/lib/zookeeper/registry/contract'
 import { createZookeeperService } from '@src/lib/zookeeper/service'
 import { authService } from '@src/registry/contracts/auth'
+import { billingService } from '@src/registry/contracts/billing'
 import {
   layoutAreaLibraryValueSpec,
   layoutService,
@@ -134,18 +135,28 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
 }, 'zookeeper.credits-status-bar-item')
 
 const zookeeperRuntimeService = defineRegistryItemFactory((ctx) => {
-  const auth = ctx.services.get(authService)
+  const auth = ctx.services.signal(authService)
+  const billing = ctx.services.signal(billingService)
   const projectSession = ctx.services.signal(projectSessionService)
   const settings = ctx.services.signal(settingsService)
   const systemIO = ctx.services.signal(systemIOService)
   const service = createZookeeperService({
-    getApiToken: () => auth.token.value,
+    getApiToken: () => auth.value?.token.value ?? '',
+    getBilling: () => billing.value,
   })
-  const disposeProjectRuntime = attachZookeeperProjectRuntime({
-    service,
-    projectSession,
-    settings,
-    systemIO,
+  let disposed = false
+  let disposeProjectRuntime: (() => void) | undefined
+  queueMicrotask(() => {
+    if (disposed) {
+      return
+    }
+
+    disposeProjectRuntime = attachZookeeperProjectRuntime({
+      service,
+      projectSession,
+      settings,
+      systemIO,
+    })
   })
 
   return {
@@ -153,7 +164,8 @@ const zookeeperRuntimeService = defineRegistryItemFactory((ctx) => {
       id: 'zookeeper.runtime-service',
       providesServices: [provideService(zookeeperService, service)],
       dispose: () => {
-        disposeProjectRuntime()
+        disposed = true
+        disposeProjectRuntime?.()
         service.dispose()
       },
     }),

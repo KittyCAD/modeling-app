@@ -7,7 +7,9 @@ import {
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { createZookeeperService } from '@src/lib/zookeeper/service'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import { BillingTransition } from '@src/machines/billingMachine'
 import { S } from '@src/machines/utils'
+import type { BillingRegistryService } from '@src/registry/contracts/billing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 type FakeSnapshot = ReturnType<MlEphantManagerActor['getSnapshot']>
@@ -57,6 +59,13 @@ function createConversationStore(
       conversations.delete(projectId)
     }),
   } satisfies ZookeeperConversationStore
+}
+
+function createBillingService() {
+  return {
+    actor: {} as BillingRegistryService['actor'],
+    send: vi.fn(),
+  } satisfies BillingRegistryService
 }
 
 function createDeferred<T>() {
@@ -178,6 +187,49 @@ describe('createZookeeperService', () => {
     vi.clearAllMocks()
   })
 
+  it('syncs billing usage with the actor lifecycle', () => {
+    const actor = createFakeActor()
+    const billing = createBillingService()
+    const service = createZookeeperService({
+      actor,
+      getApiToken: () => 'token',
+      getBilling: () => billing,
+    })
+
+    actor.emit({
+      context: {
+        awaitingResponse: true,
+      },
+    })
+    actor.emit({
+      context: {
+        awaitingResponse: true,
+      },
+    })
+
+    expect(billing.send).toHaveBeenCalledTimes(1)
+    expect(billing.send).toHaveBeenCalledWith({
+      type: BillingTransition.UsageStarted,
+    })
+
+    actor.emit({
+      context: {
+        awaitingResponse: false,
+      },
+    })
+
+    expect(billing.send).toHaveBeenCalledTimes(3)
+    expect(billing.send).toHaveBeenCalledWith({
+      type: BillingTransition.UsageEnded,
+    })
+    expect(billing.send).toHaveBeenCalledWith({
+      type: BillingTransition.Update,
+      apiToken: 'token',
+    })
+
+    service.dispose()
+  })
+
   it('loads the saved conversation for the bound project before connecting', async () => {
     const actor = createFakeActor()
     const conversationStore = createConversationStore(
@@ -206,6 +258,38 @@ describe('createZookeeperService', () => {
       refParentSend: actor.send,
       conversationId: 'project-a-conversation',
     })
+
+    service.dispose()
+  })
+
+  it('does not connect while the API token is missing', async () => {
+    const actor = createFakeActor()
+    const conversationStore = createConversationStore(
+      new Map([['project-a-id', 'project-a-conversation']])
+    )
+    const service = createZookeeperService({
+      actor,
+      conversationStore,
+      getApiToken: () => '',
+    })
+
+    service.bindProject({
+      project: createProject('project-a'),
+      projectId: 'project-a-id',
+      loaderFile: undefined,
+      kclManager: createKclManager(),
+    })
+
+    await flushPromises()
+
+    expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+      'project-a-id'
+    )
+    expect(actor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      })
+    )
 
     service.dispose()
   })
