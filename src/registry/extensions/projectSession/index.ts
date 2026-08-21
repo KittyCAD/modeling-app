@@ -4,7 +4,7 @@ import {
   defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal, type Signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import type { ZDSProject, ZDSProjectRuntime } from '@src/lang/KclManager'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
@@ -14,7 +14,6 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
@@ -40,7 +39,6 @@ import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import fsOperationQueueRegistryItem from '@src/registry/extensions/fsOperationQueue'
-import type { Subscription } from 'xstate'
 
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -71,7 +69,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const mutation = signal<ProjectSessionMutationState>({ pending: false })
   let disposeProjectTreeSync: (() => void) | undefined
   let disposeProjectHistoryExtensions: (() => void) | undefined
-  let projectFoldersSubscription: Subscription | undefined
   let seededCloudSyncOpenedProject = false
 
   const setMutation = ({
@@ -181,35 +178,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const watchSystemIOProjectTree = (projectIORefSignal: Signal<Project>) => {
-    const syncProjectTreeFromFolders = (folders: Project[] | undefined) => {
-      const foundProject = (folders ?? []).find(
-        (candidate) =>
-          candidate.name === projectIORefSignal.value.name &&
-          candidate.path === projectIORefSignal.value.path
-      )
-      if (!foundProject || projectIORefSignal.value === foundProject) {
-        return
-      }
-      projectIORefSignal.value = {
-        ...foundProject,
-        ...(projectIORefSignal.value.libraryPath
-          ? { libraryPath: projectIORefSignal.value.libraryPath }
-          : {}),
-        ...(projectIORefSignal.value.libraryType
-          ? { libraryType: projectIORefSignal.value.libraryType }
-          : {}),
-      }
-    }
-
-    projectFoldersSubscription?.unsubscribe()
-    const systemIOActor = ctx.services.get(systemIOService).actor
-    syncProjectTreeFromFolders(systemIOActor.getSnapshot().context.folders)
-    projectFoldersSubscription = systemIOActor.subscribe(({ context }) => {
-      syncProjectTreeFromFolders(context.folders)
-    })
-  }
-
   const watchProjectHistoryExtensions = () => {
     const systemIOActor = ctx.services.get(systemIOService).actor
 
@@ -252,9 +220,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         onProjectFilesReplay: async (replayFiles) => {
           await currentProject.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            await serviceImpl.refreshProjectTree()
           }
         },
       })
@@ -313,7 +279,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       serviceImpl.setProject(openedProject)
       setCloudSyncOpenedProject(ownedProject)
       watchProjectHistoryExtensions()
-      watchSystemIOProjectTree(projectIORefSignal)
       setMutation({
         pending: false,
         operation: 'open-project',
@@ -410,8 +375,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     clearProject: () => {
       disposeProjectHistoryExtensions?.()
       disposeProjectHistoryExtensions = undefined
-      projectFoldersSubscription?.unsubscribe()
-      projectFoldersSubscription = undefined
       project.value?.close?.()
       project.value = undefined
       watchProjectTree(undefined)
