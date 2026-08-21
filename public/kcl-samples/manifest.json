@@ -904,6 +904,20 @@
     "file": "main.kcl",
     "categories": [
       "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Mounting Plate",
+    "description": "A flat support plate with four mounting holes, a center opening, and rounded vertical corners.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
       "Automotive"
     ],
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
@@ -1206,6 +1220,19 @@
     "multipleFiles": false,
     "title": "Spinning Highrise Tower",
     "description": "A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Fasteners"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
+    "multipleFiles": false,
+    "title": "Split Washer (Flat Version)",
+    "description": "A flat split washer is a small metal ring with a gap that helps keep a fastener from loosening under vibration.",
     "files": [
       "main.kcl"
     ]
