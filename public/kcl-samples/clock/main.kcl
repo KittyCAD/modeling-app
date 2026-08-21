@@ -1,0 +1,81 @@
+// Clock
+// A wall clock with a raised bezel, twelve hour markers, hands, and a rear spindle.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+fn unitBox(xSize, ySize, zSize) {
+  unitSketch = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+    line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    distance([line1.start, line1.end]) == xSize
+    distance([line2.start, line2.end]) == ySize
+  }
+  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
+  hide(unitSketch)
+  return body
+}
+
+faceSketch = sketch(on = XY) {
+  face = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
+}
+clockBody = extrude(region(segments = [faceSketch.face]), length = 50)
+  |> appearance(color = "#f4f0e6")
+
+bezelOuterSketch = sketch(on = offsetPlane(XY, offset = 50)) {
+  outer = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
+}
+bezelOuter = extrude(region(segments = [bezelOuterSketch.outer]), length = 5)
+bezelInnerSketch = sketch(on = offsetPlane(XY, offset = 50)) {
+  inner = circle(start = [var 232mm, var 0mm], center = [var 0mm, var 0mm])
+}
+bezelInner = extrude(region(segments = [bezelInnerSketch.inner]), length = 5)
+bezel = subtract(bezelOuter, tools = [bezelInner])
+  |> appearance(color = "#202020")
+
+hourMarker = unitBox(xSize = 12, ySize = 32, zSize = 5)
+  |> translate(x = -6, y = 188, z = 55)
+  |> patternCircular3d(
+       instances = 12,
+       axis = Z,
+       center = [0, 0, 55],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> appearance(color = "#202020")
+
+minuteHand = unitBox(xSize = 10, ySize = 155, zSize = 7)
+  |> translate(x = -5, y = -15, z = 56)
+  |> rotate(yaw = -18deg)
+  |> appearance(color = "#202020")
+hourHand = unitBox(xSize = 14, ySize = 105, zSize = 9)
+  |> translate(x = -7, y = -10, z = 56)
+  |> rotate(yaw = 112deg)
+  |> appearance(color = "#202020")
+
+hubSketch = sketch(on = offsetPlane(XY, offset = 55)) {
+  hub = circle(start = [var 14mm, var 0mm], center = [var 0mm, var 0mm])
+}
+hub = extrude(region(segments = [hubSketch.hub]), length = 12)
+  |> appearance(color = "#202020")
+
+spindleSketch = sketch(on = -XY) {
+  spindle = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+spindle = extrude(region(segments = [spindleSketch.spindle]), length = 20)
+
+hide(faceSketch)
+hide(bezelOuterSketch)
+hide(bezelInnerSketch)
+hide(hubSketch)
+hide(spindleSketch)

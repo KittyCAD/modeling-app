@@ -1,0 +1,69 @@
+// Mounting bracket for the Focusrite Scarlett Solo audio interface
+// A 3D-printable under-desk cradle with four screw tabs and retention lips.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+fn unitBox(xSize, ySize, zSize) {
+  unitSketch = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+    line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    distance([line1.start, line1.end]) == xSize
+    distance([line2.start, line2.end]) == ySize
+  }
+  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
+  hide(unitSketch)
+  return body
+}
+
+bodySketch = sketch(on = XZ) {
+  line1 = line(start = [var -76mm, var 49mm], end = [var -76mm, var -4mm])
+  line2 = line(start = [var -76mm, var -4mm], end = [var 76mm, var -4mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 76mm, var -4mm], end = [var 76mm, var 49mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 76mm, var 49mm], end = [var 72mm, var 49mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 72mm, var 49mm], end = [var 72mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 72mm, var 0mm], end = [var -72mm, var 0mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -72mm, var 0mm], end = [var -72mm, var 49mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -72mm, var 49mm], end = [var -76mm, var 49mm])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line1.start])
+}
+bracketBody = extrude(region(segments = [bodySketch.line1, bodySketch.line2]), length = 88, symmetric = true)
+
+rightTab = unitBox(xSize = 12, ySize = 25, zSize = 4)
+  |> translate(x = 76, y = -44, z = 45)
+  |> patternLinear3d(instances = 2, distance = 63, axis = [0, 1, 0])
+leftTab = unitBox(xSize = 12, ySize = 25, zSize = 4)
+  |> translate(x = -88, y = -44, z = 45)
+  |> patternLinear3d(instances = 2, distance = 63, axis = [0, 1, 0])
+
+frontRetention = unitBox(xSize = 104, ySize = 4, zSize = 4)
+  |> translate(x = -52, y = -44, z = 0)
+backRetention = unitBox(xSize = 104, ySize = 4, zSize = 4)
+  |> translate(x = -52, y = 40, z = 0)
+
+[
+  bracketBody,
+  rightTab,
+  leftTab,
+  frontRetention,
+  backRetention
+]
+  |> appearance(color = "#d9d9d9")
+hide(bodySketch)

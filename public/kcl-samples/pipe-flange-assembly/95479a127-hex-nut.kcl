@@ -1,0 +1,29 @@
+// Hex nut (95479A127)
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import hexNutThickness from "parameters.kcl"
+
+export fn hexNut() {
+  hexSketch = sketch(on = XY) {
+    line1 = line(start = [var 0.46875in, var 0.2706in], end = [var 0in, var 0.5413in])
+    line2 = line(start = [var 0in, var 0.5413in], end = [var -0.46875in, var 0.2706in])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var -0.46875in, var 0.2706in], end = [var -0.46875in, var -0.2706in])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var -0.46875in, var -0.2706in], end = [var 0in, var -0.5413in])
+    coincident([line3.end, line4.start])
+    line5 = line(start = [var 0in, var -0.5413in], end = [var 0.46875in, var -0.2706in])
+    coincident([line4.end, line5.start])
+    line6 = line(start = [var 0.46875in, var -0.2706in], end = [var 0.46875in, var 0.2706in])
+    coincident([line5.end, line6.start])
+  }
+  blank = extrude(region(segments = [hexSketch.line1, hexSketch.line2]), length = hexNutThickness)
+  boreSketch = sketch(on = XY) {
+    bore = circle(start = [var 0.3125in, var 0in], center = [var 0in, var 0in])
+  }
+  bore = extrude(region(segments = [boreSketch.bore]), length = hexNutThickness)
+  result = subtract(blank, tools = [bore])
+    |> appearance(color = "#3aa6a6")
+  return result
+}

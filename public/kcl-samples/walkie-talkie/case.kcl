@@ -1,0 +1,55 @@
+// Walkie Talkie Case
+// The plastic case for the front of the walkie talkie
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import parameters
+import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
+
+// Sketch the profile of the screen
+screenSketch = sketch(on = XZ) {
+  line1 = line(start = [var -0.88in, var 1.25in], end = [var 0.88in, var 1.25in])
+  line2 = line(start = [var 0.88in, var 1.25in], end = [var 0.88in, var 0.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 0.25in], end = [var -0.88in, var 0.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.88in, var 0.25in], end = [var -0.88in, var 1.25in])
+  coincident([line3.end, line4.start])
+}
+screenPlate = extrude(region(segments = [screenSketch.line1, screenSketch.line2]), length = -0.075)
+  |> appearance(color = "#30363d", metalness = 0, roughness = 35)
+
+// Recreate the speaker grille with patterned KCL 2 solids instead of the
+// legacy patternTransform2d sketch.
+speakerDotSketch = sketch(on = XZ) {
+  dot = circle(start = [var -0.475in, var -0.25in], center = [var -0.5in, var -0.25in])
+}
+speakerDots = extrude(region(segments = [speakerDotSketch.dot]), length = -0.075)
+  |> patternLinear3d(instances = 9, distance = 0.125, axis = X)
+  |> patternLinear3d(instances = 8, distance = 0.125, axis = -Z)
+  |> appearance(color = "#d0ff01")
+
+// Sketch the outer profile of the case and extrude with holes using the previously made profiles
+case = sketch(on = XZ) {
+  line1 = line(start = [var -1.12in, var 1.63in], end = [var -0.88in, var 1.87in])
+  line2 = line(start = [var -0.88in, var 1.87in], end = [var 0.88in, var 1.87in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.88in, var 1.87in], end = [var 1.12in, var 1.63in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.12in, var 1.63in], end = [var 1.12in, var -1.63in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 1.12in, var -1.63in], end = [var 0.88in, var -1.87in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.88in, var -1.87in], end = [var -0.88in, var -1.87in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -0.88in, var -1.87in], end = [var -1.12in, var -1.63in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -1.12in, var -1.63in], end = [var -1.12in, var 1.63in])
+  coincident([line7.end, line8.start])
+}
+region001 = region(segments = [case.line1, case.line2])
+casePanel = extrude(region001, length = -0.0625)
+  |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)
+
+[casePanel, screenPlate, speakerDots]

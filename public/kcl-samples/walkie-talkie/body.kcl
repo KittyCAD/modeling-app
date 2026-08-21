@@ -1,0 +1,20 @@
+// Walkie Talkie Body
+// The main body of the walkie talkie assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import thickness from "parameters.kcl"
+
+bodySketch = sketch(on = XZ) {
+  line1 = line(start = [var -1.25in, var 2in], end = [var 1.25in, var 2in])
+  line2 = line(start = [var 1.25in, var 2in], end = [var 1.25in, var -2in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.25in, var -2in], end = [var -1.25in, var -2in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -1.25in, var -2in], end = [var -1.25in, var 2in])
+  coincident([line3.end, line4.start])
+}
+body = extrude(region(segments = [bodySketch.line1, bodySketch.line2]), length = thickness)
+  |> appearance(color = "#277bb0")
+
+body

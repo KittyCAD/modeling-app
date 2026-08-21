@@ -1,0 +1,51 @@
+// Flange
+// Flange used for mating two pipes together in the pipe flange assembly.
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "parameters.kcl"
+
+export fn flange() {
+  baseSketch = sketch(on = XY) {
+    outer = circle(start = [var 3in, var 0in], center = [var 0in, var 0in])
+  }
+  base = extrude(region(segments = [baseSketch.outer]), length = flangeBaseThickness)
+
+  backSketch = sketch(on = XY) {
+    outer = circle(start = [var 1.81in, var 0in], center = [var 0in, var 0in])
+  }
+  back = extrude(region(segments = [backSketch.outer]), length = -flangeBackHeight)
+
+  frontSketch = sketch(on = offsetPlane(XY, offset = flangeBaseThickness)) {
+    outer = circle(start = [var 1.53in, var 0in], center = [var 0in, var 0in])
+  }
+  front = extrude(region(segments = [frontSketch.outer]), length = flangeFrontHeight)
+  body = union([base, back, front])
+
+  centerSketch = sketch(on = offsetPlane(XY, offset = -flangeBackHeight)) {
+    hole = circle(start = [var 1.22in, var 0in], center = [var 0in, var 0in])
+  }
+  centerHole = extrude(region(segments = [centerSketch.hole]), length = flangeTotalThickness)
+
+  mountSketch = sketch(on = offsetPlane(XY, offset = -flangeBackHeight)) {
+    hole = circle(start = [var 0.375in, var 2.375in], center = [var 0in, var 2.375in])
+  }
+  mountHoles = extrude(region(segments = [mountSketch.hole]), length = flangeTotalThickness)
+    |> patternCircular3d(
+         instances = 4,
+         axis = Z,
+         center = [0, 0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = false,
+       )
+
+  bored = subtract(body, tools = [centerHole])
+  result = subtract(bored, tools = mountHoles)
+    |> appearance(color = "#bab0b0")
+  hide(baseSketch)
+  hide(backSketch)
+  hide(frontSketch)
+  hide(centerSketch)
+  hide(mountSketch)
+  return result
+}

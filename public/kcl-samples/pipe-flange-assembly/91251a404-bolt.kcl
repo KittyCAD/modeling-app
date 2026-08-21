@@ -1,0 +1,19 @@
+// Bolt (91251A404)
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import boltLength, boltHeadLength from "parameters.kcl"
+
+export fn bolt() {
+  headSketch = sketch(on = XY) {
+    head = circle(start = [var 0.469in, var 0in], center = [var 0in, var 0in])
+  }
+  head = extrude(region(segments = [headSketch.head]), length = -boltHeadLength)
+  shaftSketch = sketch(on = XY) {
+    shaft = circle(start = [var 0.3125in, var 0in], center = [var 0in, var 0in])
+  }
+  shaft = extrude(region(segments = [shaftSketch.shaft]), length = boltLength)
+  result = union([head, shaft])
+    |> appearance(color = "#4c8d42")
+  return result
+}

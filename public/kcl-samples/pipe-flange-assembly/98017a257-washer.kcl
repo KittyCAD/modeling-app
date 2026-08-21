@@ -1,0 +1,19 @@
+// Washer (98017A257)
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import washerThickness from "parameters.kcl"
+
+export fn washer() {
+  outerSketch = sketch(on = XY) {
+    outer = circle(start = [var 0.594in, var 0in], center = [var 0in, var 0in])
+  }
+  outer = extrude(region(segments = [outerSketch.outer]), length = washerThickness)
+  innerSketch = sketch(on = XY) {
+    inner = circle(start = [var 0.32in, var 0in], center = [var 0in, var 0in])
+  }
+  inner = extrude(region(segments = [innerSketch.inner]), length = washerThickness)
+  result = subtract(outer, tools = [inner])
+    |> appearance(color = "#c84630")
+  return result
+}

@@ -1,0 +1,69 @@
+// Truss Structure
+// A three-frame roof truss with legs, ridge members, and longitudinal cross beams.
+// Categories: Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+fn unitBox(xSize, ySize, zSize) {
+  unitSketch = sketch(on = XY) {
+    line1 = line(start = [var 0in, var 0in], end = [var 1in, var 0in])
+    line2 = line(start = [var 1in, var 0in], end = [var 1in, var 1in])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 1in, var 1in], end = [var 0in, var 1in])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0in, var 1in], end = [var 0in, var 0in])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    distance([line1.start, line1.end]) == xSize
+    distance([line2.start, line2.end]) == ySize
+  }
+  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
+  hide(unitSketch)
+  return body
+}
+
+frameSpacing = 84
+
+leftLeg = unitBox(xSize = 2, ySize = 4, zSize = 48)
+  |> translate(x = 0, y = -60, z = -48)
+rightLeg = unitBox(xSize = 2, ySize = 4, zSize = 48)
+  |> translate(x = 0, y = 56, z = -48)
+bottomTie = unitBox(xSize = 2, ySize = 120, zSize = 4)
+  |> translate(x = 0, y = -60, z = 0)
+leftRafter = unitBox(xSize = 2, ySize = 68, zSize = 4)
+  |> translate(x = 0, y = -60, z = 8)
+  |> rotate(pitch = -25deg)
+rightRafter = unitBox(xSize = 2, ySize = 68, zSize = 4)
+  |> translate(x = 0, y = 0, z = 35)
+  |> rotate(pitch = 25deg)
+centerPost = unitBox(xSize = 2, ySize = 4, zSize = 28)
+  |> translate(x = 0, y = -2, z = 4)
+
+frame = [
+  leftLeg,
+  rightLeg,
+  bottomTie,
+  leftRafter,
+  rightRafter,
+  centerPost
+]
+  |> patternLinear3d(instances = 3, distance = frameSpacing, axis = [-1, 0, 0])
+
+ridgeBeam = unitBox(xSize = frameSpacing * 2 + 2, ySize = 4, zSize = 4)
+  |> translate(x = -frameSpacing * 2, y = -2, z = 32)
+leftLongitudinal = unitBox(xSize = frameSpacing * 2 + 2, ySize = 4, zSize = 4)
+  |> translate(x = -frameSpacing * 2, y = -60, z = 0)
+rightLongitudinal = unitBox(xSize = frameSpacing * 2 + 2, ySize = 4, zSize = 4)
+  |> translate(x = -frameSpacing * 2, y = 56, z = 0)
+
+[
+  frame,
+  ridgeBeam,
+  leftLongitudinal,
+  rightLongitudinal
+]
+  |> appearance(color = "#b8b8b8")

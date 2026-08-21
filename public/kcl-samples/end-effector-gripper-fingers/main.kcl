@@ -1,0 +1,115 @@
+// End Effector Grippers
+// A three-finger robotic gripper with a tapered actuator housing, linkage bars, and pivot pins.
+// Categories: Manufacturing
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+fn unitBox(xSize, ySize, zSize) {
+  unitSketch = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+    line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    distance([line1.start, line1.end]) == xSize
+    distance([line2.start, line2.end]) == ySize
+  }
+  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
+  hide(unitSketch)
+  return body
+}
+
+section0Sketch = sketch(on = XY) {
+  edge = circle(start = [var 40mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section0 = region(segments = [section0Sketch.edge])
+section1Sketch = sketch(on = offsetPlane(XY, offset = 20)) {
+  edge = circle(start = [var 50mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section1 = region(segments = [section1Sketch.edge])
+section2Sketch = sketch(on = offsetPlane(XY, offset = 80)) {
+  edge = circle(start = [var 90mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section2 = region(segments = [section2Sketch.edge])
+section3Sketch = sketch(on = offsetPlane(XY, offset = 100)) {
+  edge = circle(start = [var 105mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section3 = region(segments = [section3Sketch.edge])
+section4Sketch = sketch(on = offsetPlane(XY, offset = 120)) {
+  edge = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
+}
+section4 = region(segments = [section4Sketch.edge])
+
+housing = loft([
+  section0,
+  section1,
+  section2,
+  section3,
+  section4
+])
+  |> appearance(color = "#0f0f0f")
+
+bracketOuterSketch = sketch(on = offsetPlane(XY, offset = 120)) {
+  outer = circle(start = [var 100mm, var 0mm], center = [var 0mm, var 0mm])
+}
+bracketOuter = extrude(region(segments = [bracketOuterSketch.outer]), length = 8)
+bracketInnerSketch = sketch(on = offsetPlane(XY, offset = 120)) {
+  inner = circle(start = [var 78mm, var 0mm], center = [var 0mm, var 0mm])
+}
+bracketInner = extrude(region(segments = [bracketInnerSketch.inner]), length = 8)
+bracketRing = subtract(bracketOuter, tools = [bracketInner])
+  |> appearance(color = "#0f0f0f")
+
+linkage = unitBox(xSize = 12, ySize = 16, zSize = 78)
+  |> translate(x = 43, y = -8, z = 125)
+  |> rotate(pitch = -24deg)
+  |> patternCircular3d(
+       instances = 3,
+       axis = Z,
+       center = [0, 0, 120],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> appearance(color = "#f7f7f7")
+
+finger = unitBox(xSize = 28, ySize = 30, zSize = 110)
+  |> translate(x = 78, y = -15, z = 178)
+  |> rotate(pitch = 12deg)
+  |> patternCircular3d(
+       instances = 3,
+       axis = Z,
+       center = [0, 0, 120],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> appearance(color = "#0f0f0f")
+
+pinSketch = sketch(on = offsetPlane(YZ, offset = 40)) {
+  pin = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+}
+pin = extrude(region(segments = [pinSketch.pin]), length = 80, symmetric = true)
+  |> translate(z = 145)
+  |> patternCircular3d(
+       instances = 3,
+       axis = Z,
+       center = [0, 0, 120],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> appearance(color = "#a6a6a6")
+
+hide(section0Sketch)
+hide(section1Sketch)
+hide(section2Sketch)
+hide(section3Sketch)
+hide(section4Sketch)
+hide(bracketOuterSketch)
+hide(bracketInnerSketch)
+hide(pinSketch)

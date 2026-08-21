@@ -1,0 +1,133 @@
+// Food Service Spatula
+// A slotted stainless flipper with an angled handle and a long rectangular grip.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+fn unitBox(xSize, ySize, zSize) {
+  unitSketch = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+    line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var 1mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 1mm, var 1mm], end = [var 0mm, var 1mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+    horizontal(line1)
+    vertical(line2)
+    horizontal(line3)
+    vertical(line4)
+    distance([line1.start, line1.end]) == xSize
+    distance([line2.start, line2.end]) == ySize
+  }
+  body = extrude(region(segments = [unitSketch.line1, unitSketch.line2]), length = zSize)
+  hide(unitSketch)
+  return body
+}
+
+flipperSketch = sketch(on = XY) {
+  line1 = line(start = [var -70mm, var -32mm], end = [var 0mm, var -30mm])
+  line2 = line(start = [var 0mm, var -30mm], end = [var 0mm, var 30mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0mm, var 30mm], end = [var -70mm, var 32mm])
+  coincident([line2.end, line3.start])
+  arc4 = arc(start = [var -70mm, var 32mm], end = [var -70mm, var -32mm], center = [var -70mm, var 0mm])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line1.start])
+}
+flipperBody = extrude(
+  region(segments = [
+    flipperSketch.line1,
+    flipperSketch.line2
+  ]),
+  length = 3.5,
+)
+
+slotCenterSketch = sketch(on = XY) {
+  top = line(start = [var -55mm, var 5mm], end = [var -25mm, var 5mm])
+  right = arc(start = [var -25mm, var 5mm], end = [var -25mm, var -5mm], center = [var -25mm, var 0mm])
+  coincident([top.end, right.start])
+  bottom = line(start = [var -25mm, var -5mm], end = [var -55mm, var -5mm])
+  coincident([right.end, bottom.start])
+  left = arc(start = [var -55mm, var -5mm], end = [var -55mm, var 5mm], center = [var -55mm, var 0mm])
+  coincident([bottom.end, left.start])
+  coincident([left.end, top.start])
+}
+centerSlot = extrude(
+  region(segments = [
+    slotCenterSketch.top,
+    slotCenterSketch.right
+  ]),
+  length = 3.5,
+)
+
+slotUpperSketch = sketch(on = XY) {
+  top = line(start = [var -55mm, var 23mm], end = [var -25mm, var 23mm])
+  right = arc(start = [var -25mm, var 23mm], end = [var -25mm, var 13mm], center = [var -25mm, var 18mm])
+  coincident([top.end, right.start])
+  bottom = line(start = [var -25mm, var 13mm], end = [var -55mm, var 13mm])
+  coincident([right.end, bottom.start])
+  left = arc(start = [var -55mm, var 13mm], end = [var -55mm, var 23mm], center = [var -55mm, var 18mm])
+  coincident([bottom.end, left.start])
+  coincident([left.end, top.start])
+}
+upperSlot = extrude(
+  region(segments = [
+    slotUpperSketch.top,
+    slotUpperSketch.right,
+    slotUpperSketch.bottom,
+    slotUpperSketch.left
+  ]),
+  length = 3.5,
+)
+
+slotLowerSketch = sketch(on = XY) {
+  top = line(start = [var -55mm, var -13mm], end = [var -25mm, var -13mm])
+  right = arc(start = [var -25mm, var -13mm], end = [var -25mm, var -23mm], center = [var -25mm, var -18mm])
+  coincident([top.end, right.start])
+  bottom = line(start = [var -25mm, var -23mm], end = [var -55mm, var -23mm])
+  coincident([right.end, bottom.start])
+  left = arc(start = [var -55mm, var -23mm], end = [var -55mm, var -13mm], center = [var -55mm, var -18mm])
+  coincident([bottom.end, left.start])
+  coincident([left.end, top.start])
+}
+lowerSlot = extrude(
+  region(segments = [
+    slotLowerSketch.top,
+    slotLowerSketch.right,
+    slotLowerSketch.bottom,
+    slotLowerSketch.left
+  ]),
+  length = 3.5,
+)
+flipper = subtract(flipperBody, tools = [centerSlot, upperSlot, lowerSlot])
+
+handleSketch = sketch(on = offsetPlane(XZ, offset = -7.5)) {
+  line1 = line(start = [var 0mm, var 3.5mm], end = [var 31.82mm, var 35.32mm])
+  line2 = line(start = [var 31.82mm, var 35.32mm], end = [var 172.77mm, var 86.62mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 172.77mm, var 86.62mm], end = [var 171.06mm, var 91.32mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 171.06mm, var 91.32mm], end = [var 29.06mm, var 39.64mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 29.06mm, var 39.64mm], end = [var -7.08mm, var 3.5mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -7.08mm, var 3.5mm], end = [var 0mm, var 3.5mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+}
+handle = extrude(region(segments = [handleSketch.line1, handleSketch.line2]), length = 15)
+
+grip = unitBox(xSize = 150, ySize = 20, zSize = 10)
+  |> translate(x = 165, y = -10, z = 78)
+  |> rotate(pitch = -20deg)
+  |> appearance(color = "#202020")
+
+[flipper, handle]
+  |> appearance(color = "#bfc2c4", metalness = 70, roughness = 30)
+hide(flipperSketch)
+hide(slotCenterSketch)
+hide(slotUpperSketch)
+hide(slotLowerSketch)
+hide(handleSketch)

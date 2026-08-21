@@ -1,0 +1,41 @@
+// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = sketch(on = XY) {
+  line1 = line(start = [var -3.06in, var -2.06in], end = [var 3.06in, var -2.06in])
+  line2 = line(start = [var 3.06in, var -2.06in], end = [var 3.06in, var 2.06in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 3.06in, var 2.06in], end = [var -3.06in, var 2.06in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -3.06in, var 2.06in], end = [var -3.06in, var -2.06in])
+  coincident([line3.end, line4.start])
+}
+region001 = region(segments = [plateSketch.line1, plateSketch.line2])
+plateBody = extrude(region001, length = stockThickness)
+  |> appearance(color = "#1e62eb")
+
+holeSketch = sketch(on = XY) {
+  hole = circle(start = [var 2.875in, var 1.5in], center = [var 2.5in, var 1.5in])
+}
+hole = extrude(region(segments = [holeSketch.hole]), length = stockThickness)
+  |> patternCircular3d(
+       instances = 4,
+       axis = Z,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+plateWithHoles = subtract(plateBody, tools = hole)
+  |> appearance(color = "#1e62eb")
+hide(holeSketch)
