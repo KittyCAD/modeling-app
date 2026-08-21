@@ -194,6 +194,7 @@ jobs:
           name: out-x64-linux
           path: |
             out/*-x86_64-linux.*
+            out/*-amd64-linux.*
 
       - uses: actions/upload-artifact@v7
         if: ${{ matrix.platform == 'macos' }}
@@ -283,6 +284,8 @@ jobs:
             --arg windows_universal_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-universal-win.exe" \
             --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
             --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
+            --arg linux_deb_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.deb" \
+            --arg linux_deb_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-amd64-linux.deb" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -299,6 +302,12 @@ jobs:
                 },
                 "appimage-x64": {
                   "url": $linux_x64_url
+                },
+                "deb-arm64": {
+                  "url": $linux_deb_arm64_url
+                },
+                "deb-x64": {
+                  "url": $linux_deb_x64_url
                 }
               }
             }' > out/last_download.json
