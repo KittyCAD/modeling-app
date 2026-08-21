@@ -92,7 +92,7 @@ Assign someone to each section of the manual checklist.
 * [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Click **Restart to update** in the status bar
-* [ ] Close the app and run newly downloaded file
+* [ ] Close the app and run the newly downloaded file
 * [ ] Confirm the app launches to the previous version
 
 
