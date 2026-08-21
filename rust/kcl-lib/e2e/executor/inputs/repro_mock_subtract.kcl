@@ -1,0 +1,14 @@
+left = startSketchOn(XY)
+  |> circle(center = [-4, 0], radius = 3)
+  |> extrude(length = 5)
+
+right = startSketchOn(XY)
+  |> circle(center = [4, 0], radius = 3)
+  |> extrude(length = 5)
+
+tool = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 2)
+  |> extrude(length = 5)
+
+subtracted_parts = subtract([left, right], tools = tool)
+secondResult = subtracted_parts[1]
