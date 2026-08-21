@@ -24,6 +24,7 @@ import {
   activeViewSignal,
   hasNamedViewsUi,
   isSameView,
+  isSketchSessionOpen,
   moduleKeyOf,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
@@ -104,6 +105,14 @@ function execStateWith({
   } as unknown as ExecState
 }
 
+type ModelingStateFake = Parameters<typeof isSketchSessionOpen>[0]
+
+function modelingStateIn(stateValue: string): ModelingStateFake {
+  return {
+    matches: (value: string) => value === stateValue,
+  } as unknown as ModelingStateFake
+}
+
 function setFlag(enabled: boolean) {
   ;(window as unknown as { app?: unknown }).app = {
     userFeatures: { has: () => enabled },
@@ -126,6 +135,7 @@ function fakes({ isReady = true }: { isReady?: boolean } = {}) {
   const raw = {
     execState: execStateWith(),
     errors: [] as unknown[],
+    modelingState: null as ModelingStateFake,
     engineSceneGenerationSignal,
     engineCommandManager: { setObjectsHidden, sendSceneCommand, isReady },
     sceneInfra: {
@@ -229,6 +239,19 @@ describe('isSameView', () => {
         { name: 'Back', moduleKey: 'Main' }
       )
     ).toBe(false)
+  })
+})
+
+describe('isSketchSessionOpen', () => {
+  it('reports both sketch sessions and nothing else', () => {
+    expect(isSketchSessionOpen(modelingStateIn('Sketch'))).toBe(true)
+    expect(isSketchSessionOpen(modelingStateIn('sketchSolveMode'))).toBe(true)
+    expect(isSketchSessionOpen(modelingStateIn('idle'))).toBe(false)
+  })
+
+  it('reports no session before a modeling state exists', () => {
+    expect(isSketchSessionOpen(null)).toBe(false)
+    expect(isSketchSessionOpen(undefined)).toBe(false)
   })
 })
 
@@ -433,6 +456,61 @@ describe('reapplying the active view after an execution', () => {
     expect(f.setObjectsHidden).toHaveBeenCalledOnce()
   })
 
+  it('does nothing while a version 1 sketch session is open', async () => {
+    const f = fakes()
+    await activateFront(f)
+
+    f.raw.modelingState = modelingStateIn('Sketch')
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+
+    // The sketch session is what stopped it, not a missing effect.
+    f.raw.modelingState = null
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
+  })
+
+  it('does nothing while a version 2 sketch session is open', async () => {
+    const f = fakes()
+    await activateFront(f)
+
+    f.raw.modelingState = modelingStateIn('sketchSolveMode')
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+
+    f.raw.modelingState = null
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).toHaveBeenCalledOnce()
+  })
+
+  /**
+   * A sketch session must not turn a view off, only postpone reapplying it.
+   * Dropping the view here would leave the user in a sketch with the scene
+   * silently reverted and no toast explaining it.
+   */
+  it('keeps the active view when the view is gone but a sketch is open', async () => {
+    const f = fakes()
+    await activateFront(f)
+
+    f.raw.modelingState = modelingStateIn('sketchSolveMode')
+    f.raw.execState = execStateWith({ views: [] })
+    f.engineSceneGenerationSignal.value += 1
+    await flush()
+
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(mockToast.error).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
+  })
+
   it('does nothing once the flag is off', async () => {
     const f = fakes()
     await activateFront(f)
@@ -543,6 +621,19 @@ describe('reapplying the active view after a reconnection', () => {
     expect(movedTheCamera).toBe(false)
     expect(f.setObjectsHidden).not.toHaveBeenCalled()
     expect(f.setCameraToAxis).not.toHaveBeenCalled()
+  })
+
+  it('leaves the camera to the caller while a sketch session is open', async () => {
+    const f = fakes()
+    await activateFront(f)
+    f.raw.modelingState = modelingStateIn('sketchSolveMode')
+
+    const movedTheCamera = await reapplyActiveViewAfterReconnect(f.kclManager)
+
+    expect(movedTheCamera).toBe(false)
+    expect(f.setObjectsHidden).not.toHaveBeenCalled()
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toEqual({ name: 'Front', moduleKey: 'Main' })
   })
 
   it('leaves the camera to the caller while the flag is off', async () => {

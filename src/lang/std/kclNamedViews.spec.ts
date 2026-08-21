@@ -26,6 +26,17 @@ function kclTypesInArrayType(recordedType: string): string[] {
   return (match?.[1] ?? '').split('|').map((name) => name.trim())
 }
 
+/**
+ * Pins `except`'s accepted types and `VISIBILITY_KINDS` to the same objects.
+ * Drift either way is a defect:
+ *
+ * - in the universe, unnameable: any `Hide` baseline hides it with no way to
+ *   show it again;
+ * - nameable, outside the universe: the `except` entry does nothing.
+ *
+ * The types come from the generated binding, so widening `except` in Rust
+ * without widening `VISIBILITY_KINDS` fails here.
+ */
 describe('the universe and `view::named`', () => {
   it('cover exactly the same objects', () => {
     const exceptArg = STD_LIB_COMMANDS['view::named'].args.find(
