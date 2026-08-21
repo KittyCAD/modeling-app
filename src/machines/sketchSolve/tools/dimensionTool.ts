@@ -103,7 +103,7 @@ type DimensionSnapCandidate = Omit<SnappingCandidate, 'target'> & {
     | { type: typeof ORIGIN_TARGET }
 }
 
-function isDimensionSnapCandidate(
+function isDimensionToolCandidate(
   candidate: SnappingCandidate
 ): candidate is DimensionSnapCandidate {
   return (
@@ -912,7 +912,7 @@ function getClosestDimensionSelection(
     mousePoint,
     currentSketchObjects,
     context.sceneInfra
-  ).find(isDimensionSnapCandidate)
+  ).find(isDimensionToolCandidate)
 
   if (!closestCandidate) {
     return null
