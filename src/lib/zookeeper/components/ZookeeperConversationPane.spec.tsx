@@ -397,14 +397,21 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
-  test('shows recovery while offline and reconnects when the browser comes online', async () => {
+  test('preserves the conversation while offline and reconnects when the browser comes online', async () => {
     vi.useFakeTimers()
-    const zookeeperManagerActor = createFakeActor({
-      awaitingResponse: false,
-    })
+    const zookeeperManagerActor = createStatefulPromptActor(false)
+    const conversationStore = createFakeConversationStore()
+    const project = {
+      name: 'sample-project',
+      path: '/tmp/sample-project',
+    }
 
     try {
-      renderPane({ zookeeperManagerActor })
+      renderPane({
+        zookeeperManagerActor,
+        conversationStore,
+        theProject: project,
+      })
 
       act(() => {
         window.dispatchEvent(new Event('offline'))
@@ -413,17 +420,19 @@ describe('ZookeeperConversationPane', () => {
       expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
         type: ZookeeperManagerTransitions.NetworkOffline,
       })
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'No internet connection.'
-      )
-      expect(screen.getByTestId('connection-recovery')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /reconnect/i })).toBeEnabled()
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: /Clear chat/ })
+        screen.queryByTestId('connection-recovery')
       ).not.toBeInTheDocument()
+      expect(screen.getByText('make a cube 10mm')).toBeInTheDocument()
+      expect(screen.getByText('Done.')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).toHaveAttribute('inert')
       expect(
         screen.getByTestId('ml-ephant-conversation-input-button')
       ).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Clear chat/ })).toBeDisabled()
       expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
 
       await act(async () => {
@@ -438,6 +447,7 @@ describe('ZookeeperConversationPane', () => {
 
       act(() => {
         window.dispatchEvent(new Event('online'))
+        zookeeperManagerActor.setConnectionState('setup', false)
       })
       expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
@@ -445,6 +455,23 @@ describe('ZookeeperConversationPane', () => {
         conversationId: 'conversation-id',
       })
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(screen.getByText('make a cube 10mm')).toBeInTheDocument()
+      expect(screen.getByText('Done.')).toBeInTheDocument()
+      expect(screen.queryByTestId('loading')).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).toHaveAttribute('inert')
+
+      act(() => {
+        zookeeperManagerActor.setConnectionState('ready', false)
+      })
+
+      expect(
+        screen.getByTestId('zookeeper-conversation-composer')
+      ).not.toHaveAttribute('inert')
+      expect(
+        screen.getByTestId('ml-ephant-conversation-input-button')
+      ).toBeEnabled()
     } finally {
       vi.useRealTimers()
     }

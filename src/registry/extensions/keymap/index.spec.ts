@@ -189,6 +189,7 @@ describe('keymap extension', () => {
   it('selects non-built-in command IDs through the command system', () => {
     const onSubmit = vi.fn()
     const send = vi.fn()
+    let disabled = false
     const registry = createRegistryWithKeymapItems(
       [
         {
@@ -213,6 +214,7 @@ describe('keymap extension', () => {
                         id: 'test.command',
                         groupId: 'test',
                         name: 'Run test command',
+                        disabled,
                         needsReview: false,
                         args: {
                           value: {
@@ -251,6 +253,11 @@ describe('keymap extension', () => {
       },
     })
     expect(onSubmit).not.toHaveBeenCalled()
+
+    send.mockClear()
+    disabled = true
+    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
+    expect(send).not.toHaveBeenCalled()
 
     registry[Symbol.dispose]()
   })

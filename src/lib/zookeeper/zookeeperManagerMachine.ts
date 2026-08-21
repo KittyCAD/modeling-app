@@ -725,7 +725,7 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
+      if (event.closeReason === ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON) {
         toast.error(event.closeReason)
       }
       return {
@@ -837,7 +837,6 @@ export const zookeeperManagerMachine = setup({
         closeReason: undefined,
         lastMessageId: undefined,
         lastMessageType: undefined,
-        conversation: undefined,
         conversationId: event.conversationId || undefined,
         defaultMode: undefined,
         modeOptions: undefined,

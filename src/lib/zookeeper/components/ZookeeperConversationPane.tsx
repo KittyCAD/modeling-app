@@ -688,7 +688,7 @@ export const ZookeeperConversationPane = (props: {
             : undefined
       }
       onCancel={onCancel}
-      disabled={needsReconnect || isClearingChatPending}
+      disabled={needsReconnect || !isReady || isClearingChatPending}
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isPromptRunning}
       isProcessing={isPromptRunning}
