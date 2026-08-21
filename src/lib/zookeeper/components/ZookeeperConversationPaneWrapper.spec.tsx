@@ -8,6 +8,16 @@ const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const projectSession = {
+    project: {
+      value: {
+        name: 'demo',
+        path: '/workspace/demo',
+        executingPath: '/workspace/demo/main.kcl',
+        executingFileEntry: { value: { name: 'main.kcl' } },
+      },
+    },
+  }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -24,6 +34,7 @@ const mocks = vi.hoisted(() => {
   return {
     kclManager,
     zookeeperSubscribe,
+    projectSession,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
@@ -70,11 +81,8 @@ vi.mock('@src/lib/boot', () => ({
     },
     billing: { send: vi.fn() },
     debug: {},
-    project: {
-      name: 'demo',
-      path: '/workspace/demo',
-      executingPath: '/workspace/demo/main.kcl',
-      executingFileEntry: { value: { name: 'main.kcl' } },
+    registry: {
+      get: vi.fn(() => mocks.projectSession),
     },
     settings: {
       actor: { send: vi.fn() },

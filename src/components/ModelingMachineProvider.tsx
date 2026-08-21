@@ -31,6 +31,7 @@ import {
   EngineConnectionStateType,
 } from '@src/lib/engineConnection/utils'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -48,8 +49,9 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { machineManager, commands, settings, layout, project, registry } =
-    useApp()
+  const app = useApp()
+  const { machineManager, commands, settings, layout, registry } = app
+  const project = registry.get(projectSession).project.value
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
