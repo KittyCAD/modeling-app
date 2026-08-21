@@ -3,6 +3,7 @@ import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
 import {
+  getContainingDirectoryProjectLibraryPath,
   getDefaultDirectoryProjectLibraryPath,
   isProjectLibrarySettings,
 } from '@src/lib/projectLibraries'
@@ -25,11 +26,14 @@ export type ProjectRoute = {
 }
 
 function getProjectDirectorySetting(
-  configuration: DeepPartial<Configuration>
+  configuration: DeepPartial<Configuration>,
+  targetPath?: string
 ): string | undefined {
   const libraries = configuration.settings?.app?.libraries
   if (isProjectLibrarySettings(libraries)) {
-    return getDefaultDirectoryProjectLibraryPath(libraries)
+    return targetPath
+      ? getContainingDirectoryProjectLibraryPath(libraries, targetPath)
+      : getDefaultDirectoryProjectLibraryPath(libraries)
   }
 
   const projectSettings = configuration.settings?.project
@@ -141,7 +145,7 @@ export function parseProjectRoute(
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
-  const projectDirectory = getProjectDirectorySetting(configuration)
+  const projectDirectory = getProjectDirectorySetting(configuration, id)
   const relativeToRoot = projectDirectory
     ? getRelativePathIfContained(projectDirectory, id)
     : undefined
@@ -169,6 +173,29 @@ export function parseProjectRoute(
     projectPath: projectPath,
     currentFileName: currentFileName,
     currentFilePath: currentFilePath,
+  }
+}
+
+/** Parse a file route by preserving an already-open project as the root. */
+export function parseProjectRouteFromProject(
+  project: Pick<Project, 'name' | 'path'> | undefined,
+  id: string
+): ProjectRoute | undefined {
+  if (!project?.path) {
+    return undefined
+  }
+
+  const relativeToProject = getRelativePathIfContained(project.path, id)
+  if (relativeToProject === undefined) {
+    return undefined
+  }
+
+  const isProjectRoot = relativeToProject === ''
+  return {
+    projectName: project.name || fsZds.basename(project.path) || null,
+    projectPath: project.path,
+    currentFileName: isProjectRoot ? null : fsZds.basename(id),
+    currentFilePath: isProjectRoot ? null : id,
   }
 }
 

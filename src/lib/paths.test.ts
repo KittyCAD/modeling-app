@@ -8,6 +8,7 @@ import {
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   parseProjectRoute,
+  parseProjectRouteFromProject,
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
@@ -126,6 +127,45 @@ describe('testing parseProjectRoute', () => {
     })
   })
 
+  it('should parse a project file using the configured library that contains the route', async () => {
+    const defaultProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'default-projects'
+    )
+    const clientProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'client-projects'
+    )
+    const config = {
+      settings: {
+        app: {
+          libraries: [
+            {
+              title: 'Default Projects',
+              path: defaultProjectDirectory,
+              type: 'directory',
+            },
+            {
+              title: 'Client Projects',
+              path: clientProjectDirectory,
+              type: 'directory',
+            },
+          ],
+        },
+      },
+    }
+    const projectPath = fsZds.join(clientProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'main.kcl')
+    expect(parseProjectRoute(config, route)).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+
   it('should respect an explicit empty libraries setting', async () => {
     const legacyProjectDirectory = absolutePath(
       'home',
@@ -197,6 +237,44 @@ describe('testing parseProjectRoute', () => {
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
+  })
+
+  it('should preserve the already-open project root for nested file routes', async () => {
+    const projectPath = absolutePath(
+      'home',
+      'somebody',
+      'CloudStorage',
+      'Zoo',
+      'personal',
+      'assembly'
+    )
+    const route = fsZds.join(projectPath, 'parts', 'main.kcl')
+    expect(
+      parseProjectRouteFromProject(
+        {
+          name: 'assembly',
+          path: projectPath,
+        },
+        route
+      )
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should ignore already-open projects that do not contain the route', async () => {
+    expect(
+      parseProjectRouteFromProject(
+        {
+          name: 'assembly',
+          path: absolutePath('home', 'somebody', 'projects', 'assembly'),
+        },
+        absolutePath('home', 'somebody', 'other-projects', 'assembly.kcl')
+      )
+    ).toBeUndefined()
   })
 })
 
