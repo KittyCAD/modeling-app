@@ -119,9 +119,6 @@ function createProjectMenuApp() {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor: {
-        send: vi.fn(),
-      },
       settings: {
         actor: {},
         useSettings: () => ({
@@ -219,7 +216,6 @@ describe('project explorer project menu', () => {
           localProjectName: projectWellFormed.name,
         })
       )
-      expect(app.systemIOActor.send).not.toHaveBeenCalled()
     } finally {
       dispose()
     }

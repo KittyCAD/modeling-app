@@ -872,7 +872,6 @@ describe('ProjectExplorer', () => {
     addPlaceHoldersForNewFileAndFolder(project.children, project.path)
     const openedProject = createFakeOpenedProject(project)
     app.registry.get(projectSession).setProject(openedProject)
-    const systemIOSend = vi.spyOn(app.systemIOActor, 'send')
 
     const { rerender } = render(
       <ProjectExplorer
@@ -915,7 +914,6 @@ describe('ProjectExplorer', () => {
         path: `/${applicationDirectory}/${projectName}/notes.txt`,
       })
     })
-    expect(systemIOSend).not.toHaveBeenCalled()
   })
   it('should render a placefolder for a folder when create folder is pressed', () => {
     const mainFile = createFile('main.kcl')
