@@ -332,7 +332,7 @@ describe('project system', () => {
       }
 
       const projectPath = fsZds.join(library.path, 'bracket')
-      const openedProject = await app.openProject({
+      const openedProject = await app.registry.get(projectSession).openProject({
         ...mockProject,
         name: 'bracket',
         path: projectPath,
@@ -812,7 +812,9 @@ describe('project system', () => {
           },
         ],
       }
-      const openedProject = await app.openProject(project)
+      const openedProject = await app.registry
+        .get(projectSession)
+        .openProject(project)
       const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
 
@@ -865,7 +867,9 @@ describe('project system', () => {
     const app = createAppForTest()
 
     try {
-      const project = await app.openProject(mockProject)
+      const project = await app.registry
+        .get(projectSession)
+        .openProject(mockProject)
       const session = app.registry.get(projectSession)
       const openedProject = session.getProject()
 
@@ -921,7 +925,9 @@ describe('project system', () => {
         ],
       }
 
-      const openedProject = await app.openProject(project)
+      const openedProject = await app.registry
+        .get(projectSession)
+        .openProject(project)
       const session = app.registry.get(projectSession)
       const queue = app.registry.get(fsOperationQueue)
       queue.clearJournal()
