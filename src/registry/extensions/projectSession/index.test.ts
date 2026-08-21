@@ -46,7 +46,6 @@ describe('project session extension', () => {
       openEditor: vi.fn(async () => ({}) as KclManager),
       closeEditor: vi.fn(),
       closeAllEditors: vi.fn(),
-      setFileSystemOperations: vi.fn(),
       createFile: vi.fn(async ({ path }: { path: string }) => path),
       writeFile: vi.fn(async ({ path }: { path: string }) => path),
       createFolder: vi.fn(async ({ path }: { path: string }) => path),
@@ -81,17 +80,6 @@ describe('project session extension', () => {
 
     projectSession.setProject(project)
 
-    const injectedFileSystemOperations =
-      project.mocks.setFileSystemOperations.mock.calls[0]?.[0]
-    expect(injectedFileSystemOperations).toEqual(
-      expect.objectContaining({
-        cp: expect.any(Function),
-        mkdir: expect.any(Function),
-        rename: expect.any(Function),
-        rm: expect.any(Function),
-        writeFile: expect.any(Function),
-      })
-    )
     expect(projectSession.getProject()).toBe(project)
     expect(projectSession.project.value).toBe(project)
     expect(projectSession.getProjectTree()).toBe(
@@ -147,6 +135,20 @@ describe('project session extension', () => {
 
     expect(projectSession.getCurrentProjectLibraryId()).toBeUndefined()
     expect(projectSession.currentProjectLibraryId.value).toBeUndefined()
+  })
+
+  it('provides queue-backed filesystem operations for opened projects', () => {
+    const projectSession = configureProjectSession()
+
+    expect(projectSession.getFileSystemOperations()).toEqual(
+      expect.objectContaining({
+        cp: expect.any(Function),
+        mkdir: expect.any(Function),
+        rename: expect.any(Function),
+        rm: expect.any(Function),
+        writeFile: expect.any(Function),
+      })
+    )
   })
 
   it('refreshes the hydrated project tree through the opened project', async () => {

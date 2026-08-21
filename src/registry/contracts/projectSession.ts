@@ -1,6 +1,10 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { Signal } from '@preact/signals-core'
-import type { KclManager, ZDSProject } from '@src/lang/KclManager'
+import type {
+  KclManager,
+  ZDSProject,
+  ZDSProjectFileSystemOperations,
+} from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 
 export type ProjectSessionMutationOperation =
@@ -78,6 +82,7 @@ export interface ProjectSessionService {
   readonly currentProjectLibraryId: Signal<string | undefined>
   readonly mutation: Signal<ProjectSessionMutationState>
   getProject: () => ZDSProject | undefined
+  getFileSystemOperations: () => ZDSProjectFileSystemOperations
   setProject: (project: ZDSProject | undefined) => void
   clearProject: () => void
   getProjectTree: () => Project | undefined

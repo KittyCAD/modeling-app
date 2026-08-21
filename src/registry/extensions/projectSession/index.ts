@@ -139,8 +139,8 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     currentProjectLibraryId,
     mutation,
     getProject: () => project.value,
+    getFileSystemOperations: () => ctx.services.get(fsOperationQueue),
     setProject: (nextProject) => {
-      nextProject?.setFileSystemOperations(ctx.services.get(fsOperationQueue))
       project.value = nextProject
       watchProjectTree(nextProject)
     },
