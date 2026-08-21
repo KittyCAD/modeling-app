@@ -662,6 +662,43 @@ export default class RustContext {
     }
   }
 
+  /** Add constraints to a sketch in one atomic execution. */
+  async addConstraints(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraints: ApiConstraint[],
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false
+  ): Promise<SketchMutationResult> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        sourceDelta: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        checkpointId?: number | null
+      } = await instance.add_constraints(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraints),
+        JSON.stringify(settings),
+        createCheckpoint
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
   /** Edit a constraint value in a sketch. */
   async editConstraintValue(
     version: ApiVersion,

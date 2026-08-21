@@ -143,7 +143,8 @@ export const constraintToolConfigs = {
         id: 'line-line',
         resultingConstraintType: 'Coincident',
         slots: [['line'], ['line']],
-        areaSelectionPolicy: 'consume-minimal',
+        repeatableLastSlot: true,
+        areaSelectionPolicy: 'consume-all-compatible',
       },
       {
         id: 'point-origin',
