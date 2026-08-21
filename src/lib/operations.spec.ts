@@ -758,6 +758,76 @@ describe('operations.test.ts', () => {
     })
   })
 
+  describe('edge cut edit flows', () => {
+    it.each([
+      {
+        operationName: 'fillet',
+        commandName: 'Fillet',
+        sizeArgument: 'radius',
+      },
+      {
+        operationName: 'chamfer',
+        commandName: 'Chamfer',
+        sizeArgument: 'length',
+      },
+    ])(
+      'retrieves a body-qualified sketch tag when editing $operationName',
+      async ({ operationName, commandName, sizeArgument }) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `${operationName}001 = ${operationName}(extrude001, tags = extrude001.sketch.tags.line2, ${sizeArgument} = 5)`
+        const operation = stdlib(operationName)
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        operation.unlabeledArg = {
+          value: {
+            type: 'Solid',
+            value: { artifactId: 'sweep-id' },
+          },
+          sourceRange: rangeOfText(code, 'extrude001'),
+        }
+        operation.labeledArgs = {
+          tags: {
+            value: {
+              type: 'TagIdentifier',
+              value: 'line2',
+              artifact_id: 'segment-id',
+            },
+            sourceRange: rangeOfText(code, 'extrude001.sketch.tags.line2'),
+          },
+          [sizeArgument]: {
+            value: { type: 'Number', value: 5, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '5'),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([segmentArtifact('segment-id')]),
+          rustContext,
+        })
+        if (isErr(result)) {
+          throw result
+        }
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+
+        const argDefaultValues = result.data.argDefaultValues as {
+          selection?: {
+            graphSelections: Array<{ artifact: Artifact }>
+          }
+        }
+        expect(result.data.name).toBe(commandName)
+        expect(argDefaultValues.selection?.graphSelections).toHaveLength(1)
+        expect(argDefaultValues.selection?.graphSelections[0].artifact.id).toBe(
+          'segment-id'
+        )
+      }
+    )
+  })
+
   describe('Sweep edit flow', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()

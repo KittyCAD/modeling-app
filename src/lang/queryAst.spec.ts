@@ -22,6 +22,7 @@ import {
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
   getSelectedSketchTarget,
+  getSketchSegmentName,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -81,6 +82,44 @@ beforeEach(async () => {
 
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
+})
+
+describe('getSketchSegmentName', () => {
+  it('prefers an explicit tag over a standalone segment variable name', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 100,
+  tag = $seg01,
+)
+extrude001 = extrude(profile001, length = 100)`
+    const { ast, artifactGraph } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const sourceSegment = [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'segment' &&
+        !artifact.originalSegId &&
+        code
+          .slice(artifact.codeRef.range[0], artifact.codeRef.range[1])
+          .includes('circle')
+    )
+    if (!sourceSegment || sourceSegment.type !== 'segment') {
+      throw new Error('Tagged circle segment not found')
+    }
+
+    expect(
+      getSketchSegmentName(
+        ast,
+        sourceSegment.id,
+        artifactGraph,
+        instanceInThisFile
+      )
+    ).toBe('seg01')
+  })
 })
 
 describe('findAllPreviousVariables', () => {

@@ -600,7 +600,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getCommonEdge(faces=[region001.tags.line3,extrude001.faces.capEnd001]),
+          axis = getOppositeEdge(extrude001.sketch.tags.line3),
           revolutions = 20,
           angleStart = 0,
           radius = 1,
@@ -673,7 +673,7 @@ extrude001 = extrude(region001, length = 100)`
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
-          axis = getCommonEdge(faces=[region001.tags.line3,extrude001.faces.capEnd001]),
+          axis = getOppositeEdge(extrude001.sketch.tags.line3),
           revolutions = 20,
           angleStart = 0,
           radius = 5,
@@ -989,8 +989,8 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capEnd001]), radius=5,)`
-    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capStart001]), radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[extrude001.sketch.tags.line2,extrude001.faces.capEnd001]), radius=5,)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[extrude001.sketch.tags.line2,extrude001.faces.capStart001]), radius=5,)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
@@ -1426,7 +1426,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, region001.tags.line3]), radius = 1000,)`
+    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [extrude001.sketch.tags.line1, extrude001.sketch.tags.line3]), radius = 1000,)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1526,8 +1526,8 @@ sketch001 = sketch(on = XY) {
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capEnd001]), length=5,)`
-    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[region001.tags.line2,extrude001.faces.capStart001]), length=5,)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[extrude001.sketch.tags.line2,extrude001.faces.capEnd001]), length=5,)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[extrude001.sketch.tags.line2,extrude001.faces.capStart001]), length=5,)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2119,7 +2119,7 @@ sketch002 = sketch(on = face001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, extrude001.faces.capEnd001]),)`
+    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getOppositeEdge(extrude001.sketch.tags.line1))`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2490,7 +2490,7 @@ profile002 = startProfile(sketch002, at = [-1, 0])
   |> ${secondSurfaceEdge}
   |> extrude(length = 2, bodyType = SURFACE)
   |> flipSurface()`
-    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = seg01),  getBoundedEdge(profile002, edge = seg02)])`
+    const blendDeclaration = `blend001 = blend([  getBoundedEdge(profile001, edge = profile001.sketch.tags.seg01),  getBoundedEdge(profile002, edge = profile002.sketch.tags.seg02)])`
 
     async function selectEdgesFromBothSurfaces() {
       const multiCursorKey = process.platform === 'linux' ? 'Control' : 'Meta'
