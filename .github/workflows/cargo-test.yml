@@ -108,6 +108,7 @@ jobs:
         env:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
+          ZOO_ENGINE_PR: "4817"
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
       - name: Commit differences
@@ -124,6 +125,7 @@ jobs:
           RUST_MIN_STACK: 10485760000
           ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           ZOO_HOST: https://api.dev.zoo.dev
+          ZOO_ENGINE_PR: "4817"
         run: |
           set -euo pipefail
           pushd rust
@@ -239,6 +241,7 @@ jobs:
         env:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
+          ZOO_ENGINE_PR: "4817"
           RUST_MIN_STACK: 10485760000
           KCL_EXECUTOR: ${{ matrix.executor }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
