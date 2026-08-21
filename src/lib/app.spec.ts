@@ -300,7 +300,6 @@ describe('project system', () => {
     try {
       session.setProject({
         projectIORefSignal: signal(mockProject),
-        setFileSystemOperations: vi.fn(),
       } as unknown as NonNullable<ReturnType<typeof session.getProject>>)
       app.singletons.kclManager.modelingState = {
         matches: (state: string) => state === 'sketchSolveMode',

@@ -349,7 +349,11 @@ export class App implements AppSubsystems {
       this.settings.get().app.libraries.current
     )
     const projectIORefSignal = signal(ownedProject)
-    const openedProject = await ZDSProject.open(projectIORefSignal, this)
+    const openedProject = await ZDSProject.open(
+      projectIORefSignal,
+      this,
+      session
+    )
     session.setProject(openedProject)
     this.setCloudSyncOpenedProject(ownedProject)
 

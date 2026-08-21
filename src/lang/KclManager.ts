@@ -373,22 +373,9 @@ export type ZDSProjectFileSystemOperations = Pick<
   'cp' | 'mkdir' | 'rename' | 'rm' | 'writeFile'
 >
 
-const createUnconfiguredProjectFileSystemOperationsError = () =>
-  new Error('Project filesystem operations are not configured.')
-
-const unconfiguredProjectFileSystemOperations: ZDSProjectFileSystemOperations =
-  {
-    cp: () =>
-      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
-    mkdir: () =>
-      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
-    rename: () =>
-      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
-    rm: () =>
-      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
-    writeFile: () =>
-      Promise.reject(createUnconfiguredProjectFileSystemOperationsError()),
-  }
+export interface ZDSProjectFileSystemOperationProvider {
+  getFileSystemOperations: () => ZDSProjectFileSystemOperations
+}
 
 const normalizeProjectPathForComparison = (path: string) =>
   fsZds.resolve(path).replace(/\\/g, '/')
@@ -422,25 +409,21 @@ export class ZDSProject {
   }))
 
   private fileWatcherId = uuidv4()
-  private fileSystemOperations: ZDSProjectFileSystemOperations =
-    unconfiguredProjectFileSystemOperations
+  private fileSystemOperations: ZDSProjectFileSystemOperations
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App
+    private app: App,
+    fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
   ) {
+    this.fileSystemOperations =
+      fileSystemOperationProvider.getFileSystemOperations()
     this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
       projectIORefSignal.value.path,
       this.fileWatcherId,
       this.onUpdateFromDisk
     )
-  }
-
-  setFileSystemOperations(
-    fileSystemOperations: ZDSProjectFileSystemOperations
-  ) {
-    this.fileSystemOperations = fileSystemOperations
   }
 
   /** Clean up resources and watchers for Project */
@@ -453,8 +436,12 @@ export class ZDSProject {
   }
 
   /** Open a project, with the option to open an initial editor too */
-  static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
+  static async open(
+    projectRef: Signal<Project>,
+    app: App,
+    fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
+  ) {
+    return new ZDSProject(projectRef, app, fileSystemOperationProvider)
   }
 
   get executingPath() {
@@ -615,11 +602,20 @@ export class ZDSProject {
     )
   }
 
-  private getPathOutsideProjectError(path: string) {
-    if (!this.isPathInsideProject(path)) {
-      return new Error(`Path "${path}" is outside project "${this.path}".`)
+  private getPathOutsideProjectError(...paths: string[]) {
+    for (const path of paths) {
+      if (!this.isPathInsideProject(path)) {
+        return new Error(`Path "${path}" is outside project "${this.path}".`)
+      }
     }
     return undefined
+  }
+
+  private ensureProjectPaths(...paths: string[]) {
+    const outsideProjectError = this.getPathOutsideProjectError(...paths)
+    return outsideProjectError
+      ? Promise.reject(outsideProjectError)
+      : Promise.resolve()
   }
 
   private isPathAtOrUnder(path: string, targetPath: string) {
@@ -779,10 +775,7 @@ export class ZDSProject {
   }
 
   async writeFile(input: ZDSProjectFileWriteInput) {
-    const outsideProjectError = this.getPathOutsideProjectError(input.path)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.path)
 
     if (input.overwrite === false && (await this.pathExists(input.path))) {
       return Promise.reject(new Error(`File already exists: ${input.path}`))
@@ -800,10 +793,7 @@ export class ZDSProject {
   }
 
   async createFolder(input: ZDSProjectPathInput) {
-    const outsideProjectError = this.getPathOutsideProjectError(input.path)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.path)
 
     if (await this.pathExists(input.path)) {
       return Promise.reject(new Error(`Folder already exists: ${input.path}`))
@@ -814,12 +804,7 @@ export class ZDSProject {
   }
 
   async renameEntry(input: ZDSProjectRenameInput) {
-    const outsideProjectError =
-      this.getPathOutsideProjectError(input.oldPath) ??
-      this.getPathOutsideProjectError(input.newPath)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.oldPath, input.newPath)
 
     if (input.oldPath === input.newPath) {
       return input.newPath
@@ -834,10 +819,7 @@ export class ZDSProject {
   }
 
   async deleteEntry(input: ZDSProjectPathInput) {
-    const outsideProjectError = this.getPathOutsideProjectError(input.path)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.path)
 
     await this.fileSystemOperations.rm(input.path, { recursive: true })
     this.closeProjectEntryEditors(input.path)
@@ -846,12 +828,7 @@ export class ZDSProject {
   }
 
   async copyEntry(input: ZDSProjectCopyMoveInput) {
-    const outsideProjectError =
-      this.getPathOutsideProjectError(input.sourcePath) ??
-      this.getPathOutsideProjectError(input.targetPath)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.sourcePath, input.targetPath)
 
     await this.fileSystemOperations.cp(input.sourcePath, input.targetPath, {
       recursive: true,
@@ -861,12 +838,7 @@ export class ZDSProject {
   }
 
   async moveEntry(input: ZDSProjectCopyMoveInput) {
-    const outsideProjectError =
-      this.getPathOutsideProjectError(input.sourcePath) ??
-      this.getPathOutsideProjectError(input.targetPath)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.sourcePath, input.targetPath)
 
     await this.movePath(input.sourcePath, input.targetPath)
     this.rewriteProjectEntryPaths(input.sourcePath, input.targetPath)
@@ -874,10 +846,7 @@ export class ZDSProject {
   }
 
   async archiveEntry(input: ZDSProjectPathInput) {
-    const outsideProjectError = this.getPathOutsideProjectError(input.path)
-    if (outsideProjectError) {
-      return Promise.reject(outsideProjectError)
-    }
+    await this.ensureProjectPaths(input.path)
 
     const archivedPath = await toArchivePath(input.path)
     await this.movePath(input.path, archivedPath)
@@ -887,12 +856,7 @@ export class ZDSProject {
   }
 
   async applyFilePatch(input: ZDSProjectFilePatchInput) {
-    for (const file of input.files) {
-      const outsideProjectError = this.getPathOutsideProjectError(file.path)
-      if (outsideProjectError) {
-        return Promise.reject(outsideProjectError)
-      }
-    }
+    await this.ensureProjectPaths(...input.files.map((file) => file.path))
 
     for (const file of input.files) {
       if (file.contents === null) {
