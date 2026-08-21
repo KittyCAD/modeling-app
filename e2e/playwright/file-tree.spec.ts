@@ -83,6 +83,129 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
     })
   })
 })
+
+test.describe(
+  'when file tree creation navigates within the same project',
+  { tag: ['@web'] },
+  () => {
+    test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
+      page,
+      folderSetupFn,
+      fs,
+      scene,
+    }) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        const testDir = await fs.join(dir, 'browser-file-tree-project')
+        await fs.mkdir(await fs.join(testDir, 'parts'), { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+        await fs.writeFile(
+          await fs.join(testDir, 'parts', 'existing.kcl'),
+          testData
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const startingFilePath = await fs.join(
+        dir,
+        'browser-file-tree-project',
+        'parts',
+        'existing.kcl'
+      )
+      await page.goto(`/file/${encodeURIComponent(startingFilePath)}`)
+      await scene.settled()
+      await u.openFilePanel()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(() => {
+              const snapshot = window.app.systemIOActor.getSnapshot()
+              return {
+                hasFolders: snapshot.context.folders !== undefined,
+                state: snapshot.value,
+              }
+            }),
+          {
+            timeout: 30_000,
+            message: 'SystemIO should finish initial browser folder load',
+          }
+        )
+        .toMatchObject({ hasFolders: true, state: 'idle' })
+
+      const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+      const partsFolder = filePaneScroll.getByRole('treeitem', {
+        name: 'parts',
+        exact: true,
+      })
+      await expect(partsFolder).toBeVisible()
+      await partsFolder.click()
+      await page.evaluate(() => {
+        const appWindow = window as any
+        const systemIOActor = window.app.systemIOActor as any
+        const originalSend = systemIOActor.send.bind(systemIOActor)
+        appWindow.__setProjectDirectoryPathEvents = []
+        systemIOActor.send = (event: any) => {
+          if (event?.type === 'set project directory path') {
+            appWindow.__setProjectDirectoryPathEvents.push(event)
+          }
+          return originalSend(event)
+        }
+      })
+      await page.evaluate(() => {
+        window.app.systemIOActor.send({
+          type: 'read folders from project directory' as any,
+        })
+      })
+
+      await page.getByTestId('create-file-button').click()
+      await page.getByTestId('file-rename-field').fill('nested-file')
+      await page.keyboard.press('Enter')
+      await expect(page.getByText('Successfully created file.')).toBeVisible({
+        timeout: 30_000,
+      })
+
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'nested-file.kcl',
+          exact: true,
+        })
+      ).toBeVisible({ timeout: 30_000 })
+      await expect
+        .poll(
+          async () =>
+            await filePaneScroll
+              .getByRole('treeitem')
+              .evaluateAll((items) =>
+                items.every(
+                  (item) => item.getAttribute('aria-disabled') !== 'true'
+                )
+              ),
+          {
+            timeout: 30_000,
+            message:
+              'File tree should become interactive after creating the file',
+          }
+        )
+        .toBeTruthy()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(
+              () => (window as any).__setProjectDirectoryPathEvents.length
+            ),
+          {
+            timeout: 5_000,
+            message:
+              'Same-project file navigation should not restart project directory reads',
+          }
+        )
+        .toBe(0)
+    })
+  }
+)
 test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
