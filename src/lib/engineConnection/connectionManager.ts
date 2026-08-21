@@ -216,6 +216,9 @@ export class ConnectionManager extends EventTarget {
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       handleMessage,
+      getCloudProjectId: () =>
+        this.systemDeps.settingsActor.getSnapshot().context.currentProject
+          ?.cloudProjectId,
     })
 
     // Nothing more to do when using a lite engine initialization
