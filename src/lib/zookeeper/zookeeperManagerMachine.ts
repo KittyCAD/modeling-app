@@ -5,9 +5,8 @@ import type {
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
-import { createActorContext } from '@xstate/react'
 import ms from 'ms'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 import {
@@ -1893,6 +1892,23 @@ export const zookeeperManagerMachine = setup({
 })
 
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
-export const ZookeeperManagerReactContext = createActorContext(
-  zookeeperManagerMachine
-)
+
+export function createZookeeperManagerActor(
+  apiToken: string
+): ZookeeperManagerActor {
+  return createActor(zookeeperManagerMachine, {
+    input: { apiToken },
+  }).start()
+}
+
+/**
+ * Stop a project-owned Zookeeper session and close its live transport.
+ *
+ * XState does not run root exit actions when an actor is stopped directly, so
+ * runtime owners must close the resolved socket before stopping the actor.
+ * Connecting sockets are still closed by the setup actor's abort handler.
+ */
+export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  actor.stop()
+}

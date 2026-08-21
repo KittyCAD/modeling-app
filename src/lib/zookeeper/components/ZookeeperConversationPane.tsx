@@ -4,7 +4,6 @@ import {
 } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
@@ -47,7 +46,6 @@ export const ZookeeperConversationPane = (props: {
   kclManager: KclManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
-  sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
   sendBillingUsageStarted: () => void
   sendBillingUsageEnded: () => void
@@ -56,6 +54,7 @@ export const ZookeeperConversationPane = (props: {
   user?: ZookeeperConversationPaneUser
   showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
+  isPaneVisible?: boolean
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
@@ -608,6 +607,26 @@ export const ZookeeperConversationPane = (props: {
   const isLoadingAttachments =
     !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const wasPromptRunningRef = useRef(false)
+  const billingCallbacksRef = useRef({
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+  })
+  billingCallbacksRef.current = {
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+  }
+
+  useEffect(
+    () => () => {
+      if (!wasPromptRunningRef.current) {
+        return
+      }
+      wasPromptRunningRef.current = false
+      billingCallbacksRef.current.sendBillingUsageEnded()
+      billingCallbacksRef.current.sendBillingUpdate()
+    },
+    []
+  )
 
   useEffect(() => {
     if (isPromptRunning === wasPromptRunningRef.current) {
@@ -684,6 +703,7 @@ export const ZookeeperConversationPane = (props: {
       onMlCopilotModeChange={props.onMlCopilotModeChange}
       modeOptions={modeOptions}
       modeScopeKey={props.theProject?.path}
+      isPaneVisible={props.isPaneVisible}
     />
   )
 }

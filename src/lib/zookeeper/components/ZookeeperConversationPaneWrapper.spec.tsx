@@ -1,5 +1,7 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
+import type { Project } from '@src/lib/project'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -8,6 +10,10 @@ const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const zookeeperManagerActor = {
+    getSnapshot: () => ({ context: {} }),
+    subscribe: zookeeperSubscribe,
+  }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -23,7 +29,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
-    zookeeperSubscribe,
+    zookeeperManagerActor,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
@@ -104,16 +110,6 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
   ZookeeperConversationToMarkdown: vi.fn(() => ''),
-  ZookeeperManagerReactContext: {
-    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    useActorRef: () => ({
-      getSnapshot: () => ({
-        context: {},
-      }),
-      send: vi.fn(),
-      subscribe: mocks.zookeeperSubscribe,
-    }),
-  },
 }))
 
 vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
@@ -179,6 +175,25 @@ async function flushQueuedWork() {
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
 
+function renderWrapper(isSessionCurrent = () => true) {
+  return render(
+    <ZookeeperConversationPaneWrapper
+      areaConfig={{ hide: () => false }}
+      layout={{
+        areaType: AreaType.Zookeeper,
+        id: 'zookeeper',
+        label: 'Zookeeper',
+        type: LayoutType.Simple,
+      }}
+      isSessionCurrent={isSessionCurrent}
+      theProject={{ name: 'demo', path: '/workspace/demo' } as Project}
+      zookeeperManagerActor={
+        mocks.zookeeperManagerActor as unknown as ZookeeperManagerActor
+      }
+    />
+  )
+}
+
 describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
@@ -186,18 +201,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
     mocks.kclManager.path = '/workspace/demo/main.kcl'
     mocks.watchCallback = undefined
 
-    render(
-      <ZookeeperConversationPaneWrapper
-        areaConfig={{ hide: () => false }}
-        layout={{
-          areaType: AreaType.Zookeeper,
-          id: 'zookeeper',
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-        }}
-        onClose={vi.fn()}
-      />
-    )
+    renderWrapper()
 
     expect(mocks.watchCallback).toBeDefined()
 
@@ -248,18 +252,7 @@ describe('ZookeeperConversationPaneWrapper', () => {
     mocks.kclManager.path = '/workspace/demo/main.kcl'
     mocks.watchCallback = undefined
 
-    render(
-      <ZookeeperConversationPaneWrapper
-        areaConfig={{ hide: () => false }}
-        layout={{
-          areaType: AreaType.Zookeeper,
-          id: 'zookeeper',
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-        }}
-        onClose={vi.fn()}
-      />
-    )
+    renderWrapper()
 
     emitZookeeperFileRequest('intermediate code')
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
@@ -273,5 +266,32 @@ describe('ZookeeperConversationPaneWrapper', () => {
 
     emitZookeeperFileRequest('final code')
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
+  test('finishes an already-dispatched edit after the plugin is disabled', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.kclManager.updateCodeEditor.mockClear()
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
+    mocks.watchCallback = undefined
+    let sessionIsCurrent = true
+    const { unmount } = renderWrapper(() => sessionIsCurrent)
+
+    emitZookeeperFileRequest('completed while disabled')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+
+    sessionIsCurrent = false
+    unmount()
+    request.onFileSystemSuccess()
+    request.onSuccess()
+
+    expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
+      'completed while disabled',
+      expect.objectContaining({
+        shouldClearHistory: true,
+        shouldExecute: true,
+      })
+    )
+    expect(mocks.kclManager.zookeeperHistoryRecordingInProgress).toBe(false)
   })
 })

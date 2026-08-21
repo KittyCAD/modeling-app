@@ -12,6 +12,7 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
 import {
   useProjectIdToConversationId,
@@ -21,11 +22,6 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import {
-  ZookeeperConversationToMarkdown,
-  type ZookeeperManagerActor,
-  ZookeeperManagerReactContext,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
@@ -33,6 +29,10 @@ import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
@@ -42,7 +42,13 @@ import {
 } from '@src/machines/systemIO/utils'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
-import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -89,39 +95,23 @@ function getZookeeperChangedFilePreviousCode(
 }
 
 export function ZookeeperConversationPaneWrapper(
-  props: AreaTypeComponentProps
+  props: AreaTypeComponentProps & {
+    isPaneVisible?: boolean
+    isSessionCurrent: () => boolean
+    theProject: Project
+    zookeeperManagerActor: ZookeeperManagerActor
+  }
 ) {
-  const { auth } = useApp()
-  const token = auth.useToken()
-
-  return (
-    <ZookeeperManagerReactContext.Provider
-      options={{
-        input: {
-          apiToken: token,
-        },
-      }}
-    >
-      <ZookeeperConversationPaneInner {...props} />
-    </ZookeeperManagerReactContext.Provider>
-  )
-}
-
-function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { auth, billing, settings, project, systemIOActor } = app
+  const { auth, billing, debug, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
-  const {
-    context: contextModeling,
-    send: sendModeling,
-    theProject,
-  } = useModelingContext()
+  const { context: contextModeling } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
-  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
+  const { zookeeperManagerActor } = props
 
   useEffect(() => {
     const updatePromptRunning = (
@@ -140,17 +130,18 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   }, [zookeeperManagerActor])
 
   useEffect(() => {
-    if (!IS_STAGING_OR_DEBUG) return
+    if (!IS_STAGING_OR_DEBUG) {
+      return
+    }
 
-    app.debug.zookeeperManagerActor = zookeeperManagerActor
+    debug.zookeeperManagerActor = zookeeperManagerActor
 
     return () => {
-      if (app.debug.zookeeperManagerActor === zookeeperManagerActor) {
-        delete app.debug.zookeeperManagerActor
+      if (debug.zookeeperManagerActor === zookeeperManagerActor) {
+        delete debug.zookeeperManagerActor
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
-  }, [])
+  }, [debug, zookeeperManagerActor])
 
   const {
     beginPendingZookeeperHistoryWrite,
@@ -167,6 +158,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
     zookeeperManagerActor,
     kclManager.engineCommandManager,
     (requestProps) => {
+      const requestProjectPath = project?.path
+      const requestProjectIsCurrent = () =>
+        app.project?.path === requestProjectPath
+      const requestIsCurrent = () =>
+        props.isSessionCurrent() && requestProjectIsCurrent()
       const activeFilePath =
         requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
       const payload = prepareZookeeperNewFileRequest({
@@ -237,6 +233,27 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                 requestSettled = true
                 resolve()
               }
+              const stopIfStale = ({
+                fileSystemWriteFinished = false,
+                waitForProjectCompletion = false,
+              }: {
+                fileSystemWriteFinished?: boolean
+                waitForProjectCompletion?: boolean
+              } = {}) => {
+                if (requestIsCurrent()) return false
+                const projectIsCurrent = requestProjectIsCurrent()
+                if (fileSystemWriteFinished && !projectIsCurrent) {
+                  kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
+                }
+                historyWriteCompleted = true
+                if (!waitForProjectCompletion || !projectIsCurrent) {
+                  postWriteCompleted = true
+                }
+                settleRequest()
+                return true
+              }
+
+              if (stopIfStale()) return
 
               void (async () => {
                 let historyRecorded = false
@@ -254,7 +271,9 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     reserved: pendingHistoryReserved,
                   })
                 }
+                if (stopIfStale()) return
                 await waitForIdleState({ systemIOActor })
+                if (stopIfStale()) return
                 kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
                 systemIOActor.send({
                   type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
@@ -263,9 +282,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     filesToDelete: payload.filesToDelete,
                     override: true,
                     requestedProjectName: payload.requestedProjectName,
+                    requestedProjectPath: requestProjectPath,
                     requestedFileNameWithExtension:
                       payload.requestedFileNameWithExtension ?? '',
                     onFileSystemError: () => {
+                      if (stopIfStale({ fileSystemWriteFinished: true })) return
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
                       }
@@ -274,6 +295,14 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
+                      if (
+                        stopIfStale({
+                          fileSystemWriteFinished: true,
+                          waitForProjectCompletion: true,
+                        })
+                      ) {
+                        return
+                      }
                       if (historyRecorded) {
                         historyWriteCompleted = true
                         settleRequest()
@@ -313,6 +342,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                           currentFileRequestedCode:
                             currentEditorFile?.requestedCode,
                           exchangeId,
+                          requestIsCurrent,
                           patch: payload.zookeeperEditPatch,
                           projectPath: project.path,
                         })
@@ -336,6 +366,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                     shouldRefreshActiveEditor
                       ? {
                           onSuccess: () => {
+                            if (!requestProjectIsCurrent()) {
+                              postWriteCompleted = true
+                              settleRequest()
+                              return
+                            }
                             if (
                               shouldRefreshActiveEditor &&
                               activeFileOutput &&
@@ -347,7 +382,8 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                                 {
                                   shouldAddToHistory: false,
                                   shouldClearHistory:
-                                    !shouldRecordZookeeperHistory,
+                                    !shouldRecordZookeeperHistory ||
+                                    !props.isSessionCurrent(),
                                   shouldExecute: true,
                                   shouldResetCamera: true,
                                   shouldWriteToDisk:
@@ -363,6 +399,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                   },
                 })
               })().catch((error: unknown) => {
+                if (stopIfStale()) return
                 if (pendingHistoryReserved || pendingHistoryStarted) {
                   cancelPendingZookeeperHistoryWrite({ exchangeId })
                 }
@@ -403,7 +440,13 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
         icon="sparkles"
         title="Zookeeper"
         onClose={props.onClose}
-        Menu={ZookeeperConversationMenu}
+        Menu={
+          props.isPaneVisible === false ? undefined : (
+            <ZookeeperConversationMenu
+              zookeeperManagerActor={zookeeperManagerActor}
+            />
+          )
+        }
       />
       <ZookeeperConversationPane
         {...{
@@ -411,7 +454,6 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
           conversationStore: zookeeperConversationStore,
           kclManager,
           contextModeling,
-          sendModeling,
           sendBillingUpdate: () => {
             billing.send({
               type: BillingTransition.Update,
@@ -428,10 +470,11 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
               type: BillingTransition.UsageEnded,
             })
           },
-          theProject: theProject.current,
+          theProject: props.theProject,
           loaderFile,
           settings: settingsValues,
           user,
+          isPaneVisible: props.isPaneVisible,
           showMakeathonAnnouncement,
           onMlCopilotModeChange: (mode) => {
             settings.actor.send({
@@ -456,7 +499,7 @@ function useZookeeperEditPatchHistory({
     new Map<number, PendingZookeeperHistory>()
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
     return () => {
       pendingZookeeperHistories.clear()
@@ -664,6 +707,7 @@ function useZookeeperEditPatchHistory({
       currentFilePath,
       currentFileRequestedCode,
       exchangeId,
+      requestIsCurrent,
       patch,
       projectPath,
     }: CompletePendingZookeeperHistoryWriteProps) => {
@@ -691,6 +735,7 @@ function useZookeeperEditPatchHistory({
         console.error('Failed to capture Zookeeper history snapshots.', error)
         pending.snapshotFilesByRelativePath.clear()
       }
+      if (!requestIsCurrent()) return
       pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       tryFlushPendingZookeeperHistory(exchangeId)
@@ -945,6 +990,7 @@ type CompletePendingZookeeperHistoryWriteProps = {
   currentFilePath?: string
   currentFileRequestedCode?: string
   exchangeId: number
+  requestIsCurrent: () => boolean
   patch: ZookeeperEditPatch
   projectPath: string
 }
@@ -993,9 +1039,11 @@ function useFlushZookeeperHistoryOnResponseEnd(
   ])
 }
 
-export const ZookeeperConversationMenu = () => {
-  const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
-
+const ZookeeperConversationMenu = ({
+  zookeeperManagerActor,
+}: {
+  zookeeperManagerActor: ZookeeperManagerActor
+}) => {
   return (
     <HeaderMenu>
       <Menu.Item>

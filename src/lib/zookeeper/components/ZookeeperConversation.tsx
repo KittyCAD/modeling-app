@@ -74,6 +74,7 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  isPaneVisible?: boolean
 }
 
 const getModeOption = (
@@ -275,6 +276,7 @@ interface ZookeeperConversationInputProps {
   onRemoveFromQueue: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  isPaneVisible?: boolean
 }
 
 export const ZookeeperConversationInput = (
@@ -303,6 +305,12 @@ export const ZookeeperConversationInput = (
       stopZoodleRuntimeExtension()
     }
   }, [stopZoodleRuntimeExtension])
+
+  useEffect(() => {
+    if (props.isPaneVisible === false) {
+      stopZoodleRuntimeExtension()
+    }
+  }, [props.isPaneVisible, stopZoodleRuntimeExtension])
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -834,6 +842,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               onRemoveFromQueue={props.onRemoveFromQueue}
               modeOptions={props.modeOptions}
               modeScopeKey={props.modeScopeKey}
+              isPaneVisible={props.isPaneVisible}
             />
           </div>
         </div>

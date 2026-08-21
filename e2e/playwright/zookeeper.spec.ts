@@ -28,10 +28,19 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       )
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
-      await expect(copilot.placeHolderResponse).not.toBeVisible({
+
+      const paneButton = page.getByTestId('ttc-pane-button')
+      const spinner = paneButton.locator('[aria-label="loading"]')
+      await expect(spinner).not.toBeVisible()
+
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      await expect(spinner).toBeVisible()
+      await expect(spinner).not.toBeVisible({
         timeout: 30_000,
       })
 
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(copilot.placeHolderResponse).not.toBeVisible()
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await expect(editor.codeContent).toContainText('sketch')
@@ -41,6 +50,69 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await scene.settled()
       const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
       await expect(extrude).toBeVisible()
+    })
+  })
+  test('Closing and reopening the pane keeps the Zookeeper session alive', async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+  }) => {
+    await page.setBodyDimensions({ width: 1500, height: 1000 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+
+    await page.waitForFunction(
+      () => {
+        const actor = window.app.debug.zookeeperManagerActor
+        const snapshot = actor?.getSnapshot()
+        return (
+          snapshot?.matches('ready' as never) === true &&
+          snapshot.context.ws?.readyState === WebSocket.OPEN
+        )
+      },
+      undefined,
+      { timeout: 60_000 }
+    )
+
+    await page.evaluate(() => {
+      const actor = window.app.debug.zookeeperManagerActor
+      const websocket = actor?.getSnapshot().context.ws
+      if (!actor || !websocket) {
+        throw new Error('Expected a ready Zookeeper session')
+      }
+      Reflect.set(window, '__zookeeperSessionBeforePaneClose', {
+        actor,
+        websocket,
+      })
+    })
+
+    await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+        })
+    )
+
+    const sessionIsUnchanged = () =>
+      page.evaluate(() => {
+        const before = Reflect.get(window, '__zookeeperSessionBeforePaneClose')
+        const actor = window.app.debug.zookeeperManagerActor
+        return (
+          actor === before?.actor &&
+          actor?.getSnapshot().context.ws === before?.websocket &&
+          before?.websocket.readyState === WebSocket.OPEN
+        )
+      })
+
+    expect(await sessionIsUnchanged()).toBe(true)
+
+    await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+    expect(await sessionIsUnchanged()).toBe(true)
+    await page.evaluate(() => {
+      Reflect.deleteProperty(window, '__zookeeperSessionBeforePaneClose')
     })
   })
   test(
