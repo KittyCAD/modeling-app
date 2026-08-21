@@ -62,8 +62,6 @@ export const TOOLBAR_COMMAND_IDS = {
     horizontal: 'zds.toolbar.sketch.horizontal',
     fixed: 'zds.toolbar.sketch.fixed',
     dimension: 'zds.toolbar.sketch.dimension',
-    horizontalDistance: 'zds.toolbar.sketch.horizontalDistance',
-    verticalDistance: 'zds.toolbar.sketch.verticalDistance',
     construction: 'zds.toolbar.sketch.construction',
   },
 } as const
@@ -105,11 +103,7 @@ type SketchSolveActionCommand = {
   event: Extract<
     ModelingMachineEvent,
     {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
     }
   >['type']
 }
@@ -589,20 +583,6 @@ export const toolbarCommands: readonly Command[] = [
       'Constrain distance between points, length of lines, or radius of arcs.',
     icon: 'dimension',
     event: 'Dimension',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-    displayName: 'Horizontal Distance',
-    description: 'Constrain horizontal distance between two points.',
-    icon: 'horizontalDimension',
-    event: 'HorizontalDistance',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-    displayName: 'Vertical Distance',
-    description: 'Constrain vertical distance between two points.',
-    icon: 'verticalDimension',
-    event: 'VerticalDistance',
   }),
   createSketchSolveActionCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.construction,

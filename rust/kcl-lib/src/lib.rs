@@ -94,6 +94,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
+pub use errors::BacktraceItemKind;
 pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
@@ -217,7 +218,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
-        EditAngleConstraintOptions,
+        EditConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,

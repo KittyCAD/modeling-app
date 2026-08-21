@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 gaugeWidth = 1.25

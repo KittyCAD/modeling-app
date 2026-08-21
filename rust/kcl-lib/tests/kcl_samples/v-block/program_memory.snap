@@ -79,10 +79,10 @@ description: Variables in memory after executing v-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 465,
-            "end": 470,
+            "commentStart": 483,
+            "end": 488,
             "moduleId": 0,
-            "start": 465,
+            "start": 483,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -103,10 +103,10 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 540,
-            "end": 545,
+            "commentStart": 558,
+            "end": 563,
             "moduleId": 0,
-            "start": 540,
+            "start": 558,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -127,10 +127,10 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 655,
-            "end": 660,
+            "commentStart": 673,
+            "end": 678,
             "moduleId": 0,
-            "start": 655,
+            "start": 673,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -151,10 +151,10 @@ description: Variables in memory after executing v-block.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 774,
-            "end": 779,
+            "commentStart": 792,
+            "end": 797,
             "moduleId": 0,
-            "start": 774,
+            "start": 792,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -175,10 +175,10 @@ description: Variables in memory after executing v-block.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 895,
-            "end": 900,
+            "commentStart": 913,
+            "end": 918,
             "moduleId": 0,
-            "start": 895,
+            "start": 913,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -199,10 +199,10 @@ description: Variables in memory after executing v-block.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 1015,
-            "end": 1020,
+            "commentStart": 1033,
+            "end": 1038,
             "moduleId": 0,
-            "start": 1015,
+            "start": 1033,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -223,10 +223,10 @@ description: Variables in memory after executing v-block.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 1136,
-            "end": 1141,
+            "commentStart": 1154,
+            "end": 1159,
             "moduleId": 0,
-            "start": 1136,
+            "start": 1154,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -247,10 +247,10 @@ description: Variables in memory after executing v-block.kcl
             1.56
           ],
           "tag": {
-            "commentStart": 1254,
-            "end": 1259,
+            "commentStart": 1272,
+            "end": 1277,
             "moduleId": 0,
-            "start": 1254,
+            "start": 1272,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -271,10 +271,10 @@ description: Variables in memory after executing v-block.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 1371,
-            "end": 1376,
+            "commentStart": 1389,
+            "end": 1394,
             "moduleId": 0,
-            "start": 1371,
+            "start": 1389,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -295,10 +295,10 @@ description: Variables in memory after executing v-block.kcl
             2.38
           ],
           "tag": {
-            "commentStart": 1490,
-            "end": 1496,
+            "commentStart": 1508,
+            "end": 1514,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1508,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -319,10 +319,10 @@ description: Variables in memory after executing v-block.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 1610,
-            "end": 1616,
+            "commentStart": 1628,
+            "end": 1634,
             "moduleId": 0,
-            "start": 1610,
+            "start": 1628,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -343,10 +343,10 @@ description: Variables in memory after executing v-block.kcl
             1.38
           ],
           "tag": {
-            "commentStart": 1732,
-            "end": 1738,
+            "commentStart": 1750,
+            "end": 1756,
             "moduleId": 0,
-            "start": 1732,
+            "start": 1750,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -367,10 +367,10 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 1852,
-            "end": 1858,
+            "commentStart": 1870,
+            "end": 1876,
             "moduleId": 0,
-            "start": 1852,
+            "start": 1870,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -391,10 +391,10 @@ description: Variables in memory after executing v-block.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 1968,
-            "end": 1974,
+            "commentStart": 1986,
+            "end": 1992,
             "moduleId": 0,
-            "start": 1968,
+            "start": 1986,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -415,10 +415,10 @@ description: Variables in memory after executing v-block.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2083,
-            "end": 2089,
+            "commentStart": 2101,
+            "end": 2107,
             "moduleId": 0,
-            "start": 2083,
+            "start": 2101,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -588,10 +588,10 @@ description: Variables in memory after executing v-block.kcl
               ],
               "radius": 0.2500000000000025,
               "tag": {
-                "commentStart": 2778,
-                "end": 2785,
+                "commentStart": 2796,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2778,
+                "start": 2796,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -678,10 +678,10 @@ description: Variables in memory after executing v-block.kcl
               ],
               "radius": 0.2500000000000025,
               "tag": {
-                "commentStart": 2778,
-                "end": 2785,
+                "commentStart": 2796,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2778,
+                "start": 2796,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -899,10 +899,10 @@ description: Variables in memory after executing v-block.kcl
                   ],
                   "radius": 0.2500000000000025,
                   "tag": {
-                    "commentStart": 2778,
-                    "end": 2785,
+                    "commentStart": 2796,
+                    "end": 2803,
                     "moduleId": 0,
-                    "start": 2778,
+                    "start": 2796,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -988,10 +988,10 @@ description: Variables in memory after executing v-block.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2778,
-                "end": 2785,
+                "commentStart": 2796,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2778,
+                "start": 2796,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1019,10 +1019,10 @@ description: Variables in memory after executing v-block.kcl
                 ],
                 "radius": 0.2500000000000025,
                 "tag": {
-                  "commentStart": 2778,
-                  "end": 2785,
+                  "commentStart": 2796,
+                  "end": 2803,
                   "moduleId": 0,
-                  "start": 2778,
+                  "start": 2796,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1104,10 +1104,10 @@ description: Variables in memory after executing v-block.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2778,
-                "end": 2785,
+                "commentStart": 2796,
+                "end": 2803,
                 "moduleId": 0,
-                "start": 2778,
+                "start": 2796,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -1135,10 +1135,10 @@ description: Variables in memory after executing v-block.kcl
                 ],
                 "radius": 0.2500000000000025,
                 "tag": {
-                  "commentStart": 2778,
-                  "end": 2785,
+                  "commentStart": 2796,
+                  "end": 2803,
                   "moduleId": 0,
-                  "start": 2778,
+                  "start": 2796,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -1249,10 +1249,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 465,
-            "end": 470,
+            "commentStart": 483,
+            "end": 488,
             "moduleId": 0,
-            "start": 465,
+            "start": 483,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1263,10 +1263,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 540,
-            "end": 545,
+            "commentStart": 558,
+            "end": 563,
             "moduleId": 0,
-            "start": 540,
+            "start": 558,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1277,10 +1277,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 655,
-            "end": 660,
+            "commentStart": 673,
+            "end": 678,
             "moduleId": 0,
-            "start": 655,
+            "start": 673,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1291,10 +1291,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 774,
-            "end": 779,
+            "commentStart": 792,
+            "end": 797,
             "moduleId": 0,
-            "start": 774,
+            "start": 792,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1305,10 +1305,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 895,
-            "end": 900,
+            "commentStart": 913,
+            "end": 918,
             "moduleId": 0,
-            "start": 895,
+            "start": 913,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1319,10 +1319,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1015,
-            "end": 1020,
+            "commentStart": 1033,
+            "end": 1038,
             "moduleId": 0,
-            "start": 1015,
+            "start": 1033,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1333,10 +1333,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1136,
-            "end": 1141,
+            "commentStart": 1154,
+            "end": 1159,
             "moduleId": 0,
-            "start": 1136,
+            "start": 1154,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1347,10 +1347,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1254,
-            "end": 1259,
+            "commentStart": 1272,
+            "end": 1277,
             "moduleId": 0,
-            "start": 1254,
+            "start": 1272,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -1361,10 +1361,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1371,
-            "end": 1376,
+            "commentStart": 1389,
+            "end": 1394,
             "moduleId": 0,
-            "start": 1371,
+            "start": 1389,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -1375,10 +1375,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1490,
-            "end": 1496,
+            "commentStart": 1508,
+            "end": 1514,
             "moduleId": 0,
-            "start": 1490,
+            "start": 1508,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -1389,10 +1389,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1610,
-            "end": 1616,
+            "commentStart": 1628,
+            "end": 1634,
             "moduleId": 0,
-            "start": 1610,
+            "start": 1628,
             "type": "TagDeclarator",
             "value": "line11"
           },
@@ -1403,10 +1403,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1732,
-            "end": 1738,
+            "commentStart": 1750,
+            "end": 1756,
             "moduleId": 0,
-            "start": 1732,
+            "start": 1750,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -1417,10 +1417,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1852,
-            "end": 1858,
+            "commentStart": 1870,
+            "end": 1876,
             "moduleId": 0,
-            "start": 1852,
+            "start": 1870,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -1431,10 +1431,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1968,
-            "end": 1974,
+            "commentStart": 1986,
+            "end": 1992,
             "moduleId": 0,
-            "start": 1968,
+            "start": 1986,
             "type": "TagDeclarator",
             "value": "line14"
           },
@@ -1445,10 +1445,10 @@ description: Variables in memory after executing v-block.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2083,
-            "end": 2089,
+            "commentStart": 2101,
+            "end": 2107,
             "moduleId": 0,
-            "start": 2083,
+            "start": 2101,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -1470,10 +1470,10 @@ description: Variables in memory after executing v-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 465,
-              "end": 470,
+              "commentStart": 483,
+              "end": 488,
               "moduleId": 0,
-              "start": 465,
+              "start": 483,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1494,10 +1494,10 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 540,
-              "end": 545,
+              "commentStart": 558,
+              "end": 563,
               "moduleId": 0,
-              "start": 540,
+              "start": 558,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1518,10 +1518,10 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 655,
-              "end": 660,
+              "commentStart": 673,
+              "end": 678,
               "moduleId": 0,
-              "start": 655,
+              "start": 673,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1542,10 +1542,10 @@ description: Variables in memory after executing v-block.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 774,
-              "end": 779,
+              "commentStart": 792,
+              "end": 797,
               "moduleId": 0,
-              "start": 774,
+              "start": 792,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1566,10 +1566,10 @@ description: Variables in memory after executing v-block.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 895,
-              "end": 900,
+              "commentStart": 913,
+              "end": 918,
               "moduleId": 0,
-              "start": 895,
+              "start": 913,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1590,10 +1590,10 @@ description: Variables in memory after executing v-block.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 1015,
-              "end": 1020,
+              "commentStart": 1033,
+              "end": 1038,
               "moduleId": 0,
-              "start": 1015,
+              "start": 1033,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -1614,10 +1614,10 @@ description: Variables in memory after executing v-block.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 1136,
-              "end": 1141,
+              "commentStart": 1154,
+              "end": 1159,
               "moduleId": 0,
-              "start": 1136,
+              "start": 1154,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -1638,10 +1638,10 @@ description: Variables in memory after executing v-block.kcl
               1.56
             ],
             "tag": {
-              "commentStart": 1254,
-              "end": 1259,
+              "commentStart": 1272,
+              "end": 1277,
               "moduleId": 0,
-              "start": 1254,
+              "start": 1272,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -1662,10 +1662,10 @@ description: Variables in memory after executing v-block.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 1371,
-              "end": 1376,
+              "commentStart": 1389,
+              "end": 1394,
               "moduleId": 0,
-              "start": 1371,
+              "start": 1389,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -1686,10 +1686,10 @@ description: Variables in memory after executing v-block.kcl
               2.38
             ],
             "tag": {
-              "commentStart": 1490,
-              "end": 1496,
+              "commentStart": 1508,
+              "end": 1514,
               "moduleId": 0,
-              "start": 1490,
+              "start": 1508,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -1710,10 +1710,10 @@ description: Variables in memory after executing v-block.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 1610,
-              "end": 1616,
+              "commentStart": 1628,
+              "end": 1634,
               "moduleId": 0,
-              "start": 1610,
+              "start": 1628,
               "type": "TagDeclarator",
               "value": "line11"
             },
@@ -1734,10 +1734,10 @@ description: Variables in memory after executing v-block.kcl
               1.38
             ],
             "tag": {
-              "commentStart": 1732,
-              "end": 1738,
+              "commentStart": 1750,
+              "end": 1756,
               "moduleId": 0,
-              "start": 1732,
+              "start": 1750,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -1758,10 +1758,10 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 1852,
-              "end": 1858,
+              "commentStart": 1870,
+              "end": 1876,
               "moduleId": 0,
-              "start": 1852,
+              "start": 1870,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -1782,10 +1782,10 @@ description: Variables in memory after executing v-block.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 1968,
-              "end": 1974,
+              "commentStart": 1986,
+              "end": 1992,
               "moduleId": 0,
-              "start": 1968,
+              "start": 1986,
               "type": "TagDeclarator",
               "value": "line14"
             },
@@ -1806,10 +1806,10 @@ description: Variables in memory after executing v-block.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2083,
-              "end": 2089,
+              "commentStart": 2101,
+              "end": 2107,
               "moduleId": 0,
-              "start": 2083,
+              "start": 2101,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -3781,10 +3781,10 @@ description: Variables in memory after executing v-block.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 465,
-                    "end": 470,
+                    "commentStart": 483,
+                    "end": 488,
                     "moduleId": 0,
-                    "start": 465,
+                    "start": 483,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3805,10 +3805,10 @@ description: Variables in memory after executing v-block.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 540,
-                    "end": 545,
+                    "commentStart": 558,
+                    "end": 563,
                     "moduleId": 0,
-                    "start": 540,
+                    "start": 558,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3829,10 +3829,10 @@ description: Variables in memory after executing v-block.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 655,
-                    "end": 660,
+                    "commentStart": 673,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 655,
+                    "start": 673,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3853,10 +3853,10 @@ description: Variables in memory after executing v-block.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 774,
-                    "end": 779,
+                    "commentStart": 792,
+                    "end": 797,
                     "moduleId": 0,
-                    "start": 774,
+                    "start": 792,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -3877,10 +3877,10 @@ description: Variables in memory after executing v-block.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 895,
-                    "end": 900,
+                    "commentStart": 913,
+                    "end": 918,
                     "moduleId": 0,
-                    "start": 895,
+                    "start": 913,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -3901,10 +3901,10 @@ description: Variables in memory after executing v-block.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 1015,
-                    "end": 1020,
+                    "commentStart": 1033,
+                    "end": 1038,
                     "moduleId": 0,
-                    "start": 1015,
+                    "start": 1033,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -3925,10 +3925,10 @@ description: Variables in memory after executing v-block.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 1136,
-                    "end": 1141,
+                    "commentStart": 1154,
+                    "end": 1159,
                     "moduleId": 0,
-                    "start": 1136,
+                    "start": 1154,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -3949,10 +3949,10 @@ description: Variables in memory after executing v-block.kcl
                     1.56
                   ],
                   "tag": {
-                    "commentStart": 1254,
-                    "end": 1259,
+                    "commentStart": 1272,
+                    "end": 1277,
                     "moduleId": 0,
-                    "start": 1254,
+                    "start": 1272,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -3973,10 +3973,10 @@ description: Variables in memory after executing v-block.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 1371,
-                    "end": 1376,
+                    "commentStart": 1389,
+                    "end": 1394,
                     "moduleId": 0,
-                    "start": 1371,
+                    "start": 1389,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -3997,10 +3997,10 @@ description: Variables in memory after executing v-block.kcl
                     2.38
                   ],
                   "tag": {
-                    "commentStart": 1490,
-                    "end": 1496,
+                    "commentStart": 1508,
+                    "end": 1514,
                     "moduleId": 0,
-                    "start": 1490,
+                    "start": 1508,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -4021,10 +4021,10 @@ description: Variables in memory after executing v-block.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 1610,
-                    "end": 1616,
+                    "commentStart": 1628,
+                    "end": 1634,
                     "moduleId": 0,
-                    "start": 1610,
+                    "start": 1628,
                     "type": "TagDeclarator",
                     "value": "line11"
                   },
@@ -4045,10 +4045,10 @@ description: Variables in memory after executing v-block.kcl
                     1.38
                   ],
                   "tag": {
-                    "commentStart": 1732,
-                    "end": 1738,
+                    "commentStart": 1750,
+                    "end": 1756,
                     "moduleId": 0,
-                    "start": 1732,
+                    "start": 1750,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -4069,10 +4069,10 @@ description: Variables in memory after executing v-block.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 1852,
-                    "end": 1858,
+                    "commentStart": 1870,
+                    "end": 1876,
                     "moduleId": 0,
-                    "start": 1852,
+                    "start": 1870,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -4093,10 +4093,10 @@ description: Variables in memory after executing v-block.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 1968,
-                    "end": 1974,
+                    "commentStart": 1986,
+                    "end": 1992,
                     "moduleId": 0,
-                    "start": 1968,
+                    "start": 1986,
                     "type": "TagDeclarator",
                     "value": "line14"
                   },
@@ -4117,10 +4117,10 @@ description: Variables in memory after executing v-block.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2083,
-                    "end": 2089,
+                    "commentStart": 2101,
+                    "end": 2107,
                     "moduleId": 0,
-                    "start": 2083,
+                    "start": 2101,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },

@@ -263,8 +263,8 @@ pub struct EditDistanceConstraintLabelPositionOptions {
     pub commit_solved_initial_guesses: bool,
 }
 
-/// Options for editing an angle constraint during sketch dragging.
-pub struct EditAngleConstraintOptions {
+/// Options for editing a constraint during sketch dragging.
+pub struct EditConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -431,6 +431,20 @@ impl FrontendState {
         result
     }
 
+    /// Edit a distance constraint with optional solver writeback.
+    pub async fn edit_distance_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, constraint, options)
+            .await
+    }
+
     /// Edit an angle constraint with optional solver writeback.
     pub async fn edit_angle_constraint_with_options(
         &mut self,
@@ -439,14 +453,92 @@ impl FrontendState {
         sketch: ObjectId,
         constraint_id: ObjectId,
         angle: Angle,
-        options: EditAngleConstraintOptions,
+        options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let previous_commit_mode = self
-            .next_edit_commits_solver_solutions
-            .replace(options.commit_solved_initial_guesses);
-        let result = SketchApi::edit_angle_constraint(self, ctx, version, sketch, constraint_id, angle).await;
-        self.next_edit_commits_solver_solutions = previous_commit_mode;
-        result
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, Constraint::Angle(angle), options)
+            .await
+    }
+
+    /// Edit an angle or distance-family constraint with optional solver writeback.
+    pub async fn edit_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+
+        let mut new_ast = self.program.ast.clone();
+        let command = match &object.kind {
+            ObjectKind::Constraint {
+                constraint:
+                    Constraint::Distance(_) | Constraint::HorizontalDistance(_) | Constraint::VerticalDistance(_),
+            } => {
+                let (function_name, distance) = match &constraint {
+                    Constraint::Distance(distance) => (DISTANCE_FN, distance),
+                    Constraint::HorizontalDistance(distance) => (HORIZONTAL_DISTANCE_FN, distance),
+                    Constraint::VerticalDistance(distance) => (VERTICAL_DISTANCE_FN, distance),
+                    _ => {
+                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                            "A distance constraint can only be replaced by another distance constraint".to_owned(),
+                        )));
+                    }
+                };
+                let (call, value) = self
+                    .distance_constraint_ast_parts(function_name, distance, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditDistanceConstraint { call, value }
+            }
+            ObjectKind::Constraint {
+                constraint: Constraint::Angle(_),
+            } => {
+                let Constraint::Angle(angle) = &constraint else {
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                        "An angle constraint can only be replaced by another angle constraint".to_owned(),
+                    )));
+                };
+                let (call, value) = self
+                    .angle_constraint_ast_parts(angle, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditAngleConstraint { call, value }
+            }
+            ObjectKind::Constraint { .. } => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Editing {} is not supported",
+                    object.kind.human_friendly_kind_with_article(),
+                ))));
+            }
+            _ => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Object is not a constraint: {constraint_id:?}"
+                ))));
+            }
+        };
+
+        self.mutate_ast(&mut new_ast, constraint_id, command)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: options.commit_solved_initial_guesses,
+            },
+        )
+        .await
     }
 
     pub async fn restore_sketch_checkpoint(
@@ -1494,7 +1586,8 @@ impl SketchApi for FrontendState {
         Ok((final_src_delta, scene_graph_delta))
     }
 
-    async fn edit_constraint(
+    // Edit only the value, e.g. `distance(...) == 5mm` to `distance(...) == 7mm`.
+    async fn edit_constraint_value(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
@@ -1596,60 +1689,6 @@ impl SketchApi for FrontendState {
             &mut new_ast,
             ExecuteAfterEditOptions {
                 segment_ids_edited: anchor_segment_ids.into_iter().collect(),
-                edit_kind: EditDeleteKind::Edit,
-                commit_solved_initial_guesses,
-            },
-        )
-        .await
-    }
-
-    async fn edit_angle_constraint(
-        &mut self,
-        ctx: &ExecutorContext,
-        _version: Version,
-        sketch: ObjectId,
-        constraint_id: ObjectId,
-        angle: Angle,
-    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
-        })?;
-        if !matches!(
-            &object.kind,
-            ObjectKind::Constraint {
-                constraint: Constraint::Angle(_),
-            }
-        ) {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object should be an angle constraint but it was {}",
-                object.kind.human_friendly_kind_with_article(),
-            ))));
-        }
-
-        let mut new_ast = self.program.ast.clone();
-        let (call, value) = self
-            .angle_constraint_ast_parts(&angle, &mut new_ast)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.mutate_ast(
-            &mut new_ast,
-            constraint_id,
-            AstMutateCommand::EditAngleConstraint { call, value },
-        )
-        .map_err(KclErrorWithOutputs::no_outputs)?;
-        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
-
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            sketch_block_ref,
-            &mut new_ast,
-            ExecuteAfterEditOptions {
-                segment_ids_edited: Default::default(),
                 edit_kind: EditDeleteKind::Edit,
                 commit_solved_initial_guesses,
             },
@@ -2018,11 +2057,7 @@ impl FrontendState {
             ..
         } = err;
 
-        if let Some(source_range) = error.source_ranges().first() {
-            non_fatal.push(CompilationIssue::fatal(*source_range, error.get_message()));
-        } else {
-            non_fatal.push(CompilationIssue::fatal(SourceRange::synthetic(), error.get_message()));
-        }
+        non_fatal.push(CompilationIssue::fatal(issue_source_range(&error), error.get_message()));
 
         Ok(ExecOutcome {
             variables,
@@ -3703,16 +3738,24 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+        self.add_distance_constraint(sketch, DISTANCE_FN, distance, new_ast)
+    }
+
+    fn distance_constraint_ast_parts(
+        &self,
+        function_name: &str,
+        distance: &Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
+        let [segment0_ast, segment1_ast] = match distance.segments.as_slice() {
             [pt0, pt1] => [
                 self.coincident_segment_to_ast(pt0, new_ast)?,
                 self.coincident_segment_to_ast(pt1, new_ast)?,
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
+                    "Distance constraint must have exactly 2 segments, got {}",
+                    distance.segments.len()
                 )));
             }
         };
@@ -3725,44 +3768,54 @@ impl FrontendState {
             None => Default::default(),
         };
 
-        // Create the distance() call.
-        let distance_call_ast =
-            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-                callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
-                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
-                    ast::ArrayExpression {
-                        elements: vec![pt0_ast, pt1_ast],
-                        digest: None,
-                        non_code_meta: Default::default(),
-                    },
-                )))),
-                arguments,
-                digest: None,
-                non_code_meta: Default::default(),
-            })));
-        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(function_name)),
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![segment0_ast, segment1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
                 },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
+            )))),
+            arguments,
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Number {
+                value: distance.distance.value,
+                suffix: distance.distance.units,
+            },
+            raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                KclError::refactor(format!(
+                    "Could not format numeric suffix: {:?}",
+                    distance.distance.units
+                ))
+            })?,
             digest: None,
         })));
 
-        // Add the line to the AST of the sketch block.
+        Ok((call, value))
+    }
+
+    fn add_distance_constraint(
+        &mut self,
+        sketch: ObjectId,
+        function_name: &str,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        let (call, value) = self.distance_constraint_ast_parts(function_name, &distance, new_ast)?;
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
+            left: call,
+            operator: ast::BinaryOperator::Eq,
+            right: value,
+            digest: None,
+        })));
+
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
-            sketch_id,
+            sketch,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
         Ok(sketch_block_ref)
@@ -4184,69 +4237,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Horizontal distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the horizontalDistance() call.
-        let distance_call_ast =
-            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-                callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
-                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
-                    ast::ArrayExpression {
-                        elements: vec![pt0_ast, pt1_ast],
-                        digest: None,
-                        non_code_meta: Default::default(),
-                    },
-                )))),
-                arguments,
-                digest: None,
-                non_code_meta: Default::default(),
-            })));
-        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, HORIZONTAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_vertical_distance(
@@ -4255,69 +4246,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Vertical distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the verticalDistance() call.
-        let distance_call_ast =
-            ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-                callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
-                unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
-                    ast::ArrayExpression {
-                        elements: vec![pt0_ast, pt1_ast],
-                        digest: None,
-                        non_code_meta: Default::default(),
-                    },
-                )))),
-                arguments,
-                digest: None,
-                non_code_meta: Default::default(),
-            })));
-        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, VERTICAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_horizontal(
@@ -4922,7 +4851,7 @@ impl FrontendState {
             };
             let depends_on_segment = match constraint {
                 Constraint::Coincident(c) => c.segment_ids().any(segment_or_owner_matches),
-                Constraint::Distance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::Distance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Fixed(fixed) => fixed
                     .points
                     .iter()
@@ -4932,8 +4861,8 @@ impl FrontendState {
                 Constraint::EqualRadius(equal_radius) => {
                     equal_radius.input.iter().copied().any(segment_or_owner_matches)
                 }
-                Constraint::HorizontalDistance(d) => d.point_ids().any(segment_or_owner_matches),
-                Constraint::VerticalDistance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::HorizontalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
+                Constraint::VerticalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Horizontal(h) => match h {
                     Horizontal::Line { line } => segment_or_owner_matches(*line),
                     Horizontal::Points { points } => points.iter().any(|point| match point {
@@ -5923,6 +5852,10 @@ enum AstMutateCommand {
         call: ast::BinaryPart,
         value: ast::BinaryPart,
     },
+    EditDistanceConstraint {
+        call: ast::BinaryPart,
+        value: ast::BinaryPart,
+    },
     EditDistanceConstraintLabelPosition {
         label_position: ast::Expr,
     },
@@ -6132,6 +6065,10 @@ fn source_ref_matches(ctx: &AstMutateContext, node_range: SourceRange, node_path
 
 fn is_angle_constraint_call_name(name: &str) -> bool {
     matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
+}
+
+fn is_distance_constraint_call_name(name: &str) -> bool {
+    matches!(name, DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN)
 }
 
 fn is_constraint_call_name(name: &str) -> bool {
@@ -6520,6 +6457,34 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 );
 
                 match (left_is_angle, right_is_angle) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditDistanceConstraint { call, value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_distance = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+                let right_is_distance = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+
+                match (left_is_distance, right_is_distance) {
                     (true, _) => {
                         binary_expr.left = call.clone();
                         binary_expr.right = value.clone();
@@ -7350,6 +7315,20 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
     })))
 }
 
+/// The source range to attach to a diagnostic for `error` in the top-level
+/// module. Source ranges are ordered innermost first and may point into
+/// imported modules, so prefer the innermost range that is in the top-level
+/// module; otherwise fall back to the innermost range.
+fn issue_source_range(error: &KclError) -> SourceRange {
+    let source_ranges = error.source_ranges();
+    source_ranges
+        .iter()
+        .find(|range| range.is_top_level_module())
+        .or_else(|| source_ranges.first())
+        .copied()
+        .unwrap_or_else(SourceRange::synthetic)
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync;
@@ -7411,6 +7390,30 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn issue_source_range_prefers_top_level_module() {
+        use kcl_error::ModuleId;
+
+        let top = SourceRange::new(10, 20, ModuleId::default());
+        let imported = SourceRange::new(0, 5, ModuleId::from_usize(7));
+
+        // Innermost frame is in an imported module; the diagnostic should
+        // land on the innermost top-level range instead.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![imported, top],
+        ));
+        assert_eq!(super::issue_source_range(&error), top);
+
+        // No top-level range at all: fall back to the innermost one.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![imported]));
+        assert_eq!(super::issue_source_range(&error), imported);
+
+        // No ranges: synthetic.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![]));
+        assert_eq!(super::issue_source_range(&error), SourceRange::synthetic());
     }
 
     #[test]
@@ -7638,7 +7641,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_parse_error_messages_are_user_facing() {
+    async fn test_edit_constraint_value_parse_error_messages_are_user_facing() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7662,7 +7665,7 @@ sketch(on = XY) {
             ("3'", "Invalid constraint value: found unknown token '''"),
         ] {
             let err = frontend
-                .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
+                .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
                 .await
                 .expect_err("expected invalid constraint expression to fail");
             let message = err.error.message();
@@ -7677,7 +7680,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_failed_edit_constraint_does_not_update_program() {
+    async fn test_failed_edit_constraint_value_does_not_update_program() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7698,7 +7701,7 @@ sketch(on = XY) {
         let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
 
         frontend
-            .edit_constraint(
+            .edit_constraint_value(
                 &mock_ctx,
                 version,
                 sketch_id,
@@ -7715,7 +7718,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_array_index_oob_fails_in_sketch_mode() {
+    async fn test_edit_constraint_value_array_index_oob_fails_in_sketch_mode() {
         let initial_source = "\
 arr = [0]
 sketch(on = XY) {
@@ -7739,7 +7742,7 @@ sketch(on = XY) {
         // It should not fall back to the first element of the array the way
         // plain mock execution does.
         let err = frontend
-            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
+            .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
             .await
             .expect_err("expected out-of-bounds array index to be an error in sketch mode execution");
         let message = err.error.message();
@@ -10991,7 +10994,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11051,7 +11054,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11105,7 +11108,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11151,6 +11154,84 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_type_and_value() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  distance([line1.start, line1.end]) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+        let label_position = Point2d {
+            x: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (source_delta, scene_delta) = frontend
+            .edit_distance_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Constraint::HorizontalDistance(Distance {
+                    segments: vec![point0_id.into(), point1_id.into()],
+                    distance: Number {
+                        value: 4.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: Some(label_position.clone()),
+                    source: Default::default(),
+                }),
+                EditConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  horizontalDistance([line1.start, line1.end], labelPosition = [2mm, 5mm]) == 4mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::HorizontalDistance(distance) = constraint else {
+            panic!("Expected horizontal distance constraint");
+        };
+        assert_eq!(distance.distance.value, 4.0);
         assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
@@ -11342,7 +11423,7 @@ sketch(on = XY) {
                     label_position: Some(label_position.clone()),
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11416,7 +11497,7 @@ sketch(on = XY) {
                     label_position: None,
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11703,7 +11784,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), line_id.into()],
+            segments: vec![point_id.into(), line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -11767,7 +11848,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), arc_id.into()],
+            segments: vec![point_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11820,7 +11901,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![arc_id.into(), ConstraintSegment::ORIGIN],
+            segments: vec![arc_id.into(), ConstraintSegment::ORIGIN],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11872,7 +11953,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![ConstraintSegment::ORIGIN, line_id.into()],
+            segments: vec![ConstraintSegment::ORIGIN, line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -11936,7 +12017,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_id.into(), circle_id.into()],
+            segments: vec![line_id.into(), circle_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12001,7 +12082,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![circle_id.into(), arc_id.into()],
+            segments: vec![circle_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12055,7 +12136,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12113,7 +12194,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12170,7 +12251,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::HorizontalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -12431,7 +12512,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::VerticalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,

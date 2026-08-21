@@ -338,10 +338,10 @@ description: Variables in memory after executing sphere.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 236,
-                    "end": 241,
+                    "commentStart": 254,
+                    "end": 259,
                     "moduleId": 0,
-                    "start": 236,
+                    "start": 254,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -368,10 +368,10 @@ description: Variables in memory after executing sphere.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 306,
-                    "end": 310,
+                    "commentStart": 324,
+                    "end": 328,
                     "moduleId": 0,
-                    "start": 306,
+                    "start": 324,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -468,10 +468,10 @@ description: Variables in memory after executing sphere.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 236,
-            "end": 241,
+            "commentStart": 254,
+            "end": 259,
             "moduleId": 0,
-            "start": 236,
+            "start": 254,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -498,10 +498,10 @@ description: Variables in memory after executing sphere.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 306,
-            "end": 310,
+            "commentStart": 324,
+            "end": 328,
             "moduleId": 0,
-            "start": 306,
+            "start": 324,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -588,10 +588,10 @@ description: Variables in memory after executing sphere.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 306,
-            "end": 310,
+            "commentStart": 324,
+            "end": 328,
             "moduleId": 0,
-            "start": 306,
+            "start": 324,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -613,10 +613,10 @@ description: Variables in memory after executing sphere.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 236,
-              "end": 241,
+              "commentStart": 254,
+              "end": 259,
               "moduleId": 0,
-              "start": 236,
+              "start": 254,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -643,10 +643,10 @@ description: Variables in memory after executing sphere.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 306,
-              "end": 310,
+              "commentStart": 324,
+              "end": 328,
               "moduleId": 0,
-              "start": 306,
+              "start": 324,
               "type": "TagDeclarator",
               "value": "arc2"
             },

@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define the bench length
 benchLength = 56mm

@@ -90,6 +90,7 @@ fn render_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError
         kcl_source: input.to_string(),
         error,
         filename: filename.to_string(),
+        label: filename.to_string(),
     };
     let report = miette::Report::new(report);
     format!("{report:?}")

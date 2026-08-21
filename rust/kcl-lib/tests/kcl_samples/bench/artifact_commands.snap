@@ -425,17 +425,17 @@ description: Artifact commands bench.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.7156434039844974,
-            "y": 29.94292571289359
+            "x": -0.7156434039844584,
+            "y": 29.942925712893565
           },
-          "radius": 25.9000232121337,
+          "radius": 25.90002321213365,
           "start": {
             "unit": "degrees",
-            "value": -26.565256977533902
+            "value": -26.565256977533892
           },
           "end": {
             "unit": "degrees",
-            "value": -5.145668077978456
+            "value": -5.145668077978409
           },
           "relative": false
         }
@@ -619,7 +619,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -631,7 +632,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1319,7 +1321,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1635,7 +1638,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1980,7 +1984,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -2446,7 +2451,8 @@ description: Artifact commands bench.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define the dihedral angle for a regular dodecahedron
 dihedral = 116.565

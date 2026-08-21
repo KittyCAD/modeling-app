@@ -1745,7 +1745,12 @@ impl ExecutorContext {
                             exec_state.mod_local.artifacts = Default::default();
                             let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
-                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                                .map(|geom| Some(KclValue::ImportedGeometry(geom)))
+                                // Label the failure with the import so the
+                                // backtrace names the foreign file (and so
+                                // add_import_backtrace's assumption that the
+                                // immediate frame is present holds).
+                                .map_err(|err| err.add_import_location(&module_path.import_name(), source_range));
                             let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
 
                             result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
@@ -1829,6 +1834,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
+                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
                         return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
@@ -1848,7 +1854,24 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem).await
+        self.inner_run(program, exec_state, preserve_mem)
+            .await
+            .map_err(|mut error| {
+                // Engine rejections of async commands (e.g. foreign imports)
+                // surface after module execution, so they miss the import
+                // frames the eager loop attaches. Without a top-level range
+                // the frontend cannot anchor the error in the root file;
+                // rebuild the ancestry from the outermost range's module.
+                let source_ranges = error.error.source_ranges();
+                if !source_ranges.is_empty()
+                    && !source_ranges.iter().any(|range| range.module_id().is_top_level())
+                    && let Some(outermost) = source_ranges.last()
+                {
+                    error.error =
+                        import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+                }
+                error
+            })
     }
 
     /// Get the universe & universe map of the program.
@@ -2371,6 +2394,208 @@ mod tests {
         };
         assert_eq!(artifact.id, artifact_id);
         assert!(!artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn nested_import_preserves_inner_error_and_backtrace() {
+        // The imported modules live in an in-memory file system under a
+        // synthetic project directory, so parallel tests share no on-disk
+        // state and there is nothing to clean up even if the process is
+        // killed.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-error");
+        let main_path = project_dir.join("main.kcl");
+        let assembly_path = project_dir.join("assembly.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        // Key each module by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [
+            (
+                project_dir.join("broken.kcl").to_string(),
+                b"export brokenValue = missingName + 1\n".to_vec(),
+            ),
+            (
+                assembly_path.to_string(),
+                b"import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir),
+            current_file: Some(main_path.clone()),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            let KclError::UndefinedValue { details, name } = &error.error else {
+                panic!("expected UndefinedValue, got {:#?}", error.error);
+            };
+            assert_eq!(name.as_deref(), Some("missingName"));
+            assert_eq!(details.message, "`missingName` is not defined");
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("import broken.kcl"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("broken.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [assembly_path.to_string(), main_path.to_string()]
+            );
+
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("broken.kcl"));
+            assert!(rendered.contains("assembly.kcl"));
+            assert!(rendered.contains("main.kcl"));
+            assert!(rendered.contains("export brokenValue = missingName + 1"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_error_across_import_keeps_backtrace_innermost_first() {
+        // A function defined in an imported module fails when the importing
+        // module calls it: function frames and the import frame must stay in
+        // one innermost-first chain.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-fn-error");
+        let main_path = project_dir.join("main.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        let files = [
+            (
+                project_dir.join("helper.kcl").to_string(),
+                b"export fn inner() { return missingName }\nexport fn outer() { return inner() }\n".to_vec(),
+            ),
+            (
+                project_dir.join("assembly.kcl").to_string(),
+                b"import outer from \"helper.kcl\"\n\nexport assemblyValue = outer()\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir.clone()),
+            current_file: Some(main_path),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            assert!(
+                matches!(&error.error, KclError::UndefinedValue { .. }),
+                "expected UndefinedValue, got {:#?}",
+                error.error
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("inner"), Some("outer"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("helper.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    project_dir.join("assembly.kcl").to_string(),
+                    project_dir.join("main.kcl").to_string()
+                ]
+            );
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("return missingName"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -4300,6 +4525,46 @@ w = f() + f()
         let actual_instances = value.len();
         let expected_instances = 10; // from the KCL `instances = `
         assert_eq!(actual_instances, expected_instances);
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_subtract() {
+        // Run this KCL file, in mock execution.
+        let code = kcl_input!("repro_mock_subtract");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let result = match result {
+            Ok(x) => x,
+            Err(e) => {
+                let error = e.error;
+                panic!("{error}");
+            }
+        };
+
+        // Get the variable we're interested in, from KCL program memory.
+        let subtracted_parts = result
+            .variables
+            .get("subtractedParts")
+            .expect("no variable called 'subtracted_parts' found");
+        let subtracted_parts = match subtracted_parts {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+
+        // Validate the variable.
+        // from the KCL, there's 2 parts being subtracted from.
+        let expected_number_of_parts = 2;
+        let actual_number_of_parts = subtracted_parts.len();
+        assert_eq!(actual_number_of_parts, expected_number_of_parts);
     }
 
     #[tokio::test(flavor = "multi_thread")]
