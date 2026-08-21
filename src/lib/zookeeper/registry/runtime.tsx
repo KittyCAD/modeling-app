@@ -7,6 +7,7 @@ import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
@@ -322,6 +323,11 @@ export const zookeeperPaneRuntimeRegistryItem = defineRegistryItemFactory(
               cssClassOverrides: {
                 button:
                   'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+              },
+              getIcon(isOpen) {
+                return !isOpen && zookeeperPromptRunningSignal.value
+                  ? 'loading'
+                  : undefined
               },
               Component: PaneOutlet,
             },
