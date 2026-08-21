@@ -2352,12 +2352,12 @@ fn trim_stroke_intersection_counts(
     points: &[Coords2d],
     objects: &[Object],
     default_unit: UnitLength,
-    eligible_segment_ids: Option<&IndexSet<ObjectId>>,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> IndexMap<ArtifactId, usize> {
     objects
         .iter()
         .filter_map(|object| load_curve_handle(object, objects, default_unit).ok())
-        .filter(|curve| eligible_segment_ids.is_none_or(|ids| ids.contains(&curve.segment_id)))
+        .filter(|curve| eligible_segment_ids.contains(&curve.segment_id))
         .filter_map(|curve| {
             let intersection_count = curve_polyline_intersections(&curve, points, EPSILON_POINT_ON_SEGMENT).len();
             (intersection_count > 0).then(|| {
@@ -2977,8 +2977,21 @@ where
     ));
     let mut invalidates_ids = false;
     let mut current_scene_graph_delta = initial_scene_graph_delta;
-    let selected_intersection_counts =
-        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit, None);
+    // This test-only generic loop has no sketch context, so every segment in
+    // its synthetic scene is explicitly eligible for the initial snapshot.
+    let initial_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+        .new_graph
+        .objects
+        .iter()
+        .filter(|object| matches!(object.kind, ObjectKind::Segment { .. }))
+        .map(|object| object.id)
+        .collect();
+    let selected_intersection_counts = trim_stroke_intersection_counts(
+        points,
+        &current_scene_graph_delta.new_graph.objects,
+        default_unit,
+        &initial_segment_ids,
+    );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
     let circle_delete_fallback_strategy =
@@ -3355,7 +3368,7 @@ pub async fn execute_trim_loop_with_context(
         points,
         &current_scene_graph_delta.new_graph.objects,
         default_unit,
-        Some(&active_sketch_segment_ids),
+        &active_sketch_segment_ids,
     );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
