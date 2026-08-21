@@ -354,6 +354,35 @@ description: Operations executed field-monitor-stand.kcl
     },
     {
       "type": "VariableDeclaration",
+      "name": "filletRadius",
+      "value": {
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "type": "Default",
+          "len": "mm",
+          "angle": "degrees"
+        }
+      },
+      "visibility": "default",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
       "name": "holeCutDepth",
       "value": {
         "type": "Number",
@@ -369,7 +398,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -398,7 +427,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 14
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -427,7 +456,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 15
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -456,7 +485,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 18
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -485,7 +514,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 18
+            "index": 19
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -514,7 +543,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 19
+            "index": 20
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -543,7 +572,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -565,7 +594,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -639,7 +668,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -726,7 +755,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -773,7 +802,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -857,7 +886,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -904,7 +933,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -988,7 +1017,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1035,7 +1064,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1119,7 +1148,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1166,7 +1195,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1250,7 +1279,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1297,7 +1326,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1341,7 +1370,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1405,7 +1434,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1441,7 +1470,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1477,7 +1506,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1513,7 +1542,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1557,7 +1586,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1601,7 +1630,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1645,7 +1674,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1692,7 +1721,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1739,7 +1768,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1786,7 +1815,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1872,7 +1901,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1926,7 +1955,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1982,7 +2011,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2011,7 +2040,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2030,7 +2059,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2104,7 +2133,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2191,7 +2220,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2238,7 +2267,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2322,7 +2351,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2369,7 +2398,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2413,7 +2442,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2449,7 +2478,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2485,7 +2514,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2549,7 +2578,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2616,7 +2645,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2663,7 +2692,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2710,7 +2739,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2764,7 +2793,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2806,7 +2835,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2835,7 +2864,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "ExpressionStatementExpr"
@@ -2854,7 +2883,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2928,7 +2957,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2995,7 +3024,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3062,7 +3091,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3109,7 +3138,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3156,7 +3185,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3206,7 +3235,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 31
+            "index": 32
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3248,7 +3277,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 32
+            "index": 33
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3277,7 +3306,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 33
+            "index": 34
           },
           {
             "type": "ExpressionStatementExpr"
@@ -3362,7 +3391,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 34
+            "index": 35
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3461,7 +3490,7 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 35
+            "index": 36
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3523,7 +3552,73 @@ description: Operations executed field-monitor-stand.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 36
+            "index": 37
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              },
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 38
           },
           {
             "type": "VariableDeclarationDeclaration"
