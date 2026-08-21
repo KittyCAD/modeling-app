@@ -39,10 +39,15 @@ type ZookeeperSession = Readonly<{
   scope: ZookeeperSessionScope
 }>
 
-type ActiveZookeeperSession = Readonly<{
-  actor: ZookeeperManagerActor
-  stop: () => void
+type ZookeeperHostLease = Readonly<{
+  scope: ZookeeperSessionScope | undefined
 }>
+
+type ZookeeperSessionActivation = {
+  generation: number
+  scope: ZookeeperSessionScope
+  stop?: () => void
+}
 
 type ZookeeperManagerModule = {
   createZookeeperManagerActor: typeof createZookeeperManagerActor
@@ -71,114 +76,101 @@ export function createZookeeperRuntime(
   const paneProps = signal<AreaTypeComponentProps | undefined>(undefined)
   const session = signal<ZookeeperSession | undefined>(undefined)
   let portalHost: HTMLDivElement | undefined
-  let currentScope: ZookeeperSessionScope | undefined
-  let retainedScope: ZookeeperSessionScope | undefined
-  let sessionGeneration = 0
-  let activeSession: ActiveZookeeperSession | undefined
-  let attachedHosts = 0
-  let hostGeneration = 0
+  let hostLease: ZookeeperHostLease | undefined
+  let activation: ZookeeperSessionActivation | undefined
+  let nextSessionGeneration = 0
   let disposed = false
 
-  const clearActiveSession = () => {
-    const previousSession = activeSession
-    activeSession = undefined
+  const deactivate = () => {
+    const previousActivation = activation
+    activation = undefined
     session.value = undefined
-    previousSession?.stop()
+    previousActivation?.stop?.()
   }
 
-  const updateScope = async (scope: ZookeeperSessionScope | undefined) => {
-    if (disposed || scopesMatch(retainedScope, scope)) {
+  const setSessionScope = async (scope: ZookeeperSessionScope | undefined) => {
+    if (disposed || scopesMatch(activation?.scope, scope)) {
       return
     }
 
-    retainedScope = scope
-    const generation = ++sessionGeneration
-    clearActiveSession()
+    deactivate()
     if (!scope) {
       return
     }
+    const nextActivation: ZookeeperSessionActivation = {
+      generation: ++nextSessionGeneration,
+      scope,
+    }
+    activation = nextActivation
 
     try {
       const manager = await loadManager()
-      if (
-        disposed ||
-        generation !== sessionGeneration ||
-        !scopesMatch(retainedScope, scope)
-      ) {
+      if (disposed || activation !== nextActivation) {
         return
       }
 
       const actor = manager.createZookeeperManagerActor(scope.apiToken)
-      activeSession = {
-        actor,
-        stop: () => manager.stopZookeeperManagerActor(actor),
-      }
+      nextActivation.stop = () => manager.stopZookeeperManagerActor(actor)
       session.value = {
         actor,
-        generation,
+        generation: nextActivation.generation,
         isCurrent: () =>
-          !disposed &&
-          attachedHosts > 0 &&
-          generation === sessionGeneration &&
-          activeSession?.actor === actor,
+          !disposed && hostLease !== undefined && activation === nextActivation,
         scope,
       }
     } catch (error: unknown) {
-      if (disposed || generation !== sessionGeneration) {
+      if (disposed || activation !== nextActivation) {
         return
       }
-      retainedScope = undefined
+      activation = undefined
       console.error('Failed to start the Zookeeper session.', error)
     }
   }
 
-  const reconcileScope = () => {
-    if (attachedHosts === 0) {
-      return updateScope(undefined)
+  const reconcileSession = () => {
+    if (!hostLease) {
+      return
     }
-    if (!currentScope || paneNode.peek()) {
-      return updateScope(currentScope)
+    const scope = hostLease.scope
+    if (!scope) {
+      void setSessionScope(undefined)
+      return
     }
-    if (!scopesMatch(retainedScope, currentScope)) {
-      return updateScope(undefined)
+    if (paneNode.peek()) {
+      void setSessionScope(scope)
+      return
     }
-    return Promise.resolve()
+    // A closed pane may retain its session, but never starts one for a new scope.
+    if (!scopesMatch(activation?.scope, scope)) {
+      void setSessionScope(undefined)
+    }
   }
 
   return {
     paneNode,
     paneProps,
     session,
-    attachHost() {
+    attachHost(scope: ZookeeperSessionScope | undefined) {
       if (disposed) {
         return () => undefined
       }
 
-      attachedHosts += 1
-      hostGeneration += 1
-      let attached = true
+      const lease = { scope }
+      hostLease = lease
+      reconcileSession()
 
       return () => {
-        if (!attached || disposed) {
+        if (disposed || hostLease !== lease) {
           return
         }
-        attached = false
-        attachedHosts -= 1
-        const releaseGeneration = ++hostGeneration
-        if (attachedHosts > 0) {
-          return
-        }
+        hostLease = undefined
 
+        // Preserve the session when React replaces the host in the same turn.
         queueMicrotask(() => {
-          if (
-            disposed ||
-            attachedHosts > 0 ||
-            releaseGeneration !== hostGeneration
-          ) {
+          if (disposed || hostLease) {
             return
           }
-          currentScope = undefined
-          void updateScope(undefined)
+          void setSessionScope(undefined)
         })
       }
     },
@@ -191,7 +183,7 @@ export function createZookeeperRuntime(
       if (portalHost) {
         node.append(portalHost)
       }
-      void reconcileScope()
+      reconcileSession()
 
       return () => {
         if (paneNode.peek() !== node) {
@@ -205,10 +197,6 @@ export function createZookeeperRuntime(
       if (!disposed) {
         paneProps.value = props
       }
-    },
-    syncScope(scope: ZookeeperSessionScope | undefined) {
-      currentScope = scope
-      return reconcileScope()
     },
     getPortalHost() {
       if (!portalHost) {
@@ -224,10 +212,8 @@ export function createZookeeperRuntime(
         return
       }
       disposed = true
-      currentScope = undefined
-      retainedScope = undefined
-      sessionGeneration += 1
-      clearActiveSession()
+      hostLease = undefined
+      deactivate()
       paneNode.value = undefined
       paneProps.value = undefined
       portalHost?.remove()
@@ -272,13 +258,13 @@ function ZookeeperPortalHost({
   const session = runtime.session.value
   const [portalHost] = useState(() => runtime.getPortalHost())
 
-  useLayoutEffect(() => {
-    const releaseHost = runtime.attachHost()
-    void runtime.syncScope(
-      projectPath && token ? { apiToken: token, projectPath } : undefined
-    )
-    return releaseHost
-  }, [projectPath, runtime, token])
+  useLayoutEffect(
+    () =>
+      runtime.attachHost(
+        projectPath && token ? { apiToken: token, projectPath } : undefined
+      ),
+    [projectPath, runtime, token]
+  )
 
   if (
     !session ||

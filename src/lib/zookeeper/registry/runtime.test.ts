@@ -55,23 +55,26 @@ describe('Zookeeper runtime', () => {
     const actor = {} as ZookeeperManagerActor
     const createZookeeperManagerActor = vi.fn(() => actor)
     const stopZookeeperManagerActor = vi.fn()
-    const runtime = createZookeeperRuntime(async () => ({
+    const loadManager = vi.fn(async () => ({
       createZookeeperManagerActor,
       stopZookeeperManagerActor,
     }))
-    const releaseHost = runtime.attachHost()
-    const outlet = document.createElement('div')
-    const detach = runtime.attachPane(outlet)
+    const runtime = createZookeeperRuntime(loadManager)
     const scope = { apiToken: 'token', projectPath: '/project' }
+    const releaseHost = runtime.attachHost(scope)
+    const outlet = document.createElement('div')
 
-    await runtime.syncScope(scope)
-    expect(runtime.session.value?.actor).toBe(actor)
+    expect(loadManager).not.toHaveBeenCalled()
+    const detach = runtime.attachPane(outlet)
+
+    await vi.waitFor(() => {
+      expect(runtime.session.value?.actor).toBe(actor)
+    })
+    expect(loadManager).toHaveBeenCalledOnce()
     const session = runtime.session.value
 
     detach()
-    await runtime.syncScope(scope)
     runtime.attachPane(outlet)
-    await runtime.syncScope(scope)
 
     expect(runtime.session.value?.actor).toBe(actor)
     expect(createZookeeperManagerActor).toHaveBeenCalledOnce()
@@ -79,7 +82,8 @@ describe('Zookeeper runtime', () => {
     expect(session?.isCurrent()).toBe(true)
 
     releaseHost()
-    const releaseRemountedHost = runtime.attachHost()
+    expect(session?.isCurrent()).toBe(false)
+    const releaseRemountedHost = runtime.attachHost(scope)
     await Promise.resolve()
     expect(stopZookeeperManagerActor).not.toHaveBeenCalled()
     expect(session?.isCurrent()).toBe(true)
@@ -102,17 +106,19 @@ describe('Zookeeper runtime', () => {
     const manager = { createZookeeperManagerActor, stopZookeeperManagerActor }
     const managerLoad = deferred<typeof manager>()
     const runtime = createZookeeperRuntime(() => managerLoad.promise)
-    runtime.attachHost()
 
     const firstScope = { apiToken: 'first', projectPath: '/first' }
     const secondScope = { apiToken: 'second', projectPath: '/second' }
+    const releaseFirstHost = runtime.attachHost(firstScope)
     const outlet = document.createElement('div')
     const detach = runtime.attachPane(outlet)
-    const firstLoad = runtime.syncScope(firstScope)
-    const secondLoad = runtime.syncScope(secondScope)
+    releaseFirstHost()
+    const releaseSecondHost = runtime.attachHost(secondScope)
 
     managerLoad.resolve(manager)
-    await Promise.all([firstLoad, secondLoad])
+    await vi.waitFor(() => {
+      expect(runtime.session.value?.actor).toBe(activeActor)
+    })
 
     expect(createZookeeperManagerActor).toHaveBeenCalledOnce()
     expect(createZookeeperManagerActor).toHaveBeenCalledWith('second')
@@ -124,7 +130,9 @@ describe('Zookeeper runtime', () => {
 
     const thirdScope = { apiToken: 'third', projectPath: '/third' }
     detach()
-    await runtime.syncScope(thirdScope)
+    releaseSecondHost()
+    runtime.attachHost(thirdScope)
+    await Promise.resolve()
     expect(stopZookeeperManagerActor).toHaveBeenCalledWith(activeActor)
     expect(activeSession?.isCurrent()).toBe(false)
     expect(runtime.session.value).toBeUndefined()
@@ -144,16 +152,12 @@ describe('Zookeeper runtime', () => {
     const manager = { createZookeeperManagerActor, stopZookeeperManagerActor }
     const managerLoad = deferred<typeof manager>()
     const runtime = createZookeeperRuntime(() => managerLoad.promise)
-    runtime.attachHost()
+    runtime.attachHost({ apiToken: 'token', projectPath: '/project' })
     runtime.attachPane(document.createElement('div'))
-    const activation = runtime.syncScope({
-      apiToken: 'token',
-      projectPath: '/project',
-    })
 
     runtime.dispose()
     managerLoad.resolve(manager)
-    await activation
+    await Promise.resolve()
 
     expect(createZookeeperManagerActor).not.toHaveBeenCalled()
     expect(runtime.session.value).toBeUndefined()
