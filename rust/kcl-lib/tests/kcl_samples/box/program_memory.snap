@@ -47,10 +47,10 @@ description: Variables in memory after executing box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 287,
-            "end": 292,
+            "commentStart": 305,
+            "end": 310,
             "moduleId": 0,
-            "start": 287,
+            "start": 305,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -61,10 +61,10 @@ description: Variables in memory after executing box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 359,
-            "end": 364,
+            "commentStart": 377,
+            "end": 382,
             "moduleId": 0,
-            "start": 359,
+            "start": 377,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -75,10 +75,10 @@ description: Variables in memory after executing box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 432,
-            "end": 437,
+            "commentStart": 450,
+            "end": 455,
             "moduleId": 0,
-            "start": 432,
+            "start": 450,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -89,10 +89,10 @@ description: Variables in memory after executing box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 508,
-            "end": 513,
+            "commentStart": 526,
+            "end": 531,
             "moduleId": 0,
-            "start": 508,
+            "start": 526,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -114,10 +114,10 @@ description: Variables in memory after executing box.kcl
               -5.000000000000001
             ],
             "tag": {
-              "commentStart": 287,
-              "end": 292,
+              "commentStart": 305,
+              "end": 310,
               "moduleId": 0,
-              "start": 287,
+              "start": 305,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -138,10 +138,10 @@ description: Variables in memory after executing box.kcl
               -5.000000000000001
             ],
             "tag": {
-              "commentStart": 359,
-              "end": 364,
+              "commentStart": 377,
+              "end": 382,
               "moduleId": 0,
-              "start": 359,
+              "start": 377,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -162,10 +162,10 @@ description: Variables in memory after executing box.kcl
               4.999999999999998
             ],
             "tag": {
-              "commentStart": 432,
-              "end": 437,
+              "commentStart": 450,
+              "end": 455,
               "moduleId": 0,
-              "start": 432,
+              "start": 450,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -186,10 +186,10 @@ description: Variables in memory after executing box.kcl
               4.999999999999998
             ],
             "tag": {
-              "commentStart": 508,
-              "end": 513,
+              "commentStart": 526,
+              "end": 531,
               "moduleId": 0,
-              "start": 508,
+              "start": 526,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -293,10 +293,10 @@ description: Variables in memory after executing box.kcl
             -5.000000000000001
           ],
           "tag": {
-            "commentStart": 287,
-            "end": 292,
+            "commentStart": 305,
+            "end": 310,
             "moduleId": 0,
-            "start": 287,
+            "start": 305,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -317,10 +317,10 @@ description: Variables in memory after executing box.kcl
             -5.000000000000001
           ],
           "tag": {
-            "commentStart": 359,
-            "end": 364,
+            "commentStart": 377,
+            "end": 382,
             "moduleId": 0,
-            "start": 359,
+            "start": 377,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -341,10 +341,10 @@ description: Variables in memory after executing box.kcl
             4.999999999999998
           ],
           "tag": {
-            "commentStart": 432,
-            "end": 437,
+            "commentStart": 450,
+            "end": 455,
             "moduleId": 0,
-            "start": 432,
+            "start": 450,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -365,10 +365,10 @@ description: Variables in memory after executing box.kcl
             4.999999999999998
           ],
           "tag": {
-            "commentStart": 508,
-            "end": 513,
+            "commentStart": 526,
+            "end": 531,
             "moduleId": 0,
-            "start": 508,
+            "start": 526,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1213,10 +1213,10 @@ description: Variables in memory after executing box.kcl
                     -5.000000000000001
                   ],
                   "tag": {
-                    "commentStart": 287,
-                    "end": 292,
+                    "commentStart": 305,
+                    "end": 310,
                     "moduleId": 0,
-                    "start": 287,
+                    "start": 305,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1237,10 +1237,10 @@ description: Variables in memory after executing box.kcl
                     -5.000000000000001
                   ],
                   "tag": {
-                    "commentStart": 359,
-                    "end": 364,
+                    "commentStart": 377,
+                    "end": 382,
                     "moduleId": 0,
-                    "start": 359,
+                    "start": 377,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1261,10 +1261,10 @@ description: Variables in memory after executing box.kcl
                     4.999999999999998
                   ],
                   "tag": {
-                    "commentStart": 432,
-                    "end": 437,
+                    "commentStart": 450,
+                    "end": 455,
                     "moduleId": 0,
-                    "start": 432,
+                    "start": 450,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1285,10 +1285,10 @@ description: Variables in memory after executing box.kcl
                     4.999999999999998
                   ],
                   "tag": {
-                    "commentStart": 508,
-                    "end": 513,
+                    "commentStart": 526,
+                    "end": 531,
                     "moduleId": 0,
-                    "start": 508,
+                    "start": 526,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },

@@ -661,10 +661,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     -0.00000000000000000009849998117036657
                   ],
                   "tag": {
-                    "commentStart": 1380,
-                    "end": 1393,
+                    "commentStart": 1398,
+                    "end": 1411,
                     "moduleId": 0,
-                    "start": 1380,
+                    "start": 1398,
                     "type": "TagDeclarator",
                     "value": "rootSeamRight"
                   },
@@ -685,10 +685,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     10.103629710818451
                   ],
                   "tag": {
-                    "commentStart": 1463,
-                    "end": 1476,
+                    "commentStart": 1481,
+                    "end": 1494,
                     "moduleId": 0,
-                    "start": 1463,
+                    "start": 1481,
                     "type": "TagDeclarator",
                     "value": "rootNeckRight"
                   },
@@ -709,10 +709,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     22.599924769811953
                   ],
                   "tag": {
-                    "commentStart": 1552,
-                    "end": 1561,
+                    "commentStart": 1570,
+                    "end": 1579,
                     "moduleId": 0,
-                    "start": 1552,
+                    "start": 1570,
                     "type": "TagDeclarator",
                     "value": "spanRight"
                   },
@@ -739,10 +739,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   ],
                   "radius": 5.83333333917264,
                   "tag": {
-                    "commentStart": 1638,
-                    "end": 1649,
+                    "commentStart": 1656,
+                    "end": 1667,
                     "moduleId": 0,
-                    "start": 1638,
+                    "start": 1656,
                     "type": "TagDeclarator",
                     "value": "tipArcRight"
                   },
@@ -763,10 +763,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     122.59992477559284
                   ],
                   "tag": {
-                    "commentStart": 1762,
-                    "end": 1774,
+                    "commentStart": 1780,
+                    "end": 1792,
                     "moduleId": 0,
-                    "start": 1762,
+                    "start": 1780,
                     "type": "TagDeclarator",
                     "value": "tipFlatRight"
                   },
@@ -787,10 +787,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     122.59992476981195
                   ],
                   "tag": {
-                    "commentStart": 1849,
-                    "end": 1860,
+                    "commentStart": 1867,
+                    "end": 1878,
                     "moduleId": 0,
-                    "start": 1849,
+                    "start": 1867,
                     "type": "TagDeclarator",
                     "value": "tipFlatLeft"
                   },
@@ -817,10 +817,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   ],
                   "radius": 5.833333333391753,
                   "tag": {
-                    "commentStart": 1936,
-                    "end": 1946,
+                    "commentStart": 1954,
+                    "end": 1964,
                     "moduleId": 0,
-                    "start": 1936,
+                    "start": 1954,
                     "type": "TagDeclarator",
                     "value": "tipArcLeft"
                   },
@@ -841,10 +841,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     116.76685244457846
                   ],
                   "tag": {
-                    "commentStart": 2062,
-                    "end": 2070,
+                    "commentStart": 2080,
+                    "end": 2088,
                     "moduleId": 0,
-                    "start": 2062,
+                    "start": 2080,
                     "type": "TagDeclarator",
                     "value": "spanLeft"
                   },
@@ -865,10 +865,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     22.599924769811953
                   ],
                   "tag": {
-                    "commentStart": 2149,
-                    "end": 2161,
+                    "commentStart": 2167,
+                    "end": 2179,
                     "moduleId": 0,
-                    "start": 2149,
+                    "start": 2167,
                     "type": "TagDeclarator",
                     "value": "rootNeckLeft"
                   },
@@ -889,10 +889,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     10.103629710818451
                   ],
                   "tag": {
-                    "commentStart": 2239,
-                    "end": 2251,
+                    "commentStart": 2257,
+                    "end": 2269,
                     "moduleId": 0,
-                    "start": 2239,
+                    "start": 2257,
                     "type": "TagDeclarator",
                     "value": "rootSeamLeft"
                   },
@@ -3011,10 +3011,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             -0.00000000000000000009849998117036657
           ],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -3035,10 +3035,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             10.103629710818451
           ],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -3059,10 +3059,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             22.599924769811953
           ],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -3089,10 +3089,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           ],
           "radius": 5.83333333917264,
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -3113,10 +3113,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             122.59992477559284
           ],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -3137,10 +3137,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             122.59992476981195
           ],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -3167,10 +3167,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           ],
           "radius": 5.833333333391753,
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -3191,10 +3191,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             116.76685244457846
           ],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -3215,10 +3215,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             22.599924769811953
           ],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -3239,10 +3239,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             10.103629710818451
           ],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -3406,10 +3406,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -3420,10 +3420,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -3434,10 +3434,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -3448,10 +3448,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -3462,10 +3462,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -3476,10 +3476,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -3490,10 +3490,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -3504,10 +3504,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -3518,10 +3518,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -3532,10 +3532,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -3557,10 +3557,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               -0.00000000000000000009849998117036657
             ],
             "tag": {
-              "commentStart": 1380,
-              "end": 1393,
+              "commentStart": 1398,
+              "end": 1411,
               "moduleId": 0,
-              "start": 1380,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "rootSeamRight"
             },
@@ -3581,10 +3581,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 1463,
-              "end": 1476,
+              "commentStart": 1481,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1463,
+              "start": 1481,
               "type": "TagDeclarator",
               "value": "rootNeckRight"
             },
@@ -3605,10 +3605,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 1552,
-              "end": 1561,
+              "commentStart": 1570,
+              "end": 1579,
               "moduleId": 0,
-              "start": 1552,
+              "start": 1570,
               "type": "TagDeclarator",
               "value": "spanRight"
             },
@@ -3635,10 +3635,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.83333333917264,
             "tag": {
-              "commentStart": 1638,
-              "end": 1649,
+              "commentStart": 1656,
+              "end": 1667,
               "moduleId": 0,
-              "start": 1638,
+              "start": 1656,
               "type": "TagDeclarator",
               "value": "tipArcRight"
             },
@@ -3659,10 +3659,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992477559284
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1774,
+              "commentStart": 1780,
+              "end": 1792,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "tipFlatRight"
             },
@@ -3683,10 +3683,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992476981195
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1860,
+              "commentStart": 1867,
+              "end": 1878,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1867,
               "type": "TagDeclarator",
               "value": "tipFlatLeft"
             },
@@ -3713,10 +3713,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.833333333391753,
             "tag": {
-              "commentStart": 1936,
-              "end": 1946,
+              "commentStart": 1954,
+              "end": 1964,
               "moduleId": 0,
-              "start": 1936,
+              "start": 1954,
               "type": "TagDeclarator",
               "value": "tipArcLeft"
             },
@@ -3737,10 +3737,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               116.76685244457846
             ],
             "tag": {
-              "commentStart": 2062,
-              "end": 2070,
+              "commentStart": 2080,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2062,
+              "start": 2080,
               "type": "TagDeclarator",
               "value": "spanLeft"
             },
@@ -3761,10 +3761,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 2149,
-              "end": 2161,
+              "commentStart": 2167,
+              "end": 2179,
               "moduleId": 0,
-              "start": 2149,
+              "start": 2167,
               "type": "TagDeclarator",
               "value": "rootNeckLeft"
             },
@@ -3785,10 +3785,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 2239,
-              "end": 2251,
+              "commentStart": 2257,
+              "end": 2269,
               "moduleId": 0,
-              "start": 2239,
+              "start": 2257,
               "type": "TagDeclarator",
               "value": "rootSeamLeft"
             },
@@ -3984,10 +3984,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -3998,10 +3998,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -4012,10 +4012,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -4026,10 +4026,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -4040,10 +4040,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -4054,10 +4054,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -4068,10 +4068,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -4082,10 +4082,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -4096,10 +4096,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -4110,10 +4110,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -4135,10 +4135,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               -0.00000000000000000009849998117036657
             ],
             "tag": {
-              "commentStart": 1380,
-              "end": 1393,
+              "commentStart": 1398,
+              "end": 1411,
               "moduleId": 0,
-              "start": 1380,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "rootSeamRight"
             },
@@ -4159,10 +4159,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 1463,
-              "end": 1476,
+              "commentStart": 1481,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1463,
+              "start": 1481,
               "type": "TagDeclarator",
               "value": "rootNeckRight"
             },
@@ -4183,10 +4183,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 1552,
-              "end": 1561,
+              "commentStart": 1570,
+              "end": 1579,
               "moduleId": 0,
-              "start": 1552,
+              "start": 1570,
               "type": "TagDeclarator",
               "value": "spanRight"
             },
@@ -4213,10 +4213,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.83333333917264,
             "tag": {
-              "commentStart": 1638,
-              "end": 1649,
+              "commentStart": 1656,
+              "end": 1667,
               "moduleId": 0,
-              "start": 1638,
+              "start": 1656,
               "type": "TagDeclarator",
               "value": "tipArcRight"
             },
@@ -4237,10 +4237,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992477559284
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1774,
+              "commentStart": 1780,
+              "end": 1792,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "tipFlatRight"
             },
@@ -4261,10 +4261,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992476981195
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1860,
+              "commentStart": 1867,
+              "end": 1878,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1867,
               "type": "TagDeclarator",
               "value": "tipFlatLeft"
             },
@@ -4291,10 +4291,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.833333333391753,
             "tag": {
-              "commentStart": 1936,
-              "end": 1946,
+              "commentStart": 1954,
+              "end": 1964,
               "moduleId": 0,
-              "start": 1936,
+              "start": 1954,
               "type": "TagDeclarator",
               "value": "tipArcLeft"
             },
@@ -4315,10 +4315,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               116.76685244457846
             ],
             "tag": {
-              "commentStart": 2062,
-              "end": 2070,
+              "commentStart": 2080,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2062,
+              "start": 2080,
               "type": "TagDeclarator",
               "value": "spanLeft"
             },
@@ -4339,10 +4339,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 2149,
-              "end": 2161,
+              "commentStart": 2167,
+              "end": 2179,
               "moduleId": 0,
-              "start": 2149,
+              "start": 2167,
               "type": "TagDeclarator",
               "value": "rootNeckLeft"
             },
@@ -4363,10 +4363,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 2239,
-              "end": 2251,
+              "commentStart": 2257,
+              "end": 2269,
               "moduleId": 0,
-              "start": 2239,
+              "start": 2257,
               "type": "TagDeclarator",
               "value": "rootSeamLeft"
             },
@@ -4490,10 +4490,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -4504,10 +4504,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -4518,10 +4518,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -4532,10 +4532,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -4546,10 +4546,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -4560,10 +4560,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -4574,10 +4574,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -4588,10 +4588,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -4602,10 +4602,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -4616,10 +4616,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -4641,10 +4641,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               -0.00000000000000000009849998117036657
             ],
             "tag": {
-              "commentStart": 1380,
-              "end": 1393,
+              "commentStart": 1398,
+              "end": 1411,
               "moduleId": 0,
-              "start": 1380,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "rootSeamRight"
             },
@@ -4665,10 +4665,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 1463,
-              "end": 1476,
+              "commentStart": 1481,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1463,
+              "start": 1481,
               "type": "TagDeclarator",
               "value": "rootNeckRight"
             },
@@ -4689,10 +4689,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 1552,
-              "end": 1561,
+              "commentStart": 1570,
+              "end": 1579,
               "moduleId": 0,
-              "start": 1552,
+              "start": 1570,
               "type": "TagDeclarator",
               "value": "spanRight"
             },
@@ -4719,10 +4719,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.83333333917264,
             "tag": {
-              "commentStart": 1638,
-              "end": 1649,
+              "commentStart": 1656,
+              "end": 1667,
               "moduleId": 0,
-              "start": 1638,
+              "start": 1656,
               "type": "TagDeclarator",
               "value": "tipArcRight"
             },
@@ -4743,10 +4743,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992477559284
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1774,
+              "commentStart": 1780,
+              "end": 1792,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "tipFlatRight"
             },
@@ -4767,10 +4767,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992476981195
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1860,
+              "commentStart": 1867,
+              "end": 1878,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1867,
               "type": "TagDeclarator",
               "value": "tipFlatLeft"
             },
@@ -4797,10 +4797,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.833333333391753,
             "tag": {
-              "commentStart": 1936,
-              "end": 1946,
+              "commentStart": 1954,
+              "end": 1964,
               "moduleId": 0,
-              "start": 1936,
+              "start": 1954,
               "type": "TagDeclarator",
               "value": "tipArcLeft"
             },
@@ -4821,10 +4821,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               116.76685244457846
             ],
             "tag": {
-              "commentStart": 2062,
-              "end": 2070,
+              "commentStart": 2080,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2062,
+              "start": 2080,
               "type": "TagDeclarator",
               "value": "spanLeft"
             },
@@ -4845,10 +4845,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 2149,
-              "end": 2161,
+              "commentStart": 2167,
+              "end": 2179,
               "moduleId": 0,
-              "start": 2149,
+              "start": 2167,
               "type": "TagDeclarator",
               "value": "rootNeckLeft"
             },
@@ -4869,10 +4869,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 2239,
-              "end": 2251,
+              "commentStart": 2257,
+              "end": 2269,
               "moduleId": 0,
-              "start": 2239,
+              "start": 2257,
               "type": "TagDeclarator",
               "value": "rootSeamLeft"
             },
@@ -5004,10 +5004,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1380,
-                "end": 1393,
+                "commentStart": 1398,
+                "end": 1411,
                 "moduleId": 0,
-                "start": 1380,
+                "start": 1398,
                 "type": "TagDeclarator",
                 "value": "rootSeamRight"
               },
@@ -5018,10 +5018,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1463,
-                "end": 1476,
+                "commentStart": 1481,
+                "end": 1494,
                 "moduleId": 0,
-                "start": 1463,
+                "start": 1481,
                 "type": "TagDeclarator",
                 "value": "rootNeckRight"
               },
@@ -5032,10 +5032,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1552,
-                "end": 1561,
+                "commentStart": 1570,
+                "end": 1579,
                 "moduleId": 0,
-                "start": 1552,
+                "start": 1570,
                 "type": "TagDeclarator",
                 "value": "spanRight"
               },
@@ -5046,10 +5046,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1638,
-                "end": 1649,
+                "commentStart": 1656,
+                "end": 1667,
                 "moduleId": 0,
-                "start": 1638,
+                "start": 1656,
                 "type": "TagDeclarator",
                 "value": "tipArcRight"
               },
@@ -5060,10 +5060,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1762,
-                "end": 1774,
+                "commentStart": 1780,
+                "end": 1792,
                 "moduleId": 0,
-                "start": 1762,
+                "start": 1780,
                 "type": "TagDeclarator",
                 "value": "tipFlatRight"
               },
@@ -5074,10 +5074,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1849,
-                "end": 1860,
+                "commentStart": 1867,
+                "end": 1878,
                 "moduleId": 0,
-                "start": 1849,
+                "start": 1867,
                 "type": "TagDeclarator",
                 "value": "tipFlatLeft"
               },
@@ -5088,10 +5088,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1936,
-                "end": 1946,
+                "commentStart": 1954,
+                "end": 1964,
                 "moduleId": 0,
-                "start": 1936,
+                "start": 1954,
                 "type": "TagDeclarator",
                 "value": "tipArcLeft"
               },
@@ -5102,10 +5102,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2062,
-                "end": 2070,
+                "commentStart": 2080,
+                "end": 2088,
                 "moduleId": 0,
-                "start": 2062,
+                "start": 2080,
                 "type": "TagDeclarator",
                 "value": "spanLeft"
               },
@@ -5116,10 +5116,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2149,
-                "end": 2161,
+                "commentStart": 2167,
+                "end": 2179,
                 "moduleId": 0,
-                "start": 2149,
+                "start": 2167,
                 "type": "TagDeclarator",
                 "value": "rootNeckLeft"
               },
@@ -5130,10 +5130,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2239,
-                "end": 2251,
+                "commentStart": 2257,
+                "end": 2269,
                 "moduleId": 0,
-                "start": 2239,
+                "start": 2257,
                 "type": "TagDeclarator",
                 "value": "rootSeamLeft"
               },
@@ -5155,10 +5155,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   -0.00000000000000000009849998117036657
                 ],
                 "tag": {
-                  "commentStart": 1380,
-                  "end": 1393,
+                  "commentStart": 1398,
+                  "end": 1411,
                   "moduleId": 0,
-                  "start": 1380,
+                  "start": 1398,
                   "type": "TagDeclarator",
                   "value": "rootSeamRight"
                 },
@@ -5179,10 +5179,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 1463,
-                  "end": 1476,
+                  "commentStart": 1481,
+                  "end": 1494,
                   "moduleId": 0,
-                  "start": 1463,
+                  "start": 1481,
                   "type": "TagDeclarator",
                   "value": "rootNeckRight"
                 },
@@ -5203,10 +5203,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 1552,
-                  "end": 1561,
+                  "commentStart": 1570,
+                  "end": 1579,
                   "moduleId": 0,
-                  "start": 1552,
+                  "start": 1570,
                   "type": "TagDeclarator",
                   "value": "spanRight"
                 },
@@ -5233,10 +5233,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.83333333917264,
                 "tag": {
-                  "commentStart": 1638,
-                  "end": 1649,
+                  "commentStart": 1656,
+                  "end": 1667,
                   "moduleId": 0,
-                  "start": 1638,
+                  "start": 1656,
                   "type": "TagDeclarator",
                   "value": "tipArcRight"
                 },
@@ -5257,10 +5257,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992477559284
                 ],
                 "tag": {
-                  "commentStart": 1762,
-                  "end": 1774,
+                  "commentStart": 1780,
+                  "end": 1792,
                   "moduleId": 0,
-                  "start": 1762,
+                  "start": 1780,
                   "type": "TagDeclarator",
                   "value": "tipFlatRight"
                 },
@@ -5281,10 +5281,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992476981195
                 ],
                 "tag": {
-                  "commentStart": 1849,
-                  "end": 1860,
+                  "commentStart": 1867,
+                  "end": 1878,
                   "moduleId": 0,
-                  "start": 1849,
+                  "start": 1867,
                   "type": "TagDeclarator",
                   "value": "tipFlatLeft"
                 },
@@ -5311,10 +5311,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.833333333391753,
                 "tag": {
-                  "commentStart": 1936,
-                  "end": 1946,
+                  "commentStart": 1954,
+                  "end": 1964,
                   "moduleId": 0,
-                  "start": 1936,
+                  "start": 1954,
                   "type": "TagDeclarator",
                   "value": "tipArcLeft"
                 },
@@ -5335,10 +5335,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   116.76685244457846
                 ],
                 "tag": {
-                  "commentStart": 2062,
-                  "end": 2070,
+                  "commentStart": 2080,
+                  "end": 2088,
                   "moduleId": 0,
-                  "start": 2062,
+                  "start": 2080,
                   "type": "TagDeclarator",
                   "value": "spanLeft"
                 },
@@ -5359,10 +5359,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 2149,
-                  "end": 2161,
+                  "commentStart": 2167,
+                  "end": 2179,
                   "moduleId": 0,
-                  "start": 2149,
+                  "start": 2167,
                   "type": "TagDeclarator",
                   "value": "rootNeckLeft"
                 },
@@ -5383,10 +5383,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 2239,
-                  "end": 2251,
+                  "commentStart": 2257,
+                  "end": 2269,
                   "moduleId": 0,
-                  "start": 2239,
+                  "start": 2257,
                   "type": "TagDeclarator",
                   "value": "rootSeamLeft"
                 },
@@ -5510,10 +5510,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1380,
-                "end": 1393,
+                "commentStart": 1398,
+                "end": 1411,
                 "moduleId": 0,
-                "start": 1380,
+                "start": 1398,
                 "type": "TagDeclarator",
                 "value": "rootSeamRight"
               },
@@ -5524,10 +5524,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1463,
-                "end": 1476,
+                "commentStart": 1481,
+                "end": 1494,
                 "moduleId": 0,
-                "start": 1463,
+                "start": 1481,
                 "type": "TagDeclarator",
                 "value": "rootNeckRight"
               },
@@ -5538,10 +5538,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1552,
-                "end": 1561,
+                "commentStart": 1570,
+                "end": 1579,
                 "moduleId": 0,
-                "start": 1552,
+                "start": 1570,
                 "type": "TagDeclarator",
                 "value": "spanRight"
               },
@@ -5552,10 +5552,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1638,
-                "end": 1649,
+                "commentStart": 1656,
+                "end": 1667,
                 "moduleId": 0,
-                "start": 1638,
+                "start": 1656,
                 "type": "TagDeclarator",
                 "value": "tipArcRight"
               },
@@ -5566,10 +5566,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1762,
-                "end": 1774,
+                "commentStart": 1780,
+                "end": 1792,
                 "moduleId": 0,
-                "start": 1762,
+                "start": 1780,
                 "type": "TagDeclarator",
                 "value": "tipFlatRight"
               },
@@ -5580,10 +5580,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1849,
-                "end": 1860,
+                "commentStart": 1867,
+                "end": 1878,
                 "moduleId": 0,
-                "start": 1849,
+                "start": 1867,
                 "type": "TagDeclarator",
                 "value": "tipFlatLeft"
               },
@@ -5594,10 +5594,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1936,
-                "end": 1946,
+                "commentStart": 1954,
+                "end": 1964,
                 "moduleId": 0,
-                "start": 1936,
+                "start": 1954,
                 "type": "TagDeclarator",
                 "value": "tipArcLeft"
               },
@@ -5608,10 +5608,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2062,
-                "end": 2070,
+                "commentStart": 2080,
+                "end": 2088,
                 "moduleId": 0,
-                "start": 2062,
+                "start": 2080,
                 "type": "TagDeclarator",
                 "value": "spanLeft"
               },
@@ -5622,10 +5622,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2149,
-                "end": 2161,
+                "commentStart": 2167,
+                "end": 2179,
                 "moduleId": 0,
-                "start": 2149,
+                "start": 2167,
                 "type": "TagDeclarator",
                 "value": "rootNeckLeft"
               },
@@ -5636,10 +5636,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2239,
-                "end": 2251,
+                "commentStart": 2257,
+                "end": 2269,
                 "moduleId": 0,
-                "start": 2239,
+                "start": 2257,
                 "type": "TagDeclarator",
                 "value": "rootSeamLeft"
               },
@@ -5661,10 +5661,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   -0.00000000000000000009849998117036657
                 ],
                 "tag": {
-                  "commentStart": 1380,
-                  "end": 1393,
+                  "commentStart": 1398,
+                  "end": 1411,
                   "moduleId": 0,
-                  "start": 1380,
+                  "start": 1398,
                   "type": "TagDeclarator",
                   "value": "rootSeamRight"
                 },
@@ -5685,10 +5685,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 1463,
-                  "end": 1476,
+                  "commentStart": 1481,
+                  "end": 1494,
                   "moduleId": 0,
-                  "start": 1463,
+                  "start": 1481,
                   "type": "TagDeclarator",
                   "value": "rootNeckRight"
                 },
@@ -5709,10 +5709,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 1552,
-                  "end": 1561,
+                  "commentStart": 1570,
+                  "end": 1579,
                   "moduleId": 0,
-                  "start": 1552,
+                  "start": 1570,
                   "type": "TagDeclarator",
                   "value": "spanRight"
                 },
@@ -5739,10 +5739,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.83333333917264,
                 "tag": {
-                  "commentStart": 1638,
-                  "end": 1649,
+                  "commentStart": 1656,
+                  "end": 1667,
                   "moduleId": 0,
-                  "start": 1638,
+                  "start": 1656,
                   "type": "TagDeclarator",
                   "value": "tipArcRight"
                 },
@@ -5763,10 +5763,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992477559284
                 ],
                 "tag": {
-                  "commentStart": 1762,
-                  "end": 1774,
+                  "commentStart": 1780,
+                  "end": 1792,
                   "moduleId": 0,
-                  "start": 1762,
+                  "start": 1780,
                   "type": "TagDeclarator",
                   "value": "tipFlatRight"
                 },
@@ -5787,10 +5787,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992476981195
                 ],
                 "tag": {
-                  "commentStart": 1849,
-                  "end": 1860,
+                  "commentStart": 1867,
+                  "end": 1878,
                   "moduleId": 0,
-                  "start": 1849,
+                  "start": 1867,
                   "type": "TagDeclarator",
                   "value": "tipFlatLeft"
                 },
@@ -5817,10 +5817,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.833333333391753,
                 "tag": {
-                  "commentStart": 1936,
-                  "end": 1946,
+                  "commentStart": 1954,
+                  "end": 1964,
                   "moduleId": 0,
-                  "start": 1936,
+                  "start": 1954,
                   "type": "TagDeclarator",
                   "value": "tipArcLeft"
                 },
@@ -5841,10 +5841,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   116.76685244457846
                 ],
                 "tag": {
-                  "commentStart": 2062,
-                  "end": 2070,
+                  "commentStart": 2080,
+                  "end": 2088,
                   "moduleId": 0,
-                  "start": 2062,
+                  "start": 2080,
                   "type": "TagDeclarator",
                   "value": "spanLeft"
                 },
@@ -5865,10 +5865,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 2149,
-                  "end": 2161,
+                  "commentStart": 2167,
+                  "end": 2179,
                   "moduleId": 0,
-                  "start": 2149,
+                  "start": 2167,
                   "type": "TagDeclarator",
                   "value": "rootNeckLeft"
                 },
@@ -5889,10 +5889,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 2239,
-                  "end": 2251,
+                  "commentStart": 2257,
+                  "end": 2269,
                   "moduleId": 0,
-                  "start": 2239,
+                  "start": 2257,
                   "type": "TagDeclarator",
                   "value": "rootSeamLeft"
                 },
@@ -6016,10 +6016,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1380,
-                "end": 1393,
+                "commentStart": 1398,
+                "end": 1411,
                 "moduleId": 0,
-                "start": 1380,
+                "start": 1398,
                 "type": "TagDeclarator",
                 "value": "rootSeamRight"
               },
@@ -6030,10 +6030,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1463,
-                "end": 1476,
+                "commentStart": 1481,
+                "end": 1494,
                 "moduleId": 0,
-                "start": 1463,
+                "start": 1481,
                 "type": "TagDeclarator",
                 "value": "rootNeckRight"
               },
@@ -6044,10 +6044,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1552,
-                "end": 1561,
+                "commentStart": 1570,
+                "end": 1579,
                 "moduleId": 0,
-                "start": 1552,
+                "start": 1570,
                 "type": "TagDeclarator",
                 "value": "spanRight"
               },
@@ -6058,10 +6058,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1638,
-                "end": 1649,
+                "commentStart": 1656,
+                "end": 1667,
                 "moduleId": 0,
-                "start": 1638,
+                "start": 1656,
                 "type": "TagDeclarator",
                 "value": "tipArcRight"
               },
@@ -6072,10 +6072,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1762,
-                "end": 1774,
+                "commentStart": 1780,
+                "end": 1792,
                 "moduleId": 0,
-                "start": 1762,
+                "start": 1780,
                 "type": "TagDeclarator",
                 "value": "tipFlatRight"
               },
@@ -6086,10 +6086,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1849,
-                "end": 1860,
+                "commentStart": 1867,
+                "end": 1878,
                 "moduleId": 0,
-                "start": 1849,
+                "start": 1867,
                 "type": "TagDeclarator",
                 "value": "tipFlatLeft"
               },
@@ -6100,10 +6100,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1936,
-                "end": 1946,
+                "commentStart": 1954,
+                "end": 1964,
                 "moduleId": 0,
-                "start": 1936,
+                "start": 1954,
                 "type": "TagDeclarator",
                 "value": "tipArcLeft"
               },
@@ -6114,10 +6114,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2062,
-                "end": 2070,
+                "commentStart": 2080,
+                "end": 2088,
                 "moduleId": 0,
-                "start": 2062,
+                "start": 2080,
                 "type": "TagDeclarator",
                 "value": "spanLeft"
               },
@@ -6128,10 +6128,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2149,
-                "end": 2161,
+                "commentStart": 2167,
+                "end": 2179,
                 "moduleId": 0,
-                "start": 2149,
+                "start": 2167,
                 "type": "TagDeclarator",
                 "value": "rootNeckLeft"
               },
@@ -6142,10 +6142,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2239,
-                "end": 2251,
+                "commentStart": 2257,
+                "end": 2269,
                 "moduleId": 0,
-                "start": 2239,
+                "start": 2257,
                 "type": "TagDeclarator",
                 "value": "rootSeamLeft"
               },
@@ -6167,10 +6167,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   -0.00000000000000000009849998117036657
                 ],
                 "tag": {
-                  "commentStart": 1380,
-                  "end": 1393,
+                  "commentStart": 1398,
+                  "end": 1411,
                   "moduleId": 0,
-                  "start": 1380,
+                  "start": 1398,
                   "type": "TagDeclarator",
                   "value": "rootSeamRight"
                 },
@@ -6191,10 +6191,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 1463,
-                  "end": 1476,
+                  "commentStart": 1481,
+                  "end": 1494,
                   "moduleId": 0,
-                  "start": 1463,
+                  "start": 1481,
                   "type": "TagDeclarator",
                   "value": "rootNeckRight"
                 },
@@ -6215,10 +6215,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 1552,
-                  "end": 1561,
+                  "commentStart": 1570,
+                  "end": 1579,
                   "moduleId": 0,
-                  "start": 1552,
+                  "start": 1570,
                   "type": "TagDeclarator",
                   "value": "spanRight"
                 },
@@ -6245,10 +6245,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.83333333917264,
                 "tag": {
-                  "commentStart": 1638,
-                  "end": 1649,
+                  "commentStart": 1656,
+                  "end": 1667,
                   "moduleId": 0,
-                  "start": 1638,
+                  "start": 1656,
                   "type": "TagDeclarator",
                   "value": "tipArcRight"
                 },
@@ -6269,10 +6269,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992477559284
                 ],
                 "tag": {
-                  "commentStart": 1762,
-                  "end": 1774,
+                  "commentStart": 1780,
+                  "end": 1792,
                   "moduleId": 0,
-                  "start": 1762,
+                  "start": 1780,
                   "type": "TagDeclarator",
                   "value": "tipFlatRight"
                 },
@@ -6293,10 +6293,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   122.59992476981195
                 ],
                 "tag": {
-                  "commentStart": 1849,
-                  "end": 1860,
+                  "commentStart": 1867,
+                  "end": 1878,
                   "moduleId": 0,
-                  "start": 1849,
+                  "start": 1867,
                   "type": "TagDeclarator",
                   "value": "tipFlatLeft"
                 },
@@ -6323,10 +6323,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                 ],
                 "radius": 5.833333333391753,
                 "tag": {
-                  "commentStart": 1936,
-                  "end": 1946,
+                  "commentStart": 1954,
+                  "end": 1964,
                   "moduleId": 0,
-                  "start": 1936,
+                  "start": 1954,
                   "type": "TagDeclarator",
                   "value": "tipArcLeft"
                 },
@@ -6347,10 +6347,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   116.76685244457846
                 ],
                 "tag": {
-                  "commentStart": 2062,
-                  "end": 2070,
+                  "commentStart": 2080,
+                  "end": 2088,
                   "moduleId": 0,
-                  "start": 2062,
+                  "start": 2080,
                   "type": "TagDeclarator",
                   "value": "spanLeft"
                 },
@@ -6371,10 +6371,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   22.599924769811953
                 ],
                 "tag": {
-                  "commentStart": 2149,
-                  "end": 2161,
+                  "commentStart": 2167,
+                  "end": 2179,
                   "moduleId": 0,
-                  "start": 2149,
+                  "start": 2167,
                   "type": "TagDeclarator",
                   "value": "rootNeckLeft"
                 },
@@ -6395,10 +6395,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   10.103629710818451
                 ],
                 "tag": {
-                  "commentStart": 2239,
-                  "end": 2251,
+                  "commentStart": 2257,
+                  "end": 2269,
                   "moduleId": 0,
-                  "start": 2239,
+                  "start": 2257,
                   "type": "TagDeclarator",
                   "value": "rootSeamLeft"
                 },
@@ -6524,10 +6524,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -6538,10 +6538,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -6552,10 +6552,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -6566,10 +6566,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -6580,10 +6580,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -6594,10 +6594,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -6608,10 +6608,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -6622,10 +6622,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -6636,10 +6636,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -6650,10 +6650,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -6675,10 +6675,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               -0.00000000000000000009849998117036657
             ],
             "tag": {
-              "commentStart": 1380,
-              "end": 1393,
+              "commentStart": 1398,
+              "end": 1411,
               "moduleId": 0,
-              "start": 1380,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "rootSeamRight"
             },
@@ -6699,10 +6699,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 1463,
-              "end": 1476,
+              "commentStart": 1481,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1463,
+              "start": 1481,
               "type": "TagDeclarator",
               "value": "rootNeckRight"
             },
@@ -6723,10 +6723,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 1552,
-              "end": 1561,
+              "commentStart": 1570,
+              "end": 1579,
               "moduleId": 0,
-              "start": 1552,
+              "start": 1570,
               "type": "TagDeclarator",
               "value": "spanRight"
             },
@@ -6753,10 +6753,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.83333333917264,
             "tag": {
-              "commentStart": 1638,
-              "end": 1649,
+              "commentStart": 1656,
+              "end": 1667,
               "moduleId": 0,
-              "start": 1638,
+              "start": 1656,
               "type": "TagDeclarator",
               "value": "tipArcRight"
             },
@@ -6777,10 +6777,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992477559284
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1774,
+              "commentStart": 1780,
+              "end": 1792,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "tipFlatRight"
             },
@@ -6801,10 +6801,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992476981195
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1860,
+              "commentStart": 1867,
+              "end": 1878,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1867,
               "type": "TagDeclarator",
               "value": "tipFlatLeft"
             },
@@ -6831,10 +6831,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.833333333391753,
             "tag": {
-              "commentStart": 1936,
-              "end": 1946,
+              "commentStart": 1954,
+              "end": 1964,
               "moduleId": 0,
-              "start": 1936,
+              "start": 1954,
               "type": "TagDeclarator",
               "value": "tipArcLeft"
             },
@@ -6855,10 +6855,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               116.76685244457846
             ],
             "tag": {
-              "commentStart": 2062,
-              "end": 2070,
+              "commentStart": 2080,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2062,
+              "start": 2080,
               "type": "TagDeclarator",
               "value": "spanLeft"
             },
@@ -6879,10 +6879,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 2149,
-              "end": 2161,
+              "commentStart": 2167,
+              "end": 2179,
               "moduleId": 0,
-              "start": 2149,
+              "start": 2167,
               "type": "TagDeclarator",
               "value": "rootNeckLeft"
             },
@@ -6903,10 +6903,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 2239,
-              "end": 2251,
+              "commentStart": 2257,
+              "end": 2269,
               "moduleId": 0,
-              "start": 2239,
+              "start": 2257,
               "type": "TagDeclarator",
               "value": "rootSeamLeft"
             },
@@ -7030,10 +7030,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1380,
-            "end": 1393,
+            "commentStart": 1398,
+            "end": 1411,
             "moduleId": 0,
-            "start": 1380,
+            "start": 1398,
             "type": "TagDeclarator",
             "value": "rootSeamRight"
           },
@@ -7044,10 +7044,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1463,
-            "end": 1476,
+            "commentStart": 1481,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1463,
+            "start": 1481,
             "type": "TagDeclarator",
             "value": "rootNeckRight"
           },
@@ -7058,10 +7058,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1552,
-            "end": 1561,
+            "commentStart": 1570,
+            "end": 1579,
             "moduleId": 0,
-            "start": 1552,
+            "start": 1570,
             "type": "TagDeclarator",
             "value": "spanRight"
           },
@@ -7072,10 +7072,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1638,
-            "end": 1649,
+            "commentStart": 1656,
+            "end": 1667,
             "moduleId": 0,
-            "start": 1638,
+            "start": 1656,
             "type": "TagDeclarator",
             "value": "tipArcRight"
           },
@@ -7086,10 +7086,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1774,
+            "commentStart": 1780,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "tipFlatRight"
           },
@@ -7100,10 +7100,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1849,
-            "end": 1860,
+            "commentStart": 1867,
+            "end": 1878,
             "moduleId": 0,
-            "start": 1849,
+            "start": 1867,
             "type": "TagDeclarator",
             "value": "tipFlatLeft"
           },
@@ -7114,10 +7114,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1936,
-            "end": 1946,
+            "commentStart": 1954,
+            "end": 1964,
             "moduleId": 0,
-            "start": 1936,
+            "start": 1954,
             "type": "TagDeclarator",
             "value": "tipArcLeft"
           },
@@ -7128,10 +7128,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2062,
-            "end": 2070,
+            "commentStart": 2080,
+            "end": 2088,
             "moduleId": 0,
-            "start": 2062,
+            "start": 2080,
             "type": "TagDeclarator",
             "value": "spanLeft"
           },
@@ -7142,10 +7142,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2149,
-            "end": 2161,
+            "commentStart": 2167,
+            "end": 2179,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2167,
             "type": "TagDeclarator",
             "value": "rootNeckLeft"
           },
@@ -7156,10 +7156,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2239,
-            "end": 2251,
+            "commentStart": 2257,
+            "end": 2269,
             "moduleId": 0,
-            "start": 2239,
+            "start": 2257,
             "type": "TagDeclarator",
             "value": "rootSeamLeft"
           },
@@ -7181,10 +7181,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               -0.00000000000000000009849998117036657
             ],
             "tag": {
-              "commentStart": 1380,
-              "end": 1393,
+              "commentStart": 1398,
+              "end": 1411,
               "moduleId": 0,
-              "start": 1380,
+              "start": 1398,
               "type": "TagDeclarator",
               "value": "rootSeamRight"
             },
@@ -7205,10 +7205,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 1463,
-              "end": 1476,
+              "commentStart": 1481,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1463,
+              "start": 1481,
               "type": "TagDeclarator",
               "value": "rootNeckRight"
             },
@@ -7229,10 +7229,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 1552,
-              "end": 1561,
+              "commentStart": 1570,
+              "end": 1579,
               "moduleId": 0,
-              "start": 1552,
+              "start": 1570,
               "type": "TagDeclarator",
               "value": "spanRight"
             },
@@ -7259,10 +7259,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.83333333917264,
             "tag": {
-              "commentStart": 1638,
-              "end": 1649,
+              "commentStart": 1656,
+              "end": 1667,
               "moduleId": 0,
-              "start": 1638,
+              "start": 1656,
               "type": "TagDeclarator",
               "value": "tipArcRight"
             },
@@ -7283,10 +7283,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992477559284
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1774,
+              "commentStart": 1780,
+              "end": 1792,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "tipFlatRight"
             },
@@ -7307,10 +7307,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               122.59992476981195
             ],
             "tag": {
-              "commentStart": 1849,
-              "end": 1860,
+              "commentStart": 1867,
+              "end": 1878,
               "moduleId": 0,
-              "start": 1849,
+              "start": 1867,
               "type": "TagDeclarator",
               "value": "tipFlatLeft"
             },
@@ -7337,10 +7337,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 5.833333333391753,
             "tag": {
-              "commentStart": 1936,
-              "end": 1946,
+              "commentStart": 1954,
+              "end": 1964,
               "moduleId": 0,
-              "start": 1936,
+              "start": 1954,
               "type": "TagDeclarator",
               "value": "tipArcLeft"
             },
@@ -7361,10 +7361,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               116.76685244457846
             ],
             "tag": {
-              "commentStart": 2062,
-              "end": 2070,
+              "commentStart": 2080,
+              "end": 2088,
               "moduleId": 0,
-              "start": 2062,
+              "start": 2080,
               "type": "TagDeclarator",
               "value": "spanLeft"
             },
@@ -7385,10 +7385,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               22.599924769811953
             ],
             "tag": {
-              "commentStart": 2149,
-              "end": 2161,
+              "commentStart": 2167,
+              "end": 2179,
               "moduleId": 0,
-              "start": 2149,
+              "start": 2167,
               "type": "TagDeclarator",
               "value": "rootNeckLeft"
             },
@@ -7409,10 +7409,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               10.103629710818451
             ],
             "tag": {
-              "commentStart": 2239,
-              "end": 2251,
+              "commentStart": 2257,
+              "end": 2269,
               "moduleId": 0,
-              "start": 2239,
+              "start": 2257,
               "type": "TagDeclarator",
               "value": "rootSeamLeft"
             },
@@ -7536,10 +7536,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6728,
-            "end": 6738,
+            "commentStart": 6746,
+            "end": 6756,
             "moduleId": 0,
-            "start": 6728,
+            "start": 6746,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -7550,10 +7550,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6805,
-            "end": 6813,
+            "commentStart": 6823,
+            "end": 6831,
             "moduleId": 0,
-            "start": 6805,
+            "start": 6823,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -7564,10 +7564,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6909,
-            "end": 6916,
+            "commentStart": 6927,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6909,
+            "start": 6927,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -7578,10 +7578,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6984,
-            "end": 6993,
+            "commentStart": 7002,
+            "end": 7011,
             "moduleId": 0,
-            "start": 6984,
+            "start": 7002,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -7603,10 +7603,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 6728,
-              "end": 6738,
+              "commentStart": 6746,
+              "end": 6756,
               "moduleId": 0,
-              "start": 6728,
+              "start": 6746,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -7633,10 +7633,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 6805,
-              "end": 6813,
+              "commentStart": 6823,
+              "end": 6831,
               "moduleId": 0,
-              "start": 6805,
+              "start": 6823,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -7657,10 +7657,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               35.99999999999999
             ],
             "tag": {
-              "commentStart": 6909,
-              "end": 6916,
+              "commentStart": 6927,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6909,
+              "start": 6927,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -7681,10 +7681,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               36.0
             ],
             "tag": {
-              "commentStart": 6984,
-              "end": 6993,
+              "commentStart": 7002,
+              "end": 7011,
               "moduleId": 0,
-              "start": 6984,
+              "start": 7002,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -7784,10 +7784,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6728,
-            "end": 6738,
+            "commentStart": 6746,
+            "end": 6756,
             "moduleId": 0,
-            "start": 6728,
+            "start": 6746,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -7798,10 +7798,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6805,
-            "end": 6813,
+            "commentStart": 6823,
+            "end": 6831,
             "moduleId": 0,
-            "start": 6805,
+            "start": 6823,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -7812,10 +7812,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6909,
-            "end": 6916,
+            "commentStart": 6927,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6909,
+            "start": 6927,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -7826,10 +7826,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6984,
-            "end": 6993,
+            "commentStart": 7002,
+            "end": 7011,
             "moduleId": 0,
-            "start": 6984,
+            "start": 7002,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -7851,10 +7851,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 6728,
-              "end": 6738,
+              "commentStart": 6746,
+              "end": 6756,
               "moduleId": 0,
-              "start": 6728,
+              "start": 6746,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -7881,10 +7881,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 6805,
-              "end": 6813,
+              "commentStart": 6823,
+              "end": 6831,
               "moduleId": 0,
-              "start": 6805,
+              "start": 6823,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -7905,10 +7905,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               35.99999999999999
             ],
             "tag": {
-              "commentStart": 6909,
-              "end": 6916,
+              "commentStart": 6927,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6909,
+              "start": 6927,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -7929,10 +7929,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               36.0
             ],
             "tag": {
-              "commentStart": 6984,
-              "end": 6993,
+              "commentStart": 7002,
+              "end": 7011,
               "moduleId": 0,
-              "start": 6984,
+              "start": 7002,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -8133,10 +8133,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6728,
-            "end": 6738,
+            "commentStart": 6746,
+            "end": 6756,
             "moduleId": 0,
-            "start": 6728,
+            "start": 6746,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -8147,10 +8147,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6805,
-            "end": 6813,
+            "commentStart": 6823,
+            "end": 6831,
             "moduleId": 0,
-            "start": 6805,
+            "start": 6823,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -8161,10 +8161,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6909,
-            "end": 6916,
+            "commentStart": 6927,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6909,
+            "start": 6927,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -8175,10 +8175,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6984,
-            "end": 6993,
+            "commentStart": 7002,
+            "end": 7011,
             "moduleId": 0,
-            "start": 6984,
+            "start": 7002,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -8200,10 +8200,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 6728,
-              "end": 6738,
+              "commentStart": 6746,
+              "end": 6756,
               "moduleId": 0,
-              "start": 6728,
+              "start": 6746,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -8230,10 +8230,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 6805,
-              "end": 6813,
+              "commentStart": 6823,
+              "end": 6831,
               "moduleId": 0,
-              "start": 6805,
+              "start": 6823,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -8254,10 +8254,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               35.99999999999999
             ],
             "tag": {
-              "commentStart": 6909,
-              "end": 6916,
+              "commentStart": 6927,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6909,
+              "start": 6927,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -8278,10 +8278,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               36.0
             ],
             "tag": {
-              "commentStart": 6984,
-              "end": 6993,
+              "commentStart": 7002,
+              "end": 7011,
               "moduleId": 0,
-              "start": 6984,
+              "start": 7002,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -8381,10 +8381,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6728,
-            "end": 6738,
+            "commentStart": 6746,
+            "end": 6756,
             "moduleId": 0,
-            "start": 6728,
+            "start": 6746,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -8395,10 +8395,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6805,
-            "end": 6813,
+            "commentStart": 6823,
+            "end": 6831,
             "moduleId": 0,
-            "start": 6805,
+            "start": 6823,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -8409,10 +8409,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6909,
-            "end": 6916,
+            "commentStart": 6927,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6909,
+            "start": 6927,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -8423,10 +8423,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6984,
-            "end": 6993,
+            "commentStart": 7002,
+            "end": 7011,
             "moduleId": 0,
-            "start": 6984,
+            "start": 7002,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -8448,10 +8448,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               1.0
             ],
             "tag": {
-              "commentStart": 6728,
-              "end": 6738,
+              "commentStart": 6746,
+              "end": 6756,
               "moduleId": 0,
-              "start": 6728,
+              "start": 6746,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -8478,10 +8478,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             ],
             "radius": 35.0,
             "tag": {
-              "commentStart": 6805,
-              "end": 6813,
+              "commentStart": 6823,
+              "end": 6831,
               "moduleId": 0,
-              "start": 6805,
+              "start": 6823,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -8502,10 +8502,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               35.99999999999999
             ],
             "tag": {
-              "commentStart": 6909,
-              "end": 6916,
+              "commentStart": 6927,
+              "end": 6934,
               "moduleId": 0,
-              "start": 6909,
+              "start": 6927,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -8526,10 +8526,10 @@ description: Variables in memory after executing ceiling-fan.kcl
               36.0
             ],
             "tag": {
-              "commentStart": 6984,
-              "end": 6993,
+              "commentStart": 7002,
+              "end": 7011,
               "moduleId": 0,
-              "start": 6984,
+              "start": 7002,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -9162,10 +9162,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 6728,
-                    "end": 6738,
+                    "commentStart": 6746,
+                    "end": 6756,
                     "moduleId": 0,
-                    "start": 6728,
+                    "start": 6746,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -9192,10 +9192,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                   ],
                   "radius": 35.0,
                   "tag": {
-                    "commentStart": 6805,
-                    "end": 6813,
+                    "commentStart": 6823,
+                    "end": 6831,
                     "moduleId": 0,
-                    "start": 6805,
+                    "start": 6823,
                     "type": "TagDeclarator",
                     "value": "innerArc"
                   },
@@ -9216,10 +9216,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     35.99999999999999
                   ],
                   "tag": {
-                    "commentStart": 6909,
-                    "end": 6916,
+                    "commentStart": 6927,
+                    "end": 6934,
                     "moduleId": 0,
-                    "start": 6909,
+                    "start": 6927,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -9240,10 +9240,10 @@ description: Variables in memory after executing ceiling-fan.kcl
                     36.0
                   ],
                   "tag": {
-                    "commentStart": 6984,
-                    "end": 6993,
+                    "commentStart": 7002,
+                    "end": 7011,
                     "moduleId": 0,
-                    "start": 6984,
+                    "start": 7002,
                     "type": "TagDeclarator",
                     "value": "outerEdge"
                   },
@@ -9709,10 +9709,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             1.0
           ],
           "tag": {
-            "commentStart": 6728,
-            "end": 6738,
+            "commentStart": 6746,
+            "end": 6756,
             "moduleId": 0,
-            "start": 6728,
+            "start": 6746,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -9739,10 +9739,10 @@ description: Variables in memory after executing ceiling-fan.kcl
           ],
           "radius": 35.0,
           "tag": {
-            "commentStart": 6805,
-            "end": 6813,
+            "commentStart": 6823,
+            "end": 6831,
             "moduleId": 0,
-            "start": 6805,
+            "start": 6823,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -9763,10 +9763,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             35.99999999999999
           ],
           "tag": {
-            "commentStart": 6909,
-            "end": 6916,
+            "commentStart": 6927,
+            "end": 6934,
             "moduleId": 0,
-            "start": 6909,
+            "start": 6927,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -9787,10 +9787,10 @@ description: Variables in memory after executing ceiling-fan.kcl
             36.0
           ],
           "tag": {
-            "commentStart": 6984,
-            "end": 6993,
+            "commentStart": 7002,
+            "end": 7011,
             "moduleId": 0,
-            "start": 6984,
+            "start": 7002,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },

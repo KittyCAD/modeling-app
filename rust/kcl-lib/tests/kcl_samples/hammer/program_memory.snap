@@ -288,10 +288,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7445,
-            "end": 7452,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7445,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -302,10 +302,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7659,
-            "end": 7671,
+            "commentStart": 7677,
+            "end": 7689,
             "moduleId": 0,
-            "start": 7659,
+            "start": 7677,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -339,10 +339,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.45,
             "tag": {
-              "commentStart": 7445,
-              "end": 7452,
+              "commentStart": 7463,
+              "end": 7470,
               "moduleId": 0,
-              "start": 7445,
+              "start": 7463,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -444,10 +444,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 285,
-            "end": 290,
+            "commentStart": 303,
+            "end": 308,
             "moduleId": 0,
-            "start": 285,
+            "start": 303,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -458,10 +458,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 368,
-            "end": 372,
+            "commentStart": 386,
+            "end": 390,
             "moduleId": 0,
-            "start": 368,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -472,10 +472,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 521,
-            "end": 525,
+            "commentStart": 539,
+            "end": 543,
             "moduleId": 0,
-            "start": 521,
+            "start": 539,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -486,10 +486,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 673,
-            "end": 678,
+            "commentStart": 691,
+            "end": 696,
             "moduleId": 0,
-            "start": 673,
+            "start": 691,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -500,10 +500,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 796,
-            "end": 801,
+            "commentStart": 814,
+            "end": 819,
             "moduleId": 0,
-            "start": 796,
+            "start": 814,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -514,10 +514,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 918,
-            "end": 922,
+            "commentStart": 936,
+            "end": 940,
             "moduleId": 0,
-            "start": 918,
+            "start": 936,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -528,10 +528,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1074,
-            "end": 1078,
+            "commentStart": 1092,
+            "end": 1096,
             "moduleId": 0,
-            "start": 1074,
+            "start": 1092,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -542,10 +542,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -556,10 +556,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1354,
-            "end": 1358,
+            "commentStart": 1372,
+            "end": 1376,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1372,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -570,10 +570,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1510,
-            "end": 1516,
+            "commentStart": 1528,
+            "end": 1534,
             "moduleId": 0,
-            "start": 1510,
+            "start": 1528,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -584,10 +584,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1634,
-            "end": 1639,
+            "commentStart": 1652,
+            "end": 1657,
             "moduleId": 0,
-            "start": 1634,
+            "start": 1652,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -598,10 +598,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1795,
-            "end": 1801,
+            "commentStart": 1813,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1795,
+            "start": 1813,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -612,10 +612,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1921,
-            "end": 1927,
+            "commentStart": 1939,
+            "end": 1945,
             "moduleId": 0,
-            "start": 1921,
+            "start": 1939,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -626,10 +626,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2048,
-            "end": 2053,
+            "commentStart": 2066,
+            "end": 2071,
             "moduleId": 0,
-            "start": 2048,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -640,10 +640,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2207,
-            "end": 2213,
+            "commentStart": 2225,
+            "end": 2231,
             "moduleId": 0,
-            "start": 2207,
+            "start": 2225,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -665,10 +665,10 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "tag": {
-              "commentStart": 285,
-              "end": 290,
+              "commentStart": 303,
+              "end": 308,
               "moduleId": 0,
-              "start": 285,
+              "start": 303,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -695,10 +695,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.561803255311611,
             "tag": {
-              "commentStart": 368,
-              "end": 372,
+              "commentStart": 386,
+              "end": 390,
               "moduleId": 0,
-              "start": 368,
+              "start": 386,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -725,10 +725,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.7392984301211136,
             "tag": {
-              "commentStart": 521,
-              "end": 525,
+              "commentStart": 539,
+              "end": 543,
               "moduleId": 0,
-              "start": 521,
+              "start": 539,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -749,10 +749,10 @@ description: Variables in memory after executing hammer.kcl
               11.259673374915069
             ],
             "tag": {
-              "commentStart": 673,
-              "end": 678,
+              "commentStart": 691,
+              "end": 696,
               "moduleId": 0,
-              "start": 673,
+              "start": 691,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -773,10 +773,10 @@ description: Variables in memory after executing hammer.kcl
               11.42
             ],
             "tag": {
-              "commentStart": 796,
-              "end": 801,
+              "commentStart": 814,
+              "end": 819,
               "moduleId": 0,
-              "start": 796,
+              "start": 814,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -803,10 +803,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.69255003516511,
             "tag": {
-              "commentStart": 918,
-              "end": 922,
+              "commentStart": 936,
+              "end": 940,
               "moduleId": 0,
-              "start": 918,
+              "start": 936,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -833,10 +833,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.2786396109072824,
             "tag": {
-              "commentStart": 1074,
-              "end": 1078,
+              "commentStart": 1092,
+              "end": 1096,
               "moduleId": 0,
-              "start": 1074,
+              "start": 1092,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -857,10 +857,10 @@ description: Variables in memory after executing hammer.kcl
               12.849355849688148
             ],
             "tag": {
-              "commentStart": 1229,
-              "end": 1234,
+              "commentStart": 1247,
+              "end": 1252,
               "moduleId": 0,
-              "start": 1229,
+              "start": 1247,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -887,10 +887,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.049999999999998934,
             "tag": {
-              "commentStart": 1354,
-              "end": 1358,
+              "commentStart": 1372,
+              "end": 1376,
               "moduleId": 0,
-              "start": 1354,
+              "start": 1372,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -911,10 +911,10 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "tag": {
-              "commentStart": 1510,
-              "end": 1516,
+              "commentStart": 1528,
+              "end": 1534,
               "moduleId": 0,
-              "start": 1510,
+              "start": 1528,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -941,10 +941,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.05510091751605532,
             "tag": {
-              "commentStart": 1634,
-              "end": 1639,
+              "commentStart": 1652,
+              "end": 1657,
               "moduleId": 0,
-              "start": 1634,
+              "start": 1652,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -965,10 +965,10 @@ description: Variables in memory after executing hammer.kcl
               11.621666666666654
             ],
             "tag": {
-              "commentStart": 1795,
-              "end": 1801,
+              "commentStart": 1813,
+              "end": 1819,
               "moduleId": 0,
-              "start": 1795,
+              "start": 1813,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -989,10 +989,10 @@ description: Variables in memory after executing hammer.kcl
               11.62
             ],
             "tag": {
-              "commentStart": 1921,
-              "end": 1927,
+              "commentStart": 1939,
+              "end": 1945,
               "moduleId": 0,
-              "start": 1921,
+              "start": 1939,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -1019,10 +1019,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.0021208230186167,
             "tag": {
-              "commentStart": 2048,
-              "end": 2053,
+              "commentStart": 2066,
+              "end": 2071,
               "moduleId": 0,
-              "start": 2048,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -1043,10 +1043,10 @@ description: Variables in memory after executing hammer.kcl
               11.259453287974884
             ],
             "tag": {
-              "commentStart": 2207,
-              "end": 2213,
+              "commentStart": 2225,
+              "end": 2231,
               "moduleId": 0,
-              "start": 2207,
+              "start": 2225,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -1190,10 +1190,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 285,
-            "end": 290,
+            "commentStart": 303,
+            "end": 308,
             "moduleId": 0,
-            "start": 285,
+            "start": 303,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1204,10 +1204,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 368,
-            "end": 372,
+            "commentStart": 386,
+            "end": 390,
             "moduleId": 0,
-            "start": 368,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1218,10 +1218,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 521,
-            "end": 525,
+            "commentStart": 539,
+            "end": 543,
             "moduleId": 0,
-            "start": 521,
+            "start": 539,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1232,10 +1232,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 673,
-            "end": 678,
+            "commentStart": 691,
+            "end": 696,
             "moduleId": 0,
-            "start": 673,
+            "start": 691,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1246,10 +1246,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 796,
-            "end": 801,
+            "commentStart": 814,
+            "end": 819,
             "moduleId": 0,
-            "start": 796,
+            "start": 814,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1260,10 +1260,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 918,
-            "end": 922,
+            "commentStart": 936,
+            "end": 940,
             "moduleId": 0,
-            "start": 918,
+            "start": 936,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -1274,10 +1274,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1074,
-            "end": 1078,
+            "commentStart": 1092,
+            "end": 1096,
             "moduleId": 0,
-            "start": 1074,
+            "start": 1092,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -1288,10 +1288,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -1302,10 +1302,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1354,
-            "end": 1358,
+            "commentStart": 1372,
+            "end": 1376,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1372,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -1316,10 +1316,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1510,
-            "end": 1516,
+            "commentStart": 1528,
+            "end": 1534,
             "moduleId": 0,
-            "start": 1510,
+            "start": 1528,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -1330,10 +1330,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1634,
-            "end": 1639,
+            "commentStart": 1652,
+            "end": 1657,
             "moduleId": 0,
-            "start": 1634,
+            "start": 1652,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -1344,10 +1344,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1795,
-            "end": 1801,
+            "commentStart": 1813,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1795,
+            "start": 1813,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -1358,10 +1358,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1921,
-            "end": 1927,
+            "commentStart": 1939,
+            "end": 1945,
             "moduleId": 0,
-            "start": 1921,
+            "start": 1939,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -1372,10 +1372,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2048,
-            "end": 2053,
+            "commentStart": 2066,
+            "end": 2071,
             "moduleId": 0,
-            "start": 2048,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -1386,10 +1386,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2207,
-            "end": 2213,
+            "commentStart": 2225,
+            "end": 2231,
             "moduleId": 0,
-            "start": 2207,
+            "start": 2225,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -1411,10 +1411,10 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "tag": {
-              "commentStart": 285,
-              "end": 290,
+              "commentStart": 303,
+              "end": 308,
               "moduleId": 0,
-              "start": 285,
+              "start": 303,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1441,10 +1441,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.561803255311611,
             "tag": {
-              "commentStart": 368,
-              "end": 372,
+              "commentStart": 386,
+              "end": 390,
               "moduleId": 0,
-              "start": 368,
+              "start": 386,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -1471,10 +1471,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.7392984301211136,
             "tag": {
-              "commentStart": 521,
-              "end": 525,
+              "commentStart": 539,
+              "end": 543,
               "moduleId": 0,
-              "start": 521,
+              "start": 539,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -1495,10 +1495,10 @@ description: Variables in memory after executing hammer.kcl
               11.259673374915069
             ],
             "tag": {
-              "commentStart": 673,
-              "end": 678,
+              "commentStart": 691,
+              "end": 696,
               "moduleId": 0,
-              "start": 673,
+              "start": 691,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1519,10 +1519,10 @@ description: Variables in memory after executing hammer.kcl
               11.42
             ],
             "tag": {
-              "commentStart": 796,
-              "end": 801,
+              "commentStart": 814,
+              "end": 819,
               "moduleId": 0,
-              "start": 796,
+              "start": 814,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1549,10 +1549,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.69255003516511,
             "tag": {
-              "commentStart": 918,
-              "end": 922,
+              "commentStart": 936,
+              "end": 940,
               "moduleId": 0,
-              "start": 918,
+              "start": 936,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -1579,10 +1579,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.2786396109072824,
             "tag": {
-              "commentStart": 1074,
-              "end": 1078,
+              "commentStart": 1092,
+              "end": 1096,
               "moduleId": 0,
-              "start": 1074,
+              "start": 1092,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -1603,10 +1603,10 @@ description: Variables in memory after executing hammer.kcl
               12.849355849688148
             ],
             "tag": {
-              "commentStart": 1229,
-              "end": 1234,
+              "commentStart": 1247,
+              "end": 1252,
               "moduleId": 0,
-              "start": 1229,
+              "start": 1247,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -1633,10 +1633,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.049999999999998934,
             "tag": {
-              "commentStart": 1354,
-              "end": 1358,
+              "commentStart": 1372,
+              "end": 1376,
               "moduleId": 0,
-              "start": 1354,
+              "start": 1372,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -1657,10 +1657,10 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "tag": {
-              "commentStart": 1510,
-              "end": 1516,
+              "commentStart": 1528,
+              "end": 1534,
               "moduleId": 0,
-              "start": 1510,
+              "start": 1528,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -1687,10 +1687,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.05510091751605532,
             "tag": {
-              "commentStart": 1634,
-              "end": 1639,
+              "commentStart": 1652,
+              "end": 1657,
               "moduleId": 0,
-              "start": 1634,
+              "start": 1652,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -1711,10 +1711,10 @@ description: Variables in memory after executing hammer.kcl
               11.621666666666654
             ],
             "tag": {
-              "commentStart": 1795,
-              "end": 1801,
+              "commentStart": 1813,
+              "end": 1819,
               "moduleId": 0,
-              "start": 1795,
+              "start": 1813,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -1735,10 +1735,10 @@ description: Variables in memory after executing hammer.kcl
               11.62
             ],
             "tag": {
-              "commentStart": 1921,
-              "end": 1927,
+              "commentStart": 1939,
+              "end": 1945,
               "moduleId": 0,
-              "start": 1921,
+              "start": 1939,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -1765,10 +1765,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.0021208230186167,
             "tag": {
-              "commentStart": 2048,
-              "end": 2053,
+              "commentStart": 2066,
+              "end": 2071,
               "moduleId": 0,
-              "start": 2048,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -1789,10 +1789,10 @@ description: Variables in memory after executing hammer.kcl
               11.259453287974884
             ],
             "tag": {
-              "commentStart": 2207,
-              "end": 2213,
+              "commentStart": 2225,
+              "end": 2231,
               "moduleId": 0,
-              "start": 2207,
+              "start": 2225,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -1936,10 +1936,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7931,
-            "end": 7936,
+            "commentStart": 7949,
+            "end": 7954,
             "moduleId": 0,
-            "start": 7931,
+            "start": 7949,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1950,10 +1950,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8006,
-            "end": 8010,
+            "commentStart": 8024,
+            "end": 8028,
             "moduleId": 0,
-            "start": 8006,
+            "start": 8024,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1964,10 +1964,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8155,
-            "end": 8159,
+            "commentStart": 8173,
+            "end": 8177,
             "moduleId": 0,
-            "start": 8155,
+            "start": 8173,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1978,10 +1978,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8309,
-            "end": 8313,
+            "commentStart": 8327,
+            "end": 8331,
             "moduleId": 0,
-            "start": 8309,
+            "start": 8327,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1992,10 +1992,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8460,
-            "end": 8465,
+            "commentStart": 8478,
+            "end": 8483,
             "moduleId": 0,
-            "start": 8460,
+            "start": 8478,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2006,10 +2006,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8581,
-            "end": 8586,
+            "commentStart": 8599,
+            "end": 8604,
             "moduleId": 0,
-            "start": 8581,
+            "start": 8599,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2031,10 +2031,10 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 7931,
-              "end": 7936,
+              "commentStart": 7949,
+              "end": 7954,
               "moduleId": 0,
-              "start": 7931,
+              "start": 7949,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2061,10 +2061,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.05038878181744558,
             "tag": {
-              "commentStart": 8006,
-              "end": 8010,
+              "commentStart": 8024,
+              "end": 8028,
               "moduleId": 0,
-              "start": 8006,
+              "start": 8024,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2091,10 +2091,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 128.49000000000035,
             "tag": {
-              "commentStart": 8155,
-              "end": 8159,
+              "commentStart": 8173,
+              "end": 8177,
               "moduleId": 0,
-              "start": 8155,
+              "start": 8173,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -2121,10 +2121,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 59.4733375236148,
             "tag": {
-              "commentStart": 8309,
-              "end": 8313,
+              "commentStart": 8327,
+              "end": 8331,
               "moduleId": 0,
-              "start": 8309,
+              "start": 8327,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -2145,10 +2145,10 @@ description: Variables in memory after executing hammer.kcl
               12.800020759525506
             ],
             "tag": {
-              "commentStart": 8460,
-              "end": 8465,
+              "commentStart": 8478,
+              "end": 8483,
               "moduleId": 0,
-              "start": 8460,
+              "start": 8478,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2169,10 +2169,10 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "tag": {
-              "commentStart": 8581,
-              "end": 8586,
+              "commentStart": 8599,
+              "end": 8604,
               "moduleId": 0,
-              "start": 8581,
+              "start": 8599,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2280,10 +2280,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5980,
-            "end": 5985,
+            "commentStart": 5998,
+            "end": 6003,
             "moduleId": 0,
-            "start": 5980,
+            "start": 5998,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2294,10 +2294,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6058,
-            "end": 6063,
+            "commentStart": 6076,
+            "end": 6081,
             "moduleId": 0,
-            "start": 6058,
+            "start": 6076,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2308,10 +2308,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6178,
-            "end": 6183,
+            "commentStart": 6196,
+            "end": 6201,
             "moduleId": 0,
-            "start": 6178,
+            "start": 6196,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2322,10 +2322,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6299,
-            "end": 6304,
+            "commentStart": 6317,
+            "end": 6322,
             "moduleId": 0,
-            "start": 6299,
+            "start": 6317,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2336,10 +2336,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6421,
-            "end": 6426,
+            "commentStart": 6439,
+            "end": 6444,
             "moduleId": 0,
-            "start": 6421,
+            "start": 6439,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2350,10 +2350,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6540,
-            "end": 6545,
+            "commentStart": 6558,
+            "end": 6563,
             "moduleId": 0,
-            "start": 6540,
+            "start": 6558,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2364,10 +2364,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6660,
-            "end": 6665,
+            "commentStart": 6678,
+            "end": 6683,
             "moduleId": 0,
-            "start": 6660,
+            "start": 6678,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -2378,10 +2378,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6784,
-            "end": 6789,
+            "commentStart": 6802,
+            "end": 6807,
             "moduleId": 0,
-            "start": 6784,
+            "start": 6802,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -2392,10 +2392,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6907,
-            "end": 6912,
+            "commentStart": 6925,
+            "end": 6930,
             "moduleId": 0,
-            "start": 6907,
+            "start": 6925,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -2406,10 +2406,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7029,
-            "end": 7035,
+            "commentStart": 7047,
+            "end": 7053,
             "moduleId": 0,
-            "start": 7029,
+            "start": 7047,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -2431,10 +2431,10 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 5980,
-              "end": 5985,
+              "commentStart": 5998,
+              "end": 6003,
               "moduleId": 0,
-              "start": 5980,
+              "start": 5998,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2455,10 +2455,10 @@ description: Variables in memory after executing hammer.kcl
               0.16
             ],
             "tag": {
-              "commentStart": 6058,
-              "end": 6063,
+              "commentStart": 6076,
+              "end": 6081,
               "moduleId": 0,
-              "start": 6058,
+              "start": 6076,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2479,10 +2479,10 @@ description: Variables in memory after executing hammer.kcl
               0.27
             ],
             "tag": {
-              "commentStart": 6178,
-              "end": 6183,
+              "commentStart": 6196,
+              "end": 6201,
               "moduleId": 0,
-              "start": 6178,
+              "start": 6196,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2503,10 +2503,10 @@ description: Variables in memory after executing hammer.kcl
               0.27
             ],
             "tag": {
-              "commentStart": 6299,
-              "end": 6304,
+              "commentStart": 6317,
+              "end": 6322,
               "moduleId": 0,
-              "start": 6299,
+              "start": 6317,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2527,10 +2527,10 @@ description: Variables in memory after executing hammer.kcl
               0.16
             ],
             "tag": {
-              "commentStart": 6421,
-              "end": 6426,
+              "commentStart": 6439,
+              "end": 6444,
               "moduleId": 0,
-              "start": 6421,
+              "start": 6439,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2551,10 +2551,10 @@ description: Variables in memory after executing hammer.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 6540,
-              "end": 6545,
+              "commentStart": 6558,
+              "end": 6563,
               "moduleId": 0,
-              "start": 6540,
+              "start": 6558,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2575,10 +2575,10 @@ description: Variables in memory after executing hammer.kcl
               -0.16
             ],
             "tag": {
-              "commentStart": 6660,
-              "end": 6665,
+              "commentStart": 6678,
+              "end": 6683,
               "moduleId": 0,
-              "start": 6660,
+              "start": 6678,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -2599,10 +2599,10 @@ description: Variables in memory after executing hammer.kcl
               -0.27
             ],
             "tag": {
-              "commentStart": 6784,
-              "end": 6789,
+              "commentStart": 6802,
+              "end": 6807,
               "moduleId": 0,
-              "start": 6784,
+              "start": 6802,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -2623,10 +2623,10 @@ description: Variables in memory after executing hammer.kcl
               -0.27
             ],
             "tag": {
-              "commentStart": 6907,
-              "end": 6912,
+              "commentStart": 6925,
+              "end": 6930,
               "moduleId": 0,
-              "start": 6907,
+              "start": 6925,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -2647,10 +2647,10 @@ description: Variables in memory after executing hammer.kcl
               -0.16
             ],
             "tag": {
-              "commentStart": 7029,
-              "end": 7035,
+              "commentStart": 7047,
+              "end": 7053,
               "moduleId": 0,
-              "start": 7029,
+              "start": 7047,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -3600,10 +3600,10 @@ description: Variables in memory after executing hammer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 7931,
-                    "end": 7936,
+                    "commentStart": 7949,
+                    "end": 7954,
                     "moduleId": 0,
-                    "start": 7931,
+                    "start": 7949,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3630,10 +3630,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.05038878181744558,
                   "tag": {
-                    "commentStart": 8006,
-                    "end": 8010,
+                    "commentStart": 8024,
+                    "end": 8028,
                     "moduleId": 0,
-                    "start": 8006,
+                    "start": 8024,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -3677,10 +3677,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 128.49000000000035,
                   "tag": {
-                    "commentStart": 8155,
-                    "end": 8159,
+                    "commentStart": 8173,
+                    "end": 8177,
                     "moduleId": 0,
-                    "start": 8155,
+                    "start": 8173,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -3707,10 +3707,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 59.4733375236148,
                   "tag": {
-                    "commentStart": 8309,
-                    "end": 8313,
+                    "commentStart": 8327,
+                    "end": 8331,
                     "moduleId": 0,
-                    "start": 8309,
+                    "start": 8327,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -3731,10 +3731,10 @@ description: Variables in memory after executing hammer.kcl
                     12.800020759525506
                   ],
                   "tag": {
-                    "commentStart": 8460,
-                    "end": 8465,
+                    "commentStart": 8478,
+                    "end": 8483,
                     "moduleId": 0,
-                    "start": 8460,
+                    "start": 8478,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -3755,10 +3755,10 @@ description: Variables in memory after executing hammer.kcl
                     12.8
                   ],
                   "tag": {
-                    "commentStart": 8581,
-                    "end": 8586,
+                    "commentStart": 8599,
+                    "end": 8604,
                     "moduleId": 0,
-                    "start": 8581,
+                    "start": 8599,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -3867,10 +3867,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 285,
-            "end": 290,
+            "commentStart": 303,
+            "end": 308,
             "moduleId": 0,
-            "start": 285,
+            "start": 303,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3881,10 +3881,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 368,
-            "end": 372,
+            "commentStart": 386,
+            "end": 390,
             "moduleId": 0,
-            "start": 368,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -3895,10 +3895,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 521,
-            "end": 525,
+            "commentStart": 539,
+            "end": 543,
             "moduleId": 0,
-            "start": 521,
+            "start": 539,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -3909,10 +3909,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 673,
-            "end": 678,
+            "commentStart": 691,
+            "end": 696,
             "moduleId": 0,
-            "start": 673,
+            "start": 691,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3923,10 +3923,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 796,
-            "end": 801,
+            "commentStart": 814,
+            "end": 819,
             "moduleId": 0,
-            "start": 796,
+            "start": 814,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3937,10 +3937,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 918,
-            "end": 922,
+            "commentStart": 936,
+            "end": 940,
             "moduleId": 0,
-            "start": 918,
+            "start": 936,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -3951,10 +3951,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1074,
-            "end": 1078,
+            "commentStart": 1092,
+            "end": 1096,
             "moduleId": 0,
-            "start": 1074,
+            "start": 1092,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -3965,10 +3965,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -3979,10 +3979,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1354,
-            "end": 1358,
+            "commentStart": 1372,
+            "end": 1376,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1372,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -3993,10 +3993,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1510,
-            "end": 1516,
+            "commentStart": 1528,
+            "end": 1534,
             "moduleId": 0,
-            "start": 1510,
+            "start": 1528,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -4007,10 +4007,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1634,
-            "end": 1639,
+            "commentStart": 1652,
+            "end": 1657,
             "moduleId": 0,
-            "start": 1634,
+            "start": 1652,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -4021,10 +4021,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1795,
-            "end": 1801,
+            "commentStart": 1813,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1795,
+            "start": 1813,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -4035,10 +4035,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1921,
-            "end": 1927,
+            "commentStart": 1939,
+            "end": 1945,
             "moduleId": 0,
-            "start": 1921,
+            "start": 1939,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -4049,10 +4049,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2048,
-            "end": 2053,
+            "commentStart": 2066,
+            "end": 2071,
             "moduleId": 0,
-            "start": 2048,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -4063,10 +4063,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2207,
-            "end": 2213,
+            "commentStart": 2225,
+            "end": 2231,
             "moduleId": 0,
-            "start": 2207,
+            "start": 2225,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -4088,10 +4088,10 @@ description: Variables in memory after executing hammer.kcl
               11.26
             ],
             "tag": {
-              "commentStart": 285,
-              "end": 290,
+              "commentStart": 303,
+              "end": 308,
               "moduleId": 0,
-              "start": 285,
+              "start": 303,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4118,10 +4118,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.561803255311611,
             "tag": {
-              "commentStart": 368,
-              "end": 372,
+              "commentStart": 386,
+              "end": 390,
               "moduleId": 0,
-              "start": 368,
+              "start": 386,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -4148,10 +4148,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.7392984301211136,
             "tag": {
-              "commentStart": 521,
-              "end": 525,
+              "commentStart": 539,
+              "end": 543,
               "moduleId": 0,
-              "start": 521,
+              "start": 539,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -4172,10 +4172,10 @@ description: Variables in memory after executing hammer.kcl
               11.259673374915069
             ],
             "tag": {
-              "commentStart": 673,
-              "end": 678,
+              "commentStart": 691,
+              "end": 696,
               "moduleId": 0,
-              "start": 673,
+              "start": 691,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4196,10 +4196,10 @@ description: Variables in memory after executing hammer.kcl
               11.42
             ],
             "tag": {
-              "commentStart": 796,
-              "end": 801,
+              "commentStart": 814,
+              "end": 819,
               "moduleId": 0,
-              "start": 796,
+              "start": 814,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -4226,10 +4226,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 3.69255003516511,
             "tag": {
-              "commentStart": 918,
-              "end": 922,
+              "commentStart": 936,
+              "end": 940,
               "moduleId": 0,
-              "start": 918,
+              "start": 936,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -4256,10 +4256,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.2786396109072824,
             "tag": {
-              "commentStart": 1074,
-              "end": 1078,
+              "commentStart": 1092,
+              "end": 1096,
               "moduleId": 0,
-              "start": 1074,
+              "start": 1092,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -4280,10 +4280,10 @@ description: Variables in memory after executing hammer.kcl
               12.849355849688148
             ],
             "tag": {
-              "commentStart": 1229,
-              "end": 1234,
+              "commentStart": 1247,
+              "end": 1252,
               "moduleId": 0,
-              "start": 1229,
+              "start": 1247,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -4310,10 +4310,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.049999999999998934,
             "tag": {
-              "commentStart": 1354,
-              "end": 1358,
+              "commentStart": 1372,
+              "end": 1376,
               "moduleId": 0,
-              "start": 1354,
+              "start": 1372,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -4334,10 +4334,10 @@ description: Variables in memory after executing hammer.kcl
               12.8
             ],
             "tag": {
-              "commentStart": 1510,
-              "end": 1516,
+              "commentStart": 1528,
+              "end": 1534,
               "moduleId": 0,
-              "start": 1510,
+              "start": 1528,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -4364,10 +4364,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.05510091751605532,
             "tag": {
-              "commentStart": 1634,
-              "end": 1639,
+              "commentStart": 1652,
+              "end": 1657,
               "moduleId": 0,
-              "start": 1634,
+              "start": 1652,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -4388,10 +4388,10 @@ description: Variables in memory after executing hammer.kcl
               11.621666666666654
             ],
             "tag": {
-              "commentStart": 1795,
-              "end": 1801,
+              "commentStart": 1813,
+              "end": 1819,
               "moduleId": 0,
-              "start": 1795,
+              "start": 1813,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -4412,10 +4412,10 @@ description: Variables in memory after executing hammer.kcl
               11.62
             ],
             "tag": {
-              "commentStart": 1921,
-              "end": 1927,
+              "commentStart": 1939,
+              "end": 1945,
               "moduleId": 0,
-              "start": 1921,
+              "start": 1939,
               "type": "TagDeclarator",
               "value": "line13"
             },
@@ -4442,10 +4442,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.0021208230186167,
             "tag": {
-              "commentStart": 2048,
-              "end": 2053,
+              "commentStart": 2066,
+              "end": 2071,
               "moduleId": 0,
-              "start": 2048,
+              "start": 2066,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -4466,10 +4466,10 @@ description: Variables in memory after executing hammer.kcl
               11.259453287974884
             ],
             "tag": {
-              "commentStart": 2207,
-              "end": 2213,
+              "commentStart": 2225,
+              "end": 2231,
               "moduleId": 0,
-              "start": 2207,
+              "start": 2225,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -4650,10 +4650,10 @@ description: Variables in memory after executing hammer.kcl
             11.26
           ],
           "tag": {
-            "commentStart": 285,
-            "end": 290,
+            "commentStart": 303,
+            "end": 308,
             "moduleId": 0,
-            "start": 285,
+            "start": 303,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4680,10 +4680,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.561803255311611,
           "tag": {
-            "commentStart": 368,
-            "end": 372,
+            "commentStart": 386,
+            "end": 390,
             "moduleId": 0,
-            "start": 368,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -4727,10 +4727,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 3.7392984301211136,
           "tag": {
-            "commentStart": 521,
-            "end": 525,
+            "commentStart": 539,
+            "end": 543,
             "moduleId": 0,
-            "start": 521,
+            "start": 539,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -4768,10 +4768,10 @@ description: Variables in memory after executing hammer.kcl
             11.259673374915069
           ],
           "tag": {
-            "commentStart": 673,
-            "end": 678,
+            "commentStart": 691,
+            "end": 696,
             "moduleId": 0,
-            "start": 673,
+            "start": 691,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4792,10 +4792,10 @@ description: Variables in memory after executing hammer.kcl
             11.42
           ],
           "tag": {
-            "commentStart": 796,
-            "end": 801,
+            "commentStart": 814,
+            "end": 819,
             "moduleId": 0,
-            "start": 796,
+            "start": 814,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4822,10 +4822,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 3.69255003516511,
           "tag": {
-            "commentStart": 918,
-            "end": 922,
+            "commentStart": 936,
+            "end": 940,
             "moduleId": 0,
-            "start": 918,
+            "start": 936,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -4852,10 +4852,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.2786396109072824,
           "tag": {
-            "commentStart": 1074,
-            "end": 1078,
+            "commentStart": 1092,
+            "end": 1096,
             "moduleId": 0,
-            "start": 1074,
+            "start": 1092,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -4876,10 +4876,10 @@ description: Variables in memory after executing hammer.kcl
             12.849355849688148
           ],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -4906,10 +4906,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.049999999999998934,
           "tag": {
-            "commentStart": 1354,
-            "end": 1358,
+            "commentStart": 1372,
+            "end": 1376,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1372,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -4930,10 +4930,10 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "tag": {
-            "commentStart": 1510,
-            "end": 1516,
+            "commentStart": 1528,
+            "end": 1534,
             "moduleId": 0,
-            "start": 1510,
+            "start": 1528,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -4960,10 +4960,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.05510091751605532,
           "tag": {
-            "commentStart": 1634,
-            "end": 1639,
+            "commentStart": 1652,
+            "end": 1657,
             "moduleId": 0,
-            "start": 1634,
+            "start": 1652,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -4984,10 +4984,10 @@ description: Variables in memory after executing hammer.kcl
             11.621666666666654
           ],
           "tag": {
-            "commentStart": 1795,
-            "end": 1801,
+            "commentStart": 1813,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1795,
+            "start": 1813,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -5008,10 +5008,10 @@ description: Variables in memory after executing hammer.kcl
             11.62
           ],
           "tag": {
-            "commentStart": 1921,
-            "end": 1927,
+            "commentStart": 1939,
+            "end": 1945,
             "moduleId": 0,
-            "start": 1921,
+            "start": 1939,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -5038,10 +5038,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.0021208230186167,
           "tag": {
-            "commentStart": 2048,
-            "end": 2053,
+            "commentStart": 2066,
+            "end": 2071,
             "moduleId": 0,
-            "start": 2048,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -5062,10 +5062,10 @@ description: Variables in memory after executing hammer.kcl
             11.259453287974884
           ],
           "tag": {
-            "commentStart": 2207,
-            "end": 2213,
+            "commentStart": 2225,
+            "end": 2231,
             "moduleId": 0,
-            "start": 2207,
+            "start": 2225,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -5208,10 +5208,10 @@ description: Variables in memory after executing hammer.kcl
             -1.6
           ],
           "tag": {
-            "commentStart": 2630,
-            "end": 2635,
+            "commentStart": 2648,
+            "end": 2653,
             "moduleId": 0,
-            "start": 2630,
+            "start": 2648,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5238,10 +5238,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.050000000000000044,
           "tag": {
-            "commentStart": 2711,
-            "end": 2715,
+            "commentStart": 2729,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2711,
+            "start": 2729,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5262,10 +5262,10 @@ description: Variables in memory after executing hammer.kcl
             -0.6100000000000001
           ],
           "tag": {
-            "commentStart": 2869,
-            "end": 2874,
+            "commentStart": 2887,
+            "end": 2892,
             "moduleId": 0,
-            "start": 2869,
+            "start": 2887,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5292,10 +5292,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.1540971397016868,
           "tag": {
-            "commentStart": 2992,
-            "end": 2996,
+            "commentStart": 3010,
+            "end": 3014,
             "moduleId": 0,
-            "start": 2992,
+            "start": 3010,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -5339,10 +5339,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 10.269341241078791,
           "tag": {
-            "commentStart": 3147,
-            "end": 3151,
+            "commentStart": 3165,
+            "end": 3169,
             "moduleId": 0,
-            "start": 3147,
+            "start": 3165,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -5363,10 +5363,10 @@ description: Variables in memory after executing hammer.kcl
             -1.1499124381018504
           ],
           "tag": {
-            "commentStart": 3303,
-            "end": 3308,
+            "commentStart": 3321,
+            "end": 3326,
             "moduleId": 0,
-            "start": 3303,
+            "start": 3321,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5387,10 +5387,10 @@ description: Variables in memory after executing hammer.kcl
             -1.6
           ],
           "tag": {
-            "commentStart": 3423,
-            "end": 3428,
+            "commentStart": 3441,
+            "end": 3446,
             "moduleId": 0,
-            "start": 3423,
+            "start": 3441,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -5501,10 +5501,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5980,
-            "end": 5985,
+            "commentStart": 5998,
+            "end": 6003,
             "moduleId": 0,
-            "start": 5980,
+            "start": 5998,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5525,10 +5525,10 @@ description: Variables in memory after executing hammer.kcl
             0.16
           ],
           "tag": {
-            "commentStart": 6058,
-            "end": 6063,
+            "commentStart": 6076,
+            "end": 6081,
             "moduleId": 0,
-            "start": 6058,
+            "start": 6076,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5549,10 +5549,10 @@ description: Variables in memory after executing hammer.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 6178,
-            "end": 6183,
+            "commentStart": 6196,
+            "end": 6201,
             "moduleId": 0,
-            "start": 6178,
+            "start": 6196,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5573,10 +5573,10 @@ description: Variables in memory after executing hammer.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 6299,
-            "end": 6304,
+            "commentStart": 6317,
+            "end": 6322,
             "moduleId": 0,
-            "start": 6299,
+            "start": 6317,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5597,10 +5597,10 @@ description: Variables in memory after executing hammer.kcl
             0.16
           ],
           "tag": {
-            "commentStart": 6421,
-            "end": 6426,
+            "commentStart": 6439,
+            "end": 6444,
             "moduleId": 0,
-            "start": 6421,
+            "start": 6439,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -5621,10 +5621,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6540,
-            "end": 6545,
+            "commentStart": 6558,
+            "end": 6563,
             "moduleId": 0,
-            "start": 6540,
+            "start": 6558,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5645,10 +5645,10 @@ description: Variables in memory after executing hammer.kcl
             -0.16
           ],
           "tag": {
-            "commentStart": 6660,
-            "end": 6665,
+            "commentStart": 6678,
+            "end": 6683,
             "moduleId": 0,
-            "start": 6660,
+            "start": 6678,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -5669,10 +5669,10 @@ description: Variables in memory after executing hammer.kcl
             -0.27
           ],
           "tag": {
-            "commentStart": 6784,
-            "end": 6789,
+            "commentStart": 6802,
+            "end": 6807,
             "moduleId": 0,
-            "start": 6784,
+            "start": 6802,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -5693,10 +5693,10 @@ description: Variables in memory after executing hammer.kcl
             -0.27
           ],
           "tag": {
-            "commentStart": 6907,
-            "end": 6912,
+            "commentStart": 6925,
+            "end": 6930,
             "moduleId": 0,
-            "start": 6907,
+            "start": 6925,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -5717,10 +5717,10 @@ description: Variables in memory after executing hammer.kcl
             -0.16
           ],
           "tag": {
-            "commentStart": 7029,
-            "end": 7035,
+            "commentStart": 7047,
+            "end": 7053,
             "moduleId": 0,
-            "start": 7029,
+            "start": 7047,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -5843,10 +5843,10 @@ description: Variables in memory after executing hammer.kcl
             1.6
           ],
           "tag": {
-            "commentStart": 4614,
-            "end": 4619,
+            "commentStart": 4632,
+            "end": 4637,
             "moduleId": 0,
-            "start": 4614,
+            "start": 4632,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5873,10 +5873,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.050000000000000044,
           "tag": {
-            "commentStart": 4693,
-            "end": 4697,
+            "commentStart": 4711,
+            "end": 4715,
             "moduleId": 0,
-            "start": 4693,
+            "start": 4711,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5897,10 +5897,10 @@ description: Variables in memory after executing hammer.kcl
             0.6100000000000001
           ],
           "tag": {
-            "commentStart": 4846,
-            "end": 4851,
+            "commentStart": 4864,
+            "end": 4869,
             "moduleId": 0,
-            "start": 4846,
+            "start": 4864,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5927,10 +5927,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.1542571742967844,
           "tag": {
-            "commentStart": 4969,
-            "end": 4973,
+            "commentStart": 4987,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4969,
+            "start": 4987,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -5957,10 +5957,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 10.26931882888921,
           "tag": {
-            "commentStart": 5123,
-            "end": 5127,
+            "commentStart": 5141,
+            "end": 5145,
             "moduleId": 0,
-            "start": 5123,
+            "start": 5141,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -5981,10 +5981,10 @@ description: Variables in memory after executing hammer.kcl
             1.149835702308021
           ],
           "tag": {
-            "commentStart": 5274,
-            "end": 5279,
+            "commentStart": 5292,
+            "end": 5297,
             "moduleId": 0,
-            "start": 5274,
+            "start": 5292,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6005,10 +6005,10 @@ description: Variables in memory after executing hammer.kcl
             1.6
           ],
           "tag": {
-            "commentStart": 5394,
-            "end": 5399,
+            "commentStart": 5412,
+            "end": 5417,
             "moduleId": 0,
-            "start": 5394,
+            "start": 5412,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -6125,10 +6125,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.45,
           "tag": {
-            "commentStart": 7445,
-            "end": 7452,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7445,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6215,10 +6215,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7931,
-            "end": 7936,
+            "commentStart": 7949,
+            "end": 7954,
             "moduleId": 0,
-            "start": 7931,
+            "start": 7949,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6245,10 +6245,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.05038878181744558,
           "tag": {
-            "commentStart": 8006,
-            "end": 8010,
+            "commentStart": 8024,
+            "end": 8028,
             "moduleId": 0,
-            "start": 8006,
+            "start": 8024,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6292,10 +6292,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 128.49000000000035,
           "tag": {
-            "commentStart": 8155,
-            "end": 8159,
+            "commentStart": 8173,
+            "end": 8177,
             "moduleId": 0,
-            "start": 8155,
+            "start": 8173,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -6322,10 +6322,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 59.4733375236148,
           "tag": {
-            "commentStart": 8309,
-            "end": 8313,
+            "commentStart": 8327,
+            "end": 8331,
             "moduleId": 0,
-            "start": 8309,
+            "start": 8327,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6346,10 +6346,10 @@ description: Variables in memory after executing hammer.kcl
             12.800020759525506
           ],
           "tag": {
-            "commentStart": 8460,
-            "end": 8465,
+            "commentStart": 8478,
+            "end": 8483,
             "moduleId": 0,
-            "start": 8460,
+            "start": 8478,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6370,10 +6370,10 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "tag": {
-            "commentStart": 8581,
-            "end": 8586,
+            "commentStart": 8599,
+            "end": 8604,
             "moduleId": 0,
-            "start": 8581,
+            "start": 8599,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6480,10 +6480,10 @@ description: Variables in memory after executing hammer.kcl
             -0.56
           ],
           "tag": {
-            "commentStart": 3775,
-            "end": 3780,
+            "commentStart": 3793,
+            "end": 3798,
             "moduleId": 0,
-            "start": 3775,
+            "start": 3793,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6510,10 +6510,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 9.476057661233177,
           "tag": {
-            "commentStart": 3858,
-            "end": 3862,
+            "commentStart": 3876,
+            "end": 3880,
             "moduleId": 0,
-            "start": 3858,
+            "start": 3876,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6540,10 +6540,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.37740231642600164,
           "tag": {
-            "commentStart": 4010,
-            "end": 4014,
+            "commentStart": 4028,
+            "end": 4032,
             "moduleId": 0,
-            "start": 4010,
+            "start": 4028,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -6570,10 +6570,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 9.51790209828337,
           "tag": {
-            "commentStart": 4159,
-            "end": 4163,
+            "commentStart": 4177,
+            "end": 4181,
             "moduleId": 0,
-            "start": 4159,
+            "start": 4177,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6594,10 +6594,10 @@ description: Variables in memory after executing hammer.kcl
             0.5595069992379997
           ],
           "tag": {
-            "commentStart": 4311,
-            "end": 4316,
+            "commentStart": 4329,
+            "end": 4334,
             "moduleId": 0,
-            "start": 4311,
+            "start": 4329,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -6696,10 +6696,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2630,
-            "end": 2635,
+            "commentStart": 2648,
+            "end": 2653,
             "moduleId": 0,
-            "start": 2630,
+            "start": 2648,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -6710,10 +6710,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2711,
-            "end": 2715,
+            "commentStart": 2729,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2711,
+            "start": 2729,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6724,10 +6724,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2869,
-            "end": 2874,
+            "commentStart": 2887,
+            "end": 2892,
             "moduleId": 0,
-            "start": 2869,
+            "start": 2887,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -6738,10 +6738,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2992,
-            "end": 2996,
+            "commentStart": 3010,
+            "end": 3014,
             "moduleId": 0,
-            "start": 2992,
+            "start": 3010,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6752,10 +6752,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3147,
-            "end": 3151,
+            "commentStart": 3165,
+            "end": 3169,
             "moduleId": 0,
-            "start": 3147,
+            "start": 3165,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -6766,10 +6766,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3303,
-            "end": 3308,
+            "commentStart": 3321,
+            "end": 3326,
             "moduleId": 0,
-            "start": 3303,
+            "start": 3321,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -6780,10 +6780,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3423,
-            "end": 3428,
+            "commentStart": 3441,
+            "end": 3446,
             "moduleId": 0,
-            "start": 3423,
+            "start": 3441,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -6805,10 +6805,10 @@ description: Variables in memory after executing hammer.kcl
               -1.6
             ],
             "tag": {
-              "commentStart": 2630,
-              "end": 2635,
+              "commentStart": 2648,
+              "end": 2653,
               "moduleId": 0,
-              "start": 2630,
+              "start": 2648,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -6835,10 +6835,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.050000000000000044,
             "tag": {
-              "commentStart": 2711,
-              "end": 2715,
+              "commentStart": 2729,
+              "end": 2733,
               "moduleId": 0,
-              "start": 2711,
+              "start": 2729,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -6859,10 +6859,10 @@ description: Variables in memory after executing hammer.kcl
               -0.6100000000000001
             ],
             "tag": {
-              "commentStart": 2869,
-              "end": 2874,
+              "commentStart": 2887,
+              "end": 2892,
               "moduleId": 0,
-              "start": 2869,
+              "start": 2887,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -6889,10 +6889,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.1540971397016868,
             "tag": {
-              "commentStart": 2992,
-              "end": 2996,
+              "commentStart": 3010,
+              "end": 3014,
               "moduleId": 0,
-              "start": 2992,
+              "start": 3010,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -6919,10 +6919,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 10.269341241078791,
             "tag": {
-              "commentStart": 3147,
-              "end": 3151,
+              "commentStart": 3165,
+              "end": 3169,
               "moduleId": 0,
-              "start": 3147,
+              "start": 3165,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -6943,10 +6943,10 @@ description: Variables in memory after executing hammer.kcl
               -1.1499124381018504
             ],
             "tag": {
-              "commentStart": 3303,
-              "end": 3308,
+              "commentStart": 3321,
+              "end": 3326,
               "moduleId": 0,
-              "start": 3303,
+              "start": 3321,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -6967,10 +6967,10 @@ description: Variables in memory after executing hammer.kcl
               -1.6
             ],
             "tag": {
-              "commentStart": 3423,
-              "end": 3428,
+              "commentStart": 3441,
+              "end": 3446,
               "moduleId": 0,
-              "start": 3423,
+              "start": 3441,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -7147,10 +7147,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3775,
-            "end": 3780,
+            "commentStart": 3793,
+            "end": 3798,
             "moduleId": 0,
-            "start": 3775,
+            "start": 3793,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7161,10 +7161,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3858,
-            "end": 3862,
+            "commentStart": 3876,
+            "end": 3880,
             "moduleId": 0,
-            "start": 3858,
+            "start": 3876,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7175,10 +7175,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4010,
-            "end": 4014,
+            "commentStart": 4028,
+            "end": 4032,
             "moduleId": 0,
-            "start": 4010,
+            "start": 4028,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -7189,10 +7189,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4159,
-            "end": 4163,
+            "commentStart": 4177,
+            "end": 4181,
             "moduleId": 0,
-            "start": 4159,
+            "start": 4177,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -7203,10 +7203,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4311,
-            "end": 4316,
+            "commentStart": 4329,
+            "end": 4334,
             "moduleId": 0,
-            "start": 4311,
+            "start": 4329,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7228,10 +7228,10 @@ description: Variables in memory after executing hammer.kcl
               -0.56
             ],
             "tag": {
-              "commentStart": 3775,
-              "end": 3780,
+              "commentStart": 3793,
+              "end": 3798,
               "moduleId": 0,
-              "start": 3775,
+              "start": 3793,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7258,10 +7258,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 9.476057661233177,
             "tag": {
-              "commentStart": 3858,
-              "end": 3862,
+              "commentStart": 3876,
+              "end": 3880,
               "moduleId": 0,
-              "start": 3858,
+              "start": 3876,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -7288,10 +7288,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.37740231642600164,
             "tag": {
-              "commentStart": 4010,
-              "end": 4014,
+              "commentStart": 4028,
+              "end": 4032,
               "moduleId": 0,
-              "start": 4010,
+              "start": 4028,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -7318,10 +7318,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 9.51790209828337,
             "tag": {
-              "commentStart": 4159,
-              "end": 4163,
+              "commentStart": 4177,
+              "end": 4181,
               "moduleId": 0,
-              "start": 4159,
+              "start": 4177,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -7342,10 +7342,10 @@ description: Variables in memory after executing hammer.kcl
               0.5595069992379997
             ],
             "tag": {
-              "commentStart": 4311,
-              "end": 4316,
+              "commentStart": 4329,
+              "end": 4334,
               "moduleId": 0,
-              "start": 4311,
+              "start": 4329,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -7453,10 +7453,10 @@ description: Variables in memory after executing hammer.kcl
             11.26
           ],
           "tag": {
-            "commentStart": 285,
-            "end": 290,
+            "commentStart": 303,
+            "end": 308,
             "moduleId": 0,
-            "start": 285,
+            "start": 303,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7483,10 +7483,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.561803255311611,
           "tag": {
-            "commentStart": 368,
-            "end": 372,
+            "commentStart": 386,
+            "end": 390,
             "moduleId": 0,
-            "start": 368,
+            "start": 386,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -7513,10 +7513,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 3.7392984301211136,
           "tag": {
-            "commentStart": 521,
-            "end": 525,
+            "commentStart": 539,
+            "end": 543,
             "moduleId": 0,
-            "start": 521,
+            "start": 539,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -7537,10 +7537,10 @@ description: Variables in memory after executing hammer.kcl
             11.259673374915069
           ],
           "tag": {
-            "commentStart": 673,
-            "end": 678,
+            "commentStart": 691,
+            "end": 696,
             "moduleId": 0,
-            "start": 673,
+            "start": 691,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7561,10 +7561,10 @@ description: Variables in memory after executing hammer.kcl
             11.42
           ],
           "tag": {
-            "commentStart": 796,
-            "end": 801,
+            "commentStart": 814,
+            "end": 819,
             "moduleId": 0,
-            "start": 796,
+            "start": 814,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -7591,10 +7591,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 3.69255003516511,
           "tag": {
-            "commentStart": 918,
-            "end": 922,
+            "commentStart": 936,
+            "end": 940,
             "moduleId": 0,
-            "start": 918,
+            "start": 936,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -7621,10 +7621,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.2786396109072824,
           "tag": {
-            "commentStart": 1074,
-            "end": 1078,
+            "commentStart": 1092,
+            "end": 1096,
             "moduleId": 0,
-            "start": 1074,
+            "start": 1092,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -7645,10 +7645,10 @@ description: Variables in memory after executing hammer.kcl
             12.849355849688148
           ],
           "tag": {
-            "commentStart": 1229,
-            "end": 1234,
+            "commentStart": 1247,
+            "end": 1252,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1247,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -7675,10 +7675,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.049999999999998934,
           "tag": {
-            "commentStart": 1354,
-            "end": 1358,
+            "commentStart": 1372,
+            "end": 1376,
             "moduleId": 0,
-            "start": 1354,
+            "start": 1372,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -7699,10 +7699,10 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "tag": {
-            "commentStart": 1510,
-            "end": 1516,
+            "commentStart": 1528,
+            "end": 1534,
             "moduleId": 0,
-            "start": 1510,
+            "start": 1528,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -7729,10 +7729,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.05510091751605532,
           "tag": {
-            "commentStart": 1634,
-            "end": 1639,
+            "commentStart": 1652,
+            "end": 1657,
             "moduleId": 0,
-            "start": 1634,
+            "start": 1652,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -7753,10 +7753,10 @@ description: Variables in memory after executing hammer.kcl
             11.621666666666654
           ],
           "tag": {
-            "commentStart": 1795,
-            "end": 1801,
+            "commentStart": 1813,
+            "end": 1819,
             "moduleId": 0,
-            "start": 1795,
+            "start": 1813,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -7777,10 +7777,10 @@ description: Variables in memory after executing hammer.kcl
             11.62
           ],
           "tag": {
-            "commentStart": 1921,
-            "end": 1927,
+            "commentStart": 1939,
+            "end": 1945,
             "moduleId": 0,
-            "start": 1921,
+            "start": 1939,
             "type": "TagDeclarator",
             "value": "line13"
           },
@@ -7807,10 +7807,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.0021208230186167,
           "tag": {
-            "commentStart": 2048,
-            "end": 2053,
+            "commentStart": 2066,
+            "end": 2071,
             "moduleId": 0,
-            "start": 2048,
+            "start": 2066,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -7831,10 +7831,10 @@ description: Variables in memory after executing hammer.kcl
             11.259453287974884
           ],
           "tag": {
-            "commentStart": 2207,
-            "end": 2213,
+            "commentStart": 2225,
+            "end": 2231,
             "moduleId": 0,
-            "start": 2207,
+            "start": 2225,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -7977,10 +7977,10 @@ description: Variables in memory after executing hammer.kcl
             -1.6
           ],
           "tag": {
-            "commentStart": 2630,
-            "end": 2635,
+            "commentStart": 2648,
+            "end": 2653,
             "moduleId": 0,
-            "start": 2630,
+            "start": 2648,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8007,10 +8007,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.050000000000000044,
           "tag": {
-            "commentStart": 2711,
-            "end": 2715,
+            "commentStart": 2729,
+            "end": 2733,
             "moduleId": 0,
-            "start": 2711,
+            "start": 2729,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8031,10 +8031,10 @@ description: Variables in memory after executing hammer.kcl
             -0.6100000000000001
           ],
           "tag": {
-            "commentStart": 2869,
-            "end": 2874,
+            "commentStart": 2887,
+            "end": 2892,
             "moduleId": 0,
-            "start": 2869,
+            "start": 2887,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8061,10 +8061,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.1540971397016868,
           "tag": {
-            "commentStart": 2992,
-            "end": 2996,
+            "commentStart": 3010,
+            "end": 3014,
             "moduleId": 0,
-            "start": 2992,
+            "start": 3010,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8091,10 +8091,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 10.269341241078791,
           "tag": {
-            "commentStart": 3147,
-            "end": 3151,
+            "commentStart": 3165,
+            "end": 3169,
             "moduleId": 0,
-            "start": 3147,
+            "start": 3165,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -8115,10 +8115,10 @@ description: Variables in memory after executing hammer.kcl
             -1.1499124381018504
           ],
           "tag": {
-            "commentStart": 3303,
-            "end": 3308,
+            "commentStart": 3321,
+            "end": 3326,
             "moduleId": 0,
-            "start": 3303,
+            "start": 3321,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8139,10 +8139,10 @@ description: Variables in memory after executing hammer.kcl
             -1.6
           ],
           "tag": {
-            "commentStart": 3423,
-            "end": 3428,
+            "commentStart": 3441,
+            "end": 3446,
             "moduleId": 0,
-            "start": 3423,
+            "start": 3441,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -8253,10 +8253,10 @@ description: Variables in memory after executing hammer.kcl
             -0.56
           ],
           "tag": {
-            "commentStart": 3775,
-            "end": 3780,
+            "commentStart": 3793,
+            "end": 3798,
             "moduleId": 0,
-            "start": 3775,
+            "start": 3793,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8283,10 +8283,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 9.476057661233177,
           "tag": {
-            "commentStart": 3858,
-            "end": 3862,
+            "commentStart": 3876,
+            "end": 3880,
             "moduleId": 0,
-            "start": 3858,
+            "start": 3876,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8313,10 +8313,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.37740231642600164,
           "tag": {
-            "commentStart": 4010,
-            "end": 4014,
+            "commentStart": 4028,
+            "end": 4032,
             "moduleId": 0,
-            "start": 4010,
+            "start": 4028,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -8343,10 +8343,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 9.51790209828337,
           "tag": {
-            "commentStart": 4159,
-            "end": 4163,
+            "commentStart": 4177,
+            "end": 4181,
             "moduleId": 0,
-            "start": 4159,
+            "start": 4177,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8367,10 +8367,10 @@ description: Variables in memory after executing hammer.kcl
             0.5595069992379997
           ],
           "tag": {
-            "commentStart": 4311,
-            "end": 4316,
+            "commentStart": 4329,
+            "end": 4334,
             "moduleId": 0,
-            "start": 4311,
+            "start": 4329,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8473,10 +8473,10 @@ description: Variables in memory after executing hammer.kcl
             1.6
           ],
           "tag": {
-            "commentStart": 4614,
-            "end": 4619,
+            "commentStart": 4632,
+            "end": 4637,
             "moduleId": 0,
-            "start": 4614,
+            "start": 4632,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8503,10 +8503,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.050000000000000044,
           "tag": {
-            "commentStart": 4693,
-            "end": 4697,
+            "commentStart": 4711,
+            "end": 4715,
             "moduleId": 0,
-            "start": 4693,
+            "start": 4711,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8527,10 +8527,10 @@ description: Variables in memory after executing hammer.kcl
             0.6100000000000001
           ],
           "tag": {
-            "commentStart": 4846,
-            "end": 4851,
+            "commentStart": 4864,
+            "end": 4869,
             "moduleId": 0,
-            "start": 4846,
+            "start": 4864,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8557,10 +8557,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 1.1542571742967844,
           "tag": {
-            "commentStart": 4969,
-            "end": 4973,
+            "commentStart": 4987,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4969,
+            "start": 4987,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8587,10 +8587,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 10.26931882888921,
           "tag": {
-            "commentStart": 5123,
-            "end": 5127,
+            "commentStart": 5141,
+            "end": 5145,
             "moduleId": 0,
-            "start": 5123,
+            "start": 5141,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -8611,10 +8611,10 @@ description: Variables in memory after executing hammer.kcl
             1.149835702308021
           ],
           "tag": {
-            "commentStart": 5274,
-            "end": 5279,
+            "commentStart": 5292,
+            "end": 5297,
             "moduleId": 0,
-            "start": 5274,
+            "start": 5292,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8635,10 +8635,10 @@ description: Variables in memory after executing hammer.kcl
             1.6
           ],
           "tag": {
-            "commentStart": 5394,
-            "end": 5399,
+            "commentStart": 5412,
+            "end": 5417,
             "moduleId": 0,
-            "start": 5394,
+            "start": 5412,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -8749,10 +8749,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 5980,
-            "end": 5985,
+            "commentStart": 5998,
+            "end": 6003,
             "moduleId": 0,
-            "start": 5980,
+            "start": 5998,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8773,10 +8773,10 @@ description: Variables in memory after executing hammer.kcl
             0.16
           ],
           "tag": {
-            "commentStart": 6058,
-            "end": 6063,
+            "commentStart": 6076,
+            "end": 6081,
             "moduleId": 0,
-            "start": 6058,
+            "start": 6076,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -8797,10 +8797,10 @@ description: Variables in memory after executing hammer.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 6178,
-            "end": 6183,
+            "commentStart": 6196,
+            "end": 6201,
             "moduleId": 0,
-            "start": 6178,
+            "start": 6196,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -8821,10 +8821,10 @@ description: Variables in memory after executing hammer.kcl
             0.27
           ],
           "tag": {
-            "commentStart": 6299,
-            "end": 6304,
+            "commentStart": 6317,
+            "end": 6322,
             "moduleId": 0,
-            "start": 6299,
+            "start": 6317,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -8845,10 +8845,10 @@ description: Variables in memory after executing hammer.kcl
             0.16
           ],
           "tag": {
-            "commentStart": 6421,
-            "end": 6426,
+            "commentStart": 6439,
+            "end": 6444,
             "moduleId": 0,
-            "start": 6421,
+            "start": 6439,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8869,10 +8869,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 6540,
-            "end": 6545,
+            "commentStart": 6558,
+            "end": 6563,
             "moduleId": 0,
-            "start": 6540,
+            "start": 6558,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -8893,10 +8893,10 @@ description: Variables in memory after executing hammer.kcl
             -0.16
           ],
           "tag": {
-            "commentStart": 6660,
-            "end": 6665,
+            "commentStart": 6678,
+            "end": 6683,
             "moduleId": 0,
-            "start": 6660,
+            "start": 6678,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -8917,10 +8917,10 @@ description: Variables in memory after executing hammer.kcl
             -0.27
           ],
           "tag": {
-            "commentStart": 6784,
-            "end": 6789,
+            "commentStart": 6802,
+            "end": 6807,
             "moduleId": 0,
-            "start": 6784,
+            "start": 6802,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -8941,10 +8941,10 @@ description: Variables in memory after executing hammer.kcl
             -0.27
           ],
           "tag": {
-            "commentStart": 6907,
-            "end": 6912,
+            "commentStart": 6925,
+            "end": 6930,
             "moduleId": 0,
-            "start": 6907,
+            "start": 6925,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -8965,10 +8965,10 @@ description: Variables in memory after executing hammer.kcl
             -0.16
           ],
           "tag": {
-            "commentStart": 7029,
-            "end": 7035,
+            "commentStart": 7047,
+            "end": 7053,
             "moduleId": 0,
-            "start": 7029,
+            "start": 7047,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -9097,10 +9097,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.45,
           "tag": {
-            "commentStart": 7445,
-            "end": 7452,
+            "commentStart": 7463,
+            "end": 7470,
             "moduleId": 0,
-            "start": 7445,
+            "start": 7463,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9191,10 +9191,10 @@ description: Variables in memory after executing hammer.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 7931,
-            "end": 7936,
+            "commentStart": 7949,
+            "end": 7954,
             "moduleId": 0,
-            "start": 7931,
+            "start": 7949,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9221,10 +9221,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 0.05038878181744558,
           "tag": {
-            "commentStart": 8006,
-            "end": 8010,
+            "commentStart": 8024,
+            "end": 8028,
             "moduleId": 0,
-            "start": 8006,
+            "start": 8024,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9251,10 +9251,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 128.49000000000035,
           "tag": {
-            "commentStart": 8155,
-            "end": 8159,
+            "commentStart": 8173,
+            "end": 8177,
             "moduleId": 0,
-            "start": 8155,
+            "start": 8173,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -9281,10 +9281,10 @@ description: Variables in memory after executing hammer.kcl
           ],
           "radius": 59.4733375236148,
           "tag": {
-            "commentStart": 8309,
-            "end": 8313,
+            "commentStart": 8327,
+            "end": 8331,
             "moduleId": 0,
-            "start": 8309,
+            "start": 8327,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -9305,10 +9305,10 @@ description: Variables in memory after executing hammer.kcl
             12.800020759525506
           ],
           "tag": {
-            "commentStart": 8460,
-            "end": 8465,
+            "commentStart": 8478,
+            "end": 8483,
             "moduleId": 0,
-            "start": 8460,
+            "start": 8478,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -9329,10 +9329,10 @@ description: Variables in memory after executing hammer.kcl
             12.8
           ],
           "tag": {
-            "commentStart": 8581,
-            "end": 8586,
+            "commentStart": 8599,
+            "end": 8604,
             "moduleId": 0,
-            "start": 8581,
+            "start": 8599,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9435,10 +9435,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4614,
-            "end": 4619,
+            "commentStart": 4632,
+            "end": 4637,
             "moduleId": 0,
-            "start": 4614,
+            "start": 4632,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -9449,10 +9449,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4693,
-            "end": 4697,
+            "commentStart": 4711,
+            "end": 4715,
             "moduleId": 0,
-            "start": 4693,
+            "start": 4711,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -9463,10 +9463,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4846,
-            "end": 4851,
+            "commentStart": 4864,
+            "end": 4869,
             "moduleId": 0,
-            "start": 4846,
+            "start": 4864,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -9477,10 +9477,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4969,
-            "end": 4973,
+            "commentStart": 4987,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4969,
+            "start": 4987,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -9491,10 +9491,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5123,
-            "end": 5127,
+            "commentStart": 5141,
+            "end": 5145,
             "moduleId": 0,
-            "start": 5123,
+            "start": 5141,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -9505,10 +9505,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5274,
-            "end": 5279,
+            "commentStart": 5292,
+            "end": 5297,
             "moduleId": 0,
-            "start": 5274,
+            "start": 5292,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -9519,10 +9519,10 @@ description: Variables in memory after executing hammer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5394,
-            "end": 5399,
+            "commentStart": 5412,
+            "end": 5417,
             "moduleId": 0,
-            "start": 5394,
+            "start": 5412,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -9544,10 +9544,10 @@ description: Variables in memory after executing hammer.kcl
               1.6
             ],
             "tag": {
-              "commentStart": 4614,
-              "end": 4619,
+              "commentStart": 4632,
+              "end": 4637,
               "moduleId": 0,
-              "start": 4614,
+              "start": 4632,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -9574,10 +9574,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 0.050000000000000044,
             "tag": {
-              "commentStart": 4693,
-              "end": 4697,
+              "commentStart": 4711,
+              "end": 4715,
               "moduleId": 0,
-              "start": 4693,
+              "start": 4711,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -9598,10 +9598,10 @@ description: Variables in memory after executing hammer.kcl
               0.6100000000000001
             ],
             "tag": {
-              "commentStart": 4846,
-              "end": 4851,
+              "commentStart": 4864,
+              "end": 4869,
               "moduleId": 0,
-              "start": 4846,
+              "start": 4864,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -9628,10 +9628,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 1.1542571742967844,
             "tag": {
-              "commentStart": 4969,
-              "end": 4973,
+              "commentStart": 4987,
+              "end": 4991,
               "moduleId": 0,
-              "start": 4969,
+              "start": 4987,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -9658,10 +9658,10 @@ description: Variables in memory after executing hammer.kcl
             ],
             "radius": 10.26931882888921,
             "tag": {
-              "commentStart": 5123,
-              "end": 5127,
+              "commentStart": 5141,
+              "end": 5145,
               "moduleId": 0,
-              "start": 5123,
+              "start": 5141,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -9682,10 +9682,10 @@ description: Variables in memory after executing hammer.kcl
               1.149835702308021
             ],
             "tag": {
-              "commentStart": 5274,
-              "end": 5279,
+              "commentStart": 5292,
+              "end": 5297,
               "moduleId": 0,
-              "start": 5274,
+              "start": 5292,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -9706,10 +9706,10 @@ description: Variables in memory after executing hammer.kcl
               1.6
             ],
             "tag": {
-              "commentStart": 5394,
-              "end": 5399,
+              "commentStart": 5412,
+              "end": 5417,
               "moduleId": 0,
-              "start": 5394,
+              "start": 5412,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -11855,10 +11855,10 @@ description: Variables in memory after executing hammer.kcl
                     11.26
                   ],
                   "tag": {
-                    "commentStart": 285,
-                    "end": 290,
+                    "commentStart": 303,
+                    "end": 308,
                     "moduleId": 0,
-                    "start": 285,
+                    "start": 303,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -11885,10 +11885,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.561803255311611,
                   "tag": {
-                    "commentStart": 368,
-                    "end": 372,
+                    "commentStart": 386,
+                    "end": 390,
                     "moduleId": 0,
-                    "start": 368,
+                    "start": 386,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -11932,10 +11932,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 3.7392984301211136,
                   "tag": {
-                    "commentStart": 521,
-                    "end": 525,
+                    "commentStart": 539,
+                    "end": 543,
                     "moduleId": 0,
-                    "start": 521,
+                    "start": 539,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -11973,10 +11973,10 @@ description: Variables in memory after executing hammer.kcl
                     11.259673374915069
                   ],
                   "tag": {
-                    "commentStart": 673,
-                    "end": 678,
+                    "commentStart": 691,
+                    "end": 696,
                     "moduleId": 0,
-                    "start": 673,
+                    "start": 691,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -11997,10 +11997,10 @@ description: Variables in memory after executing hammer.kcl
                     11.42
                   ],
                   "tag": {
-                    "commentStart": 796,
-                    "end": 801,
+                    "commentStart": 814,
+                    "end": 819,
                     "moduleId": 0,
-                    "start": 796,
+                    "start": 814,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -12027,10 +12027,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 3.69255003516511,
                   "tag": {
-                    "commentStart": 918,
-                    "end": 922,
+                    "commentStart": 936,
+                    "end": 940,
                     "moduleId": 0,
-                    "start": 918,
+                    "start": 936,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -12057,10 +12057,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 1.2786396109072824,
                   "tag": {
-                    "commentStart": 1074,
-                    "end": 1078,
+                    "commentStart": 1092,
+                    "end": 1096,
                     "moduleId": 0,
-                    "start": 1074,
+                    "start": 1092,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -12081,10 +12081,10 @@ description: Variables in memory after executing hammer.kcl
                     12.849355849688148
                   ],
                   "tag": {
-                    "commentStart": 1229,
-                    "end": 1234,
+                    "commentStart": 1247,
+                    "end": 1252,
                     "moduleId": 0,
-                    "start": 1229,
+                    "start": 1247,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -12111,10 +12111,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.049999999999998934,
                   "tag": {
-                    "commentStart": 1354,
-                    "end": 1358,
+                    "commentStart": 1372,
+                    "end": 1376,
                     "moduleId": 0,
-                    "start": 1354,
+                    "start": 1372,
                     "type": "TagDeclarator",
                     "value": "arc9"
                   },
@@ -12135,10 +12135,10 @@ description: Variables in memory after executing hammer.kcl
                     12.8
                   ],
                   "tag": {
-                    "commentStart": 1510,
-                    "end": 1516,
+                    "commentStart": 1528,
+                    "end": 1534,
                     "moduleId": 0,
-                    "start": 1510,
+                    "start": 1528,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -12165,10 +12165,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.05510091751605532,
                   "tag": {
-                    "commentStart": 1634,
-                    "end": 1639,
+                    "commentStart": 1652,
+                    "end": 1657,
                     "moduleId": 0,
-                    "start": 1634,
+                    "start": 1652,
                     "type": "TagDeclarator",
                     "value": "arc11"
                   },
@@ -12189,10 +12189,10 @@ description: Variables in memory after executing hammer.kcl
                     11.621666666666654
                   ],
                   "tag": {
-                    "commentStart": 1795,
-                    "end": 1801,
+                    "commentStart": 1813,
+                    "end": 1819,
                     "moduleId": 0,
-                    "start": 1795,
+                    "start": 1813,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -12213,10 +12213,10 @@ description: Variables in memory after executing hammer.kcl
                     11.62
                   ],
                   "tag": {
-                    "commentStart": 1921,
-                    "end": 1927,
+                    "commentStart": 1939,
+                    "end": 1945,
                     "moduleId": 0,
-                    "start": 1921,
+                    "start": 1939,
                     "type": "TagDeclarator",
                     "value": "line13"
                   },
@@ -12243,10 +12243,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 1.0021208230186167,
                   "tag": {
-                    "commentStart": 2048,
-                    "end": 2053,
+                    "commentStart": 2066,
+                    "end": 2071,
                     "moduleId": 0,
-                    "start": 2048,
+                    "start": 2066,
                     "type": "TagDeclarator",
                     "value": "arc14"
                   },
@@ -12267,10 +12267,10 @@ description: Variables in memory after executing hammer.kcl
                     11.259453287974884
                   ],
                   "tag": {
-                    "commentStart": 2207,
-                    "end": 2213,
+                    "commentStart": 2225,
+                    "end": 2231,
                     "moduleId": 0,
-                    "start": 2207,
+                    "start": 2225,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -13361,10 +13361,10 @@ description: Variables in memory after executing hammer.kcl
                     -1.6
                   ],
                   "tag": {
-                    "commentStart": 2630,
-                    "end": 2635,
+                    "commentStart": 2648,
+                    "end": 2653,
                     "moduleId": 0,
-                    "start": 2630,
+                    "start": 2648,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -13391,10 +13391,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.050000000000000044,
                   "tag": {
-                    "commentStart": 2711,
-                    "end": 2715,
+                    "commentStart": 2729,
+                    "end": 2733,
                     "moduleId": 0,
-                    "start": 2711,
+                    "start": 2729,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -13415,10 +13415,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.6100000000000001
                   ],
                   "tag": {
-                    "commentStart": 2869,
-                    "end": 2874,
+                    "commentStart": 2887,
+                    "end": 2892,
                     "moduleId": 0,
-                    "start": 2869,
+                    "start": 2887,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -13445,10 +13445,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 1.1540971397016868,
                   "tag": {
-                    "commentStart": 2992,
-                    "end": 2996,
+                    "commentStart": 3010,
+                    "end": 3014,
                     "moduleId": 0,
-                    "start": 2992,
+                    "start": 3010,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -13492,10 +13492,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 10.269341241078791,
                   "tag": {
-                    "commentStart": 3147,
-                    "end": 3151,
+                    "commentStart": 3165,
+                    "end": 3169,
                     "moduleId": 0,
-                    "start": 3147,
+                    "start": 3165,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -13516,10 +13516,10 @@ description: Variables in memory after executing hammer.kcl
                     -1.1499124381018504
                   ],
                   "tag": {
-                    "commentStart": 3303,
-                    "end": 3308,
+                    "commentStart": 3321,
+                    "end": 3326,
                     "moduleId": 0,
-                    "start": 3303,
+                    "start": 3321,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -13540,10 +13540,10 @@ description: Variables in memory after executing hammer.kcl
                     -1.6
                   ],
                   "tag": {
-                    "commentStart": 3423,
-                    "end": 3428,
+                    "commentStart": 3441,
+                    "end": 3446,
                     "moduleId": 0,
-                    "start": 3423,
+                    "start": 3441,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -14362,10 +14362,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.56
                   ],
                   "tag": {
-                    "commentStart": 3775,
-                    "end": 3780,
+                    "commentStart": 3793,
+                    "end": 3798,
                     "moduleId": 0,
-                    "start": 3775,
+                    "start": 3793,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -14392,10 +14392,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 9.476057661233177,
                   "tag": {
-                    "commentStart": 3858,
-                    "end": 3862,
+                    "commentStart": 3876,
+                    "end": 3880,
                     "moduleId": 0,
-                    "start": 3858,
+                    "start": 3876,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -14422,10 +14422,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.37740231642600164,
                   "tag": {
-                    "commentStart": 4010,
-                    "end": 4014,
+                    "commentStart": 4028,
+                    "end": 4032,
                     "moduleId": 0,
-                    "start": 4010,
+                    "start": 4028,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -14452,10 +14452,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 9.51790209828337,
                   "tag": {
-                    "commentStart": 4159,
-                    "end": 4163,
+                    "commentStart": 4177,
+                    "end": 4181,
                     "moduleId": 0,
-                    "start": 4159,
+                    "start": 4177,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -14476,10 +14476,10 @@ description: Variables in memory after executing hammer.kcl
                     0.5595069992379997
                   ],
                   "tag": {
-                    "commentStart": 4311,
-                    "end": 4316,
+                    "commentStart": 4329,
+                    "end": 4334,
                     "moduleId": 0,
-                    "start": 4311,
+                    "start": 4329,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -15530,10 +15530,10 @@ description: Variables in memory after executing hammer.kcl
                     1.6
                   ],
                   "tag": {
-                    "commentStart": 4614,
-                    "end": 4619,
+                    "commentStart": 4632,
+                    "end": 4637,
                     "moduleId": 0,
-                    "start": 4614,
+                    "start": 4632,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -15560,10 +15560,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.050000000000000044,
                   "tag": {
-                    "commentStart": 4693,
-                    "end": 4697,
+                    "commentStart": 4711,
+                    "end": 4715,
                     "moduleId": 0,
-                    "start": 4693,
+                    "start": 4711,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -15584,10 +15584,10 @@ description: Variables in memory after executing hammer.kcl
                     0.6100000000000001
                   ],
                   "tag": {
-                    "commentStart": 4846,
-                    "end": 4851,
+                    "commentStart": 4864,
+                    "end": 4869,
                     "moduleId": 0,
-                    "start": 4846,
+                    "start": 4864,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -15614,10 +15614,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 1.1542571742967844,
                   "tag": {
-                    "commentStart": 4969,
-                    "end": 4973,
+                    "commentStart": 4987,
+                    "end": 4991,
                     "moduleId": 0,
-                    "start": 4969,
+                    "start": 4987,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -15644,10 +15644,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 10.26931882888921,
                   "tag": {
-                    "commentStart": 5123,
-                    "end": 5127,
+                    "commentStart": 5141,
+                    "end": 5145,
                     "moduleId": 0,
-                    "start": 5123,
+                    "start": 5141,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -15668,10 +15668,10 @@ description: Variables in memory after executing hammer.kcl
                     1.149835702308021
                   ],
                   "tag": {
-                    "commentStart": 5274,
-                    "end": 5279,
+                    "commentStart": 5292,
+                    "end": 5297,
                     "moduleId": 0,
-                    "start": 5274,
+                    "start": 5292,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -15692,10 +15692,10 @@ description: Variables in memory after executing hammer.kcl
                     1.6
                   ],
                   "tag": {
-                    "commentStart": 5394,
-                    "end": 5399,
+                    "commentStart": 5412,
+                    "end": 5417,
                     "moduleId": 0,
-                    "start": 5394,
+                    "start": 5412,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -17018,10 +17018,10 @@ description: Variables in memory after executing hammer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5980,
-                    "end": 5985,
+                    "commentStart": 5998,
+                    "end": 6003,
                     "moduleId": 0,
-                    "start": 5980,
+                    "start": 5998,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -17042,10 +17042,10 @@ description: Variables in memory after executing hammer.kcl
                     0.16
                   ],
                   "tag": {
-                    "commentStart": 6058,
-                    "end": 6063,
+                    "commentStart": 6076,
+                    "end": 6081,
                     "moduleId": 0,
-                    "start": 6058,
+                    "start": 6076,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -17066,10 +17066,10 @@ description: Variables in memory after executing hammer.kcl
                     0.27
                   ],
                   "tag": {
-                    "commentStart": 6178,
-                    "end": 6183,
+                    "commentStart": 6196,
+                    "end": 6201,
                     "moduleId": 0,
-                    "start": 6178,
+                    "start": 6196,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -17090,10 +17090,10 @@ description: Variables in memory after executing hammer.kcl
                     0.27
                   ],
                   "tag": {
-                    "commentStart": 6299,
-                    "end": 6304,
+                    "commentStart": 6317,
+                    "end": 6322,
                     "moduleId": 0,
-                    "start": 6299,
+                    "start": 6317,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -17114,10 +17114,10 @@ description: Variables in memory after executing hammer.kcl
                     0.16
                   ],
                   "tag": {
-                    "commentStart": 6421,
-                    "end": 6426,
+                    "commentStart": 6439,
+                    "end": 6444,
                     "moduleId": 0,
-                    "start": 6421,
+                    "start": 6439,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -17138,10 +17138,10 @@ description: Variables in memory after executing hammer.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 6540,
-                    "end": 6545,
+                    "commentStart": 6558,
+                    "end": 6563,
                     "moduleId": 0,
-                    "start": 6540,
+                    "start": 6558,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -17162,10 +17162,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.16
                   ],
                   "tag": {
-                    "commentStart": 6660,
-                    "end": 6665,
+                    "commentStart": 6678,
+                    "end": 6683,
                     "moduleId": 0,
-                    "start": 6660,
+                    "start": 6678,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -17186,10 +17186,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.27
                   ],
                   "tag": {
-                    "commentStart": 6784,
-                    "end": 6789,
+                    "commentStart": 6802,
+                    "end": 6807,
                     "moduleId": 0,
-                    "start": 6784,
+                    "start": 6802,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -17210,10 +17210,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.27
                   ],
                   "tag": {
-                    "commentStart": 6907,
-                    "end": 6912,
+                    "commentStart": 6925,
+                    "end": 6930,
                     "moduleId": 0,
-                    "start": 6907,
+                    "start": 6925,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -17234,10 +17234,10 @@ description: Variables in memory after executing hammer.kcl
                     -0.16
                   ],
                   "tag": {
-                    "commentStart": 7029,
-                    "end": 7035,
+                    "commentStart": 7047,
+                    "end": 7053,
                     "moduleId": 0,
-                    "start": 7029,
+                    "start": 7047,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -17498,10 +17498,10 @@ description: Variables in memory after executing hammer.kcl
                   ],
                   "radius": 0.45,
                   "tag": {
-                    "commentStart": 7445,
-                    "end": 7452,
+                    "commentStart": 7463,
+                    "end": 7470,
                     "moduleId": 0,
-                    "start": 7445,
+                    "start": 7463,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

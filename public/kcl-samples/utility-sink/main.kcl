@@ -3,7 +3,7 @@
 // Categories: Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 tableHeight = 850
