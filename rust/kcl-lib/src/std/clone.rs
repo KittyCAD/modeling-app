@@ -613,6 +613,39 @@ clonedCube = clone(cube)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_loft() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 10, var 0], center = [var 0, var 0])
+}
+secondSketch = sketch(on = offsetPlane(XY, offset = 10)) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+
+lofted = loft([
+  region(segments = [firstSketch.circle1]),
+  region(segments = [secondSketch.circle1]),
+])
+clonedLoft = clone(lofted)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::Solid { value: lofted } = result.variables.get("lofted").unwrap() else {
+            panic!("Expected a solid loft");
+        };
+        let KclValueView::Solid { value: cloned_loft } = result.variables.get("clonedLoft").unwrap() else {
+            panic!("Expected a cloned solid loft");
+        };
+
+        assert_ne!(lofted.id, cloned_loft.id);
+        assert!(!cloned_loft.value.is_empty());
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_composite_solid_keeps_engine_artifact_id() {
         let code = r#"left = startSketchOn(XY)
     |> startProfile(at = [0, 0])
