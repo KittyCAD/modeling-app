@@ -99,6 +99,7 @@ use crate::walk::Visitable;
 use crate::walk::traverse::MutateBodyItem;
 use crate::walk::traverse::TraversalReturn;
 use crate::walk::traverse::Visitor;
+use crate::walk::traverse::delete_body_item_preserving_pre_comments;
 use crate::walk::traverse::dfs_mut;
 
 pub(crate) mod api;
@@ -930,10 +931,14 @@ impl SketchApi for FrontendState {
                 sketch_object.kind.human_friendly_kind_with_article(),
             ))));
         };
+        let sketch_variable_name = variable_name_containing_source_ref(&new_ast, &sketch_object.source);
 
         // Modify the AST to remove the sketch.
         self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)
             .map_err(KclErrorWithOutputs::no_outputs)?;
+        if let Some(sketch_variable_name) = sketch_variable_name {
+            remove_variable_from_hide_calls(&mut new_ast, &sketch_variable_name);
+        }
 
         self.execute_after_delete_sketch(ctx, &mut new_ast).await
     }
@@ -5770,6 +5775,95 @@ fn variable_name_containing_source_ref(ast: &ast::Node<ast::Program>, source_ref
     })
 }
 
+/// Remove references to a deleted variable from top-level `hide` calls.
+///
+/// `hide` returns the geometry it hides, so the UI normally assigns its result
+/// to a variable. Deleting the geometry without deleting that call leaves an
+/// undefined variable reference and makes the post-delete execution fail.
+fn remove_variable_from_hide_calls(ast: &mut ast::Node<ast::Program>, variable_name: &str) {
+    let mut body_indices_to_delete = Vec::new();
+
+    for (body_index, body_item) in ast.body.iter_mut().enumerate() {
+        let expression = match body_item {
+            ast::BodyItem::ExpressionStatement(statement) => &mut statement.expression,
+            ast::BodyItem::VariableDeclaration(declaration) => &mut declaration.declaration.init,
+            _ => continue,
+        };
+        let ast::Expr::CallExpressionKw(call) = expression else {
+            continue;
+        };
+        if call.callee.name.name != "hide" {
+            continue;
+        }
+        let Some(argument) = call.unlabeled.as_mut() else {
+            continue;
+        };
+
+        match argument {
+            ast::Expr::Name(name) if name.name.name == variable_name => {
+                body_indices_to_delete.push(body_index);
+            }
+            ast::Expr::ArrayExpression(array) => {
+                let matching_element_indices = array
+                    .elements
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, element)| {
+                        matches!(element, ast::Expr::Name(name) if name.name.name == variable_name).then_some(index)
+                    })
+                    .collect::<Vec<_>>();
+                if matching_element_indices.is_empty() {
+                    continue;
+                }
+                for element_index in matching_element_indices.into_iter().rev() {
+                    remove_array_element_preserving_non_code(array, element_index);
+                }
+                if array.elements.is_empty() {
+                    body_indices_to_delete.push(body_index);
+                } else if array.elements.len() == 1
+                    && array.non_code_meta.is_empty()
+                    && let Some(remaining_element) = array.elements.pop()
+                {
+                    *argument = remaining_element;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    for body_index in body_indices_to_delete.into_iter().rev() {
+        delete_body_item_preserving_pre_comments(&mut ast.inner.body, &mut ast.inner.non_code_meta, body_index);
+    }
+}
+
+fn remove_array_element_preserving_non_code(array: &mut ast::Node<ast::ArrayExpression>, element_index: usize) {
+    let combined_item_count = array.elements.len() + array.non_code_meta.non_code_nodes_len();
+    let mut visited_elements = 0;
+    let combined_index = (0..combined_item_count).find(|combined_index| {
+        if array.non_code_meta.non_code_nodes.contains_key(combined_index) {
+            return false;
+        }
+        if visited_elements == element_index {
+            return true;
+        }
+        visited_elements += 1;
+        false
+    });
+
+    array.elements.remove(element_index);
+    let Some(combined_index) = combined_index else {
+        return;
+    };
+
+    array.non_code_meta.non_code_nodes = std::mem::take(&mut array.non_code_meta.non_code_nodes)
+        .into_iter()
+        .map(|(index, nodes)| {
+            let index = if index > combined_index { index - 1 } else { index };
+            (index, nodes)
+        })
+        .collect();
+}
+
 fn mutate_ast_node_by_source_ref(
     ast: &mut ast::Node<ast::Program>,
     source_ref: &SourceRef,
@@ -8693,6 +8787,74 @@ bad = missing_name
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_hidden_sketch() {
+        let initial_source = "sketch001 = sketch(on = XY) {}
+hidden001 = hide(sketch001)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(src_delta.text, "");
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_one_sketch_from_hide_array() {
+        let initial_source = "sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+}
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+}
+hidden001 = hide([sketch001, sketch002])
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let (src_delta, _scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert_eq!(
+            src_delta.text,
+            "sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0, var 0], end = [var 1, var 0])
+}
+hidden001 = hide(sketch002)
+"
+        );
+
+        ctx.close().await;
+    }
+
+    #[test]
+    fn test_delete_sketch_does_not_rewrite_unrelated_hide_array() {
+        let source = "hidden001 = hide([otherSketch])
+";
+        let mut ast = Program::parse(source).unwrap().0.unwrap().ast;
+
+        remove_variable_from_hide_calls(&mut ast, "sketch001");
+
+        assert_eq!(source_from_ast(&ast), source);
     }
 
     #[tokio::test(flavor = "multi_thread")]
