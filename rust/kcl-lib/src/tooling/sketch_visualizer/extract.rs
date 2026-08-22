@@ -318,6 +318,7 @@ impl<'a> Extraction<'a> {
             points: point_data,
             segments: segment_data,
             constraints: self.constraints.clone(),
+            id_color_map: None,
             contact_groups: None,
             coincident_groups: None,
             connected_components: None,
