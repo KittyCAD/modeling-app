@@ -5,6 +5,7 @@ import type {
 import type { AtprotoProjectApiConfig } from '@src/lib/atprotoSync/api'
 import {
   ATPROTO_IDENTITY_PROVIDER_ID,
+  ATPROTO_OAUTH_SCOPES,
   type AtprotoOAuthConnectOptions,
   type AtprotoOAuthConnector,
   type AtprotoOAuthIdentity,
@@ -82,6 +83,49 @@ function canUseDefaultBrowserOAuthRuntime() {
   )
 }
 
+function isLoopbackHostname(hostname: string) {
+  return (
+    hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]'
+  )
+}
+
+// The ATProto loopback client id is also the dev metadata declaration, so it
+// must encode every custom scope that the authorization request may ask for.
+function createDefaultClientMetadata():
+  | BrowserOAuthClientOptions['clientMetadata']
+  | undefined {
+  if (
+    typeof window === 'undefined' ||
+    !isLoopbackHostname(window.location.hostname)
+  ) {
+    return undefined
+  }
+
+  const scope = ATPROTO_OAUTH_SCOPES.join(' ')
+  const redirectHostname =
+    window.location.hostname === 'localhost'
+      ? '127.0.0.1'
+      : window.location.hostname
+  const redirectUri = `http://${redirectHostname}${
+    window.location.port ? `:${window.location.port}` : ''
+  }${window.location.pathname || '/'}`
+  const clientIdParams = new URLSearchParams({
+    scope,
+    redirect_uri: redirectUri,
+  })
+
+  return {
+    client_id: `http://localhost?${clientIdParams.toString()}`,
+    scope,
+    redirect_uris: [redirectUri],
+    response_types: ['code'],
+    grant_types: ['authorization_code', 'refresh_token'],
+    token_endpoint_auth_method: 'none',
+    application_type: 'native',
+    dpop_bound_access_tokens: true,
+  }
+}
+
 function hasAtprotoOAuthCallbackParams() {
   if (typeof window === 'undefined') {
     return false
@@ -146,7 +190,7 @@ export function createAtprotoBrowserOAuthConnector({
   const createDefaultClient = async () => {
     const { BrowserOAuthClient } = await import('@atproto/oauth-client-browser')
     return new BrowserOAuthClient({
-      clientMetadata,
+      clientMetadata: clientMetadata ?? createDefaultClientMetadata(),
       handleResolver,
       responseMode,
       plcDirectoryUrl,

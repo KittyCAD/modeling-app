@@ -2,6 +2,7 @@ import type { OAuthSession } from '@atproto/oauth-client-browser'
 import {
   ATPROTO_ARCHIVE_BLOB_SCOPE,
   ATPROTO_AUTH_SYNC_SCOPE,
+  ATPROTO_OAUTH_SCOPES,
   createAtprotoBrowserOAuthConnector,
 } from '@src/lib/atprotoSync'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -193,6 +194,50 @@ describe('ATProto browser OAuth connector', () => {
       status: 'connected',
       connectedAt: '2026-08-22T00:00:00.000Z',
       expiresAt: '2026-08-22T01:00:00.000Z',
+    })
+  })
+
+  it('declares requested sync scopes in default loopback client metadata', async () => {
+    window.history.pushState(null, '', '/settings')
+    vi.stubGlobal('indexedDB', {})
+    vi.stubGlobal('localStorage', {})
+    vi.stubGlobal('BroadcastChannel', class BroadcastChannel {})
+    const client = {
+      init: vi.fn(),
+      restore: vi.fn(),
+      revoke: vi.fn(),
+      signInPopup: vi.fn().mockResolvedValue(createSession()),
+    }
+    defaultBrowserOAuthClientMock.setClient(client)
+    const scope = ATPROTO_OAUTH_SCOPES.join(' ')
+    const redirectUri = `http://127.0.0.1${window.location.port ? `:${window.location.port}` : ''}${window.location.pathname}`
+    const connector = createAtprotoBrowserOAuthConnector({
+      now: () => new Date('2026-08-22T00:00:00.000Z'),
+    })
+
+    await connector.connect({
+      input: 'franknoirot.co',
+      scopes: ATPROTO_OAUTH_SCOPES,
+    })
+
+    const constructorOptions = defaultBrowserOAuthClientMock.constructorSpy.mock
+      .calls[0]?.[0] as {
+      clientMetadata?: {
+        client_id: string
+        scope: string
+        redirect_uris: string[]
+      }
+    }
+
+    expect(constructorOptions.clientMetadata).toMatchObject({
+      scope,
+      redirect_uris: [redirectUri],
+    })
+    expect(
+      new URL(constructorOptions.clientMetadata?.client_id ?? '').searchParams
+    ).toEqual(new URLSearchParams({ scope, redirect_uri: redirectUri }))
+    expect(client.signInPopup).toHaveBeenCalledWith('franknoirot.co', {
+      scope,
     })
   })
 
