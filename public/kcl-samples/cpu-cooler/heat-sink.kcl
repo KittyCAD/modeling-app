@@ -380,3 +380,13 @@ export thruHole = extrude(region007, length = -sheetThickness)
        arcDegrees = 360deg,
        rotateDuplicates = true,
      )
+
+hide(endTubePath)
+hide(sketch001)
+hide(centerTubePath)
+hide(sketch002)
+hide(sketch003)
+hide(sketch004)
+hide(sketch005)
+hide(sketch006)
+hide(sketch007)
