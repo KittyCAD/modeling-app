@@ -20,16 +20,6 @@ appearance(
 This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 For planes, only `color` is used.
 
-
-
-
-
-
-
-
-
-**Legacy KCL 1 example:** The next pipe example uses deprecated `subtract2d`.
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -299,26 +289,24 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
-@settings(kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-// Color the result of a sweep.
+profile = sketch(on = XZ) {
+  bottom = line(start = [var -3mm, var -1mm], end = [var -1mm, var -1mm])
+  right = line(start = [var -1mm, var -1mm], end = [var -1mm, var 1mm])
+  top = line(start = [var -1mm, var 1mm], end = [var -3mm, var 1mm])
+  left = line(start = [var -3mm, var 1mm], end = [var -3mm, var -1mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+profileRegion = region(segments = [profile.bottom, profile.right])
+path = sketch(on = offsetPlane(YZ, offset = -2mm)) {
+  trajectory = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm])
+}
 
-// Create a path for the sweep.
-sweepPath = startSketchOn(XZ)
-  |> startProfile(at = [0.05, 0.05])
-  |> line(end = [0, 7])
-  |> tangentialArc(angle = 90deg, radius = 5)
-  |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90deg, radius = 5)
-  |> line(end = [0, 7])
-
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
-
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
-  |> subtract2d(tool = pipeHole)
-  |> sweep(path = sweepPath)
+sweep(profileRegion, path = path.trajectory)
   |> appearance(color = "#ff0000", metalness = 50, roughness = 50)
 
 ```

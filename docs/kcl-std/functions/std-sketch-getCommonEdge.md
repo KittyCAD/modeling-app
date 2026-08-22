@@ -27,25 +27,23 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 ### Examples
 
 ```kcl
-// Get an edge shared between two faces, created after a chamfer.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-scale = 20
-part001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [0, scale])
-  |> line(end = [scale, 0])
-  |> line(end = [0, -scale])
-  |> close(tag = $line0)
-  |> extrude(length = 20, tagEnd = $end0)
-  // We tag the chamfer to reference it later.
-  |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+shaftSketch = sketch(on = XY) {
+  shaftCircle = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  radius(shaftCircle) == 4mm
+}
+shaftRegion = region(segments = [shaftSketch.shaftCircle])
+shaft = extrude(shaftRegion, length = 20mm, tagEnd = $shaftTop)
 
-// Get the shared edge between the chamfer and the extrusion.
-commonEdge = getCommonEdge(faces = [chamfer0, end0])
+// The circle identifies the cylindrical side face after extrusion.
+// Together with the tagged end face, it identifies the top rim.
+topRim = getCommonEdge(faces = [
+  shaft.sketch.tags.shaftCircle,
+  shaft.faces.shaftTop
+])
 
-// Chamfer the shared edge.
-// TODO: uncomment this when ssi for fillets lands
-// chamfer(part001, length = 5, tags = [commonEdge])
+chamfer(shaft, length = 1mm, tags = [topRim])
 
 ```
 

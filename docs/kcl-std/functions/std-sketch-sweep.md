@@ -32,8 +32,6 @@ extrusion.
 You can provide more than one sketch to sweep, and they will all be
 swept along the same path.
 
-**Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -58,27 +56,25 @@ swept along the same path.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-// Create a pipe using a sweep.
+profile = sketch(on = XZ) {
+  bottom = line(start = [var -3mm, var -1mm], end = [var -1mm, var -1mm])
+  right = line(start = [var -1mm, var -1mm], end = [var -1mm, var 1mm])
+  top = line(start = [var -1mm, var 1mm], end = [var -3mm, var 1mm])
+  left = line(start = [var -3mm, var 1mm], end = [var -3mm, var -1mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+profileRegion = region(segments = [profile.bottom, profile.right])
 
-// Create a path for the sweep.
-sweepPath = startSketchOn(XZ)
-  |> startProfile(at = [0.05, 0.05])
-  |> line(end = [0, 7])
-  |> tangentialArc(angle = 90deg, radius = 5)
-  |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90deg, radius = 5)
-  |> line(end = [0, 7])
+path = sketch(on = offsetPlane(YZ, offset = -2mm)) {
+  trajectory = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm])
+}
 
-// Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
-
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
-  |> subtract2d(tool = pipeHole)
-  |> sweep(path = sweepPath)
+sweep(profileRegion, path = path.trajectory)
 
 ```
 
