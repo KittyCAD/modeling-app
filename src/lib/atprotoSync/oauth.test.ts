@@ -1,7 +1,7 @@
 import {
-  Registry,
   defineRegistryItem,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import {
@@ -22,12 +22,12 @@ import {
   createSettings,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import {
+  type ConnectedIdentity,
+  connectedIdentitiesService,
+} from '@src/registry/contracts/connectedIdentities'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
-import {
-  connectedIdentitiesService,
-  type ConnectedIdentity,
-} from '@src/registry/contracts/connectedIdentities'
 import connectedIdentitiesRegistryItem from '@src/registry/extensions/connectedIdentities'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -153,10 +153,13 @@ describe('ATProto OAuth identity provider', () => {
     const connectedIdentities = registry.get(connectedIdentitiesService)
     expect(connectedIdentities.identities.value).toEqual([])
 
-    await connectedIdentities.connect(ATPROTO_IDENTITY_PROVIDER_ID)
+    await connectedIdentities.connect(ATPROTO_IDENTITY_PROVIDER_ID, {
+      input: 'franknoirot.co',
+    })
 
     expect(connector.connect).toHaveBeenCalledWith({
       scopes: ATPROTO_OAUTH_SCOPES,
+      input: 'franknoirot.co',
     })
     expect(connectedIdentities.identities.value).toMatchObject([
       {
@@ -177,5 +180,35 @@ describe('ATProto OAuth identity provider', () => {
 
     expect(connector.disconnect).toHaveBeenCalledWith(refreshedIdentity)
     expect(connectedIdentities.identities.value).toEqual([])
+  })
+
+  it('stores an initialized OAuth identity as a connected identity', async () => {
+    const settings = createFakeSettingsService()
+    const connector: AtprotoOAuthConnector = {
+      initialize: vi.fn().mockResolvedValue(connectedIdentity),
+      connect: vi.fn().mockResolvedValue(connectedIdentity),
+    }
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'fake-settings-service',
+        providesServices: [provideService(settingsService, settings)],
+      }),
+      connectedIdentitiesRegistryItem,
+      createAtprotoOAuthRegistryItem({ connector }),
+    ])
+
+    const connectedIdentities = registry.get(connectedIdentitiesService)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(connector.initialize).toHaveBeenCalledTimes(1)
+    expect(connectedIdentities.identities.value).toMatchObject([
+      {
+        id: 'atproto:did:plc:frank',
+        handle: 'franknoirot.co',
+        status: 'connected',
+      },
+    ])
   })
 })

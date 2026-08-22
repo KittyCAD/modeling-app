@@ -4,21 +4,22 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import { useSignals } from '@preact/signals-react/runtime'
 import { computed } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
+import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import type { ExtensionSettingDefinition } from '@src/lib/settings/extensionSettings'
 import { Setting } from '@src/lib/settings/initialSettings'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
-import {
-  settingsService,
-  settingsValueSpec,
-} from '@src/registry/contracts/settings'
+import { reportRejection } from '@src/lib/trap'
 import {
   type ConnectedIdentity,
   connectedIdentitiesService,
   connectedIdentityProvidersValueSpec,
 } from '@src/registry/contracts/connectedIdentities'
+import {
+  settingsService,
+  settingsValueSpec,
+} from '@src/registry/contracts/settings'
 import { useState } from 'react'
 
 export const ATPROTO_IDENTITY_PROVIDER_ID = 'atproto'
@@ -58,9 +59,11 @@ export type AtprotoOAuthIdentity = {
 
 export type AtprotoOAuthConnectOptions = {
   scopes: readonly string[]
+  input?: string
 }
 
 export type AtprotoOAuthConnector = {
+  initialize?: () => Promise<AtprotoOAuthIdentity | null | undefined>
   connect: (
     options: AtprotoOAuthConnectOptions
   ) => Promise<AtprotoOAuthIdentity>
@@ -250,6 +253,7 @@ function AtprotoOAuthSetting({
   const [error, setError] = useState<string | undefined>()
   const connectedIdentities = registry.optional(connectedIdentitiesService)
   const identity = isAtprotoOAuthIdentity(value) ? value : null
+  const [signInInput, setSignInInput] = useState(identity?.handle ?? '')
   const identityId = identity
     ? `${ATPROTO_IDENTITY_PROVIDER_ID}:${identity.did}`
     : undefined
@@ -296,7 +300,9 @@ function AtprotoOAuthSetting({
                 return
               }
               void run(() =>
-                connectedIdentities.connect(ATPROTO_IDENTITY_PROVIDER_ID)
+                connectedIdentities.connect(ATPROTO_IDENTITY_PROVIDER_ID, {
+                  input: signInInput.trim() || undefined,
+                })
               )
             }}
           >
@@ -304,6 +310,16 @@ function AtprotoOAuthSetting({
           </button>
         )}
       </div>
+      {!identity ? (
+        <input
+          type="text"
+          className="w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-sm"
+          placeholder="handle, DID, or PDS URL"
+          value={signInInput}
+          disabled={busy}
+          onChange={(event) => setSignInInput(event.target.value)}
+        />
+      ) : null}
       {error ? (
         <p className="text-xs text-destroy-70 dark:text-destroy-20">{error}</p>
       ) : null}
@@ -317,6 +333,7 @@ export function createAtprotoOAuthRegistryItem({
   connector?: AtprotoOAuthConnector
 } = {}) {
   return defineRegistryItemFactory((ctx) => {
+    let disposed = false
     const settings = ctx.services.signal(settingsService)
     const identity = computed<AtprotoOAuthIdentity | null>(() => {
       const settingsRecord = settings.value?.get() as
@@ -336,6 +353,10 @@ export function createAtprotoOAuthRegistryItem({
     )
 
     const updateIdentity = (value: AtprotoOAuthIdentity | null) => {
+      if (disposed) {
+        return
+      }
+
       const settingsServiceImpl = ctx.services.get(settingsService)
       settingsServiceImpl.send({
         type: `set.${ATPROTO_AUTH_SETTING_CATEGORY}.${ATPROTO_AUTH_SETTING_NAME}`,
@@ -345,6 +366,22 @@ export function createAtprotoOAuthRegistryItem({
         },
       } as never)
     }
+
+    queueMicrotask(() => {
+      if (disposed || !connector.initialize) {
+        return
+      }
+
+      void connector.initialize().then((initializedIdentity) => {
+        if (initializedIdentity !== undefined) {
+          updateIdentity(
+            initializedIdentity
+              ? normalizeAtprotoOAuthIdentity(initializedIdentity)
+              : null
+          )
+        }
+      }, reportRejection)
+    })
 
     return {
       item: defineRuntimeRegistryItem({
@@ -361,9 +398,12 @@ export function createAtprotoOAuthRegistryItem({
               id: ATPROTO_IDENTITY_PROVIDER_ID,
               title: 'ATProto',
               identities,
-              connect: async () => {
+              connect: async (options) => {
+                const connectOptions = isRecord(options) ? options : {}
+                const input = optionalString(connectOptions.input)
                 const nextIdentity = await connector.connect({
                   scopes: ATPROTO_OAUTH_SCOPES,
+                  input,
                 })
                 updateIdentity(normalizeAtprotoOAuthIdentity(nextIdentity))
               },
@@ -393,6 +433,9 @@ export function createAtprotoOAuthRegistryItem({
             }
           ),
         ],
+        dispose: () => {
+          disposed = true
+        },
       }),
     }
   }, 'atproto-oauth-provider')

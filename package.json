@@ -19,6 +19,7 @@
     "rust/kcl-language-server"
   ],
   "dependencies": {
+    "@atproto/oauth-client-browser": "^0.5.3",
     "@chainner/node-path": "^0.1.1",
     "@codemirror/autocomplete": "^6.20.1",
     "@codemirror/commands": "^6.10.3",
