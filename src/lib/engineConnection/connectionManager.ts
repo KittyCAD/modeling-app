@@ -1,4 +1,8 @@
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type {
+  ModelingCmdReq,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -100,6 +104,15 @@ export class ConnectionManager extends EventTarget {
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
+  }
+
+  /** True when a scene command sent now reaches the engine. */
+  get isReady(): boolean {
+    return (
+      this.connection !== undefined &&
+      this.started &&
+      this.connection.websocket?.readyState === WebSocket.OPEN
+    )
   }
   private readonly systemDeps: ConnectionSystemDeps
 
@@ -383,7 +396,7 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+    if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setTheme, websocket is not ready',
@@ -394,7 +407,7 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    await this.connection?.deferredConnection?.promise
 
     // Set the stream background color
     // This takes RGBA values from 0-1
@@ -1420,6 +1433,34 @@ export class ConnectionManager extends EventTarget {
         object_id: id,
         hidden: hidden,
       },
+    })
+  }
+
+  /**
+   * Hides the engine objects whose flag is true, shows the ones whose flag is
+   * false, and sends them as one request.
+   */
+  async setObjectsHidden(hiddenByObjectId: ReadonlyMap<string, boolean>) {
+    if (hiddenByObjectId.size === 0) {
+      return
+    }
+
+    const requests: ModelingCmdReq[] = [...hiddenByObjectId].map(
+      ([objectId, hidden]) => ({
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'object_visible',
+          object_id: objectId,
+          hidden,
+        },
+      })
+    )
+
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests,
+      responses: false,
     })
   }
 }
