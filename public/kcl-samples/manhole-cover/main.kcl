@@ -11,7 +11,7 @@ pickHoleWidth = 2
 pickHoleDepth = 1 + 1 / 8
 
 // The cover outline and all nine ventilation loops live in one sketch. The
-// outer region therefore already contains the voids that subtract2d created.
+// outer region therefore already contains the voids that legacy CSG created.
 coverSketch = sketch(on = XY) {
   coverCircle = circle(start = [var 11.375in, var 0in], center = [var 0in, var 0in])
 

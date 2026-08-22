@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 202
 description: Result of parsing manhole-cover.kcl
 ---
 {
@@ -7674,7 +7673,7 @@ description: Result of parsing manhole-cover.kcl
         "moduleId": 0,
         "preComments": [
           "// The cover outline and all nine ventilation loops live in one sketch. The",
-          "// outer region therefore already contains the voids that subtract2d created."
+          "// outer region therefore already contains the voids that legacy CSG created."
         ],
         "start": 0,
         "type": "VariableDeclaration",
