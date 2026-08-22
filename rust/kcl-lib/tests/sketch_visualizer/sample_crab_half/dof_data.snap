@@ -1,0 +1,1677 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "crabHalf"
+  },
+  "bounds": {
+    "min": {
+      "x": -0.07604392065997412,
+      "y": -3.1025641840410274
+    },
+    "max": {
+      "x": 5.05,
+      "y": 3.63
+    }
+  },
+  "units": [
+    "Inch"
+  ],
+  "mode": "dof",
+  "constraintStatus": {
+    "name": "",
+    "status": "UnderConstrained",
+    "free_count": 25,
+    "conflict_count": 0,
+    "total_count": 25
+  },
+  "dof": {
+    "default": "Free",
+    "points": {},
+    "segments": {}
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 0.0,
+        "y": 1.75
+      },
+      "owner": 4
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 0.55,
+        "y": 1.92
+      },
+      "owner": 4,
+      "contactGroup": 0,
+      "coincidentGroup": 0
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.55,
+        "y": 1.92
+      },
+      "owner": 7,
+      "contactGroup": 0,
+      "coincidentGroup": 0
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 1.04,
+        "y": 3.26
+      },
+      "owner": 7,
+      "contactGroup": 1,
+      "coincidentGroup": 1
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 1.04,
+        "y": 3.26
+      },
+      "owner": 11,
+      "contactGroup": 1,
+      "coincidentGroup": 1
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 0.3,
+        "y": 3.26
+      },
+      "owner": 11,
+      "contactGroup": 2,
+      "coincidentGroup": 2
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 0.67,
+        "y": 3.26
+      },
+      "owner": 11
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 0.3,
+        "y": 3.26
+      },
+      "owner": 14,
+      "contactGroup": 2,
+      "coincidentGroup": 2
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 0.72,
+        "y": 2.18
+      },
+      "owner": 14,
+      "contactGroup": 3,
+      "coincidentGroup": 3
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 0.72,
+        "y": 2.18
+      },
+      "owner": 17,
+      "contactGroup": 3,
+      "coincidentGroup": 3
+    },
+    {
+      "id": 16,
+      "position": {
+        "x": 2.0,
+        "y": 1.58
+      },
+      "owner": 17,
+      "contactGroup": 4,
+      "coincidentGroup": 4
+    },
+    {
+      "id": 18,
+      "position": {
+        "x": 2.0,
+        "y": 1.58
+      },
+      "owner": 20,
+      "contactGroup": 4,
+      "coincidentGroup": 4
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 3.35,
+        "y": 2.7
+      },
+      "owner": 20,
+      "contactGroup": 5,
+      "coincidentGroup": 5
+    },
+    {
+      "id": 21,
+      "position": {
+        "x": 3.35,
+        "y": 2.7
+      },
+      "owner": 23,
+      "contactGroup": 5,
+      "coincidentGroup": 5
+    },
+    {
+      "id": 22,
+      "position": {
+        "x": 5.05,
+        "y": 2.42
+      },
+      "owner": 23,
+      "contactGroup": 6,
+      "coincidentGroup": 6
+    },
+    {
+      "id": 24,
+      "position": {
+        "x": 5.05,
+        "y": 2.42
+      },
+      "owner": 26,
+      "contactGroup": 6,
+      "coincidentGroup": 6
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 4.38,
+        "y": 1.82
+      },
+      "owner": 26,
+      "contactGroup": 7,
+      "coincidentGroup": 7
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 4.38,
+        "y": 1.82
+      },
+      "owner": 29,
+      "contactGroup": 7,
+      "coincidentGroup": 7
+    },
+    {
+      "id": 28,
+      "position": {
+        "x": 4.98,
+        "y": 1.12
+      },
+      "owner": 29,
+      "contactGroup": 8,
+      "coincidentGroup": 8
+    },
+    {
+      "id": 30,
+      "position": {
+        "x": 4.98,
+        "y": 1.12
+      },
+      "owner": 32,
+      "contactGroup": 8,
+      "coincidentGroup": 8
+    },
+    {
+      "id": 31,
+      "position": {
+        "x": 4.28,
+        "y": 0.6
+      },
+      "owner": 32,
+      "contactGroup": 9,
+      "coincidentGroup": 9
+    },
+    {
+      "id": 33,
+      "position": {
+        "x": 4.28,
+        "y": 0.6
+      },
+      "owner": 35,
+      "contactGroup": 9,
+      "coincidentGroup": 9
+    },
+    {
+      "id": 34,
+      "position": {
+        "x": 3.06,
+        "y": 0.88
+      },
+      "owner": 35,
+      "contactGroup": 10,
+      "coincidentGroup": 10
+    },
+    {
+      "id": 36,
+      "position": {
+        "x": 3.06,
+        "y": 0.88
+      },
+      "owner": 38,
+      "contactGroup": 10,
+      "coincidentGroup": 10
+    },
+    {
+      "id": 37,
+      "position": {
+        "x": 2.02,
+        "y": 0.8
+      },
+      "owner": 38,
+      "contactGroup": 11,
+      "coincidentGroup": 11
+    },
+    {
+      "id": 39,
+      "position": {
+        "x": 2.02,
+        "y": 0.8
+      },
+      "owner": 41,
+      "contactGroup": 11,
+      "coincidentGroup": 11
+    },
+    {
+      "id": 40,
+      "position": {
+        "x": 1.92,
+        "y": 0.42
+      },
+      "owner": 41,
+      "contactGroup": 12,
+      "coincidentGroup": 12
+    },
+    {
+      "id": 42,
+      "position": {
+        "x": 1.92,
+        "y": 0.42
+      },
+      "owner": 44,
+      "contactGroup": 12,
+      "coincidentGroup": 12
+    },
+    {
+      "id": 43,
+      "position": {
+        "x": 4.26,
+        "y": 0.57
+      },
+      "owner": 44,
+      "contactGroup": 13,
+      "coincidentGroup": 13
+    },
+    {
+      "id": 45,
+      "position": {
+        "x": 4.26,
+        "y": 0.57
+      },
+      "owner": 47,
+      "contactGroup": 13,
+      "coincidentGroup": 13
+    },
+    {
+      "id": 46,
+      "position": {
+        "x": 4.9,
+        "y": 0.18
+      },
+      "owner": 47,
+      "contactGroup": 14,
+      "coincidentGroup": 14
+    },
+    {
+      "id": 48,
+      "position": {
+        "x": 4.9,
+        "y": 0.18
+      },
+      "owner": 50,
+      "contactGroup": 14,
+      "coincidentGroup": 14
+    },
+    {
+      "id": 49,
+      "position": {
+        "x": 2.14,
+        "y": -0.08
+      },
+      "owner": 50,
+      "contactGroup": 15,
+      "coincidentGroup": 15
+    },
+    {
+      "id": 51,
+      "position": {
+        "x": 2.14,
+        "y": -0.08
+      },
+      "owner": 53,
+      "contactGroup": 15,
+      "coincidentGroup": 15
+    },
+    {
+      "id": 52,
+      "position": {
+        "x": 1.96,
+        "y": -0.56
+      },
+      "owner": 53,
+      "contactGroup": 16,
+      "coincidentGroup": 16
+    },
+    {
+      "id": 54,
+      "position": {
+        "x": 1.96,
+        "y": -0.56
+      },
+      "owner": 56,
+      "contactGroup": 16,
+      "coincidentGroup": 16
+    },
+    {
+      "id": 55,
+      "position": {
+        "x": 4.28,
+        "y": -0.76
+      },
+      "owner": 56,
+      "contactGroup": 17,
+      "coincidentGroup": 17
+    },
+    {
+      "id": 57,
+      "position": {
+        "x": 4.28,
+        "y": -0.76
+      },
+      "owner": 59,
+      "contactGroup": 17,
+      "coincidentGroup": 17
+    },
+    {
+      "id": 58,
+      "position": {
+        "x": 4.96,
+        "y": -1.22
+      },
+      "owner": 59,
+      "contactGroup": 18,
+      "coincidentGroup": 18
+    },
+    {
+      "id": 60,
+      "position": {
+        "x": 4.96,
+        "y": -1.22
+      },
+      "owner": 62,
+      "contactGroup": 18,
+      "coincidentGroup": 18
+    },
+    {
+      "id": 61,
+      "position": {
+        "x": 2.24,
+        "y": -1.24
+      },
+      "owner": 62,
+      "contactGroup": 19,
+      "coincidentGroup": 19
+    },
+    {
+      "id": 63,
+      "position": {
+        "x": 2.24,
+        "y": -1.24
+      },
+      "owner": 65,
+      "contactGroup": 19,
+      "coincidentGroup": 19
+    },
+    {
+      "id": 64,
+      "position": {
+        "x": 1.82,
+        "y": -1.74
+      },
+      "owner": 65,
+      "contactGroup": 20,
+      "coincidentGroup": 20
+    },
+    {
+      "id": 66,
+      "position": {
+        "x": 1.82,
+        "y": -1.74
+      },
+      "owner": 68,
+      "contactGroup": 20,
+      "coincidentGroup": 20
+    },
+    {
+      "id": 67,
+      "position": {
+        "x": 4.02,
+        "y": -2.34
+      },
+      "owner": 68,
+      "contactGroup": 21,
+      "coincidentGroup": 21
+    },
+    {
+      "id": 69,
+      "position": {
+        "x": 4.02,
+        "y": -2.34
+      },
+      "owner": 71,
+      "contactGroup": 21,
+      "coincidentGroup": 21
+    },
+    {
+      "id": 70,
+      "position": {
+        "x": 4.72,
+        "y": -2.98
+      },
+      "owner": 71,
+      "contactGroup": 22,
+      "coincidentGroup": 22
+    },
+    {
+      "id": 72,
+      "position": {
+        "x": 4.72,
+        "y": -2.98
+      },
+      "owner": 74,
+      "contactGroup": 22,
+      "coincidentGroup": 22
+    },
+    {
+      "id": 73,
+      "position": {
+        "x": 1.5092409450357664,
+        "y": -2.2730097068229878
+      },
+      "owner": 74,
+      "contactGroup": 23,
+      "coincidentGroup": 23
+    },
+    {
+      "id": 75,
+      "position": {
+        "x": 1.5092409450050073,
+        "y": -2.2730097068559973
+      },
+      "owner": 78,
+      "contactGroup": 23,
+      "coincidentGroup": 23
+    },
+    {
+      "id": 76,
+      "position": {
+        "x": -0.07604392031568925,
+        "y": -2.6114163875126164
+      },
+      "owner": 78
+    },
+    {
+      "id": 77,
+      "position": {
+        "x": 0.8575619696760547,
+        "y": -3.1025641840410274
+      },
+      "owner": 78
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 7,
+      "kind": "line",
+      "pointIds": [
+        5,
+        6
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 11,
+      "kind": "arc",
+      "pointIds": [
+        8,
+        9,
+        10
+      ],
+      "endpointIds": [
+        8,
+        9
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 14,
+      "kind": "line",
+      "pointIds": [
+        12,
+        13
+      ],
+      "endpointIds": [
+        12,
+        13
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 17,
+      "kind": "line",
+      "pointIds": [
+        15,
+        16
+      ],
+      "endpointIds": [
+        15,
+        16
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 20,
+      "kind": "line",
+      "pointIds": [
+        18,
+        19
+      ],
+      "endpointIds": [
+        18,
+        19
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 23,
+      "kind": "line",
+      "pointIds": [
+        21,
+        22
+      ],
+      "endpointIds": [
+        21,
+        22
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 26,
+      "kind": "line",
+      "pointIds": [
+        24,
+        25
+      ],
+      "endpointIds": [
+        24,
+        25
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 29,
+      "kind": "line",
+      "pointIds": [
+        27,
+        28
+      ],
+      "endpointIds": [
+        27,
+        28
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 32,
+      "kind": "line",
+      "pointIds": [
+        30,
+        31
+      ],
+      "endpointIds": [
+        30,
+        31
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 35,
+      "kind": "line",
+      "pointIds": [
+        33,
+        34
+      ],
+      "endpointIds": [
+        33,
+        34
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 38,
+      "kind": "line",
+      "pointIds": [
+        36,
+        37
+      ],
+      "endpointIds": [
+        36,
+        37
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 41,
+      "kind": "line",
+      "pointIds": [
+        39,
+        40
+      ],
+      "endpointIds": [
+        39,
+        40
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 44,
+      "kind": "line",
+      "pointIds": [
+        42,
+        43
+      ],
+      "endpointIds": [
+        42,
+        43
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 47,
+      "kind": "line",
+      "pointIds": [
+        45,
+        46
+      ],
+      "endpointIds": [
+        45,
+        46
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 50,
+      "kind": "line",
+      "pointIds": [
+        48,
+        49
+      ],
+      "endpointIds": [
+        48,
+        49
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 53,
+      "kind": "line",
+      "pointIds": [
+        51,
+        52
+      ],
+      "endpointIds": [
+        51,
+        52
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 56,
+      "kind": "line",
+      "pointIds": [
+        54,
+        55
+      ],
+      "endpointIds": [
+        54,
+        55
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 59,
+      "kind": "line",
+      "pointIds": [
+        57,
+        58
+      ],
+      "endpointIds": [
+        57,
+        58
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 62,
+      "kind": "line",
+      "pointIds": [
+        60,
+        61
+      ],
+      "endpointIds": [
+        60,
+        61
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 65,
+      "kind": "line",
+      "pointIds": [
+        63,
+        64
+      ],
+      "endpointIds": [
+        63,
+        64
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 68,
+      "kind": "line",
+      "pointIds": [
+        66,
+        67
+      ],
+      "endpointIds": [
+        66,
+        67
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 71,
+      "kind": "line",
+      "pointIds": [
+        69,
+        70
+      ],
+      "endpointIds": [
+        69,
+        70
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 74,
+      "kind": "line",
+      "pointIds": [
+        72,
+        73
+      ],
+      "endpointIds": [
+        72,
+        73
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 78,
+      "kind": "arc",
+      "pointIds": [
+        75,
+        76,
+        77
+      ],
+      "endpointIds": [
+        75,
+        76
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    }
+  ],
+  "constraints": [
+    {
+      "id": 79,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 3
+        },
+        {
+          "type": "object",
+          "id": 5
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 6
+        },
+        {
+          "type": "object",
+          "id": 8
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 9
+        },
+        {
+          "type": "object",
+          "id": 12
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 13
+        },
+        {
+          "type": "object",
+          "id": 15
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 16
+        },
+        {
+          "type": "object",
+          "id": 18
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 19
+        },
+        {
+          "type": "object",
+          "id": 21
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 22
+        },
+        {
+          "type": "object",
+          "id": 24
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 25
+        },
+        {
+          "type": "object",
+          "id": 27
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 28
+        },
+        {
+          "type": "object",
+          "id": 30
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 31
+        },
+        {
+          "type": "object",
+          "id": 33
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 34
+        },
+        {
+          "type": "object",
+          "id": 36
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 37
+        },
+        {
+          "type": "object",
+          "id": 39
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 40
+        },
+        {
+          "type": "object",
+          "id": 42
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 43
+        },
+        {
+          "type": "object",
+          "id": 45
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 46
+        },
+        {
+          "type": "object",
+          "id": 48
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 49
+        },
+        {
+          "type": "object",
+          "id": 51
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 52
+        },
+        {
+          "type": "object",
+          "id": 54
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 55
+        },
+        {
+          "type": "object",
+          "id": 57
+        }
+      ]
+    },
+    {
+      "id": 97,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 58
+        },
+        {
+          "type": "object",
+          "id": 60
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 61
+        },
+        {
+          "type": "object",
+          "id": 63
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 64
+        },
+        {
+          "type": "object",
+          "id": 66
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 67
+        },
+        {
+          "type": "object",
+          "id": 69
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 70
+        },
+        {
+          "type": "object",
+          "id": 72
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 73
+        },
+        {
+          "type": "object",
+          "id": 75
+        }
+      ]
+    }
+  ],
+  "contactGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": 1,
+      "pointIds": [
+        6,
+        8
+      ]
+    },
+    {
+      "id": 2,
+      "pointIds": [
+        9,
+        12
+      ]
+    },
+    {
+      "id": 3,
+      "pointIds": [
+        13,
+        15
+      ]
+    },
+    {
+      "id": 4,
+      "pointIds": [
+        16,
+        18
+      ]
+    },
+    {
+      "id": 5,
+      "pointIds": [
+        19,
+        21
+      ]
+    },
+    {
+      "id": 6,
+      "pointIds": [
+        22,
+        24
+      ]
+    },
+    {
+      "id": 7,
+      "pointIds": [
+        25,
+        27
+      ]
+    },
+    {
+      "id": 8,
+      "pointIds": [
+        28,
+        30
+      ]
+    },
+    {
+      "id": 9,
+      "pointIds": [
+        31,
+        33
+      ]
+    },
+    {
+      "id": 10,
+      "pointIds": [
+        34,
+        36
+      ]
+    },
+    {
+      "id": 11,
+      "pointIds": [
+        37,
+        39
+      ]
+    },
+    {
+      "id": 12,
+      "pointIds": [
+        40,
+        42
+      ]
+    },
+    {
+      "id": 13,
+      "pointIds": [
+        43,
+        45
+      ]
+    },
+    {
+      "id": 14,
+      "pointIds": [
+        46,
+        48
+      ]
+    },
+    {
+      "id": 15,
+      "pointIds": [
+        49,
+        51
+      ]
+    },
+    {
+      "id": 16,
+      "pointIds": [
+        52,
+        54
+      ]
+    },
+    {
+      "id": 17,
+      "pointIds": [
+        55,
+        57
+      ]
+    },
+    {
+      "id": 18,
+      "pointIds": [
+        58,
+        60
+      ]
+    },
+    {
+      "id": 19,
+      "pointIds": [
+        61,
+        63
+      ]
+    },
+    {
+      "id": 20,
+      "pointIds": [
+        64,
+        66
+      ]
+    },
+    {
+      "id": 21,
+      "pointIds": [
+        67,
+        69
+      ]
+    },
+    {
+      "id": 22,
+      "pointIds": [
+        70,
+        72
+      ]
+    },
+    {
+      "id": 23,
+      "pointIds": [
+        73,
+        75
+      ]
+    }
+  ],
+  "coincidentGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        3,
+        5
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 1,
+      "pointIds": [
+        6,
+        8
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 2,
+      "pointIds": [
+        9,
+        12
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 3,
+      "pointIds": [
+        13,
+        15
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 4,
+      "pointIds": [
+        16,
+        18
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 5,
+      "pointIds": [
+        19,
+        21
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 6,
+      "pointIds": [
+        22,
+        24
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 7,
+      "pointIds": [
+        25,
+        27
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 8,
+      "pointIds": [
+        28,
+        30
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 9,
+      "pointIds": [
+        31,
+        33
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 10,
+      "pointIds": [
+        34,
+        36
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 11,
+      "pointIds": [
+        37,
+        39
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 12,
+      "pointIds": [
+        40,
+        42
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 13,
+      "pointIds": [
+        43,
+        45
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 14,
+      "pointIds": [
+        46,
+        48
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 15,
+      "pointIds": [
+        49,
+        51
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 16,
+      "pointIds": [
+        52,
+        54
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 17,
+      "pointIds": [
+        55,
+        57
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 18,
+      "pointIds": [
+        58,
+        60
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 19,
+      "pointIds": [
+        61,
+        63
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 20,
+      "pointIds": [
+        64,
+        66
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 21,
+      "pointIds": [
+        67,
+        69
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 22,
+      "pointIds": [
+        70,
+        72
+      ],
+      "includesOrigin": false
+    },
+    {
+      "id": 23,
+      "pointIds": [
+        73,
+        75
+      ],
+      "includesOrigin": false
+    }
+  ],
+  "connectedComponents": [
+    {
+      "id": 0,
+      "segmentIds": [
+        4,
+        7,
+        11,
+        14,
+        17,
+        20,
+        23,
+        26,
+        29,
+        32,
+        35,
+        38,
+        41,
+        44,
+        47,
+        50,
+        53,
+        56,
+        59,
+        62,
+        65,
+        68,
+        71,
+        74,
+        78
+      ]
+    }
+  ],
+  "openEndpoints": [
+    2,
+    76
+  ],
+  "closednessHints": [
+    {
+      "componentId": 0,
+      "isClosed": false,
+      "openEndpointIds": [
+        2,
+        76
+      ]
+    }
+  ],
+  "warnings": []
+}

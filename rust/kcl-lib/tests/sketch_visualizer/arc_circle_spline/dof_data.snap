@@ -1,0 +1,266 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "profile"
+  },
+  "bounds": {
+    "min": {
+      "x": -23.997039179559856,
+      "y": -30.0
+    },
+    "max": {
+      "x": 50.0,
+      "y": 28.0
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "mode": "dof",
+  "constraintStatus": {
+    "name": "",
+    "status": "UnderConstrained",
+    "free_count": 7,
+    "conflict_count": 0,
+    "total_count": 7
+  },
+  "dof": {
+    "default": "Free",
+    "points": {},
+    "segments": {}
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 4,
+      "contactGroup": 0
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 32.0,
+        "y": 0.0
+      },
+      "owner": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.0,
+        "y": 24.0
+      },
+      "owner": 8
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 24.0,
+        "y": 0.0
+      },
+      "owner": 8
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 8,
+      "contactGroup": 0
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 50.0,
+        "y": 16.0
+      },
+      "owner": 11
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 38.0,
+        "y": 16.0
+      },
+      "owner": 11
+    },
+    {
+      "id": 12,
+      "position": {
+        "x": 2.0,
+        "y": -28.0
+      },
+      "owner": 19
+    },
+    {
+      "id": 13,
+      "position": {
+        "x": 16.0,
+        "y": -8.0
+      },
+      "owner": 19
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 30.0,
+        "y": -30.0
+      },
+      "owner": 19
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 48.0,
+        "y": -10.0
+      },
+      "owner": 19
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "componentId": 0,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 8,
+      "kind": "arc",
+      "pointIds": [
+        5,
+        6,
+        7
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false,
+      "componentId": 1,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 11,
+      "kind": "circle",
+      "pointIds": [
+        9,
+        10
+      ],
+      "endpointIds": [],
+      "construction": false,
+      "componentId": 2,
+      "renderedColor": "#3c73ff"
+    },
+    {
+      "id": 19,
+      "kind": "control_point_spline",
+      "pointIds": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "endpointIds": [
+        12,
+        15
+      ],
+      "construction": false,
+      "componentId": 3,
+      "renderedColor": "#3c73ff"
+    }
+  ],
+  "constraints": [],
+  "contactGroups": [
+    {
+      "id": 0,
+      "pointIds": [
+        2,
+        7
+      ]
+    }
+  ],
+  "coincidentGroups": [],
+  "connectedComponents": [
+    {
+      "id": 0,
+      "segmentIds": [
+        4
+      ]
+    },
+    {
+      "id": 1,
+      "segmentIds": [
+        8
+      ]
+    },
+    {
+      "id": 2,
+      "segmentIds": [
+        11
+      ]
+    },
+    {
+      "id": 3,
+      "segmentIds": [
+        19
+      ]
+    }
+  ],
+  "openEndpoints": [
+    2,
+    3,
+    5,
+    6,
+    12,
+    15
+  ],
+  "closednessHints": [
+    {
+      "componentId": 0,
+      "isClosed": false,
+      "openEndpointIds": [
+        2,
+        3
+      ]
+    },
+    {
+      "componentId": 1,
+      "isClosed": false,
+      "openEndpointIds": [
+        5,
+        6
+      ]
+    },
+    {
+      "componentId": 2,
+      "isClosed": true,
+      "openEndpointIds": []
+    },
+    {
+      "componentId": 3,
+      "isClosed": false,
+      "openEndpointIds": [
+        12,
+        15
+      ]
+    }
+  ],
+  "warnings": []
+}
