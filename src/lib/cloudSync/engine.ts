@@ -4,16 +4,7 @@ import {
   reportCloudSyncConflict,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
-import {
-  CloudApiError,
-  createRemoteProject,
-  deleteRemoteProject,
-  downloadRemoteProjectArchive,
-  getRemoteProject,
-  getRemoteProjectThumbnailUrl,
-  listRemoteProjects,
-  updateRemoteProject,
-} from '@src/lib/cloudSync/cloudApi'
+import { zooCloudSyncRemoteApi } from '@src/lib/cloudSync/cloudApi'
 import {
   buildConflictInspectionFromCloudFiles,
   type ConflictInspection,
@@ -49,6 +40,7 @@ import type {
   CloudSyncConfig,
   CloudSyncLocalProject,
   CloudSyncOpenedProject,
+  CloudSyncProjectBinding,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
   OutboxEntry,
@@ -56,6 +48,7 @@ import type {
   ProjectManifest,
   ProjectMetadata,
   ProjectSyncFailureKind,
+  ProjectTomlRemoteProjectBinding,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
@@ -220,11 +213,11 @@ function projectFailureError(
 }
 
 function remoteUploadFailureFromError(error: unknown) {
-  return error instanceof CloudApiError && error.status === 403
+  return isRemoteUploadForbiddenError(error)
     ? projectFailureError(
         'remote-upload-forbidden',
         REMOTE_UPLOAD_FORBIDDEN_MESSAGE,
-        { retryAfterMs: error.retryAfterMs }
+        { retryAfterMs: remoteApiRetryAfterMs(error) }
       )
     : error
 }
@@ -234,8 +227,9 @@ function rejectRemoteUploadFailure(error: unknown): Promise<never> {
 }
 
 function cloudApiRetryAfterMs(error: unknown): number | undefined {
-  if (error instanceof CloudApiError) {
-    return error.retryAfterMs
+  const apiRetryAfterMs = remoteApiRetryAfterMs(error)
+  if (apiRetryAfterMs !== undefined) {
+    return apiRetryAfterMs
   }
   if (
     typeof error === 'object' &&
@@ -581,8 +575,10 @@ function normalizeCloudSyncOpenedProject(
   return {
     projectPath: normalizedProjectPath,
     syncable:
-      openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
-      Boolean(openedProject.libraryPath?.trim()),
+      Boolean(
+        openedProject.libraryType &&
+          getProjectBinding().libraryTypes.includes(openedProject.libraryType)
+      ) && Boolean(openedProject.libraryPath?.trim()),
   }
 }
 
@@ -720,51 +716,104 @@ export function getCloudSyncScopePlan(
   )
 }
 
-function getEnvironmentName() {
-  if (config.environmentName) {
-    return config.environmentName
+function getEnvironmentNameForConfig(targetConfig: CloudSyncConfig) {
+  if (targetConfig.environmentName) {
+    return targetConfig.environmentName
   }
 
   return getEnvironmentNameFromEnv(env())
 }
 
-type ProjectTomlCloudEnvironmentBinding =
-  | {
-      kind: 'current-environment'
-      projectId: string
-    }
-  | {
-      kind: 'other-environment'
-      projectId: string
-    }
-  | {
-      kind: 'unbound'
+const zooCloudSyncProjectBinding: CloudSyncProjectBinding = {
+  id: 'zoo',
+  libraryTypes: [CLOUD_PROJECT_LIBRARY_TYPE],
+  readProjectTomlBinding: (projectToml, targetConfig) => {
+    const environmentName = getEnvironmentNameForConfig(targetConfig)
+    const currentEnvironmentProjectId = environmentName
+      ? getCloudProjectIdFromProjectTomlContents(projectToml, environmentName)
+      : undefined
+    if (currentEnvironmentProjectId) {
+      return {
+        kind: 'current-environment',
+        projectId: currentEnvironmentProjectId,
+      }
     }
 
-function getProjectTomlCloudEnvironmentBinding(
-  projectToml: string
-): ProjectTomlCloudEnvironmentBinding {
-  const environmentName = getEnvironmentName()
-  const currentEnvironmentProjectId = environmentName
-    ? getCloudProjectIdFromProjectTomlContents(projectToml, environmentName)
-    : undefined
-  if (currentEnvironmentProjectId) {
-    return {
-      kind: 'current-environment',
-      projectId: currentEnvironmentProjectId,
+    const anyEnvironmentProjectId =
+      getCloudProjectIdFromProjectTomlContents(projectToml)
+    if (anyEnvironmentProjectId) {
+      return {
+        kind: 'other-environment',
+        projectId: anyEnvironmentProjectId,
+      }
     }
-  }
 
-  const anyEnvironmentProjectId =
-    getCloudProjectIdFromProjectTomlContents(projectToml)
-  if (anyEnvironmentProjectId) {
-    return {
-      kind: 'other-environment',
-      projectId: anyEnvironmentProjectId,
-    }
-  }
+    return { kind: 'unbound' }
+  },
+  setProjectIdInProjectTomlContents: (projectToml, projectId, targetConfig) => {
+    const environmentName = getEnvironmentNameForConfig(targetConfig)
+    return environmentName
+      ? setCloudProjectIdInProjectTomlContents(
+          projectToml,
+          environmentName,
+          projectId
+        )
+      : projectToml
+  },
+  removeProjectIdFromProjectTomlContents: (projectToml, targetConfig) => {
+    const environmentName = getEnvironmentNameForConfig(targetConfig)
+    return environmentName
+      ? removeCloudProjectIdFromProjectTomlContents(
+          projectToml,
+          environmentName
+        )
+      : projectToml
+  },
+  withRemoteProjectMetadataInArchiveFiles: (
+    files,
+    title,
+    projectId,
+    targetConfig
+  ) =>
+    withRemoteProjectMetadataInArchiveFiles(
+      files,
+      title,
+      projectId,
+      getEnvironmentNameForConfig(targetConfig)
+    ),
+}
 
-  return { kind: 'unbound' }
+function getRemoteApi() {
+  return config.remoteApi ?? zooCloudSyncRemoteApi
+}
+
+function getProjectBinding() {
+  return config.projectBinding ?? zooCloudSyncProjectBinding
+}
+
+function isRemoteProjectNotFoundError(error: unknown) {
+  return getRemoteApi().isNotFoundError?.(error) ?? false
+}
+
+function isRemoteUploadForbiddenError(error: unknown) {
+  return getRemoteApi().isRemoteUploadForbiddenError?.(error) ?? false
+}
+
+function remoteApiRetryAfterMs(error: unknown) {
+  return getRemoteApi().retryAfterMs?.(error)
+}
+
+function withConfiguredRemoteProjectMetadataInArchiveFiles(
+  files: ProjectArchiveFile[],
+  title: string | undefined,
+  projectId: string
+) {
+  return getProjectBinding().withRemoteProjectMetadataInArchiveFiles(
+    files,
+    title,
+    projectId,
+    config
+  )
 }
 
 function getRevision(project: RemoteProject | undefined): Revision | undefined {
@@ -836,18 +885,18 @@ async function downloadRemoteProjectSnapshot({
   reviewedRemoteRevision?: Revision
   verifyStableRevision?: boolean
 }) {
-  const project = remoteProject ?? (await getRemoteProject(config, projectId))
+  const project =
+    remoteProject ?? (await getRemoteApi().getRemoteProject(config, projectId))
   const revision = getRevision(project)
   assertReviewedRemoteRevision(revision, reviewedRemoteRevision)
 
   const parsedArchive = await parseProjectArchive(
-    await downloadRemoteProjectArchive(config, projectId)
+    await getRemoteApi().downloadRemoteProjectArchive(config, projectId)
   )
-  const filesWithMetadata = withRemoteProjectMetadataInArchiveFiles(
+  const filesWithMetadata = withConfiguredRemoteProjectMetadataInArchiveFiles(
     parsedArchive,
     project.title,
-    projectId,
-    getEnvironmentName()
+    projectId
   )
   const files = filterCloudSyncProjectFilesForSync(filesWithMetadata)
 
@@ -860,7 +909,7 @@ async function downloadRemoteProjectSnapshot({
     }
   }
 
-  const latestProject = await getRemoteProject(config, projectId)
+  const latestProject = await getRemoteApi().getRemoteProject(config, projectId)
   const latestRevision = getRevision(latestProject)
   assertReviewedRemoteRevision(latestRevision, revision)
 
@@ -1146,31 +1195,28 @@ async function writeLocalProjectCloudProjectId(
   projectPath: string,
   projectId: string
 ) {
-  const environmentName = getEnvironmentName()
-  if (!environmentName) {
-    return false
-  }
-
-  return updateLocalProjectToml(projectPath, (projectToml) =>
-    getCloudProjectIdFromProjectTomlContents(projectToml, environmentName) ===
-    projectId
+  return updateLocalProjectToml(projectPath, (projectToml) => {
+    const binding = getProjectBinding().readProjectTomlBinding(
+      projectToml,
+      config
+    )
+    return binding.kind === 'current-environment' &&
+      binding.projectId === projectId
       ? projectToml
-      : setCloudProjectIdInProjectTomlContents(
+      : getProjectBinding().setProjectIdInProjectTomlContents(
           projectToml,
-          environmentName,
-          projectId
+          projectId,
+          config
         )
-  )
+  })
 }
 
 async function removeLocalProjectCloudProjectId(projectPath: string) {
-  const environmentName = getEnvironmentName()
-  if (!environmentName) {
-    return false
-  }
-
   return updateLocalProjectToml(projectPath, (projectToml) =>
-    removeCloudProjectIdFromProjectTomlContents(projectToml, environmentName)
+    getProjectBinding().removeProjectIdFromProjectTomlContents(
+      projectToml,
+      config
+    )
   )
 }
 
@@ -1710,13 +1756,15 @@ async function cloneRemoteProjectToLocal(
     preferredProjectPath && !(await exists(preferredProjectPath))
       ? preferredProjectPath
       : await uniqueProjectPath(projectDirectory, projectName)
-  const archive = await downloadRemoteProjectArchive(config, remoteProject.id)
+  const archive = await getRemoteApi().downloadRemoteProjectArchive(
+    config,
+    remoteProject.id
+  )
   const files = filterCloudSyncProjectFilesForSync(
-    withRemoteProjectMetadataInArchiveFiles(
+    withConfiguredRemoteProjectMetadataInArchiveFiles(
       await parseProjectArchive(archive),
       remoteProject.title,
-      remoteProject.id,
-      getEnvironmentName()
+      remoteProject.id
     )
   )
   const nextMetadata = {
@@ -1775,7 +1823,10 @@ export async function ensureCloudProjectLocallySynced(
   ) {
     let nextMetadata = knownLocalMetadata
     if (!(await readLocalProjectTitle(knownLocalProjectPath))) {
-      const remoteProject = await getRemoteProject(config, projectId)
+      const remoteProject = await getRemoteApi().getRemoteProject(
+        config,
+        projectId
+      )
       nextMetadata = await hydrateCleanLocalProjectTitle(
         knownLocalMetadata,
         getRemoteProjectTitleForProjectToml(remoteProject.title)
@@ -1812,7 +1863,7 @@ export async function ensureCloudProjectLocallySynced(
     await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
   }
 
-  const remoteProject = await getRemoteProject(config, projectId)
+  const remoteProject = await getRemoteApi().getRemoteProject(config, projectId)
   const projectName = localProjectNameForRemoteProject(remoteProject)
   await localFs.mkdir(projectDirectory, { recursive: true })
 
@@ -1876,25 +1927,26 @@ export async function renameRemoteCloudProject(
     return
   }
 
-  const remoteProject = await getRemoteProject(config, projectId)
-  const files = withRemoteProjectMetadataInArchiveFiles(
+  const remoteProject = await getRemoteApi().getRemoteProject(config, projectId)
+  const files = withConfiguredRemoteProjectMetadataInArchiveFiles(
     filterCloudSyncProjectFilesForSync(
       await parseProjectArchive(
-        await downloadRemoteProjectArchive(config, projectId)
+        await getRemoteApi().downloadRemoteProjectArchive(config, projectId)
       )
     ),
     title,
-    projectId,
-    getEnvironmentName()
+    projectId
   )
-  const updated = await updateRemoteProject({
-    config,
-    projectPath: localProjectNameForRemoteProject(remoteProject),
-    project: remoteProject,
-    files,
-    expectedRevision: getRevision(remoteProject),
-    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-  }).catch(rejectRemoteUploadFailure)
+  const updated = await getRemoteApi()
+    .updateRemoteProject({
+      config,
+      projectPath: localProjectNameForRemoteProject(remoteProject),
+      project: remoteProject,
+      files,
+      expectedRevision: getRevision(remoteProject),
+      entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+    })
+    .catch(rejectRemoteUploadFailure)
 
   // Reflect the new title in the in-memory remote index immediately so Home
   // updates before the next full remote index sync completes.
@@ -1949,7 +2001,7 @@ export async function duplicateRemoteCloudProject(
   const files = prepareRemoteProjectFilesForDuplication(
     filterCloudSyncProjectFilesForSync(
       await parseProjectArchive(
-        await downloadRemoteProjectArchive(config, projectId)
+        await getRemoteApi().downloadRemoteProjectArchive(config, projectId)
       )
     ),
     title
@@ -1958,7 +2010,7 @@ export async function duplicateRemoteCloudProject(
     return Promise.reject(files)
   }
 
-  const created = await createRemoteProject(config, title, files)
+  const created = await getRemoteApi().createRemoteProject(config, title, files)
   const duplicatedProject = {
     ...created,
     title: created.title?.trim() || title,
@@ -2000,9 +2052,9 @@ export async function deleteRemoteCloudProject(
   }
 
   try {
-    await deleteRemoteProject(config, projectId)
+    await getRemoteApi().deleteRemoteProject(config, projectId)
   } catch (error) {
-    if (!(error instanceof CloudApiError && error.status === 404)) {
+    if (!isRemoteProjectNotFoundError(error)) {
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw
       throw error
     }
@@ -2027,12 +2079,12 @@ export async function getCloudSyncRemoteProjectThumbnailUrl(
     return undefined
   }
 
-  return getRemoteProjectThumbnailUrl(config, remoteProject)
+  return getRemoteApi().getRemoteProjectThumbnailUrl?.(config, remoteProject)
 }
 
 async function readProjectTomlCloudEnvironmentBinding(
   projectPath: string
-): Promise<ProjectTomlCloudEnvironmentBinding> {
+): Promise<ProjectTomlRemoteProjectBinding> {
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   if (!(await exists(projectTomlPath))) {
     return { kind: 'unbound' }
@@ -2042,7 +2094,7 @@ async function readProjectTomlCloudEnvironmentBinding(
     encoding: 'utf-8',
   })
 
-  return getProjectTomlCloudEnvironmentBinding(projectToml)
+  return getProjectBinding().readProjectTomlBinding(projectToml, config)
 }
 
 async function readProjectTomlCloudProjectId(projectPath: string) {
@@ -2080,7 +2132,7 @@ async function getOrCreateProjectMetadata(projectPath: string) {
 
 async function bindRemoteProjectIdFromToml(
   metadata: ProjectMetadata,
-  binding?: ProjectTomlCloudEnvironmentBinding
+  binding?: ProjectTomlRemoteProjectBinding
 ) {
   if (isProjectSyncExcluded(metadata)) {
     return metadata
@@ -2253,19 +2305,24 @@ async function applyLocalDataForConflict(
 
   const expectedRevision =
     reviewedRemoteRevision ?? conflict.remoteRevision ?? metadata.remoteRevision
-  const remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
+  const remoteProject = await getRemoteApi().getRemoteProject(
+    config,
+    metadata.remoteProjectId
+  )
   assertReviewedRemoteRevision(getRevision(remoteProject), expectedRevision)
 
   const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
   const localManifest = await projectManifestFromFiles(localFiles)
-  const updated = await updateRemoteProject({
-    config,
-    projectPath: metadata.localProjectPath,
-    project: remoteProject,
-    files: localFiles,
-    expectedRevision,
-    entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-  }).catch(rejectRemoteUploadFailure)
+  const updated = await getRemoteApi()
+    .updateRemoteProject({
+      config,
+      projectPath: metadata.localProjectPath,
+      project: remoteProject,
+      files: localFiles,
+      expectedRevision,
+      entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+    })
+    .catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteLegacyConflictCopy(conflict)
   await markProjectSynced(
@@ -2670,10 +2727,10 @@ async function syncDeletedProject(
   if (remoteProjectId) {
     try {
       await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
-        deleteRemoteProject(config, remoteProjectId)
+        getRemoteApi().deleteRemoteProject(config, remoteProjectId)
       )
     } catch (error) {
-      if (!(error instanceof CloudApiError && error.status === 404)) {
+      if (!isRemoteProjectNotFoundError(error)) {
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw error
       }
@@ -2828,10 +2885,10 @@ async function syncProject(
       try {
         remoteProject = await runCloudSyncProjectApiRequest(
           throttleProjectApiRequest,
-          () => getRemoteProject(config, remoteProjectId)
+          () => getRemoteApi().getRemoteProject(config, remoteProjectId)
         )
       } catch (error) {
-        if (error instanceof CloudApiError && error.status === 404) {
+        if (isRemoteProjectNotFoundError(error)) {
           await reconcileMissingRemoteProject(metadata, {
             hasPendingLocalChanges: entries.length > 0,
           })
@@ -2882,7 +2939,12 @@ async function syncProject(
     if (preflightAction === 'create-remote') {
       const created = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
-        () => createRemoteProject(config, metadata.localProjectPath, localFiles)
+        () =>
+          getRemoteApi().createRemoteProject(
+            config,
+            metadata.localProjectPath,
+            localFiles
+          )
       )
       await writeLocalProjectCloudProjectId(
         metadata.localProjectPath,
@@ -2927,7 +2989,7 @@ async function syncProject(
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
-          updateRemoteProject({
+          getRemoteApi().updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
             project: remoteProject,
@@ -2947,14 +3009,13 @@ async function syncProject(
 
     const remoteArchive = await runCloudSyncProjectApiRequest(
       throttleProjectApiRequest,
-      () => downloadRemoteProjectArchive(config, remoteProjectId)
+      () => getRemoteApi().downloadRemoteProjectArchive(config, remoteProjectId)
     )
     const remoteFiles = filterCloudSyncProjectFilesForSync(
-      withRemoteProjectMetadataInArchiveFiles(
+      withConfiguredRemoteProjectMetadataInArchiveFiles(
         await parseProjectArchive(remoteArchive),
         remoteProject.title,
-        remoteProjectId,
-        getEnvironmentName()
+        remoteProjectId
       )
     )
     const remoteManifest = await projectManifestFromFiles(remoteFiles)
@@ -3014,7 +3075,7 @@ async function syncProject(
       const updated = await runCloudSyncProjectApiRequest(
         throttleProjectApiRequest,
         () =>
-          updateRemoteProject({
+          getRemoteApi().updateRemoteProject({
             config,
             projectPath: metadata.localProjectPath,
             project: remoteProject,
@@ -3066,7 +3127,7 @@ async function syncRemoteIndex(
 
   const remoteProjects = await runCloudSyncProjectApiRequest(
     throttleProjectApiRequest,
-    () => listRemoteProjects(config)
+    () => getRemoteApi().listRemoteProjects(config)
   )
   cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
@@ -3691,9 +3752,9 @@ export async function disconnectCloudSyncProject(projectPath: string) {
 
   if (remoteProjectId) {
     try {
-      await deleteRemoteProject(config, remoteProjectId)
+      await getRemoteApi().deleteRemoteProject(config, remoteProjectId)
     } catch (error) {
-      if (!(error instanceof CloudApiError && error.status === 404)) {
+      if (!isRemoteProjectNotFoundError(error)) {
         const restoredMetadata = {
           ...metadata,
           localProjectPath: normalizedProjectPath,
@@ -3984,14 +4045,24 @@ export async function notifyCloudSyncRenameMutation(
 
 export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   const previousConfig = config
+  const remoteApiProvided = Object.hasOwn(nextConfig, 'remoteApi')
+  const projectBindingProvided = Object.hasOwn(nextConfig, 'projectBinding')
   config = {
     ...config,
     ...nextConfig,
   }
+  if (!remoteApiProvided) {
+    delete config.remoteApi
+  }
+  if (!projectBindingProvided) {
+    delete config.projectBinding
+  }
   const cloudIdentityChanged =
     previousConfig.token !== config.token ||
     previousConfig.baseUrl !== config.baseUrl ||
-    previousConfig.environmentName !== config.environmentName
+    previousConfig.environmentName !== config.environmentName ||
+    previousConfig.remoteApi !== config.remoteApi ||
+    previousConfig.projectBinding !== config.projectBinding
   const projectDirectoryChanged =
     getCloudLibraryMaterializationConfigKey(previousConfig) !==
     getCloudLibraryMaterializationConfigKey(config)

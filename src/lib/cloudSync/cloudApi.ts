@@ -6,10 +6,12 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import type {
   CloudSyncConfig,
+  CloudSyncRemoteProjectApi,
   ProjectArchiveFile,
   ProjectUploadPublicationMetadata,
   RemoteProject,
   RemoteProjectSummary,
+  RemoteProjectUpdateInput,
   Revision,
 } from '@src/lib/cloudSync/types'
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
@@ -46,6 +48,32 @@ function retryAfterDelayMs(value: string | null) {
   }
 
   return Math.max(0, retryAtMs - Date.now())
+}
+
+export function isCloudApiNotFoundError(error: unknown) {
+  return error instanceof CloudApiError && error.status === 404
+}
+
+export function isCloudApiRemoteUploadForbiddenError(error: unknown) {
+  return error instanceof CloudApiError && error.status === 403
+}
+
+export function getCloudApiRetryAfterMs(error: unknown): number | undefined {
+  if (error instanceof CloudApiError) {
+    return error.retryAfterMs
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'retryAfterMs' in error &&
+    typeof error.retryAfterMs === 'number'
+  ) {
+    return error.retryAfterMs
+  }
+  if (error instanceof Error && error.cause !== undefined) {
+    return getCloudApiRetryAfterMs(error.cause)
+  }
+  return undefined
 }
 
 function getBaseUrl(config: CloudSyncConfig) {
@@ -389,14 +417,7 @@ export async function updateRemoteProject({
   files,
   expectedRevision,
   entrypointPath,
-}: {
-  config: CloudSyncConfig
-  projectPath: string
-  project: RemoteProject
-  files: ProjectArchiveFile[]
-  expectedRevision?: Revision
-  entrypointPath?: string
-}) {
+}: RemoteProjectUpdateInput) {
   const publicationMetadata = getProjectUploadPublicationMetadata(project)
 
   return cloudJson<RemoteProject>(
@@ -414,6 +435,19 @@ export async function updateRemoteProject({
       }),
     }
   )
+}
+
+export const zooCloudSyncRemoteApi: CloudSyncRemoteProjectApi = {
+  listRemoteProjects,
+  getRemoteProject,
+  getRemoteProjectThumbnailUrl,
+  deleteRemoteProject,
+  downloadRemoteProjectArchive,
+  createRemoteProject,
+  updateRemoteProject,
+  isNotFoundError: isCloudApiNotFoundError,
+  isRemoteUploadForbiddenError: isCloudApiRemoteUploadForbiddenError,
+  retryAfterMs: getCloudApiRetryAfterMs,
 }
 
 type BuildProjectFormDataOptions = {

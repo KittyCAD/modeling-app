@@ -81,6 +81,93 @@ export type RemoteProjectSummary = {
 /** Full remote project metadata used by cloud sync before archive download. */
 export type RemoteProject = RemoteProjectSummary
 
+export type RemoteProjectUpdateInput = {
+  config: CloudSyncConfig
+  projectPath: string
+  project: RemoteProject
+  files: ProjectArchiveFile[]
+  expectedRevision?: Revision
+  entrypointPath?: string
+}
+
+export type ProjectTomlRemoteProjectBinding =
+  | {
+      kind: 'current-environment'
+      projectId: string
+    }
+  | {
+      kind: 'other-environment'
+      projectId: string
+    }
+  | {
+      kind: 'unbound'
+    }
+
+/**
+ * Provider-specific project identity stored in `project.toml`.
+ *
+ * Zoo cloud uses `[cloud.<environment>].project_id`; ATProto uses
+ * `[atproto].project_id`. The sync engine treats both as the same logical
+ * remote-project binding.
+ */
+export type CloudSyncProjectBinding = {
+  id: string
+  libraryTypes: readonly ProjectLibraryType[]
+  readProjectTomlBinding: (
+    contents: string,
+    config: CloudSyncConfig
+  ) => ProjectTomlRemoteProjectBinding
+  setProjectIdInProjectTomlContents: (
+    contents: string,
+    projectId: string,
+    config: CloudSyncConfig
+  ) => string
+  removeProjectIdFromProjectTomlContents: (
+    contents: string,
+    config: CloudSyncConfig
+  ) => string
+  withRemoteProjectMetadataInArchiveFiles: (
+    files: ProjectArchiveFile[],
+    title: string | undefined,
+    projectId: string,
+    config: CloudSyncConfig
+  ) => ProjectArchiveFile[]
+}
+
+/** Provider-specific remote archive/project transport for the sync engine. */
+export type CloudSyncRemoteProjectApi = {
+  listRemoteProjects: (
+    config: CloudSyncConfig
+  ) => Promise<RemoteProjectSummary[]>
+  getRemoteProject: (
+    config: CloudSyncConfig,
+    projectId: string
+  ) => Promise<RemoteProject>
+  getRemoteProjectThumbnailUrl?: (
+    config: CloudSyncConfig,
+    project: RemoteProjectSummary
+  ) => Promise<string | undefined>
+  deleteRemoteProject: (
+    config: CloudSyncConfig,
+    projectId: string
+  ) => Promise<void>
+  downloadRemoteProjectArchive: (
+    config: CloudSyncConfig,
+    projectId: string
+  ) => Promise<ArrayBuffer>
+  createRemoteProject: (
+    config: CloudSyncConfig,
+    projectPath: string,
+    files: ProjectArchiveFile[]
+  ) => Promise<RemoteProject>
+  updateRemoteProject: (
+    input: RemoteProjectUpdateInput
+  ) => Promise<RemoteProject>
+  isNotFoundError?: (error: unknown) => boolean
+  isRemoteUploadForbiddenError?: (error: unknown) => boolean
+  retryAfterMs?: (error: unknown) => number | undefined
+}
+
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
 export type ProjectUploadBody = {
   title: string
@@ -106,6 +193,8 @@ export type CloudSyncConfig = {
   /** Local materialization paths for configured cloud-type project libraries. */
   cloudProjectDirectoryPaths?: string[]
   autoEnrollCloudLibraryProjects?: boolean
+  remoteApi?: CloudSyncRemoteProjectApi
+  projectBinding?: CloudSyncProjectBinding
 }
 
 /** Currently opened project context used to scope status and retry behavior. */

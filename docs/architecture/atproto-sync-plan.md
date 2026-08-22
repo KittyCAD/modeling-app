@@ -21,8 +21,10 @@ activation from non-boolean settings, a gated `atproto-sync` project library
 plugin, and a live XRPC-backed ATProto sync client behind the tested adapter
 interface. The OAuth session now produces the API config used by ATProto project
 library operations, and the library can list, create, open/materialize, rename,
-and delete ATProto-backed projects. The `atproto-sync` plugin activates only
-when `auth.atproto` contains a sync-capable connected identity.
+and delete ATProto-backed projects. The cloud sync engine now has provider hooks
+for remote project APIs and `project.toml` bindings, with Zoo as the default and
+ATProto adapters available. The `atproto-sync` plugin activates only when
+`auth.atproto` contains a sync-capable connected identity.
 
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
@@ -213,10 +215,47 @@ output was removed before staging.
    production `client_id` and metadata document still need a product decision.
 2. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
    identities.
-3. Add a background/local-edit sync path on top of the archive-first adapter.
-   The project library operations can publish and materialize projects, but they
-   do not yet watch local file changes and upload a fresh archive automatically.
+3. Wire the ATProto plugin into the generalized sync engine runtime so
+   ATProto materialization directories use the existing outbox,
+   manifest-diff, guarded-update, pull, and conflict-resolution path.
 4. Broaden provider-neutral error mapping for live OAuth/PDS failures.
+
+### Sync Engine Generalization
+
+The existing cloud sync engine remains named `cloudSync`, but its core
+remote-project dependency is now provider-configurable. Zoo cloud is the
+default provider, preserving existing behavior. Other providers can supply:
+
+- `CloudSyncRemoteProjectApi`: list/get/create/update/download/delete remote
+  projects plus provider error classifiers for not-found, forbidden upload, and
+  retry-after handling.
+- `CloudSyncProjectBinding`: the `project.toml` binding strategy for remote
+  project IDs and the project library types this engine should treat as
+  syncable.
+
+The ATProto side now provides:
+
+- `createAtprotoCloudSyncRemoteApi`, adapting `nyc.noirot.cad.project +
+  archive` operations to the sync engine's remote API shape.
+- `atprotoCloudSyncProjectBinding`, using `[atproto].project_id` instead of
+  `[cloud.<environment>].project_id`.
+- Archive upload cleanup that strips local `[atproto]` materialization metadata
+  before writing a remote snapshot.
+
+Current status:
+
+- [x] Route the sync engine's remote list/get/create/update/download/delete
+  calls through a configured provider API, with Zoo as the default.
+- [x] Route project binding reads/writes and downloaded archive metadata through
+  a configured binding strategy, with Zoo as the default.
+- [x] Reset provider hooks when runtime config omits them so a prior provider
+  cannot leak into the default Zoo path.
+- [x] Add ATProto remote API and binding adapters.
+- [x] Test remote-only rename through a configured non-Zoo provider path.
+- [ ] Decide whether the runtime should support one active sync provider at a
+  time or multiple isolated provider engine instances.
+- [ ] Wire the `atproto-sync` plugin to configure the engine with the ATProto
+  provider hooks after OAuth authentication.
 
 ### Project API Adapter
 
@@ -327,7 +366,10 @@ Current status:
 - [x] Rename local-backed and remote-only projects through the archive-first
   adapter.
 - [x] Delete local materializations and their remote project records.
-- [ ] Add an explicit background sync/watch path for arbitrary local file edits.
+- [x] Add the ATProto remote API and `[atproto].project_id` binding adapters
+  needed by the generalized sync engine.
+- [ ] Configure the authenticated ATProto plugin runtime to use those sync
+  engine adapters for arbitrary local file edits.
 
 ## Tests And Acceptance Criteria
 

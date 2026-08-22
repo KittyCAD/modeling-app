@@ -4,8 +4,10 @@ import type {
   CloudSyncConflictResolution,
   CloudSyncLocalProject,
   CloudSyncOpenedProject,
+  CloudSyncProjectBinding,
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncRemoteProjectApi,
   CloudSyncStatus,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync'
@@ -80,6 +82,8 @@ export type CloudSyncRegistryRuntimeConfig = {
   environmentName?: string
   cloudProjectDirectoryPaths?: string[]
   autoEnrollCloudLibraryProjects?: boolean
+  remoteApi?: CloudSyncRemoteProjectApi
+  projectBinding?: CloudSyncProjectBinding
 }
 
 export type CloudSyncRegistryService = {

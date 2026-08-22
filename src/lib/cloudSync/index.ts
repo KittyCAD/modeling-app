@@ -14,11 +14,15 @@ export { retryCloudSyncEngine as retryCloudSync } from '@src/lib/cloudSync/engin
 export type {
   CloudSyncConfig,
   CloudSyncOpenedProject,
+  CloudSyncProjectBinding,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncRemoteProjectApi,
   CloudSyncStatus,
   ProjectMetadata as CloudSyncProjectMetadata,
   ProjectSyncFailure,
   ProjectSyncFailureKind,
+  ProjectTomlRemoteProjectBinding,
+  RemoteProjectUpdateInput,
 } from '@src/lib/cloudSync/types'
 
 let fsObserverInstalled = false
