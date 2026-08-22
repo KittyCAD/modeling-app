@@ -29,13 +29,14 @@ import {
   fileNameHasExtension,
   getParentAbsolutePath,
   joinOSPaths,
+  joinRouterPaths,
+  PATHS,
   parentPathRelativeToApplicationDirectory,
-  parentPathRelativeToProject,
+  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
@@ -46,6 +47,7 @@ import {
   projectSession,
 } from '@src/registry/contracts/projectSession'
 import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import { routerService } from '@src/registry/contracts/router'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
@@ -200,8 +202,9 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, systemIOActor } = useApp()
+  const { commands, registry } = useApp()
   const session = registry.get(projectSession)
+  const router = registry.get(routerService)
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -323,25 +326,18 @@ export const ProjectExplorer = ({
   )
 
   const navigateToProject = useCallback(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToProject,
-      data: {
-        requestedProjectName: project.name,
-      },
-    })
-  }, [project.name, systemIOActor])
+    void router.navigate(
+      joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(project.path))
+    )
+  }, [project.path, router])
 
   const navigateToFile = useCallback(
-    (requestedFileName: string) => {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToFile,
-        data: {
-          requestedProjectName: project.name,
-          requestedFileName,
-        },
-      })
+    (requestedFilePath: string) => {
+      void router.navigate(
+        joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(requestedFilePath))
+      )
     },
-    [project.name, systemIOActor]
+    [router]
   )
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
@@ -1246,12 +1242,7 @@ export const ProjectExplorer = ({
                   void runFileTreeMutation(async () => {
                     await session.renameEntry({ oldPath, newPath })
                     if (shouldWeNavigate && file?.path) {
-                      navigateToFile(
-                        parentPathRelativeToProject(
-                          file.path.replace(oldPath, newPath),
-                          applicationProjectDirectory
-                        )
-                      )
+                      navigateToFile(file.path.replace(oldPath, newPath))
                     }
                   }, `Successfully renamed folder "${name}" to "${requestedName}"`)
 
@@ -1278,10 +1269,6 @@ export const ProjectExplorer = ({
                 getParentAbsolutePath(row.path),
                 fileName
               )
-              const pathRelativeToParent = parentPathRelativeToProject(
-                requestedAbsolutePath,
-                applicationProjectDirectory
-              )
 
               void runFileTreeMutation(async () => {
                 await session.createFile({
@@ -1290,7 +1277,7 @@ export const ProjectExplorer = ({
                   useDefaultKclContents: fileName.endsWith(FILE_EXT),
                 })
                 if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
-                  navigateToFile(pathRelativeToParent)
+                  navigateToFile(requestedAbsolutePath)
                 }
               }, `File ${fileName} written successfully`)
             } else {
@@ -1320,12 +1307,7 @@ export const ProjectExplorer = ({
                   newPath: requestedAbsolutePath,
                 })
                 if (shouldWeNavigate) {
-                  navigateToFile(
-                    parentPathRelativeToProject(
-                      requestedAbsolutePath,
-                      applicationProjectDirectory
-                    )
-                  )
+                  navigateToFile(requestedAbsolutePath)
                 }
               }, `Successfully renamed file "${name}" to "${fileName}"`)
             }

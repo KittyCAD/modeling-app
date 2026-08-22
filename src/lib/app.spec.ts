@@ -909,7 +909,7 @@ describe('project system', () => {
     }
   })
 
-  it('hydrates opened project tree from already-read SystemIO folders', async () => {
+  it('keeps opened project trees independent from already-read SystemIO folders', async () => {
     const projectDirectoryPath = `/tmp/app-project-session-system-io-tree-${crypto.randomUUID()}`
     const projectPath = fsZds.join(projectDirectoryPath, 'bracket')
     const mainPath = fsZds.join(projectPath, 'main.kcl')
@@ -963,10 +963,29 @@ describe('project system', () => {
       const openedProject = await session.openProject(staleProjectTree)
 
       expect(openedProject.projectIORefSignal.value.children).toEqual(
-        hydratedProject?.children
+        staleProjectTree.children
       )
       expect(session.projectTree.value?.children).toEqual(
-        hydratedProject?.children
+        staleProjectTree.children
+      )
+
+      const refreshedProjectTree = await session.refreshProjectTree()
+
+      expect(refreshedProjectTree?.children).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: 'parts',
+            children: expect.arrayContaining([
+              expect.objectContaining({
+                name: 'nested.kcl',
+                path: nestedPath,
+              }),
+            ]),
+          }),
+        ])
+      )
+      expect(session.projectTree.value?.children).toEqual(
+        refreshedProjectTree?.children
       )
     } finally {
       app.dispose()
