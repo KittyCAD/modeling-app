@@ -227,41 +227,22 @@ export fn mirror3d(
 /// Translate is really useful for sketches if you want to move a sketch
 /// and then rotate it using the `rotate` function to create a loft.
 ///
-/// **Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
-///
-/// // Move a pipe.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> translate(
-///         x = 1.0,
-///         y = 1.0,
-///         z = 2.5,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// moved = extrude(profileRegion, length = 4mm)
+///   |> translate(x = 10mm, y = 5mm, z = 2.5mm)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -437,108 +418,58 @@ export fn translate(
 /// When rotating a part around an axis, you specify the axis of rotation and the angle of
 /// rotation.
 ///
-/// **Legacy KCL 1 examples:** The pipe examples below use deprecated `subtract2d`.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
-///
-/// // Rotate a pipe with roll, pitch, and yaw.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///         roll = 10,
-///         pitch =  10,
-///         yaw = 90,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// rotated = extrude(profileRegion, length = 4mm)
+///   |> rotate(roll = 10deg, pitch = 10deg, yaw = 90deg)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Rotate a pipe with just roll.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///         roll = 10,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// rotated = extrude(profileRegion, length = 4mm)
+///   |> rotate(roll = 10deg)
 /// ```
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Rotate a pipe about a named axis with an angle.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///     axis =  Z,
-///     angle = 90deg,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// rotated = extrude(profileRegion, length = 4mm)
+///   |> rotate(axis = Z, angle = 90deg)
 /// ```
 ///
 /// ```kcl,sketchSyntaxAgnostic
@@ -553,38 +484,22 @@ export fn translate(
 ///     )
 /// ```
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// // Rotate a pipe about a raw axis with an angle.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///    )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> rotate(
-///     axis =  [0, 0, 1.0],
-///     angle = 90deg,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// rotated = extrude(profileRegion, length = 4mm)
+///   |> rotate(axis = [0, 0, 1], angle = 90deg)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -683,39 +598,22 @@ export fn rotate(
 /// **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
 /// way (i.e. scaled differently along each axis).
 ///
-/// **Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
-///
-/// // Scale a pipe.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )              
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
-///     |> scale(
-///     z = 2.5,
-///     )
+/// profile = sketch(on = XY) {
+///   bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
+///   right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
+///   top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
+///   left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
+/// scaled = extrude(profileRegion, length = 4mm)
+///   |> scale(z = 2.5)
 /// ```
 ///
 /// ```kcl,sketchSyntaxAgnostic

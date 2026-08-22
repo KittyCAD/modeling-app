@@ -1375,26 +1375,24 @@ export fn getPreviousAdjacentEdge(
 
 /// Get the shared edge between two faces.
 ///
-/// ```kcl,legacySketch
-/// // Get an edge shared between two faces, created after a chamfer.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// scale = 20
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///     |> close(tag = $line0)
-///     |> extrude(length = 20, tagEnd = $end0)
-///     // We tag the chamfer to reference it later.
-///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+/// shaftSketch = sketch(on = XY) {
+///   shaftCircle = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+///   radius(shaftCircle) == 4mm
+/// }
+/// shaftRegion = region(segments = [shaftSketch.shaftCircle])
+/// shaft = extrude(shaftRegion, length = 20mm, tagEnd = $shaftTop)
 ///
-/// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
+/// // The circle identifies the cylindrical side face after extrusion.
+/// // Together with the tagged end face, it identifies the top rim.
+/// topRim = getCommonEdge(faces = [
+///   shaft.sketch.tags.shaftCircle,
+///   shaft.faces.shaftTop,
+/// ])
 ///
-/// // Chamfer the shared edge.
-/// // TODO: uncomment this when ssi for fillets lands
-/// // chamfer(part001, length = 5, tags = [commonEdge])
+/// chamfer(shaft, length = 1mm, tags = [topRim])
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
@@ -1530,36 +1528,26 @@ export fn polygon(
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
-/// **Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
+/// profile = sketch(on = XZ) {
+///   bottom = line(start = [var -3mm, var -1mm], end = [var -1mm, var -1mm])
+///   right = line(start = [var -1mm, var -1mm], end = [var -1mm, var 1mm])
+///   top = line(start = [var -1mm, var 1mm], end = [var -3mm, var 1mm])
+///   left = line(start = [var -3mm, var 1mm], end = [var -3mm, var -1mm])
+///   coincident([bottom.end, right.start])
+///   coincident([right.end, top.start])
+///   coincident([top.end, left.start])
+///   coincident([left.end, bottom.start])
+/// }
+/// profileRegion = region(segments = [profile.bottom, profile.right])
 ///
-/// // Create a pipe using a sweep.
+/// path = sketch(on = offsetPlane(YZ, offset = -2mm)) {
+///   trajectory = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm])
+/// }
 ///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)
+/// sweep(profileRegion, path = path.trajectory)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -2021,7 +2009,7 @@ export fn sweep(
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
