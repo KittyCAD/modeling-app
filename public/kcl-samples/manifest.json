@@ -1475,6 +1475,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade-root-inserts/main.kcl",
+    "multipleFiles": false,
+    "title": "Wind Turbine Blade",
+    "description": "A 52 m hollow composite blade with sixteen root inserts for its pitch-bearing interface.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
