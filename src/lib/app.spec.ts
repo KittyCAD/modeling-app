@@ -4,6 +4,12 @@ import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
+  ATPROTO_ARCHIVE_BLOB_SCOPE,
+  ATPROTO_ARCHIVE_RECORD_COLLECTION,
+  ATPROTO_IDENTITY_PROVIDER_ID,
+  ATPROTO_PROJECT_RECORD_COLLECTION,
+} from '@src/lib/atprotoSync'
+import {
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
@@ -598,6 +604,46 @@ describe('project system', () => {
       expect(getPluginToggle(app, ATPROTO_SYNC_PLUGIN_ID).active.value).toBe(
         false
       )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('activates the bundled ATProto sync plugin from expanded repo scopes', async () => {
+    const app = createAppForTest()
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const pluginToggle = getPluginToggle(app, ATPROTO_SYNC_PLUGIN_ID)
+      expect(pluginToggle.active.value).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.auth.atproto',
+        data: {
+          level: 'user',
+          value: {
+            provider: ATPROTO_IDENTITY_PROVIDER_ID,
+            did: 'did:plc:5dwcnpy3p6afki4rwv7gqegd',
+            handle: 'franknoirot.co',
+            serviceUrl: 'https://puffball.us-east.host.bsky.network/',
+            authorizationServer: 'https://bsky.social',
+            scopes: [
+              'atproto',
+              `repo?collection=nyc.noirot.cad.analysis&collection=${ATPROTO_ARCHIVE_RECORD_COLLECTION}&collection=nyc.noirot.cad.declaration&collection=${ATPROTO_PROJECT_RECORD_COLLECTION}&collection=nyc.noirot.cad.release&collection=nyc.noirot.cad.source`,
+              ATPROTO_ARCHIVE_BLOB_SCOPE,
+            ],
+            status: 'connected',
+            connectedAt: '2026-08-22T21:59:36.399Z',
+            expiresAt: '2026-08-22T22:59:35.215Z',
+          },
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(pluginToggle.active.value).toBe(true)
     } finally {
       app.dispose()
     }

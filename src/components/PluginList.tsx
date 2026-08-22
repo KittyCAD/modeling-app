@@ -4,6 +4,7 @@ import type {
   Registry,
   SlotToggleController,
 } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
 import type { Setting } from '@src/lib/settings/initialSettings'
@@ -89,6 +90,7 @@ function PluginItem({
   resolvedService: SlotToggleController
   activationSetting?: ZdsPluginActivationSetting
 }) {
+  useSignals()
   const app = useApp()
   const settingsContext = app.settings.useSettings()
   const setting = activationSetting ?? {

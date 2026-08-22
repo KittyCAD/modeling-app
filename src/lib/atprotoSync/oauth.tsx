@@ -28,6 +28,8 @@ export const ATPROTO_AUTH_SETTING_CATEGORY = 'auth'
 export const ATPROTO_AUTH_SETTING_NAME = 'atproto'
 export const ATPROTO_AUTH_SYNC_SCOPE = 'include:nyc.noirot.cad.authSync'
 export const ATPROTO_ARCHIVE_BLOB_SCOPE = 'blob:application/zip'
+export const ATPROTO_PROJECT_RECORD_COLLECTION = 'nyc.noirot.cad.project'
+export const ATPROTO_ARCHIVE_RECORD_COLLECTION = 'nyc.noirot.cad.archive'
 export const ATPROTO_OAUTH_SCOPES = [
   'atproto',
   ATPROTO_AUTH_SYNC_SCOPE,
@@ -195,6 +197,51 @@ function hasScope(identity: AtprotoOAuthIdentity, scope: string) {
   return identity.scopes.includes(scope)
 }
 
+function parseRepoScopeCollections(scope: string): Set<string> | 'all' | null {
+  if (scope === 'repo') {
+    return 'all'
+  }
+
+  if (scope.startsWith('repo:')) {
+    const collection = scope.slice('repo:'.length)
+    return collection ? new Set([collection]) : null
+  }
+
+  if (!scope.startsWith('repo?')) {
+    return null
+  }
+
+  const params = new URLSearchParams(scope.slice('repo?'.length))
+  const collections = params
+    .getAll('collection')
+    .filter((collection) => collection.length > 0)
+  return collections.length > 0 ? new Set(collections) : 'all'
+}
+
+function hasRepoScopeForCollections(
+  identity: AtprotoOAuthIdentity,
+  requiredCollections: readonly string[]
+) {
+  const grantedCollections = new Set<string>()
+
+  for (const scope of identity.scopes) {
+    const collections = parseRepoScopeCollections(scope)
+    if (collections === 'all') {
+      return true
+    }
+    if (!collections) {
+      continue
+    }
+    for (const collection of collections) {
+      grantedCollections.add(collection)
+    }
+  }
+
+  return requiredCollections.every((collection) =>
+    grantedCollections.has(collection)
+  )
+}
+
 export function isAtprotoSyncIdentity(value: unknown): boolean {
   if (!isAtprotoOAuthIdentity(value) || value.status !== 'connected') {
     return false
@@ -202,7 +249,11 @@ export function isAtprotoSyncIdentity(value: unknown): boolean {
 
   const hasRepoWriteScope =
     hasScope(value, ATPROTO_AUTH_SYNC_SCOPE) ||
-    hasScope(value, 'transition:generic')
+    hasScope(value, 'transition:generic') ||
+    hasRepoScopeForCollections(value, [
+      ATPROTO_PROJECT_RECORD_COLLECTION,
+      ATPROTO_ARCHIVE_RECORD_COLLECTION,
+    ])
   const hasBlobScope =
     hasScope(value, ATPROTO_ARCHIVE_BLOB_SCOPE) ||
     hasScope(value, 'blob:*/*') ||

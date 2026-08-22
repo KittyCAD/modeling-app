@@ -6,11 +6,13 @@ import {
 import { signal } from '@preact/signals-core'
 import {
   ATPROTO_ARCHIVE_BLOB_SCOPE,
+  ATPROTO_ARCHIVE_RECORD_COLLECTION,
   ATPROTO_AUTH_SETTING_CATEGORY,
   ATPROTO_AUTH_SETTING_NAME,
   ATPROTO_AUTH_SYNC_SCOPE,
   ATPROTO_IDENTITY_PROVIDER_ID,
   ATPROTO_OAUTH_SCOPES,
+  ATPROTO_PROJECT_RECORD_COLLECTION,
   type AtprotoOAuthConnector,
   type AtprotoOAuthIdentity,
   atprotoConnectedIdentityFromOAuthIdentity,
@@ -111,7 +113,27 @@ describe('ATProto OAuth identity provider', () => {
     expect(
       isAtprotoSyncIdentity({
         ...connectedIdentity,
+        scopes: [
+          'atproto',
+          `repo?collection=nyc.noirot.cad.analysis&collection=${ATPROTO_ARCHIVE_RECORD_COLLECTION}&collection=nyc.noirot.cad.declaration&collection=${ATPROTO_PROJECT_RECORD_COLLECTION}&collection=nyc.noirot.cad.release&collection=nyc.noirot.cad.source`,
+          ATPROTO_ARCHIVE_BLOB_SCOPE,
+        ],
+      })
+    ).toBe(true)
+    expect(
+      isAtprotoSyncIdentity({
+        ...connectedIdentity,
         scopes: ['atproto', ATPROTO_AUTH_SYNC_SCOPE],
+      })
+    ).toBe(false)
+    expect(
+      isAtprotoSyncIdentity({
+        ...connectedIdentity,
+        scopes: [
+          'atproto',
+          `repo?collection=${ATPROTO_PROJECT_RECORD_COLLECTION}`,
+          ATPROTO_ARCHIVE_BLOB_SCOPE,
+        ],
       })
     ).toBe(false)
     expect(
