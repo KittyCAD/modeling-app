@@ -10,12 +10,12 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { Setting } from '@src/lib/settings/initialSettings'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -33,6 +33,7 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { ATPROTO_SYNC_PLUGIN_ID } from '@src/registry/plugins/atproto'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -578,6 +579,25 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(false)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('registers the bundled ATProto sync plugin separately from its auth provider', async () => {
+    const app = createAppForTest()
+
+    try {
+      await waitForSettingsIdle(app)
+
+      expect(
+        app.registry
+          .get(pluginsValueSpec)
+          .some((plugin) => plugin.id === ATPROTO_SYNC_PLUGIN_ID)
+      ).toBe(true)
+      expect(getPluginToggle(app, ATPROTO_SYNC_PLUGIN_ID).active.value).toBe(
+        false
+      )
     } finally {
       app.dispose()
     }

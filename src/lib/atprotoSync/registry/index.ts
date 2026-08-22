@@ -21,7 +21,7 @@ export const atprotoSyncRuntime = createAtprotoSyncRuntime({
 })
 
 export const atprotoSyncRegistryItem = defineRegistryItem({
-  id: 'atproto-sync',
+  id: 'atproto-oauth',
   uses: [atprotoOAuthRegistryItem],
 })
 

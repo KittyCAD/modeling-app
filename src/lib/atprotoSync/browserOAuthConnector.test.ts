@@ -4,7 +4,51 @@ import {
   ATPROTO_AUTH_SYNC_SCOPE,
   createAtprotoBrowserOAuthConnector,
 } from '@src/lib/atprotoSync'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+const defaultBrowserOAuthClientMock = vi.hoisted(() => {
+  let client:
+    | {
+        init: (...args: unknown[]) => unknown
+        restore: (...args: unknown[]) => unknown
+        revoke: (...args: unknown[]) => unknown
+        signInPopup: (...args: unknown[]) => unknown
+      }
+    | undefined
+  const constructorSpy = vi.fn()
+
+  return {
+    constructorSpy,
+    setClient: (nextClient: typeof client) => {
+      client = nextClient
+    },
+    BrowserOAuthClient: class BrowserOAuthClient {
+      constructor(options: unknown) {
+        constructorSpy(options)
+      }
+
+      init(...args: unknown[]) {
+        return client?.init(...args)
+      }
+
+      restore(...args: unknown[]) {
+        return client?.restore(...args)
+      }
+
+      revoke(...args: unknown[]) {
+        return client?.revoke(...args)
+      }
+
+      signInPopup(...args: unknown[]) {
+        return client?.signInPopup(...args)
+      }
+    },
+  }
+})
+
+vi.mock('@atproto/oauth-client-browser', () => ({
+  BrowserOAuthClient: defaultBrowserOAuthClientMock.BrowserOAuthClient,
+}))
 
 function createSession({
   did = 'did:plc:frank',
@@ -31,6 +75,66 @@ function createSession({
 }
 
 describe('ATProto browser OAuth connector', () => {
+  beforeEach(() => {
+    defaultBrowserOAuthClientMock.constructorSpy.mockReset()
+    defaultBrowserOAuthClientMock.setClient(undefined)
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('does not initialize the default SDK client on ordinary app routes', async () => {
+    window.history.pushState(null, '', '/signin?callbackUrl=%2F')
+    vi.stubGlobal('indexedDB', {})
+    vi.stubGlobal('localStorage', {})
+    vi.stubGlobal('BroadcastChannel', class BroadcastChannel {})
+    defaultBrowserOAuthClientMock.setClient({
+      init: vi.fn().mockResolvedValue({
+        session: createSession({ did: 'did:plc:unexpected' }),
+      }),
+      restore: vi.fn(),
+      revoke: vi.fn(),
+      signInPopup: vi.fn(),
+    })
+    const connector = createAtprotoBrowserOAuthConnector()
+
+    await expect(connector.initialize?.()).resolves.toBeUndefined()
+
+    expect(defaultBrowserOAuthClientMock.constructorSpy).not.toHaveBeenCalled()
+  })
+
+  it('initializes the default SDK client on ATProto OAuth callback routes', async () => {
+    window.history.pushState(null, '', '/?code=oauth-code&state=oauth-state')
+    vi.stubGlobal('indexedDB', {})
+    vi.stubGlobal('localStorage', {})
+    vi.stubGlobal('BroadcastChannel', class BroadcastChannel {})
+    const client = {
+      init: vi.fn().mockResolvedValue({
+        session: createSession({ did: 'did:plc:callback' }),
+      }),
+      restore: vi.fn(),
+      revoke: vi.fn(),
+      signInPopup: vi.fn(),
+    }
+    defaultBrowserOAuthClientMock.setClient(client)
+    const connector = createAtprotoBrowserOAuthConnector({
+      now: () => new Date('2026-08-22T00:00:00.000Z'),
+    })
+
+    const identity = await connector.initialize?.()
+
+    expect(defaultBrowserOAuthClientMock.constructorSpy).toHaveBeenCalledTimes(
+      1
+    )
+    expect(client.init).toHaveBeenCalledWith(true)
+    expect(identity).toMatchObject({
+      provider: 'atproto',
+      did: 'did:plc:callback',
+      status: 'connected',
+    })
+  })
+
   it('initializes the SDK once and converts a restored session to an identity', async () => {
     const client = {
       init: vi.fn().mockResolvedValue({

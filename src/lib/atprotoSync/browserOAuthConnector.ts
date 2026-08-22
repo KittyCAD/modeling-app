@@ -82,6 +82,15 @@ function canUseDefaultBrowserOAuthRuntime() {
   )
 }
 
+function hasAtprotoOAuthCallbackParams() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  const params = new URLSearchParams(window.location.search)
+  return params.has('code') && params.has('state')
+}
+
 function sessionFetchHandler(session: OAuthSession): typeof fetch {
   return async (input, init) => {
     const url = new URL(
@@ -155,6 +164,9 @@ export function createAtprotoBrowserOAuthConnector({
 
   const initializeSession = async () => {
     if (!client && !createClient && !canUseDefaultBrowserOAuthRuntime()) {
+      return undefined
+    }
+    if (!client && !createClient && !hasAtprotoOAuthCallbackParams()) {
       return undefined
     }
 
