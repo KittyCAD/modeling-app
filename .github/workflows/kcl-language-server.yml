@@ -205,15 +205,22 @@ jobs:
           path: ./rust/build
   build-release-x86_64-unknown-linux-musl:
     name: kcl-language-server build-release (x86_64-unknown-linux-musl)
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     env:
       RA_TARGET: x86_64-unknown-linux-musl
       # For some reason `-crt-static` is not working for clang without lld
       RUSTFLAGS: "-C link-arg=-fuse-ld=lld -C target-feature=-crt-static"
     container:
       image: alpine:latest
+      # The cache volume lives on the host. Three things carry it into the
+      # container: NSC_CACHE_PATH, which is the only variable the cache action
+      # reads to locate the volume; the bind mount of the volume itself; and
+      # SYS_ADMIN, which the action needs to mount the cached paths.
+      env:
+        NSC_CACHE_PATH: ${{ env.NSC_CACHE_PATH }}
       volumes:
-        - /usr/local/cargo/registry:/usr/local/cargo/registry
+        - /cache:/cache
+      options: --cap-add=SYS_ADMIN
     steps:
       - name: Install dependencies
         run: |
@@ -226,7 +233,8 @@ jobs:
             build-base \
             musl-dev \
             nodejs \
-            npm
+            npm \
+            sudo
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
         with:
@@ -238,10 +246,22 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache-workspaces: rust
+          # Caching is handled by the Namespace cache volume below. The
+          # built-in cache cannot work in this container
+          cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
-          target: ${{ matrix.target }}
+      - name: Rust cache on the Namespace volume
+        # The cargo paths are absolute rather than `~/.cargo/...` because this
+        # container has two candidate home directories. HOME is /github/home,
+        # which is where cargo reads and writes, while the effective user id
+        # resolves to /root.
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            /github/home/.cargo/registry
+            /github/home/.cargo/git
       - name: build
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
