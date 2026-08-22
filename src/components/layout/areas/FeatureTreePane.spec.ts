@@ -2,6 +2,7 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeValueDetail,
+  namedViewTooltipText,
   supportsZ0006AutoFixBeforeFeatureTreeEdit,
 } from '@src/components/layout/areas/FeatureTreePane'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -244,6 +245,29 @@ describe('FeatureTreePane', () => {
       // as a top-level branch.
       expect(JSON.stringify(tree)).toContain('first')
       expect(JSON.stringify(tree)).not.toContain('second')
+    })
+  })
+
+  describe('namedViewTooltipText', () => {
+    const plateOnly = {
+      calculated: { type: 'String' as const, value: 'Plate only' },
+      display: '"Plate only"',
+    }
+
+    it('names the view, and the variable as a declaration', () => {
+      expect(
+        namedViewTooltipText({
+          name: 'Named View',
+          valueDetail: plateOnly,
+          variableName: 'plateOnly',
+        })
+      ).toBe('Named View "Plate only", declared as plateOnly')
+    })
+
+    it('names the view alone when it has no variable', () => {
+      expect(
+        namedViewTooltipText({ name: 'Named View', valueDetail: plateOnly })
+      ).toBe('Named View "Plate only"')
     })
   })
 
