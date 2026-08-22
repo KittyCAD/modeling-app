@@ -24,6 +24,8 @@ import {
   createSettings,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
+import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import {
   type ConnectedIdentity,
   connectedIdentitiesService,
@@ -43,12 +45,33 @@ const connectedIdentity: AtprotoOAuthIdentity = {
   connectedAt: '2026-08-22T00:00:00.000Z',
 }
 
-function createFakeSettingsService(): SettingsRegistryService {
+type FakeSettingsServiceOptions = {
+  identity?: AtprotoOAuthIdentity | null
+  libraries?: readonly ProjectLibrarySetting[]
+}
+
+function createFakeSettingsService({
+  identity,
+  libraries = [],
+}: FakeSettingsServiceOptions = {}): SettingsRegistryService {
   const settings = createSettings({
+    ...projectLibrariesSettingsContribution,
     [ATPROTO_AUTH_SETTING_CATEGORY]: {
       [ATPROTO_AUTH_SETTING_NAME]: atprotoOAuthSetting,
     },
   })
+  settings.app.libraries.user = [...libraries]
+  if (identity !== undefined) {
+    const authSettings = settings as SettingsType & {
+      [ATPROTO_AUTH_SETTING_CATEGORY]: Record<
+        string,
+        { user?: AtprotoOAuthIdentity | null }
+      >
+    }
+    authSettings[ATPROTO_AUTH_SETTING_CATEGORY][
+      ATPROTO_AUTH_SETTING_NAME
+    ].user = identity
+  }
   const current = signal(settings)
 
   return {
@@ -59,22 +82,23 @@ function createFakeSettingsService(): SettingsRegistryService {
       type: string
       data?: { level: 'user' | 'project'; value: unknown }
     }) => {
-      if (
-        event.type !==
-          `set.${ATPROTO_AUTH_SETTING_CATEGORY}.${ATPROTO_AUTH_SETTING_NAME}` ||
-        !event.data
-      ) {
+      const match = /^set\.([^.]+)\.([^.]+)$/.exec(event.type)
+      if (!match || !event.data) {
         return
       }
 
+      const [, category, settingName] = match
       const setting = (
         current.value as SettingsType & {
-          [ATPROTO_AUTH_SETTING_CATEGORY]: Record<
+          [category: string]: Record<
             string,
-            { user?: unknown; project?: unknown }
+            { user?: unknown; project?: unknown } | undefined
           >
         }
-      )[ATPROTO_AUTH_SETTING_CATEGORY][ATPROTO_AUTH_SETTING_NAME]
+      )[category]?.[settingName]
+      if (!setting) {
+        return
+      }
       setting[event.data.level] = event.data.value
       current.value = { ...current.value }
     }) as SettingsRegistryService['send'],
@@ -201,6 +225,60 @@ describe('ATProto OAuth identity provider', () => {
     await connectedIdentities.disconnect('atproto:did:plc:frank')
 
     expect(connector.disconnect).toHaveBeenCalledWith(refreshedIdentity)
+    expect(connectedIdentities.identities.value).toEqual([])
+  })
+
+  it('removes ATProto project libraries when disconnecting', async () => {
+    const localLibrary = {
+      title: 'Local Projects',
+      path: '/Users/frank/projects',
+      type: 'directory',
+    } satisfies ProjectLibrarySetting
+    const atprotoLibrary = {
+      title: 'ATProto Projects',
+      path: 'atproto://franknoirot.co',
+      type: 'atproto',
+      source: 'franknoirot.co',
+    } satisfies ProjectLibrarySetting
+    const otherAtprotoLibrary = {
+      title: 'Other ATProto Projects',
+      path: 'atproto://other.example',
+      type: 'atproto',
+      source: 'other.example',
+    } satisfies ProjectLibrarySetting
+    const settings = createFakeSettingsService({
+      identity: connectedIdentity,
+      libraries: [localLibrary, atprotoLibrary, otherAtprotoLibrary],
+    })
+    const connector: AtprotoOAuthConnector = {
+      connect: vi.fn().mockResolvedValue(connectedIdentity),
+      disconnect: vi.fn().mockResolvedValue(undefined),
+    }
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'fake-settings-service',
+        providesServices: [provideService(settingsService, settings)],
+      }),
+      connectedIdentitiesRegistryItem,
+      createAtprotoOAuthRegistryItem({ connector }),
+    ])
+
+    const connectedIdentities = registry.get(connectedIdentitiesService)
+    expect(connectedIdentities.identities.value).toHaveLength(1)
+
+    await connectedIdentities.disconnect('atproto:did:plc:frank')
+
+    expect(connector.disconnect).toHaveBeenCalledWith(connectedIdentity)
+    expect(
+      (
+        settings.get() as SettingsType & {
+          [ATPROTO_AUTH_SETTING_CATEGORY]: Record<string, { current: unknown }>
+        }
+      )[ATPROTO_AUTH_SETTING_CATEGORY][ATPROTO_AUTH_SETTING_NAME].current
+    ).toBe(null)
+    expect(settings.get().app.libraries.current).toEqual([localLibrary])
     expect(connectedIdentities.identities.value).toEqual([])
   })
 

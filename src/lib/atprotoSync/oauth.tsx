@@ -8,6 +8,10 @@ import { computed } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import type { AtprotoProjectApiConfig } from '@src/lib/atprotoSync/api'
+import {
+  isProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { ExtensionSettingDefinition } from '@src/lib/settings/extensionSettings'
 import { Setting } from '@src/lib/settings/initialSettings'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
@@ -35,6 +39,7 @@ export const ATPROTO_OAUTH_SCOPES = [
   ATPROTO_AUTH_SYNC_SCOPE,
   ATPROTO_ARCHIVE_BLOB_SCOPE,
 ] as const
+const ATPROTO_PROJECT_LIBRARY_TYPE = 'atproto'
 
 export type AtprotoOAuthIdentityStatus =
   | 'connected'
@@ -91,6 +96,44 @@ function isJsonRecord(value: JsonValue | undefined): value is {
 
 function optionalString(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined
+}
+
+function settingFromRecord(
+  value: unknown,
+  category: string,
+  settingName: string
+): Setting<unknown> | undefined {
+  const record = value as
+    | Record<string, Record<string, unknown> | undefined>
+    | undefined
+  const setting = record?.[category]?.[settingName]
+  return setting instanceof Setting ? setting : undefined
+}
+
+function atprotoProjectLibrariesRemovedFrom(
+  settingsValue: unknown
+): ProjectLibrarySetting[] | undefined {
+  const libraries = (
+    settingsValue as
+      | {
+          app?: {
+            libraries?: {
+              current?: unknown
+            }
+          }
+        }
+      | undefined
+  )?.app?.libraries?.current
+
+  if (!isProjectLibrarySettings(libraries)) {
+    return undefined
+  }
+
+  const nextLibraries = libraries.filter(
+    (library) => library.type !== ATPROTO_PROJECT_LIBRARY_TYPE
+  )
+
+  return nextLibraries.length === libraries.length ? undefined : nextLibraries
 }
 
 function isAtprotoOAuthIdentityStatus(
@@ -421,6 +464,37 @@ export function createAtprotoOAuthRegistryItem({
         },
       } as never)
     }
+    const clearIdentityAndAtprotoProjectLibraries = () => {
+      if (disposed) {
+        return
+      }
+
+      const settingsServiceImpl = ctx.services.get(settingsService)
+      const settingsValue = settingsServiceImpl.get()
+      const nextLibraries = atprotoProjectLibrariesRemovedFrom(settingsValue)
+
+      if (!nextLibraries) {
+        updateIdentity(null)
+        return
+      }
+
+      const identitySetting = settingFromRecord(
+        settingsValue,
+        ATPROTO_AUTH_SETTING_CATEGORY,
+        ATPROTO_AUTH_SETTING_NAME
+      )
+      if (identitySetting) {
+        identitySetting.user = null
+      }
+
+      settingsServiceImpl.send({
+        type: 'set.app.libraries',
+        data: {
+          level: 'user',
+          value: nextLibraries,
+        },
+      } as never)
+    }
 
     queueMicrotask(() => {
       if (disposed || !connector.initialize) {
@@ -467,7 +541,7 @@ export function createAtprotoOAuthRegistryItem({
                 if (currentIdentity) {
                   await connector.disconnect?.(currentIdentity)
                 }
-                updateIdentity(null)
+                clearIdentityAndAtprotoProjectLibraries()
               },
               refresh: async () => {
                 const currentIdentity = identity.value
