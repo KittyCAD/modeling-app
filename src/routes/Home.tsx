@@ -68,6 +68,7 @@ import {
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -337,6 +338,7 @@ const Home = () => {
     )
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const session = registry.get(projectSession)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
@@ -413,16 +415,14 @@ const Home = () => {
   }, [projectLibraryRealizations, projectLibraryWatchKey])
 
   useEffect(() => {
-    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+    session.setCurrentProjectLibraryId(selectedProjectLibraryId)
 
     return () => {
-      if (
-        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
-      ) {
-        app.currentProjectLibraryIdSignal.value = undefined
+      if (session.getCurrentProjectLibraryId() === selectedProjectLibraryId) {
+        session.setCurrentProjectLibraryId(undefined)
       }
     }
-  }, [app, selectedProjectLibraryId])
+  }, [session, selectedProjectLibraryId])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
