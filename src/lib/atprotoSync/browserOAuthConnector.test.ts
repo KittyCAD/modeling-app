@@ -10,13 +10,16 @@ function createSession({
   did = 'did:plc:frank',
   scope = `atproto ${ATPROTO_AUTH_SYNC_SCOPE} ${ATPROTO_ARCHIVE_BLOB_SCOPE}`,
   expired = false,
+  fetchHandler = vi.fn(),
 }: {
   did?: string
   scope?: string
   expired?: boolean
+  fetchHandler?: OAuthSession['fetchHandler']
 } = {}): OAuthSession {
   return {
     did,
+    fetchHandler,
     getTokenInfo: vi.fn().mockResolvedValue({
       aud: 'https://pds.example',
       iss: 'https://auth.example',
@@ -87,6 +90,50 @@ describe('ATProto browser OAuth connector', () => {
       connectedAt: '2026-08-22T00:00:00.000Z',
       expiresAt: '2026-08-22T01:00:00.000Z',
     })
+  })
+
+  it('builds project API configs that use the SDK session fetch handler', async () => {
+    const fetchHandler = vi
+      .fn<OAuthSession['fetchHandler']>()
+      .mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            uri: 'at://did:plc:frank/nyc.noirot.cad.project/demo',
+            cid: 'project-cid',
+            value: { title: 'Demo' },
+          })
+        )
+      )
+    const session = createSession({ fetchHandler })
+    const client = {
+      init: vi.fn(),
+      restore: vi.fn(),
+      revoke: vi.fn(),
+      signInPopup: vi.fn().mockResolvedValue(session),
+    }
+    const connector = createAtprotoBrowserOAuthConnector({ client })
+    const identity = await connector.connect({
+      input: 'franknoirot.co',
+      scopes: ['atproto'],
+    })
+
+    const config = await connector.createProjectApiConfig?.(identity)
+
+    await expect(
+      config?.client.getRecord({
+        repo: 'did:plc:frank',
+        collection: 'nyc.noirot.cad.project',
+        rkey: 'demo',
+      })
+    ).resolves.toMatchObject({
+      cid: 'project-cid',
+    })
+    expect(fetchHandler).toHaveBeenCalledWith(
+      '/xrpc/com.atproto.repo.getRecord?repo=did%3Aplc%3Afrank&collection=nyc.noirot.cad.project&rkey=demo',
+      expect.objectContaining({
+        method: 'GET',
+      })
+    )
   })
 
   it('uses default input and revokes/restores stored SDK sessions', async () => {

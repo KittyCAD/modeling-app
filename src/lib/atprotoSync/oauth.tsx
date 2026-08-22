@@ -7,6 +7,7 @@ import {
 import { computed } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
+import type { AtprotoProjectApiConfig } from '@src/lib/atprotoSync/api'
 import type { ExtensionSettingDefinition } from '@src/lib/settings/extensionSettings'
 import { Setting } from '@src/lib/settings/initialSettings'
 import type { SettingComponentProps } from '@src/lib/settings/settingsTypes'
@@ -64,6 +65,9 @@ export type AtprotoOAuthConnectOptions = {
 
 export type AtprotoOAuthConnector = {
   initialize?: () => Promise<AtprotoOAuthIdentity | null | undefined>
+  createProjectApiConfig?: (
+    identity: AtprotoOAuthIdentity
+  ) => Promise<AtprotoProjectApiConfig>
   connect: (
     options: AtprotoOAuthConnectOptions
   ) => Promise<AtprotoOAuthIdentity>

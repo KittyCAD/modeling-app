@@ -8,6 +8,7 @@ declare module '@atproto/oauth-client-browser' {
       expired?: boolean
       expiresAt?: Date
     }>
+    fetchHandler(pathname: string, init?: RequestInit): Promise<Response>
   }
 
   export type BrowserOAuthClientOptions = {

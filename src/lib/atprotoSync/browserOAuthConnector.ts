@@ -2,6 +2,7 @@ import type {
   BrowserOAuthClientOptions,
   OAuthSession,
 } from '@atproto/oauth-client-browser'
+import type { AtprotoProjectApiConfig } from '@src/lib/atprotoSync/api'
 import {
   ATPROTO_IDENTITY_PROVIDER_ID,
   type AtprotoOAuthConnectOptions,
@@ -9,6 +10,7 @@ import {
   type AtprotoOAuthIdentity,
   normalizeAtprotoOAuthIdentity,
 } from '@src/lib/atprotoSync/oauth'
+import { AtprotoXrpcClient } from '@src/lib/atprotoSync/xrpcClient'
 
 type BrowserOAuthClientLike = Pick<
   import('@atproto/oauth-client-browser').BrowserOAuthClient,
@@ -80,6 +82,19 @@ function canUseDefaultBrowserOAuthRuntime() {
   )
 }
 
+function sessionFetchHandler(session: OAuthSession): typeof fetch {
+  return async (input, init) => {
+    const url = new URL(
+      typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input.url
+    )
+    return session.fetchHandler(`${url.pathname}${url.search}`, init)
+  }
+}
+
 async function atprotoOAuthIdentityFromSession({
   session,
   input,
@@ -117,6 +132,7 @@ export function createAtprotoBrowserOAuthConnector({
 }: AtprotoBrowserOAuthConnectorOptions = {}): AtprotoOAuthConnector {
   let clientPromise: Promise<BrowserOAuthClientLike> | undefined
   let initializationPromise: Promise<OAuthSession | undefined> | undefined
+  const sessions = new Map<string, OAuthSession>()
 
   const createDefaultClient = async () => {
     const { BrowserOAuthClient } = await import('@atproto/oauth-client-browser')
@@ -160,15 +176,53 @@ export function createAtprotoBrowserOAuthConnector({
     return initializationPromise
   }
 
+  const rememberSession = (session: OAuthSession) => {
+    sessions.set(session.did, session)
+    return session
+  }
+
+  const restoreSession = async (identity: AtprotoOAuthIdentity) => {
+    const restored = await (await getClient()).restore(identity.did, true)
+    return rememberSession(restored)
+  }
+
+  const identityFromSession = async ({
+    session,
+    input,
+  }: {
+    session: OAuthSession
+    input?: string
+  }) =>
+    atprotoOAuthIdentityFromSession({
+      session: rememberSession(session),
+      input,
+      now,
+    })
+
   return {
     initialize: async () => {
       const session = await initializeSession()
-      return session
-        ? atprotoOAuthIdentityFromSession({
-            session,
-            now,
-          })
-        : undefined
+      return session ? identityFromSession({ session }) : undefined
+    },
+    createProjectApiConfig: async (
+      identity
+    ): Promise<AtprotoProjectApiConfig> => {
+      const session =
+        sessions.get(identity.did) ?? (await restoreSession(identity))
+      const tokenInfo = await session.getTokenInfo('auto')
+      const serviceUrl = identity.serviceUrl ?? tokenInfo.aud
+      if (!serviceUrl) {
+        throw new Error('ATProto OAuth session is missing a PDS service URL.')
+      }
+
+      return {
+        repo: identity.did,
+        client: new AtprotoXrpcClient({
+          serviceUrl,
+          fetch: sessionFetchHandler(session),
+        }),
+        source: 'zds-atproto-sync',
+      }
     },
     connect: async (options: AtprotoOAuthConnectOptions) => {
       const input = resolveDefaultInput(options.input, defaultInput)
@@ -180,10 +234,9 @@ export function createAtprotoBrowserOAuthConnector({
         scope: options.scopes.join(' '),
       })
 
-      return atprotoOAuthIdentityFromSession({
+      return identityFromSession({
         session,
         input,
-        now,
       })
     },
     disconnect: async (identity) => {
@@ -192,10 +245,9 @@ export function createAtprotoBrowserOAuthConnector({
     refresh: async (identity) => {
       try {
         const session = await (await getClient()).restore(identity.did, true)
-        return atprotoOAuthIdentityFromSession({
+        return identityFromSession({
           session,
           input: identity.handle,
-          now,
         })
       } catch {
         return {
