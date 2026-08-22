@@ -4,17 +4,25 @@ import {
   defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal, type Signal } from '@preact/signals-core'
+import { effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { ZDSProject, type ZDSProjectRuntime } from '@src/lang/KclManager'
+import fsZds from '@src/lib/fs-zds'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import {
+  PATHS,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { reportRejection } from '@src/lib/trap'
 import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
@@ -32,12 +40,16 @@ import {
   type ProjectSessionService,
   projectSession,
 } from '@src/registry/contracts/projectSession'
+import {
+  type ProjectLibraryRealization,
+  projectLibraryRealizationsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import { routerService } from '@src/registry/contracts/router'
 import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import fsOperationQueueRegistryItem from '@src/registry/extensions/fsOperationQueue'
-import type { Subscription } from 'xstate'
 
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -64,11 +76,16 @@ function getZookeeperReplayFallbackFilePath(
 export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   const projectTree = signal(project.value?.projectIORefSignal.value)
+  const projectLibraryRealizations = ctx.valueSpecs.signal(
+    projectLibraryRealizationsValueSpec
+  )
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   const mutation = signal<ProjectSessionMutationState>({ pending: false })
   let disposeProjectTreeSync: (() => void) | undefined
   let disposeProjectHistoryExtensions: (() => void) | undefined
-  let projectFoldersSubscription: Subscription | undefined
+  let disposeProjectLibraryRealizationSync: (() => void) | undefined
+  let disposeSystemIOProjectTreeRefresh: (() => void) | undefined
+  let lastProjectLibraryRedirectPath: string | undefined
   let seededCloudSyncOpenedProject = false
 
   const setMutation = ({
@@ -140,6 +157,168 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     return projectTree.value
   }
 
+  const sameProjectPath = (left: string, right: string) =>
+    left.replaceAll('\\', '/') === right.replaceAll('\\', '/')
+
+  const updateOpenedProjectTree = (
+    openedProject: ZDSProject,
+    nextProjectTree: Project
+  ) => {
+    const currentProjectTree = openedProject.projectIORefSignal.value
+    const libraryPath =
+      nextProjectTree.libraryPath ?? currentProjectTree.libraryPath
+    const libraryType =
+      nextProjectTree.libraryType ?? currentProjectTree.libraryType
+    openedProject.projectIORefSignal.value = {
+      ...nextProjectTree,
+      ...(libraryPath ? { libraryPath } : {}),
+      ...(libraryType ? { libraryType } : {}),
+    }
+    syncProjectTree()
+  }
+
+  const projectFromRealizationMetadata = (
+    currentProjectTree: Project,
+    realization: ProjectLibraryRealization
+  ): Project => {
+    const libraryRef =
+      realization.libraryRefs.find(
+        (ref) =>
+          currentProjectTree.libraryPath &&
+          sameProjectPath(ref.path, currentProjectTree.libraryPath)
+      ) ?? realization.libraryRefs[0]
+
+    return {
+      ...currentProjectTree,
+      name: realization.localProjectName,
+      path: realization.localProjectPath,
+      title: realization.title,
+      default_file: realization.defaultFile ?? currentProjectTree.default_file,
+      kcl_file_count:
+        realization.kclFileCount ?? currentProjectTree.kcl_file_count,
+      directory_count:
+        realization.directoryCount ?? currentProjectTree.directory_count,
+      readWriteAccess: realization.readWriteAccess,
+      ...(libraryRef
+        ? {
+            libraryPath: libraryRef.path,
+            libraryType: libraryRef.type,
+          }
+        : {}),
+    }
+  }
+
+  const projectTreeMetadataMatches = (left: Project, right: Project) =>
+    left.name === right.name &&
+    sameProjectPath(left.path, right.path) &&
+    left.title === right.title &&
+    sameProjectPath(left.default_file, right.default_file) &&
+    left.kcl_file_count === right.kcl_file_count &&
+    left.directory_count === right.directory_count &&
+    left.readWriteAccess === right.readWriteAccess &&
+    left.libraryPath === right.libraryPath &&
+    left.libraryType === right.libraryType
+
+  const navigateToMovedProjectRealization = ({
+    currentProject,
+    realization,
+  }: {
+    currentProject: ZDSProject
+    realization: ProjectLibraryRealization
+  }) => {
+    if (lastProjectLibraryRedirectPath === realization.localProjectPath) {
+      return
+    }
+
+    const router = ctx.services.optional(routerService)
+    if (!router?.isReady.value) {
+      return
+    }
+
+    lastProjectLibraryRedirectPath = realization.localProjectPath
+    const activeFilePath =
+      currentProject.executingFileEntry?.value.path ??
+      currentProject.projectIORefSignal.value.default_file
+    const activeFileRelativePath = activeFilePath
+      ? fsZds.relative(currentProject.path, activeFilePath)
+      : ''
+    const targetPath = activeFileRelativePath
+      ? fsZds.join(realization.localProjectPath, activeFileRelativePath)
+      : (realization.defaultFile ?? realization.localProjectPath)
+
+    void router.navigate(
+      joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(targetPath))
+    )
+  }
+
+  const findMovedProjectRealization = ({
+    currentProjectTree,
+    realizations,
+  }: {
+    currentProjectTree: Project
+    realizations: readonly ProjectLibraryRealization[]
+  }) => {
+    const currentDisplayName = getProjectDisplayName(currentProjectTree)
+    const candidates = realizations.filter(
+      (realization) =>
+        !sameProjectPath(
+          realization.localProjectPath,
+          currentProjectTree.path
+        ) && realization.title === currentDisplayName
+    )
+    const sameLibraryCandidates = currentProjectTree.libraryPath
+      ? candidates.filter((realization) =>
+          realization.libraryRefs.some((ref) =>
+            sameProjectPath(ref.path, currentProjectTree.libraryPath ?? '')
+          )
+        )
+      : candidates
+
+    return sameLibraryCandidates.length === 1
+      ? sameLibraryCandidates[0]
+      : undefined
+  }
+
+  const watchProjectLibraryRealizations = () => {
+    disposeProjectLibraryRealizationSync?.()
+    disposeProjectLibraryRealizationSync = effect(() => {
+      const currentProject = project.value
+      if (!currentProject) {
+        return
+      }
+
+      const currentProjectTree = currentProject.projectIORefSignal.value
+      const realization = projectLibraryRealizations.value.find(
+        (candidate) =>
+          candidate.localProjectPath &&
+          sameProjectPath(candidate.localProjectPath, currentProjectTree.path)
+      )
+      if (realization) {
+        lastProjectLibraryRedirectPath = undefined
+        const nextProjectTree = projectFromRealizationMetadata(
+          currentProjectTree,
+          realization
+        )
+        if (projectTreeMetadataMatches(currentProjectTree, nextProjectTree)) {
+          return
+        }
+        updateOpenedProjectTree(currentProject, nextProjectTree)
+        return
+      }
+
+      const movedRealization = findMovedProjectRealization({
+        currentProjectTree,
+        realizations: projectLibraryRealizations.value,
+      })
+      if (movedRealization) {
+        navigateToMovedProjectRealization({
+          currentProject,
+          realization: movedRealization,
+        })
+      }
+    })
+  }
+
   const watchProjectTree = (nextProject: ZDSProject | undefined) => {
     disposeProjectTreeSync?.()
     disposeProjectTreeSync = undefined
@@ -178,32 +357,70 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const watchSystemIOProjectTree = (projectIORefSignal: Signal<Project>) => {
-    const syncProjectTreeFromFolders = (folders: Project[] | undefined) => {
-      const foundProject = (folders ?? []).find(
-        (candidate) =>
-          candidate.name === projectIORefSignal.value.name &&
-          candidate.path === projectIORefSignal.value.path
-      )
-      if (!foundProject || projectIORefSignal.value === foundProject) {
+  const watchSystemIOProjectTreeRefresh = () => {
+    disposeSystemIOProjectTreeRefresh?.()
+    disposeSystemIOProjectTreeRefresh = effect(() => {
+      const systemIO = ctx.services.optional(systemIOService)
+      if (!systemIO) {
         return
       }
-      projectIORefSignal.value = {
-        ...foundProject,
-        ...(projectIORefSignal.value.libraryPath
-          ? { libraryPath: projectIORefSignal.value.libraryPath }
-          : {}),
-        ...(projectIORefSignal.value.libraryType
-          ? { libraryType: projectIORefSignal.value.libraryType }
-          : {}),
-      }
-    }
 
-    projectFoldersSubscription?.unsubscribe()
-    const systemIOActor = ctx.services.get(systemIOService).actor
-    syncProjectTreeFromFolders(systemIOActor.getSnapshot().context.folders)
-    projectFoldersSubscription = systemIOActor.subscribe(({ context }) => {
-      syncProjectTreeFromFolders(context.folders)
+      let observedFolderRead = false
+      const subscription = systemIO.actor.subscribe((snapshot) => {
+        if (snapshot.matches(SystemIOMachineStates.readingFolders)) {
+          observedFolderRead = true
+          return
+        }
+
+        if (
+          !observedFolderRead ||
+          !snapshot.matches(SystemIOMachineStates.idle)
+        ) {
+          return
+        }
+
+        observedFolderRead = false
+        const currentProject = project.value
+        if (!currentProject) {
+          return
+        }
+
+        if (
+          snapshot.context.lastOperation ===
+            SystemIOMachineStates.renamingProject &&
+          snapshot.context.requestedProjectName.title
+        ) {
+          updateOpenedProjectTree(currentProject, {
+            ...currentProject.projectIORefSignal.value,
+            title: snapshot.context.requestedProjectName.title,
+          })
+        }
+
+        const refreshedProjectFromFolderRead = snapshot.context.folders?.find(
+          (candidate) => sameProjectPath(candidate.path, currentProject.path)
+        )
+        if (refreshedProjectFromFolderRead) {
+          updateOpenedProjectTree(
+            currentProject,
+            refreshedProjectFromFolderRead
+          )
+          return
+        }
+
+        currentProject
+          .refreshProjectTree()
+          .then((refreshedProjectTree) => {
+            if (project.value === currentProject) {
+              updateOpenedProjectTree(currentProject, refreshedProjectTree)
+            }
+          })
+          .catch(reportRejection)
+      })
+
+      return () => {
+        observedFolderRead = false
+        subscription.unsubscribe()
+      }
     })
   }
 
@@ -249,9 +466,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         onProjectFilesReplay: async (replayFiles) => {
           await currentProject.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            await serviceImpl.refreshProjectTree()
           }
         },
       })
@@ -266,17 +481,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const openProject = async (projectIORef: Project) => {
     const currentProject = project.value
     if (currentProject?.path === projectIORef.path) {
-      const currentProjectTree = currentProject.projectIORefSignal.value
-      const libraryPath =
-        projectIORef.libraryPath ?? currentProjectTree.libraryPath
-      const libraryType =
-        projectIORef.libraryType ?? currentProjectTree.libraryType
-      currentProject.projectIORefSignal.value = {
-        ...projectIORef,
-        ...(libraryPath ? { libraryPath } : {}),
-        ...(libraryType ? { libraryType } : {}),
-      }
-      syncProjectTree()
+      updateOpenedProjectTree(currentProject, projectIORef)
       return currentProject
     }
 
@@ -302,7 +507,6 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       serviceImpl.setProject(openedProject)
       setCloudSyncOpenedProject(ownedProject)
       watchProjectHistoryExtensions()
-      watchSystemIOProjectTree(projectIORefSignal)
       setMutation({
         pending: false,
         operation: 'open-project',
@@ -371,12 +575,19 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     setProject: (nextProject) => {
       project.value = nextProject
       watchProjectTree(nextProject)
+      if (nextProject) {
+        watchProjectLibraryRealizations()
+        watchSystemIOProjectTreeRefresh()
+      }
     },
     clearProject: () => {
       disposeProjectHistoryExtensions?.()
       disposeProjectHistoryExtensions = undefined
-      projectFoldersSubscription?.unsubscribe()
-      projectFoldersSubscription = undefined
+      disposeProjectLibraryRealizationSync?.()
+      disposeProjectLibraryRealizationSync = undefined
+      disposeSystemIOProjectTreeRefresh?.()
+      disposeSystemIOProjectTreeRefresh = undefined
+      lastProjectLibraryRedirectPath = undefined
       project.value?.close?.()
       project.value = undefined
       watchProjectTree(undefined)

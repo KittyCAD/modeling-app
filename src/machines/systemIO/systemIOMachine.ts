@@ -108,7 +108,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_renameProject
-          output: { redirect: boolean; newName: string }
+          output: { redirect: boolean; newName: string; newTitle: string }
         }
       | {
           type: SystemIOMachineEvents.deleteProject
@@ -549,10 +549,17 @@ export const systemIOMachine = setup({
       }): Promise<{
         message: string
         newName: string
+        newTitle: string
         oldName: string
         redirect: boolean
       }> => {
-        return { message: '', newName: '', oldName: '', redirect: true }
+        return {
+          message: '',
+          newName: '',
+          newTitle: '',
+          oldName: '',
+          redirect: true,
+        }
       }
     ),
     [SystemIOMachineActors.createKCLFile]: fromPromise(
@@ -1116,7 +1123,10 @@ export const systemIOMachine = setup({
                 // If we just finished renaming, navigate to the renamed project
                 if (context.pendingRenamedProjectName) {
                   const newName = context.pendingRenamedProjectName
-                  return { name: newName }
+                  return {
+                    name: newName,
+                    title: context.requestedProjectName.title,
+                  }
                 }
                 return context.requestedProjectName
               },
@@ -1227,7 +1237,13 @@ export const systemIOMachine = setup({
               pendingRenamedProjectName: ({ event }) => {
                 // Redirect back to the project if renamed from the current project
                 const output = (
-                  event as { output: { redirect: boolean; newName: string } }
+                  event as {
+                    output: {
+                      redirect: boolean
+                      newName: string
+                      newTitle: string
+                    }
+                  }
                 ).output
                 return output.redirect ? output.newName : undefined
               },
@@ -1240,6 +1256,8 @@ export const systemIOMachine = setup({
                 return {
                   name: (event as { output: { newName: string } }).output
                     .newName,
+                  title: (event as { output: { newTitle: string } }).output
+                    .newTitle,
                 }
               },
             }),

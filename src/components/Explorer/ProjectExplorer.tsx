@@ -29,25 +29,26 @@ import {
   fileNameHasExtension,
   getParentAbsolutePath,
   joinOSPaths,
+  joinRouterPaths,
+  PATHS,
   parentPathRelativeToApplicationDirectory,
-  parentPathRelativeToProject,
-  toArchivePath,
+  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
-import {
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import {
+  type ProjectSessionMutationOperation,
+  projectSession,
+} from '@src/registry/contracts/projectSession'
 import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import { routerService } from '@src/registry/contracts/router'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
-import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
 import toast from 'react-hot-toast'
@@ -59,17 +60,23 @@ const isFileExplorerEntryOpened = (
   return rows[entry.key]
 }
 
-const FILE_TREE_MUTATION_STATES = [
-  SystemIOMachineStates.renamingFolder,
-  SystemIOMachineStates.renamingFile,
-  SystemIOMachineStates.deletingFileOrFolder,
-  SystemIOMachineStates.renamingFileAndNavigateToFile,
-  SystemIOMachineStates.renamingFolderAndNavigateToFile,
-  SystemIOMachineStates.deletingFileOrFolderAndNavigate,
-  SystemIOMachineStates.copyingRecursive,
-  SystemIOMachineStates.movingRecursive,
-  SystemIOMachineStates.movingRecursiveAndNavigate,
-] as const
+const PROJECT_SESSION_FILE_TREE_MUTATION_OPERATIONS =
+  new Set<ProjectSessionMutationOperation>([
+    'refresh-project-tree',
+    'create-file',
+    'write-file',
+    'create-folder',
+    'rename-entry',
+    'delete-entry',
+    'copy-entry',
+    'move-entry',
+    'archive-entry',
+    'apply-file-patch',
+  ])
+
+function fileTreeErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'File operation failed.'
+}
 
 const handleExternalDragEvent = (e: React.DragEvent): boolean => {
   if (!isExternalFileDrag(e)) {
@@ -185,7 +192,7 @@ export const ProjectExplorer = ({
   createFilePressed: number
   createFolderPressed: number
   refreshExplorerPressed: number
-  onRefreshExplorer?: () => void
+  onRefreshExplorer?: () => void | Promise<void>
   collapsePressed: number
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
   onRowDoubleClicked?: (row: FileExplorerEntry, domIndex: number) => void
@@ -195,24 +202,26 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, systemIOActor } = useApp()
+  const { commands, registry } = useApp()
+  const session = registry.get(projectSession)
+  const router = registry.get(routerService)
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
   ).value
   const { kclManager } = useSingletons()
-  const isSystemIOIdle = useSelector(systemIOActor, (state) =>
-    state.matches(SystemIOMachineStates.idle)
-  )
-  const isSystemIOFileTreeMutation = useSelector(systemIOActor, (state) =>
-    FILE_TREE_MUTATION_STATES.some((fileTreeMutationState) =>
-      state.matches(fileTreeMutationState)
+  const projectSessionMutation = session.mutation.value
+  const isProjectSessionFileTreeMutation =
+    projectSessionMutation.pending &&
+    Boolean(
+      projectSessionMutation.operation &&
+        PROJECT_SESSION_FILE_TREE_MUTATION_OPERATIONS.has(
+          projectSessionMutation.operation
+        )
     )
-  )
-  const lastRecursiveMoveTarget = useSelector(
-    systemIOActor,
-    (state) => state.context.lastRecursiveMoveTarget
-  )
+  const lastFileTreeMutationTarget = projectSessionMutation.pending
+    ? undefined
+    : projectSessionMutation.lastTargetPath
   const errors = kclManager.errorsSignal.value
   const applicationProjectDirectory =
     overrideApplicationProjectDirectory || getParentAbsolutePath(project.path)
@@ -247,7 +256,7 @@ export const ProjectExplorer = ({
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
   const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [isCopying, setIsCopying] = useState<boolean>(false)
-  const [isFileTreeMutationPending, setIsFileTreeMutationPending] =
+  const [isLocalFileTreeMutationPending, setIsLocalFileTreeMutationPending] =
     useState<boolean>(false)
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
@@ -279,33 +288,57 @@ export const ProjectExplorer = ({
   })
   const previousProject = useRef(project)
   const lastSyncedFilePathRef = useRef<string | undefined>(undefined)
-  const lastRevealedRecursiveMoveTargetRef = useRef<string | undefined>(
+  const lastRevealedFileTreeMutationTargetRef = useRef<string | undefined>(
     undefined
   )
 
   onRowEnterRef.current = onRowEnter
   const isFileTreeInteractionDisabled =
-    isFileTreeMutationPending || isSystemIOFileTreeMutation
+    isLocalFileTreeMutationPending || isProjectSessionFileTreeMutation
   isFileTreeInteractionDisabledRef.current = isFileTreeInteractionDisabled
 
-  const setFileTreeMutationPending = useCallback((isPending: boolean) => {
+  const setLocalFileTreeMutationPending = useCallback((isPending: boolean) => {
     isFileTreeInteractionDisabledRef.current = isPending
-    setIsFileTreeMutationPending(isPending)
+    setIsLocalFileTreeMutationPending(isPending)
   }, [])
 
-  const sendFileTreeMutationEvent = useCallback(
-    (event: Parameters<typeof systemIOActor.send>[0]) => {
-      setFileTreeMutationPending(true)
-      systemIOActor.send(event)
+  const runFileTreeMutation = useCallback(
+    async <Result,>(
+      mutation: () => Promise<Result>,
+      successMessage?: string
+    ) => {
+      setLocalFileTreeMutationPending(true)
+      try {
+        const result = await mutation()
+        if (successMessage) {
+          toast.success(successMessage)
+        }
+        return result
+      } catch (error) {
+        console.error(error)
+        toast.error(fileTreeErrorMessage(error))
+        return undefined
+      } finally {
+        setLocalFileTreeMutationPending(false)
+      }
     },
-    [setFileTreeMutationPending, systemIOActor]
+    [setLocalFileTreeMutationPending]
   )
 
-  useEffect(() => {
-    if (isSystemIOIdle && isFileTreeMutationPending) {
-      setFileTreeMutationPending(false)
-    }
-  }, [isFileTreeMutationPending, isSystemIOIdle, setFileTreeMutationPending])
+  const navigateToProject = useCallback(() => {
+    void router.navigate(
+      joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(project.path))
+    )
+  }, [project.path, router])
+
+  const navigateToFile = useCallback(
+    (requestedFilePath: string) => {
+      void router.navigate(
+        joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(requestedFilePath))
+      )
+    },
+    [router]
+  )
 
   // fake row is used for new files or folders, you should not be able to have multiple fake rows for creation
   const [fakeRow, setFakeRow] = useState<{
@@ -360,7 +393,7 @@ export const ProjectExplorer = ({
     if (refreshExplorerPressed <= 0) {
       return
     }
-    onRefreshExplorer?.()
+    void onRefreshExplorer?.()
   }, [onRefreshExplorer, refreshExplorerPressed])
 
   useEffect(() => {
@@ -777,60 +810,60 @@ export const ProjectExplorer = ({
 
       // Copy supported files to the target directory
       if (supportedFiles.length > 0) {
-        setFileTreeMutationPending(true)
-        const targetPath = getDropTargetPath(target, project.path)
-        const createdDirs = new Set<string>()
+        await runFileTreeMutation(
+          async () => {
+            const targetPath = getDropTargetPath(target, project.path)
+            const createdDirs = new Set<string>()
 
-        for (const { file, relativePath } of supportedFiles) {
-          try {
-            const destinationDirPath = relativePath
-              ? joinOSPaths(targetPath, relativePath)
-              : targetPath
+            for (const { file, relativePath } of supportedFiles) {
+              try {
+                const destinationDirPath = relativePath
+                  ? joinOSPaths(targetPath, relativePath)
+                  : targetPath
 
-            // Create parent directories if needed
-            if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await fsZds.mkdir(destinationDirPath, { recursive: true })
-              createdDirs.add(destinationDirPath)
+                // Create parent directories if needed
+                if (relativePath && !createdDirs.has(destinationDirPath)) {
+                  await fsZds.mkdir(destinationDirPath, { recursive: true })
+                  createdDirs.add(destinationDirPath)
+                }
+
+                const { path: destinationPath } = await getNextFileName({
+                  entryName: file.name,
+                  baseDir: destinationDirPath,
+                  wasmInstance,
+                  preserveUnknownExtension: true,
+                })
+
+                const arrayBuffer = await file.arrayBuffer()
+                await fsZds.writeFile(
+                  destinationPath,
+                  new Uint8Array(arrayBuffer)
+                )
+              } catch (e) {
+                console.error('Failed to copy file:', file.name, e)
+                toast.error(`Failed to import ${file.name}.`)
+              }
             }
 
-            const { path: destinationPath } = await getNextFileName({
-              entryName: file.name,
-              baseDir: destinationDirPath,
-              wasmInstance,
-              preserveUnknownExtension: true,
-            })
+            // Open the target folder so the user can see the imported files
+            if (target?.children) {
+              const newOpenedRows = { ...openedRowsRef.current }
+              newOpenedRows[target.key] = true
+              setOpenedRows(newOpenedRows)
+            }
 
-            const arrayBuffer = await file.arrayBuffer()
-            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
-          } catch (e) {
-            console.error('Failed to copy file:', file.name, e)
-            toast.error(`Failed to import ${file.name}.`)
-          }
-        }
-
-        // Open the target folder so the user can see the imported files
-        if (target?.children) {
-          const newOpenedRows = { ...openedRowsRef.current }
-          newOpenedRows[target.key] = true
-          setOpenedRows(newOpenedRows)
-        }
-
-        // Refresh the explorer to show the new files
-        systemIOActor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
-
-        toast.success(
+            await onRefreshExplorer?.()
+          },
           `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
         )
       }
     },
     [
+      onRefreshExplorer,
       readOnly,
       project.path,
+      runFileTreeMutation,
       wasmInstance,
-      systemIOActor,
-      setFileTreeMutationPending,
     ]
   )
 
@@ -900,29 +933,30 @@ export const ProjectExplorer = ({
         pathIterator.pop()
       }
     }
-    const recursiveMoveTargetRow = lastRecursiveMoveTarget
+    const fileTreeMutationTargetRow = lastFileTreeMutationTarget
       ? flattenedData.find(
           (child) =>
-            child.path === lastRecursiveMoveTarget &&
+            child.path === lastFileTreeMutationTarget &&
             rowPathMatchesTreeParent(child, project)
         )
       : undefined
-    const shouldRevealRecursiveMoveTarget =
-      !!recursiveMoveTargetRow &&
-      lastRecursiveMoveTarget !== lastRevealedRecursiveMoveTargetRef.current
-    if (shouldRevealRecursiveMoveTarget) {
-      const moveTargetKey =
-        recursiveMoveTargetRow.children === null
-          ? recursiveMoveTargetRow.parentPath
-          : recursiveMoveTargetRow.key
-      const pathIterator = desktopSafePathSplit(moveTargetKey)
+    const shouldRevealFileTreeMutationTarget =
+      !!fileTreeMutationTargetRow &&
+      lastFileTreeMutationTarget !==
+        lastRevealedFileTreeMutationTargetRef.current
+    if (shouldRevealFileTreeMutationTarget) {
+      const targetKey =
+        fileTreeMutationTargetRow.children === null
+          ? fileTreeMutationTargetRow.parentPath
+          : fileTreeMutationTargetRow.key
+      const pathIterator = desktopSafePathSplit(targetKey)
       while (pathIterator.length > 0) {
         const key = desktopSafePathJoin(pathIterator)
         openedRowsChanged = openedRowsChanged || !openedRowsForRender[key]
         openedRowsForRender[key] = true
         pathIterator.pop()
       }
-      lastRevealedRecursiveMoveTargetRef.current = lastRecursiveMoveTarget
+      lastRevealedFileTreeMutationTargetRef.current = lastFileTreeMutationTarget
     }
 
     const copyEntryToTarget = (src: FileEntry, target: FileEntry) => {
@@ -939,13 +973,14 @@ export const ProjectExplorer = ({
         '-copy-'
       )
       if (result && result.src && result.target) {
-        sendFileTreeMutationEvent({
-          type: SystemIOMachineEvents.copyRecursive,
-          data: {
-            src: result.src,
-            target: result.target,
-          },
-        })
+        void runFileTreeMutation(
+          () =>
+            session.copyEntry({
+              sourcePath: result.src,
+              targetPath: result.target,
+            }),
+          'Copied successfully'
+        )
       } else {
         toast.error('Failed to copy and paste the result is null.')
       }
@@ -1046,61 +1081,33 @@ export const ProjectExplorer = ({
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.moveRecursiveAndNavigate,
-                    data: {
-                      src,
-                      target,
-                      successMessage: 'Archived successfully',
-                      requestedProjectName: project.name,
-                    },
+              void runFileTreeMutation(async () => {
+                const { archivedPath } = await session.archiveEntry({
+                  path: src,
+                })
+                kclManager.addGlobalHistoryEvent(
+                  fsArchiveFile({
+                    src,
+                    target: archivedPath,
+                    requestedProjectName: project.name,
                   })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
-                })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
+                )
+                navigateToProject()
+              }, 'Archived successfully')
             } else {
               const src = child.path
-              setFileTreeMutationPending(true)
-              toArchivePath(src)
-                .then((target) => {
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.moveRecursive,
-                    data: {
-                      src,
-                      target,
-                      successMessage: 'Archived successfully',
-                    },
+              void runFileTreeMutation(async () => {
+                const { archivedPath } = await session.archiveEntry({
+                  path: src,
+                })
+                kclManager.addGlobalHistoryEvent(
+                  fsArchiveFile({
+                    src,
+                    target: archivedPath,
+                    requestedProjectName: project.name,
                   })
-                  kclManager.addGlobalHistoryEvent(
-                    fsArchiveFile({
-                      src,
-                      target,
-                      requestedProjectName: project.name,
-                    })
-                  )
-                })
-                .catch((e) => {
-                  setFileTreeMutationPending(false)
-                  console.error(e)
-                  console.warn(
-                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
-                  )
-                })
+                )
+              }, 'Archived successfully')
             }
           },
           onOpenInNewWindow: () => {
@@ -1157,20 +1164,19 @@ export const ProjectExplorer = ({
               )
               if (result && result.src && result.target) {
                 const { src, target } = result
-                sendFileTreeMutationEvent({
-                  type: SystemIOMachineEvents.moveRecursive,
-                  data: {
-                    src,
-                    target,
-                  },
-                })
-                kclManager.addGlobalHistoryEvent(
-                  fsMoveFile({
-                    src,
-                    target,
-                    requestedProjectName: project.name,
+                void runFileTreeMutation(async () => {
+                  await session.moveEntry({
+                    sourcePath: src,
+                    targetPath: target,
                   })
-                )
+                  kclManager.addGlobalHistoryEvent(
+                    fsMoveFile({
+                      src,
+                      target,
+                      requestedProjectName: project.name,
+                    })
+                  )
+                }, 'Moved successfully')
               } else {
                 toast.error('Failed to copy and paste the result is null.')
               }
@@ -1207,16 +1213,14 @@ export const ProjectExplorer = ({
             if (row.isFolder) {
               if (requestedName !== name) {
                 if (row.isFake) {
-                  // create
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.createBlankFolder,
-                    data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        requestedName
-                      ),
-                    },
-                  })
+                  const requestedAbsolutePath = joinOSPaths(
+                    getParentAbsolutePath(row.path),
+                    requestedName
+                  )
+                  void runFileTreeMutation(
+                    () => session.createFolder({ path: requestedAbsolutePath }),
+                    `Successfully created "${requestedName}"`
+                  )
                 } else {
                   const absolutePathToParentDirectory = getParentAbsolutePath(
                     row.path
@@ -1235,32 +1239,12 @@ export const ProjectExplorer = ({
                     file?.path?.startsWith(oldPath) &&
                     canNavigate
 
-                  if (shouldWeNavigate && file && file.path) {
-                    const requestedFileNameWithExtension =
-                      parentPathRelativeToProject(
-                        file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
-                      )
-                    sendFileTreeMutationEvent({
-                      type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
-                      data: {
-                        requestedFolderName: requestedName,
-                        folderName: name,
-                        absolutePathToParentDirectory,
-                        requestedProjectName: project.name,
-                        requestedFileNameWithExtension,
-                      },
-                    })
-                  } else {
-                    sendFileTreeMutationEvent({
-                      type: SystemIOMachineEvents.renameFolder,
-                      data: {
-                        requestedFolderName: requestedName,
-                        folderName: name,
-                        absolutePathToParentDirectory,
-                      },
-                    })
-                  }
+                  void runFileTreeMutation(async () => {
+                    await session.renameEntry({ oldPath, newPath })
+                    if (shouldWeNavigate && file?.path) {
+                      navigateToFile(file.path.replace(oldPath, newPath))
+                    }
+                  }, `Successfully renamed folder "${name}" to "${requestedName}"`)
 
                   // TODO: Gotcha... Set new string open even if it fails?
                   if (openedRowsRef.current[child.key]) {
@@ -1286,31 +1270,16 @@ export const ProjectExplorer = ({
                 fileName
               )
 
-              if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
-                // Create the KCL file and navigate to (open) it in the editor.
-                const pathRelativeToParent = parentPathRelativeToProject(
-                  requestedAbsolutePath,
-                  applicationProjectDirectory
-                )
-                sendFileTreeMutationEvent({
-                  type: SystemIOMachineEvents.importFileFromURL,
-                  data: {
-                    requestedCode: '',
-                    requestedProjectName: project.name,
-                    requestedFileNameWithExtension: pathRelativeToParent,
-                  },
+              void runFileTreeMutation(async () => {
+                await session.createFile({
+                  path: requestedAbsolutePath,
+                  contents: '',
+                  useDefaultKclContents: fileName.endsWith(FILE_EXT),
                 })
-              } else {
-                // Create a blank file. The actor seeds default KCL content only
-                // for .kcl files and writes an empty file for everything else,
-                // so non-KCL files (.md, .txt, ...) don't get KCL boilerplate.
-                sendFileTreeMutationEvent({
-                  type: SystemIOMachineEvents.createBlankFile,
-                  data: {
-                    requestedAbsolutePath,
-                  },
-                })
-              }
+                if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
+                  navigateToFile(requestedAbsolutePath)
+                }
+              }, `Successfully created "${fileName}"`)
             } else {
               // Respect a user-typed extension otherwise assume the file is KCL.
               const fileName =
@@ -1328,18 +1297,19 @@ export const ProjectExplorer = ({
               const shouldWeNavigate =
                 requestedAbsoluteFilePathWithExtension === file?.path &&
                 canNavigate
-              sendFileTreeMutationEvent({
-                type: shouldWeNavigate
-                  ? SystemIOMachineEvents.renameFileAndNavigateToFile
-                  : SystemIOMachineEvents.renameFile,
-                data: {
-                  requestedFileNameWithExtension: fileName,
-                  fileNameWithExtension: name,
-                  absolutePathToParentDirectory: getParentAbsolutePath(
-                    row.path
-                  ),
-                },
-              })
+              const requestedAbsolutePath = joinOSPaths(
+                getParentAbsolutePath(row.path),
+                fileName
+              )
+              void runFileTreeMutation(async () => {
+                await session.renameEntry({
+                  oldPath: requestedAbsoluteFilePathWithExtension,
+                  newPath: requestedAbsolutePath,
+                })
+                if (shouldWeNavigate) {
+                  navigateToFile(requestedAbsolutePath)
+                }
+              }, `Successfully renamed file "${name}" to "${fileName}"`)
             }
           },
         }
