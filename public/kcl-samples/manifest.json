@@ -1213,6 +1213,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Manufacturing",
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket",
+    "description": "A standard hub sprocket is a toothed wheel that engages with a roller chain.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Maker"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
