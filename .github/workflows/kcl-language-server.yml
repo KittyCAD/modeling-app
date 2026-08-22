@@ -115,32 +115,17 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache: ${{ runner.os != 'Linux' }}
-          cache-workspaces: rust
+          cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: Rust cache on the Namespace volume
-        if: runner.os == 'Linux'
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
             rust/target
             ~/.cargo/registry
             ~/.cargo/git
-      - name: TEMPORARY probe - does this profile have a cache volume?
-        # Remove once the answer is recorded. The Windows and macOS profiles
-        # are unverified. This action fails the job when no volume is attached,
-        # so the probe sets continue-on-error and mounts a throwaway directory
-        # that no other step reads or writes. Success means a volume exists and
-        # the real cache can be switched over; failure prints
-        # "requires a cache volume to be configured" and the build continues on
-        # the GitHub cache.
-        if: runner.os != 'Linux'
-        continue-on-error: true
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: .nscloud-volume-probe
       - name: Install Node.js
         uses: actions/setup-node@v7.0.0
         with:
