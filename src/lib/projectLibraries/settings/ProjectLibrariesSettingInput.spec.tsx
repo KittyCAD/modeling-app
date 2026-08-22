@@ -62,6 +62,29 @@ const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
   },
 ]
 
+const atprotoLibraryTypeOptions: ProjectLibraryTypeOption[] = [
+  ...libraryTypeOptions,
+  {
+    label: 'ATProto',
+    icon: 'atSign',
+    value: 'atproto',
+    defaultLibrary: {
+      title: 'ATProto Projects',
+      path: '/documents/Zoo Design Studio/ATProto/franknoirot.co',
+      type: 'atproto',
+      source: 'franknoirot.co',
+    },
+    newLibrary: {
+      title: 'ATProto Projects',
+      path: '/documents/Zoo Design Studio/ATProto/franknoirot.co',
+      type: 'atproto',
+      source: 'franknoirot.co',
+    },
+    chooseDirectoryOnAdd: true,
+    settingsDetails: DirectoryProjectLibrarySettingsDetails,
+  },
+]
+
 describe('ProjectLibrariesSettingInput', () => {
   test('does not invent a directory library type when none are registered', () => {
     const updateValue = vi.fn()
@@ -282,6 +305,44 @@ describe('ProjectLibrariesSettingInput', () => {
           title: 'Project Library',
           path: '/client-projects',
           type: 'directory',
+        },
+      ])
+    )
+    expect(open).toHaveBeenCalledWith({
+      properties: ['openDirectory', 'createDirectory'],
+      defaultPath: '/documents',
+      title: 'Choose a project library folder',
+    })
+  })
+
+  test('lets non-directory library types choose a local folder when adding', async () => {
+    const updateValue = vi.fn()
+    const open = vi.fn().mockResolvedValue({
+      canceled: false,
+      filePaths: ['/atproto-projects'],
+    })
+    const getPath = vi.fn().mockResolvedValue('/documents')
+    window.electron = { getPath, open } as unknown as Window['electron']
+
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={atprotoLibraryTypeOptions}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('project-library-add'))
+    fireEvent.click(screen.getByTestId('project-library-add-type-atproto'))
+
+    await waitFor(() =>
+      expect(updateValue).toHaveBeenLastCalledWith([
+        ...defaultLibraries,
+        {
+          title: 'ATProto Projects',
+          path: '/atproto-projects',
+          type: 'atproto',
+          source: 'franknoirot.co',
         },
       ])
     )

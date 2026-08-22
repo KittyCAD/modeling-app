@@ -3,7 +3,7 @@ import {
   ATPROTO_ARCHIVE_BLOB_SCOPE,
   ATPROTO_AUTH_SYNC_SCOPE,
   ATPROTO_IDENTITY_PROVIDER_ID,
-  ATPROTO_PROJECT_LIBRARY_PATH_PREFIX,
+  ATPROTO_PROJECT_LIBRARY_LOCAL_PATH_PREFIX,
   ATPROTO_PROJECT_LIBRARY_TYPE,
   getDefaultAtprotoProjectLibrarySetting,
 } from '@src/lib/atprotoSync'
@@ -76,9 +76,10 @@ describe('ATProto sync plugin', () => {
       newLibrarySetting: {
         title: 'ATProto Projects',
         type: ATPROTO_PROJECT_LIBRARY_TYPE,
-        path: `${ATPROTO_PROJECT_LIBRARY_PATH_PREFIX}franknoirot.co`,
+        path: `${ATPROTO_PROJECT_LIBRARY_LOCAL_PATH_PREFIX}/franknoirot.co`,
         source: 'franknoirot.co',
       },
+      chooseDirectoryOnAdd: true,
     })
     expect(
       getProjectLibraryCreateProjectOperation(libraryType, {

@@ -19,7 +19,10 @@ import {
   getAtprotoRemoteProject,
 } from '@src/lib/atprotoSync/api'
 import { readAtprotoSyncLocalMetadata } from '@src/lib/atprotoSync/localSync'
-import { createAtprotoProjectLibraryType } from '@src/lib/atprotoSync/projectLibrary'
+import {
+  createAtprotoProjectLibraryType,
+  getAtprotoProjectLibraryMaterializationDirectoryPath,
+} from '@src/lib/atprotoSync/projectLibrary'
 import {
   ATPROTO_CAD_PROJECT_COLLECTION,
   type AtprotoBlobRef,
@@ -269,6 +272,34 @@ beforeAll(async () => {
 })
 
 describe('ATProto project library type', () => {
+  it('resolves legacy atproto library paths through the documents directory', async () => {
+    const getPath = vi
+      .spyOn(fsZds, 'getPath')
+      .mockResolvedValue('/Users/frank/Documents')
+    const library = {
+      id: 'atproto-test',
+      title: 'ATProto',
+      path: 'atproto://franknoirot.co',
+      type: ATPROTO_PROJECT_LIBRARY_TYPE,
+      source: 'franknoirot.co',
+    } satisfies ProjectLibrary
+
+    try {
+      await expect(
+        getAtprotoProjectLibraryMaterializationDirectoryPath(library)
+      ).resolves.toBe(
+        fsZds.join(
+          '/Users/frank/Documents',
+          'zoo-design-studio-projects',
+          'ATProto',
+          'franknoirot-co'
+        )
+      )
+    } finally {
+      getPath.mockRestore()
+    }
+  })
+
   it('lists remote projects and materializes them locally on open', async () => {
     const testRoot = `/tmp/atproto-project-library-${crypto.randomUUID()}`
     const library = {

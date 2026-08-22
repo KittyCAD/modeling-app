@@ -246,6 +246,14 @@ export interface ProjectLibraryTypeContribution {
   defaultSetting?: ProjectLibrarySetting
   /** Template used when a user manually adds a new library of this type. */
   newLibrarySetting?: ProjectLibrarySetting
+  /**
+   * Ask for a local directory before adding a library of this type.
+   *
+   * Directory-backed remote library types can still keep their remote account or
+   * source in `source`, while writing the chosen local realization root to
+   * `path`.
+   */
+  chooseDirectoryOnAdd?: boolean
   /** Optional detail cell rendered in the project libraries settings row. */
   settingsDetails?: ComponentType<ProjectLibrarySettingsDetailsProps>
   /** Hide this type from creation/editing UI while keeping runtime support. */

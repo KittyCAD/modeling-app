@@ -54,6 +54,7 @@ import {
 } from '@src/lib/projectLibraries'
 import { createProjectInLocalDirectory } from '@src/lib/projectLibraries/operations'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import {
   getProjectDirectoryNameFromTitle,
   sanitizeProjectName,
@@ -136,18 +137,26 @@ function materializationDirectoryName(library: ProjectLibrary) {
   return getProjectDirectoryNameFromTitle(source ?? library.title, 'account')
 }
 
-export function getAtprotoProjectLibraryMaterializationDirectoryPath(
+async function getDefaultAtprotoProjectLibraryMaterializationDirectoryPath(
+  library: ProjectLibrary
+) {
+  const documentsPath = await fsZds.getPath('documents')
+  return fsZds.join(
+    documentsPath,
+    PROJECT_FOLDER,
+    'ATProto',
+    materializationDirectoryName(library)
+  )
+}
+
+export async function getAtprotoProjectLibraryMaterializationDirectoryPath(
   library: ProjectLibrary
 ) {
   if (!library.path.startsWith(ATPROTO_PROJECT_LIBRARY_PATH_PREFIX)) {
     return library.path
   }
 
-  return fsZds.join(
-    `/documents/${PROJECT_FOLDER}`,
-    'ATProto',
-    materializationDirectoryName(library)
-  )
+  return getDefaultAtprotoProjectLibraryMaterializationDirectoryPath(library)
 }
 
 function projectNameForRemoteProject(remoteProject: RemoteProjectSummary) {
@@ -255,7 +264,7 @@ async function readMaterializedProjects({
   signal?: AbortSignal
 }) {
   const directory =
-    getAtprotoProjectLibraryMaterializationDirectoryPath(library)
+    await getAtprotoProjectLibraryMaterializationDirectoryPath(library)
   await fsZds.mkdir(directory, { recursive: true })
   const names = await fsZds.readdir(directory)
   const projects: AtprotoMaterializedProject[] = []
@@ -312,7 +321,7 @@ async function materializeRemoteProject({
   )
   const project = await createProjectInLocalDirectory({
     projectDirectoryPath:
-      getAtprotoProjectLibraryMaterializationDirectoryPath(library),
+      await getAtprotoProjectLibraryMaterializationDirectoryPath(library),
     requestedProjectName: projectNameForRemoteProject(remoteProject),
     requestedProjectTitle: remoteProjectDisplayTitle(remoteProject),
     wasmInstancePromise,
@@ -498,7 +507,7 @@ function createAtprotoProjectLibraryOperations(
 
         const project = await createProjectInLocalDirectory({
           projectDirectoryPath:
-            getAtprotoProjectLibraryMaterializationDirectoryPath(library),
+            await getAtprotoProjectLibraryMaterializationDirectoryPath(library),
           requestedProjectName,
           requestedProjectTitle,
           wasmInstancePromise: context.getWasmPromise(),
@@ -714,6 +723,8 @@ export function createAtprotoProjectLibraryType({
               icon: 'atSign',
               order: 30,
               newLibrarySetting: getDefaultAtprotoProjectLibrarySetting(),
+              chooseDirectoryOnAdd: true,
+              settingsDetails: DirectoryProjectLibrarySettingsDetails,
               operations,
             },
             { key: 'atproto-project-library-type' }

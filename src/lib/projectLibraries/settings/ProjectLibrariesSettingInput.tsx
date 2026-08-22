@@ -50,6 +50,7 @@ export interface ProjectLibraryTypeOption {
   value: ProjectLibraryType
   defaultLibrary: ProjectLibrarySetting
   newLibrary: ProjectLibrarySetting
+  chooseDirectoryOnAdd?: boolean
   settingsDetails: ComponentType<ProjectLibrarySettingsDetailsProps>
   hideInSettingsOnPlatform?: ProjectLibraryTypeContribution['hideInSettingsOnPlatform']
 }
@@ -92,6 +93,7 @@ export function projectLibraryTypeOptionsFromContributions(
         value: libraryType.type,
         defaultLibrary: libraryType.defaultSetting ?? fallbackLibrary,
         newLibrary: libraryType.newLibrarySetting ?? fallbackLibrary,
+        chooseDirectoryOnAdd: libraryType.chooseDirectoryOnAdd,
         settingsDetails:
           libraryType.settingsDetails ?? DefaultProjectLibrarySettingsDetails,
         hideInSettingsOnPlatform: libraryType.hideInSettingsOnPlatform,
@@ -176,6 +178,7 @@ function ProjectLibraryTypeSelect({
             path: 'projects',
             type: value,
           },
+          chooseDirectoryOnAdd: false,
           settingsDetails: DefaultProjectLibrarySettingsDetails,
         },
       ]
@@ -244,6 +247,15 @@ function ProjectLibraryTypeSelect({
         </Listbox.Options>
       </div>
     </Listbox>
+  )
+}
+
+function shouldChooseDirectoryOnAdd(
+  libraryTypeOption: ProjectLibraryTypeOption
+) {
+  return (
+    libraryTypeOption.chooseDirectoryOnAdd ??
+    libraryTypeOption.newLibrary.type === DIRECTORY_PROJECT_LIBRARY_TYPE
   )
 }
 
@@ -421,7 +433,9 @@ export function ProjectLibrariesSettingInput({
               ? fallback.path
               : library.path,
           type,
-          ...(type === CLOUD_PROJECT_LIBRARY_TYPE && source ? { source } : {}),
+          ...(type !== DIRECTORY_PROJECT_LIBRARY_TYPE && source
+            ? { source }
+            : {}),
         }
       })
     )
@@ -449,7 +463,7 @@ export function ProjectLibrariesSettingInput({
 
   async function addLibraryOfType(libraryTypeOption: ProjectLibraryTypeOption) {
     const newLibrary = libraryTypeOption.newLibrary
-    if (newLibrary.type !== DIRECTORY_PROJECT_LIBRARY_TYPE || !electron) {
+    if (!shouldChooseDirectoryOnAdd(libraryTypeOption) || !electron) {
       commit([...draftLibraries, newLibrary])
       return
     }

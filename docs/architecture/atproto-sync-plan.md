@@ -346,6 +346,8 @@ connector for an OAuth-backed project API config. The browser SDK session fetch
 handler is the bridge that signs XRPC requests for the adapter.
 
 - Library settings bind to a connected ATProto identity and optional repo DID.
+- ATProto library settings use `source` for the remote account and `path` for
+  the local materialization directory.
 - Remote projects materialize through the same archive flow as cloud-backed
   projects.
 - Provider credentials stay in identity storage, not `project.toml`.
@@ -362,7 +364,8 @@ handler is the bridge that signs XRPC requests for the adapter.
 Current status:
 
 - [x] Register `type: "atproto"` through the project library registry.
-- [x] Provide a default `atproto://franknoirot.co` library setting template.
+- [x] Provide a default ATProto library setting template where `source` is
+  `franknoirot.co` and `path` is the local realization folder.
 - [x] Gate the `atproto-sync` plugin from the `auth.atproto` object setting
   instead of a dedicated boolean plugin toggle.
 - [x] Keep project library operations behind live identity-backed adapter
