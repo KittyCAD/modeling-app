@@ -47,6 +47,16 @@ export function isAtprotoProjectSyncCapable(project: AtprotoCadProjectRecord) {
   return isAtprotoStrongRef(project.headArchive)
 }
 
+function projectRecordDisplayTitle(project: AtprotoCadProjectRecord) {
+  const title = project.title?.trim()
+  if (title) {
+    return title
+  }
+
+  const name = project.name
+  return typeof name === 'string' && name.trim() ? name.trim() : undefined
+}
+
 export function atprotoProjectRecordToRemoteProject(
   record: AtprotoRepoRecord<AtprotoCadProjectRecord>
 ): AtprotoRemoteProject | undefined {
@@ -57,7 +67,7 @@ export function atprotoProjectRecordToRemoteProject(
 
   return {
     id: record.uri,
-    title: record.value.title,
+    title: projectRecordDisplayTitle(record.value),
     updated_at:
       record.value.syncUpdatedAt ||
       record.value.updatedAt ||

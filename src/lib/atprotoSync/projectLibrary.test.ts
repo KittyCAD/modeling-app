@@ -29,6 +29,7 @@ import { parseProjectArchive } from '@src/lib/cloudSync/projectArchive'
 import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import {
   getAtprotoProjectIdFromProjectTomlContents,
@@ -292,16 +293,19 @@ describe('ATProto project library type', () => {
         .get(ATPROTO_PROJECT_LIBRARY_TYPE)
       expect(libraryType?.operations?.openProject).toBeDefined()
 
-      await vi.waitFor(() =>
-        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+      await vi.waitFor(() => {
+        const entries = registry.get(homeProjectEntriesValueSpec)
+        expect(entries).toEqual([
           expect.objectContaining({
             source: 'remote',
             status: 'cloud-only',
             remoteProjectId: remoteProject.id,
+            name: 'Bracket',
             title: 'Bracket',
           }),
         ])
-      )
+        expect(getHomeProjectDisplayName(entries[0])).toBe('Bracket')
+      })
 
       const opened = await libraryType?.operations?.openProject?.run({
         library,
@@ -535,7 +539,7 @@ describe('ATProto project library type', () => {
       fsZds.join(library.path, 'bracket', PROJECT_SETTINGS_FILE_NAME),
       encoder.encode(
         setAtprotoProjectIdInProjectTomlContents(
-          'title = "Bracket"\ndefault_file = "main.kcl"\n',
+          `title = "${remoteProject.id}"\ndefault_file = "main.kcl"\n`,
           remoteProject.id
         )
       )
@@ -554,6 +558,7 @@ describe('ATProto project library type', () => {
             source: 'local',
             status: 'synced',
             localProjectName: 'bracket',
+            title: 'Bracket',
             remoteProjectId: remoteProject.id,
           }),
         ])

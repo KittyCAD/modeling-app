@@ -78,6 +78,19 @@ describe('ATProto CAD project mapping', () => {
     })
   })
 
+  test('uses legacy project name fields as remote project titles', () => {
+    const remoteProject = atprotoProjectRecordToRemoteProject(
+      projectRecord({
+        title: '',
+        name: 'Legacy Bracket',
+        createdAt: '2026-08-22T12:00:00.000Z',
+        headArchive: archiveRef,
+      })
+    )
+
+    expect(remoteProject?.title).toBe('Legacy Bracket')
+  })
+
   test('does not treat catalog-only project records as sync-capable', () => {
     expect(
       atprotoProjectRecordToRemoteProject(

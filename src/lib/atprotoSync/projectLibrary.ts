@@ -15,6 +15,7 @@ import {
   downloadAtprotoRemoteProjectArchive,
   getAtprotoRemoteProject,
   listAtprotoRemoteProjects,
+  parseAtprotoUri,
   updateAtprotoRemoteProject,
 } from '@src/lib/atprotoSync/api'
 import {
@@ -150,10 +151,49 @@ export function getAtprotoProjectLibraryMaterializationDirectoryPath(
 }
 
 function projectNameForRemoteProject(remoteProject: RemoteProjectSummary) {
-  const fallback = sanitizeProjectName(remoteProject.id, 'atproto-project')
-  return remoteProject.title?.trim()
-    ? getProjectDirectoryNameFromTitle(remoteProject.title, fallback)
-    : fallback
+  const fallback = sanitizeProjectName(
+    remoteProjectRecordKey(remoteProject.id),
+    'atproto-project'
+  )
+  const title =
+    humanProjectTitle(remoteProject.title) ??
+    humanProjectTitle(remoteProject.name)
+  return title ? getProjectDirectoryNameFromTitle(title, fallback) : fallback
+}
+
+function remoteProjectRecordKey(projectId: string) {
+  try {
+    return parseAtprotoUri(projectId).rkey
+  } catch {
+    return projectId
+  }
+}
+
+function humanProjectTitle(value: unknown) {
+  if (typeof value !== 'string') {
+    return undefined
+  }
+
+  const title = value.trim()
+  return title && !title.startsWith('at://') ? title : undefined
+}
+
+function remoteProjectDisplayTitle(remoteProject: RemoteProjectSummary) {
+  return (
+    humanProjectTitle(remoteProject.title) ??
+    humanProjectTitle(remoteProject.name) ??
+    projectNameForRemoteProject(remoteProject)
+  )
+}
+
+function localProjectDisplayTitle(
+  project: Project,
+  remoteProject?: RemoteProjectSummary
+) {
+  return (
+    humanProjectTitle(project.title) ??
+    (remoteProject ? remoteProjectDisplayTitle(remoteProject) : undefined)
+  )
 }
 
 async function readAtprotoProjectId(projectPath: string) {
@@ -274,7 +314,7 @@ async function materializeRemoteProject({
     projectDirectoryPath:
       getAtprotoProjectLibraryMaterializationDirectoryPath(library),
     requestedProjectName: projectNameForRemoteProject(remoteProject),
-    requestedProjectTitle: remoteProject.title ?? remoteProject.id,
+    requestedProjectTitle: remoteProjectDisplayTitle(remoteProject),
     wasmInstancePromise,
     initialProject: projectFilesToInitialProject(files),
   })
@@ -305,7 +345,7 @@ function homeEntryFromLocalProject({
     status: remoteProject ? 'synced' : 'local',
     libraryId: library.id,
     name: project.name,
-    title: project.title ?? remoteProject?.title,
+    title: localProjectDisplayTitle(project, remoteProject),
     localProjectPath: project.path,
     localProjectName: project.name,
     remoteProjectId,
@@ -329,12 +369,13 @@ function homeEntryFromRemoteProject({
   library: ProjectLibrary
   remoteProject: RemoteProjectSummary
 }): HomeProjectEntryContribution {
+  const title = remoteProjectDisplayTitle(remoteProject)
   return {
     source: 'remote',
     status: 'cloud-only',
     libraryId: library.id,
-    name: remoteProject.title ?? remoteProject.id,
-    title: remoteProject.title,
+    name: title,
+    title,
     remoteProjectId: remoteProject.id,
     deleteRemoteOnDelete: true,
     modified: remoteProject.updated_at
