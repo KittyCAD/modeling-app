@@ -11,7 +11,11 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
+import {
+  appendRouterSubRouteWithSearch,
+  getProjectRelativeFilePath,
+  PATHS,
+} from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -295,8 +299,14 @@ function ProjectMenuPopover({
           onClick: () => {
             const targetPath =
               filePath !== undefined
-                ? filePath + PATHS.SETTINGS_PROJECT
-                : PATHS.HOME + PATHS.SETTINGS_PROJECT
+                ? appendRouterSubRouteWithSearch(
+                    filePath,
+                    PATHS.SETTINGS_PROJECT
+                  )
+                : appendRouterSubRouteWithSearch(
+                    PATHS.HOME,
+                    PATHS.SETTINGS_PROJECT
+                  )
             void navigate(targetPath)
           },
         },
