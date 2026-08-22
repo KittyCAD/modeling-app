@@ -236,6 +236,62 @@ describe('ProjectLibrariesSettingInput', () => {
     ])
   })
 
+  test('lets the user choose a library type before opening a folder picker', async () => {
+    const updateValue = vi.fn()
+    const open = vi.fn().mockResolvedValue({
+      canceled: false,
+      filePaths: ['/client-projects'],
+    })
+    const getPath = vi.fn().mockResolvedValue('/documents')
+    window.electron = { getPath, open } as unknown as Window['electron']
+
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={multipleLibraryTypeOptions}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('project-library-add'))
+    fireEvent.click(screen.getByTestId('project-library-add-type-cloud'))
+
+    expect(open).not.toHaveBeenCalled()
+    expect(getPath).not.toHaveBeenCalled()
+    expect(updateValue).toHaveBeenLastCalledWith([
+      ...defaultLibraries,
+      {
+        title: 'Cloud',
+        path: 'zoo-cloud',
+        type: 'cloud',
+      },
+    ])
+
+    fireEvent.click(screen.getByTestId('project-library-add'))
+    fireEvent.click(screen.getByTestId('project-library-add-type-directory'))
+
+    await waitFor(() =>
+      expect(updateValue).toHaveBeenLastCalledWith([
+        ...defaultLibraries,
+        {
+          title: 'Cloud',
+          path: 'zoo-cloud',
+          type: 'cloud',
+        },
+        {
+          title: 'Project Library',
+          path: '/client-projects',
+          type: 'directory',
+        },
+      ])
+    )
+    expect(open).toHaveBeenCalledWith({
+      properties: ['openDirectory', 'createDirectory'],
+      defaultPath: '/documents',
+      title: 'Choose a project library folder',
+    })
+  })
+
   test('hides library management controls when management is disabled', () => {
     const updateValue = vi.fn()
     render(

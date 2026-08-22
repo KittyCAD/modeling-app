@@ -1,4 +1,4 @@
-import { Listbox } from '@headlessui/react'
+import { Listbox, Menu } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
 import {
   CustomIcon,
@@ -447,12 +447,7 @@ export function ProjectLibrariesSettingInput({
     return result.filePaths[0]
   }
 
-  async function addLibrary() {
-    const libraryTypeOption = selectableLibraryTypeOptions[0]
-    if (!libraryTypeOption) {
-      return
-    }
-
+  async function addLibraryOfType(libraryTypeOption: ProjectLibraryTypeOption) {
     const newLibrary = libraryTypeOption.newLibrary
     if (newLibrary.type !== DIRECTORY_PROJECT_LIBRARY_TYPE || !electron) {
       commit([...draftLibraries, newLibrary])
@@ -466,6 +461,15 @@ export function ProjectLibrariesSettingInput({
     }
 
     commit([...draftLibraries, { ...newLibrary, path: selectedPath }])
+  }
+
+  async function addLibrary() {
+    const libraryTypeOption = selectableLibraryTypeOptions[0]
+    if (!libraryTypeOption) {
+      return
+    }
+
+    await addLibraryOfType(libraryTypeOption)
   }
 
   function removeLibrary(index: number) {
@@ -670,23 +674,62 @@ export function ProjectLibrariesSettingInput({
           })}
         </ul>
       )}
-      {canAddLibraries && (
-        <ActionButton
-          Element="button"
-          type="button"
-          tabIndex={0}
-          onClick={toSync(addLibrary, reportRejection)}
-          disabled={selectableLibraryTypeOptions.length === 0}
-          className="self-start disabled:cursor-not-allowed disabled:opacity-60"
-          iconStart={{
-            icon: 'plus',
-            bgClassName: '!bg-transparent',
-          }}
-          data-testid="project-library-add"
-        >
-          Add library
-        </ActionButton>
-      )}
+      {canAddLibraries &&
+        (selectableLibraryTypeOptions.length > 1 ? (
+          <Menu as="div" className="relative self-start">
+            <Menu.Button
+              className="action-button m-0 flex items-center gap-2 rounded-sm border border-chalkboard-30 border-solid p-0 pr-2 text-xs leading-none text-chalkboard-100 hover:border-chalkboard-40 disabled:cursor-not-allowed disabled:opacity-60 enabled:dark:border-chalkboard-70 dark:bg-chalkboard-90/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60"
+              disabled={selectableLibraryTypeOptions.length === 0}
+              data-testid="project-library-add"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-transparent">
+                <CustomIcon name="plus" className="h-4 w-4" />
+              </span>
+              Add library
+              <CustomIcon name="caretDown" className="h-3 w-3" />
+            </Menu.Button>
+            <Menu.Items className="absolute left-0 z-50 mt-1 min-w-48 rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-1 shadow-lg focus:outline-none dark:border-chalkboard-70 dark:bg-chalkboard-90">
+              {selectableLibraryTypeOptions.map((option) => (
+                <Menu.Item key={option.value}>
+                  {({ active }) => (
+                    <button
+                      type="button"
+                      className={`flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm ${
+                        active
+                          ? 'bg-chalkboard-20 dark:bg-chalkboard-80'
+                          : 'bg-transparent'
+                      }`}
+                      data-testid={`project-library-add-type-${option.value}`}
+                      onClick={toSync(
+                        () => addLibraryOfType(option),
+                        reportRejection
+                      )}
+                    >
+                      <CustomIcon name={option.icon} className="h-4 w-4" />
+                      <span className="min-w-0 flex-1">{option.label}</span>
+                    </button>
+                  )}
+                </Menu.Item>
+              ))}
+            </Menu.Items>
+          </Menu>
+        ) : (
+          <ActionButton
+            Element="button"
+            type="button"
+            tabIndex={0}
+            onClick={toSync(addLibrary, reportRejection)}
+            disabled={selectableLibraryTypeOptions.length === 0}
+            className="self-start disabled:cursor-not-allowed disabled:opacity-60"
+            iconStart={{
+              icon: 'plus',
+              bgClassName: '!bg-transparent',
+            }}
+            data-testid="project-library-add"
+          >
+            Add library
+          </ActionButton>
+        ))}
     </div>
   )
 }
