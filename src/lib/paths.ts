@@ -188,6 +188,54 @@ export function joinRouterPaths(...parts: string[]): string {
   return `/${cleanedUpPath}`
 }
 
+export function stripTrailingRouterSubRoute(
+  pathname: string,
+  subRoute: string
+): string {
+  const routeSegment = `/${subRoute.replace(/^\/+|\/+$/g, '')}`
+  if (routeSegment === '/') {
+    return pathname
+  }
+
+  let strippedPathname = pathname
+  while (strippedPathname.endsWith(routeSegment)) {
+    strippedPathname = strippedPathname.slice(0, -routeSegment.length)
+  }
+
+  return strippedPathname || PATHS.INDEX
+}
+
+export function appendRouterSubRoute(
+  pathname: string,
+  subRoute: string
+): string {
+  return joinRouterPaths(
+    stripTrailingRouterSubRoute(pathname, subRoute),
+    subRoute
+  )
+}
+
+export function appendRouterSubRouteWithSearch(
+  pathname: string,
+  subRouteWithSearch: string
+): string {
+  const hashIndex = subRouteWithSearch.indexOf('#')
+  const subRouteWithoutHash =
+    hashIndex === -1
+      ? subRouteWithSearch
+      : subRouteWithSearch.slice(0, hashIndex)
+  const hash = hashIndex === -1 ? '' : subRouteWithSearch.slice(hashIndex)
+  const searchIndex = subRouteWithoutHash.indexOf('?')
+  const subRoute =
+    searchIndex === -1
+      ? subRouteWithoutHash
+      : subRouteWithoutHash.slice(0, searchIndex)
+  const search =
+    searchIndex === -1 ? '' : subRouteWithoutHash.slice(searchIndex)
+
+  return `${appendRouterSubRoute(pathname, subRoute)}${search}${hash}`
+}
+
 /**
  * Joins any number of arguments of strings to create a OS level path that is safe
  * A path will be created of the format /value/value1/value2

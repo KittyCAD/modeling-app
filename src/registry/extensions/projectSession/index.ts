@@ -179,27 +179,32 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const watchSystemIOProjectTree = (projectIORefSignal: Signal<Project>) => {
+    const syncProjectTreeFromFolders = (folders: Project[] | undefined) => {
+      const foundProject = (folders ?? []).find(
+        (candidate) =>
+          candidate.name === projectIORefSignal.value.name &&
+          candidate.path === projectIORefSignal.value.path
+      )
+      if (!foundProject || projectIORefSignal.value === foundProject) {
+        return
+      }
+      projectIORefSignal.value = {
+        ...foundProject,
+        ...(projectIORefSignal.value.libraryPath
+          ? { libraryPath: projectIORefSignal.value.libraryPath }
+          : {}),
+        ...(projectIORefSignal.value.libraryType
+          ? { libraryType: projectIORefSignal.value.libraryType }
+          : {}),
+      }
+    }
+
     projectFoldersSubscription?.unsubscribe()
-    projectFoldersSubscription = ctx.services
-      .get(systemIOService)
-      .actor.subscribe(({ context }) => {
-        const foundProject = (context.folders ?? []).find(
-          (candidate) =>
-            candidate.name === projectIORefSignal.value.name &&
-            candidate.path === projectIORefSignal.value.path
-        )
-        if (foundProject && projectIORefSignal.value !== foundProject) {
-          projectIORefSignal.value = {
-            ...foundProject,
-            ...(projectIORefSignal.value.libraryPath
-              ? { libraryPath: projectIORefSignal.value.libraryPath }
-              : {}),
-            ...(projectIORefSignal.value.libraryType
-              ? { libraryType: projectIORefSignal.value.libraryType }
-              : {}),
-          }
-        }
-      })
+    const systemIOActor = ctx.services.get(systemIOService).actor
+    syncProjectTreeFromFolders(systemIOActor.getSnapshot().context.folders)
+    projectFoldersSubscription = systemIOActor.subscribe(({ context }) => {
+      syncProjectTreeFromFolders(context.folders)
+    })
   }
 
   const watchProjectHistoryExtensions = () => {
@@ -259,6 +264,22 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const openProject = async (projectIORef: Project) => {
+    const currentProject = project.value
+    if (currentProject?.path === projectIORef.path) {
+      const currentProjectTree = currentProject.projectIORefSignal.value
+      const libraryPath =
+        projectIORef.libraryPath ?? currentProjectTree.libraryPath
+      const libraryType =
+        projectIORef.libraryType ?? currentProjectTree.libraryType
+      currentProject.projectIORefSignal.value = {
+        ...projectIORef,
+        ...(libraryPath ? { libraryPath } : {}),
+        ...(libraryType ? { libraryType } : {}),
+      }
+      syncProjectTree()
+      return currentProject
+    }
+
     serviceImpl.clearProject()
     setMutation({
       pending: true,

@@ -8,8 +8,7 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
+import { appendRouterSubRoute, PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
@@ -603,9 +602,7 @@ function isEventFromFormControl(target: EventTarget | null) {
 
 function openSettings() {
   const pathname = getRouterPathname()
-  const settingsPath = pathname.includes(PATHS.SETTINGS)
-    ? pathname
-    : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+  const settingsPath = appendRouterSubRoute(pathname, PATHS.SETTINGS)
 
   pushRouterPath(
     `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`

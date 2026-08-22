@@ -1,6 +1,8 @@
 import { APP_NAME } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
+  appendRouterSubRoute,
+  appendRouterSubRouteWithSearch,
   fileNameHasExtension,
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
@@ -8,6 +10,7 @@ import {
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   parseProjectRoute,
+  stripTrailingRouterSubRoute,
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
@@ -359,6 +362,37 @@ describe('testing getRouterSearchFromRequestUrl', () => {
         true
       )
     ).toEqual('?debug=true')
+  })
+})
+
+describe('testing router sub-routes', () => {
+  it('appends a router sub-route once', () => {
+    expect(appendRouterSubRoute('/home', '/settings')).toEqual('/home/settings')
+    expect(appendRouterSubRoute('/home/settings', '/settings')).toEqual(
+      '/home/settings'
+    )
+  })
+
+  it('appends search and hash to a file router sub-route', () => {
+    const fileRoute = '/file/%2Fprojects%2Fbracket%2Fmain.kcl'
+
+    expect(
+      appendRouterSubRouteWithSearch(fileRoute, '/settings?tab=user#libraries')
+    ).toEqual(
+      '/file/%2Fprojects%2Fbracket%2Fmain.kcl/settings?tab=user#libraries'
+    )
+  })
+
+  it('strips only trailing router sub-routes', () => {
+    expect(stripTrailingRouterSubRoute('/home/settings', '/settings')).toEqual(
+      '/home'
+    )
+    expect(
+      stripTrailingRouterSubRoute(
+        '/file/%2Fprojects%2Fsettings%2Fmain.kcl/settings',
+        '/settings'
+      )
+    ).toEqual('/file/%2Fprojects%2Fsettings%2Fmain.kcl')
   })
 })
 
