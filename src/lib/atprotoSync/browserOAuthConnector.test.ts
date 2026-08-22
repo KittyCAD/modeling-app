@@ -281,22 +281,15 @@ describe('ATProto browser OAuth connector', () => {
     })
   })
 
-  it('moves localhost app windows to loopback before default popup sign-in', async () => {
-    setTestUrl('http://localhost:3000/#/settings?tab=auth')
-    const redirectToLoopback = vi.fn()
-    const connector = createAtprotoBrowserOAuthConnector({
-      redirectToLoopback,
-    })
+  it('rejects default popup sign-in from localhost because the callback cannot hand back', async () => {
+    const connector = createAtprotoBrowserOAuthConnector()
 
-    void connector.connect({
-      input: 'franknoirot.co',
-      scopes: ATPROTO_OAUTH_SCOPES,
-    })
-    await Promise.resolve()
-
-    expect(redirectToLoopback).toHaveBeenCalledWith(
-      'http://127.0.0.1:3000/#/settings?tab=auth'
-    )
+    await expect(
+      connector.connect({
+        input: 'franknoirot.co',
+        scopes: ATPROTO_OAUTH_SCOPES,
+      })
+    ).rejects.toThrow('ATProto OAuth local dev must run from http://127.0.0.1')
     expect(defaultBrowserOAuthClientMock.constructorSpy).not.toHaveBeenCalled()
   })
 

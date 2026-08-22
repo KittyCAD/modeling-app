@@ -28,7 +28,6 @@ export type AtprotoBrowserOAuthConnectorOptions = {
   fetch?: BrowserOAuthClientOptions['fetch']
   defaultInput?: string | (() => string | undefined)
   now?: () => Date
-  redirectToLoopback?: (href: string) => void
 }
 
 function scopesFromTokenInfoScope(scope: string): readonly string[] {
@@ -142,18 +141,12 @@ function hasAtprotoOAuthCallbackParams() {
   )
 }
 
-function getLoopbackHrefForCurrentLocation() {
-  if (
-    typeof window === 'undefined' ||
-    window.location.protocol !== 'http:' ||
-    window.location.hostname !== 'localhost'
-  ) {
-    return undefined
-  }
-
-  const loopbackUrl = new URL(window.location.href)
-  loopbackUrl.hostname = '127.0.0.1'
-  return loopbackUrl.href
+function isUnsupportedLocalhostOAuthOrigin() {
+  return (
+    typeof window !== 'undefined' &&
+    window.location.protocol === 'http:' &&
+    window.location.hostname === 'localhost'
+  )
 }
 
 function sessionFetchHandler(session: OAuthSession): typeof fetch {
@@ -203,9 +196,6 @@ export function createAtprotoBrowserOAuthConnector({
   fetch,
   defaultInput,
   now = () => new Date(),
-  redirectToLoopback = (href) => {
-    window.location.href = href
-  },
 }: AtprotoBrowserOAuthConnectorOptions = {}): AtprotoOAuthConnector {
   let clientPromise: Promise<BrowserOAuthClientLike> | undefined
   let initializationPromise: Promise<OAuthSession | undefined> | undefined
@@ -310,12 +300,10 @@ export function createAtprotoBrowserOAuthConnector({
         throw new Error('Enter an ATProto handle, DID, or PDS URL.')
       }
 
-      if (!client && !createClient) {
-        const loopbackHref = getLoopbackHrefForCurrentLocation()
-        if (loopbackHref) {
-          redirectToLoopback(loopbackHref)
-          return new Promise<AtprotoOAuthIdentity>(() => undefined)
-        }
+      if (!client && !createClient && isUnsupportedLocalhostOAuthOrigin()) {
+        throw new Error(
+          'ATProto OAuth local dev must run from http://127.0.0.1 so the popup can return to ZDS. Restart desktop dev and try again.'
+        )
       }
 
       const session = await (await getClient()).signInPopup(input, {

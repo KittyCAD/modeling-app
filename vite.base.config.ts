@@ -125,6 +125,18 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
   return define
 }
 
+export const ELECTRON_RENDERER_DEV_SERVER_HOST = '127.0.0.1'
+
+function formatDevServerHost(host: string) {
+  if (host === '::1') {
+    return '[::1]'
+  }
+  if (host === '::' || host === '0.0.0.0') {
+    return 'localhost'
+  }
+  return host
+}
+
 export function pluginExposeRenderer(name: string): Plugin {
   const { VITE_DEV_SERVER_URL } = getDefineKeys([name])[name]
 
@@ -137,9 +149,9 @@ export function pluginExposeRenderer(name: string): Plugin {
 
       server.httpServer?.once('listening', () => {
         const addressInfo = server.httpServer!.address() as AddressInfo
+        const host = formatDevServerHost(addressInfo.address)
         // Expose env constant for main process use.
-        process.env[VITE_DEV_SERVER_URL] =
-          `http://localhost:${addressInfo?.port}`
+        process.env[VITE_DEV_SERVER_URL] = `http://${host}:${addressInfo.port}`
       })
     },
   }

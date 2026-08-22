@@ -8,6 +8,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 
 import {
   createCustomLogger,
+  ELECTRON_RENDERER_DEV_SERVER_HOST,
   indexHtmlCsp,
   isIgnoredWatchPath,
   pluginExposeRenderer,
@@ -25,6 +26,7 @@ export default defineConfig((env) => {
     mode,
     base: './',
     server: {
+      host: ELECTRON_RENDERER_DEV_SERVER_HOST,
       watch: {
         ignored: isIgnoredWatchPath,
       },
