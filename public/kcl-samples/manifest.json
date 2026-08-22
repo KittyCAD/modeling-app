@@ -231,6 +231,19 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Automotive"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket Cassette",
+    "description": "A sprocket cassette is a stack of sprockets on a splined hub for multiple gear ratios.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",

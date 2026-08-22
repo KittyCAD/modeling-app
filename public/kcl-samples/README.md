@@ -62,6 +62,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![camshaft](screenshots/camshaft.png)](camshaft/main.kcl)
 #### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([screenshot](screenshots/car-wheel-assembly.png))
 [![car-wheel-assembly](screenshots/car-wheel-assembly.png)](car-wheel-assembly/main.kcl)
+#### [cassette](cassette/main.kcl) ([screenshot](screenshots/cassette.png))
+[![cassette](screenshots/cassette.png)](cassette/main.kcl)
 #### [ceiling-fan](ceiling-fan/main.kcl) ([screenshot](screenshots/ceiling-fan.png))
 [![ceiling-fan](screenshots/ceiling-fan.png)](ceiling-fan/main.kcl)
 #### [clock](clock/main.kcl) ([screenshot](screenshots/clock.png))
