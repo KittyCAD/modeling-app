@@ -128,6 +128,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![hammer](screenshots/hammer.png)](hammer/main.kcl)
 #### [helium-tank](helium-tank/main.kcl) ([screenshot](screenshots/helium-tank.png))
 [![helium-tank](screenshots/helium-tank.png)](helium-tank/main.kcl)
+#### [herringbone-gear](herringbone-gear/main.kcl) ([screenshot](screenshots/herringbone-gear.png))
+[![herringbone-gear](screenshots/herringbone-gear.png)](herringbone-gear/main.kcl)
 #### [hex-nut](hex-nut/main.kcl) ([screenshot](screenshots/hex-nut.png))
 [![hex-nut](screenshots/hex-nut.png)](hex-nut/main.kcl)
 #### [hex-nut-with-chamfer](hex-nut-with-chamfer/main.kcl) ([screenshot](screenshots/hex-nut-with-chamfer.png))

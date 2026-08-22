@@ -673,6 +673,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Automotive",
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Gear",
+    "description": "A double-helical involute gear with opposing tooth angles and an 8 mm center bore.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Fasteners"
     ],
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
