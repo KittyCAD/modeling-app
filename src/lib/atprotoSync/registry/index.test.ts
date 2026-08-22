@@ -1,17 +1,15 @@
 import { Registry } from '@kittycad/registry'
 import {
-  ATPROTO_PROJECT_LIBRARY_PATH_PREFIX,
+  ATPROTO_AUTH_SETTING_CATEGORY,
+  ATPROTO_AUTH_SETTING_NAME,
   ATPROTO_PROJECT_LIBRARY_TYPE,
-  getDefaultAtprotoProjectLibrarySetting,
 } from '@src/lib/atprotoSync'
-import atprotoProjectLibraryRegistryItem from '@src/lib/atprotoSync/registry'
-import {
-  getProjectLibraryCreateProjectOperation,
-  projectLibraryTypesValueSpec,
-} from '@src/registry/contracts/projectLibraries'
+import atprotoSyncRegistryItem from '@src/lib/atprotoSync/registry'
+import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { afterEach, describe, expect, it } from 'vitest'
 
-describe('ATProto project library registry item', () => {
+describe('ATProto sync registry item', () => {
   let registry: Registry | undefined
 
   afterEach(() => {
@@ -19,29 +17,19 @@ describe('ATProto project library registry item', () => {
     registry = undefined
   })
 
-  it('registers a library type without project operations until identity wiring exists', () => {
+  it('registers auth settings without activating the project library type', () => {
     registry = new Registry()
-    registry.configure([atprotoProjectLibraryRegistryItem])
+    registry.configure([atprotoSyncRegistryItem])
 
-    const libraryType = registry
-      .get(projectLibraryTypesValueSpec)
-      .get(ATPROTO_PROJECT_LIBRARY_TYPE)
-
-    expect(libraryType).toMatchObject({
-      type: ATPROTO_PROJECT_LIBRARY_TYPE,
-      title: 'ATProto',
-      newLibrarySetting: {
-        title: 'ATProto Projects',
-        type: ATPROTO_PROJECT_LIBRARY_TYPE,
-        path: `${ATPROTO_PROJECT_LIBRARY_PATH_PREFIX}franknoirot.co`,
-        source: 'franknoirot.co',
-      },
-    })
     expect(
-      getProjectLibraryCreateProjectOperation(libraryType, {
-        id: 'test-atproto-library',
-        ...getDefaultAtprotoProjectLibrarySetting(),
-      })
-    ).toBeUndefined()
+      registry.get(settingsValueSpec)[ATPROTO_AUTH_SETTING_CATEGORY]?.[
+        ATPROTO_AUTH_SETTING_NAME
+      ]
+    ).toBeDefined()
+    expect(
+      registry
+        .get(projectLibraryTypesValueSpec)
+        .has(ATPROTO_PROJECT_LIBRARY_TYPE)
+    ).toBe(false)
   })
 })

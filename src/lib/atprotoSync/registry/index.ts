@@ -24,7 +24,7 @@ export const atprotoProjectLibraryType = defineRegistryItem({
 
 export const atprotoSyncRegistryItem = defineRegistryItem({
   id: 'atproto-sync',
-  uses: [atprotoOAuthRegistryItem, atprotoProjectLibraryType],
+  uses: [atprotoOAuthRegistryItem],
 })
 
 export default atprotoSyncRegistryItem
