@@ -168,6 +168,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![pipe-straight](screenshots/pipe-straight.png)](pipe-straight/main.kcl)
 #### [planetary-gearset](planetary-gearset/main.kcl) ([screenshot](screenshots/planetary-gearset.png))
 [![planetary-gearset](screenshots/planetary-gearset.png)](planetary-gearset/main.kcl)
+#### [propeller](propeller/main.kcl) ([screenshot](screenshots/propeller.png))
+[![propeller](screenshots/propeller.png)](propeller/main.kcl)
 #### [rack-blanking-panel](rack-blanking-panel/main.kcl) ([screenshot](screenshots/rack-blanking-panel.png))
 [![rack-blanking-panel](screenshots/rack-blanking-panel.png)](rack-blanking-panel/main.kcl)
 #### [radial-flow-centrifugal-impeller](radial-flow-centrifugal-impeller/main.kcl) ([screenshot](screenshots/radial-flow-centrifugal-impeller.png))
