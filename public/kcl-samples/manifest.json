@@ -933,6 +933,20 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
+    "multipleFiles": false,
+    "title": "Pipe with bend",
+    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Automotive",
       "Aerospace"
     ],
