@@ -1,30 +1,18 @@
-import { defineRegistryItem, provide } from '@kittycad/registry'
+import { defineRegistryItem } from '@kittycad/registry'
 import {
-  ATPROTO_PROJECT_LIBRARY_TYPE,
   createAtprotoBrowserOAuthConnector,
   createAtprotoOAuthRegistryItem,
-  getDefaultAtprotoProjectLibrarySetting,
 } from '@src/lib/atprotoSync'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { createAtprotoProjectLibraryType } from '@src/lib/atprotoSync/projectLibrary'
 
-export const atprotoProjectLibraryType = defineRegistryItem({
-  id: 'atproto-project-library-type',
-  provides: [
-    provide(
-      projectLibraryTypesValueSpec,
-      {
-        type: ATPROTO_PROJECT_LIBRARY_TYPE,
-        title: 'ATProto',
-        order: 30,
-        newLibrarySetting: getDefaultAtprotoProjectLibrarySetting(),
-      },
-      { key: 'atproto-project-library-type' }
-    ),
-  ],
-})
+const atprotoOAuthConnector = createAtprotoBrowserOAuthConnector()
 
 export const atprotoOAuthRegistryItem = createAtprotoOAuthRegistryItem({
-  connector: createAtprotoBrowserOAuthConnector(),
+  connector: atprotoOAuthConnector,
+})
+
+export const atprotoProjectLibraryType = createAtprotoProjectLibraryType({
+  connector: atprotoOAuthConnector,
 })
 
 export const atprotoSyncRegistryItem = defineRegistryItem({

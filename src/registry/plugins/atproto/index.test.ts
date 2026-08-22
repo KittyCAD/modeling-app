@@ -1,4 +1,4 @@
-import { Registry, pluginsValueSpec } from '@kittycad/registry'
+import { pluginsValueSpec, Registry } from '@kittycad/registry'
 import {
   ATPROTO_ARCHIVE_BLOB_SCOPE,
   ATPROTO_AUTH_SYNC_SCOPE,
@@ -84,6 +84,6 @@ describe('ATProto sync plugin', () => {
         id: 'test-atproto-library',
         ...getDefaultAtprotoProjectLibrarySetting(),
       })
-    ).toBeUndefined()
+    ).toBeDefined()
   })
 })

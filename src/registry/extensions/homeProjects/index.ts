@@ -448,6 +448,14 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return undefined
       }
 
+      const openedRemoteProject = await openProject.operation.run({
+        library: openProject.library,
+        project,
+      })
+      if (openedRemoteProject) {
+        return openedRemoteProject
+      }
+
       const targetProjectDirectoryPath =
         await getCloudProjectLibraryMaterializationDirectoryPath(
           openProject.library

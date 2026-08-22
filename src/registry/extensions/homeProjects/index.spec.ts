@@ -86,4 +86,55 @@ describe('home project actions', () => {
       registry[Symbol.dispose]()
     }
   })
+
+  it('lets a project library open and materialize a remote-only project', async () => {
+    const registry = new Registry()
+    const settings = signal({
+      app: {
+        libraries: {
+          current: [library],
+        },
+      },
+    })
+    const openProject = vi.fn(async () => ({
+      defaultFile: '/materialized/main.kcl',
+    }))
+    registry.configure([
+      homeProjectsExtension,
+      defineRegistryItem({
+        id: 'remote-open-test-library',
+        provides: [
+          provide(projectLibraryTypesValueSpec, {
+            type: library.type,
+            title: library.title,
+            operations: {
+              openProject: {
+                run: openProject,
+              },
+            },
+          }),
+        ],
+        providesServices: [
+          provideService(settingsService, {
+            current: settings,
+            get: () => settings.value,
+          } as unknown as SettingsRegistryService),
+        ],
+      }),
+    ])
+
+    try {
+      await expect(
+        registry.get(homeProjectActionsService).open(project)
+      ).resolves.toEqual({
+        defaultFile: '/materialized/main.kcl',
+      })
+      expect(openProject).toHaveBeenCalledWith({
+        library,
+        project,
+      })
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
 })

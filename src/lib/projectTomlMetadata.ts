@@ -32,9 +32,10 @@ function isEmptyTomlTable(value: TomlTable) {
 }
 
 const ROOT_SCALAR_KEY_ORDER = ['title', 'default_file']
-const ROOT_TABLE_KEY_ORDER = ['settings', 'cloud']
+const ROOT_TABLE_KEY_ORDER = ['settings', 'cloud', 'atproto']
 const SETTINGS_TABLE_KEY_ORDER = ['app', 'meta', 'modeling']
 const CLOUD_ENVIRONMENT_SCALAR_KEY_ORDER = ['project_id']
+const ATPROTO_SCALAR_KEY_ORDER = ['project_id']
 
 function normalizeProjectTomlPath(path: string) {
   return path
@@ -58,6 +59,9 @@ function scalarKeyOrderForPath(path: string[]) {
   }
   if (path[0] === 'cloud' && path.length === 2) {
     return CLOUD_ENVIRONMENT_SCALAR_KEY_ORDER
+  }
+  if (path[0] === 'atproto' && path.length === 1) {
+    return ATPROTO_SCALAR_KEY_ORDER
   }
   return []
 }
@@ -269,6 +273,44 @@ export function removeCloudProjectIdFromProjectTomlContents(
   }
   if (isEmptyTomlTable(table.cloud)) {
     delete table.cloud
+  }
+
+  return stringifyProjectToml(table)
+}
+
+export function setAtprotoProjectIdInProjectTomlContents(
+  contents: string,
+  projectId: string
+) {
+  const table = parseProjectToml(contents) ?? {}
+  if (!isTomlTable(table.atproto)) {
+    table.atproto = {}
+  }
+
+  table.atproto.project_id = projectId
+  return stringifyProjectToml(table)
+}
+
+export function getAtprotoProjectIdFromProjectTomlContents(contents: string) {
+  const table = parseProjectToml(contents)
+  if (!table || !isTomlTable(table.atproto)) {
+    return undefined
+  }
+
+  return getNonEmptyString(table.atproto.project_id)
+}
+
+export function removeAtprotoProjectIdFromProjectTomlContents(
+  contents: string
+) {
+  const table = parseProjectToml(contents)
+  if (!table || !isTomlTable(table.atproto)) {
+    return contents
+  }
+
+  delete table.atproto.project_id
+  if (isEmptyTomlTable(table.atproto)) {
+    delete table.atproto
   }
 
   return stringifyProjectToml(table)
