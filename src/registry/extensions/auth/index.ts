@@ -18,6 +18,10 @@ import {
   authSessionExpiredListenersValueSpec,
   authService,
 } from '@src/registry/contracts/auth'
+import {
+  type ConnectedIdentity,
+  connectedIdentityProvidersValueSpec,
+} from '@src/registry/contracts/connectedIdentities'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
 
@@ -29,6 +33,33 @@ const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
   auth.send({ type: 'Session expired' })
 }
 
+export function getZooIdentityLabel(
+  user: NonNullable<AuthRegistryService['user']['value']>
+) {
+  if (user.name) {
+    return user.name
+  }
+  if (user.first_name) {
+    return user.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : user.first_name
+  }
+  return user.email || 'Zoo account'
+}
+
+export function zooConnectedIdentityFromUser(
+  user: NonNullable<AuthRegistryService['user']['value']>
+): ConnectedIdentity {
+  return {
+    id: `zoo:${user.id}`,
+    provider: 'zoo',
+    label: getZooIdentityLabel(user),
+    handle: user.email,
+    capabilities: ['zoo:auth', 'projects:read', 'projects:write'],
+    status: 'connected',
+  }
+}
+
 export const authExtension = defineRegistryItemFactory((ctx) => {
   const authActor = createActor(authMachine).start()
   const authState = signal(authActor.getSnapshot())
@@ -38,6 +69,14 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
   const token = computed(() => authState.value.context.token)
   const user = computed(() => authState.value.context.user)
   const isLoggedIn = computed(() => authState.value.matches('loggedIn'))
+  const zooConnectedIdentities = computed(() => {
+    const currentUser = user.value
+    if (!isLoggedIn.value || !currentUser) {
+      return []
+    }
+
+    return [zooConnectedIdentityFromUser(currentUser)]
+  })
 
   const serviceImpl: AuthRegistryService = {
     actor: authActor,
@@ -79,6 +118,20 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
         provide(authSessionExpiredListenersValueSpec, expireAuthSession, {
           key: 'auth-extension:expire-auth-session',
         }),
+        provide(
+          connectedIdentityProvidersValueSpec,
+          {
+            id: 'zoo',
+            title: 'Zoo',
+            identities: zooConnectedIdentities,
+            disconnect: async () => {
+              authActor.send({ type: 'Log out' })
+            },
+          },
+          {
+            key: 'auth-extension:zoo-connected-identity-provider',
+          }
+        ),
       ],
       providesServices: [provideService(authService, serviceImpl)],
       dispose: () => {

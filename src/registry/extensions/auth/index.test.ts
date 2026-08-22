@@ -7,7 +7,9 @@ import {
   authService,
   provideAuthSessionExpiredListener,
 } from '@src/registry/contracts/auth'
-import authRegistryItem from '@src/registry/extensions/auth'
+import authRegistryItem, {
+  zooConnectedIdentityFromUser,
+} from '@src/registry/extensions/auth'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('auth extension', () => {
@@ -63,5 +65,35 @@ describe('auth extension', () => {
     notifySessionExpired('fetch')
 
     expect(listener).toHaveBeenCalledTimes(1)
+  })
+
+  it('projects Zoo users into connected identities', () => {
+    expect(
+      zooConnectedIdentityFromUser({
+        id: '8675309',
+        name: 'Test User',
+        email: 'kittycad.sidebar.test@example.com',
+        image: '',
+        is_onboarded: false,
+        created_at: 'yesteryear',
+        updated_at: 'today',
+        company: 'Test Company',
+        discord: 'Test User#1234',
+        github: 'testuser',
+        phone: '555-555-5555',
+        first_name: 'Test',
+        last_name: 'User',
+        can_train_on_data: false,
+        is_service_account: false,
+        deletion_scheduled: false,
+      })
+    ).toEqual({
+      id: 'zoo:8675309',
+      provider: 'zoo',
+      label: 'Test User',
+      handle: 'kittycad.sidebar.test@example.com',
+      capabilities: ['zoo:auth', 'projects:read', 'projects:write'],
+      status: 'connected',
+    })
   })
 })
