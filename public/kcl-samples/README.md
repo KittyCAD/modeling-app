@@ -94,6 +94,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![double-hook](screenshots/double-hook.png)](double-hook/main.kcl)
 #### [enclosure](enclosure/main.kcl) ([screenshot](screenshots/enclosure.png))
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
+#### [end-effector-gripper-fingers](end-effector-gripper-fingers/main.kcl) ([screenshot](screenshots/end-effector-gripper-fingers.png))
+[![end-effector-gripper-fingers](screenshots/end-effector-gripper-fingers.png)](end-effector-gripper-fingers/main.kcl)
 #### [engine-valve](engine-valve/main.kcl) ([screenshot](screenshots/engine-valve.png))
 [![engine-valve](screenshots/engine-valve.png)](engine-valve/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([screenshot](screenshots/exhaust-manifold.png))
