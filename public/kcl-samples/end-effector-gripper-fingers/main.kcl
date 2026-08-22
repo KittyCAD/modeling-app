@@ -1,0 +1,889 @@
+// End Effector Grippers
+// End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras
+// Categories: Manufacturing
+
+// Set units
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+tol = 0.001
+
+// Define sheet metal parameters
+bracketThickness = 3
+bracketBendRadius = 3.75
+
+// Define linkage parameters
+linkRadius = 8
+linkLength = 70
+linkAngle = 65deg
+
+// Model the five body sections as explicit solved profiles.
+sketch1 = sketch(on = offsetPlane(XY, offset = 0)) {
+  line1 = line(start = [var 40mm, var -4mm], end = [var 40mm, var 4mm])
+  arc2 = arc(start = [var 40mm, var 4mm], end = [var 36mm, var 10.92820323mm], center = [var 32mm, var 4mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 36mm, var 10.92820323mm], end = [var -15.961524227mm, var 40.92820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -15.961524227mm, var 40.92820323mm], end = [var -23.961524227mm, var 40.92820323mm], center = [var -19.961524227mm, var 34mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -23.961524227mm, var 40.92820323mm], end = [var -30.889727457mm, var 36.92820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -30.889727457mm, var 36.92820323mm], end = [var -34.889727457mm, var 30mm], center = [var -26.889727457mm, var 30mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -34.889727457mm, var 30mm], end = [var -34.889727457mm, var -30mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -34.889727457mm, var -30mm],
+    end = [
+      var -30.889727457mm,
+      var -36.92820323mm
+    ],
+    center = [var -26.889727457mm, var -30mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -30.889727457mm,
+      var -36.92820323mm
+    ],
+    end = [
+      var -23.961524227mm,
+      var -40.92820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -23.961524227mm,
+      var -40.92820323mm
+    ],
+    end = [
+      var -15.961524227mm,
+      var -40.92820323mm
+    ],
+    center = [var -19.961524227mm, var -34mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -15.961524227mm,
+      var -40.92820323mm
+    ],
+    end = [var 36mm, var -10.92820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 36mm, var -10.92820323mm], end = [var 40mm, var -4mm], center = [var 32mm, var -4mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+sketch2 = sketch(on = offsetPlane(XY, offset = 20)) {
+  line1 = line(start = [var 50mm, var -5mm], end = [var 50mm, var 5mm])
+  arc2 = arc(start = [var 50mm, var 5mm], end = [var 46mm, var 11.92820323mm], center = [var 42mm, var 5mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 46mm, var 11.92820323mm], end = [var -18.951905284mm, var 49.42820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -18.951905284mm, var 49.42820323mm], end = [var -26.951905284mm, var 49.42820323mm], center = [var -22.951905284mm, var 42.5mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -26.951905284mm, var 49.42820323mm], end = [var -35.612159322mm, var 44.42820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -35.612159322mm, var 44.42820323mm], end = [var -39.612159322mm, var 37.5mm], center = [var -31.612159322mm, var 37.5mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -39.612159322mm, var 37.5mm], end = [var -39.612159322mm, var -37.5mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -39.612159322mm, var -37.5mm],
+    end = [
+      var -35.612159322mm,
+      var -44.42820323mm
+    ],
+    center = [var -31.612159322mm, var -37.5mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -35.612159322mm,
+      var -44.42820323mm
+    ],
+    end = [
+      var -26.951905284mm,
+      var -49.42820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -26.951905284mm,
+      var -49.42820323mm
+    ],
+    end = [
+      var -18.951905284mm,
+      var -49.42820323mm
+    ],
+    center = [var -22.951905284mm, var -42.5mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -18.951905284mm,
+      var -49.42820323mm
+    ],
+    end = [var 46mm, var -11.92820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 46mm, var -11.92820323mm], end = [var 50mm, var -5mm], center = [var 42mm, var -5mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+sketch3 = sketch(on = offsetPlane(XY, offset = 80)) {
+  line1 = line(start = [var 90mm, var -9mm], end = [var 90mm, var 9mm])
+  arc2 = arc(start = [var 90mm, var 9mm], end = [var 86mm, var 15.92820323mm], center = [var 82mm, var 9mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 86mm, var 15.92820323mm], end = [var -30.913429511mm, var 83.42820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -30.913429511mm, var 83.42820323mm], end = [var -38.913429511mm, var 83.42820323mm], center = [var -34.913429511mm, var 76.5mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -38.913429511mm, var 83.42820323mm], end = [var -54.501886779mm, var 74.42820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -54.501886779mm, var 74.42820323mm], end = [var -58.501886779mm, var 67.5mm], center = [var -50.501886779mm, var 67.5mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -58.501886779mm, var 67.5mm], end = [var -58.501886779mm, var -67.5mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -58.501886779mm, var -67.5mm],
+    end = [
+      var -54.501886779mm,
+      var -74.42820323mm
+    ],
+    center = [var -50.501886779mm, var -67.5mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -54.501886779mm,
+      var -74.42820323mm
+    ],
+    end = [
+      var -38.913429511mm,
+      var -83.42820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -38.913429511mm,
+      var -83.42820323mm
+    ],
+    end = [
+      var -30.913429511mm,
+      var -83.42820323mm
+    ],
+    center = [var -34.913429511mm, var -76.5mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -30.913429511mm,
+      var -83.42820323mm
+    ],
+    end = [var 86mm, var -15.92820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 86mm, var -15.92820323mm], end = [var 90mm, var -9mm], center = [var 82mm, var -9mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+sketch4 = sketch(on = offsetPlane(XY, offset = 100)) {
+  line1 = line(start = [var 105mm, var -10.5mm], end = [var 105mm, var 10.5mm])
+  arc2 = arc(start = [var 105mm, var 10.5mm], end = [var 101mm, var 17.42820323mm], center = [var 97mm, var 10.5mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 101mm, var 17.42820323mm], end = [var -35.399001096mm, var 96.17820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -35.399001096mm, var 96.17820323mm], end = [var -43.399001096mm, var 96.17820323mm], center = [var -39.399001096mm, var 89.25mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -43.399001096mm, var 96.17820323mm], end = [var -61.585534576mm, var 85.67820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -61.585534576mm, var 85.67820323mm], end = [var -65.585534576mm, var 78.75mm], center = [var -57.585534576mm, var 78.75mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -65.585534576mm, var 78.75mm], end = [var -65.585534576mm, var -78.75mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -65.585534576mm, var -78.75mm],
+    end = [
+      var -61.585534576mm,
+      var -85.67820323mm
+    ],
+    center = [var -57.585534576mm, var -78.75mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -61.585534576mm,
+      var -85.67820323mm
+    ],
+    end = [
+      var -43.399001096mm,
+      var -96.17820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -43.399001096mm,
+      var -96.17820323mm
+    ],
+    end = [
+      var -35.399001096mm,
+      var -96.17820323mm
+    ],
+    center = [var -39.399001096mm, var -89.25mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -35.399001096mm,
+      var -96.17820323mm
+    ],
+    end = [var 101mm, var -17.42820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 101mm, var -17.42820323mm], end = [var 105mm, var -10.5mm], center = [var 97mm, var -10.5mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+sketch5 = sketch(on = offsetPlane(XY, offset = 120)) {
+  line1 = line(start = [var 100mm, var -10mm], end = [var 100mm, var 10mm])
+  arc2 = arc(start = [var 100mm, var 10mm], end = [var 96mm, var 16.92820323mm], center = [var 92mm, var 10mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 96mm, var 16.92820323mm], end = [var -33.903810568mm, var 91.92820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -33.903810568mm, var 91.92820323mm], end = [var -41.903810568mm, var 91.92820323mm], center = [var -37.903810568mm, var 85mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -41.903810568mm, var 91.92820323mm], end = [var -59.224318643mm, var 81.92820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -59.224318643mm, var 81.92820323mm], end = [var -63.224318643mm, var 75mm], center = [var -55.224318643mm, var 75mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -63.224318643mm, var 75mm], end = [var -63.224318643mm, var -75mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -63.224318643mm, var -75mm],
+    end = [
+      var -59.224318643mm,
+      var -81.92820323mm
+    ],
+    center = [var -55.224318643mm, var -75mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -59.224318643mm,
+      var -81.92820323mm
+    ],
+    end = [
+      var -41.903810568mm,
+      var -91.92820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -41.903810568mm,
+      var -91.92820323mm
+    ],
+    end = [
+      var -33.903810568mm,
+      var -91.92820323mm
+    ],
+    center = [var -37.903810568mm, var -85mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -33.903810568mm,
+      var -91.92820323mm
+    ],
+    end = [var 96mm, var -16.92820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 96mm, var -16.92820323mm], end = [var 100mm, var -10mm], center = [var 92mm, var -10mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+// Loft consumes its section paths, so emit independent copies at the two
+// planes shared by adjacent lofts, matching the legacy clone sketch intent.
+sketch2ForHousing = sketch(on = offsetPlane(XY, offset = 20)) {
+  line1 = line(start = [var 50mm, var -5mm], end = [var 50mm, var 5mm])
+  arc2 = arc(start = [var 50mm, var 5mm], end = [var 46mm, var 11.92820323mm], center = [var 42mm, var 5mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 46mm, var 11.92820323mm], end = [var -18.951905284mm, var 49.42820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -18.951905284mm, var 49.42820323mm], end = [var -26.951905284mm, var 49.42820323mm], center = [var -22.951905284mm, var 42.5mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -26.951905284mm, var 49.42820323mm], end = [var -35.612159322mm, var 44.42820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -35.612159322mm, var 44.42820323mm], end = [var -39.612159322mm, var 37.5mm], center = [var -31.612159322mm, var 37.5mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -39.612159322mm, var 37.5mm], end = [var -39.612159322mm, var -37.5mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -39.612159322mm, var -37.5mm],
+    end = [
+      var -35.612159322mm,
+      var -44.42820323mm
+    ],
+    center = [var -31.612159322mm, var -37.5mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -35.612159322mm,
+      var -44.42820323mm
+    ],
+    end = [
+      var -26.951905284mm,
+      var -49.42820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -26.951905284mm,
+      var -49.42820323mm
+    ],
+    end = [
+      var -18.951905284mm,
+      var -49.42820323mm
+    ],
+    center = [var -22.951905284mm, var -42.5mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -18.951905284mm,
+      var -49.42820323mm
+    ],
+    end = [var 46mm, var -11.92820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 46mm, var -11.92820323mm], end = [var 50mm, var -5mm], center = [var 42mm, var -5mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+sketch4ForUpperTrim = sketch(on = offsetPlane(XY, offset = 100)) {
+  line1 = line(start = [var 105mm, var -10.5mm], end = [var 105mm, var 10.5mm])
+  arc2 = arc(start = [var 105mm, var 10.5mm], end = [var 101mm, var 17.42820323mm], center = [var 97mm, var 10.5mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 101mm, var 17.42820323mm], end = [var -35.399001096mm, var 96.17820323mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -35.399001096mm, var 96.17820323mm], end = [var -43.399001096mm, var 96.17820323mm], center = [var -39.399001096mm, var 89.25mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -43.399001096mm, var 96.17820323mm], end = [var -61.585534576mm, var 85.67820323mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -61.585534576mm, var 85.67820323mm], end = [var -65.585534576mm, var 78.75mm], center = [var -57.585534576mm, var 78.75mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -65.585534576mm, var 78.75mm], end = [var -65.585534576mm, var -78.75mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(
+    start = [var -65.585534576mm, var -78.75mm],
+    end = [
+      var -61.585534576mm,
+      var -85.67820323mm
+    ],
+    center = [var -57.585534576mm, var -78.75mm],
+  )
+  coincident([line7.end, arc8.start])
+  line9 = line(
+    start = [
+      var -61.585534576mm,
+      var -85.67820323mm
+    ],
+    end = [
+      var -43.399001096mm,
+      var -96.17820323mm
+    ],
+  )
+  coincident([arc8.end, line9.start])
+  arc10 = arc(
+    start = [
+      var -43.399001096mm,
+      var -96.17820323mm
+    ],
+    end = [
+      var -35.399001096mm,
+      var -96.17820323mm
+    ],
+    center = [var -39.399001096mm, var -89.25mm],
+  )
+  coincident([line9.end, arc10.start])
+  line11 = line(
+    start = [
+      var -35.399001096mm,
+      var -96.17820323mm
+    ],
+    end = [var 101mm, var -17.42820323mm],
+  )
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 101mm, var -17.42820323mm], end = [var 105mm, var -10.5mm], center = [var 97mm, var -10.5mm])
+  coincident([line11.end, arc12.start])
+  coincident([arc12.end, line1.start])
+}
+
+section1 = region(segments = [sketch1.line1, sketch1.arc2])
+section2 = region(segments = [sketch2.line1, sketch2.arc2])
+section3 = region(segments = [sketch3.line1, sketch3.arc2])
+section4 = region(segments = [sketch4.line1, sketch4.arc2])
+section5 = region(segments = [sketch5.line1, sketch5.arc2])
+section2ForHousing = region(segments = [
+  sketch2ForHousing.line1,
+  sketch2ForHousing.arc2
+])
+section4ForUpperTrim = region(segments = [
+  sketch4ForUpperTrim.line1,
+  sketch4ForUpperTrim.arc2
+])
+
+// Loft the lower trim of the body
+lowerTrim = loft([section1, section2])
+  |> appearance(color = "#f7f7f7")
+
+// Loft the center body housing
+housing = loft([section2ForHousing, section3, section4])
+  |> appearance(color = "#0f0f0f")
+
+// Loft the upper trim of the body
+upperTrim = loft([section4ForUpperTrim, section5])
+  |> appearance(color = "#f7f7f7")
+
+// Model an angled bracket that will be used to mount the three grippers
+sketch001 = sketch(on = offsetPlane(XY, offset = 120)) {
+  line1 = line(start = [var 97mm, var 5mm], end = [var 7mm, var 5mm])
+  arc2 = arc(start = [var 1.154328524mm, var 8.375mm], end = [var 7mm, var 5mm], center = [var 7mm, var 11.75mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(
+    start = [var 1.154328524mm, var 8.375mm],
+    end = [
+      var -43.845671476mm,
+      var 86.317286341mm
+    ],
+  )
+  coincident([arc2.start, line3.start])
+  line4 = line(
+    start = [
+      var -43.845671476mm,
+      var 86.317286341mm
+    ],
+    end = [
+      var -41.247595264mm,
+      var 87.817286341mm
+    ],
+  )
+  coincident([line3.end, line4.start])
+  line5 = line(
+    start = [
+      var -41.247595264mm,
+      var 87.817286341mm
+    ],
+    end = [var 3.752404736mm, var 9.875mm],
+  )
+  coincident([line4.end, line5.start])
+  arc6 = arc(start = [var 3.752404736mm, var 9.875mm], end = [var 7mm, var 8mm], center = [var 7mm, var 11.75mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 7mm, var 8mm], end = [var 97mm, var 8mm])
+  coincident([arc6.end, line7.start])
+  line8 = line(start = [var 97mm, var 8mm], end = [var 97mm, var 5mm])
+  coincident([line7.end, line8.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.arc2])
+angleBracket = extrude(region001, length = 40, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 8,
+       edges = [
+         {
+           sideFaces = [region001.tags.line4, capEnd001]
+         },
+         {
+           sideFaces = [region001.tags.line8, capEnd001]
+         }
+       ],
+     )
+
+// Add mounting provisions for the gripper linkages to each bracket
+bracketHoles01 = faceOf(angleBracket, face = region001.tags.line7)
+hole01 = sketch(on = bracketHoles01) {
+  circle1 = circle(start = [var -65.5mm, var 140mm], center = [var -70mm, var 140mm])
+}
+hole02 = sketch(on = bracketHoles01) {
+  circle1 = circle(start = [var -25.5mm, var 140mm], center = [var -30mm, var 140mm])
+}
+bracketHoles02 = faceOf(angleBracket, face = region001.tags.line5)
+hole03 = sketch(on = bracketHoles02) {
+  circle1 = circle(start = [var 74.5mm, var 140mm], center = [var 70mm, var 140mm])
+}
+hole04 = sketch(on = bracketHoles02) {
+  circle1 = circle(start = [var 34.5mm, var 140mm], center = [var 30mm, var 140mm])
+}
+holeRegion01 = region(segments = [hole01.circle1])
+holeRegion02 = region(segments = [hole02.circle1])
+holeRegion03 = region(segments = [hole03.circle1])
+holeRegion04 = region(segments = [hole04.circle1])
+bracket = extrude(
+  [
+    holeRegion01,
+    holeRegion02,
+    holeRegion03,
+    holeRegion04
+  ],
+  length = -bracketThickness,
+)
+  |> appearance(color = "#0f0f0f")
+
+// Model a 2 force linkage to attach the grippers to the base
+sketch002 = sketch(on = XZ) {
+  line1 = line(
+    start = [
+      var 37.250462296mm,
+      var 136.619053906mm
+    ],
+    end = [
+      var 66.833740618mm,
+      var 200.060598999mm
+    ],
+  )
+  arc2 = arc(
+    start = [
+      var 66.833740618mm,
+      var 200.060598999mm
+    ],
+    end = [
+      var 52.332816026mm,
+      var 206.822491186mm
+    ],
+    center = [
+      var 59.583278322mm,
+      var 203.441545093mm
+    ],
+  )
+  coincident([line1.end, arc2.start])
+  line3 = line(
+    start = [
+      var 52.332816026mm,
+      var 206.822491186mm
+    ],
+    end = [
+      var 22.749537704mm,
+      var 143.380946094mm
+    ],
+  )
+  coincident([arc2.end, line3.start])
+  arc4 = arc(
+    start = [
+      var 22.749537704mm,
+      var 143.380946094mm
+    ],
+    end = [
+      var 37.250462296mm,
+      var 136.619053906mm
+    ],
+    center = [var 30mm, var 140mm],
+  )
+  coincident([line3.end, arc4.start])
+}
+linkageHoleSketch = sketch(on = XZ) {
+  hole01 = circle(start = [var 34.5mm, var 140mm], center = [var 30mm, var 140mm])
+  hole02 = circle(
+    start = [
+      var 64.083278937mm,
+      var 203.441545092mm
+    ],
+    center = [
+      var 59.583278937mm,
+      var 203.441545092mm
+    ],
+  )
+}
+region002 = region(segments = [sketch002.line1, sketch002.arc2])
+linkageBlank = extrude(region002, length = 8, symmetric = true)
+linkageHoleRegion01 = region(segments = [linkageHoleSketch.hole01])
+linkageHoleRegion02 = region(segments = [linkageHoleSketch.hole02])
+linkageHole01 = extrude(
+  linkageHoleRegion01,
+  length = 8,
+  symmetric = true,
+  method = NEW,
+)
+linkageHole02 = extrude(
+  linkageHoleRegion02,
+  length = 8,
+  symmetric = true,
+  method = NEW,
+)
+linkageBar = subtract(linkageBlank, tools = [linkageHole01, linkageHole02])
+  |> appearance(color = "#f7f7f7")
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+
+// Create the base sheet metal that each gripper will be cut from
+sketch003 = sketch(on = offsetPlane(XY, offset = 129 + linkLength * sin(linkAngle))) {
+  line1 = line(start = [var 111.583278322mm, var 12mm], end = [var 34.583278322mm, var 12mm])
+  arc2 = arc(start = [var 34.583278322mm, var 12mm], end = [var 28.737606846mm, var 8.625mm], center = [var 34.583278322mm, var 5.25mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 28.737606846mm, var 8.625mm], end = [var 25.737606846mm, var 3.428847577mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 25.737606846mm, var 3.428847577mm], end = [var 25.737606846mm, var -3.321152423mm], center = [var 31.583278322mm, var 0.053847577mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 25.737606846mm, var -3.321152423mm], end = [var 28.737606846mm, var -8.517304845mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(
+    start = [var 28.737606846mm, var -8.517304845mm],
+    end = [
+      var 34.583278322mm,
+      var -11.892304845mm
+    ],
+    center = [var 34.583278322mm, var -5.142304845mm],
+  )
+  coincident([line5.end, arc6.start])
+  line7 = line(
+    start = [
+      var 34.583278322mm,
+      var -11.892304845mm
+    ],
+    end = [
+      var 111.583278322mm,
+      var -11.892304845mm
+    ],
+  )
+  coincident([arc6.end, line7.start])
+  line8 = line(
+    start = [
+      var 111.583278322mm,
+      var -11.892304845mm
+    ],
+    end = [
+      var 111.583278322mm,
+      var -8.892304845mm
+    ],
+  )
+  coincident([line7.end, line8.start])
+  line9 = line(
+    start = [
+      var 111.583278322mm,
+      var -8.892304845mm
+    ],
+    end = [var 34.583278322mm, var -8.892304845mm],
+  )
+  coincident([line8.end, line9.start])
+  arc10 = arc(start = [var 31.335683058mm, var -7.017304845mm], end = [var 34.583278322mm, var -8.892304845mm], center = [var 34.583278322mm, var -5.142304845mm])
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var 31.335683058mm, var -7.017304845mm], end = [var 28.335683058mm, var -1.821152423mm])
+  coincident([arc10.start, line11.start])
+  arc12 = arc(start = [var 28.335683058mm, var 1.928847577mm], end = [var 28.335683058mm, var -1.821152423mm], center = [var 31.583278322mm, var 0.053847577mm])
+  coincident([line11.end, arc12.end])
+  line13 = line(start = [var 28.335683058mm, var 1.928847577mm], end = [var 31.335683058mm, var 7.125mm])
+  coincident([arc12.start, line13.start])
+  arc14 = arc(start = [var 34.583278322mm, var 9mm], end = [var 31.335683058mm, var 7.125mm], center = [var 34.583278322mm, var 5.25mm])
+  coincident([line13.end, arc14.end])
+  line15 = line(start = [var 34.583278322mm, var 9mm], end = [var 111.583278322mm, var 9mm])
+  coincident([arc14.start, line15.start])
+  line16 = line(start = [var 111.583278322mm, var 9mm], end = [var 111.583278322mm, var 12mm])
+  coincident([line15.end, line16.start])
+}
+region003 = region(segments = [sketch003.line1, sketch003.arc2])
+gripBaseBracket = extrude(region003, length = 80)
+
+// Use subtract operations to remove excess material from the gripper, as well as model the mounting holes
+gripperCuts = XZ
+sketch004 = sketch(on = gripperCuts) {
+  circle1 = circle(
+    start = [
+      var 319.583278322mm,
+      var 353.441545093mm
+    ],
+    center = [
+      var 169.583278322mm,
+      var 353.441545093mm
+    ],
+  )
+}
+region004 = region(segments = [sketch004.circle1])
+cutOuter = extrude(region004, length = 40, symmetric = true)
+sketch005 = sketch(on = gripperCuts) {
+  circle1 = circle(
+    start = [
+      var 50.583278322mm,
+      var 183.441545093mm
+    ],
+    center = [
+      var 15.583278322mm,
+      var 183.441545093mm
+    ],
+  )
+}
+region005 = region(segments = [sketch005.circle1])
+cutInner = extrude(region005, length = 40, symmetric = true)
+
+sketch006 = sketch(on = gripperCuts) {
+  circle1 = circle(
+    start = [
+      var 64.083278322mm,
+      var 203.441545093mm
+    ],
+    center = [
+      var 59.583278322mm,
+      var 203.441545093mm
+    ],
+  )
+}
+region006 = region(segments = [sketch006.circle1])
+mountingHole01 = extrude(region006, length = 40, symmetric = true)
+sketch007 = sketch(on = gripperCuts) {
+  circle1 = circle(
+    start = [
+      var 104.083278322mm,
+      var 203.441545093mm
+    ],
+    center = [
+      var 99.583278322mm,
+      var 203.441545093mm
+    ],
+  )
+}
+region007 = region(segments = [sketch007.circle1])
+mountingHole02 = extrude(region007, length = 40, symmetric = true)
+
+// Remove all identified material from the gripper
+gripper = subtract(
+  [gripBaseBracket],
+  tolerance = tol,
+  tools = [
+    union(
+      [
+        union([mountingHole01, mountingHole02], tolerance = tol),
+        union([cutOuter, cutInner], tolerance = tol)
+      ],
+      tolerance = tol,
+    )
+  ],
+)
+  |> appearance(color = "#0f0f0f")
+
+// Create a cotter pin to secure the linkages to the base
+sketch008 = sketch(on = offsetPlane(YZ, offset = 30)) {
+  line1 = line(start = [var -9.5mm, var 140.5mm], end = [var -9.5mm, var 145.5mm])
+  line2 = line(start = [var -9.5mm, var 145.5mm], end = [var -8.5mm, var 145.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -8.5mm, var 145.5mm], end = [var -8.5mm, var 144mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -8.5mm, var 144mm], end = [var 8.5mm, var 144mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 8.5mm, var 144mm], end = [var 8.5mm, var 145.5mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 8.5mm, var 145.5mm], end = [var 9.5mm, var 145.5mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 9.5mm, var 145.5mm], end = [var 9.5mm, var 140.5mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 9.5mm, var 140.5mm], end = [var -9.5mm, var 140.5mm])
+  coincident([line7.end, line8.start])
+}
+region008 = region(segments = [sketch008.line1, sketch008.line2])
+basePins = revolve(
+  region008,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, 140.0]
+  },
+)
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+  |> appearance(color = "#a6a6a6")
+
+// Revolve a cotter pin and washers to secure the gripper to the linkages
+sketch009 = sketch(on = offsetPlane(YZ, offset = 30 + linkLength * cos(linkAngle))) {
+  line1 = line(start = [var 0mm, var 207.941545093mm], end = [var -4.1mm, var 207.941545093mm])
+  line2 = line(start = [var -4.1mm, var 207.941545093mm], end = [var -4.1mm, var 212.941545093mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -4.1mm, var 212.941545093mm], end = [var -8.9mm, var 212.941545093mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -8.9mm, var 212.941545093mm], end = [var -8.9mm, var 207.941545093mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -8.9mm, var 207.941545093mm], end = [var -12mm, var 207.941545093mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -12mm, var 207.941545093mm], end = [var -12mm, var 208.941545093mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var -12mm, var 208.941545093mm], end = [var -13mm, var 208.941545093mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -13mm, var 208.941545093mm], end = [var -13mm, var 203.941545093mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -13mm, var 203.941545093mm], end = [var 0mm, var 203.941545093mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0mm, var 203.941545093mm], end = [var 13mm, var 203.941545093mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 13mm, var 203.941545093mm], end = [var 13mm, var 208.941545093mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 13mm, var 208.941545093mm], end = [var 12mm, var 208.941545093mm])
+  coincident([line11.end, line12.start])
+  line13 = line(start = [var 12mm, var 208.941545093mm], end = [var 12mm, var 207.941545093mm])
+  coincident([line12.end, line13.start])
+  line14 = line(start = [var 12mm, var 207.941545093mm], end = [var 8.9mm, var 207.941545093mm])
+  coincident([line13.end, line14.start])
+  line15 = line(start = [var 8.9mm, var 207.941545093mm], end = [var 8.9mm, var 212.941545093mm])
+  coincident([line14.end, line15.start])
+  line16 = line(start = [var 8.9mm, var 212.941545093mm], end = [var 4.1mm, var 212.941545093mm])
+  coincident([line15.end, line16.start])
+  line17 = line(start = [var 4.1mm, var 212.941545093mm], end = [var 4.1mm, var 207.941545093mm])
+  coincident([line16.end, line17.start])
+  line18 = line(start = [var 4.1mm, var 207.941545093mm], end = [var 0mm, var 207.941545093mm])
+  coincident([line17.end, line18.start])
+  coincident([line18.end, line1.start])
+}
+region009 = region(segments = [sketch009.line1, sketch009.line2])
+gripperPins = revolve(
+  region009,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, 140 + linkLength * sin(linkAngle)]
+  },
+)
+  |> patternLinear3d(instances = 2, distance = 40, axis = [1, 0, 0])
+  |> appearance(color = "#a6a6a6")
+
+hide([
+  sketch1,
+  sketch2,
+  sketch3,
+  sketch4,
+  sketch5,
+  sketch2ForHousing,
+  sketch4ForUpperTrim,
+  sketch001,
+  hole01,
+  hole02,
+  hole03,
+  hole04,
+  sketch002,
+  linkageHoleSketch,
+  sketch003,
+  sketch004,
+  sketch005,
+  sketch006,
+  sketch007,
+  sketch008,
+  sketch009
+])
+
+// Pattern 3 each item around the center so that the hand has 3 fingers
+[
+  bracket,
+  linkageBar,
+  gripper,
+  basePins,
+  gripperPins
+]
+  |> patternCircular3d(
+       instances = 3,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
