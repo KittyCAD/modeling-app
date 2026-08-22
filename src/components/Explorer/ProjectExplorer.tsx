@@ -1221,7 +1221,7 @@ export const ProjectExplorer = ({
                   )
                   void runFileTreeMutation(
                     () => session.createFolder({ path: requestedAbsolutePath }),
-                    `Folder ${requestedName} written successfully`
+                    `Successfully created "${requestedName}"`
                   )
                 } else {
                   const absolutePathToParentDirectory = getParentAbsolutePath(
@@ -1281,7 +1281,7 @@ export const ProjectExplorer = ({
                 if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
                   navigateToFile(requestedAbsolutePath)
                 }
-              }, `File ${fileName} written successfully`)
+              }, `Successfully created "${fileName}"`)
             } else {
               // Respect a user-typed extension otherwise assume the file is KCL.
               const fileName =

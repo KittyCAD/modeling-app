@@ -395,7 +395,7 @@ export class App implements AppSubsystems {
             systemIOActor: this.systemIOActor,
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
-              this.settings.actor.getSnapshot().context.currentProject?.name,
+              this.registry.get(projectSession).getProject()?.name,
             getCurrentProjectLibraryId: () =>
               this.registry.get(projectSession).getCurrentProjectLibraryId(),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
@@ -403,6 +403,20 @@ export class App implements AppSubsystems {
               this.registry.get(homeProjectActionsService),
             getHomeProjectEntries: () =>
               this.registry.get(homeProjectEntriesValueSpec),
+            onCurrentProjectTitleRenamed: (requestedTitle) => {
+              const openedProject = this.registry
+                .get(projectSession)
+                .getProject()
+              const openedProjectTree = openedProject?.projectIORefSignal.value
+              if (!openedProject || !openedProjectTree) {
+                return
+              }
+
+              openedProject.projectIORefSignal.value = {
+                ...openedProjectTree,
+                title: requestedTitle,
+              }
+            },
           }).map(provideCommand),
         ],
       }),

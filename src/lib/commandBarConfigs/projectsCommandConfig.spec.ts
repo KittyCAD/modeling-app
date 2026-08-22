@@ -378,16 +378,19 @@ describe('project command config', () => {
     ])
   })
 
-  it('renames project titles without replacing the project directory identifier', () => {
+  it('renames project titles through the legacy project command path', () => {
     const systemIOActor = createSystemIOActor([
       createProject({
         name: 'bracket-directory',
         title: 'Display Bracket',
       }),
     ])
+    const onCurrentProjectTitleRenamed = vi.fn()
     const commands = createProjectCommands({
       systemIOActor,
       enableProjectDirectoryCommands: true,
+      getCurrentProjectDirectoryName: () => 'bracket-directory',
+      onCurrentProjectTitleRenamed,
     })
     const renameCommand = commands.find(
       (command) => command.name === 'Rename project'
@@ -420,6 +423,9 @@ describe('project command config', () => {
         redirect: true,
       },
     })
+    expect(onCurrentProjectTitleRenamed).toHaveBeenCalledWith(
+      'Retitled Bracket'
+    )
   })
 
   it('uses home project entries for project command options', () => {
@@ -485,11 +491,14 @@ describe('project command config', () => {
       libraryIds: ['client-projects'],
     })
     const homeProjectActions = createHomeProjectActions()
+    const onCurrentProjectTitleRenamed = vi.fn()
     const commands = createProjectCommands({
       systemIOActor,
       enableProjectDirectoryCommands: true,
+      getCurrentProjectDirectoryName: () => 'bracket',
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
+      onCurrentProjectTitleRenamed,
     })
     const openCommand = commands.find(
       (command) => command.name === 'Open project'
@@ -510,6 +519,10 @@ describe('project command config', () => {
         oldName: homeProject.id,
         newName: 'Updated Client Bracket',
       })
+      await renameCommand?.onSubmit({
+        oldName: homeProject.localProjectName,
+        newName: 'Updated Client Bracket Again',
+      })
       await deleteCommand?.onSubmit({
         name: homeProject.id,
       })
@@ -521,6 +534,16 @@ describe('project command config', () => {
       expect(homeProjectActions.rename).toHaveBeenCalledWith(
         homeProject,
         'Updated Client Bracket'
+      )
+      expect(homeProjectActions.rename).toHaveBeenCalledWith(
+        homeProject,
+        'Updated Client Bracket Again'
+      )
+      expect(onCurrentProjectTitleRenamed).toHaveBeenCalledWith(
+        'Updated Client Bracket'
+      )
+      expect(onCurrentProjectTitleRenamed).toHaveBeenCalledWith(
+        'Updated Client Bracket Again'
       )
       expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
       expect(systemIOActor.send).not.toHaveBeenCalled()

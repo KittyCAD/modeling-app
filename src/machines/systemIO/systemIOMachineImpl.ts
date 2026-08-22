@@ -28,7 +28,10 @@ import {
 import type { FileEntry } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
+import {
+  readProjectsFromProjectDirectory,
+  syncProjectDirectoryNameFromTitle,
+} from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -567,11 +570,23 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await writeProjectTitleToProjectToml(projectPath, requestedProjectTitle)
+        const renamedProjectDirectoryName =
+          await syncProjectDirectoryNameFromTitle({
+            project: {
+              ...project,
+              path: projectPath,
+              title: requestedProjectTitle,
+            },
+            projectDirectoryEntryNames: folders.map((folder) => folder.name),
+          })
+        const newProjectDirectoryName =
+          renamedProjectDirectoryName ?? projectDirectoryName
 
         return {
           message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectTitle}"`,
           oldName: projectDirectoryName,
-          newName: projectDirectoryName,
+          newName: newProjectDirectoryName,
+          newTitle: requestedProjectTitle,
           redirect: input.redirect,
         }
       }

@@ -7,13 +7,18 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   clearActiveTextFile,
   isEditableTextFile,
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  FILE_EXT,
+  INSERT_FOREIGN_TOAST_ID,
+} from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import {
   type AreaTypeComponentProps,
@@ -24,21 +29,25 @@ import {
 import {
   getEXTNoPeriod,
   isExtensionARelevantExtension,
-  parentPathRelativeToProject,
+  joinRouterPaths,
+  PATHS,
+  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { routerService } from '@src/registry/contracts/router'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useSignals()
   const app = useApp()
-  const { commands, systemIOActor, layout } = app
+  const { commands, layout } = app
   const session = app.registry.get(projectSession)
+  const lsp = app.registry.get(lspService)
+  const router = app.registry.get(routerService)
   const project = session.project.value
   const projectTree = session.projectTree.value
   const { kclManager } = useSingletons()
@@ -112,11 +121,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
         const extension = getEXTNoPeriod(filename)
@@ -137,16 +141,21 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       ) {
         // Leaving any open text file for the KCL editor.
         clearActiveTextFile()
-        const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
+          const projectPath = projectRef.current?.value.path ?? null
+          lsp.onFileClose(file?.path ?? null, projectPath)
+          lsp.onFileOpen(entry.path, projectPath)
+          kclManager.engineCommandManager.rejectAllModelingCommands(
+            EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+          )
+          if (file?.path && file.path !== entry.path) {
+            kclManager.switchedFiles = true
+          }
+          kclManager.isExecuting = false
+          void router.navigate(
+            joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(entry.path))
+          )
         }
 
         if (modelingMachineState.matches('Sketch')) {
@@ -202,12 +211,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     },
     [
       commands,
+      file?.path,
+      kclManager,
+      lsp,
       modelingActor,
       modelingMachineState,
       modelingSend,
       openCodeEditorPaneIfClosed,
-      projectDirectoryPath,
-      systemIOActor,
+      router,
       wasmInstance,
     ]
   )

@@ -33,6 +33,7 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   getProjectLibraryOperation,
   type ProjectLibraryRealization,
@@ -60,6 +61,10 @@ function homeProjectDisplayNameExists({
         getHomeProjectDisplayName(project) === requestedName
     )
   )
+}
+
+function sameProjectPath(left: string, right: string) {
+  return left.replaceAll('\\', '/') === right.replaceAll('\\', '/')
 }
 
 function homeProjectStatusFromRealization(
@@ -508,6 +513,20 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
+      const session = ctx.services.optional(projectSession)
+      const openedProject = session?.getProject()
+      const openedProjectTree = openedProject?.projectIORefSignal.value
+      if (
+        openedProject &&
+        openedProjectTree &&
+        project.localProjectPath &&
+        sameProjectPath(openedProjectTree.path, project.localProjectPath)
+      ) {
+        openedProject.projectIORefSignal.value = {
+          ...openedProjectTree,
+          title: requestedName,
+        }
+      }
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
       )

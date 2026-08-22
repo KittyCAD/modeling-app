@@ -72,6 +72,7 @@ export function createProjectCommands({
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
+  onCurrentProjectTitleRenamed,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
@@ -80,6 +81,7 @@ export function createProjectCommands({
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
+  onCurrentProjectTitleRenamed?: (requestedTitle: string) => void
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -152,7 +154,10 @@ export function createProjectCommands({
     }
 
     return homeProjectCommandTargets(action)?.find(
-      ({ project }) => project.id === value
+      ({ project }) =>
+        project.id === value ||
+        project.localProjectName === value ||
+        project.name === value
     )
   }
 
@@ -544,7 +549,13 @@ export function createProjectCommands({
       if (record) {
         const target = selectedHomeProjectTarget(record.oldName, 'rename')
         if (target) {
-          return target.actions.rename(target.project, record.newName)
+          return target.actions
+            .rename(target.project, record.newName)
+            .then(() => {
+              if (isCurrentHomeProject(target.project)) {
+                onCurrentProjectTitleRenamed?.(record.newName)
+              }
+            })
         }
 
         // Only redirect back to the project when not on the home page
@@ -561,6 +572,18 @@ export function createProjectCommands({
             redirect: !isOnHomePage, // only redirect when renaming from within a project
           },
         })
+        const wouldDuplicateTitle = folderSnapshot()?.some(
+          (folder) =>
+            folder.name !== record.oldName &&
+            getProjectDisplayName(folder) === record.newName
+        )
+        if (
+          !isOnHomePage &&
+          !wouldDuplicateTitle &&
+          record.oldName === currentProjectDirectoryNameSnapshot()
+        ) {
+          onCurrentProjectTitleRenamed?.(record.newName)
+        }
       }
     },
     args: {

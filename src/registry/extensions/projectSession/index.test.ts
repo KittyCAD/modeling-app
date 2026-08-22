@@ -1,7 +1,9 @@
 import {
   Registry,
   defineRegistryItem,
+  provide,
   provideService,
+  type RegistryItem,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
@@ -12,9 +14,25 @@ import {
 } from '@src/registry/contracts/cloudSync'
 import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import {
+  type ProjectLibraryRealizationContribution,
+  projectLibraryRealizationsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import type { RouterRegistryService } from '@src/registry/contracts/router'
+import { routerService } from '@src/registry/contracts/router'
+import {
+  type SystemIORegistryService,
+  systemIOService,
+} from '@src/registry/contracts/systemIO'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@src/lang/KclManager', () => ({
+  ZDSProject: {
+    open: vi.fn(),
+  },
+}))
 vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
 
 describe('project session extension', () => {
@@ -25,11 +43,9 @@ describe('project session extension', () => {
     registry = undefined
   })
 
-  function configureProjectSession(
-    extraItems: Parameters<Registry['configure']>[0] = []
-  ) {
+  function configureProjectSession(items: RegistryItem[] = []) {
     registry = new Registry()
-    registry.configure([...extraItems, projectSessionRegistryItem])
+    registry.configure([...items, projectSessionRegistryItem])
     return registry.get(projectSession)
   }
 
@@ -59,8 +75,40 @@ describe('project session extension', () => {
     }
   }
 
-  function createFakeProject(projectTree = createProjectTree()) {
-    const refreshedProjectTree = createProjectTree(`${projectTree.name}-fresh`)
+  function createProjectRealization({
+    path = '/projects/bracket',
+    title = 'Bracket',
+    libraryPath = '/projects',
+  }: {
+    path?: string
+    title?: string
+    libraryPath?: string
+  } = {}): ProjectLibraryRealizationContribution {
+    const name = path.slice(path.lastIndexOf('/') + 1)
+    return {
+      name,
+      title,
+      localProjectPath: path,
+      localProjectName: name,
+      defaultFile: `${path}/main.kcl`,
+      kclFileCount: 1,
+      directoryCount: 0,
+      readWriteAccess: true,
+      libraryRefs: [
+        {
+          id: 'default',
+          title: 'Projects',
+          path: libraryPath,
+          type: 'directory',
+        },
+      ],
+    }
+  }
+
+  function createFakeProject(
+    projectTree = createProjectTree(),
+    refreshedProjectTree = createProjectTree(`${projectTree.name}-fresh`)
+  ) {
     const mocks = {
       refreshProjectTree: vi.fn(async () => refreshedProjectTree),
       openEditor: vi.fn(async () => ({}) as KclManager),
@@ -88,6 +136,56 @@ describe('project session extension', () => {
       ...mocks,
       mocks,
     } as unknown as ZDSProject & { mocks: typeof mocks }
+  }
+
+  function createSystemIOService() {
+    type SystemIOSnapshot = {
+      context: {
+        folders?: Project[]
+        lastOperation: SystemIOMachineStates
+        requestedProjectName: { name: string; title?: string }
+      }
+      matches: (state: string) => boolean
+    }
+
+    const subscribers = new Set<(snapshot: SystemIOSnapshot) => void>()
+    const createSnapshot = (
+      state: SystemIOMachineStates,
+      context: Partial<SystemIOSnapshot['context']> = {}
+    ): SystemIOSnapshot => ({
+      context: {
+        lastOperation: SystemIOMachineStates.idle,
+        requestedProjectName: { name: 'bracket' },
+        ...context,
+      },
+      matches: (candidateState: string) => candidateState === state,
+    })
+
+    const service: SystemIORegistryService = {
+      actor: {
+        getSnapshot: () => createSnapshot(SystemIOMachineStates.idle),
+        send: vi.fn(),
+        subscribe: vi.fn((listener: (snapshot: SystemIOSnapshot) => void) => {
+          subscribers.add(listener)
+          return {
+            unsubscribe: vi.fn(() => subscribers.delete(listener)),
+          }
+        }),
+      } as unknown as SystemIORegistryService['actor'],
+    }
+
+    return {
+      service,
+      emit: (
+        state: SystemIOMachineStates,
+        context: Partial<SystemIOSnapshot['context']> = {}
+      ) => {
+        const snapshot = createSnapshot(state, context)
+        for (const subscriber of subscribers) {
+          subscriber(snapshot)
+        }
+      },
+    }
   }
 
   it('provides the opened project session through registry signals', () => {
@@ -171,6 +269,157 @@ describe('project session extension', () => {
 
     expect(projectSession.getProjectTree()).toBeUndefined()
     expect(projectSession.projectTree.value).toBeUndefined()
+  })
+
+  it('syncs opened project metadata from project library realizations', async () => {
+    const realizations = signal<ProjectLibraryRealizationContribution[]>([])
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test.project-library-realizations',
+        provides: [
+          provide(projectLibraryRealizationsValueSpec, realizations, {
+            key: 'test.project-library-realizations',
+          }),
+        ],
+      }),
+    ])
+    const projectTree = createProjectTree()
+    const project = createFakeProject(projectTree)
+    projectSession.setProject(project)
+
+    realizations.value = [
+      createProjectRealization({
+        path: projectTree.path,
+        title: 'Renamed Bracket',
+      }),
+    ]
+    await flushMicrotasks()
+
+    expect(project.projectIORefSignal.value).toEqual(
+      expect.objectContaining({
+        name: 'bracket',
+        path: '/projects/bracket',
+        title: 'Renamed Bracket',
+        default_file: '/projects/bracket/main.kcl',
+      })
+    )
+    expect(projectSession.projectTree.value).toBe(
+      project.projectIORefSignal.value
+    )
+  })
+
+  it('navigates to a moved project realization that matches the opened project title', async () => {
+    const realizations = signal<ProjectLibraryRealizationContribution[]>([])
+    const navigate = vi.fn()
+    const router: Pick<RouterRegistryService, 'isReady' | 'navigate'> = {
+      isReady: signal(true),
+      navigate,
+    }
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test.project-library-realizations',
+        provides: [
+          provide(projectLibraryRealizationsValueSpec, realizations, {
+            key: 'test.project-library-realizations',
+          }),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test.router',
+        providesServices: [
+          provideService(
+            routerService,
+            router as unknown as RouterRegistryService
+          ),
+        ],
+      }),
+    ])
+    const projectTree = {
+      ...createProjectTree(),
+      title: 'Renamed Bracket',
+      libraryPath: '/projects',
+      libraryType: 'directory',
+    }
+    const project = createFakeProject(projectTree)
+    projectSession.setProject(project)
+
+    realizations.value = [
+      createProjectRealization({
+        path: '/projects/renamed-bracket',
+        title: 'Renamed Bracket',
+      }),
+    ]
+    await flushMicrotasks()
+
+    expect(navigate).toHaveBeenCalledWith(
+      '/file/%2Fprojects%2Frenamed-bracket%2Fmain.kcl'
+    )
+  })
+
+  it('syncs opened project metadata from completed SystemIO folder reads', async () => {
+    const systemIO = createSystemIOService()
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+    ])
+    const projectTree = createProjectTree()
+    const project = createFakeProject(projectTree)
+    const refreshedProjectTree = {
+      ...projectTree,
+      title: 'Renamed Bracket',
+      kcl_file_count: 2,
+    }
+    projectSession.setProject(project)
+
+    systemIO.emit(SystemIOMachineStates.readingFolders)
+    systemIO.emit(SystemIOMachineStates.idle, {
+      folders: [refreshedProjectTree],
+    })
+    await flushMicrotasks()
+
+    expect(project.mocks.refreshProjectTree).not.toHaveBeenCalled()
+    expect(project.projectIORefSignal.value).toEqual(refreshedProjectTree)
+    expect(projectSession.projectTree.value).toBe(
+      project.projectIORefSignal.value
+    )
+  })
+
+  it('refreshes the opened project when a completed SystemIO folder read omits it', async () => {
+    const systemIO = createSystemIOService()
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test.system-io',
+        providesServices: [provideService(systemIOService, systemIO.service)],
+      }),
+    ])
+    const projectTree = createProjectTree()
+    const refreshedProjectTree = {
+      ...projectTree,
+      children: [
+        {
+          name: 'new.kcl',
+          path: '/projects/bracket/new.kcl',
+          children: null,
+        },
+      ],
+      kcl_file_count: 2,
+    }
+    const project = createFakeProject(projectTree, refreshedProjectTree)
+    projectSession.setProject(project)
+
+    systemIO.emit(SystemIOMachineStates.readingFolders)
+    systemIO.emit(SystemIOMachineStates.idle, {
+      folders: [],
+    })
+    await flushMicrotasks()
+
+    expect(project.mocks.refreshProjectTree).toHaveBeenCalledOnce()
+    expect(project.projectIORefSignal.value).toEqual(refreshedProjectTree)
+    expect(projectSession.projectTree.value).toBe(
+      project.projectIORefSignal.value
+    )
   })
 
   it('tracks the current project library id', () => {
