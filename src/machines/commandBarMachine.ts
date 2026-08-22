@@ -32,6 +32,18 @@ function isCommandSubmitPromise(
   )
 }
 
+function commandSubmitErrorMessage(commandName: string, error: unknown) {
+  if (error instanceof Error && error.message) {
+    return error.message
+  }
+
+  if (typeof error === 'string' && error.trim()) {
+    return error
+  }
+
+  return `Failed to execute command: ${commandName}`
+}
+
 function handleCommandSubmitResult(commandName: string, result: unknown) {
   if (!result) return
 
@@ -44,7 +56,7 @@ function handleCommandSubmitResult(commandName: string, result: unknown) {
       })
       .catch((error: unknown) => {
         reportRejection(error)
-        toast.error(`Failed to execute command: ${commandName}`)
+        toast.error(commandSubmitErrorMessage(commandName, error))
       })
     return
   }

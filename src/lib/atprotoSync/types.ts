@@ -37,6 +37,7 @@ export type AtprotoArchiveManifest = {
 }
 
 export type AtprotoCadProjectRecord = {
+  $type?: typeof ATPROTO_CAD_PROJECT_COLLECTION
   title: string
   createdAt: string
   description?: string
@@ -48,6 +49,7 @@ export type AtprotoCadProjectRecord = {
 }
 
 export type AtprotoCadArchiveRecord = {
+  $type?: typeof ATPROTO_CAD_ARCHIVE_COLLECTION
   project: AtprotoStrongRef
   archiveBlob: AtprotoBlobRef
   archiveSha256: string

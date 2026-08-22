@@ -7,12 +7,14 @@ import {
   projectRecordFromUploadBody,
   projectUploadBodyFromAtprotoRecords,
 } from '@src/lib/atprotoSync/mapping'
-import type {
-  AtprotoBlobRef,
-  AtprotoCadArchiveRecord,
-  AtprotoCadProjectRecord,
-  AtprotoRepoRecord,
-  AtprotoStrongRef,
+import {
+  ATPROTO_CAD_ARCHIVE_COLLECTION,
+  ATPROTO_CAD_PROJECT_COLLECTION,
+  type AtprotoBlobRef,
+  type AtprotoCadArchiveRecord,
+  type AtprotoCadProjectRecord,
+  type AtprotoRepoRecord,
+  type AtprotoStrongRef,
 } from '@src/lib/atprotoSync/types'
 import { describe, expect, test } from 'vitest'
 
@@ -112,6 +114,7 @@ describe('ATProto CAD project mapping', () => {
     }
 
     expect(project).toEqual({
+      $type: ATPROTO_CAD_PROJECT_COLLECTION,
       title: 'Bracket',
       description: 'A syncable bracket',
       categoryIds: ['fixtures', 'cad'],
@@ -200,6 +203,7 @@ describe('ATProto CAD archive mapping', () => {
     })
 
     expect(archive).toMatchObject({
+      $type: ATPROTO_CAD_ARCHIVE_COLLECTION,
       project: {
         uri: projectUri,
         cid: projectCid,

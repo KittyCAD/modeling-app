@@ -62,10 +62,10 @@ export type AtprotoRecordWriteInput<Value> = {
   /**
    * Mirrors com.atproto.repo.putRecord.swapRecord.
    *
-   * `null` requests create-only behavior. A string requests compare-and-swap
-   * against that previous record CID.
+   * A string requests compare-and-swap against that previous record CID.
+   * New-record writes omit this field for broad PDS compatibility.
    */
-  swapRecord?: string | null
+  swapRecord?: string
 }
 
 export type AtprotoRecordDeleteInput = {
@@ -185,7 +185,6 @@ export async function createAtprotoRemoteProject(
     collection: ATPROTO_CAD_PROJECT_COLLECTION,
     rkey: projectRkey,
     record: projectRecordFromUploadBody(uploadPayload.body, createdAt),
-    swapRecord: null,
   })
   const archive = await createArchiveRecord({
     config,
@@ -382,7 +381,6 @@ async function createArchiveRecord({
     collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
     rkey: newRecordKey(config),
     record: archive,
-    swapRecord: null,
   })
 }
 

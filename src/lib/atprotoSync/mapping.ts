@@ -5,6 +5,8 @@ import type {
   ProjectUploadBody,
 } from '@src/lib/cloudSync/types'
 import {
+  ATPROTO_CAD_ARCHIVE_COLLECTION,
+  ATPROTO_CAD_PROJECT_COLLECTION,
   type AtprotoArchiveManifest,
   type AtprotoBlobRef,
   type AtprotoCadArchiveRecord,
@@ -136,6 +138,7 @@ export function projectRecordFromUploadBody(
   headArchive?: AtprotoStrongRef
 ): AtprotoCadProjectRecord {
   return {
+    $type: ATPROTO_CAD_PROJECT_COLLECTION,
     title: body.title,
     description: body.description,
     categoryIds: body.category_ids,
@@ -169,6 +172,7 @@ export async function atprotoArchiveRecordFromUploadBody({
       : new Uint8Array(archiveBytes)
 
   return {
+    $type: ATPROTO_CAD_ARCHIVE_COLLECTION,
     project,
     archiveBlob,
     archiveSha256: await sha256Hex(bytes),

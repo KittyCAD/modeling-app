@@ -106,9 +106,6 @@ class FakeAtprotoClient implements AtprotoCadSyncClient {
     this.putRecordCalls.push(input as AtprotoRecordWriteInput<unknown>)
     const recordUri = uri(input.collection, input.rkey)
     const existing = this.records.get(recordUri)
-    if (input.swapRecord === null && existing) {
-      throw new Error('record already exists')
-    }
     if (
       typeof input.swapRecord === 'string' &&
       existing?.cid !== input.swapRecord
@@ -248,19 +245,28 @@ describe('ATProto project API adapter', () => {
       {
         collection: ATPROTO_CAD_PROJECT_COLLECTION,
         rkey: 'project-rkey',
-        swapRecord: null,
+        record: {
+          $type: ATPROTO_CAD_PROJECT_COLLECTION,
+        },
       },
       {
         collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
         rkey: 'archive-rkey',
-        swapRecord: null,
+        record: {
+          $type: ATPROTO_CAD_ARCHIVE_COLLECTION,
+        },
       },
       {
         collection: ATPROTO_CAD_PROJECT_COLLECTION,
         rkey: 'project-rkey',
+        record: {
+          $type: ATPROTO_CAD_PROJECT_COLLECTION,
+        },
         swapRecord: 'project-initial-cid',
       },
     ])
+    expect(client.putRecordCalls[0]).not.toHaveProperty('swapRecord')
+    expect(client.putRecordCalls[1]).not.toHaveProperty('swapRecord')
 
     const archive = await client.getRecord<AtprotoCadArchiveRecord>({
       repo,
