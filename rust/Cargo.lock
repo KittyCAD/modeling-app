@@ -5743,11 +5743,10 @@ dependencies = [
 
 [[package]]
 name = "twenty-twenty"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f40badf08ea9162f080ee79ef4411b1a91919b44a01a3035c004a080dac39494"
+checksum = "6d411234fb5018ad8a6cc99279143ad57dfd5179a593394a9f76e5d7df9a6071"
 dependencies = [
- "anyhow",
  "image",
  "image-compare 0.4.2",
  "uuid",
