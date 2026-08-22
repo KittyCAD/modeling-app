@@ -126,23 +126,6 @@ jobs:
             rust/target
             ~/.cargo/registry
             ~/.cargo/git
-      # TEMPORARY. Every job on a runner profile caches the same `rust/target`
-      # on one shared volume, and warm runs still rebuild every crate. These
-      # two steps record which jobs' artifacts survive there. Each job drops a
-      # marker after building. A later run listing more than one marker means
-      # the volume merges commits; exactly one means the last writer wins.
-      - name: Diagnostic, cache contents after mount
-        shell: bash
-        # Every command tolerates failure. An absent path is a result here,
-        # not an error.
-        run: |
-          echo "== markers left by earlier runs =="
-          ls -la rust/target/.cache-marker-* 2>&1 | head -20 || true
-          echo "== target subdirectories =="
-          ls -la rust/target 2>&1 | head -30 || true
-          echo "== sizes =="
-          du -sh rust/target 2>&1 || true
-          du -sh rust/target/* 2>&1 | head -20 || true
       - name: Install Node.js
         uses: actions/setup-node@v7.0.0
         with:
@@ -172,8 +155,6 @@ jobs:
             mingw-w64 \
             wget \
             zlib1g-dev
-
-          cargo install cross
       - name: Install AArch64 target toolchain
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: sudo apt-get install gcc-aarch64-linux-gnu
@@ -186,18 +167,6 @@ jobs:
         run: |
           cd rust
           cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
-      # TEMPORARY. See the note on the diagnostic step above.
-      - name: Diagnostic, mark and list after build
-        shell: bash
-        run: |
-          mkdir -p rust/target
-          date -u > "rust/target/.cache-marker-${{ matrix.target }}-run${{ github.run_number }}-attempt${{ github.run_attempt }}"
-          echo "== markers present now =="
-          ls -la rust/target/.cache-marker-* 2>&1 | head -20 || true
-          echo "== target subdirectories =="
-          ls -la rust/target 2>&1 | head -30 || true
-          echo "== sizes =="
-          du -sh rust/target 2>&1 || true
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
@@ -281,43 +250,18 @@ jobs:
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
       - name: Rust cache on the Namespace volume
-        # `~` is ambiguous here. Cargo uses HOME, /github/home, but the
-        # effective user id resolves to /root.
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
             rust/target
             /github/home/.cargo/registry
             /github/home/.cargo/git
-      # TEMPORARY. See the note on the diagnostic step in build-release.
-      - name: Diagnostic, cache contents after mount
-        shell: bash
-        run: |
-          echo "== markers left by earlier runs =="
-          ls -la rust/target/.cache-marker-* 2>&1 | head -20 || true
-          echo "== target subdirectories =="
-          ls -la rust/target 2>&1 | head -30 || true
-          echo "== sizes =="
-          du -sh rust/target 2>&1 || true
-          du -sh rust/target/* 2>&1 | head -20 || true
       - name: build
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
           cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
-      # TEMPORARY. See the note on the diagnostic step in build-release.
-      - name: Diagnostic, mark and list after build
-        shell: bash
-        run: |
-          mkdir -p rust/target
-          date -u > "rust/target/.cache-marker-x86_64-unknown-linux-musl-run${{ github.run_number }}-attempt${{ github.run_attempt }}"
-          echo "== markers present now =="
-          ls -la rust/target/.cache-marker-* 2>&1 | head -20 || true
-          echo "== target subdirectories =="
-          ls -la rust/target 2>&1 | head -30 || true
-          echo "== sizes =="
-          du -sh rust/target 2>&1 || true
       - name: Install dependencies
         run: |
           cd rust/kcl-language-server
