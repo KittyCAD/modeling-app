@@ -13,6 +13,11 @@ lexicon authority remains `cad.noirot.nyc`, resolved by the
 `_lexicon.cad.noirot.nyc` DNS TXT record. No `co.franknoirot.*` migration is
 needed for v1.
 
+Implementation status on 2026-08-22: the branch now includes the local lexicon
+catalog, pure ZDS/ATProto mappers, a tested ATProto project API adapter contract,
+the provider-neutral `ConnectedIdentity` registry service, a Zoo auth identity
+projection, and a minimal `atproto` project library type registration.
+
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
 
@@ -169,8 +174,9 @@ not the V1 sync substrate.
 ### Branch Scope
 
 This branch tracks the planning document and follow-up status. Implementation
-branches should now be split by concern, starting with the ATProto project API
-adapter and fixtures.
+has been split by concern across separate commits so the review can evaluate the
+schema catalog, mapper layer, API adapter, identity layer, and library
+registration independently.
 
 ### Lexicon Migration/Additions
 
@@ -196,19 +202,22 @@ output was removed before staging.
 
 ### Next Work Order
 
-1. Build the ATProto project API adapter and fixture tests against the current
-   cloud sync API contract.
-2. Add `ConnectedIdentity` registry contracts and publish Zoo auth as the first
-   built-in connected identity.
-3. Add the ATProto identity provider using OAuth and the `authSync` permission
+1. Add a real ATProto client implementation behind the tested
+   `AtprotoCadSyncClient` interface.
+2. Add the ATProto identity provider using OAuth and the `authSync` permission
    set.
-4. Add the ATProto project library type and materialization flow once adapter and
-   identity behavior are covered by tests.
+3. Decide and implement remote delete semantics: delete record vs tombstone
+   record hidden from listings.
+4. Wire the `atproto` project library operations to the adapter once identity
+   and client behavior are available.
+5. Add Settings UI for connected accounts after Zoo and ATProto identities share
+   the same service surface.
 
 ### Project API Adapter
 
-Introduce an ATProto project API adapter that matches the current cloud sync
-remote API behavior rather than changing the sync engine first:
+Completed in `src/lib/atprotoSync`. The ATProto project API adapter matches the
+current cloud sync remote API behavior rather than changing the sync engine
+first:
 
 - `listRemoteProjects`: enumerate sync-capable project records with
   `headArchive`.
@@ -226,10 +235,23 @@ The adapter is responsible for mapping ATProto errors into the same categories
 the cloud sync engine expects, especially stale revision failures, missing
 project/archive failures, forbidden writes, and transient network errors.
 
+Current status:
+
+- [x] Pure mapper layer for `nyc.noirot.cad.project` and
+  `nyc.noirot.cad.archive`.
+- [x] Manifest conversion between Lexicon array shape and ZDS
+  `ProjectManifest.files`.
+- [x] Archive-first create, update, download, list, get, and delete adapter
+  functions.
+- [x] Guarded update tests using the project record CID as `expected_revision`.
+- [ ] Live ATProto client implementation.
+- [ ] Provider-neutral error mapping for live OAuth/PDS failures.
+
 ### Connected Identity
 
-Add a provider-neutral identity layer rather than overloading the current Zoo
-auth service.
+Completed for the registry service and Zoo auth projection. The next missing
+piece is an ATProto OAuth provider that contributes identities into the same
+service.
 
 `ConnectedIdentity` should represent an authenticated account projection, not
 the credential store itself:
@@ -243,21 +265,22 @@ the credential store itself:
   `projects:write`, `lexicons:publish`.
 - `status`: `connected`, `expired`, `revoked`, or `error`.
 
-Implementation direction:
+Implementation status:
 
-- Keep `authService` as the Zoo auth capability.
-- Add a `connectedIdentitiesService` for querying, connecting, disconnecting,
+- [x] Keep `authService` as the Zoo auth capability.
+- [x] Add a `connectedIdentitiesService` for querying, connecting, disconnecting,
   and refreshing identities.
-- Add a value spec for providers to contribute identity providers and connection
+- [x] Add a value spec for providers to contribute identity providers and connection
   flows.
-- Publish the current Zoo auth session as a built-in `ConnectedIdentity`.
-- Let the ATProto extension contribute OAuth connect/disconnect flows and
+- [x] Publish the current Zoo auth session as a built-in `ConnectedIdentity`.
+- [ ] Let the ATProto extension contribute OAuth connect/disconnect flows and
   identity state.
-- Surface identity management in Settings as "Connected accounts".
+- [ ] Surface identity management in Settings as "Connected accounts".
 
 ### ATProto Project Library Type
 
-Add an `atproto` project library type once the adapter and identity layer exist:
+The minimal `atproto` project library type is registered. It intentionally has
+no project operations yet because live identity/client wiring is still missing.
 
 - Library settings bind to a connected ATProto identity and optional repo DID.
 - Remote projects materialize through the same archive flow as cloud-backed
@@ -266,44 +289,53 @@ Add an `atproto` project library type once the adapter and identity layer exist:
 - Local project metadata stores an adapter remote ID and revision. For V1, the
   remote ID is the project AT URI.
 
+Current status:
+
+- [x] Register `type: "atproto"` through the project library registry.
+- [x] Provide a default `atproto://franknoirot.co` library setting template.
+- [x] Keep operations unavailable until live identity-backed adapter wiring
+  exists.
+- [ ] Add `readRealizations`, create/open/materialize, update, rename, and
+  delete operations.
+
 ## Tests And Acceptance Criteria
 
 ### Lexicon
 
-- New or changed `nyc.noirot.cad.*` schemas validate with the lexicon CLI.
-- Existing `nyc.noirot.cad.*` records remain valid after optional-field
+- [x] New or changed `nyc.noirot.cad.*` schemas validate with the lexicon CLI.
+- [x] Existing `nyc.noirot.cad.*` records remain valid after optional-field
   additions.
-- A project record without `headArchive` validates but is ignored by ZDS sync
+- [x] A project record without `headArchive` validates but is ignored by ZDS sync
   listings.
 
 ### Adapter Fixtures
 
-- A fixture converts `ProjectUploadBody + ProjectArchiveFile[]` into
+- [x] A fixture converts `ProjectUploadBody + ProjectArchiveFile[]` into
   `project + archive` records and back to `RemoteProjectSummary`,
   `ProjectUploadBody`, and `ProjectArchiveFile[]`.
-- Manifest conversion round-trips between the ATProto manifest entry array and
+- [x] Manifest conversion round-trips between the ATProto manifest entry array and
   `ProjectManifest.files`.
-- Downloading a project through `headArchive` returns the same archive bytes
+- [x] Downloading a project through `headArchive` returns the same archive bytes
   that were uploaded.
 
 ### Concurrency And Failure Modes
 
-- Guarded update succeeds when `expected_revision` matches the project record
+- [x] Guarded update succeeds when `expected_revision` matches the project record
   CID.
-- Guarded update fails when `expected_revision` is stale.
-- Missing archive record produces a recoverable sync failure, not local data
+- [x] Guarded update fails when `expected_revision` is stale.
+- [ ] Missing archive record produces a recoverable sync failure, not local data
   loss.
-- Missing archive blob produces a recoverable sync failure, not local data loss.
-- Forbidden write maps to the existing remote-upload-forbidden failure kind or a
+- [ ] Missing archive blob produces a recoverable sync failure, not local data loss.
+- [ ] Forbidden write maps to the existing remote-upload-forbidden failure kind or a
   provider-neutral equivalent.
 
 ### Identity And Library
 
-- Zoo auth appears as a `ConnectedIdentity` without changing current Zoo auth
+- [x] Zoo auth appears as a `ConnectedIdentity` without changing current Zoo auth
   consumers.
-- ATProto OAuth success contributes an ATProto `ConnectedIdentity`.
-- Settings shows Zoo and ATProto connected accounts in one management surface.
-- The ATProto library type lists only sync-capable remote projects and
+- [ ] ATProto OAuth success contributes an ATProto `ConnectedIdentity`.
+- [ ] Settings shows Zoo and ATProto connected accounts in one management surface.
+- [ ] The ATProto library type lists only sync-capable remote projects and
   materializes a selected archive into a valid local ZDS project.
 
 ## Open Follow-Ups
