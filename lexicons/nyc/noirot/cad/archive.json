@@ -1,0 +1,66 @@
+{
+  "lexicon": 1,
+  "id": "nyc.noirot.cad.archive",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "description": "Immutable whole-project ZDS archive snapshot.",
+      "record": {
+        "type": "object",
+        "required": [
+          "project",
+          "archiveBlob",
+          "archiveSha256",
+          "archiveByteSize",
+          "entrypointPath",
+          "projectTomlPath",
+          "createdAt"
+        ],
+        "properties": {
+          "project": {
+            "type": "ref",
+            "ref": "nyc.noirot.cad.defs#strongRef"
+          },
+          "archiveBlob": {
+            "type": "blob",
+            "accept": ["application/zip", "application/octet-stream"]
+          },
+          "archiveSha256": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "archiveByteSize": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entrypointPath": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "projectTomlPath": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "manifest": {
+            "type": "ref",
+            "ref": "nyc.noirot.cad.defs#archiveManifest"
+          },
+          "zdsSchemaVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 256
+          }
+        }
+      }
+    }
+  }
+}

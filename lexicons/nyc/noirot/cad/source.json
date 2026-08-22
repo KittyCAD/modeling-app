@@ -1,0 +1,128 @@
+{
+  "defs": {
+    "main": {
+      "description": "Source file content or content references for a CAD project or release.",
+      "key": "any",
+      "record": {
+        "properties": {
+          "cid": {
+            "description": "CID for this source file, if content-addressed.",
+            "format": "cid",
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "externalUri": {
+            "description": "External content URL, such as a Zoo project file or archive download URL.",
+            "format": "uri",
+            "type": "string"
+          },
+          "format": {
+            "description": "CAD source or artifact format.",
+            "knownValues": [
+              "kcl",
+              "solidworks-part",
+              "solidworks-assembly",
+              "step",
+              "stl",
+              "parasolid",
+              "obj",
+              "gltf",
+              "archive",
+              "unknown"
+            ],
+            "maxLength": 128,
+            "type": "string"
+          },
+          "lineCount": {
+            "description": "Line count for text-native source files.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mimeType": {
+            "maxLength": 256,
+            "type": "string"
+          },
+          "path": {
+            "description": "Path within the project archive or source tree.",
+            "maxLength": 2048,
+            "type": "string"
+          },
+          "role": {
+            "description": "Role this source file plays in the project.",
+            "knownValues": [
+              "entrypoint",
+              "source",
+              "import",
+              "asset",
+              "library",
+              "derived"
+            ],
+            "maxLength": 64,
+            "type": "string"
+          },
+          "sha256": {
+            "description": "Lowercase hex SHA-256 digest of the source file bytes.",
+            "maxLength": 64,
+            "minLength": 64,
+            "type": "string"
+          },
+          "sizeBytes": {
+            "description": "Size of this source file in bytes.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "sourceBlob": {
+            "accept": [
+              "text/*",
+              "model/*",
+              "application/octet-stream",
+              "application/zip",
+              "application/json",
+              "application/toml",
+              "application/yaml"
+            ],
+            "description": "Blob reference for source bytes, especially large text files and binary CAD artifacts.",
+            "maxSize": 10000000,
+            "type": "blob"
+          },
+          "sourceText": {
+            "description": "Inline UTF-8 source text for compact text-native CAD files such as KCL.",
+            "maxLength": 200000,
+            "type": "string"
+          },
+          "subject": {
+            "description": "Project or release record this source file belongs to.",
+            "ref": "nyc.noirot.cad.defs#projectRef",
+            "type": "ref"
+          },
+          "textEncoding": {
+            "description": "Text encoding for sourceText, when present.",
+            "knownValues": [
+              "utf-8"
+            ],
+            "maxLength": 64,
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "datetime",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "path",
+          "sha256",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "description": "A sidecar record for one CAD source file or artifact.",
+  "id": "nyc.noirot.cad.source",
+  "lexicon": 1
+}

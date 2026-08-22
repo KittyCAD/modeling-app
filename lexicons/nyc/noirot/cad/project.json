@@ -1,0 +1,94 @@
+{
+  "defs": {
+    "main": {
+      "description": "Metadata for a CAD project, optionally mirrored from Zoo.",
+      "key": "tid",
+      "record": {
+        "properties": {
+          "headArchive": {
+            "type": "ref",
+            "ref": "nyc.noirot.cad.defs#strongRef",
+            "description": "Current whole-project ZDS archive snapshot."
+          },
+          "categoryIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "maxLength": 64,
+            "description": "Zoo project category IDs for ProjectUploadBody interop."
+          },
+          "syncUpdatedAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "createdAt": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "description": {
+            "maxGraphemes": 2000,
+            "maxLength": 20000,
+            "type": "string"
+          },
+          "license": {
+            "ref": "nyc.noirot.cad.defs#license",
+            "type": "ref"
+          },
+          "manifest": {
+            "ref": "nyc.noirot.cad.defs#fileManifest",
+            "type": "ref"
+          },
+          "moderation": {
+            "ref": "nyc.noirot.cad.defs#moderationContext",
+            "type": "ref"
+          },
+          "projectUrl": {
+            "description": "Canonical web URL for the project, if any.",
+            "format": "uri",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "ref": "nyc.noirot.cad.defs#tag",
+              "type": "ref"
+            },
+            "maxLength": 32,
+            "type": "array"
+          },
+          "thumbnail": {
+            "accept": [
+              "image/*"
+            ],
+            "description": "Thumbnail image for the project.",
+            "maxSize": 1000000,
+            "type": "blob"
+          },
+          "title": {
+            "maxGraphemes": 120,
+            "maxLength": 1200,
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "zooProject": {
+            "ref": "nyc.noirot.cad.defs#zooProjectRef",
+            "type": "ref"
+          }
+        },
+        "required": [
+          "title",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "description": "A mutable CAD project metadata record.",
+  "id": "nyc.noirot.cad.project",
+  "lexicon": 1
+}

@@ -1,0 +1,58 @@
+{
+  "defs": {
+    "main": {
+      "description": "Versioned release metadata for a CAD project.",
+      "key": "tid",
+      "record": {
+        "properties": {
+          "createdAt": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "license": {
+            "ref": "nyc.noirot.cad.defs#license",
+            "type": "ref"
+          },
+          "manifest": {
+            "ref": "nyc.noirot.cad.defs#fileManifest",
+            "type": "ref"
+          },
+          "project": {
+            "ref": "nyc.noirot.cad.defs#projectRef",
+            "type": "ref"
+          },
+          "releaseNotes": {
+            "maxGraphemes": 2000,
+            "maxLength": 20000,
+            "type": "string"
+          },
+          "title": {
+            "maxGraphemes": 120,
+            "maxLength": 1200,
+            "type": "string"
+          },
+          "version": {
+            "description": "Project-defined release version.",
+            "maxLength": 128,
+            "type": "string"
+          },
+          "zooProject": {
+            "ref": "nyc.noirot.cad.defs#zooProjectRef",
+            "type": "ref"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "manifest",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "description": "A published version of a CAD project.",
+  "id": "nyc.noirot.cad.release",
+  "lexicon": 1
+}

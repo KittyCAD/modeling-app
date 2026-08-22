@@ -188,9 +188,11 @@ Completed on 2026-08-22 using `goat lex`:
 - [x] Validate and publish schemas as `com.atproto.lexicon.schema` records from
   the `@franknoirot.co` DID.
 - [x] Keep DNS authority at `_lexicon.cad.noirot.nyc`.
+- [x] Commit the local schema catalog under `lexicons/nyc/noirot/cad/`.
 
-The local schema JSON files produced by `goat lex` are not part of this branch
-unless intentionally committed later.
+The committed schema JSON files are the local catalog ZDS adapter fixtures
+should validate against. The accidental nested `lexicons/lexicons/...` pull
+output was removed before staging.
 
 ### Next Work Order
 
@@ -306,8 +308,6 @@ Add an `atproto` project library type once the adapter and identity layer exist:
 
 ## Open Follow-Ups
 
-- Decide whether the local schema JSON files created by `goat lex` should be
-  committed to this repository or managed in a separate lexicon package.
 - Decide whether the project record should be deleted or tombstoned when ZDS
   deletes a remote project. The adapter must hide deleted/tombstoned projects
   either way.

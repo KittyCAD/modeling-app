@@ -1,0 +1,26 @@
+{
+  "lexicon": 1,
+  "id": "nyc.noirot.cad.authSync",
+  "defs": {
+    "main": {
+      "type": "permission-set",
+      "title": "ZDS CAD sync",
+      "detail": "Create, update, and delete CAD project sync records.",
+      "permissions": [
+        {
+          "type": "permission",
+          "resource": "repo",
+          "collection": [
+            "nyc.noirot.cad.project",
+            "nyc.noirot.cad.archive",
+            "nyc.noirot.cad.source",
+            "nyc.noirot.cad.release",
+            "nyc.noirot.cad.declaration",
+            "nyc.noirot.cad.analysis"
+          ],
+          "action": ["create", "update", "delete"]
+        }
+      ]
+    }
+  }
+}

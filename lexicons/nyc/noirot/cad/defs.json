@@ -1,0 +1,383 @@
+{
+  "defs": {
+    "strongRef": {
+      "type": "object",
+      "required": ["uri", "cid"],
+      "properties": {
+        "uri": { "type": "string", "format": "at-uri" },
+        "cid": { "type": "string", "format": "cid" }
+      }
+    },
+    "archiveManifestEntry": {
+      "type": "object",
+      "required": ["path", "byteSize", "sha256"],
+      "properties": {
+        "path": { "type": "string", "maxLength": 2048 },
+        "byteSize": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "minLength": 64, "maxLength": 64 }
+      }
+    },
+    "archiveManifest": {
+      "type": "object",
+      "required": ["files"],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "ref",
+            "ref": "#archiveManifestEntry"
+          },
+          "maxLength": 4096
+        }
+      }
+    },
+  "analysisFinding": {
+      "description": "A derived analysis finding that is not itself a moderation label.",
+      "properties": {
+        "kind": {
+          "knownValues": [
+            "geometry",
+            "archive",
+            "metadata",
+            "render",
+            "security"
+          ],
+          "maxLength": 64,
+          "type": "string"
+        },
+        "name": {
+          "maxGraphemes": 128,
+          "maxLength": 1024,
+          "type": "string"
+        },
+        "severity": {
+          "knownValues": [
+            "info",
+            "warning",
+            "error"
+          ],
+          "maxLength": 64,
+          "type": "string"
+        },
+        "summary": {
+          "maxGraphemes": 512,
+          "maxLength": 4096,
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "name"
+      ],
+      "type": "object"
+    },
+    "boundingBox": {
+      "description": "Axis-aligned bounding box dimensions for a CAD model.",
+      "properties": {
+        "xLength": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "yLength": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "zLength": {
+          "ref": "#quantity",
+          "type": "ref"
+        }
+      },
+      "type": "object"
+    },
+    "fileManifest": {
+      "description": "Manifest of files associated with a project or release.",
+      "properties": {
+        "archiveCid": {
+          "description": "CID of the complete project archive, if available.",
+          "format": "cid",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "ref": "#sourceFile",
+            "type": "ref"
+          },
+          "maxLength": 512,
+          "type": "array"
+        },
+        "generatedAt": {
+          "format": "datetime",
+          "type": "string"
+        },
+        "rootSha256": {
+          "description": "Lowercase hex SHA-256 digest representing the normalized manifest.",
+          "maxLength": 64,
+          "minLength": 64,
+          "type": "string"
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "type": "object"
+    },
+    "geometryMetrics": {
+      "description": "Derived geometry and physical metrics for a CAD model.",
+      "properties": {
+        "boundingBox": {
+          "ref": "#boundingBox",
+          "type": "ref"
+        },
+        "centerOfMass": {
+          "ref": "#point3d",
+          "type": "ref"
+        },
+        "density": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "mass": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "surfaceArea": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "volume": {
+          "ref": "#quantity",
+          "type": "ref"
+        }
+      },
+      "type": "object"
+    },
+    "license": {
+      "description": "License metadata for project files.",
+      "properties": {
+        "name": {
+          "maxGraphemes": 128,
+          "maxLength": 1024,
+          "type": "string"
+        },
+        "spdxId": {
+          "description": "SPDX license identifier, when applicable.",
+          "maxLength": 128,
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "moderationContext": {
+      "description": "Author-supplied moderation hints. Labeler decisions should still be published as labels.",
+      "properties": {
+        "selfLabels": {
+          "items": {
+            "knownValues": [
+              "weapon",
+              "regulated-part",
+              "unsafe-manufacture",
+              "ip-risk",
+              "malware-archive",
+              "spam",
+              "needs-review"
+            ],
+            "maxLength": 128,
+            "type": "string"
+          },
+          "maxLength": 16,
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "point3d": {
+      "description": "A point in three-dimensional model space.",
+      "properties": {
+        "x": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "y": {
+          "ref": "#quantity",
+          "type": "ref"
+        },
+        "z": {
+          "ref": "#quantity",
+          "type": "ref"
+        }
+      },
+      "type": "object"
+    },
+    "projectRef": {
+      "description": "A versioned reference to a CAD project or release record.",
+      "properties": {
+        "cid": {
+          "description": "CID of the referenced project or release record version.",
+          "format": "cid",
+          "type": "string"
+        },
+        "uri": {
+          "description": "AT URI of the referenced project or release record.",
+          "format": "at-uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "cid"
+      ],
+      "type": "object"
+    },
+    "quantity": {
+      "description": "Decimal quantity encoded as a string because atproto records do not use floating point numbers.",
+      "properties": {
+        "unit": {
+          "knownValues": [
+            "g",
+            "kg",
+            "mm",
+            "cm",
+            "m",
+            "mm2",
+            "cm2",
+            "m2",
+            "mm3",
+            "cm3",
+            "m3"
+          ],
+          "maxLength": 32,
+          "type": "string"
+        },
+        "value": {
+          "description": "Decimal value without the unit.",
+          "maxLength": 64,
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit"
+      ],
+      "type": "object"
+    },
+    "sourceFile": {
+      "description": "One file or artifact associated with a CAD project.",
+      "properties": {
+        "cid": {
+          "description": "CID for this file, if content-addressed.",
+          "format": "cid",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "Source creation time, if known.",
+          "format": "datetime",
+          "type": "string"
+        },
+        "mimeType": {
+          "maxLength": 256,
+          "type": "string"
+        },
+        "name": {
+          "description": "Display filename, if different from the path basename.",
+          "maxGraphemes": 256,
+          "maxLength": 2048,
+          "type": "string"
+        },
+        "path": {
+          "description": "Path within a project archive or source tree.",
+          "maxLength": 2048,
+          "type": "string"
+        },
+        "role": {
+          "description": "Role this file plays in the CAD project.",
+          "knownValues": [
+            "source",
+            "archive",
+            "thumbnail",
+            "preview",
+            "derived",
+            "metadata"
+          ],
+          "maxLength": 64,
+          "type": "string"
+        },
+        "sha256": {
+          "description": "Lowercase hex SHA-256 digest of the file bytes.",
+          "maxLength": 64,
+          "minLength": 64,
+          "type": "string"
+        },
+        "sizeBytes": {
+          "description": "Size of this file in bytes.",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "tag": {
+      "description": "A short user-supplied project tag.",
+      "properties": {
+        "value": {
+          "maxGraphemes": 32,
+          "maxLength": 320,
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "type": "object"
+    },
+    "zooProjectRef": {
+      "description": "Reference to a project managed by the Zoo API.",
+      "properties": {
+        "id": {
+          "description": "Zoo project identifier.",
+          "maxLength": 256,
+          "type": "string"
+        },
+        "publicUrl": {
+          "description": "Public Zoo URL for the project, when available.",
+          "format": "uri",
+          "type": "string"
+        },
+        "shareUrl": {
+          "description": "Share-link URL for the project, when available.",
+          "format": "uri",
+          "type": "string"
+        },
+        "thumbnailUrl": {
+          "description": "Zoo-hosted thumbnail URL, when available.",
+          "format": "uri",
+          "type": "string"
+        },
+        "visibility": {
+          "description": "Zoo visibility or publication state when mirrored.",
+          "knownValues": [
+            "private",
+            "draft",
+            "published",
+            "unlisted"
+          ],
+          "maxLength": 64,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Shared definitions for CAD project records in the noirot.nyc prototype namespace.",
+  "id": "nyc.noirot.cad.defs",
+  "lexicon": 1
+}

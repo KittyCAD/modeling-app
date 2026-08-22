@@ -1,0 +1,39 @@
+{
+  "defs": {
+    "main": {
+      "description": "A fixed-key participation signal for accounts using the CAD prototype.",
+      "key": "literal:self",
+      "record": {
+        "properties": {
+          "createdAt": {
+            "format": "datetime",
+            "type": "string"
+          },
+          "description": {
+            "maxGraphemes": 512,
+            "maxLength": 4096,
+            "type": "string"
+          },
+          "displayName": {
+            "maxGraphemes": 64,
+            "maxLength": 640,
+            "type": "string"
+          },
+          "serviceEndpoint": {
+            "description": "Preferred app or AppView endpoint for this account's CAD records.",
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "description": "Declares that an account participates in the noirot.nyc CAD prototype.",
+  "id": "nyc.noirot.cad.declaration",
+  "lexicon": 1
+}
