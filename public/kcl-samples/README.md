@@ -78,6 +78,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![counterdrilled-weldment](screenshots/counterdrilled-weldment.png)](counterdrilled-weldment/main.kcl)
 #### [countersunk-plate](countersunk-plate/main.kcl) ([screenshot](screenshots/countersunk-plate.png))
 [![countersunk-plate](screenshots/countersunk-plate.png)](countersunk-plate/main.kcl)
+#### [cpu-cooler](cpu-cooler/main.kcl) ([screenshot](screenshots/cpu-cooler.png))
+[![cpu-cooler](screenshots/cpu-cooler.png)](cpu-cooler/main.kcl)
 #### [crash-box](crash-box/main.kcl) ([screenshot](screenshots/crash-box.png))
 [![crash-box](screenshots/crash-box.png)](crash-box/main.kcl)
 #### [curtain-wall-anchor-plate](curtain-wall-anchor-plate/main.kcl) ([screenshot](screenshots/curtain-wall-anchor-plate.png))
