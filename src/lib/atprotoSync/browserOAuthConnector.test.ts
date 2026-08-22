@@ -401,7 +401,10 @@ describe('ATProto browser OAuth connector', () => {
       revoke: vi.fn(),
       signInPopup: vi.fn().mockResolvedValue(session),
     }
-    const connector = createAtprotoBrowserOAuthConnector({ client })
+    const connector = createAtprotoBrowserOAuthConnector({
+      client,
+      archiveRetentionLimit: 7,
+    })
     const identity = await connector.connect({
       input: 'franknoirot.co',
       scopes: ['atproto'],
@@ -409,6 +412,7 @@ describe('ATProto browser OAuth connector', () => {
 
     const config = await connector.createProjectApiConfig?.(identity)
 
+    expect(config?.archiveRetentionLimit).toBe(7)
     await expect(
       config?.client.getRecord({
         repo: 'did:plc:frank',

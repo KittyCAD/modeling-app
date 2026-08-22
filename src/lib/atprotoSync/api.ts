@@ -52,6 +52,8 @@ export class AtprotoSyncStaleRevisionError extends AtprotoSyncApiError {
   }
 }
 
+export const DEFAULT_ATPROTO_ARCHIVE_RETENTION_LIMIT = 20
+
 export type AtprotoParsedUri = {
   repo: string
   collection: string
@@ -106,6 +108,11 @@ export type AtprotoProjectApiConfig = {
   now?: () => string
   createRecordKey?: () => string
   source?: string
+  /**
+   * Maximum number of archive snapshot records to keep per project. The current
+   * head archive counts toward the limit. Defaults to 20.
+   */
+  archiveRetentionLimit?: number
 }
 
 let generatedRecordKeyCounter = 0
@@ -225,6 +232,10 @@ export async function createAtprotoRemoteProject(
     record: finalProjectRecord,
     swapRecord: initialProject.cid,
   })
+  await pruneAtprotoProjectArchives(config, {
+    projectUri: finalProject.uri,
+    headArchive: archiveRef,
+  }).catch(() => undefined)
 
   return remoteProjectFromRecord({
     uri: finalProject.uri,
@@ -304,6 +315,10 @@ export async function updateAtprotoRemoteProject({
     record: finalProjectRecord,
     swapRecord: revision,
   })
+  await pruneAtprotoProjectArchives(config, {
+    projectUri: currentProject.uri,
+    headArchive: recordRef(archive),
+  }).catch(() => undefined)
 
   return remoteProjectFromRecord({
     uri: finalProject.uri,
@@ -369,6 +384,75 @@ function remoteProjectFromRecord(
     )
   }
   return remoteProject
+}
+
+function archiveRetentionLimit(config: AtprotoProjectApiConfig) {
+  const configured = config.archiveRetentionLimit
+  if (
+    typeof configured === 'number' &&
+    Number.isFinite(configured) &&
+    configured > 0
+  ) {
+    return Math.floor(configured)
+  }
+
+  return DEFAULT_ATPROTO_ARCHIVE_RETENTION_LIMIT
+}
+
+function archiveCreatedAtMs(
+  record: AtprotoRepoRecord<AtprotoCadArchiveRecord>
+) {
+  const createdAtMs = Date.parse(record.value.createdAt)
+  return Number.isFinite(createdAtMs) ? createdAtMs : 0
+}
+
+function archiveSortKey(record: AtprotoRepoRecord<AtprotoCadArchiveRecord>) {
+  return `${archiveCreatedAtMs(record).toString().padStart(16, '0')}:${record.uri}`
+}
+
+function isProjectArchiveRecord(
+  record: AtprotoRepoRecord<AtprotoCadArchiveRecord>,
+  projectUri: string
+) {
+  return record.value.project.uri === projectUri
+}
+
+async function pruneAtprotoProjectArchives(
+  config: AtprotoProjectApiConfig,
+  {
+    projectUri,
+    headArchive,
+  }: {
+    projectUri: string
+    headArchive: AtprotoStrongRef
+  }
+) {
+  const limit = archiveRetentionLimit(config)
+  const archiveRecords = (
+    await config.client.listRecords<AtprotoCadArchiveRecord>({
+      repo: config.repo,
+      collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
+    })
+  )
+    .filter((record) => isProjectArchiveRecord(record, projectUri))
+    .toSorted((left, right) =>
+      archiveSortKey(right).localeCompare(archiveSortKey(left))
+    )
+
+  const retainedUris = new Set<string>([headArchive.uri])
+  for (const record of archiveRecords) {
+    if (retainedUris.size >= limit) {
+      break
+    }
+    retainedUris.add(record.uri)
+  }
+
+  for (const record of archiveRecords) {
+    if (retainedUris.has(record.uri)) {
+      continue
+    }
+    await config.client.deleteRecord(parseAtprotoUri(record.uri))
+  }
 }
 
 function hasHumanProjectTitle(project: RemoteProjectSummary) {

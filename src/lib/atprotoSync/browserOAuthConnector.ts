@@ -49,6 +49,7 @@ export type AtprotoBrowserOAuthConnectorOptions = {
   plcDirectoryUrl?: BrowserOAuthClientOptions['plcDirectoryUrl']
   fetch?: BrowserOAuthClientOptions['fetch']
   defaultInput?: string | (() => string | undefined)
+  archiveRetentionLimit?: number
   now?: () => Date
 }
 
@@ -230,6 +231,7 @@ export function createAtprotoBrowserOAuthConnector({
   plcDirectoryUrl,
   fetch,
   defaultInput,
+  archiveRetentionLimit,
   now = () => new Date(),
 }: AtprotoBrowserOAuthConnectorOptions = {}): AtprotoOAuthConnector {
   let clientPromise: Promise<BrowserOAuthClientLike> | undefined
@@ -366,6 +368,7 @@ export function createAtprotoBrowserOAuthConnector({
           fetch: sessionFetchHandler(session),
         }),
         source: 'zds-atproto-sync',
+        archiveRetentionLimit,
       }
     },
     connect: async (options: AtprotoOAuthConnectOptions) => {

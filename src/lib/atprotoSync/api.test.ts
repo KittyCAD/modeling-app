@@ -400,6 +400,82 @@ describe('ATProto project API adapter', () => {
     })
   })
 
+  test('prunes old archive snapshots after successful head updates', async () => {
+    const client = new FakeAtprotoClient(['new-archive-cid', 'new-project-cid'])
+    const project = client.seed(
+      ATPROTO_CAD_PROJECT_COLLECTION,
+      'project-rkey',
+      'project-current-cid',
+      projectRecord({
+        headArchive: {
+          uri: uri(ATPROTO_CAD_ARCHIVE_COLLECTION, 'old-4'),
+          cid: 'old-4-cid',
+        },
+      })
+    )
+    for (let index = 0; index < 5; index += 1) {
+      client.seed(
+        ATPROTO_CAD_ARCHIVE_COLLECTION,
+        `old-${index}`,
+        `old-${index}-cid`,
+        {
+          ...archiveRecord(project, {
+            ref: { $link: `old-blob-${index}` },
+            mimeType: 'application/zip',
+          }),
+          createdAt: `2026-08-22T12:00:0${index}.000Z`,
+        }
+      )
+    }
+
+    await updateAtprotoRemoteProject({
+      config: {
+        repo,
+        client,
+        now: () => '2026-08-22T12:00:10.000Z',
+        createRecordKey: () => 'new-archive',
+        archiveRetentionLimit: 3,
+      },
+      projectPath: '/projects/bracket',
+      project: {
+        id: project.uri,
+        title: 'Bracket',
+        description: 'Existing description',
+        category_ids: ['existing-category'],
+        revision: project.cid,
+      },
+      files: [projectFile('main.kcl', 'line([0, 0], [2, 2])')],
+      expectedRevision: project.cid,
+    })
+
+    const archives = await client.listRecords<AtprotoCadArchiveRecord>({
+      repo,
+      collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
+    })
+    expect(archives.map((record) => parseAtprotoUri(record.uri).rkey)).toEqual([
+      'old-3',
+      'old-4',
+      'new-archive',
+    ])
+    expect(client.deleteRecordCalls).toEqual([
+      {
+        repo,
+        collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
+        rkey: 'old-2',
+      },
+      {
+        repo,
+        collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
+        rkey: 'old-1',
+      },
+      {
+        repo,
+        collection: ATPROTO_CAD_ARCHIVE_COLLECTION,
+        rkey: 'old-0',
+      },
+    ])
+  })
+
   test('rejects stale expected revisions before uploading a new archive blob', async () => {
     const client = new FakeAtprotoClient()
     const project = client.seed(
