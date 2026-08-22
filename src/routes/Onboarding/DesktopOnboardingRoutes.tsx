@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
 import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
@@ -13,6 +14,7 @@ import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   OnboardingButtons,
   OnboardingCard,
@@ -56,8 +58,10 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
 }
 
 function useOnboardingProjectIO() {
-  const { project, systemIOActor } = useApp()
-  return { projectName: project?.name, systemIOActor }
+  useSignals()
+  const { registry, systemIOActor } = useApp()
+  const currentProjectName = registry.get(projectSession).project.value?.name
+  return { projectName: currentProjectName, systemIOActor }
 }
 
 function Welcome() {

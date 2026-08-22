@@ -14,6 +14,7 @@ import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 
 const apps: App[] = []
@@ -35,6 +36,14 @@ afterEach(async () => {
     app.dispose()
   }
 })
+
+function getOpenedProject(app: App) {
+  const project = app.registry.get(projectSession).getProject()
+  if (!project) {
+    throw new Error('Expected an opened project')
+  }
+  return project
+}
 
 describe('Zookeeper project history integration', () => {
   it('cycles multiple manual edits without changing sibling files', async () => {
@@ -884,7 +893,7 @@ describe('Zookeeper project history integration', () => {
       onCurrentFileDelete: async () => switchToFile(mainPath),
       onActiveFileRestore: switchToFile,
       onProjectFilesReplay: async (replayFiles) => {
-        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+        await getOpenedProject(harness.app).syncReplayedFilesToRust(replayFiles)
       },
     })
 
@@ -1010,14 +1019,14 @@ describe('Zookeeper project history integration', () => {
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
       onActiveFileRestore: async (path, contents) => {
-        await harness.app.project?.openEditor(
+        await getOpenedProject(harness.app).openEditor(
           path,
           harness.kclManager,
           contents
         )
       },
       onProjectFilesReplay: async (replayFiles) => {
-        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+        await getOpenedProject(harness.app).syncReplayedFilesToRust(replayFiles)
       },
     })
     const executeCode = vi
@@ -1034,11 +1043,8 @@ describe('Zookeeper project history integration', () => {
     })
 
     await fsZds.rm(partPath)
-    if (harness.app.project) {
-      harness.app.project.files = harness.app.project.files.filter(
-        (file) => file.path !== partPath
-      )
-    }
+    const project = getOpenedProject(harness.app)
+    project.files = project.files.filter((file) => file.path !== partPath)
     harness.kclManager.addGlobalHistoryEvent(
       zookeeperEditPatchHistoryEvent({
         projectPath: harness.projectPath,
@@ -1146,17 +1152,20 @@ describe('Zookeeper project history integration', () => {
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => {
-        await harness.app.project?.openEditor(mainPath, harness.kclManager)
+        await getOpenedProject(harness.app).openEditor(
+          mainPath,
+          harness.kclManager
+        )
       },
       onActiveFileRestore: async (path, contents) => {
-        await harness.app.project?.openEditor(
+        await getOpenedProject(harness.app).openEditor(
           path,
           harness.kclManager,
           contents
         )
       },
       onProjectFilesReplay: async (replayFiles) => {
-        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+        await getOpenedProject(harness.app).syncReplayedFilesToRust(replayFiles)
       },
     })
     const streamedPatches: ZookeeperEditPatch[] = [
@@ -1233,14 +1242,14 @@ describe('Zookeeper project history integration', () => {
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
       onActiveFileRestore: async (path, contents) => {
-        await harness.app.project?.openEditor(
+        await getOpenedProject(harness.app).openEditor(
           path,
           harness.kclManager,
           contents
         )
       },
       onProjectFilesReplay: async (replayFiles) => {
-        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+        await getOpenedProject(harness.app).syncReplayedFilesToRust(replayFiles)
       },
     })
     const mergedPatch = mergeZookeeperEditPatches(
@@ -1294,28 +1303,27 @@ describe('Zookeeper project history integration', () => {
     })
     const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
     const smallBoxPath = fsZds.join(harness.projectPath, 'smallBox.kcl')
-    const mainFile = harness.app.project?.files.find(
-      (file) => file.path === mainPath
-    )
-    const smallBoxFile = harness.app.project?.files.find(
+    const project = getOpenedProject(harness.app)
+    const mainFile = project.files.find((file) => file.path === mainPath)
+    const smallBoxFile = project.files.find(
       (file) => file.path === smallBoxPath
     )
     expect(mainFile).toBeDefined()
     expect(smallBoxFile).toBeDefined()
     const mainFileId = mainFile?.id
-    await harness.app.project?.openEditor(smallBoxPath, harness.kclManager)
+    await project.openEditor(smallBoxPath, harness.kclManager)
     const disposeHistory = buildZookeeperHistoryExtension({
       kclManager: harness.kclManager,
       onCurrentFileDelete: async () => undefined,
       onActiveFileRestore: async (path, contents) => {
-        await harness.app.project?.openEditor(
+        await getOpenedProject(harness.app).openEditor(
           path,
           harness.kclManager,
           contents
         )
       },
       onProjectFilesReplay: async (replayFiles) => {
-        await harness.app.project?.syncReplayedFilesToRust(replayFiles)
+        await getOpenedProject(harness.app).syncReplayedFilesToRust(replayFiles)
       },
     })
 

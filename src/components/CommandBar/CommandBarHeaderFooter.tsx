@@ -16,6 +16,7 @@ import type {
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { roundOffWithUnits } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 function CommandBarHeaderFooter({
   children,
@@ -27,7 +28,9 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
-  const { commands, project } = useApp()
+  const app = useApp()
+  const { commands } = app
+  const project = app.registry.get(projectSession).project.value
   const commandBarState = commands.useState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
