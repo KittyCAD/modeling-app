@@ -122,7 +122,10 @@ class FakeAtprotoClient implements AtprotoCadSyncClient {
       value: input.record,
     }
     this.records.set(recordUri, record)
-    return record
+    return {
+      uri: record.uri,
+      cid: record.cid,
+    }
   }
 
   async deleteRecord(input: AtprotoRecordDeleteInput) {
@@ -288,6 +291,53 @@ describe('ATProto project API adapter', () => {
       'main.kcl',
       'project.toml',
     ])
+  })
+
+  test('hydrates missing project record titles from archive project.toml', async () => {
+    const client = new FakeAtprotoClient([
+      'project-initial-cid',
+      'archive-cid',
+      'project-final-cid',
+    ])
+    const recordKeys = ['project-rkey', 'archive-rkey']
+
+    const created = await createAtprotoRemoteProject(
+      {
+        repo,
+        client,
+        now: () => now,
+        createRecordKey: () => recordKeys.shift() ?? 'missing-rkey',
+      },
+      '/projects/bracket',
+      [
+        projectFile('main.kcl', 'line([0, 0], [1, 1])'),
+        projectFile('project.toml', 'title = "Semantic Bracket"\n'),
+      ]
+    )
+    const parsed = parseAtprotoUri(created.id)
+    const project = await client.getRecord<AtprotoCadProjectRecord>(parsed)
+    client.records.set(project.uri, {
+      ...project,
+      value: {
+        ...project.value,
+        title: '',
+      },
+    })
+
+    await expect(
+      listAtprotoRemoteProjects({ repo, client })
+    ).resolves.toMatchObject([
+      {
+        id: created.id,
+        title: 'Semantic Bracket',
+      },
+    ])
+    await expect(
+      getAtprotoRemoteProject({ repo, client }, created.id)
+    ).resolves.toMatchObject({
+      id: created.id,
+      title: 'Semantic Bracket',
+    })
   })
 
   test('updates projects with expected_revision as the project record CID', async () => {

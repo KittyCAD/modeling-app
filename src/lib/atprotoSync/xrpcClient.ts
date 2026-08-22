@@ -9,6 +9,7 @@ import {
 import type {
   AtprotoBlobRef,
   AtprotoRepoRecord,
+  AtprotoRepoWriteResult,
 } from '@src/lib/atprotoSync/types'
 
 export type AtprotoXrpcClientOptions = {
@@ -100,7 +101,7 @@ export class AtprotoXrpcClient implements AtprotoCadSyncClient {
 
   async putRecord<Value>(input: AtprotoRecordWriteInput<Value>) {
     try {
-      return await this.procedure<AtprotoRepoRecord<Value>>(
+      return await this.procedure<AtprotoRepoWriteResult>(
         'com.atproto.repo.putRecord',
         input
       )

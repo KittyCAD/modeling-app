@@ -26,6 +26,11 @@ export type AtprotoRepoRecord<Value> = {
   value: Value
 }
 
+export type AtprotoRepoWriteResult = {
+  uri: string
+  cid: string
+}
+
 export type AtprotoArchiveManifestEntry = {
   path: string
   byteSize: number

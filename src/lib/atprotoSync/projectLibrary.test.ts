@@ -148,7 +148,10 @@ class FakeAtprotoClient implements AtprotoCadSyncClient {
       value: input.record,
     }
     this.records.set(recordUri, record)
-    return record
+    return {
+      uri: record.uri,
+      cid: record.cid,
+    }
   }
 
   async deleteRecord(input: AtprotoRecordDeleteInput) {

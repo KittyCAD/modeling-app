@@ -1,4 +1,5 @@
 import {
+  parseProjectArchive,
   prepareProjectFilesForCloudUpload,
   projectManifestFromFiles,
   toArrayBuffer,
@@ -14,6 +15,8 @@ import {
   atprotoProjectRecordToRemoteProject,
   projectRecordFromUploadBody,
 } from '@src/lib/atprotoSync/mapping'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import {
   ATPROTO_CAD_ARCHIVE_COLLECTION,
   ATPROTO_CAD_PROJECT_COLLECTION,
@@ -22,6 +25,7 @@ import {
   type AtprotoCadProjectRecord,
   type AtprotoRemoteProject,
   type AtprotoRepoRecord,
+  type AtprotoRepoWriteResult,
   type AtprotoStrongRef,
 } from '@src/lib/atprotoSync/types'
 import JSZip from 'jszip'
@@ -86,7 +90,7 @@ export interface AtprotoCadSyncClient {
   }): Promise<AtprotoRepoRecord<Value>>
   putRecord<Value>(
     input: AtprotoRecordWriteInput<Value>
-  ): Promise<AtprotoRepoRecord<Value>>
+  ): Promise<AtprotoRepoWriteResult>
   deleteRecord(input: AtprotoRecordDeleteInput): Promise<void>
   uploadBlob(input: {
     repo: string
@@ -128,10 +132,15 @@ export async function listAtprotoRemoteProjects(
     collection: ATPROTO_CAD_PROJECT_COLLECTION,
   })
 
-  return records.flatMap((record) => {
+  const remoteProjects = records.flatMap((record) => {
     const remoteProject = atprotoProjectRecordToRemoteProject(record)
     return remoteProject ? [remoteProject] : []
   })
+  return Promise.all(
+    remoteProjects.map((remoteProject) =>
+      withArchiveTitleFallback(config, remoteProject)
+    )
+  )
 }
 
 export async function getAtprotoRemoteProject(
@@ -139,7 +148,7 @@ export async function getAtprotoRemoteProject(
   projectId: string
 ): Promise<RemoteProject> {
   return getAtprotoRemoteProjectRecord(config, projectId).then((record) =>
-    remoteProjectFromRecord(record)
+    withArchiveTitleFallback(config, remoteProjectFromRecord(record))
   )
 }
 
@@ -180,11 +189,15 @@ export async function createAtprotoRemoteProject(
   })
 
   const projectRkey = newRecordKey(config)
+  const initialProjectRecord = projectRecordFromUploadBody(
+    uploadPayload.body,
+    createdAt
+  )
   const initialProject = await config.client.putRecord({
     repo: config.repo,
     collection: ATPROTO_CAD_PROJECT_COLLECTION,
     rkey: projectRkey,
-    record: projectRecordFromUploadBody(uploadPayload.body, createdAt),
+    record: initialProjectRecord,
   })
   const archive = await createArchiveRecord({
     config,
@@ -200,7 +213,7 @@ export async function createAtprotoRemoteProject(
   })
   const archiveRef = recordRef(archive)
   const finalProjectRecord: AtprotoCadProjectRecord = {
-    ...initialProject.value,
+    ...initialProjectRecord,
     headArchive: archiveRef,
     updatedAt: createdAt,
     syncUpdatedAt: createdAt,
@@ -213,7 +226,11 @@ export async function createAtprotoRemoteProject(
     swapRecord: initialProject.cid,
   })
 
-  return remoteProjectFromRecord(finalProject)
+  return remoteProjectFromRecord({
+    uri: finalProject.uri,
+    cid: finalProject.cid,
+    value: finalProjectRecord,
+  })
 }
 
 export async function updateAtprotoRemoteProject({
@@ -271,23 +288,28 @@ export async function updateAtprotoRemoteProject({
     archiveBytes,
     createdAt: updatedAt,
   })
+  const finalProjectRecord: AtprotoCadProjectRecord = {
+    ...currentProject.value,
+    title: uploadPayload.body.title,
+    description: uploadPayload.body.description,
+    categoryIds: uploadPayload.body.category_ids,
+    headArchive: recordRef(archive),
+    updatedAt,
+    syncUpdatedAt: updatedAt,
+  }
   const finalProject = await config.client.putRecord({
     repo: parsedProjectUri.repo,
     collection: parsedProjectUri.collection,
     rkey: parsedProjectUri.rkey,
-    record: {
-      ...currentProject.value,
-      title: uploadPayload.body.title,
-      description: uploadPayload.body.description,
-      categoryIds: uploadPayload.body.category_ids,
-      headArchive: recordRef(archive),
-      updatedAt,
-      syncUpdatedAt: updatedAt,
-    },
+    record: finalProjectRecord,
     swapRecord: revision,
   })
 
-  return remoteProjectFromRecord(finalProject)
+  return remoteProjectFromRecord({
+    uri: finalProject.uri,
+    cid: finalProject.cid,
+    value: finalProjectRecord,
+  })
 }
 
 export async function deleteAtprotoRemoteProject(
@@ -305,7 +327,7 @@ function newRecordKey(config: AtprotoProjectApiConfig) {
   return config.createRecordKey?.() ?? newTidLikeRecordKey()
 }
 
-function recordRef(record: AtprotoRepoRecord<unknown>): AtprotoStrongRef {
+function recordRef(record: AtprotoRepoWriteResult): AtprotoStrongRef {
   return {
     uri: record.uri,
     cid: record.cid,
@@ -347,6 +369,53 @@ function remoteProjectFromRecord(
     )
   }
   return remoteProject
+}
+
+function hasHumanProjectTitle(project: RemoteProjectSummary) {
+  return Boolean(
+    typeof project.title === 'string' &&
+      project.title.trim() &&
+      !project.title.trim().startsWith('at://')
+  )
+}
+
+async function withArchiveTitleFallback(
+  config: AtprotoProjectApiConfig,
+  remoteProject: AtprotoRemoteProject
+): Promise<AtprotoRemoteProject> {
+  if (hasHumanProjectTitle(remoteProject)) {
+    return remoteProject
+  }
+
+  const title = await readArchiveProjectTitle(config, remoteProject).catch(
+    () => undefined
+  )
+  return title ? { ...remoteProject, title } : remoteProject
+}
+
+async function readArchiveProjectTitle(
+  config: AtprotoProjectApiConfig,
+  remoteProject: AtprotoRemoteProject
+) {
+  const archiveRecord = await getAtprotoArchiveRecord(
+    config,
+    remoteProject.atproto.headArchive
+  )
+  const archiveBytes = await config.client.getBlob({
+    repo: parseAtprotoUri(archiveRecord.uri).repo,
+    blob: archiveRecord.value.archiveBlob,
+  })
+  const files = await parseProjectArchive(archiveBytes)
+  const projectToml = files.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (!projectToml) {
+    return undefined
+  }
+
+  return getProjectTitleFromProjectTomlContents(
+    new TextDecoder().decode(projectToml.data)
+  )?.trim()
 }
 
 async function createArchiveRecord({
