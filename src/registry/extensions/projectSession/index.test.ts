@@ -79,6 +79,7 @@ describe('project session extension', () => {
       ),
       archiveEntry: vi.fn(async () => ({ archivedPath: '/archive/main.kcl' })),
       applyFilePatch: vi.fn(async () => undefined),
+      close: vi.fn(),
     }
     return {
       path: projectTree.path,
@@ -115,6 +116,42 @@ describe('project session extension', () => {
     expect(projectSession.project.value).toBeUndefined()
     expect(projectSession.getProjectTree()).toBeUndefined()
     expect(projectSession.projectTree.value).toBeUndefined()
+  })
+
+  it('reuses the active project when opening the same project path', async () => {
+    const cloudSync = createCloudSyncService()
+    const projectSession = configureProjectSession([
+      defineRegistryItem({
+        id: 'test-cloud-sync-active-project',
+        providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+    ])
+    const projectTree = createProjectTree()
+    const project = createFakeProject(projectTree)
+    const updatedProjectTree: Project = {
+      ...projectTree,
+      children: [
+        {
+          name: 'main.kcl',
+          path: '/projects/bracket/main.kcl',
+          children: null,
+        },
+        {
+          name: 'nested.kcl',
+          path: '/projects/bracket/nested.kcl',
+          children: null,
+        },
+      ],
+      kcl_file_count: 2,
+    }
+    projectSession.setProject(project)
+
+    const reopenedProject = await projectSession.openProject(updatedProjectTree)
+
+    expect(reopenedProject).toBe(project)
+    expect(projectSession.getProject()).toBe(project)
+    expect(projectSession.getProjectTree()).toEqual(updatedProjectTree)
+    expect(project.mocks.close).not.toHaveBeenCalled()
   })
 
   it('mirrors external updates from the opened project tree signal', () => {
