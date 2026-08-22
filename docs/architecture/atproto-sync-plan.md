@@ -16,10 +16,11 @@ needed for v1.
 Implementation status on 2026-08-22: the branch now includes the local lexicon
 catalog, pure ZDS/ATProto mappers, a tested ATProto project API adapter contract,
 the provider-neutral `ConnectedIdentity` registry service, a Zoo auth identity
-projection, an ATProto OAuth identity-provider surface, derived plugin
+projection, an SDK-backed ATProto browser OAuth connector, derived plugin
 activation from non-boolean settings, a gated `atproto-sync` project library
 plugin, and a live XRPC-backed ATProto sync client behind the tested adapter
-interface.
+interface. The `atproto-sync` plugin activates only when `auth.atproto` contains
+a sync-capable connected identity.
 
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
@@ -205,13 +206,14 @@ output was removed before staging.
 
 ### Next Work Order
 
-1. Plug a concrete ATProto OAuth connector into `AtprotoOAuthConnector`,
-   including client metadata, callback handling, session refresh, and DPoP/PAR
-   request signing.
-2. Decide and implement remote delete semantics: delete record vs tombstone
+1. Wire the `atproto` project library operations to the adapter using the
+   connected ATProto OAuth session, including DPoP-signed XRPC requests through
+   the SDK session fetch handler.
+2. Finalize production OAuth client metadata hosting and callback behavior. The
+   browser connector works through `@atproto/oauth-client-browser`, but the
+   production `client_id` and metadata document still need a product decision.
+3. Decide and implement remote delete semantics: delete record vs tombstone
    record hidden from listings.
-3. Wire the `atproto` project library operations to the adapter once identity
-   and client behavior are available.
 4. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
    identities.
 
@@ -255,9 +257,9 @@ Current status:
 
 ### Connected Identity
 
-Completed for the registry service, Zoo auth projection, and ATProto
-settings-backed provider surface. The next missing piece is the concrete
-SDK-backed OAuth connector behind that provider.
+Completed for the registry service, Zoo auth projection, ATProto
+settings-backed provider surface, and the concrete browser SDK OAuth connector
+behind that provider.
 
 `ConnectedIdentity` should represent an authenticated account projection, not
 the credential store itself:
@@ -283,7 +285,8 @@ Implementation status:
   identity state through an injected connector.
 - [x] Add `auth.atproto` as a settings-backed identity snapshot with a
   Connect/Disconnect settings component.
-- [ ] Plug in the concrete ATProto OAuth SDK or desktop bridge implementation.
+- [x] Plug in `@atproto/oauth-client-browser` for popup sign-in, session restore,
+  and revocation.
 - [ ] Surface identity management in Settings as "Connected accounts".
 
 ### ATProto Project Library Type
@@ -291,8 +294,8 @@ Implementation status:
 The minimal `atproto` project library type is registered behind the gated
 `atproto-sync` plugin. The plugin activates from the `auth.atproto` identity
 setting when the connected identity has the sync permission set and blob-upload
-scope. It intentionally has no project operations yet because live
-identity/client wiring is still missing.
+scope. It intentionally has no project operations yet because the project
+library still needs to bind operations to the OAuth session-backed adapter.
 
 - Library settings bind to a connected ATProto identity and optional repo DID.
 - Remote projects materialize through the same archive flow as cloud-backed
@@ -348,7 +351,7 @@ Current status:
 - [x] Zoo auth appears as a `ConnectedIdentity` without changing current Zoo auth
   consumers.
 - [x] ATProto OAuth connector success contributes an ATProto `ConnectedIdentity`.
-- [ ] A concrete ATProto OAuth SDK or desktop bridge completes the real auth
+- [x] A concrete ATProto OAuth SDK or desktop bridge completes the real auth
   flow.
 - [ ] Settings shows Zoo and ATProto connected accounts in one management surface.
 - [ ] The ATProto library type lists only sync-capable remote projects and
@@ -371,8 +374,12 @@ Current status:
 - ATProto NSID spec: https://atproto.com/specs/nsid
 - ATProto Record Key spec: https://atproto.com/specs/record-key
 - ATProto Blob spec: https://atproto.com/specs/blob
+- ATProto OAuth spec: https://atproto.com/specs/oauth
+- ATProto OAuth patterns guide: https://atproto.com/guides/oauth-patterns
 - ATProto Sync spec: https://atproto.com/specs/sync
 - ATProto Permissions spec: https://atproto.com/specs/permission
+- ATProto browser OAuth client:
+  https://www.npmjs.com/package/@atproto/oauth-client-browser
 - ATProto repo XRPC lexicons:
   https://github.com/bluesky-social/atproto/tree/main/lexicons/com/atproto/repo
 - ATProto sync XRPC lexicons:
