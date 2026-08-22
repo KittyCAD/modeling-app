@@ -72,6 +72,7 @@ describe('ATProto sync plugin', () => {
     expect(libraryType).toMatchObject({
       type: ATPROTO_PROJECT_LIBRARY_TYPE,
       title: 'ATProto',
+      icon: 'atSign',
       newLibrarySetting: {
         title: 'ATProto Projects',
         type: ATPROTO_PROJECT_LIBRARY_TYPE,

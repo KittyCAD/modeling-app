@@ -249,6 +249,23 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  atSign: (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="at sign"
+    >
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M16 8V13C16 14.6569 17.3431 16 19 16C20.6569 16 22 14.6569 22 13V12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C14.0113 22 15.8839 21.4069 17.4529 20.3856"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  ),
   arrowUp: (
     <svg
       viewBox="0 0 20 20"

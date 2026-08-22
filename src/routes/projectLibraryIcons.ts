@@ -1,4 +1,7 @@
-import type { CustomIconName } from '@src/components/CustomIcon'
+import {
+  type CustomIconName,
+  isCustomIconName,
+} from '@src/components/CustomIcon'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 
 export function getProjectLibraryIconName(
@@ -10,6 +13,10 @@ export function getProjectLibraryIconName(
 
   if (library.icon === 'network') {
     return 'network'
+  }
+
+  if (isCustomIconName(library.icon)) {
+    return library.icon
   }
 
   return 'folder'

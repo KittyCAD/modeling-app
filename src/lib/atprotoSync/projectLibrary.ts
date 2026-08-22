@@ -670,6 +670,7 @@ export function createAtprotoProjectLibraryType({
             {
               type: ATPROTO_PROJECT_LIBRARY_TYPE,
               title: 'ATProto',
+              icon: 'atSign',
               order: 30,
               newLibrarySetting: getDefaultAtprotoProjectLibrarySetting(),
               operations,
