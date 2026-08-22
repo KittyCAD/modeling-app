@@ -117,7 +117,7 @@
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^26.1.1",
-    "@types/vscode": "^1.120.0",
+    "@types/vscode": "^1.125.0",
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
     "@vscode/test-electron": "^3.1.0",
@@ -125,7 +125,7 @@
     "cross-env": "^10.1.0",
     "esbuild": "^0.28.1",
     "glob": "^13.0.6",
-    "mocha": "^11.7.6",
+    "mocha": "^11.8.0",
     "typescript": "7.0.2"
   },
   "dependencies": {
