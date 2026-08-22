@@ -7,12 +7,11 @@ library type. It starts from the existing CAD lexicons published by
 `@franknoirot.co`, then adds the minimum archive-first sync surface needed for
 interoperability with the current ZDS projects API.
 
-The existing published vocabulary under `nyc.noirot.cad.*` should be treated as
-the current public CAD/project metadata layer. New ZDS sync records should target
-the `co.franknoirot.*` authority because `@franknoirot.co` is the controlled
-identity and domain for this work. If we decide to avoid a namespace migration,
-the same sync additions can be published as `nyc.noirot.cad.*` instead, but that
-should be an explicit product decision.
+Status on 2026-08-22: the sync lexicon additions are complete under
+`nyc.noirot.cad.*`. The publishing account is `@franknoirot.co`, but the
+lexicon authority remains `cad.noirot.nyc`, resolved by the
+`_lexicon.cad.noirot.nyc` DNS TXT record. No `co.franknoirot.*` migration is
+needed for v1.
 
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
@@ -32,26 +31,31 @@ inspection:
 - `nyc.noirot.cad.defs` already includes reusable strong refs, file manifests,
   source-file descriptions, Zoo project refs, licenses, and geometry metadata.
 
-They are not yet a clean ZDS bidirectional sync contract:
+Before the sync additions, they were not a clean ZDS bidirectional sync
+contract:
 
 - `project` uses `key: "tid"`, so the record key is not naturally the Zoo or ZDS
   project ID. The adapter must use the project AT URI as the remote ID.
-- There is no first-class head archive pointer on the project record.
-- There is no archive snapshot record carrying the exact whole-project archive
+- There was no first-class head archive pointer on the project record.
+- There was no archive snapshot record carrying the exact whole-project archive
   fields ZDS needs.
-- There is no exact `category_ids` equivalent; tags should not be overloaded for
-  this because Zoo project categories are API metadata, not user tags.
-- `entrypoint_path` and `project_toml_path` are missing, and they belong to a
+- There was no exact `category_ids` equivalent; tags should not be overloaded
+  for this because Zoo project categories are API metadata, not user tags.
+- `entrypoint_path` and `project_toml_path` were missing, and they belong to a
   concrete archive snapshot rather than general project metadata.
 - `source` can carry archive blobs, but depending on source records to rebuild a
   ZDS project would diverge from the current whole-archive sync engine.
+
+The completed sync additions address the missing archive, head pointer,
+category, and archive-path fields while keeping individual `source` records as a
+publishing/inspection layer instead of the sync substrate.
 
 ## Lexicon Plan
 
 ### Existing Public Layer
 
-Keep the current published CAD lexicons as the compatibility and publishing
-baseline:
+Keep the current published CAD lexicons as the compatibility, publishing, and
+sync baseline:
 
 - `nyc.noirot.cad.project`: mutable public project metadata.
 - `nyc.noirot.cad.source`: individual source/artifact sidecars.
@@ -59,26 +63,20 @@ baseline:
 - `nyc.noirot.cad.declaration`: account participation/discovery.
 - `nyc.noirot.cad.analysis`: derived analysis sidecars.
 - `nyc.noirot.cad.defs`: shared definitions.
+- `nyc.noirot.cad.archive`: immutable whole-project ZDS archive snapshots.
+- `nyc.noirot.cad.authSync`: permission set for ZDS sync writes.
 
 ### New Sync Layer
 
-Publish equivalent sync-capable records under `co.franknoirot.*`, with names
-chosen to keep the ZDS archive contract separate from higher-level CAD
-publishing records:
+Completed under the existing namespace:
 
-- `co.franknoirot.cad.project`: mutable project metadata, compatible with the
-  existing `nyc.noirot.cad.project` shape, plus optional sync fields.
-- `co.franknoirot.cad.archive`: immutable whole-project ZDS archive snapshot.
-- `co.franknoirot.cad.declaration`: optional fixed-key account discovery record,
-  equivalent in purpose to `nyc.noirot.cad.declaration`.
-- `co.franknoirot.cad.defs`: shared definitions, including strong refs and
-  archive manifest entries.
-- `co.franknoirot.cad.authSync`: permission set for repo writes to the project,
-  archive, declaration, and related CAD sync collections.
-
-If we choose not to migrate the namespace, publish the same additions as
-`nyc.noirot.cad.archive`, optional fields on `nyc.noirot.cad.project`, and
-`nyc.noirot.cad.authSync`.
+- `nyc.noirot.cad.project` has optional sync fields for the current archive head,
+  Zoo category IDs, and sync update time.
+- `nyc.noirot.cad.defs` has shared strong-ref and archive manifest definitions.
+- `nyc.noirot.cad.archive` is the immutable whole-project ZDS archive snapshot
+  record.
+- `nyc.noirot.cad.authSync` is the permission set for repo writes to the
+  project, archive, declaration, and related CAD sync collections.
 
 ### Project Record Additions
 
@@ -170,27 +168,40 @@ not the V1 sync substrate.
 
 ### Branch Scope
 
-This branch only adds the planning document. Implementation branches should be
-split by concern once the lexicon direction is accepted.
+This branch tracks the planning document and follow-up status. Implementation
+branches should now be split by concern, starting with the ATProto project API
+adapter and fixtures.
 
 ### Lexicon Migration/Additions
 
-1. Draft `co.franknoirot.cad.defs` with strong refs, manifest entries, and any
-   shared archive/project types.
-2. Draft `co.franknoirot.cad.archive` as the archive-first ZDS sync record.
-3. Draft `co.franknoirot.cad.project`, reusing the existing published project
-   shape where possible and adding optional `headArchive`, `categoryIds`, and
-   `syncUpdatedAt`.
-4. Draft `co.franknoirot.cad.declaration` for account discovery if the existing
-   declaration cannot be reused across namespaces.
-5. Draft `co.franknoirot.cad.authSync` with repo write permissions for the
-   project, archive, declaration, source, release, and analysis collections that
-   ZDS intends to write.
-6. Validate all schemas with the lexicon CLI.
-7. Publish schemas as `com.atproto.lexicon.schema` records from the
-   `@franknoirot.co` DID.
-8. Confirm the appropriate `_lexicon` DNS TXT record points at the publishing
-   DID for the chosen authority.
+Completed on 2026-08-22 using `goat lex`:
+
+- [x] Keep the v1 sync vocabulary under `nyc.noirot.cad.*`.
+- [x] Add `nyc.noirot.cad.defs` shared strong-ref and archive manifest
+  definitions.
+- [x] Add `nyc.noirot.cad.archive` as the archive-first ZDS sync record.
+- [x] Update `nyc.noirot.cad.project` with optional `headArchive`,
+  `categoryIds`, and `syncUpdatedAt`.
+- [x] Add `nyc.noirot.cad.authSync` with repo write permissions for the project,
+  archive, declaration, source, release, and analysis collections that ZDS
+  intends to write.
+- [x] Validate and publish schemas as `com.atproto.lexicon.schema` records from
+  the `@franknoirot.co` DID.
+- [x] Keep DNS authority at `_lexicon.cad.noirot.nyc`.
+
+The local schema JSON files produced by `goat lex` are not part of this branch
+unless intentionally committed later.
+
+### Next Work Order
+
+1. Build the ATProto project API adapter and fixture tests against the current
+   cloud sync API contract.
+2. Add `ConnectedIdentity` registry contracts and publish Zoo auth as the first
+   built-in connected identity.
+3. Add the ATProto identity provider using OAuth and the `authSync` permission
+   set.
+4. Add the ATProto project library type and materialization flow once adapter and
+   identity behavior are covered by tests.
 
 ### Project API Adapter
 
@@ -257,9 +268,9 @@ Add an `atproto` project library type once the adapter and identity layer exist:
 
 ### Lexicon
 
-- All new or changed `co.franknoirot.*` schemas validate with the lexicon CLI.
-- Existing `nyc.noirot.cad.*` records remain valid after any optional-field
-  additions if we choose to update the old namespace instead of migrating.
+- New or changed `nyc.noirot.cad.*` schemas validate with the lexicon CLI.
+- Existing `nyc.noirot.cad.*` records remain valid after optional-field
+  additions.
 - A project record without `headArchive` validates but is ignored by ZDS sync
   listings.
 
@@ -295,8 +306,8 @@ Add an `atproto` project library type once the adapter and identity layer exist:
 
 ## Open Follow-Ups
 
-- Decide whether to migrate fully to `co.franknoirot.*` or keep adding records
-  to `nyc.noirot.cad.*` for continuity with existing published schemas.
+- Decide whether the local schema JSON files created by `goat lex` should be
+  committed to this repository or managed in a separate lexicon package.
 - Decide whether the project record should be deleted or tombstoned when ZDS
   deletes a remote project. The adapter must hide deleted/tombstoned projects
   either way.
