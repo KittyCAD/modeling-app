@@ -44,9 +44,9 @@ export const connectedIdentitiesExtension = defineRegistryItemFactory((ctx) => {
     providers,
     identities,
     getIdentities: () => identities.value,
-    connect: async (providerId) => {
+    connect: async (providerId, options) => {
       const provider = getProvider(providerId)
-      await provider.connect?.()
+      await provider.connect?.(options)
     },
     disconnect: async (identityId) => {
       for (const provider of providers.value) {

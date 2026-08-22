@@ -29,7 +29,7 @@ export type ConnectedIdentityProvider = {
   id: string
   title: string
   identities: ReadonlySignal<readonly ConnectedIdentity[]>
-  connect?: () => Promise<void>
+  connect?: (options?: unknown) => Promise<void>
   disconnect?: (identity: ConnectedIdentity) => Promise<void>
   refresh?: () => Promise<void>
 }
@@ -38,7 +38,7 @@ export type ConnectedIdentitiesRegistryService = {
   providers: ReadonlySignal<readonly ConnectedIdentityProvider[]>
   identities: ReadonlySignal<readonly ConnectedIdentity[]>
   getIdentities: () => readonly ConnectedIdentity[]
-  connect: (providerId: string) => Promise<void>
+  connect: (providerId: string, options?: unknown) => Promise<void>
   disconnect: (identityId: string) => Promise<void>
   refresh: (providerId?: string) => Promise<void>
 }

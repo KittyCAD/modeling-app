@@ -19,7 +19,9 @@ describe('connected identities extension', () => {
   it('flattens live identity provider contributions into a single service', async () => {
     const disconnect = vi.fn<() => Promise<void>>(async () => undefined)
     const refresh = vi.fn<() => Promise<void>>(async () => undefined)
-    const connect = vi.fn<() => Promise<void>>(async () => undefined)
+    const connect = vi.fn<(options?: unknown) => Promise<void>>(
+      async () => undefined
+    )
     const identities = signal<ConnectedIdentity[]>([
       {
         id: 'test:one',
@@ -78,11 +80,11 @@ describe('connected identities extension', () => {
       }),
     ])
 
-    await service.connect('test')
+    await service.connect('test', { input: 'test.example' })
     await service.refresh('test')
     await service.disconnect('test:two')
 
-    expect(connect).toHaveBeenCalledTimes(1)
+    expect(connect).toHaveBeenCalledWith({ input: 'test.example' })
     expect(refresh).toHaveBeenCalledTimes(1)
     expect(disconnect).toHaveBeenCalledTimes(1)
   })
