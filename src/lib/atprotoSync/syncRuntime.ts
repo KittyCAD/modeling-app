@@ -3,10 +3,9 @@ import {
   defineRuntimeRegistryItem,
 } from '@kittycad/registry'
 import { effect } from '@preact/signals-core'
-import { createAtprotoCloudSyncRemoteApi } from '@src/lib/atprotoSync/cloudSyncAdapter'
+import { uploadAtprotoLocalProject } from '@src/lib/atprotoSync/localSync'
 import {
   type AtprotoOAuthConnector,
-  type AtprotoOAuthIdentity,
   isAtprotoOAuthIdentity,
   isAtprotoSyncIdentity,
 } from '@src/lib/atprotoSync/oauth'
@@ -15,18 +14,19 @@ import {
   addCloudSyncFileSystemMutationListener,
   getCloudSyncProjectRootInDirectories,
 } from '@src/lib/cloudSync'
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
-import { normalizePathForSync } from '@src/lib/cloudSync/paths'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import {
+  isCloudSyncExcludedPath,
+  normalizePathForSync,
+} from '@src/lib/cloudSync/paths'
 import {
   type ProjectLibrary,
   type ProjectLibrarySetting,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
-import { getAtprotoProjectIdFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { reportRejection } from '@src/lib/trap'
 import { settingsService } from '@src/registry/contracts/settings'
+
+export { uploadAtprotoLocalProject }
 
 const ATPROTO_SYNC_DEBOUNCE_MS = 2500
 const ATPROTO_PROJECT_LIBRARY_TYPE = 'atproto'
@@ -45,15 +45,6 @@ function getAtprotoIdentityFromSettings(value: unknown) {
   )?.auth?.atproto?.current
 
   return isAtprotoOAuthIdentity(candidate) ? candidate : undefined
-}
-
-async function readAtprotoProjectId(projectPath: string) {
-  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
-  const projectToml = await fsZds.readFile(projectTomlPath, {
-    encoding: 'utf-8',
-  })
-
-  return getAtprotoProjectIdFromProjectTomlContents(projectToml)
 }
 
 function getAtprotoLibraries(settings: unknown) {
@@ -109,50 +100,6 @@ function projectRootForMutation(
   )
 }
 
-export async function uploadAtprotoLocalProject({
-  connector,
-  identity,
-  projectRoot,
-}: {
-  connector: AtprotoOAuthConnector
-  identity: AtprotoOAuthIdentity
-  projectRoot: string
-}) {
-  if (!connector.createProjectApiConfig) {
-    return false
-  }
-
-  const remoteProjectId = await readAtprotoProjectId(projectRoot).catch(
-    () => undefined
-  )
-  if (!remoteProjectId) {
-    return false
-  }
-
-  const atprotoConfig = await connector.createProjectApiConfig(identity)
-  const remoteApi = createAtprotoCloudSyncRemoteApi(atprotoConfig)
-  const remoteProject = await remoteApi.getRemoteProject(
-    { enabled: true },
-    remoteProjectId
-  )
-  const files = await collectLocalProjectFilesForCloudSync({
-    localFs: fsZds,
-    projectRoot,
-  })
-
-  await remoteApi.updateRemoteProject({
-    config: { enabled: true },
-    projectPath: projectRoot,
-    project: remoteProject,
-    files,
-    expectedRevision:
-      typeof remoteProject.revision === 'string'
-        ? remoteProject.revision
-        : undefined,
-  })
-  return true
-}
-
 export function createAtprotoSyncRuntime({
   connector,
 }: {
@@ -205,6 +152,10 @@ export function createAtprotoSyncRuntime({
     }
 
     const handleWriteLike = (targetPath: string) => {
+      if (isCloudSyncExcludedPath(targetPath)) {
+        return
+      }
+
       const projectRoot = projectRootForMutation(
         targetPath,
         materializationDirectories

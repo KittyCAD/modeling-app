@@ -9,6 +9,7 @@ import {
 } from '@src/lib/projectLibraries'
 
 export const INTERNAL_OPFS_META_FILE = '._meta'
+export const ATPROTO_SYNC_META_FILE = '._atproto_sync'
 export const CLOUD_PROJECT_LIBRARY_FOLDER = 'Zoo'
 export const PERSONAL_CLOUD_PROJECT_LIBRARY_FOLDER = 'personal'
 export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
@@ -17,6 +18,7 @@ export const DEFAULT_CLOUD_PROJECT_DIRECTORY_PATH = `/${webSafeJoin([
 ])}`
 const CLOUD_SYNC_EXCLUDED_PATH_PARTS = new Set([
   INTERNAL_OPFS_META_FILE,
+  ATPROTO_SYNC_META_FILE,
   '.git',
   '.hg',
   '.svn',

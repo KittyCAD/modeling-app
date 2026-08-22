@@ -23,6 +23,7 @@ import {
   shouldThrottleCloudSyncProjectApiRequests,
 } from '@src/lib/cloudSync'
 import {
+  ATPROTO_SYNC_META_FILE,
   getCloudProjectLibraryMaterializationDirectoryPath,
   isCloudSyncExcludedPath,
 } from '@src/lib/cloudSync/paths'
@@ -425,11 +426,16 @@ describe('cloudSync sync helpers', () => {
     expect(isCloudSyncExcludedPath('.git')).toBe(true)
     expect(isCloudSyncExcludedPath('.git/objects/pack.idx')).toBe(true)
     expect(isCloudSyncExcludedPath('nested/.git/HEAD')).toBe(true)
+    expect(isCloudSyncExcludedPath(ATPROTO_SYNC_META_FILE)).toBe(true)
+    expect(isCloudSyncExcludedPath(`nested/${ATPROTO_SYNC_META_FILE}`)).toBe(
+      true
+    )
     expect(isCloudSyncExcludedPath('.gitignore')).toBe(false)
     expect(isCloudSyncExcludedPath('.github/workflows/test.yml')).toBe(false)
 
     const files = filterCloudSyncProjectFilesForSync([
       projectFile('main.kcl', 'cube = 1'),
+      projectFile(ATPROTO_SYNC_META_FILE, '{}'),
       projectFile('.git/HEAD', 'ref: refs/heads/main\n'),
       projectFile('.git/objects/pack/pack-123.idx', 'pack index'),
       projectFile('.gitignore', 'dist/\n'),

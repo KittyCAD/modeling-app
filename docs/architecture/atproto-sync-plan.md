@@ -215,9 +215,9 @@ output was removed before staging.
    production `client_id` and metadata document still need a product decision.
 2. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
    identities.
-3. Add durable ATProto sync metadata so the isolated ATProto runtime can detect
-   remote divergence before upload instead of always uploading against the
-   latest remote revision.
+3. Surface ATProto sync conflicts and recovery actions in UI. The runtime now
+   detects remote divergence before upload, but conflict state is still reported
+   through errors rather than a user-managed resolution flow.
 4. Broaden provider-neutral error mapping for live OAuth/PDS failures.
 
 ### Sync Engine Generalization
@@ -260,7 +260,9 @@ Current status:
   global provider.
 - [x] Wire the `atproto-sync` plugin to start the isolated ATProto runtime after
   OAuth-gated plugin activation.
-- [ ] Add durable ATProto base revision/manifest state and conflict handling.
+- [x] Add durable ATProto base revision/manifest state so local edit uploads do
+  not overwrite remote changes made after the local materialization base.
+- [ ] Surface ATProto conflict state and local/remote resolution actions in UI.
 
 ### Project API Adapter
 
@@ -347,8 +349,10 @@ handler is the bridge that signs XRPC requests for the adapter.
 - Remote projects materialize through the same archive flow as cloud-backed
   projects.
 - Provider credentials stay in identity storage, not `project.toml`.
-- Local project metadata stores an adapter remote ID and revision. For V1, the
-  remote ID is the project AT URI in `[atproto].project_id`.
+- Local `project.toml` stores the remote ID as the project AT URI in
+  `[atproto].project_id`.
+- Local `._atproto_sync` metadata stores the trusted base revision and upload
+  manifest. The file is excluded from archive uploads.
 - Uploads strip local ATProto metadata from the archive before writing the
   remote snapshot, so local materialization markers do not become portable
   project data.
@@ -375,8 +379,9 @@ Current status:
   needed by the generalized sync engine.
 - [x] Configure the authenticated ATProto plugin runtime to use those adapters
   for local file edit uploads.
-- [ ] Add durable base tracking so local edit uploads cannot overwrite remote
+- [x] Add durable base tracking so local edit uploads cannot overwrite remote
   changes that happened after the local materialization base.
+- [ ] Add a user-visible conflict resolution path for ATProto sync.
 
 ## Tests And Acceptance Criteria
 
@@ -403,6 +408,10 @@ Current status:
 - [x] Guarded update succeeds when `expected_revision` matches the project record
   CID.
 - [x] Guarded update fails when `expected_revision` is stale.
+- [x] Local ATProto uploads use a durable saved base revision instead of the
+  latest remote revision.
+- [x] Local ATProto uploads stop before blob upload when the remote project CID
+  has moved since the saved base and local files have changed.
 - [ ] Missing archive record produces a recoverable sync failure, not local data
   loss.
 - [ ] Missing archive blob produces a recoverable sync failure, not local data loss.

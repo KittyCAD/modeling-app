@@ -18,12 +18,17 @@ import {
   updateAtprotoRemoteProject,
 } from '@src/lib/atprotoSync/api'
 import {
+  collectProjectFilesForAtprotoUpload,
+  removeAtprotoMetadataFromArchiveFiles,
+  uploadAtprotoLocalProject,
+  writeAtprotoSyncBaseMetadata,
+} from '@src/lib/atprotoSync/localSync'
+import {
   type AtprotoOAuthConnector,
   type AtprotoOAuthIdentity,
   isAtprotoOAuthIdentity,
   isAtprotoSyncIdentity,
 } from '@src/lib/atprotoSync/oauth'
-import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
 import {
   getProjectArchiveEntrypointPath,
   parseProjectArchive,
@@ -54,7 +59,6 @@ import {
 } from '@src/lib/projectName'
 import {
   getAtprotoProjectIdFromProjectTomlContents,
-  removeAtprotoProjectIdFromProjectTomlContents,
   setAtprotoProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
@@ -186,21 +190,6 @@ async function writeAtprotoProjectId(
   )
 }
 
-async function collectProjectFilesForAtprotoUpload(projectPath: string) {
-  const files = await collectLocalProjectFilesForCloudSync({
-    localFs: fsZds,
-    projectRoot: projectPath,
-  })
-
-  return removeAtprotoMetadataFromArchiveFiles(files)
-}
-
-function removeAtprotoMetadataFromArchiveFiles(files: ProjectArchiveFile[]) {
-  return withUpdatedProjectTomlInArchiveFiles(files, (projectToml) =>
-    removeAtprotoProjectIdFromProjectTomlContents(projectToml)
-  )
-}
-
 function projectFilesToInitialProject(
   files: ProjectArchiveFile[],
   fallbackEntrypoint = 'main.kcl'
@@ -291,6 +280,11 @@ async function materializeRemoteProject({
   })
 
   await writeAtprotoProjectId(project.path, remoteProject.id)
+  await writeAtprotoSyncBaseMetadata({
+    projectRoot: project.path,
+    remoteProject,
+    files,
+  })
   context.refresh(library)
   return getProjectInfo(project.path, await wasmInstancePromise)
 }
@@ -471,13 +465,21 @@ function createAtprotoProjectLibraryOperations(
           initialProject,
         })
         const config = await context.connector.createProjectApiConfig(identity)
+        const uploadFiles = await collectProjectFilesForAtprotoUpload(
+          project.path
+        )
         const remoteProject = await createAtprotoRemoteProject(
           config,
           project.path,
-          await collectProjectFilesForAtprotoUpload(project.path)
+          uploadFiles
         )
 
         await writeAtprotoProjectId(project.path, remoteProject.id)
+        await writeAtprotoSyncBaseMetadata({
+          projectRoot: project.path,
+          remoteProject,
+          files: uploadFiles,
+        })
         context.refresh(library)
         return project
       },
@@ -532,23 +534,10 @@ function createAtprotoProjectLibraryOperations(
           if (project.remoteProjectId) {
             const identity = context.getIdentity()
             if (identity && context.connector.createProjectApiConfig) {
-              const config =
-                await context.connector.createProjectApiConfig(identity)
-              const remoteProject = await getAtprotoRemoteProject(
-                config,
-                project.remoteProjectId
-              )
-              await updateAtprotoRemoteProject({
-                config,
-                projectPath: project.localProjectPath,
-                project: remoteProject,
-                files: await collectProjectFilesForAtprotoUpload(
-                  project.localProjectPath
-                ),
-                expectedRevision:
-                  typeof remoteProject.revision === 'string'
-                    ? remoteProject.revision
-                    : undefined,
+              await uploadAtprotoLocalProject({
+                connector: context.connector,
+                identity,
+                projectRoot: project.localProjectPath,
               })
             }
           }

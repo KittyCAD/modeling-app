@@ -18,6 +18,7 @@ import {
   createAtprotoRemoteProject,
   getAtprotoRemoteProject,
 } from '@src/lib/atprotoSync/api'
+import { readAtprotoSyncLocalMetadata } from '@src/lib/atprotoSync/localSync'
 import { createAtprotoProjectLibraryType } from '@src/lib/atprotoSync/projectLibrary'
 import {
   ATPROTO_CAD_PROJECT_COLLECTION,
@@ -326,6 +327,17 @@ describe('ATProto project library type', () => {
       expect(getAtprotoProjectIdFromProjectTomlContents(projectToml)).toBe(
         remoteProject.id
       )
+      await expect(
+        readAtprotoSyncLocalMetadata(fsZds.join(library.path, 'bracket'))
+      ).resolves.toMatchObject({
+        remoteProjectId: remoteProject.id,
+        remoteRevision: remoteProject.revision,
+        baseManifest: expect.objectContaining({
+          files: expect.objectContaining({
+            'main.kcl': expect.any(Object),
+          }),
+        }),
+      })
     } finally {
       registry[Symbol.dispose]()
       await fsZds.rm(testRoot, { recursive: true, force: true })
@@ -398,6 +410,17 @@ describe('ATProto project library type', () => {
       expect(getAtprotoProjectIdFromProjectTomlContents(projectToml)).toBe(
         remoteProject.uri
       )
+      await expect(
+        readAtprotoSyncLocalMetadata(fsZds.join(library.path, 'bracket'))
+      ).resolves.toMatchObject({
+        remoteProjectId: remoteProject.uri,
+        remoteRevision: 'project-final-cid',
+        baseManifest: expect.objectContaining({
+          files: expect.objectContaining({
+            'main.kcl': expect.any(Object),
+          }),
+        }),
+      })
 
       const archiveRecord = (
         await client.listRecords({
