@@ -2,6 +2,10 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'path'
 import type { DeviceFlowAuthorization } from '@root/interface'
+import type {
+  AtprotoDesktopOAuthCallbackResult,
+  AtprotoDesktopOAuthCallbackStart,
+} from '@src/lib/atprotoSync/desktopOAuth'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -64,6 +68,14 @@ const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const cancelDeviceFlow = (): Promise<void> =>
   ipcRenderer.invoke('cancelDeviceFlow')
+const startAtprotoOAuthCallback =
+  (): Promise<AtprotoDesktopOAuthCallbackStart> =>
+    ipcRenderer.invoke('atprotoOAuth.startCallback')
+const waitForAtprotoOAuthCallback =
+  (): Promise<AtprotoDesktopOAuthCallbackResult> =>
+    ipcRenderer.invoke('atprotoOAuth.waitForCallback')
+const cancelAtprotoOAuthCallback = (): Promise<void> =>
+  ipcRenderer.invoke('atprotoOAuth.cancelCallback')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
 ) =>
@@ -345,6 +357,9 @@ contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
   cancelDeviceFlow,
+  startAtprotoOAuthCallback,
+  waitForAtprotoOAuthCallback,
+  cancelAtprotoOAuthCallback,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.

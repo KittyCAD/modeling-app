@@ -2,6 +2,7 @@ import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 
 export * from '@src/lib/atprotoSync/browserOAuthConnector'
 export * from '@src/lib/atprotoSync/cloudSyncAdapter'
+export * from '@src/lib/atprotoSync/desktopOAuth'
 export * from '@src/lib/atprotoSync/oauth'
 
 export const ATPROTO_PROJECT_LIBRARY_TYPE = 'atproto'

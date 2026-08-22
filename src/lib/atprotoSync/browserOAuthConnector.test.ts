@@ -1,5 +1,6 @@
 import type { OAuthSession } from '@atproto/oauth-client-browser'
 import {
+  ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
   ATPROTO_ARCHIVE_BLOB_SCOPE,
   ATPROTO_AUTH_SYNC_SCOPE,
   ATPROTO_OAUTH_SCOPES,
@@ -10,6 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const defaultBrowserOAuthClientMock = vi.hoisted(() => {
   let client:
     | {
+        authorize?: (...args: unknown[]) => unknown
+        callback?: (...args: unknown[]) => unknown
         init: (...args: unknown[]) => unknown
         restore: (...args: unknown[]) => unknown
         revoke: (...args: unknown[]) => unknown
@@ -26,6 +29,14 @@ const defaultBrowserOAuthClientMock = vi.hoisted(() => {
     BrowserOAuthClient: class BrowserOAuthClient {
       constructor(options: unknown) {
         constructorSpy(options)
+      }
+
+      authorize(...args: unknown[]) {
+        return client?.authorize?.(...args)
+      }
+
+      callback(...args: unknown[]) {
+        return client?.callback?.(...args)
       }
 
       init(...args: unknown[]) {
@@ -84,13 +95,18 @@ function createSession({
 }
 
 describe('ATProto browser OAuth connector', () => {
+  let originalElectron: Window['electron']
+
   beforeEach(() => {
+    originalElectron = window.electron
+    window.electron = undefined
     setTestUrl('http://localhost:3000/')
     defaultBrowserOAuthClientMock.constructorSpy.mockReset()
     defaultBrowserOAuthClientMock.setClient(undefined)
   })
 
   afterEach(() => {
+    window.electron = originalElectron
     vi.unstubAllGlobals()
   })
 
@@ -281,16 +297,89 @@ describe('ATProto browser OAuth connector', () => {
     })
   })
 
-  it('rejects default popup sign-in from localhost because the callback cannot hand back', async () => {
-    const connector = createAtprotoBrowserOAuthConnector()
+  it('uses the desktop external browser callback bridge from localhost', async () => {
+    const scope = ATPROTO_OAUTH_SCOPES.join(' ')
+    const session = createSession({ did: 'did:plc:desktop' })
+    const client = {
+      authorize: vi
+        .fn()
+        .mockResolvedValue(new URL('https://auth.example/authorize')),
+      callback: vi.fn().mockResolvedValue({ session }),
+      init: vi.fn(),
+      restore: vi.fn().mockResolvedValue(session),
+      revoke: vi.fn(),
+      signInPopup: vi.fn(),
+    }
+    defaultBrowserOAuthClientMock.setClient(client)
+    window.electron = {
+      startAtprotoOAuthCallback: vi.fn().mockResolvedValue({
+        redirectUri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+      }),
+      waitForAtprotoOAuthCallback: vi.fn().mockResolvedValue({
+        redirectUri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+        params: [
+          ['code', 'oauth-code'],
+          ['state', 'oauth-state'],
+        ],
+      }),
+      cancelAtprotoOAuthCallback: vi.fn().mockResolvedValue(undefined),
+      openExternal: vi.fn().mockResolvedValue(undefined),
+    } as unknown as Window['electron']
+    const connector = createAtprotoBrowserOAuthConnector({
+      now: () => new Date('2026-08-22T00:00:00.000Z'),
+    })
 
-    await expect(
-      connector.connect({
-        input: 'franknoirot.co',
-        scopes: ATPROTO_OAUTH_SCOPES,
+    const identity = await connector.connect({
+      input: 'franknoirot.co',
+      scopes: ATPROTO_OAUTH_SCOPES,
+    })
+
+    const constructorOptions = defaultBrowserOAuthClientMock.constructorSpy.mock
+      .calls[0]?.[0] as {
+      clientMetadata?: {
+        client_id: string
+        scope: string
+        redirect_uris: string[]
+      }
+      responseMode?: string
+    }
+
+    expect(constructorOptions.clientMetadata).toMatchObject({
+      scope,
+      redirect_uris: [ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI],
+    })
+    expect(
+      new URL(constructorOptions.clientMetadata?.client_id ?? '').searchParams
+    ).toEqual(
+      new URLSearchParams({
+        scope,
+        redirect_uri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
       })
-    ).rejects.toThrow('ATProto OAuth local dev must run from http://127.0.0.1')
-    expect(defaultBrowserOAuthClientMock.constructorSpy).not.toHaveBeenCalled()
+    )
+    expect(constructorOptions.responseMode).toBe('query')
+    expect(client.authorize).toHaveBeenCalledWith('franknoirot.co', {
+      scope,
+      redirect_uri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+    })
+    expect(window.electron?.openExternal).toHaveBeenCalledWith(
+      'https://auth.example/authorize'
+    )
+    expect(client.callback).toHaveBeenCalledOnce()
+    const [callbackParams, callbackOptions] = client.callback.mock.calls[0]
+    expect((callbackParams as URLSearchParams).toString()).toBe(
+      'code=oauth-code&state=oauth-state'
+    )
+    expect(callbackOptions).toEqual({
+      redirect_uri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+    })
+    expect(client.restore).toHaveBeenCalledWith('did:plc:desktop', false)
+    expect(client.signInPopup).not.toHaveBeenCalled()
+    expect(identity).toMatchObject({
+      provider: 'atproto',
+      did: 'did:plc:desktop',
+      handle: 'franknoirot.co',
+      status: 'connected',
+    })
   })
 
   it('builds project API configs that use the SDK session fetch handler', async () => {

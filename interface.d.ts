@@ -4,6 +4,10 @@ import type { Stats } from 'fs'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type {
+  AtprotoDesktopOAuthCallbackResult,
+  AtprotoDesktopOAuthCallbackStart,
+} from '@src/lib/atprotoSync/desktopOAuth'
 import type { ElectronLifecycleReport } from '@src/lib/electronLifecycle'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { dialog, shell } from 'electron'
@@ -42,6 +46,9 @@ export interface IElectronAPI {
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
   loginWithDeviceFlow: () => Promise<string>
   cancelDeviceFlow: () => Promise<void>
+  startAtprotoOAuthCallback: () => Promise<AtprotoDesktopOAuthCallbackStart>
+  waitForAtprotoOAuthCallback: () => Promise<AtprotoDesktopOAuthCallbackResult>
+  cancelAtprotoOAuthCallback: () => Promise<void>
   platform: typeof process.env.platform
   arch: typeof process.env.arch
   version: typeof process.env.version

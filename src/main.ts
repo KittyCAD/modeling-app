@@ -1,3 +1,4 @@
+import { createServer, type Server } from 'node:http'
 import os from 'node:os'
 import path from 'path'
 // Some of the following was taken from bits and pieces of the vite-typescript
@@ -35,6 +36,12 @@ import {
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getAppFolderNameFromBuild } from '@src/lib/appFolderName'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import {
+  ATPROTO_DESKTOP_OAUTH_CALLBACK_PATH,
+  ATPROTO_DESKTOP_OAUTH_CALLBACK_PORT,
+  ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+  type AtprotoDesktopOAuthCallbackResult,
+} from '@src/lib/atprotoSync/desktopOAuth'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
@@ -146,6 +153,102 @@ const deviceFlowSessions = new DeviceFlowSessionStore<
   BrowserWindow,
   DeviceFlowHandle
 >()
+
+type AtprotoOAuthCallbackSession = {
+  abort: () => void
+  wait: () => Promise<AtprotoDesktopOAuthCallbackResult>
+}
+
+const atprotoOAuthCallbackSessions = new DeviceFlowSessionStore<
+  BrowserWindow,
+  AtprotoOAuthCallbackSession
+>()
+
+function closeServer(server: Server) {
+  return new Promise<void>((resolve) => {
+    server.close(() => resolve())
+  })
+}
+
+function createAtprotoOAuthCallbackSession(): Promise<AtprotoOAuthCallbackSession> {
+  let server: Server | undefined
+  let settled = false
+  let timeout: ReturnType<typeof setTimeout>
+  let resolveCallback!: (
+    value:
+      | AtprotoDesktopOAuthCallbackResult
+      | PromiseLike<AtprotoDesktopOAuthCallbackResult>
+  ) => void
+  let rejectCallback!: (reason?: unknown) => void
+  const callbackPromise = new Promise<AtprotoDesktopOAuthCallbackResult>(
+    (resolve, reject) => {
+      resolveCallback = resolve
+      rejectCallback = reject
+    }
+  )
+  const finish = (operation: () => void) => {
+    if (settled) {
+      return
+    }
+    settled = true
+    clearTimeout(timeout)
+    operation()
+    if (server) {
+      closeServer(server).catch(reportRejection)
+    }
+  }
+  timeout = setTimeout(
+    () => {
+      finish(() =>
+        rejectCallback(new Error('ATProto OAuth callback timed out.'))
+      )
+    },
+    5 * 60 * 1000
+  )
+
+  return new Promise((resolve, reject) => {
+    server = createServer((request, response) => {
+      const url = new URL(
+        request.url ?? '/',
+        ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI
+      )
+      if (url.pathname !== ATPROTO_DESKTOP_OAUTH_CALLBACK_PATH) {
+        response.writeHead(404)
+        response.end('Not found')
+        return
+      }
+
+      response.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+      })
+      response.end(
+        '<!doctype html><title>ZDS connected</title><p>You can return to Zoo Design Studio.</p><script>window.close()</script>'
+      )
+
+      finish(() =>
+        resolveCallback({
+          redirectUri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+          params: Array.from(url.searchParams.entries()),
+        })
+      )
+    })
+
+    server.once('error', (error) => {
+      clearTimeout(timeout)
+      reject(error)
+    })
+    server.listen(ATPROTO_DESKTOP_OAUTH_CALLBACK_PORT, '127.0.0.1', () => {
+      resolve({
+        abort: () => {
+          finish(() =>
+            rejectCallback(new Error('ATProto OAuth callback was cancelled.'))
+          )
+        },
+        wait: () => callbackPromise,
+      })
+    })
+  })
+}
 
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
@@ -347,6 +450,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
     // BrowserWindow-scoped resources must die with that exact window.
     windowMenuManager.clearWindow(newWindow)
     deviceFlowSessions.abort(newWindow)
+    atprotoOAuthCallbackSessions.abort(newWindow)
     if (mainWindow !== newWindow) return
     const nextMainWindow = BrowserWindow.getAllWindows().find(
       (browserWindow) => !browserWindow.isDestroyed()
@@ -840,6 +944,53 @@ ipcMain.handle('cancelDeviceFlow', (event) => {
   const targetWindow = BrowserWindow.fromWebContents(event.sender)
   if (targetWindow) {
     deviceFlowSessions.abort(targetWindow)
+  }
+})
+
+ipcMain.handle('atprotoOAuth.startCallback', async (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (!targetWindow) {
+    return Promise.reject(
+      new Error('No window available for ATProto OAuth callback')
+    )
+  }
+
+  atprotoOAuthCallbackSessions.abort(targetWindow)
+  const session = await createAtprotoOAuthCallbackSession()
+  atprotoOAuthCallbackSessions.set(targetWindow, {
+    handle: session,
+    verificationUri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+  })
+
+  return {
+    redirectUri: ATPROTO_DESKTOP_OAUTH_CALLBACK_REDIRECT_URI,
+  }
+})
+
+ipcMain.handle('atprotoOAuth.waitForCallback', async (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  const callbackSession = targetWindow
+    ? atprotoOAuthCallbackSessions.get(targetWindow)
+    : undefined
+  if (!targetWindow || !callbackSession) {
+    return Promise.reject(
+      new Error(
+        'No ATProto OAuth callback listener available. Did you call atprotoOAuth.startCallback first?'
+      )
+    )
+  }
+
+  try {
+    return await callbackSession.handle.wait()
+  } finally {
+    atprotoOAuthCallbackSessions.deleteIfCurrent(targetWindow, callbackSession)
+  }
+})
+
+ipcMain.handle('atprotoOAuth.cancelCallback', (event) => {
+  const targetWindow = BrowserWindow.fromWebContents(event.sender)
+  if (targetWindow) {
+    atprotoOAuthCallbackSessions.abort(targetWindow)
   }
 })
 
