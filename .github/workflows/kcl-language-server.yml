@@ -73,26 +73,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: namespace-profile-windows-2-cores
+          - os: namespace-profile-windows-8-cores
             target: x86_64-pc-windows-msvc
             code-target: win32-x64
-            #- os: namespace-profile-windows-2-cores
+            #- os: namespace-profile-windows-8-cores
             #target: i686-pc-windows-msvc
             #code-target:
             #win32-ia32
-            #- os: namespace-profile-windows-2-cores
+            #- os: namespace-profile-windows-8-cores
             #target: aarch64-pc-windows-msvc
             #code-target: win32-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores
             target: x86_64-unknown-linux-gnu
             code-target: linux-x64
-            #- os: namespace-profile-ubuntu-2-cores
+            #- os: namespace-profile-ubuntu-8-cores
             #target: aarch64-unknown-linux-musl
             #code-target: linux-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores
             target: aarch64-unknown-linux-gnu
             code-target: linux-arm64
-          - os: namespace-profile-ubuntu-2-cores
+          - os: namespace-profile-ubuntu-8-cores
             target: arm-unknown-linux-gnueabihf
             code-target: linux-armhf
           - os: namespace-profile-macos-6-cores
@@ -115,18 +115,40 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
+          cache: ${{ runner.os != 'Linux' }}
           cache-workspaces: rust
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
+      - name: Rust cache on the Namespace volume
+        if: runner.os == 'Linux'
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
+      - name: TEMPORARY probe - does this profile have a cache volume?
+        # Remove once the answer is recorded. The Windows and macOS profiles
+        # are unverified. This action fails the job when no volume is attached,
+        # so the probe sets continue-on-error and mounts a throwaway directory
+        # that no other step reads or writes. Success means a volume exists and
+        # the real cache can be switched over; failure prints
+        # "requires a cache volume to be configured" and the build continues on
+        # the GitHub cache.
+        if: runner.os != 'Linux'
+        continue-on-error: true
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: .nscloud-volume-probe
       - name: Install Node.js
         uses: actions/setup-node@v7.0.0
         with:
           node-version-file: .nvmrc
       - name: Update apt repositories
-        if: matrix.target == 'aarch64-unknown-linux-gnu' || matrix.target == 'arm-unknown-linux-gnueabihf' || matrix.os == 'namespace-profile-ubuntu-2-cores'
+        if: runner.os == 'Linux'
         run: sudo apt-get update
-      - if: ${{ matrix.os == 'namespace-profile-ubuntu-2-cores' }}
+      - if: runner.os == 'Linux'
         name: Install deps
         shell: bash
         run: |
