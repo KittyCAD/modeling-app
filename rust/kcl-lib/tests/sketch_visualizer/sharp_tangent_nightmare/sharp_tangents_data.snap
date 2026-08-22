@@ -1,0 +1,1026 @@
+---
+source: kcl-lib/src/tooling/sketch_visualizer/tests.rs
+---
+{
+  "sketch": {
+    "id": 1,
+    "name": "sketch001"
+  },
+  "bounds": {
+    "min": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "max": {
+      "x": 6.56,
+      "y": 7.24
+    }
+  },
+  "units": [
+    "Mm"
+  ],
+  "mode": "sharp_tangents",
+  "sharpTangents": {
+    "segmentCounts": {
+      "4": 3,
+      "7": 1,
+      "28": 2,
+      "56": 1,
+      "70": 1
+    },
+    "incidents": [
+      {
+        "constraintId": 31,
+        "segmentIds": [
+          7,
+          28
+        ],
+        "endpointIds": [
+          5,
+          26
+        ],
+        "alignment": 0.9997224302180008,
+        "angleDegrees": 1.349999999999451
+      },
+      {
+        "constraintId": 32,
+        "segmentIds": [
+          4,
+          28
+        ],
+        "endpointIds": [
+          3,
+          25
+        ],
+        "alignment": 0.9997224302180009,
+        "angleDegrees": 1.349999999999181
+      },
+      {
+        "constraintId": 59,
+        "segmentIds": [
+          4,
+          56
+        ],
+        "endpointIds": [
+          2,
+          53
+        ],
+        "alignment": 0.9998766324816607,
+        "angleDegrees": 0.8999999999996349
+      },
+      {
+        "constraintId": 79,
+        "segmentIds": [
+          4,
+          70
+        ],
+        "endpointIds": [
+          2,
+          67
+        ],
+        "alignment": 0.9998766324816607,
+        "angleDegrees": 0.8999999999996349
+      }
+    ]
+  },
+  "points": [
+    {
+      "id": 2,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 4
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 5.62,
+        "y": 3.48
+      },
+      "owner": 4
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 6.56,
+        "y": 2.54
+      },
+      "owner": 7
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 6.56,
+        "y": 0.0
+      },
+      "owner": 7
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 6.56,
+        "y": 0.0
+      },
+      "owner": 11
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 11
+    },
+    {
+      "id": 14,
+      "position": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "owner": 16
+    },
+    {
+      "id": 15,
+      "position": {
+        "x": 0.0,
+        "y": 2.54
+      },
+      "owner": 16
+    },
+    {
+      "id": 19,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 22
+    },
+    {
+      "id": 20,
+      "position": {
+        "x": 0.0,
+        "y": 2.54
+      },
+      "owner": 22
+    },
+    {
+      "id": 21,
+      "position": {
+        "x": 0.94,
+        "y": 2.54
+      },
+      "owner": 22
+    },
+    {
+      "id": 25,
+      "position": {
+        "x": 5.62,
+        "y": 3.48
+      },
+      "owner": 28
+    },
+    {
+      "id": 26,
+      "position": {
+        "x": 6.56,
+        "y": 2.54
+      },
+      "owner": 28
+    },
+    {
+      "id": 27,
+      "position": {
+        "x": 5.62,
+        "y": 2.54
+      },
+      "owner": 28
+    },
+    {
+      "id": 42,
+      "position": {
+        "x": 3.28,
+        "y": 3.48
+      },
+      "owner": 44
+    },
+    {
+      "id": 43,
+      "position": {
+        "x": 3.28,
+        "y": 0.0
+      },
+      "owner": 44
+    },
+    {
+      "id": 53,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 56
+    },
+    {
+      "id": 54,
+      "position": {
+        "x": 0.94,
+        "y": 5.36
+      },
+      "owner": 56
+    },
+    {
+      "id": 55,
+      "position": {
+        "x": 0.94,
+        "y": 4.42
+      },
+      "owner": 56
+    },
+    {
+      "id": 61,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 63
+    },
+    {
+      "id": 62,
+      "position": {
+        "x": 0.94,
+        "y": 5.36
+      },
+      "owner": 63
+    },
+    {
+      "id": 67,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 70
+    },
+    {
+      "id": 68,
+      "position": {
+        "x": 0.94,
+        "y": 7.24
+      },
+      "owner": 70
+    },
+    {
+      "id": 69,
+      "position": {
+        "x": 0.94,
+        "y": 5.36
+      },
+      "owner": 70
+    },
+    {
+      "id": 73,
+      "position": {
+        "x": 0.94,
+        "y": 3.48
+      },
+      "owner": 75
+    },
+    {
+      "id": 74,
+      "position": {
+        "x": 0.94,
+        "y": 7.24
+      },
+      "owner": 75
+    }
+  ],
+  "segments": [
+    {
+      "id": 4,
+      "kind": "line",
+      "pointIds": [
+        2,
+        3
+      ],
+      "endpointIds": [
+        2,
+        3
+      ],
+      "construction": false,
+      "renderedColor": "#a846c8"
+    },
+    {
+      "id": 7,
+      "kind": "line",
+      "pointIds": [
+        5,
+        6
+      ],
+      "endpointIds": [
+        5,
+        6
+      ],
+      "construction": false,
+      "renderedColor": "#ff5e5b"
+    },
+    {
+      "id": 11,
+      "kind": "line",
+      "pointIds": [
+        9,
+        10
+      ],
+      "endpointIds": [
+        9,
+        10
+      ],
+      "construction": false,
+      "renderedColor": "#d4d4d8"
+    },
+    {
+      "id": 16,
+      "kind": "line",
+      "pointIds": [
+        14,
+        15
+      ],
+      "endpointIds": [
+        14,
+        15
+      ],
+      "construction": false,
+      "renderedColor": "#d4d4d8"
+    },
+    {
+      "id": 22,
+      "kind": "arc",
+      "pointIds": [
+        19,
+        20,
+        21
+      ],
+      "endpointIds": [
+        19,
+        20
+      ],
+      "construction": false,
+      "renderedColor": "#d4d4d8"
+    },
+    {
+      "id": 28,
+      "kind": "arc",
+      "pointIds": [
+        25,
+        26,
+        27
+      ],
+      "endpointIds": [
+        25,
+        26
+      ],
+      "construction": false,
+      "renderedColor": "#d35292"
+    },
+    {
+      "id": 44,
+      "kind": "line",
+      "pointIds": [
+        42,
+        43
+      ],
+      "endpointIds": [
+        42,
+        43
+      ],
+      "construction": true,
+      "renderedColor": "#d4d4d8"
+    },
+    {
+      "id": 56,
+      "kind": "arc",
+      "pointIds": [
+        53,
+        54,
+        55
+      ],
+      "endpointIds": [
+        53,
+        54
+      ],
+      "construction": false,
+      "renderedColor": "#ff5e5b"
+    },
+    {
+      "id": 63,
+      "kind": "line",
+      "pointIds": [
+        61,
+        62
+      ],
+      "endpointIds": [
+        61,
+        62
+      ],
+      "construction": true,
+      "renderedColor": "#d4d4d8"
+    },
+    {
+      "id": 70,
+      "kind": "arc",
+      "pointIds": [
+        67,
+        68,
+        69
+      ],
+      "endpointIds": [
+        67,
+        68
+      ],
+      "construction": false,
+      "renderedColor": "#ff5e5b"
+    },
+    {
+      "id": 75,
+      "kind": "line",
+      "pointIds": [
+        73,
+        74
+      ],
+      "endpointIds": [
+        73,
+        74
+      ],
+      "construction": true,
+      "renderedColor": "#d4d4d8"
+    }
+  ],
+  "constraints": [
+    {
+      "id": 8,
+      "kind": "horizontal",
+      "targets": [
+        {
+          "type": "object",
+          "id": 6
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 6
+        },
+        {
+          "type": "object",
+          "id": 9
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 10
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 10
+        },
+        {
+          "type": "object",
+          "id": 14
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "kind": "vertical",
+      "targets": [
+        {
+          "type": "object",
+          "id": 15
+        },
+        {
+          "type": "origin"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 20
+        },
+        {
+          "type": "object",
+          "id": 15
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 19
+        },
+        {
+          "type": "object",
+          "id": 2
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 26
+        },
+        {
+          "type": "object",
+          "id": 5
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 25
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 28
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 28
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 16
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 11
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 11
+        },
+        {
+          "type": "object",
+          "id": 16
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "kind": "lines_equal_length",
+      "targets": [
+        {
+          "type": "object",
+          "id": 7
+        },
+        {
+          "type": "object",
+          "id": 16
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 9
+        },
+        {
+          "type": "object",
+          "id": 10
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 16
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 11
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "kind": "equal_radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 28
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 42
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "kind": "midpoint",
+      "targets": [
+        {
+          "type": "object",
+          "id": 42
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "kind": "midpoint",
+      "targets": [
+        {
+          "type": "object",
+          "id": 43
+        },
+        {
+          "type": "object",
+          "id": 11
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 44
+        },
+        {
+          "type": "object",
+          "id": 11
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 44
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 14
+        },
+        {
+          "type": "object",
+          "id": 15
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "kind": "radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "kind": "distance",
+      "targets": [
+        {
+          "type": "object",
+          "id": 2
+        },
+        {
+          "type": "object",
+          "id": 3
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 53
+        },
+        {
+          "type": "object",
+          "id": 19
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "kind": "vertical",
+      "targets": [
+        {
+          "type": "object",
+          "id": 55
+        },
+        {
+          "type": "object",
+          "id": 54
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 56
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "kind": "equal_radius",
+      "targets": [
+        {
+          "type": "object",
+          "id": 56
+        },
+        {
+          "type": "object",
+          "id": 22
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 61
+        },
+        {
+          "type": "object",
+          "id": 53
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 62
+        },
+        {
+          "type": "object",
+          "id": 54
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "kind": "perpendicular",
+      "targets": [
+        {
+          "type": "object",
+          "id": 63
+        },
+        {
+          "type": "object",
+          "id": 4
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 69
+        },
+        {
+          "type": "object",
+          "id": 62
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 67
+        },
+        {
+          "type": "object",
+          "id": 61
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 73
+        },
+        {
+          "type": "object",
+          "id": 67
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "kind": "coincident",
+      "targets": [
+        {
+          "type": "object",
+          "id": 74
+        },
+        {
+          "type": "object",
+          "id": 68
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "kind": "vertical",
+      "targets": [
+        {
+          "type": "object",
+          "id": 74
+        },
+        {
+          "type": "object",
+          "id": 69
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "kind": "tangent",
+      "targets": [
+        {
+          "type": "object",
+          "id": 4
+        },
+        {
+          "type": "object",
+          "id": 70
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

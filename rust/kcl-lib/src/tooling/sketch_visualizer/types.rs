@@ -35,6 +35,8 @@ pub enum SketchVisualizationMode {
     Dof,
     /// Color primary geometry by stable per-segment ID colors and emit the ID map.
     Ids,
+    /// Highlight tangent-constrained endpoints that look sharp instead of smooth.
+    SharpTangents,
 }
 
 /// The static visualization theme.
@@ -108,6 +110,9 @@ pub struct SketchVisualizationData {
     /// Compact degree-of-freedom facts, keyed by point and primary-segment IDs.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dof: Option<SketchVisualizationDofData>,
+    /// Suspected wrong-way tangent incidents and per-segment hit counts.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sharp_tangents: Option<SketchVisualizationSharpTangentData>,
     /// All owned sketch points, including control points.
     pub points: Vec<SketchVisualizationPointData>,
     /// Primary sketch geometry, excluding helper/control-polygon geometry.
@@ -206,6 +211,35 @@ impl SketchVisualizationDofBuckets {
             None => self.unknown.push(id),
         }
     }
+}
+
+/// Suspected sharp tangent diagnostics.
+///
+/// The detector only looks at tangent constraints whose segments are connected
+/// at endpoints. Each incident is a tangent pair whose two outgoing directions
+/// leave the shared point in roughly the same direction; smooth fillets should
+/// have opposing outgoing directions.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVisualizationSharpTangentData {
+    /// Number of sharp tangent incidents involving each segment.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub segment_counts: BTreeMap<usize, usize>,
+    /// Individual sharp tangent incidents, ordered by constraint and segment ID.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub incidents: Vec<SketchVisualizationSharpTangentIncident>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVisualizationSharpTangentIncident {
+    pub constraint_id: usize,
+    pub segment_ids: Vec<usize>,
+    pub endpoint_ids: Vec<usize>,
+    /// Dot product of the two outgoing tangent vectors. Values near 1 are sharp;
+    /// values near -1 are smooth.
+    pub alignment: f64,
+    pub angle_degrees: f64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
