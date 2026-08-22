@@ -1,4 +1,5 @@
 import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
+import { toArrayBuffer } from '@src/lib/cloudSync/projectArchive'
 import type {
   ProjectManifest,
   ProjectUploadBody,
@@ -47,7 +48,8 @@ export function isAtprotoProjectSyncCapable(project: AtprotoCadProjectRecord) {
 export function atprotoProjectRecordToRemoteProject(
   record: AtprotoRepoRecord<AtprotoCadProjectRecord>
 ): AtprotoRemoteProject | undefined {
-  if (!isAtprotoProjectSyncCapable(record.value)) {
+  const headArchive = record.value.headArchive
+  if (!isAtprotoStrongRef(headArchive)) {
     return undefined
   }
 
@@ -69,7 +71,7 @@ export function atprotoProjectRecordToRemoteProject(
         uri: record.uri,
         cid: record.cid,
       },
-      headArchive: record.value.headArchive,
+      headArchive,
     },
   }
 }
@@ -192,7 +194,7 @@ async function sha256Hex(data: Uint8Array) {
   if (globalThis.crypto?.subtle) {
     const hashBuffer = await globalThis.crypto.subtle.digest(
       'SHA-256',
-      data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength)
+      toArrayBuffer(data)
     )
     return Array.from(new Uint8Array(hashBuffer))
       .map((byte) => byte.toString(16).padStart(2, '0'))
