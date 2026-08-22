@@ -7,7 +7,10 @@ import {
   type RegistryItem,
   type RegistryItemDefinition,
 } from '@kittycad/registry'
-import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import {
+  defineBooleanExtensionSetting,
+  type ExtensionSettingDefinition,
+} from '@src/lib/settings/extensionSettings'
 import type {
   HideOnPlatformValue,
   SettingsLevel,
@@ -15,7 +18,7 @@ import type {
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 type ZdsPluginDefault = 'core' | 'off'
-type ZdsPluginActivationSettingCategory = 'modeling' | 'plugins'
+type ZdsPluginActivationSettingCategory = 'modeling' | 'plugins' | 'auth'
 
 export type ZdsPluginFeatureActivationPolicy = {
   /**
@@ -43,15 +46,36 @@ export type ZdsPluginActivationSetting = {
   pluginId: string
   category: ZdsPluginActivationSettingCategory
   settingName: string
+  /**
+   * Derive activation from a non-boolean setting value.
+   *
+   * Boolean settings get activation for free. Object or string settings can use
+   * this pure predicate to drive plugin activation from account/session state.
+   */
+  isActive?: (value: unknown) => boolean
   featurePolicy?: ZdsPluginFeatureActivationPolicy
 }
 
 export const zdsPluginActivationSettingsValueSpec =
   appendValueSpec<ZdsPluginActivationSetting>('zds-plugin-activation-settings')
 
+export function resolveZdsPluginActivation(
+  activationSetting: Pick<ZdsPluginActivationSetting, 'isActive'> | undefined,
+  value: unknown
+): boolean | undefined {
+  if (activationSetting?.isActive) {
+    return activationSetting.isActive(value)
+  }
+
+  return typeof value === 'boolean' ? value : undefined
+}
+
 type ZdsPluginActivationSettingSpec = {
   category: ZdsPluginActivationSettingCategory
   settingName: string
+  settingDefinition?: ExtensionSettingDefinition
+  contributeSetting?: boolean
+  isActive?: (value: unknown) => boolean
   title?: string
   description?: string
   commandConfig?: { inputType: 'boolean' }
@@ -108,6 +132,21 @@ export function createZdsPlugin({
         tomlKey: spec.id,
       },
     }
+  const shouldContributeActivationSetting =
+    activationSetting.contributeSetting !== false
+  const activationSettingDefinition =
+    activationSetting.settingDefinition ??
+    defineBooleanExtensionSetting({
+      defaultValue: enabledByDefault,
+      title: activationSetting.title,
+      description: activationSetting.description,
+      commandConfig: activationSetting.commandConfig,
+      hideOnLevel: activationSetting.hideOnLevel,
+      hideOnPlatform: activationSetting.hideOnPlatform,
+      hideWithoutFeature: activationSetting.hideWithoutFeature,
+      userToml: activationSetting.userToml,
+      projectToml: activationSetting.projectToml,
+    })
 
   return defineRegistryItem({
     id: `${spec.id}.zds-plugin`,
@@ -118,25 +157,20 @@ export function createZdsPlugin({
       }),
     ],
     provides: [
-      provide(settingsValueSpec, {
-        [activationSetting.category]: {
-          [activationSetting.settingName]: defineBooleanExtensionSetting({
-            defaultValue: enabledByDefault,
-            title: activationSetting.title,
-            description: activationSetting.description,
-            commandConfig: activationSetting.commandConfig,
-            hideOnLevel: activationSetting.hideOnLevel,
-            hideOnPlatform: activationSetting.hideOnPlatform,
-            hideWithoutFeature: activationSetting.hideWithoutFeature,
-            userToml: activationSetting.userToml,
-            projectToml: activationSetting.projectToml,
-          }),
-        },
-      }),
+      ...(shouldContributeActivationSetting
+        ? [
+            provide(settingsValueSpec, {
+              [activationSetting.category]: {
+                [activationSetting.settingName]: activationSettingDefinition,
+              },
+            }),
+          ]
+        : []),
       provide(zdsPluginActivationSettingsValueSpec, {
         pluginId: spec.id,
         category: activationSetting.category,
         settingName: activationSetting.settingName,
+        isActive: activationSetting.isActive,
         featurePolicy: activationSetting.featurePolicy,
       }),
     ],

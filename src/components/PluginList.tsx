@@ -11,6 +11,7 @@ import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
 import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
+  resolveZdsPluginActivation,
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
 } from '@src/registry/createZdsPlugin'
@@ -89,32 +90,55 @@ function PluginItem({
   activationSetting?: ZdsPluginActivationSetting
 }) {
   const app = useApp()
+  const settingsContext = app.settings.useSettings()
   const setting = activationSetting ?? {
     category: 'plugins',
     settingName: plugin.id,
   }
+  const settingsByCategory = settingsContext as unknown as Record<
+    string,
+    Record<string, Setting<unknown> | undefined> | undefined
+  >
+  const settingValue =
+    settingsByCategory[setting.category]?.[setting.settingName]?.current
+  const derivedActive = resolveZdsPluginActivation(
+    activationSetting,
+    settingValue
+  )
+  const usesDerivedActivation =
+    activationSetting?.isActive !== undefined && derivedActive !== undefined
 
   return (
     <div className="my-2">
       <div className="flex gap-2 mb-2">
         <h2 className="text-lg bold flex-1">{plugin.title}</h2>
-        <Toggle
-          name={`plugin-toggle-${plugin.id}`}
-          checked={resolvedService.active.value || false}
-          onChange={() => {
-            const nextActive = !resolvedService.active.value
-            const event: DynamicBooleanSetEvent = {
-              type: `set.${setting.category}.${setting.settingName}`,
-              data: {
-                level: 'user',
-                value: nextActive,
-              },
-            }
+        {usesDerivedActivation ? (
+          <span className="flex-none rounded-sm border border-chalkboard-30 px-2 py-1 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+            {resolvedService.active.value ? 'Active' : 'Inactive'}
+          </span>
+        ) : (
+          <Toggle
+            name={`plugin-toggle-${plugin.id}`}
+            checked={resolvedService.active.value || false}
+            onChange={() => {
+              if (setting.category === 'auth') {
+                return
+              }
 
-            app.settings.actor.send(event)
-          }}
-          className="flex-none"
-        />
+              const nextActive = !resolvedService.active.value
+              const event: DynamicBooleanSetEvent = {
+                type: `set.${setting.category}.${setting.settingName}`,
+                data: {
+                  level: 'user',
+                  value: nextActive,
+                },
+              }
+
+              app.settings.actor.send(event)
+            }}
+            className="flex-none"
+          />
+        )}
       </div>
       <p className="text-2 text-sm">{plugin.description}</p>
     </div>

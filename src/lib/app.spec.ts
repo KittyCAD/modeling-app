@@ -1,5 +1,5 @@
 import type { Feature } from '@kittycad/lib'
-import { pluginsValueSpec } from '@kittycad/registry'
+import { defineRegistryItem, pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
@@ -16,6 +16,7 @@ import {
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import { Setting } from '@src/lib/settings/initialSettings'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
@@ -31,6 +32,7 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -504,6 +506,80 @@ describe('project system', () => {
     } finally {
       app.dispose()
       window.electron = previousElectron
+    }
+  })
+
+  it('syncs derived plugin activation from non-boolean setting values', async () => {
+    const pluginId = 'derived-auth-plugin'
+    const app = createAppForTest({
+      registryOverrides: [
+        createZdsPlugin({
+          id: pluginId,
+          title: 'Derived auth plugin',
+          description: 'Test plugin with account-derived activation.',
+          defaultSetting: 'off',
+          items: [
+            defineRegistryItem({
+              id: 'derived-auth-plugin.item',
+            }),
+          ],
+          activationSetting: {
+            category: 'auth',
+            settingName: 'derivedAccount',
+            settingDefinition: {
+              createSetting: () =>
+                new Setting<{ status: string } | null>({
+                  defaultValue: null,
+                  validate: (value) =>
+                    value === null ||
+                    (typeof value === 'object' &&
+                      !Array.isArray(value) &&
+                      typeof value.status === 'string'),
+                }),
+            },
+            isActive: (value) =>
+              !!value &&
+              typeof value === 'object' &&
+              'status' in value &&
+              value.status === 'connected',
+          },
+        }),
+      ],
+    })
+
+    try {
+      await waitForSettingsIdle(app)
+
+      const pluginToggle = getPluginToggle(app, pluginId)
+      expect(pluginToggle.active.value).toBe(false)
+
+      app.settings.actor.send({
+        type: 'set.auth.derivedAccount',
+        data: {
+          level: 'user',
+          value: { status: 'connected' },
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(pluginToggle.active.value).toBe(true)
+
+      app.settings.actor.send({
+        type: 'set.auth.derivedAccount',
+        data: {
+          level: 'user',
+          value: null,
+        },
+        doNotPersist: true,
+      } as never)
+
+      await waitForSettingsIdle(app)
+
+      expect(pluginToggle.active.value).toBe(false)
+    } finally {
+      app.dispose()
     }
   })
 

@@ -84,6 +84,7 @@ import {
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import {
+  resolveZdsPluginActivation,
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
 } from '@src/registry/createZdsPlugin'
@@ -618,7 +619,7 @@ export class App implements AppSubsystems {
     const platform = this.getPluginActivationPlatform()
     for (const activationSetting of pluginActivationSettings.values()) {
       const featurePolicy = activationSetting.featurePolicy
-      if (!featurePolicy?.defaultEnabled) {
+      if (activationSetting.isActive || !featurePolicy?.defaultEnabled) {
         continue
       }
 
@@ -690,8 +691,11 @@ export class App implements AppSubsystems {
         snapshot,
         activationSetting
       )
-      const settingDesiredActive = settingValue?.current
-      if (typeof settingDesiredActive !== 'boolean') {
+      const settingDesiredActive = resolveZdsPluginActivation(
+        activationSetting,
+        settingValue?.current
+      )
+      if (settingDesiredActive === undefined) {
         continue
       }
       const desiredActive =
