@@ -4,6 +4,7 @@ import {
   createAtprotoOAuthRegistryItem,
 } from '@src/lib/atprotoSync'
 import { createAtprotoProjectLibraryType } from '@src/lib/atprotoSync/projectLibrary'
+import { createAtprotoSyncRuntime } from '@src/lib/atprotoSync/syncRuntime'
 
 const atprotoOAuthConnector = createAtprotoBrowserOAuthConnector()
 
@@ -12,6 +13,10 @@ export const atprotoOAuthRegistryItem = createAtprotoOAuthRegistryItem({
 })
 
 export const atprotoProjectLibraryType = createAtprotoProjectLibraryType({
+  connector: atprotoOAuthConnector,
+})
+
+export const atprotoSyncRuntime = createAtprotoSyncRuntime({
   connector: atprotoOAuthConnector,
 })
 

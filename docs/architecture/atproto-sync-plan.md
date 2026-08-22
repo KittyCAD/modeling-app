@@ -215,16 +215,16 @@ output was removed before staging.
    production `client_id` and metadata document still need a product decision.
 2. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
    identities.
-3. Wire the ATProto plugin into the generalized sync engine runtime so
-   ATProto materialization directories use the existing outbox,
-   manifest-diff, guarded-update, pull, and conflict-resolution path.
+3. Add durable ATProto sync metadata so the isolated ATProto runtime can detect
+   remote divergence before upload instead of always uploading against the
+   latest remote revision.
 4. Broaden provider-neutral error mapping for live OAuth/PDS failures.
 
 ### Sync Engine Generalization
 
-The existing cloud sync engine remains named `cloudSync`, but its core
-remote-project dependency is now provider-configurable. Zoo cloud is the
-default provider, preserving existing behavior. Other providers can supply:
+The existing cloud sync engine remains named `cloudSync`, and its core
+remote-project dependency is provider-configurable. Zoo cloud is the default
+provider, preserving existing behavior. Other providers can supply:
 
 - `CloudSyncRemoteProjectApi`: list/get/create/update/download/delete remote
   projects plus provider error classifiers for not-found, forbidden upload, and
@@ -241,6 +241,10 @@ The ATProto side now provides:
   `[cloud.<environment>].project_id`.
 - Archive upload cleanup that strips local `[atproto]` materialization metadata
   before writing a remote snapshot.
+- An isolated `atproto-sync` runtime instance owned by the ATProto plugin. It
+  subscribes to shared filesystem mutation events, watches only ATProto
+  materialization directories, and uploads changed local archives through the
+  ATProto remote adapter.
 
 Current status:
 
@@ -252,10 +256,11 @@ Current status:
   cannot leak into the default Zoo path.
 - [x] Add ATProto remote API and binding adapters.
 - [x] Test remote-only rename through a configured non-Zoo provider path.
-- [ ] Decide whether the runtime should support one active sync provider at a
-  time or multiple isolated provider engine instances.
-- [ ] Wire the `atproto-sync` plugin to configure the engine with the ATProto
-  provider hooks after OAuth authentication.
+- [x] Use multiple isolated provider runtime instances rather than one active
+  global provider.
+- [x] Wire the `atproto-sync` plugin to start the isolated ATProto runtime after
+  OAuth-gated plugin activation.
+- [ ] Add durable ATProto base revision/manifest state and conflict handling.
 
 ### Project API Adapter
 
@@ -368,8 +373,10 @@ Current status:
 - [x] Delete local materializations and their remote project records.
 - [x] Add the ATProto remote API and `[atproto].project_id` binding adapters
   needed by the generalized sync engine.
-- [ ] Configure the authenticated ATProto plugin runtime to use those sync
-  engine adapters for arbitrary local file edits.
+- [x] Configure the authenticated ATProto plugin runtime to use those adapters
+  for local file edit uploads.
+- [ ] Add durable base tracking so local edit uploads cannot overwrite remote
+  changes that happened after the local materialization base.
 
 ## Tests And Acceptance Criteria
 

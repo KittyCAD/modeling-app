@@ -8,6 +8,7 @@ import {
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { reportRejection } from '@src/lib/trap'
 
 export * from '@src/lib/cloudSync/engine'
 export { retryCloudSyncEngine as retryCloudSync } from '@src/lib/cloudSync/engine'
@@ -26,6 +27,38 @@ export type {
 } from '@src/lib/cloudSync/types'
 
 let fsObserverInstalled = false
+
+export type CloudSyncFileSystemMutationListener = {
+  writeLike?: (targetPath: string) => Promise<void> | void
+  remove?: (targetPath: string) => Promise<void> | void
+  rename?: (sourcePath: string, targetPath: string) => Promise<void> | void
+}
+
+const fsMutationListeners = new Set<CloudSyncFileSystemMutationListener>()
+
+async function notifyFileSystemMutationListeners(
+  notify: (
+    listener: CloudSyncFileSystemMutationListener
+  ) => Promise<void> | void
+) {
+  await Promise.all(
+    Array.from(fsMutationListeners, async (listener) => {
+      await Promise.resolve(notify(listener)).catch(reportRejection)
+    })
+  )
+}
+
+export function addCloudSyncFileSystemMutationListener(
+  listener: CloudSyncFileSystemMutationListener,
+  activeFs: IZooDesignStudioFS = fsZds
+) {
+  installCloudSyncFileSystemObserver(activeFs)
+  fsMutationListeners.add(listener)
+
+  return () => {
+    fsMutationListeners.delete(listener)
+  }
+}
 
 /**
  * Captures bound references to the active filesystem methods before cloud sync
@@ -86,11 +119,17 @@ export function installCloudSyncFileSystemObserver(
   ) => {
     const result = await localFs.writeFile(targetPath, data, options)
     await notifyCloudSyncWriteLikeMutation(targetPath)
+    await notifyFileSystemMutationListeners((listener) =>
+      listener.writeLike?.(targetPath)
+    )
     return result
   }
   const mkdir: IZooDesignStudioFS['mkdir'] = async (targetPath, options) => {
     const result = await localFs.mkdir(targetPath, options)
     await notifyCloudSyncWriteLikeMutation(targetPath)
+    await notifyFileSystemMutationListeners((listener) =>
+      listener.writeLike?.(targetPath)
+    )
     return result
   }
   const cp: IZooDesignStudioFS['cp'] = async (
@@ -100,11 +139,17 @@ export function installCloudSyncFileSystemObserver(
   ) => {
     const result = await localFs.cp(sourcePath, targetPath, options)
     await notifyCloudSyncWriteLikeMutation(targetPath)
+    await notifyFileSystemMutationListeners((listener) =>
+      listener.writeLike?.(targetPath)
+    )
     return result
   }
   const rm: IZooDesignStudioFS['rm'] = async (targetPath, options) => {
     const result = await localFs.rm(targetPath, options)
     await notifyCloudSyncRemoveMutation(targetPath)
+    await notifyFileSystemMutationListeners((listener) =>
+      listener.remove?.(targetPath)
+    )
     return result
   }
   const rename: IZooDesignStudioFS['rename'] = async (
@@ -114,6 +159,9 @@ export function installCloudSyncFileSystemObserver(
   ) => {
     const result = await localFs.rename(sourcePath, targetPath, options)
     await notifyCloudSyncRenameMutation(sourcePath, targetPath)
+    await notifyFileSystemMutationListeners((listener) =>
+      listener.rename?.(sourcePath, targetPath)
+    )
     return result
   }
 
