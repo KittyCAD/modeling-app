@@ -19,8 +19,10 @@ the provider-neutral `ConnectedIdentity` registry service, a Zoo auth identity
 projection, an SDK-backed ATProto browser OAuth connector, derived plugin
 activation from non-boolean settings, a gated `atproto-sync` project library
 plugin, and a live XRPC-backed ATProto sync client behind the tested adapter
-interface. The `atproto-sync` plugin activates only when `auth.atproto` contains
-a sync-capable connected identity.
+interface. The OAuth session now produces the API config used by ATProto project
+library operations, and the library can list, create, open/materialize, rename,
+and delete ATProto-backed projects. The `atproto-sync` plugin activates only
+when `auth.atproto` contains a sync-capable connected identity.
 
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
@@ -206,16 +208,15 @@ output was removed before staging.
 
 ### Next Work Order
 
-1. Wire the `atproto` project library operations to the adapter using the
-   connected ATProto OAuth session, including DPoP-signed XRPC requests through
-   the SDK session fetch handler.
-2. Finalize production OAuth client metadata hosting and callback behavior. The
+1. Finalize production OAuth client metadata hosting and callback behavior. The
    browser connector works through `@atproto/oauth-client-browser`, but the
    production `client_id` and metadata document still need a product decision.
-3. Decide and implement remote delete semantics: delete record vs tombstone
-   record hidden from listings.
-4. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
+2. Add the unified Settings "Connected accounts" surface for Zoo and ATProto
    identities.
+3. Add a background/local-edit sync path on top of the archive-first adapter.
+   The project library operations can publish and materialize projects, but they
+   do not yet watch local file changes and upload a fresh archive automatically.
+4. Broaden provider-neutral error mapping for live OAuth/PDS failures.
 
 ### Project API Adapter
 
@@ -294,15 +295,21 @@ Implementation status:
 The minimal `atproto` project library type is registered behind the gated
 `atproto-sync` plugin. The plugin activates from the `auth.atproto` identity
 setting when the connected identity has the sync permission set and blob-upload
-scope. It intentionally has no project operations yet because the project
-library still needs to bind operations to the OAuth session-backed adapter.
+scope. It binds operations to the current OAuth identity by asking the ATProto
+connector for an OAuth-backed project API config. The browser SDK session fetch
+handler is the bridge that signs XRPC requests for the adapter.
 
 - Library settings bind to a connected ATProto identity and optional repo DID.
 - Remote projects materialize through the same archive flow as cloud-backed
   projects.
 - Provider credentials stay in identity storage, not `project.toml`.
 - Local project metadata stores an adapter remote ID and revision. For V1, the
-  remote ID is the project AT URI.
+  remote ID is the project AT URI in `[atproto].project_id`.
+- Uploads strip local ATProto metadata from the archive before writing the
+  remote snapshot, so local materialization markers do not become portable
+  project data.
+- V1 delete semantics directly delete the remote project record. Tombstone
+  records can be revisited if discovery or audit requirements need them.
 
 Current status:
 
@@ -310,10 +317,17 @@ Current status:
 - [x] Provide a default `atproto://franknoirot.co` library setting template.
 - [x] Gate the `atproto-sync` plugin from the `auth.atproto` object setting
   instead of a dedicated boolean plugin toggle.
-- [x] Keep operations unavailable until live identity-backed adapter wiring
-  exists.
-- [ ] Add `readRealizations`, create/open/materialize, update, rename, and
-  delete operations.
+- [x] Keep project library operations behind live identity-backed adapter
+  wiring.
+- [x] Add Home project entries for sync-capable remote ATProto projects.
+- [x] Open remote-only projects by downloading `headArchive`, creating a local
+  project, and writing the `[atproto].project_id` marker.
+- [x] Create local projects and publish them through `project + archive`
+  records.
+- [x] Rename local-backed and remote-only projects through the archive-first
+  adapter.
+- [x] Delete local materializations and their remote project records.
+- [ ] Add an explicit background sync/watch path for arbitrary local file edits.
 
 ## Tests And Acceptance Criteria
 
@@ -354,14 +368,13 @@ Current status:
 - [x] A concrete ATProto OAuth SDK or desktop bridge completes the real auth
   flow.
 - [ ] Settings shows Zoo and ATProto connected accounts in one management surface.
-- [ ] The ATProto library type lists only sync-capable remote projects and
+- [x] The ATProto library type lists only sync-capable remote projects and
   materializes a selected archive into a valid local ZDS project.
 
 ## Open Follow-Ups
 
-- Decide whether the project record should be deleted or tombstoned when ZDS
-  deletes a remote project. The adapter must hide deleted/tombstoned projects
-  either way.
+- Revisit direct delete vs tombstone records if ATProto project discovery needs
+  auditability or soft-delete behavior. V1 uses direct project-record deletion.
 - Define the maximum supported archive size for V1 based on the target PDS blob
   limits. Chunking is explicitly deferred.
 - Decide whether `source` sidecar records should be emitted opportunistically
