@@ -20,6 +20,7 @@ import {
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
+import { newKclFile } from '@src/lang/project'
 import type {
   ArtifactGraph,
   ExecCallbacks,
@@ -49,6 +50,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  FILE_EXT,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import fsZds from '@src/lib/fs-zds'
@@ -163,10 +165,14 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
-import { isPathNotFoundError } from '@src/lib/desktop'
+import {
+  getProjectInfo,
+  isPathNotFoundError,
+  readAppSettingsFile,
+} from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { getStringAfterLastSeparator, toArchivePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
@@ -183,6 +189,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { FsOperationQueueService } from '@src/registry/contracts/fsOperationQueue'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -325,6 +332,54 @@ declare global {
 window.EditorSelection = EditorSelection
 window.EditorView = EditorView
 
+type ZDSProjectFileContents = string | Uint8Array<ArrayBuffer>
+
+interface ZDSProjectFileWriteInput {
+  path: string
+  contents?: ZDSProjectFileContents
+  overwrite?: boolean
+  useDefaultKclContents?: boolean
+}
+
+interface ZDSProjectPathInput {
+  path: string
+}
+
+interface ZDSProjectRenameInput {
+  oldPath: string
+  newPath: string
+}
+
+interface ZDSProjectCopyMoveInput {
+  sourcePath: string
+  targetPath: string
+}
+
+interface ZDSProjectFilePatchInput {
+  files: readonly {
+    path: string
+    contents: string | null
+  }[]
+}
+
+/**
+ * Narrow filesystem mutation surface supplied by projectSession.
+ *
+ * ZDSProject owns project-level mutation semantics, but the actual filesystem
+ * effects run through the registry queue for ordering and journaling.
+ */
+export type ZDSProjectFileSystemOperations = Pick<
+  FsOperationQueueService,
+  'cp' | 'mkdir' | 'rename' | 'rm' | 'writeFile'
+>
+
+export interface ZDSProjectFileSystemOperationProvider {
+  getFileSystemOperations: () => ZDSProjectFileSystemOperations
+}
+
+const normalizeProjectPathForComparison = (path: string) =>
+  fsZds.resolve(path).replace(/\\/g, '/')
+
 /**
  * A project contains 0 or more editors, one of which is the "executing" one
  * that connects to the geometry engine.
@@ -354,11 +409,15 @@ export class ZDSProject {
   }))
 
   private fileWatcherId = uuidv4()
+  private fileSystemOperations: ZDSProjectFileSystemOperations
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App
+    private app: App,
+    fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
   ) {
+    this.fileSystemOperations =
+      fileSystemOperationProvider.getFileSystemOperations()
     this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
       projectIORefSignal.value.path,
@@ -377,8 +436,12 @@ export class ZDSProject {
   }
 
   /** Open a project, with the option to open an initial editor too */
-  static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
+  static async open(
+    projectRef: Signal<Project>,
+    app: App,
+    fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider
+  ) {
+    return new ZDSProject(projectRef, app, fileSystemOperationProvider)
   }
 
   get executingPath() {
@@ -391,6 +454,7 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -528,6 +592,291 @@ export class ZDSProject {
       editor.close()
     }
     this.editors.clear()
+  }
+
+  private isPathInsideProject(path: string) {
+    const projectPath = normalizeProjectPathForComparison(this.path)
+    const targetPath = normalizeProjectPathForComparison(path)
+    return (
+      targetPath === projectPath || targetPath.startsWith(`${projectPath}/`)
+    )
+  }
+
+  private getPathOutsideProjectError(...paths: string[]) {
+    for (const path of paths) {
+      if (!this.isPathInsideProject(path)) {
+        return new Error(`Path "${path}" is outside project "${this.path}".`)
+      }
+    }
+    return undefined
+  }
+
+  private ensureProjectPaths(...paths: string[]) {
+    const outsideProjectError = this.getPathOutsideProjectError(...paths)
+    return outsideProjectError
+      ? Promise.reject(outsideProjectError)
+      : Promise.resolve()
+  }
+
+  private isPathAtOrUnder(path: string, targetPath: string) {
+    const normalizedPath = normalizeProjectPathForComparison(path)
+    const normalizedTargetPath = normalizeProjectPathForComparison(targetPath)
+    return (
+      normalizedPath === normalizedTargetPath ||
+      normalizedPath.startsWith(`${normalizedTargetPath}/`)
+    )
+  }
+
+  private replaceProjectEntryPath(
+    path: string,
+    oldPath: string,
+    newPath: string
+  ) {
+    if (!this.isPathAtOrUnder(path, oldPath)) {
+      return path
+    }
+    if (
+      normalizeProjectPathForComparison(path) ===
+      normalizeProjectPathForComparison(oldPath)
+    ) {
+      return newPath
+    }
+    return newPath + path.slice(oldPath.length)
+  }
+
+  private async pathExists(path: string) {
+    try {
+      await fsZds.stat(path)
+      return true
+    } catch (error) {
+      if (isPathNotFoundError(error)) {
+        return false
+      }
+      return Promise.reject(error)
+    }
+  }
+
+  private async getFileWriteContents({
+    path,
+    contents,
+    useDefaultKclContents = false,
+  }: ZDSProjectFileWriteInput): Promise<Uint8Array<ArrayBuffer>> {
+    if (contents instanceof Uint8Array) {
+      return contents
+    }
+
+    const textContents = contents ?? ''
+    if (!useDefaultKclContents || fsZds.extname(path) !== FILE_EXT) {
+      return new Uint8Array(File.encoder.encode(textContents))
+    }
+
+    const wasmInstance = await this.app.wasmPromise
+    const configuration = await readAppSettingsFile(wasmInstance)
+    if (err(configuration)) {
+      return Promise.reject(configuration)
+    }
+
+    const codeToWrite = newKclFile(
+      textContents,
+      configuration?.settings?.modeling?.base_unit ??
+        DEFAULT_DEFAULT_LENGTH_UNIT,
+      wasmInstance
+    )
+    if (err(codeToWrite)) {
+      return Promise.reject(codeToWrite)
+    }
+
+    return new Uint8Array(File.encoder.encode(codeToWrite))
+  }
+
+  private rewriteProjectEntryPaths(oldPath: string, newPath: string) {
+    this.files.forEach((file) => {
+      const nextPath = this.replaceProjectEntryPath(file.path, oldPath, newPath)
+      if (nextPath !== file.path) {
+        file.path = nextPath
+      }
+    })
+
+    for (const [pathSignal, editor] of this.editors) {
+      const nextPath = this.replaceProjectEntryPath(
+        pathSignal.value,
+        oldPath,
+        newPath
+      )
+      if (nextPath !== pathSignal.value) {
+        pathSignal.value = nextPath
+        editor.path = nextPath
+      }
+    }
+  }
+
+  private closeProjectEntryEditors(path: string) {
+    for (const [pathSignal, editor] of this.editors) {
+      if (!this.isPathAtOrUnder(pathSignal.value, path)) {
+        continue
+      }
+
+      editor.close()
+      this.editors.delete(pathSignal)
+      if (this.#executingPath.value === pathSignal) {
+        this.#executingPath.value = null
+      }
+    }
+  }
+
+  private forgetProjectEntryFiles(path: string) {
+    this.files = this.files.filter(
+      (file) => !this.isPathAtOrUnder(file.path, path)
+    )
+  }
+
+  private async movePath(sourcePath: string, targetPath: string) {
+    const fileSystemOperations = this.fileSystemOperations
+
+    await fileSystemOperations.mkdir(fsZds.dirname(targetPath), {
+      recursive: true,
+    })
+    try {
+      await fileSystemOperations.rename(sourcePath, targetPath)
+      return
+    } catch {
+      // Fall back to copy/remove for cases like cross-device moves.
+    }
+
+    await fileSystemOperations.cp(sourcePath, targetPath, { recursive: true })
+    await fileSystemOperations.rm(sourcePath, { recursive: true })
+  }
+
+  async refreshProjectTree() {
+    const refreshedProject = await getProjectInfo(
+      this.path,
+      await this.app.wasmPromise
+    )
+    const currentProject = this.projectIORefSignal.value
+    const ownedProject = {
+      ...refreshedProject,
+      ...(currentProject.libraryPath
+        ? { libraryPath: currentProject.libraryPath }
+        : {}),
+      ...(currentProject.libraryType
+        ? { libraryType: currentProject.libraryType }
+        : {}),
+    }
+    this.projectIORefSignal.value = ownedProject
+    return ownedProject
+  }
+
+  async createFile(input: ZDSProjectFileWriteInput) {
+    return this.writeFile({
+      ...input,
+      overwrite: false,
+      useDefaultKclContents: input.useDefaultKclContents ?? true,
+    })
+  }
+
+  async writeFile(input: ZDSProjectFileWriteInput) {
+    await this.ensureProjectPaths(input.path)
+
+    if (input.overwrite === false && (await this.pathExists(input.path))) {
+      return Promise.reject(new Error(`File already exists: ${input.path}`))
+    }
+
+    const fileSystemOperations = this.fileSystemOperations
+    await fileSystemOperations.mkdir(fsZds.dirname(input.path), {
+      recursive: true,
+    })
+    await fileSystemOperations.writeFile(
+      input.path,
+      await this.getFileWriteContents(input)
+    )
+    return input.path
+  }
+
+  async createFolder(input: ZDSProjectPathInput) {
+    await this.ensureProjectPaths(input.path)
+
+    if (await this.pathExists(input.path)) {
+      return Promise.reject(new Error(`Folder already exists: ${input.path}`))
+    }
+
+    await this.fileSystemOperations.mkdir(input.path, { recursive: true })
+    return input.path
+  }
+
+  async renameEntry(input: ZDSProjectRenameInput) {
+    await this.ensureProjectPaths(input.oldPath, input.newPath)
+
+    if (input.oldPath === input.newPath) {
+      return input.newPath
+    }
+    if (await this.pathExists(input.newPath)) {
+      return Promise.reject(new Error(`Path already exists: ${input.newPath}`))
+    }
+
+    await this.fileSystemOperations.rename(input.oldPath, input.newPath)
+    this.rewriteProjectEntryPaths(input.oldPath, input.newPath)
+    return input.newPath
+  }
+
+  async deleteEntry(input: ZDSProjectPathInput) {
+    await this.ensureProjectPaths(input.path)
+
+    await this.fileSystemOperations.rm(input.path, { recursive: true })
+    this.closeProjectEntryEditors(input.path)
+    this.forgetProjectEntryFiles(input.path)
+    return input.path
+  }
+
+  async copyEntry(input: ZDSProjectCopyMoveInput) {
+    await this.ensureProjectPaths(input.sourcePath, input.targetPath)
+
+    await this.fileSystemOperations.cp(input.sourcePath, input.targetPath, {
+      recursive: true,
+      force: false,
+    })
+    return input.targetPath
+  }
+
+  async moveEntry(input: ZDSProjectCopyMoveInput) {
+    await this.ensureProjectPaths(input.sourcePath, input.targetPath)
+
+    await this.movePath(input.sourcePath, input.targetPath)
+    this.rewriteProjectEntryPaths(input.sourcePath, input.targetPath)
+    return input.targetPath
+  }
+
+  async archiveEntry(input: ZDSProjectPathInput) {
+    await this.ensureProjectPaths(input.path)
+
+    const archivedPath = await toArchivePath(input.path)
+    await this.movePath(input.path, archivedPath)
+    this.closeProjectEntryEditors(input.path)
+    this.forgetProjectEntryFiles(input.path)
+    return { archivedPath }
+  }
+
+  async applyFilePatch(input: ZDSProjectFilePatchInput) {
+    await this.ensureProjectPaths(...input.files.map((file) => file.path))
+
+    for (const file of input.files) {
+      if (file.contents === null) {
+        await this.fileSystemOperations.rm(file.path)
+      } else {
+        await this.writeFile({
+          path: file.path,
+          contents: file.contents,
+          overwrite: true,
+          useDefaultKclContents: false,
+        })
+      }
+    }
+
+    await this.syncReplayedFilesToRust(
+      input.files.map((file) => ({
+        absolutePath: file.path,
+        nextContent: file.contents,
+      }))
+    )
   }
 
   /** Handle updates from the disk representation of the project */
