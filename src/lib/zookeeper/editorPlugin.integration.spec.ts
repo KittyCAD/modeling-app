@@ -1390,7 +1390,9 @@ async function createProjectHarness(files: Record<string, string>) {
     registryOverrides: [createTestWasmRegistryItem()],
   })
   apps.push(app)
-  const openedProject = await app.openProject(project)
+  const openedProject = await app.registry
+    .get(projectSession)
+    .openProject(project)
   const kclManager = await openedProject.openEditor(
     fsZds.join(projectPath, 'main.kcl')
   )

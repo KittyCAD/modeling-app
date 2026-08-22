@@ -4,9 +4,18 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { signal } from '@preact/signals-core'
 import { createEmptyAst } from '@src/editor/plugins/ast'
-import { File, KclManager } from '@src/lang/KclManager'
+import {
+  File,
+  KclManager,
+  ZDSProject,
+  type ZDSProjectFileSystemOperationProvider,
+  type ZDSProjectFileSystemOperations,
+  type ZDSProjectRuntime,
+} from '@src/lang/KclManager'
 import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
+import type { Project } from '@src/lib/project'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -104,6 +113,39 @@ function enableSketchSolveEditorExecution(kclManager: KclManager) {
   } as unknown as typeof kclManager.engineCommandManager.connection
 }
 
+function createProjectFileListTestProject() {
+  const projectRef = signal<Project>({
+    name: 'project',
+    path: '/tmp/project',
+    default_file: '/tmp/project/main.kcl',
+    directory_count: 0,
+    kcl_file_count: 2,
+    metadata: null,
+    readWriteAccess: true,
+    children: [
+      {
+        name: 'main.kcl',
+        path: '/tmp/project/main.kcl',
+        children: null,
+      },
+      {
+        name: 'deleted.kcl',
+        path: '/tmp/project/deleted.kcl',
+        children: null,
+      },
+    ],
+  })
+  const fileSystemOperationProvider: ZDSProjectFileSystemOperationProvider = {
+    getFileSystemOperations: () => ({}) as ZDSProjectFileSystemOperations,
+  }
+
+  return new ZDSProject(
+    projectRef,
+    {} as ZDSProjectRuntime,
+    fileSystemOperationProvider
+  )
+}
+
 afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
@@ -167,6 +209,35 @@ describe('KclManager live operation updates', () => {
       expect.stringContaining('Live operation updates failed')
     )
     consoleErrorSpy.mockRestore()
+  })
+})
+
+describe('ZDSProject project files', () => {
+  it('prunes stale project files when serializing files for Rust', async () => {
+    const project = createProjectFileListTestProject()
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockImplementation(async (path) => {
+        if (path === '/tmp/project/deleted.kcl') {
+          return Promise.reject('ENOENT')
+        }
+        return 'cube(1)'
+      })
+
+    const files = await (
+      project as unknown as {
+        getAllKclFiles: () => Promise<{ path: string; text: string }[]>
+      }
+    ).getAllKclFiles()
+
+    expect(files).toEqual([
+      { id: 0, path: '/tmp/project/main.kcl', text: 'cube(1)' },
+    ])
+    expect(project.files.map((file) => file.path)).toEqual([
+      '/tmp/project/main.kcl',
+    ])
+
+    readSpy.mockRestore()
   })
 })
 
