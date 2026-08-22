@@ -51,6 +51,14 @@ vi.mock('@atproto/oauth-client-browser', () => ({
   BrowserOAuthClient: defaultBrowserOAuthClientMock.BrowserOAuthClient,
 }))
 
+function setTestUrl(url: string) {
+  ;(
+    globalThis as {
+      happyDOM?: { setURL: (nextUrl: string) => void }
+    }
+  ).happyDOM?.setURL(url)
+}
+
 function createSession({
   did = 'did:plc:frank',
   scope = `atproto ${ATPROTO_AUTH_SYNC_SCOPE} ${ATPROTO_ARCHIVE_BLOB_SCOPE}`,
@@ -77,6 +85,7 @@ function createSession({
 
 describe('ATProto browser OAuth connector', () => {
   beforeEach(() => {
+    setTestUrl('http://localhost:3000/')
     defaultBrowserOAuthClientMock.constructorSpy.mockReset()
     defaultBrowserOAuthClientMock.setClient(undefined)
   })
@@ -132,6 +141,37 @@ describe('ATProto browser OAuth connector', () => {
     expect(identity).toMatchObject({
       provider: 'atproto',
       did: 'did:plc:callback',
+      status: 'connected',
+    })
+  })
+
+  it('initializes the default SDK client on ATProto OAuth fragment callback routes', async () => {
+    window.history.pushState(null, '', '/#code=oauth-code&state=oauth-state')
+    vi.stubGlobal('indexedDB', {})
+    vi.stubGlobal('localStorage', {})
+    vi.stubGlobal('BroadcastChannel', class BroadcastChannel {})
+    const client = {
+      init: vi.fn().mockResolvedValue({
+        session: createSession({ did: 'did:plc:fragment-callback' }),
+      }),
+      restore: vi.fn(),
+      revoke: vi.fn(),
+      signInPopup: vi.fn(),
+    }
+    defaultBrowserOAuthClientMock.setClient(client)
+    const connector = createAtprotoBrowserOAuthConnector({
+      now: () => new Date('2026-08-22T00:00:00.000Z'),
+    })
+
+    const identity = await connector.initialize?.()
+
+    expect(defaultBrowserOAuthClientMock.constructorSpy).toHaveBeenCalledTimes(
+      1
+    )
+    expect(client.init).toHaveBeenCalledWith(true)
+    expect(identity).toMatchObject({
+      provider: 'atproto',
+      did: 'did:plc:fragment-callback',
       status: 'connected',
     })
   })
@@ -198,7 +238,7 @@ describe('ATProto browser OAuth connector', () => {
   })
 
   it('declares requested sync scopes in default loopback client metadata', async () => {
-    window.history.pushState(null, '', '/settings')
+    setTestUrl('http://127.0.0.1:3000/settings')
     vi.stubGlobal('indexedDB', {})
     vi.stubGlobal('localStorage', {})
     vi.stubGlobal('BroadcastChannel', class BroadcastChannel {})
@@ -239,6 +279,25 @@ describe('ATProto browser OAuth connector', () => {
     expect(client.signInPopup).toHaveBeenCalledWith('franknoirot.co', {
       scope,
     })
+  })
+
+  it('moves localhost app windows to loopback before default popup sign-in', async () => {
+    setTestUrl('http://localhost:3000/#/settings?tab=auth')
+    const redirectToLoopback = vi.fn()
+    const connector = createAtprotoBrowserOAuthConnector({
+      redirectToLoopback,
+    })
+
+    void connector.connect({
+      input: 'franknoirot.co',
+      scopes: ATPROTO_OAUTH_SCOPES,
+    })
+    await Promise.resolve()
+
+    expect(redirectToLoopback).toHaveBeenCalledWith(
+      'http://127.0.0.1:3000/#/settings?tab=auth'
+    )
+    expect(defaultBrowserOAuthClientMock.constructorSpy).not.toHaveBeenCalled()
   })
 
   it('builds project API configs that use the SDK session fetch handler', async () => {

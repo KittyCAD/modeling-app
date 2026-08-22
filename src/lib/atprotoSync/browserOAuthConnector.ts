@@ -28,6 +28,7 @@ export type AtprotoBrowserOAuthConnectorOptions = {
   fetch?: BrowserOAuthClientOptions['fetch']
   defaultInput?: string | (() => string | undefined)
   now?: () => Date
+  redirectToLoopback?: (href: string) => void
 }
 
 function scopesFromTokenInfoScope(scope: string): readonly string[] {
@@ -126,13 +127,33 @@ function createDefaultClientMetadata():
   }
 }
 
+function hasOAuthCallbackParams(params: URLSearchParams) {
+  return params.has('state') && (params.has('code') || params.has('error'))
+}
+
 function hasAtprotoOAuthCallbackParams() {
   if (typeof window === 'undefined') {
     return false
   }
 
-  const params = new URLSearchParams(window.location.search)
-  return params.has('code') && params.has('state')
+  return (
+    hasOAuthCallbackParams(new URLSearchParams(window.location.search)) ||
+    hasOAuthCallbackParams(new URLSearchParams(window.location.hash.slice(1)))
+  )
+}
+
+function getLoopbackHrefForCurrentLocation() {
+  if (
+    typeof window === 'undefined' ||
+    window.location.protocol !== 'http:' ||
+    window.location.hostname !== 'localhost'
+  ) {
+    return undefined
+  }
+
+  const loopbackUrl = new URL(window.location.href)
+  loopbackUrl.hostname = '127.0.0.1'
+  return loopbackUrl.href
 }
 
 function sessionFetchHandler(session: OAuthSession): typeof fetch {
@@ -182,6 +203,9 @@ export function createAtprotoBrowserOAuthConnector({
   fetch,
   defaultInput,
   now = () => new Date(),
+  redirectToLoopback = (href) => {
+    window.location.href = href
+  },
 }: AtprotoBrowserOAuthConnectorOptions = {}): AtprotoOAuthConnector {
   let clientPromise: Promise<BrowserOAuthClientLike> | undefined
   let initializationPromise: Promise<OAuthSession | undefined> | undefined
@@ -284,6 +308,14 @@ export function createAtprotoBrowserOAuthConnector({
       const input = resolveDefaultInput(options.input, defaultInput)
       if (!input) {
         throw new Error('Enter an ATProto handle, DID, or PDS URL.')
+      }
+
+      if (!client && !createClient) {
+        const loopbackHref = getLoopbackHrefForCurrentLocation()
+        if (loopbackHref) {
+          redirectToLoopback(loopbackHref)
+          return new Promise<AtprotoOAuthIdentity>(() => undefined)
+        }
       }
 
       const session = await (await getClient()).signInPopup(input, {
