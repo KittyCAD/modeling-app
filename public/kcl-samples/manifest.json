@@ -907,6 +907,27 @@
       "Manufacturing",
       "Construction"
     ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
+    "multipleFiles": true,
+    "title": "Pipe and Flange Assembly",
+    "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
+    "files": [
+      "1120t74-pipe.kcl",
+      "68095k348-flange.kcl",
+      "91251a404-bolt.kcl",
+      "9472k188-gasket.kcl",
+      "95479a127-hex-nut.kcl",
+      "98017a257-washer.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Manufacturing",
+      "Construction"
+    ],
     "pathFromProjectDirectoryToFirstFile": "pipe-straight/main.kcl",
     "multipleFiles": false,
     "title": "Horizontal Pipe Spool",
