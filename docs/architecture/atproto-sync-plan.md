@@ -16,7 +16,8 @@ needed for v1.
 Implementation status on 2026-08-22: the branch now includes the local lexicon
 catalog, pure ZDS/ATProto mappers, a tested ATProto project API adapter contract,
 the provider-neutral `ConnectedIdentity` registry service, a Zoo auth identity
-projection, and a minimal `atproto` project library type registration.
+projection, a minimal `atproto` project library type registration, and a live
+XRPC-backed ATProto sync client behind the tested adapter interface.
 
 V1 sync is public and experimental. Private encrypted archives, archive
 chunking, and file-record reconstruction are out of scope for the first pass.
@@ -202,15 +203,13 @@ output was removed before staging.
 
 ### Next Work Order
 
-1. Add a real ATProto client implementation behind the tested
-   `AtprotoCadSyncClient` interface.
-2. Add the ATProto identity provider using OAuth and the `authSync` permission
+1. Add the ATProto identity provider using OAuth and the `authSync` permission
    set.
-3. Decide and implement remote delete semantics: delete record vs tombstone
+2. Decide and implement remote delete semantics: delete record vs tombstone
    record hidden from listings.
-4. Wire the `atproto` project library operations to the adapter once identity
+3. Wire the `atproto` project library operations to the adapter once identity
    and client behavior are available.
-5. Add Settings UI for connected accounts after Zoo and ATProto identities share
+4. Add Settings UI for connected accounts after Zoo and ATProto identities share
    the same service surface.
 
 ### Project API Adapter
@@ -244,8 +243,12 @@ Current status:
 - [x] Archive-first create, update, download, list, get, and delete adapter
   functions.
 - [x] Guarded update tests using the project record CID as `expected_revision`.
-- [ ] Live ATProto client implementation.
-- [ ] Provider-neutral error mapping for live OAuth/PDS failures.
+- [x] Live XRPC client implementation for list/get/put/delete records,
+  uploadBlob, and sync.getBlob.
+- [x] XRPC tests for pagination, auth headers, blob CID extraction, Retry-After,
+  and `InvalidSwap` to stale-revision mapping.
+- [ ] Provider-neutral error mapping for live OAuth/PDS failures beyond stale
+  revision and generic XRPC metadata.
 
 ### Connected Identity
 
@@ -357,6 +360,10 @@ Current status:
 - ATProto Blob spec: https://atproto.com/specs/blob
 - ATProto Sync spec: https://atproto.com/specs/sync
 - ATProto Permissions spec: https://atproto.com/specs/permission
+- ATProto repo XRPC lexicons:
+  https://github.com/bluesky-social/atproto/tree/main/lexicons/com/atproto/repo
+- ATProto sync XRPC lexicons:
+  https://github.com/bluesky-social/atproto/tree/main/lexicons/com/atproto/sync
 - Current ZDS cloud sync types: `src/lib/cloudSync/types.ts`
 - Current ZDS cloud project API adapter: `src/lib/cloudSync/cloudApi.ts`
 - Current ZDS archive preparation: `src/lib/cloudSync/projectArchive.ts`
