@@ -9,8 +9,7 @@ KCL Engine error
     ╭─[66:17]
  65 │ 
  66 │ ballEndHandle = intersect([ballEnd, rawHandle])
-    ·                 ───────────────┬───────────────┬
-    ·                                ╰── tests/consumed_solid_original_issue/input.kcl
+    ·                 ───────────────┬───────────────
     ·                                ╰── tests/consumed_solid_original_issue/input.kcl
     ╰────
   ╰─▶ KCL Engine error

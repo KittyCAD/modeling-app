@@ -26,6 +26,7 @@ export enum ClientErrorCode {
   DesktopChildProcessGone = 'desktop_child_process_gone',
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',
+  EngineBackendDisconnect = 'engine_backend_disconnect',
   EngineDisconnect = 'engine_disconnect',
   LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
