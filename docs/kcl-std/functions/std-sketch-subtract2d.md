@@ -16,8 +16,11 @@ subtract2d(
 ): Sketch
 ```
 
-This is part of sketch v1 and is deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+This is part of sketch v1 and is deprecated. In KCL 2, construct the outer
+boundary and hole as segments inside a
+[`sketch`](/docs/kcl-std/functions/std-sketch-sketch), then select the
+required bounded face with
+[`region`](/docs/kcl-std/functions/std-sketch-region).
 
 ### Arguments
 
