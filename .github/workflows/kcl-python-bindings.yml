@@ -147,7 +147,11 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version-file: .tool-versions
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
       - name: Install sccache
         uses: taiki-e/install-action@sccache
       - name: Build wheels
@@ -165,6 +169,11 @@ jobs:
           # `python3 -m pip install`, which this image's Homebrew Python
           # refuses under PEP 668. The step above installs it instead.
           sccache: 'false'
+      - name: sccache stats
+        # maturin-action prints these itself only when its own `sccache` input
+        # is on.
+        if: always()
+        run: sccache --show-stats
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
