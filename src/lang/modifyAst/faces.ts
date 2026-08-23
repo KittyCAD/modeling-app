@@ -30,6 +30,7 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getFaceCodeRef,
+  getSweepArtifactsFromBodyArtifact,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import {
@@ -1058,8 +1059,10 @@ export function retrieveFaceSelectionsFromOpArgs(
     return solids
   }
 
-  const sweepIds = solids.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'sweep' ? s.artifact.id : []
+  const sweepIds = solids.graphSelections.flatMap((selection) =>
+    getSweepArtifactsFromBodyArtifact(selection.artifact, artifactGraph).map(
+      (sweep) => sweep.id
+    )
   )
   if (sweepIds.length === 0) {
     return new Error('No sweep artifact found in solids selection')
