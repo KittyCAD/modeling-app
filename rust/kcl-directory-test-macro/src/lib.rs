@@ -4,8 +4,48 @@ use convert_case::Casing;
 use proc_macro::TokenStream;
 use quote::format_ident;
 use quote::quote;
+use syn::Ident;
 use syn::LitStr;
+use syn::Token;
+use syn::bracketed;
+use syn::parse::Parse;
+use syn::parse::ParseStream;
 use syn::parse_macro_input;
+use syn::punctuated::Punctuated;
+
+struct TestAllDirsArgs {
+    path: LitStr,
+    exclude: Vec<String>,
+}
+
+impl Parse for TestAllDirsArgs {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+        let path = input.parse()?;
+        let mut exclude = Vec::new();
+
+        if !input.is_empty() {
+            input.parse::<Token![,]>()?;
+            let option: Ident = input.parse()?;
+            if option != "exclude" {
+                return Err(syn::Error::new(option.span(), "expected `exclude`"));
+            }
+            input.parse::<Token![=]>()?;
+
+            let content;
+            bracketed!(content in input);
+            exclude = Punctuated::<LitStr, Token![,]>::parse_terminated(&content)?
+                .into_iter()
+                .map(|dir| dir.value())
+                .collect();
+
+            if !input.is_empty() {
+                input.parse::<Token![,]>()?;
+            }
+        }
+
+        Ok(Self { path, exclude })
+    }
+}
 
 /// A macro that generates test functions for each directory within a given path.
 /// To be included the test directory must have a main.kcl file.
@@ -13,7 +53,7 @@ use syn::parse_macro_input;
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,ignore
 /// #[test_all_dirs("./test_data")]
 /// fn test_directory(dir_name: &str, dir_path: &Path) {
 ///     // Your test logic here, will be executed once for each directory
@@ -21,12 +61,22 @@ use syn::parse_macro_input;
 ///     println!("Testing directory: {}", dir_name);
 /// }
 /// ```
+///
+/// A particular invocation can omit known-incompatible directories while
+/// other invocations continue to cover them:
+///
+/// ```rust,ignore
+/// #[test_all_dirs("./test_data", exclude = ["blocked_fixture"])]
+/// fn test_directory(dir_name: &str, dir_path: &Path) {
+///     // ...
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn test_all_dirs(attr: TokenStream, item: TokenStream) -> TokenStream {
-    // Parse the path from the attribute
-    // Clone attr to avoid the move issue
-    let attr_clone = attr.clone();
-    let path = parse_macro_input!(attr as LitStr).value();
+    // Parse the path and any directories this invocation should exclude.
+    let args = parse_macro_input!(attr as TestAllDirsArgs);
+    let path_literal = args.path;
+    let path = path_literal.value();
     let path = std::path::Path::new(&path);
     let path = std::env::current_dir().unwrap().join(path);
 
@@ -40,13 +90,17 @@ pub fn test_all_dirs(attr: TokenStream, item: TokenStream) -> TokenStream {
         Ok(dirs) => dirs,
         Err(e) => {
             return syn::Error::new_spanned(
-                proc_macro2::TokenStream::from(attr_clone),
+                path_literal,
                 format!("Failed to read directories `{}`: {}", path.display(), e),
             )
             .to_compile_error()
             .into();
         }
     };
+    let dirs = dirs
+        .into_iter()
+        .filter(|(dir_name, _)| !args.exclude.contains(dir_name))
+        .collect::<Vec<_>>();
 
     // Generate a test function for each directory
     let test_fns = dirs.iter().map(|(dir_name, dir_path)| {
@@ -119,4 +173,23 @@ fn sanitize_dir_name(name: &str) -> String {
         .replace("/", "_");
     let name = binding.trim_start_matches('_').to_string();
     name.to_case(convert_case::Case::Snake)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_path_only() {
+        let args = syn::parse_str::<TestAllDirsArgs>(r#""./test_data""#).unwrap();
+        assert_eq!(args.path.value(), "./test_data");
+        assert!(args.exclude.is_empty());
+    }
+
+    #[test]
+    fn parses_excluded_directories() {
+        let args = syn::parse_str::<TestAllDirsArgs>(r#""./test_data", exclude = ["slow", "unsupported"]"#).unwrap();
+        assert_eq!(args.path.value(), "./test_data");
+        assert_eq!(args.exclude, ["slow", "unsupported"]);
+    }
 }
