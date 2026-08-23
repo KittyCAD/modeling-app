@@ -418,34 +418,6 @@ export function getCommonFacesForEdge(
   return commonFaces ?? new Error('No common face found')
 }
 
-/** Resolve source sweeps through body targets, excluding CSG cutter ancestry. */
-export function getSweepArtifactsFromBodyArtifact(
-  artifact: Artifact | undefined,
-  artifactGraph: ArtifactGraph
-): SweepArtifact[] {
-  const sweeps = new Map<ArtifactId, SweepArtifact>()
-  const visited = new Set<ArtifactId>()
-
-  const visit = (candidate: Artifact | undefined) => {
-    if (!candidate || visited.has(candidate.id)) return
-    visited.add(candidate.id)
-
-    if (candidate.type === 'sweep') {
-      sweeps.set(candidate.id, candidate)
-    } else if (candidate.type === 'path' && candidate.sweepId) {
-      const sweep = artifactGraph.get(candidate.sweepId)
-      if (sweep?.type === 'sweep') {
-        sweeps.set(sweep.id, sweep)
-      }
-    } else if (candidate.type === 'compositeSolid') {
-      candidate.solidIds.forEach((id) => visit(artifactGraph.get(id)))
-    }
-  }
-
-  visit(artifact)
-  return [...sweeps.values()]
-}
-
 export function getSweepArtifactFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
