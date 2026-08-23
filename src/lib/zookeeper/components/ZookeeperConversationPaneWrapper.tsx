@@ -8,6 +8,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { beginCloudSyncProjectMutationBatch } from '@src/lib/cloudSync'
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -21,11 +22,6 @@ import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/lib/zookeeper/editorPlugin'
-import {
-  ZookeeperConversationToMarkdown,
-  type ZookeeperManagerActor,
-  ZookeeperManagerReactContext,
-} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   mergeZookeeperEditPatches,
@@ -33,6 +29,11 @@ import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
+  ZookeeperConversationToMarkdown,
+  type ZookeeperManagerActor,
+  ZookeeperManagerReactContext,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { zookeeperPromptRunningSignal } from '@src/lib/zookeeper/zookeeperPromptState'
 import {
   normalizeKCLFileDeletePath,
@@ -459,6 +460,9 @@ function useZookeeperEditPatchHistory({
   useEffect(() => {
     const pendingZookeeperHistories = pendingZookeeperHistoryByExchange.current
     return () => {
+      for (const pending of pendingZookeeperHistories.values()) {
+        releaseZookeeperCloudSyncBatch(pending)
+      }
       pendingZookeeperHistories.clear()
       kclManager.zookeeperHistoryRecordingInProgress = false
     }
@@ -532,30 +536,31 @@ function useZookeeperEditPatchHistory({
   const tryFlushPendingZookeeperHistory = useCallback(
     (exchangeId: number) => {
       const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
-      if (
-        !pending?.streamEnded ||
-        pending.outstandingWrites > 0 ||
-        !pending.projectPath ||
-        !pending.patch?.changed_files?.length ||
-        !pending.activeFilePath
-      ) {
+      if (!pending?.streamEnded || pending.outstandingWrites > 0) {
         return
       }
 
       pendingZookeeperHistoryByExchange.current.delete(exchangeId)
       try {
-        recordZookeeperHistory({
-          activeFileDeleted: pending.activeFileDeleted,
-          activeFilePath: pending.activeFilePath,
-          activeEditorState: pending.activeEditorState,
-          activeFileRequestedCode: pending.activeFileRequestedCode,
-          currentFilePath: pending.currentFilePath,
-          currentFileRequestedCode: pending.currentFileRequestedCode,
-          patch: pending.patch,
-          projectPath: pending.projectPath,
-          snapshotFiles: getReadyZookeeperSnapshotFiles(pending),
-        })
+        if (
+          pending.projectPath &&
+          pending.patch?.changed_files?.length &&
+          pending.activeFilePath
+        ) {
+          recordZookeeperHistory({
+            activeFileDeleted: pending.activeFileDeleted,
+            activeFilePath: pending.activeFilePath,
+            activeEditorState: pending.activeEditorState,
+            activeFileRequestedCode: pending.activeFileRequestedCode,
+            currentFilePath: pending.currentFilePath,
+            currentFileRequestedCode: pending.currentFileRequestedCode,
+            patch: pending.patch,
+            projectPath: pending.projectPath,
+            snapshotFiles: getReadyZookeeperSnapshotFiles(pending),
+          })
+        }
       } finally {
+        releaseZookeeperCloudSyncBatch(pending)
         if (pendingZookeeperHistoryByExchange.current.size === 0) {
           kclManager.zookeeperHistoryRecordingInProgress = false
         }
@@ -575,6 +580,8 @@ function useZookeeperEditPatchHistory({
         createPendingZookeeperHistory()
       pending.outstandingWrites += 1
       pending.projectPath ??= projectPath
+      pending.releaseCloudSyncBatch ??=
+        beginCloudSyncProjectMutationBatch(projectPath)
       if (
         !pending.activeEditorState &&
         activeFilePath &&
@@ -603,6 +610,8 @@ function useZookeeperEditPatchHistory({
         pending.outstandingWrites += 1
       }
       pending.projectPath ??= projectPath
+      pending.releaseCloudSyncBatch ??=
+        beginCloudSyncProjectMutationBatch(projectPath)
       if (
         !pending.activeEditorState &&
         activeFilePath &&
@@ -644,6 +653,7 @@ function useZookeeperEditPatchHistory({
         !pending.patch?.changed_files?.length
       ) {
         pendingZookeeperHistoryByExchange.current.delete(exchangeId)
+        releaseZookeeperCloudSyncBatch(pending)
       } else {
         pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
         tryFlushPendingZookeeperHistory(exchangeId)
@@ -904,6 +914,7 @@ type PendingZookeeperHistory = {
   outstandingWrites: number
   patch?: ZookeeperEditPatch
   projectPath?: string
+  releaseCloudSyncBatch?: () => void
   snapshotFilesByRelativePath: Map<string, PendingZookeeperSnapshotFile>
   streamEnded: boolean
 }
@@ -958,6 +969,11 @@ function createPendingZookeeperHistory(): PendingZookeeperHistory {
   }
 }
 
+function releaseZookeeperCloudSyncBatch(pending: PendingZookeeperHistory) {
+  pending.releaseCloudSyncBatch?.()
+  pending.releaseCloudSyncBatch = undefined
+}
+
 function useFlushZookeeperHistoryOnResponseEnd(
   zookeeperManagerActor: ZookeeperManagerActor,
   pendingZookeeperHistoryByExchange: MutableRefObject<
@@ -966,18 +982,22 @@ function useFlushZookeeperHistoryOnResponseEnd(
   tryFlushPendingZookeeperHistory: (exchangeId: number) => void
 ) {
   useEffect(() => {
-    let lastId: number | undefined
+    const completedExchanges = new Set<number>()
     const subscription = zookeeperManagerActor.subscribe((next) => {
-      if (next.context.lastMessageId === lastId) return
-      lastId = next.context.lastMessageId
-
-      if (next.context.lastMessageType !== 'end_of_stream') return
+      if (next.context.awaitingResponse) {
+        return
+      }
       const exchangeId = (next.context.conversation?.exchanges.length ?? 0) - 1
-      if (exchangeId < 0) return
+      if (exchangeId < 0 || completedExchanges.has(exchangeId)) {
+        return
+      }
 
       const pending = pendingZookeeperHistoryByExchange.current.get(exchangeId)
-      if (!pending) return
+      if (!pending) {
+        return
+      }
 
+      completedExchanges.add(exchangeId)
       pending.streamEnded = true
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       tryFlushPendingZookeeperHistory(exchangeId)

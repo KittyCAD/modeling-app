@@ -1,13 +1,39 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type * as SystemIOUtils from '@src/machines/systemIO/utils'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
-  const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  type ZookeeperSnapshot = {
+    context: {
+      awaitingResponse?: boolean
+      conversation?: { exchanges: unknown[] }
+      lastMessageId?: number
+      lastMessageType?: string
+    }
+  }
+  const zookeeperSubscribers: ((snapshot: ZookeeperSnapshot) => void)[] = []
+  const zookeeperSubscribe = vi.fn(
+    (subscriber: (snapshot: ZookeeperSnapshot) => void) => {
+      zookeeperSubscribers.push(subscriber)
+      return {
+        unsubscribe: vi.fn(() => {
+          const index = zookeeperSubscribers.indexOf(subscriber)
+          if (index >= 0) {
+            zookeeperSubscribers.splice(index, 1)
+          }
+        }),
+      }
+    }
+  )
+  const cloudSyncBatchReleases: ReturnType<typeof vi.fn>[] = []
+  const beginCloudSyncProjectMutationBatch = vi.fn(() => {
+    const release = vi.fn()
+    cloudSyncBatchReleases.push(release)
+    return release
+  })
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -18,12 +44,16 @@ const mocks = vi.hoisted(() => {
     zookeeperHistoryRecordingInProgress: false,
     addGlobalHistoryEvent: vi.fn(),
     addGlobalHistoryEventWithCodeChange: vi.fn(),
+    restoreEditorHistoryState: vi.fn(),
     updateCodeEditor: vi.fn(),
   }
 
   return {
     kclManager,
+    beginCloudSyncProjectMutationBatch,
+    cloudSyncBatchReleases,
     zookeeperSubscribe,
+    zookeeperSubscribers,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
@@ -42,6 +72,10 @@ vi.mock('@src/components/layout/Panel', () => ({
     <div>{children}</div>
   ),
   LayoutPanelHeader: () => null,
+}))
+
+vi.mock('@src/lib/cloudSync', () => ({
+  beginCloudSyncProjectMutationBatch: mocks.beginCloudSyncProjectMutationBatch,
 }))
 
 vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
@@ -126,14 +160,34 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
   },
 }))
 
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof SystemIOUtils>()
-
-  return {
-    ...original,
-    waitForIdleState: vi.fn(async () => undefined),
-  }
-})
+vi.mock('@src/machines/systemIO/utils', () => ({
+  normalizeKCLFileDeletePath: (path: string) =>
+    path.replaceAll('\\', '/').replace(/^\.\//, ''),
+  prepareZookeeperNewFileRequest: ({
+    toolOutput,
+  }: {
+    toolOutput: {
+      outputs?: Record<string, string>
+      project_name?: string
+      zookeeper_edit_patch?: unknown
+    }
+  }) => ({
+    files: Object.entries(toolOutput.outputs ?? {}).map(
+      ([requestedFileName, requestedCode]) => ({
+        requestedFileName,
+        requestedCode,
+      })
+    ),
+    filesToDelete: [],
+    requestedFileNameWithExtension: 'main.kcl',
+    requestedProjectName: toolOutput.project_name,
+    zookeeperEditPatch: toolOutput.zookeeper_edit_patch,
+  }),
+  SystemIOMachineEvents: {
+    bulkCreateAndDeleteKCLFilesAndNavigateToFile: 'bulkCreateAndDelete',
+  },
+  waitForIdleState: vi.fn(async () => undefined),
+}))
 
 vi.mock('@src/routes/utils', () => ({
   IS_STAGING_OR_DEBUG: false,
@@ -179,7 +233,58 @@ async function flushQueuedWork() {
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
 
+function finishZookeeperExchange() {
+  for (const subscriber of mocks.zookeeperSubscribers) {
+    subscriber({
+      context: {
+        awaitingResponse: false,
+        conversation: { exchanges: [{}] },
+        lastMessageId: 2,
+        lastMessageType: 'end_of_stream',
+      },
+    })
+  }
+}
+
 describe('ZookeeperConversationPaneWrapper', () => {
+  test('releases one cloud sync checkpoint only after the exchange and queued writes finish', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.beginCloudSyncProjectMutationBatch.mockClear()
+    mocks.cloudSyncBatchReleases.length = 0
+    mocks.watchCallback = undefined
+
+    render(
+      <ZookeeperConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.Zookeeper,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    emitZookeeperFileRequest('coherent final code')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+
+    expect(mocks.beginCloudSyncProjectMutationBatch).toHaveBeenCalledWith(
+      '/workspace/demo'
+    )
+    expect(mocks.cloudSyncBatchReleases).toHaveLength(1)
+
+    finishZookeeperExchange()
+    expect(mocks.cloudSyncBatchReleases[0]).not.toHaveBeenCalled()
+
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    request.onFileSystemSuccess()
+    request.onSuccess()
+    await flushQueuedWork()
+
+    expect(mocks.cloudSyncBatchReleases[0]).toHaveBeenCalledTimes(1)
+  })
+
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()

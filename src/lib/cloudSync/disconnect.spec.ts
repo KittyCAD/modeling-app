@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import {
+  beginCloudSyncProjectMutationBatch,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
   configureCloudSyncEngine,
@@ -230,6 +231,98 @@ describe('cloud sync upload failures', () => {
     configureCloudSyncEngine({ enabled: false })
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()
+  })
+
+  it('defers a project upload until its semantic mutation batch is released', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'coherent = final'],
+      [
+        projectTomlPath,
+        `title = "Bracket"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`,
+      ],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedLinkedProject()
+    await appendOutboxEntry({
+      projectPath,
+      kind: 'upsert',
+      targetPath: `${projectPath}/main.kcl`,
+      createdAt: '2026-07-08T12:00:00.000Z',
+    })
+    fetchMock.mockImplementation(async (input, init) => {
+      const url = getFetchUrl(input)
+      const method = getFetchMethod(input, init)
+
+      if (url === remoteProjectUrl && method === 'GET') {
+        return jsonResponse({
+          id: remoteProjectId,
+          title: 'Bracket',
+          description: '',
+          category_ids: [],
+          revision: remoteRevision,
+        })
+      }
+
+      if (
+        url === `${remoteProjectUrl}?expected_revision=${remoteRevision}` &&
+        method === 'PUT'
+      ) {
+        return jsonResponse({
+          id: remoteProjectId,
+          title: 'Bracket',
+          revision: 'revision-124',
+        })
+      }
+
+      return jsonResponse(
+        { message: `Unexpected fetch: ${method} ${url}` },
+        500
+      )
+    })
+
+    configureCloudSyncEngine({
+      enabled: false,
+      baseUrl: 'https://example.test',
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: ['/documents/Projects'],
+    })
+    setCloudSyncOpenedProject({
+      projectPath,
+      libraryPath: projectDirectory,
+      libraryType: CLOUD_PROJECT_LIBRARY_TYPE,
+    })
+    const releaseMutationBatch = beginCloudSyncProjectMutationBatch(projectPath)
+    configureCloudSyncEngine({ enabled: true })
+
+    await vi.waitFor(() => {
+      expect(cloudSyncStatus.value).toMatchObject({
+        state: 'idle',
+        pendingCount: 1,
+      })
+    })
+    expect(
+      fetchMock.mock.calls.some(
+        ([input, init]) =>
+          getFetchUrl(input) ===
+            `${remoteProjectUrl}?expected_revision=${remoteRevision}` &&
+          getFetchMethod(input, init) === 'PUT'
+      )
+    ).toBe(false)
+
+    releaseMutationBatch()
+
+    await vi.waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        `${remoteProjectUrl}?expected_revision=${remoteRevision}`,
+        expect.objectContaining({
+          credentials: 'include',
+          method: 'PUT',
+        })
+      )
+      expect(cloudSyncStatus.value.pendingCount).toBe(0)
+    })
   })
 
   it('records a blocked upload failure when the remote project is readable but not writable', async () => {

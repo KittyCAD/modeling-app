@@ -155,6 +155,7 @@ let detachVisibilityChangeListener: (() => void) | undefined
 let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
+const projectMutationBatchDepth = new Map<string, number>()
 
 /**
  * Per-run throttle for automatic full-library syncs. It spaces project API
@@ -353,12 +354,63 @@ export function shouldScheduleCloudSyncPendingWork({
   pendingCount,
   state,
   failureRetryScheduled,
+  hasUndeferredPendingWork = true,
 }: {
   pendingCount: number
   state: CloudSyncStatus['state']
   failureRetryScheduled: boolean
+  hasUndeferredPendingWork?: boolean
 }) {
-  return pendingCount > 0 && state !== 'conflict' && !failureRetryScheduled
+  return (
+    pendingCount > 0 &&
+    hasUndeferredPendingWork &&
+    state !== 'conflict' &&
+    !failureRetryScheduled
+  )
+}
+
+function isCloudSyncProjectMutationBatchOpen(projectPath: string) {
+  return (
+    (projectMutationBatchDepth.get(normalizePathForSync(projectPath)) ?? 0) > 0
+  )
+}
+
+/**
+ * Defer cloud publication for one project while a logical multi-file mutation
+ * is in progress. Local filesystem writes and durable outbox entries continue
+ * normally; releasing the outermost batch flushes the coherent snapshot.
+ */
+export function beginCloudSyncProjectMutationBatch(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  projectMutationBatchDepth.set(
+    normalizedProjectPath,
+    (projectMutationBatchDepth.get(normalizedProjectPath) ?? 0) + 1
+  )
+
+  let released = false
+  return () => {
+    if (released) {
+      return
+    }
+    released = true
+
+    const nextDepth =
+      (projectMutationBatchDepth.get(normalizedProjectPath) ?? 1) - 1
+    if (nextDepth > 0) {
+      projectMutationBatchDepth.set(normalizedProjectPath, nextDepth)
+      return
+    }
+
+    projectMutationBatchDepth.delete(normalizedProjectPath)
+    scheduleSync(0)
+  }
+}
+
+async function hasUndeferredPendingOutboxEntries() {
+  const entries = await getAllOutboxEntries()
+  return entries.some(
+    (entry) => !isCloudSyncProjectMutationBatchOpen(entry.projectPath)
+  )
 }
 
 export function getCloudSyncProjectRootInDirectory(
@@ -2766,6 +2818,10 @@ async function syncProject(
   entries: OutboxEntry[],
   throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
 ) {
+  if (isCloudSyncProjectMutationBatchOpen(projectPath)) {
+    return
+  }
+
   let metadata = await getOrCreateProjectMetadata(projectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -3470,6 +3526,7 @@ async function runCloudSync() {
     }
 
     await refreshPendingCount()
+    const hasUndeferredPendingWork = await hasUndeferredPendingOutboxEntries()
     const syncedAt = pendingStatusSyncedAt
     if (syncedAt && cloudSyncStatus.value.state === 'conflict') {
       updateStatus({ lastSyncedAt: syncedAt })
@@ -3505,6 +3562,7 @@ async function runCloudSync() {
         pendingCount: cloudSyncStatus.value.pendingCount,
         state: cloudSyncStatus.value.state,
         failureRetryScheduled,
+        hasUndeferredPendingWork,
       })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
@@ -3526,11 +3584,14 @@ async function runCloudSync() {
   } finally {
     syncInProgress = false
     pendingStatusSyncedAt = undefined
+    const hasUndeferredPendingWork =
+      await hasUndeferredPendingOutboxEntries().catch(() => true)
     if (
       shouldScheduleCloudSyncPendingWork({
         pendingCount: cloudSyncStatus.value.pendingCount,
         state: cloudSyncStatus.value.state,
         failureRetryScheduled,
+        hasUndeferredPendingWork,
       })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
@@ -3891,7 +3952,9 @@ async function registerProjectMutation(
     sourcePath: sourcePath ? normalizePathForSync(sourcePath) : undefined,
     createdAt: nowIso(),
   })
-  scheduleSync()
+  if (!isCloudSyncProjectMutationBatchOpen(normalizedProjectPath)) {
+    scheduleSync()
+  }
 }
 
 async function registerProjectRename(sourcePath: string, targetPath: string) {
@@ -4017,6 +4080,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     initialLocalScanComplete = false
     lastRemoteIndexSyncAt = 0
     resetSyncRetryBackoff()
+    projectMutationBatchDepth.clear()
     cloudSyncRemoteProjects.value = []
     updateStatus({
       enabled: false,
