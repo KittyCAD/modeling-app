@@ -230,6 +230,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![utility-sink](screenshots/utility-sink.png)](utility-sink/main.kcl)
 #### [v-block](v-block/main.kcl) ([screenshot](screenshots/v-block.png))
 [![v-block](screenshots/v-block.png)](v-block/main.kcl)
+#### [walkie-talkie](walkie-talkie/main.kcl) ([screenshot](screenshots/walkie-talkie.png))
+[![walkie-talkie](screenshots/walkie-talkie.png)](walkie-talkie/main.kcl)
 #### [washer](washer/main.kcl) ([screenshot](screenshots/washer.png))
 [![washer](screenshots/washer.png)](washer/main.kcl)
 #### [wedge](wedge/main.kcl) ([screenshot](screenshots/wedge.png))
