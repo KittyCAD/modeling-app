@@ -1,5 +1,9 @@
 import type * as ClientErrors from '@src/lib/clientErrors'
-import { ExpectedSystemIOError } from '@src/machines/systemIO/errorReporting'
+import {
+  ExpectedSystemIOError,
+  reportSystemIOError,
+  SystemIOPhaseError,
+} from '@src/machines/systemIO/errorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
@@ -110,12 +114,81 @@ describe('SystemIO client error reporting', () => {
     expect(JSON.stringify(report)).not.toContain(error.message)
   })
 
+  it('preserves a bounded phase and safe cause-chain details', () => {
+    const sensitivePath = '/Users/alice/Secret Project/main.kcl'
+    const cause = Object.assign(
+      new Error(`EACCES: permission denied, open '${sensitivePath}'`),
+      { code: 'EACCES' }
+    )
+
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
+        error: new SystemIOPhaseError(
+          'delete',
+          new SystemIOPhaseError('scan', cause)
+        ),
+      },
+    })
+
+    const report = mocks.reportClientError.mock.calls[0]?.[0]
+    expect(report).toMatchObject({
+      errorName: 'SystemIOPhaseError',
+      dedupeKey:
+        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:scan:SystemIOPhaseError:EACCES',
+      extra: {
+        errorCode: 'EACCES',
+        errorType: 'Error',
+        rootErrorName: 'Error',
+        phase: 'scan',
+      },
+    })
+    expect(JSON.stringify(report)).not.toContain(sensitivePath)
+    expect(JSON.stringify(report)).not.toContain(cause.message)
+    expect(report).not.toHaveProperty('error')
+  })
+
+  it('drops unrecognized phase labels', () => {
+    const sensitivePhase = '/Users/alice/Secret Project'
+
+    reportSystemIOError({
+      error: new Error('operation failed'),
+      operation: 'read project',
+      risk: 'read',
+      source: 'SystemIOTest',
+      extra: { phase: sensitivePhase },
+    })
+
+    const report = mocks.reportClientError.mock.calls[0]?.[0]
+    expect(report.dedupeKey).toBe(
+      'SystemIO:SystemIOTest:read project:unknown:Error:unknown'
+    )
+    expect(report.extra).not.toHaveProperty('phase')
+    expect(JSON.stringify(report)).not.toContain(sensitivePhase)
+  })
+
   it('does not report expected user naming conflicts', () => {
     reportSystemIOMachineError({
       context,
       event: {
         type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
         error: new ExpectedSystemIOError('Filename already exists.'),
+      },
+    })
+
+    expect(mocks.reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('does not report expected errors wrapped with a phase', () => {
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
+        error: new SystemIOPhaseError(
+          'create',
+          new ExpectedSystemIOError('Filename already exists.')
+        ),
       },
     })
 
