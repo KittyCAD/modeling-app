@@ -86,14 +86,18 @@ jobs:
           python-version-file: .tool-versions
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # The workspace sets `[profile.release] debug = true`, but no wheel
+          # ships debug info: Linux embeds DWARF in the .so and --strip removes
+          # it, while mac and Windows write it to .dSYM and .pdb sidecars that
+          # are not packaged. Generating it costs build time and inflates
+          # sccache entries.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: x86_64
-          # --strip removes debug symbols from the .so. The workspace sets
-          # `[profile.release] debug = true`, which on Linux embeds DWARF debug
-          # info directly into the .so (mac/Windows keep it in sidecar
-          # .dSYM/.pdb files that aren't packaged), pushing the wheel past
-          # PyPI's 100MB limit. Stripping keeps the published wheel small.
+          # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
+          # limit.
           args: --release --out dist --find-interpreter --strip
           sccache: 'true'
           manylinux: auto
@@ -119,10 +123,19 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version-file: .tool-versions
+          # Same reason as the macos job: install the set instead of letting
+          # the runner image decide what gets published.
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
           architecture: ${{ matrix.target }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
@@ -161,6 +174,8 @@ jobs:
           # on. They are set here because that input is off.
           RUSTC_WRAPPER: sccache
           SCCACHE_GHA_ENABLED: 'true'
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
