@@ -20,6 +20,16 @@ appearance(
 This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 For planes, only `color` is used.
 
+
+
+
+
+
+
+
+
+**Legacy KCL 1 example:** The next pipe example uses deprecated `subtract2d`.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -289,6 +299,8 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
+@settings(kclVersion = 1.0)
+
 // Color the result of a sweep.
 
 // Create a path for the sweep.

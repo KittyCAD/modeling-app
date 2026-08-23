@@ -12,7 +12,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
 
-2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. Optionally, but preferred, the third comment line should be "Categories:" followed by a category value or comma separated category values. Leaving this off won't break anything, but will list the sample on the website as "Uncategorized".
+2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. The third comment line in each sample's `main.kcl` must be "Categories:" followed by a category value or comma-separated category values.
 
 3. **Inline Comments:** Use inline comments to explain non-obvious parts of the code. Each major section should have a comment describing its purpose.
 
@@ -208,6 +208,14 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![stylized-pickup-truck](screenshots/stylized-pickup-truck.png)](stylized-pickup-truck/main.kcl)
 #### [surgical-drill-guide](surgical-drill-guide/main.kcl) ([screenshot](screenshots/surgical-drill-guide.png))
 [![surgical-drill-guide](screenshots/surgical-drill-guide.png)](surgical-drill-guide/main.kcl)
+#### [t-slot-frame](t-slot-frame/main.kcl) ([screenshot](screenshots/t-slot-frame.png))
+[![t-slot-frame](screenshots/t-slot-frame.png)](t-slot-frame/main.kcl)
+#### [t-slot-rail](t-slot-rail/main.kcl) ([screenshot](screenshots/t-slot-rail.png))
+[![t-slot-rail](screenshots/t-slot-rail.png)](t-slot-rail/main.kcl)
+#### [t-slot-rectangle](t-slot-rectangle/main.kcl) ([screenshot](screenshots/t-slot-rectangle.png))
+[![t-slot-rectangle](screenshots/t-slot-rectangle.png)](t-slot-rectangle/main.kcl)
+#### [t-slot-shelf](t-slot-shelf/main.kcl) ([screenshot](screenshots/t-slot-shelf.png))
+[![t-slot-shelf](screenshots/t-slot-shelf.png)](t-slot-shelf/main.kcl)
 #### [teapot](teapot/main.kcl) ([screenshot](screenshots/teapot.png))
 [![teapot](screenshots/teapot.png)](teapot/main.kcl)
 #### [thermal-block-insert](thermal-block-insert/main.kcl) ([screenshot](screenshots/thermal-block-insert.png))

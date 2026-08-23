@@ -13,8 +13,8 @@ description: Lints scrub-daddy-holder.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2637,
-      2722,
+      2655,
+      2740,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints scrub-daddy-holder.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2804,
-      3222,
+      2822,
+      3240,
       0
     ],
     "overridden": false,

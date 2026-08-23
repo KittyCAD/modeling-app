@@ -245,6 +245,18 @@ impl ModulePath {
         }
     }
 
+    /// The path as written in the import statement where available, falling
+    /// back to the resolved path. Used to label backtrace frames.
+    pub(crate) fn import_name(&self) -> String {
+        match self {
+            ModulePath::Local {
+                original_import_path: Some(original),
+                ..
+            } => original.to_string(),
+            _ => self.to_string(),
+        }
+    }
+
     pub(crate) fn from_std_import_path(path: &[String]) -> Result<Self, KclError> {
         // For now we only support importing from singly-nested modules inside std.
         if path.len() > 2 || path[0] != "std" {
@@ -287,4 +299,24 @@ impl fmt::Display for ModulePath {
 pub struct ModuleSource {
     pub path: ModulePath,
     pub source: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn import_name_prefers_the_path_as_written() {
+        let with_original = ModulePath::Local {
+            value: "/project/sub/model.obj".into(),
+            original_import_path: Some("sub/model.obj".into()),
+        };
+        assert_eq!(with_original.import_name(), "sub/model.obj");
+
+        let without_original = ModulePath::Local {
+            value: "/project/model.obj".into(),
+            original_import_path: None,
+        };
+        assert_eq!(without_original.import_name(), "/project/model.obj");
+    }
 }

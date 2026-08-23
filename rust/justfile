@@ -9,8 +9,7 @@ lint:
     # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
     # kcl-wasm-lib
-    # TODO: Add --all-targets. It currently has a bunch of failures.
-    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown -- -D warnings
+    cargo clippy -p kcl-wasm-lib --target wasm32-unknown-unknown --all-targets -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix

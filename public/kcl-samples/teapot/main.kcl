@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 teapotHeight = 130
@@ -33,7 +33,7 @@ sketch001 = sketch(on = offsetPlane(YZ, offset = -beltlineDiameter / 2.5)) {
   radius(circle2) == 4.5
   coincident([circle2.center, circle1.center])
 }
-region001 = region(point = [-5.9674972mm, 26mm], sketch = sketch001)
+region001 = region(segments = [sketch001.circle1])
 spout = sweep(region001, path = spoutPath)
 
 // Model the perimeter of the teapot body, to be used to trim the handle so that it fits snug to the body

@@ -115,6 +115,8 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
+const billingError = 'no API credits available'
+
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
     const first = createZookeeperCorrelation('engine-api-call-id')
@@ -379,6 +381,112 @@ describe('zookeeperManagerMachine', () => {
         setupFailed: false,
         conversationId: 'conversation-id',
       })
+
+      actor.stop()
+    })
+
+    it('surfaces a billing error after retrying setup', async () => {
+      const { fetchMock, reports } = stubClientErrorFetch()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      for (
+        let attempt = 0;
+        attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
+        attempt += 1
+      ) {
+        await vi.waitFor(() => {
+          expect(ControllableSetupWebSocket.instances).toHaveLength(attempt + 1)
+        })
+        const socket = ControllableSetupWebSocket.instances[attempt]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({ error: { detail: billingError } })
+      }
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(ControllableSetupWebSocket.instances).toHaveLength(
+        NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS
+      )
+      expect(actor.getSnapshot().context.closeReason).toBe(billingError)
+      for (const socket of ControllableSetupWebSocket.instances) {
+        expect(socket.close).toHaveBeenCalledOnce()
+      }
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(reports).toHaveLength(1)
+      expect(reports[0]).toMatchObject({
+        code: 'zookeeper_setup_error',
+        message: billingError,
+      })
+
+      actor.stop()
+    })
+
+    it('turns a billing response on an active connection into a recoverable close', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      socket.receive({ error: { detail: billingError } })
+
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(actor.getSnapshot().context).toMatchObject({
+        abruptlyClosed: true,
+        setupFailed: false,
+        closeReason: billingError,
+        conversation: { exchanges: [] },
+        conversationId: 'conversation-id',
+      })
+      expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
     })
@@ -684,6 +792,7 @@ describe('zookeeperManagerMachine', () => {
         projectName: 'zoo-project',
         projectFiles,
         activeFile: 'newFile.kcl',
+        engineApiCallId: 'engine-api-call-id',
       })
 
       await waitFor(actor, (state) =>
@@ -694,21 +803,24 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.sentPayloads).toStrictEqual([
-        JSON.stringify({
-          type: 'system',
-          command: 'continue',
-        }),
-        JSON.stringify({
-          type: 'project_context',
-          project_name: 'zoo-project',
-          current_files: {
-            'main.kcl': Array.from(new TextEncoder().encode('cube()')),
-            'notes.txt': Array.from(new TextEncoder().encode('notes')),
-          },
-          active_file: 'newFile.kcl',
-        }),
-      ])
+      expect(ws.sentPayloads).toHaveLength(2)
+      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+        type: 'system',
+        command: 'continue',
+      })
+      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+        type: 'project_context',
+        correlation_id: expect.stringMatching(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+        ),
+        engine_api_call_id: 'engine-api-call-id',
+        project_name: 'zoo-project',
+        current_files: {
+          'main.kcl': Array.from(new TextEncoder().encode('cube()')),
+          'notes.txt': Array.from(new TextEncoder().encode('notes')),
+        },
+        active_file: 'newFile.kcl',
+      })
 
       actor.stop()
     })

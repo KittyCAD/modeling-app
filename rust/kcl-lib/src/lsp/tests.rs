@@ -3001,7 +3001,22 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     // TODO warnings being stomped by execution errors?
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
+    // One diagnostic per error, anchored at the innermost top-level range;
+    // outer backtrace frames are attached as related information.
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+    // Clone out of the map so the read guard is not held across the
+    // server calls below, which write to the map.
+    let error_diagnostic = server
+        .diagnostics_map
+        .get("file:///test.kcl")
+        .unwrap()
+        .iter()
+        .find(|d| d.severity == Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR))
+        .unwrap()
+        .clone();
+    let related = error_diagnostic.related_information.as_ref().unwrap();
+    assert_eq!(related.len(), 1);
+    assert_eq!(related[0].location.uri.as_str(), "file:///test.kcl");
 
     // Update the text.
     let new_text = r#"part001 = startSketchOn(XY)

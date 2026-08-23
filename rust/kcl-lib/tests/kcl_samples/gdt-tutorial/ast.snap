@@ -3951,6 +3951,18 @@ description: Result of parsing gdt-tutorial.kcl
           "start": 0,
           "type": "NonCodeNode",
           "value": {
+            "type": "blockComment",
+            "value": "Categories: Manufacturing",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
             "type": "newLine"
           }
         }

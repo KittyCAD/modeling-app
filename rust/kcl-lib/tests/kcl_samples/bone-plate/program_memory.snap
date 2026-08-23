@@ -139,10 +139,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -170,10 +170,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -275,10 +275,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -306,10 +306,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -397,10 +397,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -428,10 +428,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -519,10 +519,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -550,10 +550,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -641,10 +641,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -672,10 +672,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -763,10 +763,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -794,10 +794,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -885,10 +885,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -916,10 +916,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -1007,10 +1007,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -1038,10 +1038,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 2.25,
             "tag": {
-              "commentStart": 4583,
-              "end": 4591,
+              "commentStart": 4601,
+              "end": 4609,
               "moduleId": 0,
-              "start": 4583,
+              "start": 4601,
               "type": "TagDeclarator",
               "value": "circle01"
             },
@@ -1139,10 +1139,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 2.25,
           "tag": {
-            "commentStart": 4583,
-            "end": 4591,
+            "commentStart": 4601,
+            "end": 4609,
             "moduleId": 0,
-            "start": 4583,
+            "start": 4601,
             "type": "TagDeclarator",
             "value": "circle01"
           },
@@ -1482,10 +1482,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 2.25,
                   "tag": {
-                    "commentStart": 4583,
-                    "end": 4591,
+                    "commentStart": 4601,
+                    "end": 4609,
                     "moduleId": 0,
-                    "start": 4583,
+                    "start": 4601,
                     "type": "TagDeclarator",
                     "value": "circle01"
                   },
@@ -1715,10 +1715,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 566,
-            "end": 570,
+            "commentStart": 584,
+            "end": 588,
             "moduleId": 0,
-            "start": 566,
+            "start": 584,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -1729,10 +1729,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 676,
-            "end": 680,
+            "commentStart": 694,
+            "end": 698,
             "moduleId": 0,
-            "start": 676,
+            "start": 694,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1743,10 +1743,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 833,
-            "end": 837,
+            "commentStart": 851,
+            "end": 855,
             "moduleId": 0,
-            "start": 833,
+            "start": 851,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -1757,10 +1757,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 989,
-            "end": 993,
+            "commentStart": 1007,
+            "end": 1011,
             "moduleId": 0,
-            "start": 989,
+            "start": 1007,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -1771,10 +1771,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1148,
-            "end": 1152,
+            "commentStart": 1166,
+            "end": 1170,
             "moduleId": 0,
-            "start": 1148,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -1785,10 +1785,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1304,
-            "end": 1308,
+            "commentStart": 1322,
+            "end": 1326,
             "moduleId": 0,
-            "start": 1304,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -1799,10 +1799,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1462,
-            "end": 1466,
+            "commentStart": 1480,
+            "end": 1484,
             "moduleId": 0,
-            "start": 1462,
+            "start": 1480,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -1813,10 +1813,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1616,
-            "end": 1620,
+            "commentStart": 1634,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1616,
+            "start": 1634,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -1827,10 +1827,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -1841,10 +1841,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1934,
-            "end": 1940,
+            "commentStart": 1952,
+            "end": 1958,
             "moduleId": 0,
-            "start": 1934,
+            "start": 1952,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -1855,10 +1855,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2061,
-            "end": 2066,
+            "commentStart": 2079,
+            "end": 2084,
             "moduleId": 0,
-            "start": 2061,
+            "start": 2079,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -1869,10 +1869,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2222,
-            "end": 2228,
+            "commentStart": 2240,
+            "end": 2246,
             "moduleId": 0,
-            "start": 2222,
+            "start": 2240,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -1883,10 +1883,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2352,
-            "end": 2357,
+            "commentStart": 2370,
+            "end": 2375,
             "moduleId": 0,
-            "start": 2352,
+            "start": 2370,
             "type": "TagDeclarator",
             "value": "arc13"
           },
@@ -1897,10 +1897,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2512,
-            "end": 2517,
+            "commentStart": 2530,
+            "end": 2535,
             "moduleId": 0,
-            "start": 2512,
+            "start": 2530,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -1911,10 +1911,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2673,
-            "end": 2679,
+            "commentStart": 2691,
+            "end": 2697,
             "moduleId": 0,
-            "start": 2673,
+            "start": 2691,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -1925,10 +1925,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2798,
-            "end": 2804,
+            "commentStart": 2816,
+            "end": 2822,
             "moduleId": 0,
-            "start": 2798,
+            "start": 2816,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -1956,10 +1956,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 120.00000000000001,
             "tag": {
-              "commentStart": 566,
-              "end": 570,
+              "commentStart": 584,
+              "end": 588,
               "moduleId": 0,
-              "start": 566,
+              "start": 584,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -1986,10 +1986,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 5.000000000000002,
             "tag": {
-              "commentStart": 676,
-              "end": 680,
+              "commentStart": 694,
+              "end": 698,
               "moduleId": 0,
-              "start": 676,
+              "start": 694,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2016,10 +2016,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 119.99999999999999,
             "tag": {
-              "commentStart": 833,
-              "end": 837,
+              "commentStart": 851,
+              "end": 855,
               "moduleId": 0,
-              "start": 833,
+              "start": 851,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -2046,10 +2046,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 4.999999999999998,
             "tag": {
-              "commentStart": 989,
-              "end": 993,
+              "commentStart": 1007,
+              "end": 1011,
               "moduleId": 0,
-              "start": 989,
+              "start": 1007,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -2076,10 +2076,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 120.00000000000001,
             "tag": {
-              "commentStart": 1148,
-              "end": 1152,
+              "commentStart": 1166,
+              "end": 1170,
               "moduleId": 0,
-              "start": 1148,
+              "start": 1166,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -2106,10 +2106,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 5.000000000001658,
             "tag": {
-              "commentStart": 1304,
-              "end": 1308,
+              "commentStart": 1322,
+              "end": 1326,
               "moduleId": 0,
-              "start": 1304,
+              "start": 1322,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -2136,10 +2136,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 169.99999999999997,
             "tag": {
-              "commentStart": 1462,
-              "end": 1466,
+              "commentStart": 1480,
+              "end": 1484,
               "moduleId": 0,
-              "start": 1462,
+              "start": 1480,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -2166,10 +2166,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 31.000000000007187,
             "tag": {
-              "commentStart": 1616,
-              "end": 1620,
+              "commentStart": 1634,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1616,
+              "start": 1634,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -2196,10 +2196,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 29.50000000016619,
             "tag": {
-              "commentStart": 1773,
-              "end": 1777,
+              "commentStart": 1791,
+              "end": 1795,
               "moduleId": 0,
-              "start": 1773,
+              "start": 1791,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -2220,10 +2220,10 @@ description: Variables in memory after executing bone-plate.kcl
               117.07996066012271
             ],
             "tag": {
-              "commentStart": 1934,
-              "end": 1940,
+              "commentStart": 1952,
+              "end": 1958,
               "moduleId": 0,
-              "start": 1934,
+              "start": 1952,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -2250,10 +2250,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 1.8040523003489886,
             "tag": {
-              "commentStart": 2061,
-              "end": 2066,
+              "commentStart": 2079,
+              "end": 2084,
               "moduleId": 0,
-              "start": 2061,
+              "start": 2079,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -2274,10 +2274,10 @@ description: Variables in memory after executing bone-plate.kcl
               140.04736666859097
             ],
             "tag": {
-              "commentStart": 2222,
-              "end": 2228,
+              "commentStart": 2240,
+              "end": 2246,
               "moduleId": 0,
-              "start": 2222,
+              "start": 2240,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -2304,10 +2304,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 29.50000000000484,
             "tag": {
-              "commentStart": 2352,
-              "end": 2357,
+              "commentStart": 2370,
+              "end": 2375,
               "moduleId": 0,
-              "start": 2352,
+              "start": 2370,
               "type": "TagDeclarator",
               "value": "arc13"
             },
@@ -2334,10 +2334,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 24.83988731935381,
             "tag": {
-              "commentStart": 2512,
-              "end": 2517,
+              "commentStart": 2530,
+              "end": 2535,
               "moduleId": 0,
-              "start": 2512,
+              "start": 2530,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -2358,10 +2358,10 @@ description: Variables in memory after executing bone-plate.kcl
               67.76972841128996
             ],
             "tag": {
-              "commentStart": 2673,
-              "end": 2679,
+              "commentStart": 2691,
+              "end": 2697,
               "moduleId": 0,
-              "start": 2673,
+              "start": 2691,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -2382,10 +2382,10 @@ description: Variables in memory after executing bone-plate.kcl
               19.23
             ],
             "tag": {
-              "commentStart": 2798,
-              "end": 2804,
+              "commentStart": 2816,
+              "end": 2822,
               "moduleId": 0,
-              "start": 2798,
+              "start": 2816,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -2543,10 +2543,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 120.00000000000001,
           "tag": {
-            "commentStart": 566,
-            "end": 570,
+            "commentStart": 584,
+            "end": 588,
             "moduleId": 0,
-            "start": 566,
+            "start": 584,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2573,10 +2573,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 5.000000000000002,
           "tag": {
-            "commentStart": 676,
-            "end": 680,
+            "commentStart": 694,
+            "end": 698,
             "moduleId": 0,
-            "start": 676,
+            "start": 694,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2603,10 +2603,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 119.99999999999999,
           "tag": {
-            "commentStart": 833,
-            "end": 837,
+            "commentStart": 851,
+            "end": 855,
             "moduleId": 0,
-            "start": 833,
+            "start": 851,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2633,10 +2633,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 4.999999999999998,
           "tag": {
-            "commentStart": 989,
-            "end": 993,
+            "commentStart": 1007,
+            "end": 1011,
             "moduleId": 0,
-            "start": 989,
+            "start": 1007,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2663,10 +2663,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 120.00000000000001,
           "tag": {
-            "commentStart": 1148,
-            "end": 1152,
+            "commentStart": 1166,
+            "end": 1170,
             "moduleId": 0,
-            "start": 1148,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -2693,10 +2693,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 5.000000000001658,
           "tag": {
-            "commentStart": 1304,
-            "end": 1308,
+            "commentStart": 1322,
+            "end": 1326,
             "moduleId": 0,
-            "start": 1304,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -2723,10 +2723,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 169.99999999999997,
           "tag": {
-            "commentStart": 1462,
-            "end": 1466,
+            "commentStart": 1480,
+            "end": 1484,
             "moduleId": 0,
-            "start": 1462,
+            "start": 1480,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -2753,10 +2753,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 31.000000000007187,
           "tag": {
-            "commentStart": 1616,
-            "end": 1620,
+            "commentStart": 1634,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1616,
+            "start": 1634,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -2783,10 +2783,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 29.50000000016619,
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -2807,10 +2807,10 @@ description: Variables in memory after executing bone-plate.kcl
             117.07996066012271
           ],
           "tag": {
-            "commentStart": 1934,
-            "end": 1940,
+            "commentStart": 1952,
+            "end": 1958,
             "moduleId": 0,
-            "start": 1934,
+            "start": 1952,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -2837,10 +2837,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 1.8040523003489886,
           "tag": {
-            "commentStart": 2061,
-            "end": 2066,
+            "commentStart": 2079,
+            "end": 2084,
             "moduleId": 0,
-            "start": 2061,
+            "start": 2079,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -2861,10 +2861,10 @@ description: Variables in memory after executing bone-plate.kcl
             140.04736666859097
           ],
           "tag": {
-            "commentStart": 2222,
-            "end": 2228,
+            "commentStart": 2240,
+            "end": 2246,
             "moduleId": 0,
-            "start": 2222,
+            "start": 2240,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -2891,10 +2891,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 29.50000000000484,
           "tag": {
-            "commentStart": 2352,
-            "end": 2357,
+            "commentStart": 2370,
+            "end": 2375,
             "moduleId": 0,
-            "start": 2352,
+            "start": 2370,
             "type": "TagDeclarator",
             "value": "arc13"
           },
@@ -2921,10 +2921,10 @@ description: Variables in memory after executing bone-plate.kcl
           ],
           "radius": 24.83988731935381,
           "tag": {
-            "commentStart": 2512,
-            "end": 2517,
+            "commentStart": 2530,
+            "end": 2535,
             "moduleId": 0,
-            "start": 2512,
+            "start": 2530,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -2945,10 +2945,10 @@ description: Variables in memory after executing bone-plate.kcl
             67.76972841128996
           ],
           "tag": {
-            "commentStart": 2673,
-            "end": 2679,
+            "commentStart": 2691,
+            "end": 2697,
             "moduleId": 0,
-            "start": 2673,
+            "start": 2691,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -2969,10 +2969,10 @@ description: Variables in memory after executing bone-plate.kcl
             19.23
           ],
           "tag": {
-            "commentStart": 2798,
-            "end": 2804,
+            "commentStart": 2816,
+            "end": 2822,
             "moduleId": 0,
-            "start": 2798,
+            "start": 2816,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -5919,10 +5919,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 120.00000000000001,
                   "tag": {
-                    "commentStart": 566,
-                    "end": 570,
+                    "commentStart": 584,
+                    "end": 588,
                     "moduleId": 0,
-                    "start": 566,
+                    "start": 584,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -5966,10 +5966,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 5.000000000000002,
                   "tag": {
-                    "commentStart": 676,
-                    "end": 680,
+                    "commentStart": 694,
+                    "end": 698,
                     "moduleId": 0,
-                    "start": 676,
+                    "start": 694,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5996,10 +5996,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 119.99999999999999,
                   "tag": {
-                    "commentStart": 833,
-                    "end": 837,
+                    "commentStart": 851,
+                    "end": 855,
                     "moduleId": 0,
-                    "start": 833,
+                    "start": 851,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -6026,10 +6026,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 4.999999999999998,
                   "tag": {
-                    "commentStart": 989,
-                    "end": 993,
+                    "commentStart": 1007,
+                    "end": 1011,
                     "moduleId": 0,
-                    "start": 989,
+                    "start": 1007,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -6056,10 +6056,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 120.00000000000001,
                   "tag": {
-                    "commentStart": 1148,
-                    "end": 1152,
+                    "commentStart": 1166,
+                    "end": 1170,
                     "moduleId": 0,
-                    "start": 1148,
+                    "start": 1166,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -6086,10 +6086,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 5.000000000001658,
                   "tag": {
-                    "commentStart": 1304,
-                    "end": 1308,
+                    "commentStart": 1322,
+                    "end": 1326,
                     "moduleId": 0,
-                    "start": 1304,
+                    "start": 1322,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -6116,10 +6116,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 169.99999999999997,
                   "tag": {
-                    "commentStart": 1462,
-                    "end": 1466,
+                    "commentStart": 1480,
+                    "end": 1484,
                     "moduleId": 0,
-                    "start": 1462,
+                    "start": 1480,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -6146,10 +6146,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 31.000000000007187,
                   "tag": {
-                    "commentStart": 1616,
-                    "end": 1620,
+                    "commentStart": 1634,
+                    "end": 1638,
                     "moduleId": 0,
-                    "start": 1616,
+                    "start": 1634,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -6176,10 +6176,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 29.50000000016619,
                   "tag": {
-                    "commentStart": 1773,
-                    "end": 1777,
+                    "commentStart": 1791,
+                    "end": 1795,
                     "moduleId": 0,
-                    "start": 1773,
+                    "start": 1791,
                     "type": "TagDeclarator",
                     "value": "arc9"
                   },
@@ -6200,10 +6200,10 @@ description: Variables in memory after executing bone-plate.kcl
                     117.07996066012271
                   ],
                   "tag": {
-                    "commentStart": 1934,
-                    "end": 1940,
+                    "commentStart": 1952,
+                    "end": 1958,
                     "moduleId": 0,
-                    "start": 1934,
+                    "start": 1952,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -6230,10 +6230,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 1.8040523003489886,
                   "tag": {
-                    "commentStart": 2061,
-                    "end": 2066,
+                    "commentStart": 2079,
+                    "end": 2084,
                     "moduleId": 0,
-                    "start": 2061,
+                    "start": 2079,
                     "type": "TagDeclarator",
                     "value": "arc11"
                   },
@@ -6254,10 +6254,10 @@ description: Variables in memory after executing bone-plate.kcl
                     140.04736666859097
                   ],
                   "tag": {
-                    "commentStart": 2222,
-                    "end": 2228,
+                    "commentStart": 2240,
+                    "end": 2246,
                     "moduleId": 0,
-                    "start": 2222,
+                    "start": 2240,
                     "type": "TagDeclarator",
                     "value": "line12"
                   },
@@ -6284,10 +6284,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 29.50000000000484,
                   "tag": {
-                    "commentStart": 2352,
-                    "end": 2357,
+                    "commentStart": 2370,
+                    "end": 2375,
                     "moduleId": 0,
-                    "start": 2352,
+                    "start": 2370,
                     "type": "TagDeclarator",
                     "value": "arc13"
                   },
@@ -6314,10 +6314,10 @@ description: Variables in memory after executing bone-plate.kcl
                   ],
                   "radius": 24.83988731935381,
                   "tag": {
-                    "commentStart": 2512,
-                    "end": 2517,
+                    "commentStart": 2530,
+                    "end": 2535,
                     "moduleId": 0,
-                    "start": 2512,
+                    "start": 2530,
                     "type": "TagDeclarator",
                     "value": "arc14"
                   },
@@ -6338,10 +6338,10 @@ description: Variables in memory after executing bone-plate.kcl
                     67.76972841128996
                   ],
                   "tag": {
-                    "commentStart": 2673,
-                    "end": 2679,
+                    "commentStart": 2691,
+                    "end": 2697,
                     "moduleId": 0,
-                    "start": 2673,
+                    "start": 2691,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -6362,10 +6362,10 @@ description: Variables in memory after executing bone-plate.kcl
                     19.23
                   ],
                   "tag": {
-                    "commentStart": 2798,
-                    "end": 2804,
+                    "commentStart": 2816,
+                    "end": 2822,
                     "moduleId": 0,
-                    "start": 2798,
+                    "start": 2816,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -6514,10 +6514,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 566,
-            "end": 570,
+            "commentStart": 584,
+            "end": 588,
             "moduleId": 0,
-            "start": 566,
+            "start": 584,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -6528,10 +6528,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 676,
-            "end": 680,
+            "commentStart": 694,
+            "end": 698,
             "moduleId": 0,
-            "start": 676,
+            "start": 694,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -6542,10 +6542,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 833,
-            "end": 837,
+            "commentStart": 851,
+            "end": 855,
             "moduleId": 0,
-            "start": 833,
+            "start": 851,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -6556,10 +6556,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 989,
-            "end": 993,
+            "commentStart": 1007,
+            "end": 1011,
             "moduleId": 0,
-            "start": 989,
+            "start": 1007,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -6570,10 +6570,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1148,
-            "end": 1152,
+            "commentStart": 1166,
+            "end": 1170,
             "moduleId": 0,
-            "start": 1148,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -6584,10 +6584,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1304,
-            "end": 1308,
+            "commentStart": 1322,
+            "end": 1326,
             "moduleId": 0,
-            "start": 1304,
+            "start": 1322,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -6598,10 +6598,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1462,
-            "end": 1466,
+            "commentStart": 1480,
+            "end": 1484,
             "moduleId": 0,
-            "start": 1462,
+            "start": 1480,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -6612,10 +6612,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1616,
-            "end": 1620,
+            "commentStart": 1634,
+            "end": 1638,
             "moduleId": 0,
-            "start": 1616,
+            "start": 1634,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -6626,10 +6626,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc9"
           },
@@ -6640,10 +6640,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1934,
-            "end": 1940,
+            "commentStart": 1952,
+            "end": 1958,
             "moduleId": 0,
-            "start": 1934,
+            "start": 1952,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -6654,10 +6654,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2061,
-            "end": 2066,
+            "commentStart": 2079,
+            "end": 2084,
             "moduleId": 0,
-            "start": 2061,
+            "start": 2079,
             "type": "TagDeclarator",
             "value": "arc11"
           },
@@ -6668,10 +6668,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2222,
-            "end": 2228,
+            "commentStart": 2240,
+            "end": 2246,
             "moduleId": 0,
-            "start": 2222,
+            "start": 2240,
             "type": "TagDeclarator",
             "value": "line12"
           },
@@ -6682,10 +6682,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2352,
-            "end": 2357,
+            "commentStart": 2370,
+            "end": 2375,
             "moduleId": 0,
-            "start": 2352,
+            "start": 2370,
             "type": "TagDeclarator",
             "value": "arc13"
           },
@@ -6696,10 +6696,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2512,
-            "end": 2517,
+            "commentStart": 2530,
+            "end": 2535,
             "moduleId": 0,
-            "start": 2512,
+            "start": 2530,
             "type": "TagDeclarator",
             "value": "arc14"
           },
@@ -6710,10 +6710,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2673,
-            "end": 2679,
+            "commentStart": 2691,
+            "end": 2697,
             "moduleId": 0,
-            "start": 2673,
+            "start": 2691,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -6724,10 +6724,10 @@ description: Variables in memory after executing bone-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2798,
-            "end": 2804,
+            "commentStart": 2816,
+            "end": 2822,
             "moduleId": 0,
-            "start": 2798,
+            "start": 2816,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -6755,10 +6755,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 120.00000000000001,
             "tag": {
-              "commentStart": 566,
-              "end": 570,
+              "commentStart": 584,
+              "end": 588,
               "moduleId": 0,
-              "start": 566,
+              "start": 584,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -6785,10 +6785,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 5.000000000000002,
             "tag": {
-              "commentStart": 676,
-              "end": 680,
+              "commentStart": 694,
+              "end": 698,
               "moduleId": 0,
-              "start": 676,
+              "start": 694,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -6815,10 +6815,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 119.99999999999999,
             "tag": {
-              "commentStart": 833,
-              "end": 837,
+              "commentStart": 851,
+              "end": 855,
               "moduleId": 0,
-              "start": 833,
+              "start": 851,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -6845,10 +6845,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 4.999999999999998,
             "tag": {
-              "commentStart": 989,
-              "end": 993,
+              "commentStart": 1007,
+              "end": 1011,
               "moduleId": 0,
-              "start": 989,
+              "start": 1007,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -6875,10 +6875,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 120.00000000000001,
             "tag": {
-              "commentStart": 1148,
-              "end": 1152,
+              "commentStart": 1166,
+              "end": 1170,
               "moduleId": 0,
-              "start": 1148,
+              "start": 1166,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -6905,10 +6905,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 5.000000000001658,
             "tag": {
-              "commentStart": 1304,
-              "end": 1308,
+              "commentStart": 1322,
+              "end": 1326,
               "moduleId": 0,
-              "start": 1304,
+              "start": 1322,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -6935,10 +6935,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 169.99999999999997,
             "tag": {
-              "commentStart": 1462,
-              "end": 1466,
+              "commentStart": 1480,
+              "end": 1484,
               "moduleId": 0,
-              "start": 1462,
+              "start": 1480,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -6965,10 +6965,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 31.000000000007187,
             "tag": {
-              "commentStart": 1616,
-              "end": 1620,
+              "commentStart": 1634,
+              "end": 1638,
               "moduleId": 0,
-              "start": 1616,
+              "start": 1634,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -6995,10 +6995,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 29.50000000016619,
             "tag": {
-              "commentStart": 1773,
-              "end": 1777,
+              "commentStart": 1791,
+              "end": 1795,
               "moduleId": 0,
-              "start": 1773,
+              "start": 1791,
               "type": "TagDeclarator",
               "value": "arc9"
             },
@@ -7019,10 +7019,10 @@ description: Variables in memory after executing bone-plate.kcl
               117.07996066012271
             ],
             "tag": {
-              "commentStart": 1934,
-              "end": 1940,
+              "commentStart": 1952,
+              "end": 1958,
               "moduleId": 0,
-              "start": 1934,
+              "start": 1952,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -7049,10 +7049,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 1.8040523003489886,
             "tag": {
-              "commentStart": 2061,
-              "end": 2066,
+              "commentStart": 2079,
+              "end": 2084,
               "moduleId": 0,
-              "start": 2061,
+              "start": 2079,
               "type": "TagDeclarator",
               "value": "arc11"
             },
@@ -7073,10 +7073,10 @@ description: Variables in memory after executing bone-plate.kcl
               140.04736666859097
             ],
             "tag": {
-              "commentStart": 2222,
-              "end": 2228,
+              "commentStart": 2240,
+              "end": 2246,
               "moduleId": 0,
-              "start": 2222,
+              "start": 2240,
               "type": "TagDeclarator",
               "value": "line12"
             },
@@ -7103,10 +7103,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 29.50000000000484,
             "tag": {
-              "commentStart": 2352,
-              "end": 2357,
+              "commentStart": 2370,
+              "end": 2375,
               "moduleId": 0,
-              "start": 2352,
+              "start": 2370,
               "type": "TagDeclarator",
               "value": "arc13"
             },
@@ -7133,10 +7133,10 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "radius": 24.83988731935381,
             "tag": {
-              "commentStart": 2512,
-              "end": 2517,
+              "commentStart": 2530,
+              "end": 2535,
               "moduleId": 0,
-              "start": 2512,
+              "start": 2530,
               "type": "TagDeclarator",
               "value": "arc14"
             },
@@ -7157,10 +7157,10 @@ description: Variables in memory after executing bone-plate.kcl
               67.76972841128996
             ],
             "tag": {
-              "commentStart": 2673,
-              "end": 2679,
+              "commentStart": 2691,
+              "end": 2697,
               "moduleId": 0,
-              "start": 2673,
+              "start": 2691,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -7181,10 +7181,10 @@ description: Variables in memory after executing bone-plate.kcl
               19.23
             ],
             "tag": {
-              "commentStart": 2798,
-              "end": 2804,
+              "commentStart": 2816,
+              "end": 2822,
               "moduleId": 0,
-              "start": 2798,
+              "start": 2816,
               "type": "TagDeclarator",
               "value": "line16"
             },
