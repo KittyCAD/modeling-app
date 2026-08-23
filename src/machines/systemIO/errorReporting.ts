@@ -2,46 +2,15 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 
 export type SystemIOErrorRisk = 'read' | 'write' | 'destructive'
-export type SystemIOErrorPhase =
-  | 'prepare'
-  | 'create'
-  | 'lookup'
-  | 'scan'
-  | 'delete'
-  | 'callback'
-  | 'navigate'
 
 export class ExpectedSystemIOError extends Error {
   override name = 'ExpectedSystemIOError'
 }
 
-export class SystemIOPhaseError extends Error {
-  override name = 'SystemIOPhaseError'
-
-  constructor(
-    readonly phase: SystemIOErrorPhase,
-    cause: unknown
-  ) {
-    super(
-      cause instanceof Error
-        ? cause.message
-        : 'SystemIO operation failed without an Error object.',
-      { cause }
-    )
-  }
-}
-
 const SAFE_ERROR_LABEL = /^[A-Za-z][A-Za-z0-9_.-]{0,63}$/
-const SYSTEM_IO_ERROR_PHASES = new Set<SystemIOErrorPhase>([
-  'prepare',
-  'create',
-  'lookup',
-  'scan',
-  'delete',
-  'callback',
-  'navigate',
-])
-const MAX_ERROR_CHAIN_LENGTH = 5
+const SAFE_STACK_FILE = /^[A-Za-z0-9_.-]+\.[A-Za-z0-9]+$/
+const SAFE_STACK_FUNCTION = /^[A-Za-z0-9_$.[\]<>-]+$/
+const MAX_STACK_FRAMES = 5
 
 function safeErrorLabel(value: unknown) {
   return typeof value === 'string' && SAFE_ERROR_LABEL.test(value)
@@ -49,74 +18,51 @@ function safeErrorLabel(value: unknown) {
     : undefined
 }
 
-function safeSystemIOErrorPhase(value: unknown) {
-  return typeof value === 'string' &&
-    SYSTEM_IO_ERROR_PHASES.has(value as SystemIOErrorPhase)
-    ? (value as SystemIOErrorPhase)
-    : undefined
-}
-
-function systemIOErrorChain(error: unknown) {
-  const chain: unknown[] = []
-  const seen = new Set<object>()
-  let current = error
-
-  while (chain.length < MAX_ERROR_CHAIN_LENGTH) {
-    if (typeof current === 'object' && current !== null) {
-      if (seen.has(current)) {
-        break
+function sanitizedContextError(error: Error, context: string) {
+  const sanitizedError = new Error(context)
+  const frames = (error.stack ?? '')
+    .split('\n')
+    .slice(1)
+    .flatMap((frame) => {
+      const location = frame.match(
+        /([A-Za-z0-9_.-]+\.[A-Za-z0-9]+):(\d+):(\d+)\)?$/
+      )
+      if (!location || !SAFE_STACK_FILE.test(location[1])) {
+        return []
       }
-      seen.add(current)
-    }
 
-    chain.push(current)
-    if (
-      typeof current !== 'object' ||
-      current === null ||
-      !('cause' in current)
-    ) {
-      break
-    }
-    current = current.cause
-  }
+      const functionName = frame.match(/^\s*at\s+([^\s(]+)(?:\s|\()/)?.[1]
+      const safeFunctionName =
+        functionName && SAFE_STACK_FUNCTION.test(functionName)
+          ? functionName
+          : undefined
+      return [
+        `    at ${safeFunctionName ? `${safeFunctionName} ` : ''}${location[1]}:${location[2]}:${location[3]}`,
+      ]
+    })
+    .slice(0, MAX_STACK_FRAMES)
 
-  return chain
+  sanitizedError.stack = [`Error: ${context}`, ...frames].join('\n')
+  return sanitizedError
 }
 
 function systemIOErrorDetails(error: unknown) {
-  const errorChain = systemIOErrorChain(error)
   const errorName =
     safeErrorLabel(error instanceof Error ? error.name : undefined) ??
     'SystemIOError'
-  const errorCode = errorChain
-    .map((chainError) =>
-      typeof chainError === 'object' &&
-      chainError !== null &&
-      'code' in chainError
-        ? safeErrorLabel(chainError.code)
-        : safeErrorLabel(chainError)
-    )
-    .find(Boolean)
-  const rootError = [...errorChain]
-    .reverse()
-    .find((chainError) => chainError instanceof Error)
-  const rootErrorName =
-    rootError instanceof Error ? safeErrorLabel(rootError.name) : undefined
-  const phase = [...errorChain]
-    .reverse()
-    .map((chainError) =>
-      chainError instanceof SystemIOPhaseError
-        ? safeSystemIOErrorPhase(chainError.phase)
-        : undefined
-    )
-    .find(Boolean)
+  const errorCode =
+    typeof error === 'object' && error !== null && 'code' in error
+      ? safeErrorLabel(error.code)
+      : safeErrorLabel(error)
+  const context = safeErrorLabel(
+    error instanceof Error ? error.message : undefined
+  )
 
   return {
     errorName,
     errorType: error instanceof Error ? 'Error' : typeof error,
     ...(errorCode ? { errorCode } : {}),
-    ...(errorChain.length > 1 && rootErrorName ? { rootErrorName } : {}),
-    ...(phase ? { phase } : {}),
+    ...(context ? { context } : {}),
   }
 }
 
@@ -129,29 +75,30 @@ export function reportSystemIOError(args: {
   dedupeKey?: string
   extra?: Record<string, unknown>
 }) {
-  if (
-    systemIOErrorChain(args.error).some(
-      (error) => error instanceof ExpectedSystemIOError
-    )
-  ) {
+  if (args.error instanceof ExpectedSystemIOError) {
     return
   }
 
   const safeExtra = { ...args.extra }
-  const extraPhase = safeSystemIOErrorPhase(safeExtra.phase)
+  const extraPhase = safeErrorLabel(safeExtra.phase)
   delete safeExtra.phase
   const filesystem = isDesktop() ? 'electron' : 'opfs'
   const {
     errorName,
-    phase: errorPhase,
+    context: errorContext,
     ...errorDetails
   } = systemIOErrorDetails(args.error)
-  const phase = extraPhase ?? errorPhase
+  const phase = extraPhase ?? errorContext
+  const contextError =
+    errorContext && args.error instanceof Error
+      ? sanitizedContextError(args.error, errorContext)
+      : undefined
   const message = `SystemIO ${args.risk} operation failed during ${args.operation}.`
 
   void reportClientError({
     code: ClientErrorCode.SystemIOError,
     message,
+    ...(contextError ? { error: contextError } : {}),
     errorName,
     dedupeKey:
       args.dedupeKey ??

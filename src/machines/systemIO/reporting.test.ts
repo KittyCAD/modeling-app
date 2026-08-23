@@ -2,7 +2,6 @@ import type * as ClientErrors from '@src/lib/clientErrors'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-  SystemIOPhaseError,
 } from '@src/machines/systemIO/errorReporting'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
@@ -114,39 +113,39 @@ describe('SystemIO client error reporting', () => {
     expect(JSON.stringify(report)).not.toContain(error.message)
   })
 
-  it('preserves a bounded phase and safe cause-chain details', () => {
+  it('reports a context-specific error with a privacy-safe stack', () => {
     const sensitivePath = '/Users/alice/Secret Project/main.kcl'
-    const cause = Object.assign(
-      new Error(`EACCES: permission denied, open '${sensitivePath}'`),
-      { code: 'EACCES' }
-    )
+    const error = new Error('onFileSystemSuccess')
+    error.stack = [
+      'Error: onFileSystemSuccess',
+      `    at actor (${sensitivePath}/systemIOMachineImpl.ts:824:30)`,
+    ].join('\n')
 
     reportSystemIOMachineError({
       context,
       event: {
         type: `xstate.error.actor.${SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile}`,
-        error: new SystemIOPhaseError(
-          'delete',
-          new SystemIOPhaseError('scan', cause)
-        ),
+        error,
       },
     })
 
     const report = mocks.reportClientError.mock.calls[0]?.[0]
     expect(report).toMatchObject({
-      errorName: 'SystemIOPhaseError',
+      error: expect.any(Error),
+      errorName: 'Error',
       dedupeKey:
-        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:scan:SystemIOPhaseError:EACCES',
+        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:unknown',
       extra: {
-        errorCode: 'EACCES',
         errorType: 'Error',
-        rootErrorName: 'Error',
-        phase: 'scan',
+        phase: 'onFileSystemSuccess',
       },
     })
+    expect(report.error).not.toBe(error)
+    expect(report.error.stack).toContain(
+      'at actor systemIOMachineImpl.ts:824:30'
+    )
     expect(JSON.stringify(report)).not.toContain(sensitivePath)
-    expect(JSON.stringify(report)).not.toContain(cause.message)
-    expect(report).not.toHaveProperty('error')
+    expect(report.error.stack).not.toContain(sensitivePath)
   })
 
   it('drops unrecognized phase labels', () => {
@@ -174,21 +173,6 @@ describe('SystemIO client error reporting', () => {
       event: {
         type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
         error: new ExpectedSystemIOError('Filename already exists.'),
-      },
-    })
-
-    expect(mocks.reportClientError).not.toHaveBeenCalled()
-  })
-
-  it('does not report expected errors wrapped with a phase', () => {
-    reportSystemIOMachineError({
-      context,
-      event: {
-        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
-        error: new SystemIOPhaseError(
-          'create',
-          new ExpectedSystemIOError('Filename already exists.')
-        ),
       },
     })
 

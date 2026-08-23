@@ -35,8 +35,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   ExpectedSystemIOError,
   reportSystemIOError,
-  type SystemIOErrorPhase,
-  SystemIOPhaseError,
 } from '@src/machines/systemIO/errorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -369,16 +367,14 @@ const sharedBulkDeleteWorkflow = async ({
   )
 
   if (!project) {
-    return Promise.reject(
-      new SystemIOPhaseError('lookup', new Error("Couldn't find project"))
-    )
+    return Promise.reject(new Error("Couldn't find project"))
   }
 
   const filesInProject = await collectProjectFiles({
     selectedFileContents: '',
     fileNames: [],
     projectContext: project,
-  }).catch((error) => Promise.reject(new SystemIOPhaseError('scan', error)))
+  })
 
   const requestedFilesToDelete = new Set(
     (input.filesToDelete ?? []).map((file) =>
@@ -402,11 +398,7 @@ const sharedBulkDeleteWorkflow = async ({
       file.type === 'kcl'
         ? file.absPath
         : fsZds.join(project.path, file.relPath)
-    try {
-      await fsZds.rm(absPath)
-    } catch (error) {
-      return Promise.reject(new SystemIOPhaseError('delete', error))
-    }
+    await fsZds.rm(absPath)
     totalDeleted += 1
   }
 
@@ -800,10 +792,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             onSuccess?: () => void
           }
         }) => {
-          let phase: SystemIOErrorPhase = 'prepare'
+          let potentialError = new Error('wasmInstancePromise')
           try {
             const wasmInstance = await input.context.wasmInstancePromise
-            phase = 'create'
+            potentialError = new Error('sharedBulkCreateWorkflow')
             const message = await sharedBulkCreateWorkflow({
               input: {
                 ...input,
@@ -812,7 +804,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               },
             })
             // We won't delete until everything's created / updated first.
-            phase = 'delete'
+            potentialError = new Error('sharedBulkDeleteWorkflow')
             const totalDeleted = await sharedBulkDeleteWorkflow({
               input: {
                 ...input,
@@ -821,10 +813,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             })
 
             message.message += `, ${totalDeleted} deleted`
-            phase = 'callback'
+            potentialError = new Error('onFileSystemSuccess')
             input.onFileSystemSuccess?.()
 
-            phase = 'navigate'
+            potentialError = new Error('prepareNavigation')
             const project = input.context.app.project
             const requestedRelativePath = normalizeKCLFileDeletePath(
               input.requestedFileNameWithExtension
@@ -844,7 +836,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               deletesRequestedFile
 
             if (!shouldNavigate) {
-              phase = 'callback'
+              potentialError = new Error('onSuccess')
               input.onSuccess?.()
             }
 
@@ -862,9 +854,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
             }
-          } catch (error: unknown) {
+          } catch {
             input.onFileSystemError?.()
-            return Promise.reject(new SystemIOPhaseError(phase, error))
+            return Promise.reject(potentialError)
           }
         }
       ),
