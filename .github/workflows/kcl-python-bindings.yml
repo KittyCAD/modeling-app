@@ -29,9 +29,56 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 jobs:
+  changes:
+    name: kcl-python-bindings (changes)
+    runs-on: namespace-profile-ubuntu-2-cores
+    if: github.event_name != 'schedule'
+    outputs:
+      packaging: ${{ steps.filter.outputs.packaging == 'true' || steps.gates.outputs.found == 'true' }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - id: filter
+        name: Check for packaging changes
+        uses: dorny/paths-filter@v4.0.3
+        # A tag push has no previous ref to diff against, so this step can
+        # fail there. A tag forces the full matrix on its own.
+        continue-on-error: true
+        with:
+          # These inputs decide whether a wheel builds and links on one
+          # architecture but not another.
+          filters: |
+            packaging:
+              - 'rust/kcl-python-bindings/**'
+              - 'rust/Cargo.lock'
+              - 'rust/**/Cargo.toml'
+              - 'rust/rust-toolchain.toml'
+              - '.tool-versions'
+              - '.github/workflows/kcl-python-bindings.yml'
+      - id: gates
+        name: Check for platform-gated code
+        shell: bash
+        # Linux stands in for Windows and macOS only while no crate in the
+        # wheel compiles differently per platform. This step tests that
+        # premise on every run instead of assuming it. A hit forces the full
+        # matrix. Unlisted crates are scanned, so a new crate fails safe.
+        # kcl-language-server is excluded because it is not in the wheel, and
+        # wasm32 gates are excluded because no wheel targets wasm.
+        run: |
+          if rg -n 'cfg\([^)]*target_(os|family|env|arch)' \
+               --glob '*.rs' \
+               --glob '!rust/kcl-language-server/**' \
+               rust/ | rg -v wasm32; then
+            echo 'Platform-gated code found; building every architecture.'
+            echo 'found=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'found=false' >> "$GITHUB_OUTPUT"
+          fi
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
     runs-on: namespace-profile-ubuntu-8-cores
+    # The hourly schedule exists to observe flaky tests. It runs the test job
+    # and nothing else.
+    if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
@@ -60,6 +107,9 @@ jobs:
   windows:
     name: kcl-python-bindings (windows)
     runs-on: namespace-profile-windows-8-cores
+    needs: changes
+    # Linux is the representative target on every other run.
+    if: needs.changes.outputs.packaging == 'true' || startsWith(github.ref, 'refs/tags/')
     strategy:
       matrix:
         target:
@@ -85,13 +135,9 @@ jobs:
           path: rust/kcl-python-bindings/dist
   macos:
     name: kcl-python-bindings (macos)
-    runs-on: macos-latest
-    # runs-on: namespace-profile-macos-6-cores
-    # TODO: Figure out if there is a way to make this work with Namespace
-    # Enabling this results in the following error on GitHub Actions:
-    #   $ /opt/homebrew/bin/python3 -m pip install sccache>=0.10.0
-    #   error: externally-managed-environment
-    #   To install Python packages system-wide, try brew install <package>
+    needs: changes
+    if: needs.changes.outputs.packaging == 'true' || startsWith(github.ref, 'refs/tags/')
+    runs-on: namespace-profile-macos-6-cores
     strategy:
       matrix:
         target:
@@ -102,13 +148,23 @@ jobs:
       - uses: actions/setup-python@v7.0.0
         with:
           python-version-file: .tool-versions
+      - name: Install sccache
+        uses: taiki-e/install-action@sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # maturin-action sets these itself when its own `sccache` input is
+          # on. They are set here because that input is off.
+          RUSTC_WRAPPER: sccache
+          SCCACHE_GHA_ENABLED: 'true'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter --strip
-          sccache: 'true'
+          # Off because maturin-action installs sccache with
+          # `python3 -m pip install`, which this image's Homebrew Python
+          # refuses under PEP 668. The step above installs it instead.
+          sccache: 'false'
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -160,6 +216,7 @@ jobs:
   sdist:
     name: kcl-python-bindings (sdist)
     runs-on: namespace-profile-ubuntu-8-cores
+    if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install the latest version of uv
