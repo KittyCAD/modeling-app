@@ -11,6 +11,7 @@ import reactPerf from 'eslint-plugin-react-perf'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
 import { defineConfig, globalIgnores } from 'eslint/config'
 import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
+import noUnsupportedIteratorHelpers from './src/eslint/rules/no-unsupported-iterator-helpers.mjs'
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -51,6 +52,7 @@ export default defineConfig([
         rules: {
           'no-codemirror-printable-keymap-keystrokes':
             noCodemirrorPrintableKeymapKeystrokes,
+          'no-unsupported-iterator-helpers': noUnsupportedIteratorHelpers,
         },
       },
     },
@@ -191,6 +193,7 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
       'zds/no-codemirror-printable-keymap-keystrokes': 'error',
+      'zds/no-unsupported-iterator-helpers': 'error',
     },
   },
   {

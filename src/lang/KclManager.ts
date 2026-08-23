@@ -404,10 +404,7 @@ export class ZDSProject {
     this.#executingPath.value = foundPathSignal[0]
   }
   findEditor(path: string) {
-    return this.editors
-      .entries()
-      .toArray()
-      .find(([p]) => p.value === path)
+    return Array.from(this.editors.entries()).find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
@@ -532,10 +529,9 @@ export class ZDSProject {
 
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
-    const foundEditorKey = this.editors
-      .keys()
-      .toArray()
-      .find((pathSignal) => pathSignal.value === path)
+    const foundEditorKey = Array.from(this.editors.keys()).find(
+      (pathSignal) => pathSignal.value === path
+    )
 
     // We ignore all currently-opened editors. The project watcher is meant
     // only to notify about the rest of the project's updates, and pass them
