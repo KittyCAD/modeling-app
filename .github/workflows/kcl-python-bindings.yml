@@ -120,6 +120,15 @@ jobs:
               | tar -xz -C /tmp
             install -m 0755 /tmp/sccache-v0.10.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache
             sccache --version
+      - name: sccache cache contents
+        # sccache ran inside the container and its server exited with
+        # it. Measuring the directory answers whether the container wrote to
+        # the mounted volume path.
+        if: always()
+        shell: bash
+        run: |
+          du -sh .sccache 2>&1 || true
+          echo "objects: $(find .sccache -type f 2>/dev/null | wc -l)"
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
