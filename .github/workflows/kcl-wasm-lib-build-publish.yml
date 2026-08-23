@@ -26,6 +26,9 @@ jobs:
           cache: "npm"
 
       - run: npm install
+        env:
+          # Yarn reads the setup-node npmrc during postinstall and requires this placeholder to exist.
+          NODE_AUTH_TOKEN: ""
 
       - name: Use correct Rust toolchain
         shell: bash
