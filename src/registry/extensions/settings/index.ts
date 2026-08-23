@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -111,10 +112,14 @@ const settingsRegistryItem = defineRegistryItem({
       id: 'settings',
       element: 'link',
       icon: 'settings',
-      href: (location) =>
-        `${webSafeJoin([location.pathname, PATHS.SETTINGS])}${
-          location.pathname.includes(PATHS.FILE) ? '?tab=project' : ''
-        }`,
+      href: (location) => {
+        const pathname = location.pathname
+        const settingsPath = pathname.includes(PATHS.SETTINGS)
+          ? pathname
+          : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+
+        return `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
+      },
       'data-testid': 'settings-link',
       order: 1,
       label: 'Settings',
