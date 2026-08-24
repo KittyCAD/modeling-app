@@ -395,8 +395,10 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. In KCL 2, create a
+/// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
@@ -2991,8 +2993,11 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. In KCL 2, construct the outer
+/// boundary and hole as segments inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// required bounded face with
+/// [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
 /// @settings(kclVersion = 1.0)
