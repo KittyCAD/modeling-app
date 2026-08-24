@@ -108,4 +108,36 @@ describe('export download files', () => {
     expect(within(responseBubble).getByText('model.step')).toBeInTheDocument()
     expect(screen.queryByText('Zookeeper File')).not.toBeInTheDocument()
   })
+
+  test('shows an export added to the existing response list', () => {
+    const items: MlCopilotServerMessage[] = []
+    const onClickClearChat = vi.fn()
+    const responseCard = () => (
+      <ResponsesCard
+        items={items}
+        deltasAggregated="Exported successfully. The download is ready here."
+        isLastResponse={true}
+        onClickClearChat={onClickClearChat}
+      />
+    )
+    const { rerender } = render(responseCard())
+
+    expect(screen.queryByText('model.step')).not.toBeInTheDocument()
+
+    items.push({
+      files: {
+        files: [
+          {
+            name: 'model.step',
+            mimetype: 'application/step',
+            data: [1, 2, 3],
+            metadata: { export_format: 'step' },
+          },
+        ],
+      },
+    })
+    rerender(responseCard())
+
+    expect(screen.getByText('model.step')).toBeInTheDocument()
+  })
 })
