@@ -1,0 +1,183 @@
+// Fan Housing
+// The plastic housing that contains the fan and the motor
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+import * from "parameters.kcl"
+
+bottomSketch = sketch(on = YZ) {
+  line1 = line(start = [var -60mm, var -60mm], end = [var 60mm, var -60mm])
+  line2 = line(start = [var 60mm, var -60mm], end = [var 60mm, var 60mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 60mm, var 60mm], end = [var -60mm, var 60mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -60mm, var 60mm], end = [var -60mm, var -60mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  centerHole = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  mount1 = circle(start = [var 54.75mm, var 52.5mm], center = [var 52.5mm, var 52.5mm])
+  mount2 = circle(start = [var -50.25mm, var 52.5mm], center = [var -52.5mm, var 52.5mm])
+  mount3 = circle(start = [var 54.75mm, var -52.5mm], center = [var 52.5mm, var -52.5mm])
+  mount4 = circle(start = [var -50.25mm, var -52.5mm], center = [var -52.5mm, var -52.5mm])
+}
+bottomRegion = region(segments = [bottomSketch.line1, bottomSketch.line2])
+bottomPlateBlank = extrude(bottomRegion, length = 4)
+  |> fillet(
+       radius = abs(fanSize - mountingHoleSpacing) / 2,
+       edges = [
+         {
+           sideFaces = [
+             bottomRegion.tags.line1,
+             bottomRegion.tags.line2
+           ]
+         },
+         {
+           sideFaces = [
+             bottomRegion.tags.line2,
+             bottomRegion.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             bottomRegion.tags.line3,
+             bottomRegion.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             bottomRegion.tags.line4,
+             bottomRegion.tags.line1
+           ]
+         }
+       ],
+     )
+
+// One curved airflow opening, repeated about the fan axis.
+airflowSketch = sketch(on = YZ) {
+  line1 = line(start = [var 33.6mm, var -43.2mm], end = [var -10.52mm, var -6.18mm])
+  arc2 = arc(start = [var -10.52mm, var -6.18mm], end = [var -13.91mm, var -6.47mm], center = [var -12.07mm, var -8.01mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -13.91mm, var -6.47mm], end = [var -38.59mm, var -35.89mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -38.59mm, var -35.89mm], end = [var -38.29mm, var -39.27mm], center = [var -36.75mm, var -37.43mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var -38.29mm, var -39.27mm], end = [var -30.94mm, var -45.44mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var -30.94mm, var -45.44mm], end = [var -6.26mm, var -54.42mm], center = [var -6.26mm, var -16.02mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -6.26mm, var -54.42mm], end = [var 8.14mm, var -54.42mm])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var 8.14mm, var -54.42mm], end = [var 33.6mm, var -43.2mm], center = [var 8.14mm, var -19.94mm])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+}
+airflowRegion = region(segments = [
+  airflowSketch.line1,
+  airflowSketch.arc2
+])
+airflowCutter = extrude(airflowRegion, length = 4)
+airflowCutters = patternCircular3d(
+  airflowCutter,
+  instances = 4,
+  axis = X,
+  center = [0, 0, 0],
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+bottomPlate = subtract(bottomPlateBlank, tools = [airflowCutters])
+
+middleSketch = sketch(on = faceOf(bottomPlate, face = END)) {
+  arc1 = arc(start = [var 20mm, var -59mm], end = [var 59mm, var -20mm], center = [var 20mm, var -20mm])
+  line2 = line(start = [var 59mm, var -20mm], end = [var 59mm, var 20mm])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var 59mm, var 20mm], end = [var 20mm, var 59mm], center = [var 20mm, var 20mm])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 20mm, var 59mm], end = [var -20mm, var 59mm])
+  coincident([arc3.end, line4.start])
+  arc5 = arc(start = [var -20mm, var 59mm], end = [var -59mm, var 20mm], center = [var -20mm, var 20mm])
+  coincident([line4.end, arc5.start])
+  line6 = line(start = [var -59mm, var 20mm], end = [var -59mm, var -20mm])
+  coincident([arc5.end, line6.start])
+  arc7 = arc(start = [var -59mm, var -20mm], end = [var -20mm, var -59mm], center = [var -20mm, var -20mm])
+  coincident([line6.end, arc7.start])
+  line8 = line(start = [var -20mm, var -59mm], end = [var 20mm, var -59mm])
+  coincident([arc7.end, line8.start])
+  coincident([line8.end, arc1.start])
+}
+middleRegion = region(segments = [middleSketch.arc1, middleSketch.line2])
+bodyMiddleBlank = extrude(middleRegion, length = fanHeight - 8)
+
+middleHoleSketch = sketch(on = faceOf(bodyMiddleBlank, face = END)) {
+  fanHole = circle(start = [var 55.2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+middleHoleRegion = region(segments = [middleHoleSketch.fanHole])
+bodyMiddle = extrude(middleHoleRegion, length = -(fanHeight - 8))
+
+topSketch = sketch(on = faceOf(bodyMiddleBlank, face = END)) {
+  line1 = line(start = [var -60mm, var -60mm], end = [var 60mm, var -60mm])
+  line2 = line(start = [var 60mm, var -60mm], end = [var 60mm, var 60mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 60mm, var 60mm], end = [var -60mm, var 60mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -60mm, var 60mm], end = [var -60mm, var -60mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  fanHole = circle(start = [var 55.2mm, var 0mm], center = [var 0mm, var 0mm])
+  mount1 = circle(start = [var 54.75mm, var 52.5mm], center = [var 52.5mm, var 52.5mm])
+  mount2 = circle(start = [var -50.25mm, var 52.5mm], center = [var -52.5mm, var 52.5mm])
+  mount3 = circle(start = [var 54.75mm, var -52.5mm], center = [var 52.5mm, var -52.5mm])
+  mount4 = circle(start = [var -50.25mm, var -52.5mm], center = [var -52.5mm, var -52.5mm])
+}
+topRegion = region(segments = [topSketch.line1, topSketch.line2])
+topPlate = extrude(topRegion, length = 4)
+  |> fillet(
+       radius = abs(fanSize - mountingHoleSpacing) / 2,
+       edges = [
+         {
+           sideFaces = [
+             topRegion.tags.line1,
+             topRegion.tags.line2
+           ]
+         },
+         {
+           sideFaces = [
+             topRegion.tags.line2,
+             topRegion.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             topRegion.tags.line3,
+             topRegion.tags.line4
+           ]
+         },
+         {
+           sideFaces = [
+             topRegion.tags.line4,
+             topRegion.tags.line1
+           ]
+         }
+       ],
+     )
+
+motorHousingSketch = sketch(on = faceOf(bottomPlate, face = END)) {
+  outer = circle(start = [var 11.2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+motorHousingBlank = extrude(region(segments = [motorHousingSketch.outer]), length = 16)
+
+motorBoreSketch = sketch(on = faceOf(motorHousingBlank, face = END)) {
+  inner = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+motorBoreRegion = region(segments = [motorBoreSketch.inner])
+motorHousing = extrude(motorBoreRegion, length = -16)
+
+hide(bottomSketch)
+hide(airflowSketch)
+hide(middleSketch)
+hide(middleHoleSketch)
+hide(topSketch)
+hide(motorHousingSketch)
+hide(motorBoreSketch)
+
+fanHousing = motorHousingBlank
+  |> appearance(color = "#a55e2c")

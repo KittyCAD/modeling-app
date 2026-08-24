@@ -4999,6 +4999,29 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn over_constrained_warning_identifies_signed_vertical_distance_direction() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  fixed([line1.start, [0mm, 10mm]])
+  fixed([line1.end, ORIGIN])
+  verticalDistance([line1.start, line1.end]) == 10mm
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert!(
+            warning.message.contains(
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first"
+            ),
+            "expected signed-direction diagnostic; found {warning:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn no_warning_when_sketch_is_not_over_constrained() {
         // Under-constrained sketch should not emit the over-constrained warning.
         let code = r#"

@@ -74,6 +74,7 @@ use crate::execution::memory::{self};
 use crate::execution::sketch_constraint_status_for_sketch;
 use crate::execution::sketch_solve::FreedomAnalysis;
 use crate::execution::sketch_solve::Solved;
+use crate::execution::sketch_solve::UnsatisfiedDirectionalConstraint;
 use crate::execution::sketch_solve::create_segment_scene_objects;
 use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
 use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
@@ -145,6 +146,39 @@ use crate::walk::Visitable;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
+}
+
+fn signed_distance_conflict_hint(solve_outcome: &Solved) -> String {
+    let hints = solve_outcome
+        .unsatisfied_directional_constraints
+        .iter()
+        .map(|constraint| match constraint {
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected > 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a positive right-hand side requires the second point to be right of the first (second.x - first.x > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected < 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a negative right-hand side requires the second point to be left of the first (second.x - first.x < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(_) => {
+                "Unsatisfied signed horizontalDistance constraint: a zero right-hand side requires both points to have the same X coordinate."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected > 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first (second.y - first.y > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected < 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a negative right-hand side requires the second point to be below the first (second.y - first.y < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(_) => {
+                "Unsatisfied signed verticalDistance constraint: a zero right-hand side requires both points to have the same Y coordinate."
+            }
+        })
+        .collect::<Vec<_>>();
+
+    if hints.is_empty() {
+        String::new()
+    } else {
+        format!(" {}", hints.join(" "))
+    }
 }
 
 fn datum_point_from_constrainable(
@@ -2835,6 +2869,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                unsatisfied_directional_constraints: Default::default(),
                                 converged: false,
                             },
                             None,
@@ -3002,8 +3037,9 @@ impl Node<SketchBlock> {
                     "segments have"
                 };
                 let message = format!(
-                    "Sketch is over-constrained: {} {description} conflicting constraints",
+                    "Sketch is over-constrained: {} {description} conflicting constraints.{}",
                     status.conflict_count,
+                    signed_distance_conflict_hint(&solve_outcome),
                 );
                 exec_state.warn(
                     CompilationIssue::err(range, message),
