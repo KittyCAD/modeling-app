@@ -7,20 +7,23 @@ import type {
 } from '@kittycad/lib'
 import { baseUnits } from '@src/lib/settings/settingsTypes'
 
-/**
- * Option lists double as runtime validators for values restored from
- * localStorage, so they have to stay exhaustive over each unit union.
- */
-export const unitLengthOptions: readonly UnitLength[] = [
+/** Builds a runtime option list and fails type-checking if a union member is omitted. */
+function exhaustiveUnitOptions<Unit extends string>() {
+  return <const Options extends readonly Unit[]>(
+    options: Exclude<Unit, Options[number]> extends never ? Options : never
+  ) => options
+}
+
+export const unitLengthOptions = exhaustiveUnitOptions<UnitLength>()([
   'mm',
   'cm',
   'm',
   'in',
   'ft',
   'yd',
-]
+])
 
-export const unitAreaOptions: readonly UnitArea[] = [
+export const unitAreaOptions = exhaustiveUnitOptions<UnitArea>()([
   'mm2',
   'cm2',
   'dm2',
@@ -29,9 +32,9 @@ export const unitAreaOptions: readonly UnitArea[] = [
   'in2',
   'ft2',
   'yd2',
-]
+])
 
-export const unitVolumeOptions: readonly UnitVolume[] = [
+export const unitVolumeOptions = exhaustiveUnitOptions<UnitVolume>()([
   'mm3',
   'cm3',
   'm3',
@@ -42,11 +45,18 @@ export const unitVolumeOptions: readonly UnitVolume[] = [
   'l',
   'usfloz',
   'usgal',
-]
+])
 
-export const unitMassOptions: readonly UnitMass[] = ['g', 'kg', 'lb']
+export const unitMassOptions = exhaustiveUnitOptions<UnitMass>()([
+  'g',
+  'kg',
+  'lb',
+])
 
-export const unitDensityOptions: readonly UnitDensity[] = ['kg:m3', 'lb:ft3']
+export const unitDensityOptions = exhaustiveUnitOptions<UnitDensity>()([
+  'kg:m3',
+  'lb:ft3',
+])
 
 /** Density is analysis specific; area and volume labels live in measurementUtils. */
 export const unitDensityLabels: Record<UnitDensity, string> = {

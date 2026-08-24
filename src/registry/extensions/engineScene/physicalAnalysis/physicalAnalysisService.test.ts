@@ -14,7 +14,7 @@ const emptyPreferences = {
   materialDensity: null,
 }
 
-describe('parsePhysicalAnalysisPreferences', () => {
+describe('physical analysis preference parsing', () => {
   it('accepts a fully populated valid payload', () => {
     expect(
       parsePhysicalAnalysisPreferences({
@@ -80,7 +80,7 @@ describe('parsePhysicalAnalysisPreferences', () => {
   })
 })
 
-describe('physicalAnalysisService persistence', () => {
+describe('physical analysis service persistence', () => {
   beforeEach(() => {
     globalThis.localStorage.clear()
     physicalAnalysisService.reloadPreferences()
