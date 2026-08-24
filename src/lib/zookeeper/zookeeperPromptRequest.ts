@@ -6,6 +6,7 @@ import type {
 import type { KclManager } from '@src/lang/KclManager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { parse, resultIsOk } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
@@ -13,6 +14,7 @@ import {
   getSelectionReferences,
   isEnginePrimitiveSelection,
   type SelectionReference,
+  type SelectionReferenceAstResolver,
 } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -437,19 +439,21 @@ function appendSelectionReferenceSourceRangePrompt({
     : prompt
 }
 
-async function buildSelectionReferencePrompt({
+async function buildSelectionReferences({
   selections,
   artifactGraph,
   kclManager,
   engineCommandManager,
   wasmInstance,
+  resolveAstForSourceRange,
 }: {
   selections: Selections
   artifactGraph: ArtifactGraph
   kclManager: KclManager
   engineCommandManager: ConnectionManager
   wasmInstance: ModuleType
-}): Promise<string | Error | null> {
+  resolveAstForSourceRange: SelectionReferenceAstResolver
+}): Promise<SelectionReference[] | Error> {
   const enginePrimitives = selections.otherSelections.filter(
     isEnginePrimitiveSelection
   )
@@ -464,7 +468,7 @@ async function buildSelectionReferencePrompt({
     !hasReferenceableGraphSelections &&
     referenceableEnginePrimitives.length === 0
   ) {
-    return null
+    return []
   }
 
   const references = await getSelectionReferences({
@@ -475,6 +479,7 @@ async function buildSelectionReferencePrompt({
     engineCommandManager,
     kclManager,
     wasmInstance,
+    resolveAstForSourceRange,
   })
 
   const unresolvedSelections = referenceableEnginePrimitives.filter(
@@ -490,7 +495,61 @@ async function buildSelectionReferencePrompt({
     )
   }
 
-  return formatSelectionReferencePrompt(references)
+  return references
+}
+
+function buildSelectionReferenceSourceRangePrompts({
+  references,
+  currentFilePrompt,
+  currentFileEntry,
+  kclFilesMap,
+}: {
+  references: SelectionReference[]
+  currentFilePrompt: SourceRangePrompt
+  currentFileEntry: FileEntry
+  kclFilesMap: KclFileMetaMap
+}): SourceRangePrompt[] | Error {
+  const referencesByModuleId = new Map<number, SelectionReference[]>()
+
+  for (const reference of references) {
+    const moduleId = reference.moduleId
+    const moduleReferences = referencesByModuleId.get(moduleId) ?? []
+    moduleReferences.push(reference)
+    referencesByModuleId.set(moduleId, moduleReferences)
+  }
+
+  const prompts: SourceRangePrompt[] = []
+  for (const [moduleId, moduleReferences] of referencesByModuleId) {
+    const file = kclFilesMap[moduleId]
+    if (!file) {
+      return new Error(
+        `Could not send Zookeeper selection: no KCL file found for generated reference file index ${moduleId}.`
+      )
+    }
+
+    const isCurrentFile = file.absPath === currentFileEntry.path
+    const carrierPrompt = isCurrentFile
+      ? currentFilePrompt
+      : {
+          file: file.relPath,
+          range: convertAppRangeToApiRange(
+            [0, file.fileContents.length, moduleId],
+            file.fileContents
+          ),
+          prompt: 'This file contains geometry selected by the user.',
+        }
+
+    prompts.push({
+      ...carrierPrompt,
+      prompt: appendSelectionReferenceSourceRangePrompt({
+        prompt: carrierPrompt.prompt,
+        selectionReferencePrompt:
+          formatSelectionReferencePrompt(moduleReferences),
+      }),
+    })
+  }
+
+  return prompts
 }
 
 export async function constructZookeeperUserPromptRequest({
@@ -562,15 +621,32 @@ export async function constructZookeeperUserPromptRequest({
   }
 
   const ranges: SourceRangePrompt[] = []
-  const selectionReferencePrompt = await buildSelectionReferencePrompt({
+  const resolveAstForSourceRange: SelectionReferenceAstResolver = (
+    sourceRange
+  ) => {
+    const moduleId = sourceRange[2]
+    if (moduleId === currentKclFile?.execStateFileNamesIndex) {
+      return kclManager.ast
+    }
+
+    const file = kclFilesMap[moduleId]
+    if (!file) return undefined
+
+    const parseResult = parse(file.fileContents, wasmInstance)
+    return !isErr(parseResult) && resultIsOk(parseResult)
+      ? parseResult.program
+      : undefined
+  }
+  const selectionReferences = await buildSelectionReferences({
     selections,
     artifactGraph,
     kclManager,
     engineCommandManager,
     wasmInstance,
+    resolveAstForSourceRange,
   })
-  if (selectionReferencePrompt instanceof Error) {
-    return selectionReferencePrompt
+  if (selectionReferences instanceof Error) {
+    return selectionReferences
   }
 
   for (const selection of selections.graphSelections) {
@@ -582,15 +658,17 @@ export async function constructZookeeperUserPromptRequest({
     ranges.push(...selectionPrompts)
   }
 
-  if (selectionReferencePrompt !== null) {
-    ranges.push({
-      ...currentFilePrompt,
-      prompt: appendSelectionReferenceSourceRangePrompt({
-        prompt: currentFilePrompt.prompt,
-        selectionReferencePrompt,
-      }),
-    })
+  const selectionReferencePrompts = buildSelectionReferenceSourceRangePrompts({
+    references: selectionReferences,
+    currentFilePrompt,
+    currentFileEntry: currentFile.entry,
+    kclFilesMap,
+  })
+  if (selectionReferencePrompts instanceof Error) {
+    return selectionReferencePrompts
   }
+
+  ranges.push(...selectionReferencePrompts)
 
   return {
     body: {
