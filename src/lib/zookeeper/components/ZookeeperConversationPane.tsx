@@ -59,6 +59,14 @@ export const ZookeeperConversationPane = (props: {
   showMakeathonAnnouncement?: boolean
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
 }) => {
+  const {
+    contextModeling: resumeContextModeling,
+    kclManager: resumeKclManager,
+    refreshUser: refreshUserForBilling,
+    sendBillingUpdate: sendBillingUpdateForBilling,
+    theProject: resumeProject,
+    zookeeperManagerActor: resumeZookeeperManagerActor,
+  } = props
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
   const [queue, setQueue] = useState<QueuedMessage[]>([])
@@ -242,8 +250,8 @@ export const ZookeeperConversationPane = (props: {
     billingCheckInFlight.current = true
     setIsCheckingBilling(true)
     try {
-      const refreshedUser = await props.refreshUser()
-      props.sendBillingUpdate()
+      const refreshedUser = await refreshUserForBilling()
+      sendBillingUpdateForBilling()
       if (
         accessDeniedCode !== 'pay_as_you_go_disabled' &&
         refreshedUser?.block_message
@@ -260,8 +268,8 @@ export const ZookeeperConversationPane = (props: {
   }, [
     accessDeniedCode,
     onReconnect,
-    props.refreshUser,
-    props.sendBillingUpdate,
+    refreshUserForBilling,
+    sendBillingUpdateForBilling,
   ])
 
   const onOpenBilling = useCallback(() => {
@@ -272,7 +280,7 @@ export const ZookeeperConversationPane = (props: {
     if (
       resumeInterruptedTurnInFlight.current ||
       !interruptedTurnAwaitingResume ||
-      props.theProject === undefined
+      resumeProject === undefined
     ) {
       return
     }
@@ -280,19 +288,19 @@ export const ZookeeperConversationPane = (props: {
     resumeInterruptedTurnInFlight.current = true
     setIsResumingInterruptedTurn(true)
     try {
-      const project = props.theProject
+      const project = resumeProject
       const currentLoaderFile = loaderFileRef.current
       const projectFiles = await collectProjectFiles({
-        selectedFileContents: props.kclManager.code,
-        selectedFilePath: props.kclManager.path,
-        fileNames: props.kclManager.execState.filenames,
+        selectedFileContents: resumeKclManager.code,
+        selectedFilePath: resumeKclManager.path,
+        fileNames: resumeKclManager.execState.filenames,
         projectContext: project,
       })
-      props.zookeeperManagerActor.send({
+      resumeZookeeperManagerActor.send({
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: project.name,
         projectFiles,
-        engineApiCallId: props.contextModeling.engineCommandManager?.apiCallId,
+        engineApiCallId: resumeContextModeling.engineCommandManager?.apiCallId,
         activeFile: currentLoaderFile
           ? activeFileRelativeToProject({
               currentFileEntry: currentLoaderFile,
@@ -308,10 +316,10 @@ export const ZookeeperConversationPane = (props: {
     }
   }, [
     interruptedTurnAwaitingResume,
-    props.contextModeling.engineCommandManager?.apiCallId,
-    props.kclManager,
-    props.theProject,
-    props.zookeeperManagerActor,
+    resumeContextModeling.engineCommandManager?.apiCallId,
+    resumeKclManager,
+    resumeProject,
+    resumeZookeeperManagerActor,
   ])
 
   useEffect(() => {
