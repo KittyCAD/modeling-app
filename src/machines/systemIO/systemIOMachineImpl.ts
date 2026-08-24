@@ -858,8 +858,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
             }
-          } catch {
+          } catch (error: unknown) {
             input.onFileSystemError?.()
+            potentialError.cause = error
             return Promise.reject(potentialError)
           }
         }

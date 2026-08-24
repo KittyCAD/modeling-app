@@ -113,9 +113,13 @@ describe('SystemIO client error reporting', () => {
     expect(JSON.stringify(report)).not.toContain(error.message)
   })
 
-  it('reports a context-specific error with a privacy-safe stack', () => {
+  it('reports context and safe cause details with a privacy-safe stack', () => {
     const sensitivePath = '/Users/alice/Secret Project/main.kcl'
-    const error = new Error('onFileSystemSuccess')
+    const cause = Object.assign(
+      new Error(`EACCES: permission denied, open '${sensitivePath}'`),
+      { code: 'EACCES' }
+    )
+    const error = new Error('onFileSystemSuccess', { cause })
     error.stack = [
       'Error: onFileSystemSuccess',
       `    at actor (${sensitivePath}/systemIOMachineImpl.ts:824:30)`,
@@ -134,9 +138,11 @@ describe('SystemIO client error reporting', () => {
       error: expect.any(Error),
       errorName: 'Error',
       dedupeKey:
-        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:unknown',
+        'SystemIO:SystemIOMachine:bulk create and delete kcl files and navigate to file:onFileSystemSuccess:Error:EACCES',
       extra: {
+        errorCode: 'EACCES',
         errorType: 'Error',
+        rootErrorName: 'Error',
         phase: 'onFileSystemSuccess',
       },
     })
@@ -145,7 +151,47 @@ describe('SystemIO client error reporting', () => {
       'at actor systemIOMachineImpl.ts:824:30'
     )
     expect(JSON.stringify(report)).not.toContain(sensitivePath)
+    expect(JSON.stringify(report)).not.toContain(cause.message)
     expect(report.error.stack).not.toContain(sensitivePath)
+  })
+
+  it('does not treat a safe-looking raw error message as context', () => {
+    const sensitiveFileName = 'secret-project.kcl'
+
+    reportSystemIOError({
+      error: new Error(sensitiveFileName),
+      operation: 'read project',
+      risk: 'read',
+      source: 'SystemIOTest',
+    })
+
+    const report = mocks.reportClientError.mock.calls[0]?.[0]
+    expect(report.dedupeKey).toBe(
+      'SystemIO:SystemIOTest:read project:unknown:Error:unknown'
+    )
+    expect(report).not.toHaveProperty('error')
+    expect(report.extra).not.toHaveProperty('phase')
+    expect(JSON.stringify(report)).not.toContain(sensitiveFileName)
+  })
+
+  it('does not treat a primitive cause as an error code', () => {
+    const sensitiveFileName = 'secret-project.kcl'
+
+    reportSystemIOError({
+      error: new Error('sharedBulkDeleteWorkflow', {
+        cause: sensitiveFileName,
+      }),
+      operation: 'write project',
+      risk: 'write',
+      source: 'SystemIOTest',
+    })
+
+    const report = mocks.reportClientError.mock.calls[0]?.[0]
+    expect(report.dedupeKey).toBe(
+      'SystemIO:SystemIOTest:write project:sharedBulkDeleteWorkflow:Error:unknown'
+    )
+    expect(report.extra).not.toHaveProperty('errorCode')
+    expect(JSON.stringify(report)).not.toContain(sensitiveFileName)
   })
 
   it('drops unrecognized phase labels', () => {
@@ -173,6 +219,20 @@ describe('SystemIO client error reporting', () => {
       event: {
         type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
         error: new ExpectedSystemIOError('Filename already exists.'),
+      },
+    })
+
+    expect(mocks.reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('does not report expected errors wrapped with operation context', () => {
+    reportSystemIOMachineError({
+      context,
+      event: {
+        type: `xstate.error.actor.${SystemIOMachineActors.renameFile}`,
+        error: new Error('sharedBulkCreateWorkflow', {
+          cause: new ExpectedSystemIOError('Filename already exists.'),
+        }),
       },
     })
 
