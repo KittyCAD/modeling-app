@@ -80,30 +80,33 @@ describe('cloud sync outbox persistence', () => {
     ])
   })
 
-  it.skip('coalesces explicit file deletions without losing their paths', async () => {
-    await appendOutboxEntry({
-      projectPath: '/projects/bracket',
-      kind: 'upsert',
-      targetPath: '/projects/bracket/first.kcl',
-      deletedPaths: ['first.kcl'],
-      createdAt: '2026-08-24T12:00:00.000Z',
-    } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
-    await appendOutboxEntry({
-      projectPath: '/projects/bracket',
-      kind: 'upsert',
-      targetPath: '/projects/bracket/second.kcl',
-      deletedPaths: ['second.kcl'],
-      createdAt: '2026-08-24T12:01:00.000Z',
-    } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
-
-    await expect(getAllOutboxEntries()).resolves.toMatchObject([
-      {
+  it.fails(
+    'coalesces explicit file deletions without losing their paths',
+    async () => {
+      await appendOutboxEntry({
         projectPath: '/projects/bracket',
         kind: 'upsert',
-        deletedPaths: ['first.kcl', 'second.kcl'],
-      },
-    ])
-  })
+        targetPath: '/projects/bracket/first.kcl',
+        deletedPaths: ['first.kcl'],
+        createdAt: '2026-08-24T12:00:00.000Z',
+      } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
+      await appendOutboxEntry({
+        projectPath: '/projects/bracket',
+        kind: 'upsert',
+        targetPath: '/projects/bracket/second.kcl',
+        deletedPaths: ['second.kcl'],
+        createdAt: '2026-08-24T12:01:00.000Z',
+      } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
+
+      await expect(getAllOutboxEntries()).resolves.toMatchObject([
+        {
+          projectPath: '/projects/bracket',
+          kind: 'upsert',
+          deletedPaths: ['first.kcl', 'second.kcl'],
+        },
+      ])
+    }
+  )
 
   it('keeps project delete work when a later upsert is registered for the tombstoned project', async () => {
     await appendOutboxEntry({
