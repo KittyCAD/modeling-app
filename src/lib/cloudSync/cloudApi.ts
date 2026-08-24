@@ -389,6 +389,7 @@ export async function updateRemoteProject({
   files,
   expectedRevision,
   entrypointPath,
+  deletedPaths = [],
 }: {
   config: CloudSyncConfig
   projectPath: string
@@ -396,6 +397,7 @@ export async function updateRemoteProject({
   files: ProjectArchiveFile[]
   expectedRevision?: Revision
   entrypointPath?: string
+  deletedPaths?: string[]
 }) {
   const publicationMetadata = getProjectUploadPublicationMetadata(project)
 
@@ -411,6 +413,7 @@ export async function updateRemoteProject({
         expectedRevision,
         entrypointPath,
         publicationMetadata,
+        deletedPaths,
       }),
     }
   )
@@ -420,6 +423,7 @@ type BuildProjectFormDataOptions = {
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
+  deletedPaths?: string[]
 }
 
 function buildProjectFormData(
