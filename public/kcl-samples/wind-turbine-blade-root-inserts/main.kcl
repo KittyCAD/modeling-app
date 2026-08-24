@@ -1,0 +1,222 @@
+// Wind Turbine Blade
+// A 52 m hollow composite blade with sixteen root inserts for its pitch-bearing interface.
+// Categories: Construction
+
+@settings(defaultLengthUnit = m, kclVersion = 2.0, experimentalFeatures = allow)
+
+interfaceDiameter = 1.5
+bladeLength = 52
+wallThickness = 0.2
+
+// Hollow root sleeve with the sixteen interface bores removed.
+rootSketch = sketch(on = YZ) {
+  outer = circle(start = [var 0.75m, var 0m], center = [var 0m, var 0m])
+  inner = circle(start = [var 0.55m, var 0m], center = [var 0m, var 0m])
+}
+rootSleeveBlank = extrude(region(segments = [rootSketch.outer]), length = 1)
+interfaceHoleSketch = sketch(on = YZ) {
+  hole = circle(start = [var 0.7m, var 0m], center = [var 0.65m, var 0m])
+}
+interfaceHole = extrude(region(segments = [interfaceHoleSketch.hole]), length = 0.75)
+interfaceHoles = patternCircular3d(
+  interfaceHole,
+  instances = 16,
+  axis = X,
+  center = [0, 0, 0],
+  arcDegrees = 360deg,
+  rotateDuplicates = false,
+)
+rootSleeve = subtract(rootSleeveBlank, tools = [interfaceHoles])
+
+// Copper insert nuts at the pitch-bearing interface.
+insertNutSketch = sketch(on = XY) {
+  line1 = line(start = [var 0m, var 0.7m], end = [var 0m, var 0.725m])
+  line2 = line(start = [var 0m, var 0.725m], end = [var -0.005m, var 0.725m])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -0.005m, var 0.725m], end = [var -0.005m, var 0.695m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.005m, var 0.695m], end = [var 0.595m, var 0.695m])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.595m, var 0.695m], end = [var 0.595m, var 0.7m])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.595m, var 0.7m], end = [var 0m, var 0.7m])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+}
+insertNut = revolve(
+  region(segments = [
+    insertNutSketch.line1,
+    insertNutSketch.line2
+  ]),
+  axis = {
+    direction = [1, 0],
+    origin = [0, 0.65]
+  },
+)
+  |> patternCircular3d(
+       instances = 16,
+       axis = X,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+  |> appearance(color = '#b87333')
+
+// Steel laminate inserts surrounding the nuts.
+rootInsertSketch = sketch(on = XY) {
+  line1 = line(start = [var 0m, var 0.695m], end = [var 0.09m, var 0.695m])
+  arc1 = arc(start = [var 0.5m, var 0.655m], end = [var 0.09m, var 0.695m], center = [var 0.09m, var -1.42625m])
+  coincident([line1.end, arc1.end])
+  line2 = line(start = [var 0.5m, var 0.655m], end = [var 0.5m, var 0.6505m])
+  coincident([arc1.start, line2.start])
+  line3 = line(start = [var 0.5m, var 0.6505m], end = [var -0.23m, var 0.6505m])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.23m, var 0.6505m], end = [var -0.23m, var 0.6685m])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var -0.23m, var 0.6685m], end = [var -0.03m, var 0.6685m])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -0.03m, var 0.6685m], end = [var 0m, var 0.695m])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+}
+rootInsert = revolve(
+  region(segments = [
+    rootInsertSketch.line1,
+    rootInsertSketch.arc1
+  ]),
+  axis = {
+    direction = [1, 0],
+    origin = [0, 0.65]
+  },
+)
+  |> patternCircular3d(
+       instances = 16,
+       axis = X,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+
+// The hollow blade stations are inlined from the legacy airfoil function.
+// Coordinates already include the original -30 and -20 degree section twist.
+baseEndOuterSketch = sketch(on = offsetPlane(YZ, offset = 1)) {
+  outer = circle(start = [var 0.75m, var 0m], center = [var 0m, var 0m])
+}
+baseEndInnerSketch = sketch(on = offsetPlane(YZ, offset = 1)) {
+  inner = circle(start = [var 0.55m, var 0m], center = [var 0m, var 0m])
+}
+baseEndOuter = region(segments = [baseEndOuterSketch.outer])
+baseEndInner = region(segments = [baseEndInnerSketch.inner])
+
+blade01OuterSketch = sketch(on = offsetPlane(YZ, offset = bladeLength / 3)) {
+  outerLine = line(start = [var 1.175m, var 2.0351597m], end = [var 0.94452276m, var -0.10186633m])
+  outerBase = arc(start = [var -0.32491914m, var 0.89270799m], end = [var 0.94452276m, var -0.10186633m], center = [var 0m, var 0m])
+  coincident([outerLine.end, outerBase.end])
+  outerFlank = arc(start = [var -0.32491914m, var 0.89270799m], end = [var 1.175m, var 2.0351597m], center = [var -1.40944659m, var 3.87242268m])
+  coincident([outerBase.start, outerFlank.start])
+  coincident([outerFlank.end, outerLine.start])
+}
+blade01InnerSketch = sketch(on = offsetPlane(YZ, offset = bladeLength / 3)) {
+  innerLine = line(start = [var 1.075m, var 1.86195462m], end = [var 0.73953238m, var -0.12486734m])
+  innerBase = arc(start = [var -0.25651511m, var 0.70476947m], end = [var 0.73953238m, var -0.12486734m], center = [var 0m, var 0m])
+  coincident([innerLine.end, innerBase.end])
+  innerFlank = arc(start = [var -0.25651511m, var 0.70476947m], end = [var 1.075m, var 1.86195462m], center = [var -1.0985889m, var 3.0183482m])
+  coincident([innerBase.start, innerFlank.start])
+  coincident([innerFlank.end, innerLine.start])
+}
+blade01Outer = region(segments = [
+  blade01OuterSketch.outerLine,
+  blade01OuterSketch.outerBase,
+  blade01OuterSketch.outerFlank
+])
+blade01Inner = region(segments = [
+  blade01InnerSketch.innerLine,
+  blade01InnerSketch.innerBase,
+  blade01InnerSketch.innerFlank
+])
+blade02OuterSketch = sketch(on = offsetPlane(YZ, offset = bladeLength - 1)) {
+  outerLine = line(start = [var 0.46172719m, var 1.26858504m], end = [var 0.86291008m, var 0.39734897m])
+  outerBase = arc(start = [var -0.475m, var 0.82272413m], end = [var 0.86291008m, var 0.39734897m], center = [var 0m, var 0m])
+  coincident([outerLine.end, outerBase.end])
+  outerFlank = arc(start = [var 0.46172719m, var 1.26858504m], end = [var -0.475m, var 0.82272413m], center = [var 2.79680392m, var -4.84420648m])
+  coincident([outerLine.start, outerFlank.start])
+  coincident([outerFlank.end, outerBase.start])
+}
+blade02InnerSketch = sketch(on = offsetPlane(YZ, offset = bladeLength - 1)) {
+  innerLine = line(start = [var 0.39332316m, var 1.08064651m], end = [var 0.70155661m, var 0.26517601m])
+  innerBase = arc(start = [var -0.375m, var 0.64951905m], end = [var 0.70155661m, var 0.26517601m], center = [var 0m, var 0m])
+  coincident([innerLine.end, innerBase.end])
+  innerFlank = arc(start = [var 0.39332316m, var 1.08064651m], end = [var -0.375m, var 0.64951905m], center = [var 17.60196587m, var -30.48749919m])
+  coincident([innerBase.start, innerFlank.end])
+  coincident([innerFlank.start, innerLine.start])
+}
+blade02Outer = region(segments = [
+  blade02OuterSketch.outerLine,
+  blade02OuterSketch.outerBase,
+  blade02OuterSketch.outerFlank
+])
+blade02Inner = region(segments = [
+  blade02InnerSketch.innerLine,
+  blade02InnerSketch.innerBase,
+  blade02InnerSketch.innerFlank
+])
+bladeOuter = loft(
+  [
+    baseEndOuter,
+    blade01Outer,
+    blade02Outer
+  ],
+  bodyType = SURFACE,
+)
+  |> appearance(color = '#ffffff')
+bladeInner = loft(
+  [
+    baseEndInner,
+    blade01Inner,
+    blade02Inner
+  ],
+  bodyType = SURFACE,
+)
+  |> appearance(color = '#ffffff')
+
+cap01Sketch = sketch(on = offsetPlane(YZ, offset = bladeLength - 1)) {
+  outerLine = line(start = [var 0.46172719m, var 1.26858504m], end = [var 0.86291008m, var 0.39734897m])
+  outerBase = arc(start = [var -0.475m, var 0.82272413m], end = [var 0.86291008m, var 0.39734897m], center = [var 0m, var 0m])
+  coincident([outerLine.end, outerBase.end])
+  outerFlank = arc(start = [var 0.46172719m, var 1.26858504m], end = [var -0.475m, var 0.82272413m], center = [var 2.79680392m, var -4.84420648m])
+  coincident([outerBase.start, outerFlank.end])
+  coincident([outerFlank.start, outerLine.start])
+}
+cap01 = region(segments = [
+  cap01Sketch.outerLine,
+  cap01Sketch.outerBase,
+  cap01Sketch.outerFlank
+])
+cap02Sketch = sketch(on = offsetPlane(YZ, offset = bladeLength)) {
+  outerLine = line(start = [var 0.12825755m, var 0.35238473m], end = [var 0.2446628m, var 0.12555921m])
+  outerBase = arc(start = [var -0.1375m, var 0.23815699m], end = [var 0.2446628m, var 0.12555921m], center = [var 0m, var 0m])
+  coincident([outerLine.end, outerBase.end])
+  outerFlank = arc(start = [var 0.12825755m, var 0.35238473m], end = [var -0.1375m, var 0.23815699m], center = [var 0.47857957m, var -0.82892413m])
+  coincident([outerLine.start, outerFlank.start])
+  coincident([outerFlank.end, outerBase.start])
+}
+cap02 = region(segments = [
+  cap02Sketch.outerLine,
+  cap02Sketch.outerBase,
+  cap02Sketch.outerFlank
+])
+bladeCap = loft([cap01, cap02])
+  |> appearance(color = '#ffffff')
+
+hide(rootSketch)
+hide(interfaceHoleSketch)
+hide(insertNutSketch)
+hide(rootInsertSketch)
+hide(baseEndOuterSketch)
+hide(baseEndInnerSketch)
+hide(blade01OuterSketch)
+hide(blade01InnerSketch)
+hide(blade02OuterSketch)
+hide(blade02InnerSketch)
+hide(cap01Sketch)
+hide(cap02Sketch)

@@ -395,8 +395,10 @@ export fn rectangle(
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. In KCL 2, create a
+/// [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(-XZ)
@@ -1375,26 +1377,33 @@ export fn getPreviousAdjacentEdge(
 
 /// Get the shared edge between two faces.
 ///
-/// ```kcl,legacySketch
-/// // Get an edge shared between two faces, created after a chamfer.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// scale = 20
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///     |> close(tag = $line0)
-///     |> extrude(length = 20, tagEnd = $end0)
-///     // We tag the chamfer to reference it later.
-///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
+/// scale = 20mm
+/// partSketch = sketch(on = XY) {
+///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
+///   top = line(start = [var 0mm, var 20mm], end = [var 20mm, var 20mm])
+///   right = line(start = [var 20mm, var 20mm], end = [var 20mm, var 0mm])
+///   line0 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
+///   coincident([left.end, top.start])
+///   coincident([top.end, right.start])
+///   coincident([right.end, line0.start])
+///   coincident([line0.end, left.start])
+/// }
+/// partRegion = region(segments = [partSketch.left, partSketch.top])
+/// part001 = extrude(partRegion, length = scale, tagEnd = $end0)
+///   |> chamfer(
+///        length = 10mm,
+///        tags = [getOppositeEdge(partRegion.tags.line0)],
+///        tag = $chamfer0,
+///      )
 ///
-/// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
-///
-/// // Chamfer the shared edge.
-/// // TODO: uncomment this when ssi for fillets lands
-/// // chamfer(part001, length = 5, tags = [commonEdge])
+/// // Select the edge shared by the chamfer and the extrusion's end face.
+/// commonEdge = getCommonEdge(faces = [
+///   part001.faces.chamfer0,
+///   part001.faces.end0,
+/// ])
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
@@ -1530,36 +1539,27 @@ export fn polygon(
 /// You can provide more than one sketch to sweep, and they will all be
 /// swept along the same path.
 ///
-/// **Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// ```kcl,legacySketch
-/// @settings(kclVersion = 1.0)
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
+/// }
 ///
-/// // Create a pipe using a sweep.
-///
-/// // Create a path for the sweep.
-/// sweepPath = startSketchOn(XZ)
-///     |> startProfile(at = [0.05, 0.05])
-///     |> line(end = [0, 7])
-///     |> tangentialArc(angle = 90deg, radius = 5)
-///     |> line(end = [-3, 0])
-///     |> tangentialArc(angle = -90deg, radius = 5)
-///     |> line(end = [0, 7])
-///
-/// // Create a hole for the pipe.
-/// pipeHole = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 1.5,
-///     )
-///
-/// sweepSketch = startSketchOn(XY)
-///     |> circle(
-///         center = [0, 0],
-///         radius = 2,
-///         )
-///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// sweepSketch = sweep(pipeRegion, path = sweepPath)
 /// ```
 ///
 /// ```kcl,legacySketch
@@ -2021,7 +2021,7 @@ export fn sweep(
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 1.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -2993,8 +2993,11 @@ export fn bezierCurve(
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
-/// This is part of sketch v1 and is deprecated in favor of
-/// [sketch-solve](/docs/kcl-std/modules/std-solver).
+/// This is part of sketch v1 and is deprecated. In KCL 2, construct the outer
+/// boundary and hole as segments inside a
+/// [`sketch` block](/docs/kcl-lang/sketches), then select the
+/// required bounded face with
+/// [`region`](/docs/kcl-std/functions/std-sketch-region).
 ///
 /// ```kcl,legacySketch
 /// @settings(kclVersion = 1.0)

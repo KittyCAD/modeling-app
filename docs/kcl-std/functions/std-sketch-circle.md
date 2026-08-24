@@ -19,8 +19,10 @@ circle(
 ): Sketch
 ```
 
-This is part of sketch v1 and is deprecated in favor of
-[sketch-solve](/docs/kcl-std/modules/std-solver).
+This is part of sketch v1 and is deprecated. In KCL 2, create a
+[`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
+[`sketch` block](/docs/kcl-lang/sketches), then select the
+closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
 
 
 **Legacy KCL 1 example:** The next example uses deprecated `subtract2d`.

@@ -54,7 +54,7 @@ function ModelingArea() {
   )
 
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div className="relative z-0 min-w-64 min-h-64 flex flex-col flex-1 items-center overflow-hidden">
       <ConnectionStream
         authToken={authToken}
         sketchSolveStreamDimming={sketchSolveStreamDimming}
