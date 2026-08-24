@@ -27,8 +27,6 @@ To translate around the global scene coordinate system, use `global = true`.
 Translate is really useful for sketches if you want to move a sketch
 and then rotate it using the `rotate` function to create a loft.
 
-**Legacy KCL 1 example:** This pipe example uses deprecated `subtract2d`.
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -48,28 +46,26 @@ and then rotate it using the `rotate` function to create a loft.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-// Move a pipe.
-
-// Create a path for the sweep.
-sweepPath = startSketchOn(XZ)
-  |> startProfile(at = [0.05, 0.05])
-  |> line(end = [0, 7])
-  |> tangentialArc(angle = 90deg, radius = 5)
-  |> line(end = [-3, 0])
-  |> tangentialArc(angle = -90deg, radius = 5)
-  |> line(end = [0, 7])
-
-// Create a hole for the pipe.
-pipeHole = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 1.5)
-
-sweepSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 2)
-  |> subtract2d(tool = pipeHole)
-  |> sweep(path = sweepPath)
-  |> translate(x = 1.0, y = 1.0, z = 2.5)
+sweepPath = sketch(on = XZ) {
+  line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+  arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+  coincident([arc4.start, line5.start])
+}
+pipeProfile = sketch(on = XY) {
+  outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+pipeRegion = region(segments = [pipeProfile.outerCircle])
+moved = sweep(pipeRegion, path = sweepPath)
+  |> translate(x = 1mm, y = 1mm, z = 2.5mm)
 
 ```
 
