@@ -1,0 +1,446 @@
+// Hand Trolley Axle
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Model the lifting grate as a sheet metal part
+sketch001 = sketch(on = -YZ) {
+  line1 = line(start = [var -10in, var 0in], end = [var -10in, var 0.09in])
+  line2 = line(start = [var -10in, var 0.09in], end = [var 1in, var 0.09in])
+  coincident([line1.end, line2.start])
+  arc3 = arc(start = [var 1in, var 0.09in], end = [var 1.1125in, var 0.2025in], center = [var 1in, var 0.2025in])
+  coincident([line2.end, arc3.start])
+  line4 = line(start = [var 1.1125in, var 0.2025in], end = [var 1.1125in, var 1.7025in])
+  coincident([arc3.end, line4.start])
+  line5 = line(start = [var 1.1125in, var 1.7025in], end = [var 1.2025in, var 1.7025in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 1.2025in, var 1.7025in], end = [var 1.2025in, var 0.2025in])
+  coincident([line5.end, line6.start])
+  arc7 = arc(start = [var 1in, var 0in], end = [var 1.2025in, var 0.2025in], center = [var 1in, var 0.2025in])
+  coincident([line6.end, arc7.end])
+  line8 = line(start = [var 1in, var 0in], end = [var -10in, var 0in])
+  coincident([arc7.start, line8.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2])
+grate = extrude(
+  region001,
+  length = frameWidth + tubeDiameter,
+  symmetric = true,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+  |> fillet(
+       radius = 1,
+       tags = [
+         getCommonEdge(faces = [region001.tags.line5, capStart001]),
+         getCommonEdge(faces = [region001.tags.line1, capEnd001]),
+         getCommonEdge(faces = [region001.tags.line5, capEnd001]),
+         getCommonEdge(faces = [region001.tags.line1, capStart001])
+       ],
+     )
+
+// Model the path of the outer rail of the trolley frame
+outerRail = sketch(on = offsetPlane(XZ, offset = tubeDiameter / 2)) {
+  line1 = line(start = [var -10in, var 0.09in], end = [var -10in, var 48.5in])
+  arc2 = arc(start = [var -7.5in, var 51in], end = [var -10in, var 48.5in], center = [var -7.5in, var 48.5in])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var -7.5in, var 51in], end = [var 0in, var 51in])
+  coincident([arc2.start, line3.start])
+  line4 = line(start = [var 0in, var 51in], end = [var 7.5in, var 51in])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var 10in, var 48.5in], end = [var 7.5in, var 51in], center = [var 7.5in, var 48.5in])
+  coincident([line4.end, arc5.end])
+  line6 = line(start = [var 10in, var 48.5in], end = [var 10in, var 0.09in])
+  coincident([arc5.start, line6.start])
+}
+
+// Sweep the tube profile around the outer rail path to give it a thickness
+sketch002 = sketch(on = offsetPlane(XY, offset = grateThickness)) {
+  circle1 = circle(start = [var -9.5in, var -0.5in], center = [var -10in, var -0.5in])
+}
+region002 = region(segments = [sketch002.circle1])
+outerRailThicken = sweep(region002, path = outerRail)
+
+// The minimum allowable straight length should equal double the bend radius
+centerRail = sketch(on = YZ) {
+  line1 = line(start = [var -0.5in, var 0.09in], end = [var -0.5in, var 5.09in])
+  arc2 = arc(start = [var -0.5in, var 5.09in], end = [var -0.834936491in, var 6.34in], center = [var -3in, var 5.09in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -0.834936491in, var 6.34in], end = [var -3.334936491in, var 10.670127019in])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -3.669872981in, var 11.920127019in], end = [var -3.334936491in, var 10.670127019in], center = [var -1.169872981in, var 11.920127019in])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -3.669872981in, var 11.920127019in], end = [var -3.669872981in, var 41.4125in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -3.669872981in, var 41.4125in], end = [var -4.402106028in, var 43.180266953in], center = [var -6.169872981in, var 41.4125in])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var -4.402106028in, var 43.180266953in], end = [var -7.937639934in, var 46.715800859in])
+  coincident([arc6.end, line7.start])
+  arc8 = arc(start = [var -6.169872981in, var 50.983567812in], end = [var -7.937639934in, var 46.715800859in], center = [var -6.169872981in, var 48.483567812in])
+  coincident([line7.end, arc8.end])
+  line9 = line(start = [var -6.169872981in, var 50.983567812in], end = [var -0.5in, var 50.983567812in])
+  coincident([arc8.start, line9.start])
+}
+
+// Sweep the tube profile around the center rail path to give it a thickness
+sketch003 = sketch(on = XY) {
+  circle1 = circle(start = [var 0.5in, var -0.5in], center = [var 0in, var -0.5in])
+}
+region003 = region(segments = [sketch003.circle1])
+centerRailThicken = sweep(region003, path = centerRail)
+
+// Model supporting ribs for the trolley frame
+sketch004 = sketch(on = offsetPlane(XY, offset = 14)) {
+  arc1 = arc(start = [var -9.55in, var -0.6in], end = [var 9.55in, var -0.6in], center = [var 0in, var 16.007843137in])
+  line2 = line(start = [var 9.55in, var -0.6in], end = [var 9.505135868in, var -0.521979428in])
+  coincident([arc1.end, line2.start])
+  arc3 = arc(start = [var -9.505135868in, var -0.521979428in], end = [var 9.505135868in, var -0.521979428in], center = [var 0in, var 16.007843137in])
+  coincident([line2.end, arc3.end])
+  line4 = line(start = [var -9.505135868in, var -0.521979428in], end = [var -9.55in, var -0.6in])
+  coincident([arc3.start, line4.start])
+}
+region004 = region(segments = [sketch004.arc1, sketch004.line2])
+rib = extrude(region004, length = 1)
+  |> patternLinear3d(instances = 3, distance = 9.8307909936667, axis = [0, 0, 1])
+
+// Create welded brackets to support the axle
+sketch005 = sketch(on = offsetPlane(YZ, offset = frameWidth / 2)) {
+  line1 = line(start = [var -1in, var 2in], end = [var -1in, var 2.54in])
+  arc2 = arc(start = [var -1in, var 2.54in], end = [var -1.05625in, var 2.637427858in], center = [var -1.1125in, var 2.54in])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -1.05625in, var 2.637427858in], end = [var -3.290595542in, var 3.927427858in])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -3.364715686in, var 4.204048002in], end = [var -3.290595542in, var 3.927427858in], center = [var -3.189345542in, var 4.102798002in])
+  coincident([line3.end, arc4.end])
+  arc5 = arc(start = [var -3.364715686in, var 4.204048002in], end = [var -3.364715686in, var 5.704048002in], center = [var -4.663753792in, var 4.954048002in])
+  coincident([arc4.start, arc5.start])
+  arc6 = arc(start = [var -3.290595542in, var 5.980668146in], end = [var -3.364715686in, var 5.704048002in], center = [var -3.189345542in, var 5.805298002in])
+  coincident([arc5.end, arc6.end])
+  line7 = line(start = [var -3.290595542in, var 5.980668146in], end = [var -1.05625in, var 7.270668146in])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -1.05625in, var 7.270668146in], end = [var -1in, var 7.368096004in], center = [var -1.1125in, var 7.368096004in])
+  coincident([line7.end, arc8.start])
+  line9 = line(start = [var -1in, var 7.368096004in], end = [var -1in, var 7.908096004in])
+  coincident([arc8.end, line9.start])
+  line10 = line(start = [var -1in, var 7.908096004in], end = [var -0.91in, var 7.908096004in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -0.91in, var 7.908096004in], end = [var -0.91in, var 7.368096004in])
+  coincident([line10.end, line11.start])
+  arc12 = arc(start = [var -1.01125in, var 7.19272586in], end = [var -0.91in, var 7.368096004in], center = [var -1.1125in, var 7.368096004in])
+  coincident([line11.end, arc12.end])
+  line13 = line(start = [var -1.01125in, var 7.19272586in], end = [var -3.245595542in, var 5.90272586in])
+  coincident([arc12.start, line13.start])
+  arc14 = arc(start = [var -3.245595542in, var 5.90272586in], end = [var -3.2867734in, var 5.749048002in], center = [var -3.189345542in, var 5.805298002in])
+  coincident([line13.end, arc14.start])
+  arc15 = arc(start = [var -3.2867734in, var 4.159048002in], end = [var -3.2867734in, var 5.749048002in], center = [var -4.663753792in, var 4.954048002in])
+  coincident([arc14.end, arc15.end])
+  arc16 = arc(start = [var -3.2867734in, var 4.159048002in], end = [var -3.245595542in, var 4.005370144in], center = [var -3.189345542in, var 4.102798002in])
+  coincident([arc15.start, arc16.start])
+  line17 = line(start = [var -3.245595542in, var 4.005370144in], end = [var -1.01125in, var 2.715370144in])
+  coincident([arc16.end, line17.start])
+  arc18 = arc(start = [var -0.91in, var 2.54in], end = [var -1.01125in, var 2.715370144in], center = [var -1.1125in, var 2.54in])
+  coincident([line17.end, arc18.end])
+  line19 = line(start = [var -0.91in, var 2.54in], end = [var -0.91in, var 2in])
+  coincident([arc18.start, line19.start])
+  line20 = line(start = [var -0.91in, var 2in], end = [var -1in, var 2in])
+  coincident([line19.end, line20.start])
+}
+region005 = region(segments = [sketch005.line1, sketch005.arc2])
+brackets = extrude(region005, length = 0.75 * tubeDiameter, symmetric = true)
+
+// Model a bearing for the axle on each bracket
+sketch006 = sketch(on = offsetPlane(YZ, offset = frameWidth / 2)) {
+  outerCircle = circle(start = [var -3.17in, var 5in], center = [var -3.67in, var 5in])
+  innerCircle = circle(start = [var -3.295in, var 5in], center = [var -3.67in, var 5in])
+}
+region006 = region(segments = [sketch006.outerCircle])
+axlebearing = extrude(region006, length = tubeDiameter, symmetric = true)
+
+patternLinear3d(
+  [brackets, axlebearing],
+  instances = 2,
+  distance = frameWidth,
+  axis = [-1, 0, 0],
+)
+
+sketch008 = sketch(on = -YZ) {
+  circle1 = circle(start = [var 4.045in, var 5in], center = [var 3.67in, var 5in])
+}
+region008 = region(segments = [sketch008.circle1])
+axle = extrude(region008, length = frameWidth + 4, symmetric = true)
+
+// Revolve a wheel that mounts to the trolley axle
+sketch009 = sketch(on = offsetPlane(XY, offset = wheelDiameter / 2)) {
+  line1 = line(start = [var -10.65in, var -3.295in], end = [var -13.35in, var -3.295in])
+  line2 = line(start = [var -13.35in, var -3.295in], end = [var -13.35in, var -3.67in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -13.35in, var -3.67in], end = [var -13.85in, var -3.67in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -13.85in, var -3.67in], end = [var -13.85in, var -3.23in])
+  coincident([line3.end, line4.start])
+  arc5 = arc(start = [var -13.667431149in, var -3.03076106in], end = [var -13.85in, var -3.23in], center = [var -13.65in, var -3.23in])
+  coincident([line4.end, arc5.end])
+  line6 = line(
+    start = [var -13.667431149in, var -3.03076106in],
+    end = [
+      var -12.531769193in,
+      var -2.931403514in
+    ],
+  )
+  coincident([arc5.start, line6.start])
+  arc7 = arc(
+    start = [
+      var -12.531769193in,
+      var -2.931403514in
+    ],
+    end = [
+      var -12.440484767in,
+      var -2.831784044in
+    ],
+    center = [
+      var -12.540484767in,
+      var -2.831784044in
+    ],
+  )
+  coincident([line6.end, arc7.start])
+  line8 = line(
+    start = [
+      var -12.440484767in,
+      var -2.831784044in
+    ],
+    end = [
+      var -12.440484767in,
+      var -1.551784044in
+    ],
+  )
+  coincident([arc7.end, line8.start])
+  arc9 = arc(
+    start = [
+      var -12.440484767in,
+      var -1.551784044in
+    ],
+    end = [
+      var -12.531769193in,
+      var -1.452164574in
+    ],
+    center = [
+      var -12.540484767in,
+      var -1.551784044in
+    ],
+  )
+  coincident([line8.end, arc9.start])
+  line10 = line(
+    start = [
+      var -12.531769193in,
+      var -1.452164574in
+    ],
+    end = [
+      var -13.478154156in,
+      var -1.369366618in
+    ],
+  )
+  coincident([arc9.end, line10.start])
+  arc11 = arc(
+    start = [
+      var -13.659961947in,
+      var -1.187558827in
+    ],
+    end = [
+      var -13.478154156in,
+      var -1.369366618in
+    ],
+    center = [
+      var -13.460723007in,
+      var -1.170127679in
+    ],
+  )
+  coincident([line10.end, arc11.end])
+  line12 = line(
+    start = [
+      var -13.659961947in,
+      var -1.187558827in
+    ],
+    end = [var -13.727071869in, var -0.42048891in],
+  )
+  coincident([arc11.start, line12.start])
+  line13 = line(start = [var -13.727071869in, var -0.42048891in], end = [var -13.577071869in, var -0.42048891in])
+  coincident([line12.end, line13.start])
+  line14 = line(
+    start = [var -13.577071869in, var -0.42048891in],
+    end = [
+      var -13.516062849in,
+      var -1.117825198in
+    ],
+  )
+  coincident([line13.end, line14.start])
+  line15 = line(
+    start = [
+      var -13.516062849in,
+      var -1.117825198in
+    ],
+    end = [
+      var -11.516062849in,
+      var -1.117825198in
+    ],
+  )
+  coincident([line14.end, line15.start])
+  line16 = line(
+    start = [
+      var -11.516062849in,
+      var -1.117825198in
+    ],
+    end = [var -11.455053829in, var -0.42048891in],
+  )
+  coincident([line15.end, line16.start])
+  line17 = line(start = [var -11.455053829in, var -0.42048891in], end = [var -11.335053829in, var -0.42048891in])
+  coincident([line16.end, line17.start])
+  line18 = line(
+    start = [var -11.335053829in, var -0.42048891in],
+    end = [
+      var -11.402163751in,
+      var -1.187558827in
+    ],
+  )
+  coincident([line17.end, line18.start])
+  arc19 = arc(
+    start = [
+      var -11.583971542in,
+      var -1.369366618in
+    ],
+    end = [
+      var -11.402163751in,
+      var -1.187558827in
+    ],
+    center = [
+      var -11.601402691in,
+      var -1.170127679in
+    ],
+  )
+  coincident([line18.end, arc19.end])
+  line20 = line(
+    start = [
+      var -11.583971542in,
+      var -1.369366618in
+    ],
+    end = [
+      var -12.012335262in,
+      var -1.406843588in
+    ],
+  )
+  coincident([arc19.start, line20.start])
+  arc21 = arc(
+    start = [
+      var -12.012335262in,
+      var -1.406843588in
+    ],
+    end = [
+      var -12.103619688in,
+      var -1.506463058in
+    ],
+    center = [
+      var -12.003619688in,
+      var -1.506463058in
+    ],
+  )
+  coincident([line20.end, arc21.start])
+  line22 = line(
+    start = [
+      var -12.103619688in,
+      var -1.506463058in
+    ],
+    end = [
+      var -12.103619688in,
+      var -2.416463058in
+    ],
+  )
+  coincident([arc21.end, line22.start])
+  arc23 = arc(
+    start = [
+      var -12.103619688in,
+      var -2.416463058in
+    ],
+    end = [
+      var -12.012335262in,
+      var -2.516082527in
+    ],
+    center = [
+      var -12.003619688in,
+      var -2.416463058in
+    ],
+  )
+  coincident([line22.end, arc23.start])
+  line24 = line(
+    start = [
+      var -12.012335262in,
+      var -2.516082527in
+    ],
+    end = [var -10.65in, var -2.635271419in],
+  )
+  coincident([arc23.end, line24.start])
+  line25 = line(start = [var -10.65in, var -2.635271419in], end = [var -10.65in, var -3.295in])
+  coincident([line24.end, line25.start])
+}
+region009 = region(segments = [sketch009.line1, sketch009.line2])
+wheel = revolve(
+  region009,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, -3.67]
+  },
+)
+
+sketch010 = sketch(on = offsetPlane(XY, offset = wheelDiameter / 2)) {
+  line1 = line(start = [var -13.55in, var -1.05in], end = [var -13.67676317in, var -0.33109034in])
+  arc2 = arc(start = [var -13.67676317in, var 1.091904762in], end = [var -13.67676317in, var -0.33109034in], center = [var -9.641660043in, var 0.380407211in])
+  coincident([line1.end, arc2.end])
+  arc3 = arc(start = [var -13.67676317in, var 1.091904762in], end = [var -13.661570923in, var 1.26555294in], center = [var -14.661570923in, var 1.26555294in])
+  coincident([arc2.start, arc3.start])
+  arc4 = arc(start = [var -13.561570923in, var 1.36555294in], end = [var -13.661570923in, var 1.26555294in], center = [var -13.561570923in, var 1.26555294in])
+  coincident([arc3.end, arc4.end])
+  line5 = line(start = [var -13.561570923in, var 1.36555294in], end = [var -11.311570923in, var 1.36555294in])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -11.211570923in, var 1.26555294in], end = [var -11.311570923in, var 1.36555294in], center = [var -11.311570923in, var 1.26555294in])
+  coincident([line5.end, arc6.end])
+  arc7 = arc(start = [var -11.211570923in, var 1.26555294in], end = [var -11.196378676in, var 1.091904762in], center = [var -10.211570923in, var 1.26555294in])
+  coincident([arc6.start, arc7.start])
+  arc8 = arc(start = [var -11.196378676in, var -0.33109034in], end = [var -11.196378676in, var 1.091904762in], center = [var -15.231481802in, var 0.380407211in])
+  coincident([arc7.end, arc8.end])
+  line9 = line(start = [var -11.196378676in, var -0.33109034in], end = [var -11.323141845in, var -1.05in])
+  coincident([arc8.start, line9.start])
+  line10 = line(start = [var -11.323141845in, var -1.05in], end = [var -13.55in, var -1.05in])
+  coincident([line9.end, line10.start])
+}
+region010 = region(segments = [sketch010.line1, sketch010.arc2])
+tire = revolve(
+  region010,
+  axis = {
+    direction = [1.0, 0.0],
+    origin = [0.0, -3.67]
+  },
+)
+  |> appearance(color = "#010101", metalness = 10, roughness = 70)
+
+patternCircular3d(
+  [wheel, tire],
+  instances = 2,
+  axis = [0, 0, 1],
+  center = [0, -3.67, 0],
+)
+
+appearance(
+  [
+    grate,
+    brackets,
+    axlebearing,
+    outerRailThicken,
+    centerRailThicken,
+    rib,
+    wheel
+  ],
+  color,
+  metalness = 40,
+  roughness,
+)
