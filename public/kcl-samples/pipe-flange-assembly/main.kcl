@@ -1,0 +1,72 @@
+// Pipe and Flange Assembly
+// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import * from "parameters.kcl"
+
+import "9472k188-gasket.kcl" as gasket
+import flange from "68095k348-flange.kcl"
+import washer from "98017a257-washer.kcl"
+import bolt from "91251a404-bolt.kcl"
+import hexNut from "95479a127-hex-nut.kcl"
+import pipe from "1120t74-pipe.kcl"
+
+flange()
+flange()
+  |> rotate(axis = [0, 1, 0], angle = 180deg)
+  |> translate(x = 0, y = 0, z = flangeBackHeight * 2 + gasketThickness)
+
+gasket
+  |> translate(x = 0, y = 0, z = -flangeBackHeight - gasketThickness)
+
+washer()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness)
+  |> patternCircular3d(
+       instances = 4,
+       axis = Z,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+  |> patternLinear3d(instances = 2, distance = -(flangeBaseThickness * 2 + flangeBackHeight * 2 + gasketThickness + washerThickness), axis = Z)
+
+bolt()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = flangeBaseThickness + washerThickness)
+  |> rotate(roll = 90deg, pitch = 0deg, yaw = 0deg)
+  |> patternCircular3d(
+       instances = 4,
+       axis = Z,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+
+hexNut()
+  |> translate(x = mountingHolePlacementDiameter / 2, y = 0, z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + washerThickness + hexNutThickness))
+  |> patternCircular3d(
+       instances = 4,
+       axis = Z,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = false,
+     )
+
+pipe()
+  |> rotate(roll = -90deg, pitch = 0deg, yaw = 0deg)
+  |> translate(
+       x = 0,
+       y = 0,
+       z = flangeBaseThickness + flangeFrontHeight - 0.5,
+       global = true,
+     )
+
+pipe()
+  |> rotate(roll = 90deg, pitch = 0deg, yaw = 0deg)
+  |> translate(
+       x = 0,
+       y = 0,
+       z = -(flangeBackHeight * 2 + gasketThickness + flangeBaseThickness + flangeFrontHeight - 0.5),
+       global = true,
+     )

@@ -635,14 +635,12 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
     let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
 
     let center: Coords2d;
-    let radius: f64;
 
-    if tangential_line_perp_slope == slope_mid_point_line.0 {
+    let radius: f64 = if tangential_line_perp_slope == slope_mid_point_line.0 {
         // can't find the intersection of the two lines if they have the same gradient
         // but in this case the center is the midpoint anyway
         center = mid_point;
-        radius = ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared())
-            .sqrt();
+        ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared()).sqrt()
     } else {
         center = intersect_point_n_slope(
             mid_point,
@@ -650,9 +648,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
             input.arc_start_point,
             tangential_line_perp_slope,
         );
-        radius = ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared())
-            .sqrt();
-    }
+        ((input.arc_start_point[0] - center[0]).squared() + (input.arc_start_point[1] - center[1]).squared()).sqrt()
+    };
 
     let arc_mid_point = get_mid_point(
         center,

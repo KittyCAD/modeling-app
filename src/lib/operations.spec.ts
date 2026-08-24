@@ -26,6 +26,7 @@ import {
   getOperationVariableName,
   groupNestedOperations,
   groupOperationTypeStreaks,
+  hiddenArtifactIdsFromOperations,
 } from '@src/lib/operations'
 import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -394,6 +395,26 @@ describe('operations.test.ts', () => {
       })
 
       expect(getHideOpByArtifactId([hideOp], 'tagged-artifact')).toBeUndefined()
+    })
+  })
+
+  describe('hiddenArtifactIdsFromOperations', () => {
+    it('collects the ids of every hide call and nothing else', () => {
+      const operations = [
+        stdlib('extrude'),
+        hideOperation('solid-artifact'),
+        hideOperationOf({ type: 'Plane', artifact_id: 'plane-artifact' }),
+      ]
+
+      expect(hiddenArtifactIdsFromOperations(operations)).toEqual(
+        new Set(['solid-artifact', 'plane-artifact'])
+      )
+    })
+
+    it('reports nothing when the program hid nothing', () => {
+      expect(hiddenArtifactIdsFromOperations([stdlib('extrude')])).toEqual(
+        new Set()
+      )
     })
   })
 

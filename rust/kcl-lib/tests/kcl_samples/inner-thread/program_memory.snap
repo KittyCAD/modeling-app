@@ -116,10 +116,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 602,
-            "end": 609,
+            "commentStart": 655,
+            "end": 662,
             "moduleId": 0,
-            "start": 602,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -147,10 +147,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 602,
-              "end": 609,
+              "commentStart": 655,
+              "end": 662,
               "moduleId": 0,
-              "start": 602,
+              "start": 655,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -248,10 +248,10 @@ description: Variables in memory after executing inner-thread.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 602,
-            "end": 609,
+            "commentStart": 655,
+            "end": 662,
             "moduleId": 0,
-            "start": 602,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -470,10 +470,10 @@ description: Variables in memory after executing inner-thread.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 602,
-                    "end": 609,
+                    "commentStart": 655,
+                    "end": 662,
                     "moduleId": 0,
-                    "start": 602,
+                    "start": 655,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -562,10 +562,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 159,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -593,10 +593,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 159,
-              "end": 166,
+              "commentStart": 212,
+              "end": 219,
               "moduleId": 0,
-              "start": 159,
+              "start": 212,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -704,10 +704,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 159,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -735,10 +735,10 @@ description: Variables in memory after executing inner-thread.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 159,
-              "end": 166,
+              "commentStart": 212,
+              "end": 219,
               "moduleId": 0,
-              "start": 159,
+              "start": 212,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -845,10 +845,10 @@ description: Variables in memory after executing inner-thread.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 159,
-            "end": 166,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 159,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1067,10 +1067,10 @@ description: Variables in memory after executing inner-thread.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 159,
-                    "end": 166,
+                    "commentStart": 212,
+                    "end": 219,
                     "moduleId": 0,
-                    "start": 159,
+                    "start": 212,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1177,10 +1177,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1029,
-            "end": 1034,
+            "commentStart": 1082,
+            "end": 1087,
             "moduleId": 0,
-            "start": 1029,
+            "start": 1082,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1191,10 +1191,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1108,
-            "end": 1113,
+            "commentStart": 1161,
+            "end": 1166,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1161,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1205,10 +1205,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1225,
-            "end": 1230,
+            "commentStart": 1278,
+            "end": 1283,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1278,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1219,10 +1219,10 @@ description: Variables in memory after executing inner-thread.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1341,
-            "end": 1346,
+            "commentStart": 1394,
+            "end": 1399,
             "moduleId": 0,
-            "start": 1341,
+            "start": 1394,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1244,10 +1244,10 @@ description: Variables in memory after executing inner-thread.kcl
               -0.25
             ],
             "tag": {
-              "commentStart": 1029,
-              "end": 1034,
+              "commentStart": 1082,
+              "end": 1087,
               "moduleId": 0,
-              "start": 1029,
+              "start": 1082,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1268,10 +1268,10 @@ description: Variables in memory after executing inner-thread.kcl
               -0.2500000001
             ],
             "tag": {
-              "commentStart": 1108,
-              "end": 1113,
+              "commentStart": 1161,
+              "end": 1166,
               "moduleId": 0,
-              "start": 1108,
+              "start": 1161,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1292,10 +1292,10 @@ description: Variables in memory after executing inner-thread.kcl
               0.24999999954999996
             ],
             "tag": {
-              "commentStart": 1225,
-              "end": 1230,
+              "commentStart": 1278,
+              "end": 1283,
               "moduleId": 0,
-              "start": 1225,
+              "start": 1278,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1316,10 +1316,10 @@ description: Variables in memory after executing inner-thread.kcl
               0.24999999929999997
             ],
             "tag": {
-              "commentStart": 1341,
-              "end": 1346,
+              "commentStart": 1394,
+              "end": 1399,
               "moduleId": 0,
-              "start": 1341,
+              "start": 1394,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1921,10 +1921,10 @@ description: Variables in memory after executing inner-thread.kcl
                     -0.25
                   ],
                   "tag": {
-                    "commentStart": 1029,
-                    "end": 1034,
+                    "commentStart": 1082,
+                    "end": 1087,
                     "moduleId": 0,
-                    "start": 1029,
+                    "start": 1082,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1945,10 +1945,10 @@ description: Variables in memory after executing inner-thread.kcl
                     -0.2500000001
                   ],
                   "tag": {
-                    "commentStart": 1108,
-                    "end": 1113,
+                    "commentStart": 1161,
+                    "end": 1166,
                     "moduleId": 0,
-                    "start": 1108,
+                    "start": 1161,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1969,10 +1969,10 @@ description: Variables in memory after executing inner-thread.kcl
                     0.24999999954999996
                   ],
                   "tag": {
-                    "commentStart": 1225,
-                    "end": 1230,
+                    "commentStart": 1278,
+                    "end": 1283,
                     "moduleId": 0,
-                    "start": 1225,
+                    "start": 1278,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1993,10 +1993,10 @@ description: Variables in memory after executing inner-thread.kcl
                     0.24999999929999997
                   ],
                   "tag": {
-                    "commentStart": 1341,
-                    "end": 1346,
+                    "commentStart": 1394,
+                    "end": 1399,
                     "moduleId": 0,
-                    "start": 1341,
+                    "start": 1394,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2101,10 +2101,10 @@ description: Variables in memory after executing inner-thread.kcl
             -0.25
           ],
           "tag": {
-            "commentStart": 1029,
-            "end": 1034,
+            "commentStart": 1082,
+            "end": 1087,
             "moduleId": 0,
-            "start": 1029,
+            "start": 1082,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2125,10 +2125,10 @@ description: Variables in memory after executing inner-thread.kcl
             -0.2500000001
           ],
           "tag": {
-            "commentStart": 1108,
-            "end": 1113,
+            "commentStart": 1161,
+            "end": 1166,
             "moduleId": 0,
-            "start": 1108,
+            "start": 1161,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2149,10 +2149,10 @@ description: Variables in memory after executing inner-thread.kcl
             0.24999999954999996
           ],
           "tag": {
-            "commentStart": 1225,
-            "end": 1230,
+            "commentStart": 1278,
+            "end": 1283,
             "moduleId": 0,
-            "start": 1225,
+            "start": 1278,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2173,10 +2173,10 @@ description: Variables in memory after executing inner-thread.kcl
             0.24999999929999997
           ],
           "tag": {
-            "commentStart": 1341,
-            "end": 1346,
+            "commentStart": 1394,
+            "end": 1399,
             "moduleId": 0,
-            "start": 1341,
+            "start": 1394,
             "type": "TagDeclarator",
             "value": "line4"
           },

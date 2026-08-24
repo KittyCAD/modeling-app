@@ -425,7 +425,7 @@ impl CameraView {
 /// so two views answering to one name would leave activation ambiguous.
 /// Reserving the name before anything computes the default view means no file
 /// written today stops being valid once it exists.
-pub(crate) const RESERVED_DEFAULT_VIEW_NAME: &str = "KCL Default";
+pub(crate) const RESERVED_DEFAULT_VIEW_NAME: &str = "Default View";
 
 /// An input rejected by [`NamedViewValue::new`].
 ///
@@ -614,6 +614,25 @@ mod tests {
     use super::*;
     use crate::docs::kcl_doc::DocData;
     use crate::docs::kcl_doc::walk_prelude;
+
+    /// The client repeats this reserved name as a TypeScript literal.
+    /// This test fails when the Rust constant changes without the TypeScript
+    /// literal. `kclNamedViews.test.ts` covers the opposite direction.
+    #[test]
+    fn reserved_default_view_name_matches_typescript() {
+        let ts_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../src/lang/std/kclNamedViews.ts");
+        let source =
+            std::fs::read_to_string(&ts_path).unwrap_or_else(|err| panic!("cannot read {}: {err}", ts_path.display()));
+        let expected = format!("export const KCL_DEFAULT_VIEW_NAME = '{RESERVED_DEFAULT_VIEW_NAME}'");
+
+        assert!(
+            source.contains(&expected),
+            "{} should declare `{expected}`. The reserved default view name is repeated on both \
+             sides of the wasm boundary and they have drifted apart; update the TypeScript literal \
+             to match this crate's RESERVED_DEFAULT_VIEW_NAME.",
+            ts_path.display()
+        );
+    }
 
     /// Returns the variant names of the named KCL enum in `std::view`,
     /// in declaration order.
@@ -890,8 +909,8 @@ mod tests {
             NamedViewError::ReservedName
         );
         // Only the reserved name itself is reserved.
-        view_named("KCL Default view").unwrap();
-        view_named("kcl default").unwrap();
+        view_named("Default View 2").unwrap();
+        view_named("default view").unwrap();
 
         // A name is display text, so interior spaces and punctuation are
         // ordinary.

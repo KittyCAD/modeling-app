@@ -45,23 +45,36 @@ result into the next call instead of reusing the original base solid.
 ### Examples
 
 ```kcl
-// Subtract a cylinder from a cube using the stdlib functions.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] + size])
-    |> line(endAbsolute = [center[0] - size, center[1] + size])
-    |> close()
-    |> extrude(length = 10)
+baseSketch = sketch(on = XY) {
+  bottom = line(start = [var -10mm, var -10mm], end = [var 10mm, var -10mm])
+  right = line(start = [var 10mm, var -10mm], end = [var 10mm, var 10mm])
+  top = line(start = [var 10mm, var 10mm], end = [var -10mm, var 10mm])
+  left = line(start = [var -10mm, var 10mm], end = [var -10mm, var -10mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
 }
+baseRegion = region(segments = [baseSketch.bottom, baseSketch.right])
+base = extrude(baseRegion, length = 10mm)
 
-part001 = cube(center = [0, 0], size = 10)
-part002 = cube(center = [7, 3], size = 5)
-  |> translate(z = 1)
+toolSketch = sketch(on = XY) {
+  bottom = line(start = [var 2mm, var -2mm], end = [var 12mm, var -2mm])
+  right = line(start = [var 12mm, var -2mm], end = [var 12mm, var 8mm])
+  top = line(start = [var 12mm, var 8mm], end = [var 2mm, var 8mm])
+  left = line(start = [var 2mm, var 8mm], end = [var 2mm, var -2mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+toolRegion = region(segments = [toolSketch.bottom, toolSketch.right])
+tool = extrude(toolRegion, length = 10mm)
+  |> translate(z = 1mm)
 
-subtractedPart = subtract([part001], tools = [part002])
+subtractedPart = subtract([base], tools = [tool])
 
 ```
 
@@ -80,26 +93,37 @@ subtractedPart = subtract([part001], tools = [part002])
 </model-viewer>
 
 ```kcl
-// Subtract a cylinder from a cube using operators.
-// NOTE: This will not work when using codemods through the UI.
-// Codemods will generate the stdlib function call instead.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-fn cube(center, size) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] - size])
-    |> line(endAbsolute = [center[0] + size, center[1] + size])
-    |> line(endAbsolute = [center[0] - size, center[1] + size])
-    |> close()
-    |> extrude(length = 10)
+baseSketch = sketch(on = XY) {
+  bottom = line(start = [var -10mm, var -10mm], end = [var 10mm, var -10mm])
+  right = line(start = [var 10mm, var -10mm], end = [var 10mm, var 10mm])
+  top = line(start = [var 10mm, var 10mm], end = [var -10mm, var 10mm])
+  left = line(start = [var -10mm, var 10mm], end = [var -10mm, var -10mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
 }
+baseRegion = region(segments = [baseSketch.bottom, baseSketch.right])
+base = extrude(baseRegion, length = 10mm)
 
-part001 = cube(center = [0, 0], size = 10)
-part002 = cube(center = [7, 3], size = 5)
-  |> translate(z = 1)
+toolSketch = sketch(on = XY) {
+  bottom = line(start = [var 2mm, var -2mm], end = [var 12mm, var -2mm])
+  right = line(start = [var 12mm, var -2mm], end = [var 12mm, var 8mm])
+  top = line(start = [var 12mm, var 8mm], end = [var 2mm, var 8mm])
+  left = line(start = [var 2mm, var 8mm], end = [var 2mm, var -2mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+toolRegion = region(segments = [toolSketch.bottom, toolSketch.right])
+tool = extrude(toolRegion, length = 10mm)
+  |> translate(z = 1mm)
 
-// This is the equivalent of: subtract([part001], tools=[part002])
-subtractedPart = part001 - part002
+// This is equivalent to: subtract([base], tools = [tool])
+subtractedPart = base - tool
 
 ```
 
@@ -111,117 +135,6 @@ subtractedPart = part001 - part002
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-subtract1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
-
-```kcl
-@settings(defaultLengthUnit = in)
-
-height = 2.5
-width = 2.5
-bodyLength = 6
-mountCenterToCenter = 1.625
-rodThreadLength = 0.75
-strokeLength = 1
-boreDiameter = 1.5
-rodDiameter = 0.625
-portCenterToCenter = 3.875
-rodThreadSize = 0.438
-
-// Sketch a cube.
-sketch001 = startSketchOn(YZ)
-profile001 = startProfile(sketch001, at = [-width / 2, -height / 2])
-  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = height, tag = $seg01)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg02)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-blueCube = extrude(profile001, length = -1.5)
-appearance(blueCube, color = '#9dcfed')
-
-// Sketch a cylinder.
-sketch002 = startSketchOn(blueCube, face = START)
-profile002 = circle(sketch002, center = [0, 0], radius = boreDiameter / 2)
-profile003 = circle(sketch002, center = [0, 0], radius = boreDiameter / 2 + 0.1)
-  |> subtract2d(tool = profile002)
-cylinder = extrude(profile003, length = 2.375, method = NEW)
-appearance(cylinder, color = '#9dcfed')
-
-// Sketch a second cube.
-sketch003 = startSketchOn(cylinder, face = END)
-profile004 = startProfile(sketch003, at = [-width / 2, -height / 2])
-  |> angledLine(angle = 0deg, length = width, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = height)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-brownCube = extrude(profile004, length = 1.75)
-  |> appearance(color = "#da7333", roughness = 50, metalness = 90)
-
-// Sketch 4 circles.
-sketch006 = startSketchOn(blueCube, face = END)
-profile008 = circle(
-  sketch006,
-  center = [
-    mountCenterToCenter / 2,
-    mountCenterToCenter / 2
-  ],
-  diameter = 0.375,
-)
-profile009 = circle(
-  sketch006,
-  center = [
-    -mountCenterToCenter / 2,
-    mountCenterToCenter / 2
-  ],
-  diameter = 0.375,
-)
-profile010 = circle(
-  sketch006,
-  center = [
-    -mountCenterToCenter / 2,
-    -mountCenterToCenter / 2
-  ],
-  diameter = 0.375,
-)
-profile011 = circle(
-  sketch006,
-  center = [
-    mountCenterToCenter / 2,
-    -mountCenterToCenter / 2
-  ],
-  diameter = 0.375,
-)
-
-// Extrude the 4 circles into 4 rods.
-rods = extrude(
-  [
-    profile008,
-    profile009,
-    profile010,
-    profile011
-  ],
-  length = -6,
-  method = NEW,
-)
-  |> appearance(color = "#ff2222", roughness = 50, metalness = 90)
-
-// Subtract all 4 rods from both cubes.
-subtract([blueCube, brownCube], tools = rods)
-
-```
-
-
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the subtract function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-subtract2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-subtract2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

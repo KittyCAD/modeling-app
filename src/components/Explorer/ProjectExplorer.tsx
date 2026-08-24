@@ -11,6 +11,7 @@ import {
   copyPasteSourceAndTarget,
   flattenProject,
   isExternalFileDrag,
+  isPathWithinFileExplorerEntry,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
@@ -1044,7 +1045,8 @@ export const ProjectExplorer = ({
             }
 
             const shouldWeNavigate =
-              file?.path?.startsWith(child.path) && canNavigate
+              isPathWithinFileExplorerEntry(file?.path, child.path) &&
+              canNavigate
 
             if (shouldWeNavigate && file && file.path) {
               const src = child.path

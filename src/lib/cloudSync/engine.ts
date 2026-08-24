@@ -2398,7 +2398,11 @@ async function hydrateCleanLocalProjectTitle(
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
-  remoteUpdatedAt: string | undefined
+  remoteUpdatedAt: string | undefined,
+  manifests: {
+    localManifest?: ProjectManifest
+    remoteManifest?: ProjectManifest
+  } = {}
 ) {
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
@@ -2429,7 +2433,18 @@ async function markProjectConflict(
       lastFailureAt: createdAt,
     })
   }
-  reportCloudSyncConflict()
+  reportCloudSyncConflict({
+    localProjectPath: metadata.localProjectPath,
+    remoteProjectId: metadata.remoteProjectId,
+    syncBaseRemoteRevision: metadata.remoteRevision,
+    conflictRemoteRevision: remoteRevision,
+    conflictRemoteUpdatedAt: remoteUpdatedAt,
+    baseManifest: metadata.baseManifest,
+    localManifest: manifests.localManifest,
+    remoteManifest: manifests.remoteManifest,
+    existingConflictCreatedAt: existingConflict?.createdAt,
+    reportedAt: createdAt,
+  })
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -3023,7 +3038,11 @@ async function syncProject(
     await markProjectConflict(
       metadata,
       remoteRevision,
-      getRemoteUpdatedAt(remoteProject)
+      getRemoteUpdatedAt(remoteProject),
+      {
+        localManifest,
+        remoteManifest,
+      }
     )
   } catch (error) {
     await markProjectFailure(metadata, error)

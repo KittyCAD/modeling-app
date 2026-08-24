@@ -4,7 +4,7 @@
     "rootDir": "src",
     "outDir": "dist",
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "dom.iterable", "es2024"],
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "bundler",

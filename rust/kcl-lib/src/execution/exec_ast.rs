@@ -74,6 +74,7 @@ use crate::execution::memory::{self};
 use crate::execution::sketch_constraint_status_for_sketch;
 use crate::execution::sketch_solve::FreedomAnalysis;
 use crate::execution::sketch_solve::Solved;
+use crate::execution::sketch_solve::UnsatisfiedDirectionalConstraint;
 use crate::execution::sketch_solve::create_segment_scene_objects;
 use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
 use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
@@ -141,9 +142,43 @@ use crate::std::utils::normalize_rad;
 use crate::std::utils::vec2_dot;
 use crate::std::utils::vec2_len;
 use crate::std::utils::vec2_sub;
+use crate::walk::Visitable;
 
 fn internal_err(message: impl Into<String>, range: impl Into<SourceRange>) -> KclError {
     KclError::new_internal(KclErrorDetails::new(message.into(), vec![range.into()]))
+}
+
+fn signed_distance_conflict_hint(solve_outcome: &Solved) -> String {
+    let hints = solve_outcome
+        .unsatisfied_directional_constraints
+        .iter()
+        .map(|constraint| match constraint {
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected > 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a positive right-hand side requires the second point to be right of the first (second.x - first.x > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(expected) if *expected < 0.0 => {
+                "Unsatisfied signed horizontalDistance constraint: a negative right-hand side requires the second point to be left of the first (second.x - first.x < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Horizontal(_) => {
+                "Unsatisfied signed horizontalDistance constraint: a zero right-hand side requires both points to have the same X coordinate."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected > 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first (second.y - first.y > 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(expected) if *expected < 0.0 => {
+                "Unsatisfied signed verticalDistance constraint: a negative right-hand side requires the second point to be below the first (second.y - first.y < 0)."
+            }
+            UnsatisfiedDirectionalConstraint::Vertical(_) => {
+                "Unsatisfied signed verticalDistance constraint: a zero right-hand side requires both points to have the same Y coordinate."
+            }
+        })
+        .collect::<Vec<_>>();
+
+    if hints.is_empty() {
+        String::new()
+    } else {
+        format!(" {}", hints.join(" "))
+    }
 }
 
 fn datum_point_from_constrainable(
@@ -1798,7 +1833,9 @@ impl ExecutorContext {
                         // Preserve the failed command in the caller's error artifacts, matching
                         // the behavior before foreign module artifact states were isolated.
                         exec_state.mod_local.artifacts.extend(module_artifacts);
-                        Err(e)
+                        // Label the failure with the import so the backtrace
+                        // names the foreign file, like KCL module failures do.
+                        Err(e.add_import_location(&path.import_name(), source_range))
                     }
                 }
             }
@@ -1833,21 +1870,10 @@ impl ExecutorContext {
                     // It was an import cycle.  Keep the original message.
                     err.override_source_ranges(vec![source_range])
                 }
-                KclError::EngineHangup { .. } | KclError::EngineInternal { .. } => {
-                    // Propagate this type of error. It's likely a transient
-                    // error that just needs to be retried.
-                    err.override_source_ranges(vec![source_range])
-                }
-                _ => {
-                    // TODO would be great to have line/column for the underlying error here
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "Error loading imported file ({path}). Open it to view more details.\n  {}",
-                            err.message()
-                        ),
-                        vec![source_range],
-                    ))
-                }
+                // The module loaded successfully, so preserve execution errors
+                // exactly as they occurred inside it. Rewrapping them here loses
+                // the error kind, structured fields, and imported-file location.
+                _ => err.add_import_location(&path.import_name(), source_range),
             }
         })
     }
@@ -2293,10 +2319,14 @@ fn reject_glob_import_clash(
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
 pub(super) fn sketch_mode_should_skip(expr: &Expr) -> bool {
-    match expr {
-        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
-        _ => true,
+    fn contains_edited_sketch_block(node: crate::walk::Node<'_>) -> bool {
+        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+            return sketch_block.is_being_edited;
+        }
+        node.children().into_iter().any(contains_edited_sketch_block)
     }
+
+    !contains_edited_sketch_block(expr.into())
 }
 
 /// If the error is about an undefined name, and that name matches the name being defined,
@@ -2839,6 +2869,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
+                                unsatisfied_directional_constraints: Default::default(),
                                 converged: false,
                             },
                             None,
@@ -3006,8 +3037,9 @@ impl Node<SketchBlock> {
                     "segments have"
                 };
                 let message = format!(
-                    "Sketch is over-constrained: {} {description} conflicting constraints",
+                    "Sketch is over-constrained: {} {description} conflicting constraints.{}",
                     status.conflict_count,
+                    signed_distance_conflict_hint(&solve_outcome),
                 );
                 exec_state.warn(
                     CompilationIssue::err(range, message),
@@ -4950,7 +4982,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -5096,7 +5128,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -5239,7 +5271,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5334,7 +5366,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids
+                                segments: input_object_ids
                                     .iter()
                                     .copied()
                                     .map(|id| id.map_or(ConstraintSegment::ORIGIN, ConstraintSegment::from))
@@ -5473,7 +5505,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5655,7 +5687,7 @@ impl Node<BinaryExpression> {
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
                             let sketch_constraint = crate::front::Constraint::Distance(Distance {
-                                points: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
+                                segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
                                 })?,
@@ -5988,7 +6020,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::HorizontalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)
@@ -6100,7 +6132,7 @@ impl Node<BinaryExpression> {
                             use crate::frontend::sketch::ConstraintSegment;
 
                             let constraint = crate::front::Constraint::VerticalDistance(Distance {
-                                points: vec![
+                                segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
                                             ConstraintSegment::from(point.object_id)

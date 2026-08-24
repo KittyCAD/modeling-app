@@ -686,11 +686,7 @@ export type ModelingMachineEvent =
       keepSelection?: boolean
     }
   | {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
       keepSelection?: boolean
     }
   | { type: 'unequip tool' }
@@ -6493,12 +6489,6 @@ export const modelingMachine = setup({
               actions: ['forward event to sketch solve if active'],
             },
             Dimension: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            HorizontalDistance: {
-              actions: ['forward event to sketch solve if active'],
-            },
-            VerticalDistance: {
               actions: ['forward event to sketch solve if active'],
             },
             construction: {

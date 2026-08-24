@@ -47,10 +47,10 @@ description: Variables in memory after executing cone.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 315,
-            "end": 320,
+            "commentStart": 333,
+            "end": 338,
             "moduleId": 0,
-            "start": 315,
+            "start": 333,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -61,10 +61,10 @@ description: Variables in memory after executing cone.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 423,
-            "end": 428,
+            "commentStart": 441,
+            "end": 446,
             "moduleId": 0,
-            "start": 423,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -86,10 +86,10 @@ description: Variables in memory after executing cone.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 245,
-              "end": 250,
+              "commentStart": 263,
+              "end": 268,
               "moduleId": 0,
-              "start": 245,
+              "start": 263,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -110,10 +110,10 @@ description: Variables in memory after executing cone.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 315,
-              "end": 320,
+              "commentStart": 333,
+              "end": 338,
               "moduleId": 0,
-              "start": 315,
+              "start": 333,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -134,10 +134,10 @@ description: Variables in memory after executing cone.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 423,
-              "end": 428,
+              "commentStart": 441,
+              "end": 446,
               "moduleId": 0,
-              "start": 423,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -255,10 +255,10 @@ description: Variables in memory after executing cone.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 245,
-            "end": 250,
+            "commentStart": 263,
+            "end": 268,
             "moduleId": 0,
-            "start": 245,
+            "start": 263,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -279,10 +279,10 @@ description: Variables in memory after executing cone.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 315,
-            "end": 320,
+            "commentStart": 333,
+            "end": 338,
             "moduleId": 0,
-            "start": 315,
+            "start": 333,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -303,10 +303,10 @@ description: Variables in memory after executing cone.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 423,
-            "end": 428,
+            "commentStart": 441,
+            "end": 446,
             "moduleId": 0,
-            "start": 423,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -782,10 +782,10 @@ description: Variables in memory after executing cone.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 245,
-                    "end": 250,
+                    "commentStart": 263,
+                    "end": 268,
                     "moduleId": 0,
-                    "start": 245,
+                    "start": 263,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -806,10 +806,10 @@ description: Variables in memory after executing cone.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 315,
-                    "end": 320,
+                    "commentStart": 333,
+                    "end": 338,
                     "moduleId": 0,
-                    "start": 315,
+                    "start": 333,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -830,10 +830,10 @@ description: Variables in memory after executing cone.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 423,
-                    "end": 428,
+                    "commentStart": 441,
+                    "end": 446,
                     "moduleId": 0,
-                    "start": 423,
+                    "start": 441,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
