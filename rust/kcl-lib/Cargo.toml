@@ -162,7 +162,7 @@ miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 proptest = { workspace = true }
 tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.8.3"
+twenty-twenty = "0.8.4"
 
 [lints]
 workspace = true

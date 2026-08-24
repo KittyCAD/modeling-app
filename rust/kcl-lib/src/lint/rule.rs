@@ -153,8 +153,8 @@ impl Discovered {
 }
 
 impl IntoDiagnostic for Discovered {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
-        (&self).to_lsp_diagnostics(code)
+    fn to_lsp_diagnostics(&self, code: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
+        (&self).to_lsp_diagnostics(code, uri)
     }
 
     fn severity(&self) -> DiagnosticSeverity {
@@ -163,7 +163,7 @@ impl IntoDiagnostic for Discovered {
 }
 
 impl IntoDiagnostic for &Discovered {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+    fn to_lsp_diagnostics(&self, code: &str, _uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
         let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));

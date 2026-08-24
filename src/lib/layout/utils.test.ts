@@ -1,6 +1,8 @@
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
+  featureTreePaneConfig,
+  namedViewsPaneConfig,
 } from '@src/lib/layout/configs/default'
 import type {
   Layout,
@@ -318,7 +320,8 @@ describe('Layout utils', () => {
       })
 
       expect(migrated).not.toBeInstanceOf(Error)
-      expect(migrated).toHaveProperty('version', 'v3')
+      // Migrations chain, so a v2 layout lands on the latest version.
+      expect(migrated).toHaveProperty('version', 'v4')
       expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
       expect(migrated).toHaveProperty(
         'layout.children[0].areaType',
@@ -328,6 +331,58 @@ describe('Layout utils', () => {
         'layout.children[1].areaType',
         AreaType.Bodies
       )
+    })
+
+    it('appends the view switcher to a v3 pane bar, closed', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v3',
+        layout: {
+          id: DefaultLayoutToolbarID.Left,
+          label: 'left-toolbar',
+          type: LayoutType.Panes,
+          side: 'inline-start',
+          sizes: [100],
+          activeIndices: [0],
+          splitOrientation: 'block',
+          children: [structuredClone(featureTreePaneConfig)],
+        },
+      })
+
+      expect(migrated).not.toBeInstanceOf(Error)
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.NamedViews
+      )
+      // Appended without joining activeIndices, so the pane starts closed.
+      expect(migrated).toHaveProperty('layout.activeIndices', [0])
+    })
+
+    it('leaves a pane bar that already has the switcher alone', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v4',
+        layout: {
+          id: DefaultLayoutToolbarID.Left,
+          label: 'left-toolbar',
+          type: LayoutType.Panes,
+          side: 'inline-start',
+          sizes: [100],
+          activeIndices: [0],
+          splitOrientation: 'block',
+          children: [
+            structuredClone(featureTreePaneConfig),
+            structuredClone(namedViewsPaneConfig),
+          ],
+        },
+      })
+
+      expect(migrated).not.toBeInstanceOf(Error)
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('layout.children.length', 2)
+    })
+
+    it('gives the switcher an icon of its own, not the feature tree pane one', () => {
+      expect(namedViewsPaneConfig.icon).not.toBe(featureTreePaneConfig.icon)
     })
   })
 

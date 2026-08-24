@@ -1462,7 +1462,7 @@ sketch(on = YZ) {
 
     // This should at least parse and set up the frontend without errors
     // The actual trim might not work yet if operations aren't fully implemented
-    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(0)).await;
+    let result = execute_trim_flow(kcl_code, &trim_points, ObjectId(1)).await;
 
     // For now, just verify it doesn't panic
     // Once operations are fully implemented, we can add assertions
@@ -2942,12 +2942,33 @@ const RECT_ARC_LINE5_TRIM_BASE_KCL: &str = r#"sketch001 = sketch(on = YZ) {
 /// Tests for `get_trim_spawn_terminations` function.
 /// These tests mirror the TypeScript tests in `trimToolImpl.spec.ts`.
 mod get_trim_spawn_terminations_tests {
+    use indexmap::IndexSet;
     use kcl_api::UnitLength;
 
     use super::*;
     use crate::frontend::trim::Coords2d;
     use crate::frontend::trim::TrimTermination;
-    use crate::frontend::trim::get_trim_spawn_terminations;
+
+    fn get_terminations_for_all_test_segments(
+        trim_spawn_seg_id: ObjectId,
+        trim_spawn_coords: &[Coords2d],
+        objects: &[crate::frontend::api::Object],
+        default_unit: UnitLength,
+    ) -> Result<crate::frontend::trim::TrimTerminations, String> {
+        let eligible_segment_ids: IndexSet<ObjectId> = objects
+            .iter()
+            .filter(|object| matches!(object.kind, crate::frontend::api::ObjectKind::Segment { .. }))
+            .map(|object| object.id)
+            .collect();
+
+        crate::frontend::trim::get_trim_spawn_terminations(
+            trim_spawn_seg_id,
+            trim_spawn_coords,
+            objects,
+            default_unit,
+            &eligible_segment_ids,
+        )
+    }
 
     #[tokio::test]
     async fn test_line_segment_intersection_terminations() {
@@ -2961,7 +2982,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -3008,7 +3029,7 @@ mod get_trim_spawn_terminations_tests {
         let line_id = find_first_line_id(&objects);
         let circle_id = find_first_circle_id(&objects);
 
-        let result = get_trim_spawn_terminations(line_id, &trim_points, &objects, UnitLength::Millimeters)
+        let result = get_terminations_for_all_test_segments(line_id, &trim_points, &objects, UnitLength::Millimeters)
             .expect("get_trim_spawn_terminations failed");
 
         // One side should terminate at line endpoint, the other should terminate by intersecting circle.
@@ -3048,7 +3069,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -3091,7 +3112,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -3146,7 +3167,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_line_id(&objects),
             &trim_points,
             &objects,
@@ -3187,7 +3208,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.3, y: 4.62 }, Coords2d { x: -2.46, y: 0.1 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3234,7 +3255,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3277,7 +3298,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3332,7 +3353,7 @@ mod get_trim_spawn_terminations_tests {
         let objects = get_objects_from_kcl(kcl_code).await;
         let trim_points = vec![Coords2d { x: -1.9, y: 0.5 }, Coords2d { x: -1.9, y: 4.0 }];
 
-        let result = get_trim_spawn_terminations(
+        let result = get_terminations_for_all_test_segments(
             find_first_arc_id(&objects),
             &trim_points,
             &objects,
@@ -3529,6 +3550,34 @@ async fn test_trim_rect_diagonal_corner_reconnects_line5_endpoints() {
         &trim_points,
     )
     .await;
+}
+
+#[tokio::test]
+/// Issue #13165: geometry from another sketch must not terminate a trim in the active sketch.
+async fn test_trim_ignores_intersections_from_other_sketches() {
+    let base_kcl_code = r#"circleSketch = sketch(on = YZ) {
+  circle1 = circle(start = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
+}
+
+rectangleSketch = sketch(on = YZ) {
+  line(start = [var -4mm, var 3mm], end = [var 4mm, var 3mm])
+  line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
+  line(start = [var 4mm, var -3mm], end = [var -4mm, var -3mm])
+  line(start = [var -4mm, var -3mm], end = [var -4mm, var 3mm])
+}
+"#;
+
+    let trim_points = vec![Coords2d { x: 1.0, y: 6.0 }, Coords2d { x: 1.0, y: 4.0 }];
+
+    let result = execute_trim_flow(base_kcl_code, &trim_points, ObjectId(1))
+        .await
+        .expect("trim flow failed");
+    let objects = get_objects_from_kcl(&result.kcl_code).await;
+    let (line_count, arc_count, circle_count) = count_segment_kinds(&objects);
+
+    assert_eq!(line_count, 4, "the rectangle sketch should be unchanged");
+    assert_eq!(arc_count, 0, "the external rectangle must not split the circle");
+    assert_eq!(circle_count, 0, "a standalone circle crossed once should be deleted");
 }
 
 #[tokio::test]
