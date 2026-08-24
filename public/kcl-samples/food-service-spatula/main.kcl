@@ -1,0 +1,275 @@
+// Food Service Spatula
+// Use these spatulas for mixing, flipping, and scraping.
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+flipperThickness = 3.5
+flipperFilletRadius = 5.0
+handleWidth = 15.0
+gripLength = 150.0
+gripFilletRadius = 3.0
+gripSlotWidth = 8.0
+
+flipperSketch = sketch(on = XY) {
+  line1 = line(start = [var -70mm, var -32mm], end = [var 0mm, var -30mm])
+  line2 = line(start = [var 0mm, var -30mm], end = [var 0mm, var 30mm])
+  line3 = line(start = [var 0mm, var 30mm], end = [var -70mm, var 32mm])
+  arc4 = arc(start = [var -70mm, var 32mm], end = [var -70mm, var -32mm], center = [var 35.242576935mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line1.start])
+
+  centerSlotLine1 = line(start = [var -25mm, var 5mm], end = [var -55mm, var 5mm])
+  centerSlotArc2 = arc(start = [var -55mm, var 5mm], end = [var -55mm, var -5mm], center = [var -55mm, var 0mm])
+  centerSlotLine3 = line(start = [var -55mm, var -5mm], end = [var -25mm, var -5mm])
+  centerSlotArc4 = arc(start = [var -25mm, var -5mm], end = [var -25mm, var 5mm], center = [var -25mm, var 0mm])
+  coincident([
+    centerSlotLine1.end,
+    centerSlotArc2.start
+  ])
+  coincident([
+    centerSlotArc2.end,
+    centerSlotLine3.start
+  ])
+  coincident([
+    centerSlotLine3.end,
+    centerSlotArc4.start
+  ])
+  coincident([
+    centerSlotArc4.end,
+    centerSlotLine1.start
+  ])
+
+  upperSlotLine1 = line(
+    start = [
+      var -24.833425849mm,
+      var 22.997224535mm
+    ],
+    end = [
+      var -54.833425849mm,
+      var 23.997224535mm
+    ],
+  )
+  upperSlotArc2 = arc(
+    start = [
+      var -54.833425849mm,
+      var 23.997224535mm
+    ],
+    end = [
+      var -55.166574151mm,
+      var 14.002775465mm
+    ],
+    center = [var -55mm, var 19mm],
+  )
+  upperSlotLine3 = line(
+    start = [
+      var -55.166574151mm,
+      var 14.002775465mm
+    ],
+    end = [
+      var -25.166574151mm,
+      var 13.002775465mm
+    ],
+  )
+  upperSlotArc4 = arc(
+    start = [
+      var -25.166574151mm,
+      var 13.002775465mm
+    ],
+    end = [
+      var -24.833425849mm,
+      var 22.997224535mm
+    ],
+    center = [var -25mm, var 18mm],
+  )
+  coincident([
+    upperSlotLine1.end,
+    upperSlotArc2.start
+  ])
+  coincident([
+    upperSlotArc2.end,
+    upperSlotLine3.start
+  ])
+  coincident([
+    upperSlotLine3.end,
+    upperSlotArc4.start
+  ])
+  coincident([
+    upperSlotArc4.end,
+    upperSlotLine1.start
+  ])
+
+  lowerSlotLine1 = line(
+    start = [
+      var -25.166574151mm,
+      var -13.002775465mm
+    ],
+    end = [
+      var -55.166574151mm,
+      var -14.002775465mm
+    ],
+  )
+  lowerSlotArc2 = arc(
+    start = [
+      var -55.166574151mm,
+      var -14.002775465mm
+    ],
+    end = [
+      var -54.833425849mm,
+      var -23.997224535mm
+    ],
+    center = [var -55mm, var -19mm],
+  )
+  lowerSlotLine3 = line(
+    start = [
+      var -54.833425849mm,
+      var -23.997224535mm
+    ],
+    end = [
+      var -24.833425849mm,
+      var -22.997224535mm
+    ],
+  )
+  lowerSlotArc4 = arc(
+    start = [
+      var -24.833425849mm,
+      var -22.997224535mm
+    ],
+    end = [
+      var -25.166574151mm,
+      var -13.002775465mm
+    ],
+    center = [var -25mm, var -18mm],
+  )
+  coincident([
+    lowerSlotLine1.end,
+    lowerSlotArc2.start
+  ])
+  coincident([
+    lowerSlotArc2.end,
+    lowerSlotLine3.start
+  ])
+  coincident([
+    lowerSlotLine3.end,
+    lowerSlotArc4.start
+  ])
+  coincident([
+    lowerSlotArc4.end,
+    lowerSlotLine1.start
+  ])
+}
+flipperRegion = region(segments = [
+  flipperSketch.line1,
+  flipperSketch.line2
+])
+flipperBlank = extrude(flipperRegion, length = flipperThickness)
+flipper = fillet(
+  flipperBlank,
+  radius = flipperFilletRadius,
+  tags = [
+    getCommonEdge(faces = [
+      flipperRegion.tags.line1,
+      flipperRegion.tags.line2
+    ]),
+    getCommonEdge(faces = [
+      flipperRegion.tags.line2,
+      flipperRegion.tags.line3
+    ])
+  ],
+)
+
+handleSketch = sketch(on = offsetPlane(XZ, offset = -handleWidth / 2)) {
+  line1 = line(start = [var 0mm, var 3.5mm], end = [var 31.819805mm, var 35.319805mm])
+  line2 = line(start = [var 31.819805mm, var 35.319805mm], end = [var 172.773698mm, var 86.622826mm])
+  line3 = line(start = [var 172.773698mm, var 86.622826mm], end = [var 171.063597mm, var 91.321289mm])
+  line4 = line(start = [var 171.063597mm, var 91.321289mm], end = [var 29.06808mm, var 39.639147mm])
+  line5 = line(start = [var 29.06808mm, var 39.639147mm], end = [var -7.071068mm, var 3.499999mm])
+  line6 = line(start = [var -7.071068mm, var 3.499999mm], end = [var 0mm, var 3.5mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+}
+handleRegion = region(segments = [handleSketch.line1, handleSketch.line2])
+handleBlank = extrude(handleRegion, length = handleWidth)
+handle = fillet(
+  handleBlank,
+  radius = 4,
+  tags = [
+    getCommonEdge(faces = [
+      handleRegion.tags.line1,
+      handleRegion.tags.line2
+    ]),
+    getCommonEdge(faces = [
+      handleRegion.tags.line4,
+      handleRegion.tags.line5
+    ])
+  ],
+)
+
+handlePlane = {
+  origin = [208.593833, 0.0, 75.921946],
+  xAxis = [0.342020, -0.0, -0.939693],
+  yAxis = [0.0, 1.0, 0.0],
+  zAxis = [0.939693, -0.0, 0.342020]
+}
+
+gripSketch = sketch(on = handlePlane) {
+  line1 = line(start = [var -26.806746mm, var -10mm], end = [var -22.806746mm, var -10mm])
+  arc2 = arc(start = [var -22.806746mm, var -10mm], end = [var -19.806746mm, var -7mm], center = [var -22.806746mm, var -7mm])
+  line3 = line(start = [var -19.806746mm, var -7mm], end = [var -19.806746mm, var 7mm])
+  arc4 = arc(start = [var -19.806746mm, var 7mm], end = [var -22.806746mm, var 10mm], center = [var -22.806746mm, var 7mm])
+  line5 = line(start = [var -22.806746mm, var 10mm], end = [var -26.806746mm, var 10mm])
+  arc6 = arc(start = [var -26.806746mm, var 10mm], end = [var -29.806746mm, var 7mm], center = [var -26.806746mm, var 7mm])
+  line7 = line(start = [var -29.806746mm, var 7mm], end = [var -29.806746mm, var -7mm])
+  arc8 = arc(start = [var -29.806746mm, var -7mm], end = [var -26.806746mm, var -10mm], center = [var -26.806746mm, var -7mm])
+  coincident([line1.end, arc2.start])
+  coincident([arc2.end, line3.start])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line5.start])
+  coincident([line5.end, arc6.start])
+  coincident([arc6.end, line7.start])
+  coincident([line7.end, arc8.start])
+  coincident([arc8.end, line1.start])
+}
+gripBlank = extrude(region(segments = [gripSketch.line1, gripSketch.arc2]), length = -gripLength)
+
+gripHolePlane = {
+  origin = [190.56114818, 0, 90.43648769],
+  xAxis = [0.939692712639, 0, 0.342019890961],
+  yAxis = [0, 1, 0],
+  zAxis = [-0.342019890961, 0, 0.939692712639]
+}
+gripHoleSketch = sketch(on = gripHolePlane) {
+  line1 = line(start = [var 0mm, var 4mm], end = [var -10mm, var 4mm])
+  arc2 = arc(start = [var -10mm, var 4mm], end = [var -10mm, var -4mm], center = [var -10mm, var 0mm])
+  line3 = line(start = [var -10mm, var -4mm], end = [var 0mm, var -4mm])
+  arc4 = arc(start = [var 0mm, var -4mm], end = [var 0mm, var 4mm], center = [var 0mm, var 0mm])
+  coincident([line1.end, arc2.start])
+  coincident([arc2.end, line3.start])
+  coincident([line3.end, arc4.start])
+  coincident([arc4.end, line1.start])
+}
+gripHole = extrude(
+  region(segments = [
+    gripHoleSketch.line1,
+    gripHoleSketch.arc2
+  ]),
+  length = 30,
+  symmetric = true,
+)
+grip = subtract(gripBlank, tools = [gripHole])
+
+[flipper, handle]
+  |> appearance(color = "#bfc2c4", metalness = 70, roughness = 30)
+grip
+  |> appearance(color = "#202020")
+
+hide(flipperSketch)
+hide(handleSketch)
+hide(gripSketch)
+hide(gripHoleSketch)
