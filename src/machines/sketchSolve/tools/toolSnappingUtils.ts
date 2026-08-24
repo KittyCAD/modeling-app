@@ -1,6 +1,7 @@
-import { Group, OrthographicCamera } from 'three'
+import { Group, Vector2 } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import type { GridSnapOptions } from '@src/clientSideScene/gridUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
@@ -53,16 +54,21 @@ export function getGridSnapOptions(
     return undefined
   }
   const camera = sceneInfra.camControls.camera
-  if (!(camera instanceof OrthographicCamera)) {
+  const gridRenderer = sceneInfra.scene.getObjectByName('InfiniteGridRenderer')
+  if (!(gridRenderer instanceof InfiniteGridRenderer)) {
     return undefined
   }
+  const viewportSize = sceneInfra.renderer.getDrawingBufferSize(new Vector2())
 
   return {
     fixedSizeGrid: modelingSettings.fixedSizeGrid.current,
     majorGridSpacing: modelingSettings.majorGridSpacing.current,
     minorGridsPerMajor: modelingSettings.minorGridsPerMajor.current,
     snapsPerMinor: modelingSettings.snapsPerMinor.current,
-    pixelsPerBaseUnit: sceneInfra.getPixelsPerBaseUnit(camera),
+    pixelsPerBaseUnit: gridRenderer.getPixelsPerBaseUnit(camera, [
+      viewportSize.x,
+      viewportSize.y,
+    ]),
   }
 }
 

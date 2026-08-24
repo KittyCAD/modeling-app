@@ -533,15 +533,10 @@ export class SceneEntities {
       return
     }
 
-    const camera = this.sceneInfra.camControls.camera
-    if (!(camera instanceof OrthographicCamera)) {
-      gridRenderer.visible = false
-      return
-    }
-
     const majorGridSpacing = settings.modeling.majorGridSpacing.current ?? 1
     const minorGridsPerMajor = settings.modeling.minorGridsPerMajor.current ?? 4
 
+    const camera = this.sceneInfra.camControls.camera
     const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
       new Vector2()
     )
@@ -554,26 +549,23 @@ export class SceneEntities {
       ? [0.2, 0.2, 0.2, 1.0]
       : [0.9, 0.9, 0.9, 1.0]
 
-    const pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
+    const pixelsPerBaseUnit = gridRenderer.getPixelsPerBaseUnit(camera, [
+      viewportSize.x,
+      viewportSize.y,
+    ])
     const fixedSizeGrid = settings.modeling.fixedSizeGrid.current
     const gridScaleFactor = getGridScaleFactor({
       majorGridSpacing,
       pixelsPerBaseUnit,
       fixedSizeGrid,
     })
-    gridRenderer.update(
-      camera,
-      [viewportSize.x, viewportSize.y],
-      pixelsPerBaseUnit,
-      gridScaleFactor,
-      {
-        majorGridSpacing,
-        minorGridsPerMajor,
-        majorColor,
-        minorColor,
-        fixedSizeGrid,
-      }
-    )
+    gridRenderer.update(camera, pixelsPerBaseUnit, gridScaleFactor, {
+      majorGridSpacing,
+      minorGridsPerMajor,
+      majorColor,
+      minorColor,
+      fixedSizeGrid,
+    })
   }
 
   getDraftPoint() {
@@ -647,15 +639,25 @@ export class SceneEntities {
       return { point, snapped: false }
     }
 
+    const camera = this.sceneInfra.camControls.camera
+    const gridRenderer = this.axisGroup?.children.find(
+      (child) => child instanceof InfiniteGridRenderer
+    )
     let pixelsPerBaseUnit = 1
-    let fixedSizeGrid = true
-    if (this.sceneInfra.camControls.camera instanceof OrthographicCamera) {
-      pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(
-        this.sceneInfra.camControls.camera
+    let fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+    if (gridRenderer) {
+      const viewportSize = this.sceneInfra.renderer.getDrawingBufferSize(
+        new Vector2()
       )
-      fixedSizeGrid = settings.modeling.fixedSizeGrid.current
+      pixelsPerBaseUnit = gridRenderer.getPixelsPerBaseUnit(camera, [
+        viewportSize.x,
+        viewportSize.y,
+      ])
+    } else if (camera instanceof OrthographicCamera) {
+      pixelsPerBaseUnit = this.sceneInfra.getPixelsPerBaseUnit(camera)
     } else {
-      console.error("Camera is not orthographic, can't snap to grid")
+      console.error("Sketch grid isn't available, can't scale grid snapping")
+      fixedSizeGrid = true
     }
 
     return snapPointToGrid(point, {

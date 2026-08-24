@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { OrthographicCamera } from 'three'
+import type { Vector2 } from 'three'
+import { OrthographicCamera, PerspectiveCamera } from 'three'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   GRID_TARGET,
@@ -35,13 +37,27 @@ function createSketchApiObject({ id }: { id: number }): ApiObject {
   } satisfies ApiObject
 }
 
-function createGridSceneInfra(): SceneInfra {
+function createGridSceneInfra({
+  perspective = false,
+}: {
+  perspective?: boolean
+} = {}): SceneInfra {
+  const gridRenderer = new InfiniteGridRenderer()
+  vi.spyOn(gridRenderer, 'getPixelsPerBaseUnit').mockReturnValue(100)
+
   return {
     ...createMockSceneInfra(),
     camControls: {
-      camera: new OrthographicCamera(),
+      camera: perspective
+        ? new PerspectiveCamera(45, 1, 0.1, 100)
+        : new OrthographicCamera(),
     },
-    getPixelsPerBaseUnit: vi.fn(() => 100),
+    renderer: {
+      getDrawingBufferSize: vi.fn((target: Vector2) => target.set(1_000, 800)),
+    },
+    scene: {
+      getObjectByName: vi.fn(() => gridRenderer),
+    },
   } as unknown as SceneInfra
 }
 
@@ -101,6 +117,21 @@ describe('toolSnappingUtils', () => {
         position: [20.25, 30.5],
       })
     }
+  })
+
+  it('snaps to the grid with a perspective camera', () => {
+    const candidate = getBestSnappingCandidate({
+      self: createGridSelf({ snapToGrid: true }),
+      sceneInfra: createGridSceneInfra({ perspective: true }),
+      sketchId: 0,
+      mousePosition: [20.37, 30.62],
+      mouseEvent: new MouseEvent('mousemove'),
+    })
+
+    expect(candidate).toMatchObject({
+      target: { type: GRID_TARGET },
+      position: [20.25, 30.5],
+    })
   })
 
   it('does not add a grid candidate when snap to grid is disabled', () => {
