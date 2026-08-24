@@ -416,12 +416,6 @@ export function addHole({
     modulePath
   )
 
-  if (mNodeToEdit) {
-    // The selected face can resolve to a downstream hole through last-child
-    // lookup. The solid input is not editable, so preserve the existing one.
-    call.unlabeled = null
-  }
-
   // Insert variables for labeled arguments if provided
   // Only insert cutAt variable if we used valueOrVariable (not for arrays)
   if (
