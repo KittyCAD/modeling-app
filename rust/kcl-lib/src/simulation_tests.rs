@@ -14,6 +14,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::units::UnitMass;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
+use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -130,6 +131,8 @@ struct Test {
     snapshot_physical_properties: bool,
     /// If set, assert that execution emits exactly this many deprecation warnings.
     expected_deprecation_warnings: Option<usize>,
+    /// If set, redact the test's UUIDs.
+    redact_uuids: bool,
 }
 
 const REPO_ROOT: &str = "../..";
@@ -145,16 +148,44 @@ fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
 }
 
+#[derive(Default, Deserialize, Clone)]
+struct TestConfig {
+    /// Replace UUIDs with the string "[uuid]", because otherwise the tests
+    /// would constantly be changing the UUID. This is a stopgap measure
+    /// until we make the engine more deterministic.
+    #[serde(default)]
+    redact_uuids: bool,
+}
+
+impl TestConfig {
+    /// Read from the config file in the given directory, return None if the file doesn't exist.
+    /// Panic if the file exists but was invalid, or some other IO error.
+    fn from_file(test_dir: &Path) -> Option<Self> {
+        let test_config_path = test_dir.join("config.toml");
+        let test_config_path_exists = std::fs::exists(&test_config_path).unwrap();
+        if !test_config_path_exists {
+            return None;
+        }
+        let config_str = std::fs::read_to_string(test_config_path).unwrap();
+        let config: TestConfig = toml::from_str(&config_str).unwrap();
+        Some(config)
+    }
+}
+
 impl Test {
     fn new(name: &str) -> Self {
+        let test_dir = Path::new("tests").join(name);
+        let test_config = TestConfig::from_file(&test_dir).unwrap_or_default();
+        let TestConfig { redact_uuids } = test_config;
         Self {
             name: name.to_owned(),
-            entry_point: Path::new("tests").join(name).join("input.kcl"),
-            input_dir: Path::new("tests").join(name),
-            output_dir: Path::new("tests").join(name),
+            entry_point: test_dir.clone().join("input.kcl"),
+            input_dir: test_dir.clone(),
+            output_dir: test_dir.clone(),
             skip_assert_artifact_graph: false,
             snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
+            redact_uuids,
         }
     }
 
@@ -273,17 +304,19 @@ where
     }
     #[cfg(not(feature = "snapshot-engine-responses"))]
     {
-        // Replace UUIDs with the string "[uuid]", because otherwise the tests
-        // would constantly be changing the UUID. This is a stopgap measure
-        // until we make the engine more deterministic.
-        settings.add_filter(
-            r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
-            "[uuid]",
-        );
-        settings.add_filter(
-            r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
-            "face_id_[uuid]",
-        );
+        if test.redact_uuids {
+            // Replace UUIDs with the string "[uuid]", because otherwise the tests
+            // would constantly be changing the UUID. This is a stopgap measure
+            // until we make the engine more deterministic.
+            settings.add_filter(
+                r"\b[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}\b",
+                "[uuid]",
+            );
+            settings.add_filter(
+                r"\bface_id_[[:xdigit:]]{8}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{4}_[[:xdigit:]]{12}\b",
+                "face_id_[uuid]",
+            );
+        }
     }
     // Run `f` (the closure that was passed in) with these settings.
     settings.bind(f);

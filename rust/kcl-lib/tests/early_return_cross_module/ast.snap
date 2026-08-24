@@ -176,7 +176,7 @@ description: Result of parsing early_return_cross_module.kcl
         "preComments": [
           "// The entry point's kclVersion governs the whole execution: this",
           "// KCL 3.0 entry point gives early-return semantics to functions from",
-          "// an imported 2.0 module too."
+          "// an imported module without a version too."
         ],
         "properties": [
           {
