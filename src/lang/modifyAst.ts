@@ -1326,12 +1326,9 @@ export function setCallInAst({
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
-    if (pathIfNewPipe && !pathsReferToSamePipe(pathIfNewPipe, pathToEdit)) {
-      // A pipe substitution reconstructed outside the edited call's pipe is
-      // invalid. Discard the reconstruction so replaceCallInPlace preserves
-      // the existing unlabeled argument and applies only the labeled edits.
-      call.unlabeled = null
-    }
+    // The unlabeled selection is not editable in command edit flows. Discard
+    // its reconstruction so replaceCallInPlace preserves the existing input.
+    call.unlabeled = null
 
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
