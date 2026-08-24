@@ -1,0 +1,433 @@
+// Vented Manhole Cover
+// A cast-iron cover with traffic-safe ventilation slots and a side pick hole.
+// Categories: Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+coverDiameter = 22 + 3 / 4
+edgeThickness = 1 + 3 / 4
+pickHoleLength = 1
+pickHoleWidth = 2
+pickHoleDepth = 1 + 1 / 8
+
+// The cover outline and all nine ventilation loops live in one sketch. The
+// outer region therefore already contains the voids that legacy CSG created.
+coverSketch = sketch(on = XY) {
+  coverCircle = circle(start = [var 11.375in, var 0in], center = [var 0in, var 0in])
+
+  slot1Side1 = line(
+    start = [var 5.67437in, var -8.539703in],
+    end = [
+      var -5.940552836109in,
+      var 8.048125896852in
+    ],
+  )
+  slot1Cap1 = arc(
+    start = [
+      var -5.530976813964in,
+      var 8.334914115028in
+    ],
+    end = [
+      var -5.940552836109in,
+      var 8.048125896852in
+    ],
+    center = [
+      var -5.735764825036in,
+      var 8.19152000594in
+    ],
+  )
+  slot1Side2 = line(
+    start = [
+      var -5.530976813964in,
+      var 8.334914115028in
+    ],
+    end = [
+      var 6.083946022144in,
+      var -8.252914781824in
+    ],
+  )
+  slot1Cap2 = arc(
+    start = [var 5.67437in, var -8.539703in],
+    end = [
+      var 6.083946022144in,
+      var -8.252914781824in
+    ],
+    center = [
+      var 5.879158011072in,
+      var -8.396308890912in
+    ],
+  )
+
+  slot2Side1 = line(
+    start = [var 3.568886in, var -9.673446in],
+    end = [
+      var -7.732864101861in,
+      var 6.46712588067in
+    ],
+  )
+  slot2Cap1 = arc(
+    start = [
+      var -7.323288079717in,
+      var 6.753914098846in
+    ],
+    end = [
+      var -7.732864101861in,
+      var 6.46712588067in
+    ],
+    center = [
+      var -7.528076090789in,
+      var 6.610519989758in
+    ],
+  )
+  slot2Side2 = line(
+    start = [
+      var -7.323288079717in,
+      var 6.753914098846in
+    ],
+    end = [
+      var 3.978462022144in,
+      var -9.386657781824in
+    ],
+  )
+  slot2Cap2 = arc(
+    start = [var 3.568886in, var -9.673446in],
+    end = [
+      var 3.978462022144in,
+      var -9.386657781824in
+    ],
+    center = [
+      var 3.773674011072in,
+      var -9.530051890912in
+    ],
+  )
+
+  slot3Side1 = line(
+    start = [var 1.114006in, var -10.3082in],
+    end = [
+      var -9.162189433665in,
+      var 4.367728025482in
+    ],
+  )
+  slot3Cap1 = arc(
+    start = [
+      var -8.752613411521in,
+      var 4.654516243657in
+    ],
+    end = [
+      var -9.162189433665in,
+      var 4.367728025482in
+    ],
+    center = [
+      var -8.957401422593in,
+      var 4.511122134569in
+    ],
+  )
+  slot3Side2 = line(
+    start = [
+      var -8.752613411521in,
+      var 4.654516243657in
+    ],
+    end = [
+      var 1.523582022144in,
+      var -10.021411781824in
+    ],
+  )
+  slot3Cap2 = arc(
+    start = [var 1.114006in, var -10.3082in],
+    end = [
+      var 1.523582022144in,
+      var -10.021411781824in
+    ],
+    center = [
+      var 1.318794011072in,
+      var -10.164805890912in
+    ],
+  )
+
+  slot4Side1 = line(
+    start = [var -1.814767in, var -10.266164in],
+    end = [
+      var -10.124168833418in,
+      var 1.600891665615in
+    ],
+  )
+  slot4Cap1 = arc(
+    start = [
+      var -9.714592811273in,
+      var 1.88767988379in
+    ],
+    end = [
+      var -10.124168833418in,
+      var 1.600891665615in
+    ],
+    center = [
+      var -9.919380822345in,
+      var 1.744285774702in
+    ],
+  )
+  slot4Side2 = line(
+    start = [
+      var -9.714592811273in,
+      var 1.88767988379in
+    ],
+    end = [
+      var -1.405190977856in,
+      var -9.979375781824in
+    ],
+  )
+  slot4Cap2 = arc(
+    start = [var -1.814767in, var -10.266164in],
+    end = [
+      var -1.405190977856in,
+      var -9.979375781824in
+    ],
+    center = [
+      var -1.609978988928in,
+      var -10.122769890912in
+    ],
+  )
+
+  slot5Side1 = line(
+    start = [var 7.46in, var -6.949in],
+    end = [
+      var -3.841750101861in,
+      var 9.19157188067in
+    ],
+  )
+  slot5Cap1 = arc(
+    start = [
+      var -3.432174079717in,
+      var 9.478360098846in
+    ],
+    end = [
+      var -3.841750101861in,
+      var 9.19157188067in
+    ],
+    center = [
+      var -3.636962090789in,
+      var 9.334965989758in
+    ],
+  )
+  slot5Side2 = line(
+    start = [
+      var -3.432174079717in,
+      var 9.478360098846in
+    ],
+    end = [
+      var 7.869576022144in,
+      var -6.662211781824in
+    ],
+  )
+  slot5Cap2 = arc(
+    start = [var 7.46in, var -6.949in],
+    end = [
+      var 7.869576022144in,
+      var -6.662211781824in
+    ],
+    center = [
+      var 7.664788011072in,
+      var -6.805605890912in
+    ],
+  )
+
+  slot6Side1 = line(
+    start = [var 8.896in, var -4.8592in],
+    end = [
+      var -1.380195433665in,
+      var 9.816728025482in
+    ],
+  )
+  slot6Cap1 = arc(
+    start = [
+      var -0.970619411521in,
+      var 10.103516243657in
+    ],
+    end = [
+      var -1.380195433665in,
+      var 9.816728025482in
+    ],
+    center = [
+      var -1.175407422593in,
+      var 9.960122134569in
+    ],
+  )
+  slot6Side2 = line(
+    start = [
+      var -0.970619411521in,
+      var 10.103516243657in
+    ],
+    end = [
+      var 9.305576022144in,
+      var -4.572411781824in
+    ],
+  )
+  slot6Cap2 = arc(
+    start = [var 8.896in, var -4.8592in],
+    end = [
+      var 9.305576022144in,
+      var -4.572411781824in
+    ],
+    center = [
+      var 9.100788011072in,
+      var -4.715805890912in
+    ],
+  )
+
+  slot7Side1 = line(
+    start = [var 9.8581in, var -2.0927in],
+    end = [
+      var 1.548698166582in,
+      var 9.774355665615in
+    ],
+  )
+  slot7Cap1 = arc(
+    start = [
+      var 1.958274188727in,
+      var 10.06114388379in
+    ],
+    end = [
+      var 1.548698166582in,
+      var 9.774355665615in
+    ],
+    center = [
+      var 1.753486177655in,
+      var 9.917749774702in
+    ],
+  )
+  slot7Side2 = line(
+    start = [
+      var 1.958274188727in,
+      var 10.06114388379in
+    ],
+    end = [
+      var 10.267676022144in,
+      var -1.805911781824in
+    ],
+  )
+  slot7Cap2 = arc(
+    start = [var 9.8581in, var -2.0927in],
+    end = [
+      var 10.267676022144in,
+      var -1.805911781824in
+    ],
+    center = [
+      var 10.062888011072in,
+      var -1.949305890912in
+    ],
+  )
+
+  slot8Side1 = line(
+    start = [var -5.779208in, var -8.745042in],
+    end = [
+      var -10.050861152081in,
+      var -2.644489065362in
+    ],
+  )
+  slot8Cap1 = arc(
+    start = [
+      var -9.641285129936in,
+      var -2.357700847187in
+    ],
+    end = [
+      var -10.050861152081in,
+      var -2.644489065362in
+    ],
+    center = [
+      var -9.846073141009in,
+      var -2.501094956274in
+    ],
+  )
+  slot8Side2 = line(
+    start = [
+      var -9.641285129936in,
+      var -2.357700847187in
+    ],
+    end = [
+      var -5.369631977856in,
+      var -8.458253781824in
+    ],
+  )
+  slot8Cap2 = arc(
+    start = [var -5.779208in, var -8.745042in],
+    end = [
+      var -5.369631977856in,
+      var -8.458253781824in
+    ],
+    center = [
+      var -5.574419988928in,
+      var -8.601647890912in
+    ],
+  )
+
+  slot9Side1 = line(
+    start = [var 9.7847in, var 2.1529in],
+    end = [
+      var 5.513046847919in,
+      var 8.253452934638in
+    ],
+  )
+  slot9Cap1 = arc(
+    start = [
+      var 5.922622870064in,
+      var 8.540241152813in
+    ],
+    end = [
+      var 5.513046847919in,
+      var 8.253452934638in
+    ],
+    center = [
+      var 5.717834858991in,
+      var 8.396847043726in
+    ],
+  )
+  slot9Side2 = line(
+    start = [
+      var 5.922622870064in,
+      var 8.540241152813in
+    ],
+    end = [
+      var 10.194276022144in,
+      var 2.439688218176in
+    ],
+  )
+  slot9Cap2 = arc(
+    start = [var 9.7847in, var 2.1529in],
+    end = [
+      var 10.194276022144in,
+      var 2.439688218176in
+    ],
+    center = [
+      var 9.989488011072in,
+      var 2.296294109088in
+    ],
+  )
+}
+coverRegion = region(segments = [coverSketch.coverCircle])
+ventedCover = extrude(coverRegion, length = edgeThickness, symmetric = true)
+
+pickHoleSketch = sketch(on = offsetPlane(YZ, offset = coverDiameter / 2)) {
+  topEdge = line(start = [var -1in, var 0.975in], end = [var 1in, var 0.975in])
+  rightEdge = line(start = [var 1in, var 0.975in], end = [var 1in, var -0.15in])
+  bottomEdge = line(start = [var 1in, var -0.15in], end = [var -1in, var -0.15in])
+  leftEdge = line(start = [var -1in, var -0.15in], end = [var -1in, var 0.975in])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+  vertical(leftEdge)
+  horizontalDistance([topEdge.start, topEdge.end]) == pickHoleWidth
+  verticalDistance([rightEdge.end, rightEdge.start]) == pickHoleDepth
+  horizontalDistance([ORIGIN, topEdge.start]) == -pickHoleWidth / 2
+  verticalDistance([ORIGIN, topEdge.start]) == edgeThickness / 2 + 0.1
+}
+pickHoleRegion = region(segments = [
+  pickHoleSketch.topEdge,
+  pickHoleSketch.rightEdge
+])
+pickHole = extrude(pickHoleRegion, length = -pickHoleLength)
+manhole = subtract(ventedCover, tools = [pickHole])
+
+hide([coverSketch, pickHoleSketch])

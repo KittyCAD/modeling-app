@@ -1,0 +1,196 @@
+// Truss Structure
+// A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.
+// Categories: Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+topFrameSketch = sketch(on = YZ) {
+  line1 = line(start = [var 60in, var 0in], end = [var -60in, var 0in])
+  line2 = line(start = [var -60in, var 0in], end = [var -60in, var 12in])
+  line3 = line(start = [var -60in, var 12in], end = [var 0in, var 39.978459489in])
+  line4 = line(start = [var 0in, var 39.978459489in], end = [var 60in, var 12in])
+  line5 = line(start = [var 60in, var 12in], end = [var 60in, var 0in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line1.start])
+
+  rightOpening1 = line(start = [var 56in, var 4in], end = [var 2in, var 4in])
+  rightOpening2 = line(start = [var 2in, var 4in], end = [var 2in, var 35.978459489in])
+  rightOpening3 = line(start = [var 2in, var 35.978459489in], end = [var 56in, var 10.797845949in])
+  rightOpening4 = line(start = [var 56in, var 10.797845949in], end = [var 56in, var 4in])
+  coincident([rightOpening1.end, rightOpening2.start])
+  coincident([rightOpening2.end, rightOpening3.start])
+  coincident([rightOpening3.end, rightOpening4.start])
+  coincident([rightOpening4.end, rightOpening1.start])
+
+  leftOpening1 = line(start = [var -56in, var 4in], end = [var -2in, var 4in])
+  leftOpening2 = line(start = [var -2in, var 4in], end = [var -2in, var 35.978459489in])
+  leftOpening3 = line(start = [var -2in, var 35.978459489in], end = [var -56in, var 10.797845949in])
+  leftOpening4 = line(start = [var -56in, var 10.797845949in], end = [var -56in, var 4in])
+  coincident([leftOpening1.end, leftOpening2.start])
+  coincident([leftOpening2.end, leftOpening3.start])
+  coincident([leftOpening3.end, leftOpening4.start])
+  coincident([leftOpening4.end, leftOpening1.start])
+}
+topFrame = extrude(
+  region(
+    segments = [
+      topFrameSketch.line1,
+      topFrameSketch.line2
+    ],
+    direction = CW,
+  ),
+  length = 2,
+)
+
+sparPlane = offsetPlane(YZ, offset = .1)
+rightSparSketch = sketch(on = sparPlane) {
+  line1 = line(start = [var 1in, var 14in], end = [var 22.650635095in, var 26.5in])
+  line2 = line(start = [var 22.650635095in, var 26.5in], end = [var 27.18217403in, var 24.386908691in])
+  line3 = line(start = [var 27.18217403in, var 24.386908691in], end = [var 1in, var 9.270623467in])
+  line4 = line(start = [var 1in, var 9.270623467in], end = [var 1in, var 14in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+rightSpar = extrude(
+  region(segments = [
+    rightSparSketch.line1,
+    rightSparSketch.line2
+  ]),
+  length = 1.8,
+)
+
+leftSparSketch = sketch(on = sparPlane) {
+  line1 = line(start = [var -1in, var 14in], end = [var -22.650635095in, var 26.5in])
+  line2 = line(start = [var -22.650635095in, var 26.5in], end = [var -27.18217403in, var 24.386908691in])
+  line3 = line(start = [var -27.18217403in, var 24.386908691in], end = [var -1in, var 9.270623467in])
+  line4 = line(start = [var -1in, var 9.270623467in], end = [var -1in, var 14in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+leftSpar = extrude(
+  region(segments = [
+    leftSparSketch.line1,
+    leftSparSketch.line2
+  ]),
+  length = 1.8,
+)
+
+legPlane = offsetPlane(XY, offset = .1)
+leftLegSketch = sketch(on = legPlane) {
+  line1 = line(start = [var 0in, var -60in], end = [var 1.9in, var -60in])
+  line2 = line(start = [var 1.9in, var -60in], end = [var 1.9in, var -57in])
+  line3 = line(start = [var 1.9in, var -57in], end = [var 0in, var -57in])
+  line4 = line(start = [var 0in, var -57in], end = [var 0in, var -60in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+leftLeg = extrude(
+  region(segments = [
+    leftLegSketch.line1,
+    leftLegSketch.line2
+  ]),
+  length = -48.1,
+)
+
+rightLegSketch = sketch(on = legPlane) {
+  line1 = line(start = [var 0in, var 60in], end = [var 1.9in, var 60in])
+  line2 = line(start = [var 1.9in, var 60in], end = [var 1.9in, var 57in])
+  line3 = line(start = [var 1.9in, var 57in], end = [var 0in, var 57in])
+  line4 = line(start = [var 0in, var 57in], end = [var 0in, var 60in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+rightLeg = extrude(
+  region(segments = [
+    rightLegSketch.line1,
+    rightLegSketch.line2
+  ]),
+  length = -48.1,
+)
+
+frame = union([
+  topFrame,
+  rightSpar,
+  leftSpar,
+  leftLeg,
+  rightLeg
+])
+  |> patternLinear3d(instances = 3, distance = 84, axis = [-1, 0, 0])
+
+centerBeamSketch = sketch(on = YZ) {
+  line1 = line(start = [var 0in, var 38.978459489in], end = [var 1.359461681in, var 38.344532097in])
+  line2 = line(start = [var 1.359461681in, var 38.344532097in], end = [var 1.359461681in, var 36.844532097in])
+  line3 = line(start = [var 1.359461681in, var 36.844532097in], end = [var 0in, var 37.478459489in])
+  line4 = line(start = [var 0in, var 37.478459489in], end = [var -1.359461681in, var 36.844532097in])
+  line5 = line(start = [var -1.359461681in, var 36.844532097in], end = [var -1.359461681in, var 38.344532097in])
+  line6 = line(start = [var -1.359461681in, var 38.344532097in], end = [var 0in, var 38.978459489in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line5.start])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line1.start])
+}
+centerBeam = extrude(
+  region(segments = [
+    centerBeamSketch.line1,
+    centerBeamSketch.line2
+  ]),
+  length = -82,
+)
+  |> patternLinear3d(instances = 2, distance = 84, axis = [-1, 0, 0])
+
+sideBeamSketch = sketch(on = -YZ) {
+  line1 = line(start = [var -59.5in, var 11.5in], end = [var -59.5in, var 9.5in])
+  line2 = line(start = [var -59.5in, var 9.5in], end = [var -56.5in, var 9.5in])
+  line3 = line(start = [var -56.5in, var 9.5in], end = [var -56.5in, var 11.5in])
+  line4 = line(start = [var -56.5in, var 11.5in], end = [var -59.5in, var 11.5in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+sideBeamRightSketch = sketch(on = -YZ) {
+  line1 = line(start = [var 60in, var 11.5in], end = [var 60in, var 9.5in])
+  line2 = line(start = [var 60in, var 9.5in], end = [var 57in, var 9.5in])
+  line3 = line(start = [var 57in, var 9.5in], end = [var 57in, var 11.5in])
+  line4 = line(start = [var 57in, var 11.5in], end = [var 60in, var 11.5in])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+sideBeam = extrude(
+  [
+    region(segments = [
+      sideBeamSketch.line1,
+      sideBeamSketch.line2
+    ]),
+    region(segments = [
+      sideBeamRightSketch.line1,
+      sideBeamRightSketch.line2
+    ])
+  ],
+  length = 82,
+)
+  |> patternLinear3d(instances = 2, distance = 84, axis = [-1, 0, 0])
+
+hide(topFrameSketch)
+hide(rightSparSketch)
+hide(leftSparSketch)
+hide(leftLegSketch)
+hide(rightLegSketch)
+hide(centerBeamSketch)
+hide(sideBeamSketch)
+hide(sideBeamRightSketch)

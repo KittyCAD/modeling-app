@@ -1,0 +1,73 @@
+// Fan
+// Spinning axial fan that moves airflow
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+import * from "parameters.kcl"
+
+hubSketch = sketch(on = YZ) {
+  hub = circle(start = [var 12.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+hubRegion = region(segments = [hubSketch.hub])
+fanCenter = extrude(hubRegion, length = fanHeight, tagEnd = $hubEnd)
+  |> fillet(
+       radius = 1.5,
+       edges = [
+         {
+           sideFaces = [hubRegion.tags.hub, hubEnd]
+         }
+       ],
+     )
+
+// Inline the three curved blade stations so their twist remains explicit.
+bladeSection01 = sketch(on = offsetPlane(YZ, offset = 4.5)) {
+  rootArc = arc(start = [var 9.64mm, var 11.49mm], end = [var 6.58mm, var 13.48mm], center = [var 0mm, var 0mm])
+  leadingArc = arc(start = [var 45.73mm, var 26.4mm], end = [var 6.58mm, var 13.48mm], center = [var 37.74mm, var -15.19mm])
+  coincident([rootArc.end, leadingArc.end])
+  tipArc = arc(start = [var 47.46mm, var 23.15mm], end = [var 45.73mm, var 26.4mm], center = [var 0mm, var 0mm])
+  coincident([leadingArc.start, tipArc.end])
+  trailingArc = arc(start = [var 47.46mm, var 23.15mm], end = [var 9.64mm, var 11.49mm], center = [var 38.79mm, var -15.9mm])
+  coincident([tipArc.start, trailingArc.start])
+  coincident([trailingArc.end, rootArc.start])
+}
+bladeSection02 = sketch(on = offsetPlane(YZ, offset = (fanHeight - 2 - 4) / 2)) {
+  rootArc = arc(start = [var 12.99mm, var 7.5mm], end = [var 10.79mm, var 10.42mm], center = [var 0mm, var 0mm])
+  leadingArc = arc(start = [var 52mm, var 9.17mm], end = [var 10.79mm, var 10.42mm], center = [var 30.27mm, var -27.19mm])
+  coincident([rootArc.end, leadingArc.end])
+  tipArc = arc(start = [var 52.51mm, var 5.52mm], end = [var 52mm, var 9.17mm], center = [var 0mm, var 0mm])
+  coincident([leadingArc.start, tipArc.end])
+  trailingArc = arc(start = [var 52.51mm, var 5.52mm], end = [var 12.99mm, var 7.5mm], center = [var 31.01mm, var -28.21mm])
+  coincident([tipArc.start, trailingArc.start])
+  coincident([trailingArc.end, rootArc.start])
+}
+bladeSection03 = sketch(on = offsetPlane(YZ, offset = fanHeight - 2)) {
+  rootArc = arc(start = [var 15mm, var 0mm], end = [var 14.55mm, var 3.63mm], center = [var 0mm, var 0mm])
+  leadingArc = arc(start = [var 49.62mm, var -18.06mm], end = [var 14.55mm, var 3.63mm], center = [var 12.62mm, var -38.68mm])
+  coincident([rootArc.end, leadingArc.end])
+  tipArc = arc(start = [var 48.24mm, var -21.48mm], end = [var 49.62mm, var -18.06mm], center = [var 0mm, var 0mm])
+  coincident([leadingArc.start, tipArc.end])
+  trailingArc = arc(start = [var 48.24mm, var -21.48mm], end = [var 15mm, var 0mm], center = [var 12.75mm, var -39.93mm])
+  coincident([tipArc.start, trailingArc.start])
+  coincident([trailingArc.end, rootArc.start])
+}
+
+bladeLoft = loft([
+  bladeSection01,
+  bladeSection02,
+  bladeSection03
+])
+  |> patternCircular3d(
+       instances = 9,
+       axis = X,
+       center = [0, 0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+
+hide(hubSketch)
+hide(bladeSection01)
+hide(bladeSection02)
+hide(bladeSection03)
+
+[fanCenter, bladeLoft]
+  |> appearance(color = "#110803")
