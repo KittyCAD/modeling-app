@@ -88,7 +88,7 @@ async function seedSyncedProject(baseFiles: ProjectArchiveFile[]) {
   })
 }
 
-describe('cloud sync incident regressions', () => {
+describe('cloud sync reliability', () => {
   beforeEach(async () => {
     await deleteCloudSyncTestDatabase()
     fetchMock.mockReset()
