@@ -102,6 +102,11 @@ export type Events =
       type: 'Log in'
       token?: string
     }
+  | {
+      type: 'User refreshed'
+      user?: UserResponse
+      token: string
+    }
 
 /**
  * Determine which token do we have persisted to initialize the auth machine
@@ -185,6 +190,12 @@ export const authMachine = setup({
           actions: assign({
             user: () => undefined,
             token: () => '',
+          }),
+        },
+        'User refreshed': {
+          actions: assign({
+            user: ({ event }) => event.user,
+            token: ({ event }) => event.token,
           }),
         },
       },
@@ -280,7 +291,7 @@ export const authMachine = setup({
   schema: { events: {} as Events },
 })
 
-async function getUser(input: { token?: string }) {
+export async function getUser(input: { token?: string }) {
   const environment =
     (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
   updateEnvironment(environment)

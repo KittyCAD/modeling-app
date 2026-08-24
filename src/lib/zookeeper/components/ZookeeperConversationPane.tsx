@@ -49,6 +49,7 @@ export const ZookeeperConversationPane = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
+  refreshUser: () => Promise<ZookeeperConversationPaneUser | undefined>
   sendBillingUsageStarted: () => void
   sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
@@ -63,6 +64,9 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
+  const [isCheckingBilling, setIsCheckingBilling] = useState(false)
+  const billingCheckInFlight = useRef(false)
+  const checkBillingWhenFocused = useRef(false)
   const [showManualConnect, setShowManualConnect] = useState(
     typeof navigator !== 'undefined' && navigator.onLine === false
   )
@@ -91,6 +95,10 @@ export const ZookeeperConversationPane = (props: {
   const closeReason = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.closeReason
   })
+  const accessDeniedCode = useSelector(
+    props.zookeeperManagerActor,
+    (actor) => actor.context.accessDeniedCode
+  )
   const conversationId = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.context.conversationId
   })
@@ -215,6 +223,67 @@ export const ZookeeperConversationPane = (props: {
     setShowManualConnect(false)
     reconnect()
   }, [reconnect])
+
+  const checkBillingAccess = useCallback(async () => {
+    if (billingCheckInFlight.current) {
+      return
+    }
+
+    billingCheckInFlight.current = true
+    setIsCheckingBilling(true)
+    try {
+      const refreshedUser = await props.refreshUser()
+      props.sendBillingUpdate()
+      if (
+        accessDeniedCode !== 'pay_as_you_go_disabled' &&
+        refreshedUser?.block_message
+      ) {
+        return
+      }
+      onReconnect()
+    } catch (error: unknown) {
+      reportRejection(error)
+    } finally {
+      billingCheckInFlight.current = false
+      setIsCheckingBilling(false)
+    }
+  }, [
+    accessDeniedCode,
+    onReconnect,
+    props.refreshUser,
+    props.sendBillingUpdate,
+  ])
+
+  const onOpenBilling = useCallback(() => {
+    checkBillingWhenFocused.current = true
+  }, [])
+
+  useEffect(() => {
+    if (!setupFailed || accessDeniedCode === undefined) {
+      checkBillingWhenFocused.current = false
+      return
+    }
+
+    const checkAfterBilling = () => {
+      if (
+        !checkBillingWhenFocused.current ||
+        (typeof document !== 'undefined' &&
+          document.visibilityState === 'hidden')
+      ) {
+        return
+      }
+
+      checkBillingWhenFocused.current = false
+      void checkBillingAccess()
+    }
+
+    window.addEventListener('focus', checkAfterBilling)
+    document.addEventListener('visibilitychange', checkAfterBilling)
+    return () => {
+      window.removeEventListener('focus', checkAfterBilling)
+      document.removeEventListener('visibilitychange', checkAfterBilling)
+    }
+  }, [accessDeniedCode, checkBillingAccess, setupFailed])
 
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
@@ -654,13 +723,19 @@ export const ZookeeperConversationPane = (props: {
         void onClickClearChat()
       }}
       onReconnect={onReconnect}
+      onCheckBilling={() => {
+        void checkBillingAccess()
+      }}
+      onOpenBilling={onOpenBilling}
       connectionError={
         showManualConnect ? 'No internet connection.' : closeReason
       }
       connectionFailed={setupFailed}
+      accessDeniedCode={accessDeniedCode}
       showManualConnect={showManualConnect}
       canClearChat={setupFailed && conversationId !== undefined}
       isClearingChat={isClearingChatPending}
+      isCheckingBilling={isCheckingBilling}
       loadingMessage={
         isSettingUp
           ? 'Connecting to Zookeeper...'

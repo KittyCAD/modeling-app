@@ -12,6 +12,7 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import type { ZookeeperAccessDenialCode } from '@src/lib/zookeeper/zookeeperBilling'
 import type {
   Conversation,
   Exchange,
@@ -52,11 +53,15 @@ export interface ZookeeperConversationProps {
   onCancel: () => void
   onClickClearChat: () => void
   onReconnect: () => void
+  onCheckBilling?: () => void
+  onOpenBilling?: () => void
   connectionError?: string
+  accessDeniedCode?: ZookeeperAccessDenialCode
   connectionFailed?: boolean
   showManualConnect?: boolean
   canClearChat?: boolean
   isClearingChat?: boolean
+  isCheckingBilling?: boolean
   loadingMessage?: string
   disabled?: boolean
   needsReconnect: boolean
@@ -721,9 +726,13 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               ) : props.needsReconnect && props.connectionFailed ? (
                 <ZookeeperConnectionErrorBanner
                   connectionError={props.connectionError}
+                  accessDeniedCode={props.accessDeniedCode}
                   canClearChat={props.canClearChat}
                   isClearingChat={props.isClearingChat}
+                  isCheckingBilling={props.isCheckingBilling}
                   onReconnect={props.onReconnect}
+                  onCheckBilling={props.onCheckBilling}
+                  onOpenBilling={props.onOpenBilling}
                   onClickClearChat={props.onClickClearChat}
                 />
               ) : props.blockedReason ? (

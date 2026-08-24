@@ -418,6 +418,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
               apiToken: token,
             })
           },
+          refreshUser: auth.refreshUser,
           sendBillingUsageStarted: () => {
             billing.send({
               type: BillingTransition.UsageStarted,

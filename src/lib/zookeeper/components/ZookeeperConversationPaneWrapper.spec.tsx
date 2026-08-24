@@ -67,6 +67,7 @@ vi.mock('@src/lib/boot', () => ({
     auth: {
       useToken: () => 'token',
       useUser: () => undefined,
+      refreshUser: vi.fn().mockResolvedValue(undefined),
     },
     billing: { send: vi.fn() },
     debug: {},

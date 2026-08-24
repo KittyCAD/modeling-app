@@ -23,7 +23,13 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import { isZookeeperBillingError } from '@src/lib/zookeeper/zookeeperBilling'
+import {
+  type ZookeeperAccessDenialCode,
+  getZookeeperAccessDenialCode,
+  isZookeeperAccessDenialCode,
+  isZookeeperBillingError,
+  parseZookeeperAccessDeniedMessage,
+} from '@src/lib/zookeeper/zookeeperBilling'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -218,11 +224,20 @@ const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
 
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
+  accessDeniedCode?: ZookeeperAccessDenialCode
+  retryable: boolean
 
-  constructor(message: string, closeReason?: string) {
+  constructor(
+    message: string,
+    closeReason?: string,
+    accessDeniedCode?: ZookeeperAccessDenialCode,
+    retryable = true
+  ) {
     super(message)
     this.name = 'ZookeeperSetupConnectionError'
     this.closeReason = closeReason
+    this.accessDeniedCode = accessDeniedCode
+    this.retryable = retryable
   }
 }
 
@@ -247,6 +262,37 @@ function getSetupFailureReason(event: unknown): string | undefined {
     return ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON
   }
   return undefined
+}
+
+function getSetupAccessDeniedCode(
+  event: unknown
+): ZookeeperAccessDenialCode | undefined {
+  if (typeof event !== 'object' || event === null) {
+    return undefined
+  }
+  if (
+    'accessDeniedCode' in event &&
+    isZookeeperAccessDenialCode(event.accessDeniedCode)
+  ) {
+    return event.accessDeniedCode
+  }
+  if (
+    'error' in event &&
+    event.error instanceof ZookeeperSetupConnectionError
+  ) {
+    return event.error.accessDeniedCode
+  }
+  return undefined
+}
+
+function isNonRetryableSetupFailure(event: unknown): boolean {
+  return (
+    typeof event === 'object' &&
+    event !== null &&
+    'error' in event &&
+    event.error instanceof ZookeeperSetupConnectionError &&
+    !event.error.retryable
+  )
 }
 
 export type ZookeeperManagerEvents =
@@ -313,6 +359,7 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.AbruptClose
       closeReason?: string
+      accessDeniedCode?: ZookeeperAccessDenialCode
     }
   | {
       type: ZookeeperManagerTransitions.NetworkOffline
@@ -355,6 +402,7 @@ export interface ZookeeperManagerContext {
   setupFailed: boolean
   setupAttempt: number
   setupFailureReason?: string
+  accessDeniedCode?: ZookeeperAccessDenialCode
   closeReason?: string
   conversation?: Conversation
   conversationId?: string
@@ -385,6 +433,7 @@ export const zookeeperDefaultContext = (args: {
   setupFailed: false,
   setupAttempt: 0,
   setupFailureReason: undefined,
+  accessDeniedCode: undefined,
   closeReason: undefined,
   conversation: undefined,
   cachedSetup: undefined,
@@ -674,7 +723,8 @@ export const zookeeperManagerMachine = setup({
     events: {} as ZookeeperManagerEvents,
   },
   guards: {
-    canRetrySetup: ({ context }) =>
+    canRetrySetup: ({ context, event }) =>
+      !isNonRetryableSetupFailure(event) &&
       context.setupAttempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
   },
   actions: {
@@ -712,6 +762,8 @@ export const zookeeperManagerMachine = setup({
           setupAttempt: context.setupAttempt,
           setupFailureReason:
             getSetupFailureReason(event) ?? context.setupFailureReason,
+          accessDeniedCode:
+            getSetupAccessDeniedCode(event) ?? context.accessDeniedCode,
           rejectedValue:
             rejectedValue !== undefined && !isErr(rejectedValue)
               ? String(rejectedValue)
@@ -726,13 +778,18 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
+      if (
+        event.closeReason &&
+        event.accessDeniedCode === undefined &&
+        !isZookeeperBillingError(event.closeReason)
+      ) {
         toast.error(event.closeReason)
       }
       return {
         abruptlyClosed: true,
-        setupFailed: false,
+        setupFailed: event.accessDeniedCode !== undefined,
         setupFailureReason: undefined,
+        accessDeniedCode: event.accessDeniedCode,
         closeReason: event.closeReason,
       }
     }),
@@ -744,6 +801,7 @@ export const zookeeperManagerMachine = setup({
         abruptlyClosed: true,
         setupFailed: false,
         setupFailureReason: undefined,
+        accessDeniedCode: undefined,
         closeReason: 'No internet connection.',
       }
     }),
@@ -752,6 +810,8 @@ export const zookeeperManagerMachine = setup({
         setupAttempt: context.setupAttempt + 1,
         setupFailureReason:
           getSetupFailureReason(event) ?? context.setupFailureReason,
+        accessDeniedCode:
+          getSetupAccessDeniedCode(event) ?? context.accessDeniedCode,
         cachedSetup: {
           refParentSend: context.cachedSetup?.refParentSend,
           conversationId: context.cachedSetup?.conversationId,
@@ -762,16 +822,20 @@ export const zookeeperManagerMachine = setup({
     markSetupFailed: assign(({ context, event }) => {
       const setupFailureReason =
         getSetupFailureReason(event) ?? context.setupFailureReason
+      const accessDeniedCode =
+        getSetupAccessDeniedCode(event) ?? context.accessDeniedCode
       const closeReason = terminalSetupFailureMessage(context, event)
       logZookeeperDisconnect('conversation setup attempts exhausted', {
         ...zookeeperErrorContext(context),
         setupAttempt: context.setupAttempt,
         setupFailureReason,
+        accessDeniedCode,
       })
       return {
         abruptlyClosed: true,
         setupFailed: true,
         setupFailureReason,
+        accessDeniedCode,
         closeReason,
       }
     }),
@@ -835,6 +899,7 @@ export const zookeeperManagerMachine = setup({
         setupFailed: false,
         setupAttempt: 1,
         setupFailureReason: undefined,
+        accessDeniedCode: undefined,
         closeReason: undefined,
         lastMessageId: undefined,
         lastMessageType: undefined,
@@ -1066,6 +1131,28 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
+            const accessDenied = parseZookeeperAccessDeniedMessage(response)
+            if (accessDenied) {
+              if (setupResolved) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.AbruptClose,
+                  closeReason: accessDenied.detail,
+                  accessDeniedCode: accessDenied.code,
+                })
+              } else {
+                cancelSetupAttempt()
+                onRejected(
+                  new ZookeeperSetupConnectionError(
+                    accessDenied.detail,
+                    accessDenied.detail,
+                    accessDenied.code,
+                    accessDenied.retryable
+                  )
+                )
+              }
+              return
+            }
+
             if (!isMlCopilotServerMessage(response)) return
 
             // Ignore the authorization bug
@@ -1090,17 +1177,23 @@ export const zookeeperManagerMachine = setup({
               'error' in response &&
               isZookeeperBillingError(response.error.detail)
             ) {
+              const accessDeniedCode =
+                getZookeeperAccessDenialCode(response.error.detail) ??
+                'pay_as_you_go_disabled'
               if (setupResolved) {
                 theRefParentSend({
                   type: ZookeeperManagerTransitions.AbruptClose,
                   closeReason: response.error.detail,
+                  accessDeniedCode,
                 })
               } else {
                 cancelSetupAttempt()
                 onRejected(
                   new ZookeeperSetupConnectionError(
                     response.error.detail,
-                    response.error.detail
+                    response.error.detail,
+                    accessDeniedCode,
+                    false
                   )
                 )
               }
@@ -1533,6 +1626,7 @@ export const zookeeperManagerMachine = setup({
               setupFailed: false,
               setupAttempt: 0,
               setupFailureReason: undefined,
+              accessDeniedCode: undefined,
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
@@ -1874,6 +1968,7 @@ export const zookeeperManagerMachine = setup({
               setupFailed: false,
               setupAttempt: 0,
               setupFailureReason: undefined,
+              accessDeniedCode: undefined,
               conversation: undefined,
               conversationId: undefined,
               cachedSetup: undefined,

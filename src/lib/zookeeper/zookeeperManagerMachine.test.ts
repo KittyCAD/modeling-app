@@ -385,7 +385,7 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('surfaces a billing error after retrying setup', async () => {
+    it('surfaces a legacy billing error without retrying setup', async () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
@@ -399,42 +399,76 @@ describe('zookeeperManagerMachine', () => {
         refParentSend: vi.fn(),
       })
 
-      for (
-        let attempt = 0;
-        attempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS;
-        attempt += 1
-      ) {
-        await vi.waitFor(() => {
-          expect(ControllableSetupWebSocket.instances).toHaveLength(attempt + 1)
-        })
-        const socket = ControllableSetupWebSocket.instances[attempt]
-        socket.open()
-        await vi.waitFor(() => {
-          expect(socket.sentPayloads).toContain(
-            JSON.stringify({ type: 'list_modes' })
-          )
-        })
-        socket.receive({ error: { detail: billingError } })
-      }
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({ error: { detail: billingError } })
 
       await waitFor(
         actor,
         (state) => state.matches(S.Await) && state.context.setupFailed
       )
 
-      expect(ControllableSetupWebSocket.instances).toHaveLength(
-        NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS
-      )
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
       expect(actor.getSnapshot().context.closeReason).toBe(billingError)
-      for (const socket of ControllableSetupWebSocket.instances) {
-        expect(socket.close).toHaveBeenCalledOnce()
-      }
+      expect(actor.getSnapshot().context.accessDeniedCode).toBe(
+        'pay_as_you_go_disabled'
+      )
+      expect(socket.close).toHaveBeenCalledOnce()
       expect(fetchMock).toHaveBeenCalledTimes(1)
       expect(reports).toHaveLength(1)
       expect(reports[0]).toMatchObject({
         code: 'zookeeper_setup_error',
         message: billingError,
       })
+
+      actor.stop()
+    })
+
+    it('preserves a typed payment denial and does not retry it', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        access_denied: {
+          code: 'payment_method_failed',
+          detail: 'Update your payment method.',
+          retryable: false,
+        },
+      })
+
+      await waitFor(
+        actor,
+        (state) => state.matches(S.Await) && state.context.setupFailed
+      )
+
+      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+      expect(actor.getSnapshot().context).toMatchObject({
+        closeReason: 'Update your payment method.',
+        accessDeniedCode: 'payment_method_failed',
+        setupAttempt: 1,
+      })
+      expect(socket.close).toHaveBeenCalledOnce()
 
       actor.stop()
     })
@@ -481,7 +515,8 @@ describe('zookeeperManagerMachine', () => {
 
       expect(actor.getSnapshot().context).toMatchObject({
         abruptlyClosed: true,
-        setupFailed: false,
+        setupFailed: true,
+        accessDeniedCode: 'pay_as_you_go_disabled',
         closeReason: billingError,
         conversation: { exchanges: [] },
         conversationId: 'conversation-id',

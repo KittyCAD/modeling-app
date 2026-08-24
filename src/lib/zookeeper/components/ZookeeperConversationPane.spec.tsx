@@ -64,6 +64,7 @@ type FakeZookeeperSnapshot = {
     setupFailed?: boolean
     setupAttempt?: number
     closeReason?: string
+    accessDeniedCode?: 'payment_method_failed'
     awaitingResponse: boolean
     attachmentsLoadedForCurrentPrompt: boolean
     conversation?: Conversation
@@ -93,6 +94,7 @@ const createFakeActor = ({
   setupAttempt = 0,
   includeConversationId = true,
   conversationId = 'conversation-id',
+  accessDeniedCode = undefined,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
@@ -104,6 +106,7 @@ const createFakeActor = ({
   setupAttempt?: number
   includeConversationId?: boolean
   conversationId?: string
+  accessDeniedCode?: 'payment_method_failed'
 } = {}): FakeZookeeperActor => {
   const snapshot: FakeZookeeperSnapshot = {
     value,
@@ -111,6 +114,11 @@ const createFakeActor = ({
       abruptlyClosed,
       setupFailed,
       setupAttempt,
+      accessDeniedCode,
+      closeReason:
+        accessDeniedCode === undefined
+          ? undefined
+          : 'Update your payment method.',
       awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation,
@@ -317,6 +325,9 @@ type RenderPaneOptions = {
   sendBillingUpdate?: () => void
   sendBillingUsageStarted?: () => void
   sendBillingUsageEnded?: () => void
+  refreshUser?: () => Promise<
+    { block_message?: string; image?: string } | undefined
+  >
 }
 
 const createPaneElement = ({
@@ -337,6 +348,7 @@ const createPaneElement = ({
   sendBillingUpdate = vi.fn(),
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
+  refreshUser = vi.fn().mockResolvedValue(undefined),
 }: RenderPaneOptions = {}) => {
   return (
     <MemoryRouter>
@@ -355,6 +367,7 @@ const createPaneElement = ({
         }
         sendModeling={vi.fn() as any}
         sendBillingUpdate={sendBillingUpdate}
+        refreshUser={refreshUser}
         sendBillingUsageStarted={sendBillingUsageStarted}
         sendBillingUsageEnded={sendBillingUsageEnded}
         settings={
@@ -398,6 +411,80 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('refreshes account state and reconnects once after returning from Billing', async () => {
+    const refreshUser = vi.fn().mockResolvedValue({ block_message: undefined })
+    const sendBillingUpdate = vi.fn()
+    const zookeeperManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      setupFailed: true,
+      awaitingResponse: false,
+      value: 'await',
+      accessDeniedCode: 'payment_method_failed',
+    })
+
+    renderPane({
+      refreshUser,
+      sendBillingUpdate,
+      zookeeperManagerActor,
+    })
+
+    const billingLink = screen.getByRole('link', { name: 'Update payment' })
+    billingLink.addEventListener('click', (event) => event.preventDefault())
+    fireEvent.click(billingLink)
+    act(() => {
+      window.dispatchEvent(new Event('focus'))
+    })
+
+    await waitFor(() => {
+      expect(refreshUser).toHaveBeenCalledOnce()
+      expect(sendBillingUpdate).toHaveBeenCalledOnce()
+      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: zookeeperManagerActor.send,
+        conversationId: 'conversation-id',
+      })
+    })
+
+    act(() => {
+      window.dispatchEvent(new Event('focus'))
+    })
+    expect(refreshUser).toHaveBeenCalledOnce()
+  })
+
+  test('keeps the billing recovery visible when Check again finds the account still blocked', async () => {
+    const refreshUser = vi
+      .fn()
+      .mockResolvedValue({ block_message: 'Payment is still required.' })
+    const sendBillingUpdate = vi.fn()
+    const zookeeperManagerActor = createFakeActor({
+      abruptlyClosed: true,
+      setupFailed: true,
+      awaitingResponse: false,
+      value: 'await',
+      accessDeniedCode: 'payment_method_failed',
+    })
+
+    renderPane({
+      refreshUser,
+      sendBillingUpdate,
+      zookeeperManagerActor,
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Check again' }))
+
+    await waitFor(() => {
+      expect(refreshUser).toHaveBeenCalledOnce()
+      expect(sendBillingUpdate).toHaveBeenCalledOnce()
+    })
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+      })
+    )
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Your payment needs attention.'
+    )
+  })
+
   test('shows recovery while offline and reconnects when the browser comes online', async () => {
     vi.useFakeTimers()
     const zookeeperManagerActor = createFakeActor({
@@ -875,6 +962,7 @@ describe('ZookeeperConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
+          refreshUser={vi.fn().mockResolvedValue(undefined)}
           sendBillingUsageStarted={vi.fn()}
           sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}
