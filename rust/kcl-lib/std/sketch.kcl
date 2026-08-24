@@ -1378,21 +1378,30 @@ export fn getPreviousAdjacentEdge(
 /// ```kcl,sketchSolve
 /// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// shaftSketch = sketch(on = XY) {
-///   shaftCircle = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
-///   radius(shaftCircle) == 4mm
+/// scale = 20mm
+/// partSketch = sketch(on = XY) {
+///   left = line(start = [var 0mm, var 0mm], end = [var 0mm, var 20mm])
+///   top = line(start = [var 0mm, var 20mm], end = [var 20mm, var 20mm])
+///   right = line(start = [var 20mm, var 20mm], end = [var 20mm, var 0mm])
+///   line0 = line(start = [var 20mm, var 0mm], end = [var 0mm, var 0mm])
+///   coincident([left.end, top.start])
+///   coincident([top.end, right.start])
+///   coincident([right.end, line0.start])
+///   coincident([line0.end, left.start])
 /// }
-/// shaftRegion = region(segments = [shaftSketch.shaftCircle])
-/// shaft = extrude(shaftRegion, length = 20mm, tagEnd = $shaftTop)
+/// partRegion = region(segments = [partSketch.left, partSketch.top])
+/// part001 = extrude(partRegion, length = scale, tagEnd = $end0)
+///   |> chamfer(
+///        length = 10mm,
+///        tags = [getOppositeEdge(partRegion.tags.line0)],
+///        tag = $chamfer0,
+///      )
 ///
-/// // The circle identifies the cylindrical side face after extrusion.
-/// // Together with the tagged end face, it identifies the top rim.
-/// topRim = getCommonEdge(faces = [
-///   shaft.sketch.tags.shaftCircle,
-///   shaft.faces.shaftTop,
+/// // Select the edge shared by the chamfer and the extrusion's end face.
+/// commonEdge = getCommonEdge(faces = [
+///   part001.faces.chamfer0,
+///   part001.faces.end0,
 /// ])
-///
-/// chamfer(shaft, length = 1mm, tags = [topRim])
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
@@ -1531,23 +1540,24 @@ export fn polygon(
 /// ```kcl,sketchSolve
 /// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 ///
-/// profile = sketch(on = XZ) {
-///   bottom = line(start = [var -3mm, var -1mm], end = [var -1mm, var -1mm])
-///   right = line(start = [var -1mm, var -1mm], end = [var -1mm, var 1mm])
-///   top = line(start = [var -1mm, var 1mm], end = [var -3mm, var 1mm])
-///   left = line(start = [var -3mm, var 1mm], end = [var -3mm, var -1mm])
-///   coincident([bottom.end, right.start])
-///   coincident([right.end, top.start])
-///   coincident([top.end, left.start])
-///   coincident([left.end, bottom.start])
-/// }
-/// profileRegion = region(segments = [profile.bottom, profile.right])
-///
-/// path = sketch(on = offsetPlane(YZ, offset = -2mm)) {
-///   trajectory = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm])
+/// sweepPath = sketch(on = XZ) {
+///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+///   arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+///   coincident([line1.end, arc2.start])
+///   line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+///   coincident([arc2.end, line3.start])
+///   arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+///   coincident([line3.end, arc4.end])
+///   line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+///   coincident([arc4.start, line5.start])
 /// }
 ///
-/// sweep(profileRegion, path = path.trajectory)
+/// pipeProfile = sketch(on = XY) {
+///   outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+///   innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// pipeRegion = region(segments = [pipeProfile.outerCircle])
+/// sweepSketch = sweep(pipeRegion, path = sweepPath)
 /// ```
 ///
 /// ```kcl,legacySketch

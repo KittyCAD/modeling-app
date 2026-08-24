@@ -61,12 +61,18 @@ baseRegion = region(segments = [baseSketch.bottom, baseSketch.right])
 base = extrude(baseRegion, length = 10mm)
 
 toolSketch = sketch(on = XY) {
-  bore = circle(start = [var 12mm, var 3mm], center = [var 7mm, var 3mm])
-  radius(bore) == 5mm
+  bottom = line(start = [var 2mm, var -2mm], end = [var 12mm, var -2mm])
+  right = line(start = [var 12mm, var -2mm], end = [var 12mm, var 8mm])
+  top = line(start = [var 12mm, var 8mm], end = [var 2mm, var 8mm])
+  left = line(start = [var 2mm, var 8mm], end = [var 2mm, var -2mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
 }
-toolRegion = region(segments = [toolSketch.bore])
-tool = extrude(toolRegion, length = 12mm)
-  |> translate(z = -1mm)
+toolRegion = region(segments = [toolSketch.bottom, toolSketch.right])
+tool = extrude(toolRegion, length = 10mm)
+  |> translate(z = 1mm)
 
 subtractedPart = subtract([base], tools = [tool])
 
@@ -103,12 +109,18 @@ baseRegion = region(segments = [baseSketch.bottom, baseSketch.right])
 base = extrude(baseRegion, length = 10mm)
 
 toolSketch = sketch(on = XY) {
-  bore = circle(start = [var 12mm, var 3mm], center = [var 7mm, var 3mm])
-  radius(bore) == 5mm
+  bottom = line(start = [var 2mm, var -2mm], end = [var 12mm, var -2mm])
+  right = line(start = [var 12mm, var -2mm], end = [var 12mm, var 8mm])
+  top = line(start = [var 12mm, var 8mm], end = [var 2mm, var 8mm])
+  left = line(start = [var 2mm, var 8mm], end = [var 2mm, var -2mm])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
 }
-toolRegion = region(segments = [toolSketch.bore])
-tool = extrude(toolRegion, length = 12mm)
-  |> translate(z = -1mm)
+toolRegion = region(segments = [toolSketch.bottom, toolSketch.right])
+tool = extrude(toolRegion, length = 10mm)
+  |> translate(z = 1mm)
 
 // This is equivalent to: subtract([base], tools = [tool])
 subtractedPart = base - tool

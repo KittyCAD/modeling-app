@@ -291,22 +291,23 @@ example = extrude(exampleSketch, length = 1)
 ```kcl
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-profile = sketch(on = XZ) {
-  bottom = line(start = [var -3mm, var -1mm], end = [var -1mm, var -1mm])
-  right = line(start = [var -1mm, var -1mm], end = [var -1mm, var 1mm])
-  top = line(start = [var -1mm, var 1mm], end = [var -3mm, var 1mm])
-  left = line(start = [var -3mm, var 1mm], end = [var -3mm, var -1mm])
-  coincident([bottom.end, right.start])
-  coincident([right.end, top.start])
-  coincident([top.end, left.start])
-  coincident([left.end, bottom.start])
+sweepPath = sketch(on = XZ) {
+  line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+  arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+  coincident([arc4.start, line5.start])
 }
-profileRegion = region(segments = [profile.bottom, profile.right])
-path = sketch(on = offsetPlane(YZ, offset = -2mm)) {
-  trajectory = line(start = [var 0mm, var 0mm], end = [var 0mm, var 12mm])
+pipeProfile = sketch(on = XY) {
+  outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
 }
-
-sweep(profileRegion, path = path.trajectory)
+pipeRegion = region(segments = [pipeProfile.outerCircle])
+sweep(pipeRegion, path = sweepPath)
   |> appearance(color = "#ff0000", metalness = 50, roughness = 50)
 
 ```

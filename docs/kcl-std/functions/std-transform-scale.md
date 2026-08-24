@@ -60,18 +60,23 @@ way (i.e. scaled differently along each axis).
 ```kcl
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
-profile = sketch(on = XY) {
-  bottom = line(start = [var 0mm, var 0mm], end = [var 12mm, var 0mm])
-  right = line(start = [var 12mm, var 0mm], end = [var 12mm, var 6mm])
-  top = line(start = [var 12mm, var 6mm], end = [var 0mm, var 6mm])
-  left = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
-  coincident([bottom.end, right.start])
-  coincident([right.end, top.start])
-  coincident([top.end, left.start])
-  coincident([left.end, bottom.start])
+sweepPath = sketch(on = XZ) {
+  line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
+  arc2 = arc(start = [var 0.05mm, var 7.05mm], end = [var -4.95mm, var 12.05mm], center = [var -4.95mm, var 7.05mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var -4.95mm, var 12.05mm], end = [var -7.95mm, var 12.05mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var -12.95mm, var 17.05mm], end = [var -7.95mm, var 12.05mm], center = [var -7.95mm, var 17.05mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -12.95mm, var 17.05mm], end = [var -12.95mm, var 24.05mm])
+  coincident([arc4.start, line5.start])
 }
-profileRegion = region(segments = [profile.bottom, profile.right])
-scaled = extrude(profileRegion, length = 4mm)
+pipeProfile = sketch(on = XY) {
+  outerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  innerCircle = circle(start = [var 1.5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+pipeRegion = region(segments = [pipeProfile.outerCircle])
+scaled = sweep(pipeRegion, path = sweepPath)
   |> scale(z = 2.5)
 
 ```
