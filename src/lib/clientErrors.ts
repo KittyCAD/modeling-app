@@ -23,6 +23,7 @@ export enum ClientErrorCode {
   CloudSyncConflict = 'cloud_sync_conflict',
   CloudSyncConflictCopyDetected = 'cloud_sync_conflict_copy_detected',
   CloudSyncFailure = 'cloud_sync_failure',
+  CloudSyncUntrackedLocalChanges = 'cloud_sync_untracked_local_changes',
   DesktopChildProcessGone = 'desktop_child_process_gone',
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',

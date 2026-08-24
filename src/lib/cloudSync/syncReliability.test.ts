@@ -50,6 +50,8 @@ function projectFile(
 
 function remoteProject(revision = remoteRevision) {
   return {
+    category_ids: [],
+    description: '',
     id: remoteProjectId,
     title: 'Bracket',
     revision,
@@ -68,6 +70,10 @@ function installFetchMock(onUpdate?: (formData: FormData) => Promise<void>) {
     if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
       await onUpdate?.(init?.body as FormData)
       return jsonResponse(remoteProject(updatedRemoteRevision))
+    }
+
+    if (url.endsWith('/user/client-errors') && method === 'POST') {
+      return jsonResponse({})
     }
 
     return jsonResponse({ message: `Unexpected fetch: ${method} ${url}` }, 500)
@@ -101,7 +107,7 @@ describe('cloud sync reliability', () => {
     await deleteCloudSyncTestDatabase()
   })
 
-  it.fails(
+  it(
     'drains project writes when a direct file-route reload omitted library ownership',
     async () => {
       const files = new Map([
