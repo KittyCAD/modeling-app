@@ -455,7 +455,7 @@ describe('constraintToolHelpers', () => {
     })
   })
 
-  it('prepares one payload per additional line for parallel area selection', () => {
+  it('prepares one grouped payload for parallel area selection', () => {
     const pointA = createPointApiObject({ id: 1 })
     const pointB = createPointApiObject({ id: 2 })
     const pointC = createPointApiObject({ id: 3 })
@@ -487,16 +487,12 @@ describe('constraintToolHelpers', () => {
     expect(apply?.payloads).toEqual([
       {
         type: 'Parallel',
-        lines: [10, 11],
-      },
-      {
-        type: 'Parallel',
-        lines: [10, 12],
+        lines: [10, 11, 12],
       },
     ])
     expect(apply?.payload).toEqual({
       type: 'Parallel',
-      lines: [10, 11],
+      lines: [10, 11, 12],
     })
   })
 
@@ -568,11 +564,7 @@ describe('constraintToolHelpers', () => {
       expect(areaSelection.apply.payloads).toEqual([
         {
           type: 'Parallel',
-          lines: [10, 11],
-        },
-        {
-          type: 'Parallel',
-          lines: [10, 12],
+          lines: [10, 11, 12],
         },
       ])
     }
