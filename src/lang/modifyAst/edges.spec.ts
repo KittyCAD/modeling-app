@@ -830,6 +830,7 @@ ${extrudedTriangle}`
           filletIndex
         )
         const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
 
         expect(newCode).toMatch(
           new RegExp(`${filletName} = fillet\\(\\s*${expectedInput},`)
