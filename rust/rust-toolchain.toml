@@ -1,3 +1,6 @@
 [toolchain]
 channel = "1.98.0"
 components = ["clippy", "rustfmt"]
+# Without it, `npm run build:wasm` and the wasm32 clippy invocation in
+# `just lint` fail with "can't find crate for `std`".
+targets = ["wasm32-unknown-unknown"]
