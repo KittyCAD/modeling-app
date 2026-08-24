@@ -73,9 +73,20 @@ async fn unparse_test(test: &Test) {
     }
 }
 
-#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
+#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples", exclude = ["walkie-talkie"])]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
+    super::execute_test(&t, true, true).await;
+}
+
+/// The current engine times out on the walkie-talkie's exact 143-tool speaker
+/// grille. Keep the real-engine regression available to run explicitly while
+/// engine#4948 is in progress, without making unrelated sample CI intermittent.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "blocked by https://github.com/KittyCAD/engine/issues/4948"]
+async fn kcl_test_execute_walkie_talkie() {
+    let dir_path = INPUTS_DIR.join("walkie-talkie");
+    let t = test("walkie-talkie", dir_path.join("main.kcl"));
     super::execute_test(&t, true, true).await;
 }
 

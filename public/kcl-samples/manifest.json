@@ -1483,6 +1483,27 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Manufacturing",
+      "Computer Hardware"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
+    "multipleFiles": true,
+    "title": "Walkie Talkie",
+    "description": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+    "files": [
+      "antenna.kcl",
+      "body.kcl",
+      "button.kcl",
+      "case.kcl",
+      "knob.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "talk-button.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Fasteners"
     ],
     "pathFromProjectDirectoryToFirstFile": "washer/main.kcl",
