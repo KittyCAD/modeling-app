@@ -20,10 +20,7 @@ washerSketch = sketch(on = XY) {
   diameter(innerCircle) == washerHoleDiameter
 }
 outerRegion = region(segments = [washerSketch.outerCircle])
-innerRegion = region(segments = [washerSketch.innerCircle])
-washerBlank = extrude(outerRegion, length = washerThickness)
-washerBore = extrude(innerRegion, length = washerThickness)
-washerRing = subtract(washerBlank, tools = [washerBore])
+washerRing = extrude(outerRegion, length = washerThickness)
 
 clearance = washerThickness * 0.5
 wedgeLength = washerOuterDiameter / 2 + clearance

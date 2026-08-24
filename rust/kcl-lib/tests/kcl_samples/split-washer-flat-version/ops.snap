@@ -649,18 +649,26 @@ description: Operations executed split-washer-flat-version.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "region",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "segments": {
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
           "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            ]
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
           },
           "sourceRange": []
         }
@@ -670,134 +678,6 @@ description: Operations executed split-washer-flat-version.kcl
           {
             "type": "ProgramBodyItem",
             "index": 6
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 8
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Solid",
-                "value": {
-                  "artifactId": "[uuid]"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -826,7 +706,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 7
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -855,7 +735,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -884,7 +764,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -924,7 +804,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -949,7 +829,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1023,7 +903,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1110,7 +990,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1197,7 +1077,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1284,7 +1164,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1331,7 +1211,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1375,7 +1255,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1419,7 +1299,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1463,7 +1343,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1527,7 +1407,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1594,7 +1474,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1641,7 +1521,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1688,7 +1568,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1727,7 +1607,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1763,7 +1643,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1799,7 +1679,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1835,7 +1715,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1886,7 +1766,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 14
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1928,7 +1808,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 15
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1972,7 +1852,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 16
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2012,7 +1892,7 @@ description: Operations executed split-washer-flat-version.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 14
           },
           {
             "type": "ExpressionStatementExpr"
