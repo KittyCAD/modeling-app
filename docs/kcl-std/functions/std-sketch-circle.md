@@ -21,7 +21,7 @@ circle(
 
 This is part of sketch v1 and is deprecated. In KCL 2, create a
 [`solver::circle`](/docs/kcl-std/functions/std-solver-circle) inside a
-[`sketch`](/docs/kcl-std/functions/std-sketch-sketch), then select the
+[`sketch` block](/docs/kcl-lang/sketches), then select the
 closed profile with [`region`](/docs/kcl-std/functions/std-sketch-region).
 
 
