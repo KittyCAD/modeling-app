@@ -1,0 +1,25 @@
+// Pipe with bend
+// A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
+
+innerDiameter = 10
+outerDiameter = 20
+bendRadius = 30
+bendAngle = 90deg
+
+pipeSectionSketch = sketch(on = XZ) {
+  outerCircle = circle(start = [var 40in, var 0in], center = [var 30in, var 0in])
+  fixed([outerCircle.center, [bendRadius, 0]])
+  radius(outerCircle) == outerDiameter / 2
+
+  innerCircle = circle(start = [var 35in, var 0in], center = [var 30in, var 0in])
+  coincident([innerCircle.center, outerCircle.center])
+  radius(innerCircle) == innerDiameter / 2
+}
+
+pipeSectionRegion = region(segments = [pipeSectionSketch.outerCircle])
+pipe = revolve(pipeSectionRegion, axis = Y, angle = bendAngle)
+
+hide(pipeSectionSketch)

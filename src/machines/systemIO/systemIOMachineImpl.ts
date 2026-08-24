@@ -346,7 +346,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
   }
 }
 
-const sharedBulkDeleteWorkflow = async ({
+export const sharedBulkDeleteWorkflow = async ({
   input,
 }: {
   input: {
@@ -357,6 +357,10 @@ const sharedBulkDeleteWorkflow = async ({
     wasmInstance: ModuleType
   }
 }) => {
+  if (!input.filesToDelete?.length) {
+    return 0
+  }
+
   if (!input.context.folders) {
     console.warn('no folders')
     return

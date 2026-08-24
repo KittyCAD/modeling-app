@@ -99,6 +99,10 @@ export function sourceRangeToUtf16(
   return [t(s[0]), t(s[1]), t(s[2])]
 }
 
+// When a backtrace has more than twice this many lines, elide the middle,
+// keeping this many innermost and outermost frames.
+const BACKTRACE_EDGE_LINES = 15
+
 /**
  * Maps the KCL errors to an array of CodeMirror diagnostics.
  * Currently the diagnostics are all errors, but in the future they could include lints.
@@ -116,6 +120,9 @@ export function kclErrorsToDiagnostics(
       if (err.kclBacktrace.length > 0) {
         // Show the backtrace in the error message.
         const backtraceLines: Array<string> = []
+        // Recursive calls repeat the same call site; one hint diagnostic per
+        // source range is enough.
+        const hintRanges = new Set<string>()
         for (let i = 0; i < err.kclBacktrace.length; i++) {
           const item = err.kclBacktrace[i]
           if (
@@ -123,22 +130,58 @@ export function kclErrorsToDiagnostics(
             isTopLevelModule(item.sourceRange) &&
             !sourceRangeContains(item.sourceRange, err.sourceRange)
           ) {
-            diagnostics.push({
-              from: toUtf16(item.sourceRange[0], sourceCode),
-              to: toUtf16(item.sourceRange[1], sourceCode),
-              message: 'Part of the error backtrace',
-              severity: 'hint',
-            })
+            const rangeKey = `${item.sourceRange[0]}:${item.sourceRange[1]}`
+            if (!hintRanges.has(rangeKey)) {
+              hintRanges.add(rangeKey)
+              diagnostics.push({
+                from: toUtf16(item.sourceRange[0], sourceCode),
+                to: toUtf16(item.sourceRange[1], sourceCode),
+                message: 'Part of the error backtrace',
+                severity: 'hint',
+              })
+            }
           }
           if (i === err.kclBacktrace.length - 1 && !item.fnName) {
             // The top-level doesn't have a name.
             break
           }
-          const name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+          // Import frames are already labeled like `import foo.kcl`;
+          // rendering call parens only makes sense for function frames.
+          let name: string
+          switch (item.kind) {
+            case 'call':
+              name = item.fnName ? `${item.fnName}()` : '(anonymous)'
+              break
+            case 'import':
+              name = item.fnName ?? '(import)'
+              break
+            default:
+              const _exhaustiveCheck: never = item.kind
+              name = '(unknown)'
+              break
+          }
           backtraceLines.push(name)
         }
-        // If the backtrace is only one line, it's not helpful to show.
-        if (backtraceLines.length > 1) {
+        // Deep recursion can produce a huge backtrace. The innermost and
+        // outermost frames are the informative ones, so elide the middle.
+        if (backtraceLines.length > 2 * BACKTRACE_EDGE_LINES) {
+          const omitted = backtraceLines.length - 2 * BACKTRACE_EDGE_LINES
+          backtraceLines.splice(
+            BACKTRACE_EDGE_LINES,
+            omitted,
+            `(${omitted} ${omitted === 1 ? 'frame' : 'frames'} omitted)`
+          )
+        }
+        // A single function frame repeats what the squiggle already points
+        // at, so it's not helpful to show. But a lone import frame is the
+        // only sign that the error lives in another file, so show it.
+        const hasImportFrame = err.kclBacktrace.some(
+          (item) => item.kind === 'import'
+        )
+        if (
+          backtraceLines.length > 1 ||
+          (hasImportFrame && backtraceLines.length === 1)
+        ) {
           message += `\n\nBacktrace:\n${backtraceLines.join('\n')}`
         }
       }

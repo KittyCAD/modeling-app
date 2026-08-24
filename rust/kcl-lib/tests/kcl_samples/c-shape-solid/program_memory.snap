@@ -80,10 +80,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           ],
           "radius": 5.000000000360869,
           "tag": {
-            "commentStart": 501,
-            "end": 509,
+            "commentStart": 519,
+            "end": 527,
             "moduleId": 0,
-            "start": 501,
+            "start": 519,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -104,10 +104,10 @@ description: Variables in memory after executing c-shape-solid.kcl
             1.0000000000947167
           ],
           "tag": {
-            "commentStart": 613,
-            "end": 622,
+            "commentStart": 631,
+            "end": 640,
             "moduleId": 0,
-            "start": 613,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -134,10 +134,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           ],
           "radius": 10.000000000190047,
           "tag": {
-            "commentStart": 699,
-            "end": 707,
+            "commentStart": 717,
+            "end": 725,
             "moduleId": 0,
-            "start": 699,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "outerArc"
           },
@@ -158,10 +158,10 @@ description: Variables in memory after executing c-shape-solid.kcl
             -0.9999999999243478
           ],
           "tag": {
-            "commentStart": 813,
-            "end": 825,
+            "commentStart": 831,
+            "end": 843,
             "moduleId": 0,
-            "start": 813,
+            "start": 831,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -786,10 +786,10 @@ description: Variables in memory after executing c-shape-solid.kcl
                   ],
                   "radius": 5.000000000360869,
                   "tag": {
-                    "commentStart": 501,
-                    "end": 509,
+                    "commentStart": 519,
+                    "end": 527,
                     "moduleId": 0,
-                    "start": 501,
+                    "start": 519,
                     "type": "TagDeclarator",
                     "value": "innerArc"
                   },
@@ -827,10 +827,10 @@ description: Variables in memory after executing c-shape-solid.kcl
                     1.0000000000947167
                   ],
                   "tag": {
-                    "commentStart": 613,
-                    "end": 622,
+                    "commentStart": 631,
+                    "end": 640,
                     "moduleId": 0,
-                    "start": 613,
+                    "start": 631,
                     "type": "TagDeclarator",
                     "value": "topBridge"
                   },
@@ -857,10 +857,10 @@ description: Variables in memory after executing c-shape-solid.kcl
                   ],
                   "radius": 10.000000000190047,
                   "tag": {
-                    "commentStart": 699,
-                    "end": 707,
+                    "commentStart": 717,
+                    "end": 725,
                     "moduleId": 0,
-                    "start": 699,
+                    "start": 717,
                     "type": "TagDeclarator",
                     "value": "outerArc"
                   },
@@ -881,10 +881,10 @@ description: Variables in memory after executing c-shape-solid.kcl
                     -0.9999999999243478
                   ],
                   "tag": {
-                    "commentStart": 813,
-                    "end": 825,
+                    "commentStart": 831,
+                    "end": 843,
                     "moduleId": 0,
-                    "start": 813,
+                    "start": 831,
                     "type": "TagDeclarator",
                     "value": "bottomBridge"
                   },
@@ -1378,10 +1378,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 501,
-            "end": 509,
+            "commentStart": 519,
+            "end": 527,
             "moduleId": 0,
-            "start": 501,
+            "start": 519,
             "type": "TagDeclarator",
             "value": "innerArc"
           },
@@ -1392,10 +1392,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 613,
-            "end": 622,
+            "commentStart": 631,
+            "end": 640,
             "moduleId": 0,
-            "start": 613,
+            "start": 631,
             "type": "TagDeclarator",
             "value": "topBridge"
           },
@@ -1406,10 +1406,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 699,
-            "end": 707,
+            "commentStart": 717,
+            "end": 725,
             "moduleId": 0,
-            "start": 699,
+            "start": 717,
             "type": "TagDeclarator",
             "value": "outerArc"
           },
@@ -1420,10 +1420,10 @@ description: Variables in memory after executing c-shape-solid.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 813,
-            "end": 825,
+            "commentStart": 831,
+            "end": 843,
             "moduleId": 0,
-            "start": 813,
+            "start": 831,
             "type": "TagDeclarator",
             "value": "bottomBridge"
           },
@@ -1451,10 +1451,10 @@ description: Variables in memory after executing c-shape-solid.kcl
             ],
             "radius": 5.000000000360869,
             "tag": {
-              "commentStart": 501,
-              "end": 509,
+              "commentStart": 519,
+              "end": 527,
               "moduleId": 0,
-              "start": 501,
+              "start": 519,
               "type": "TagDeclarator",
               "value": "innerArc"
             },
@@ -1475,10 +1475,10 @@ description: Variables in memory after executing c-shape-solid.kcl
               1.0000000000947167
             ],
             "tag": {
-              "commentStart": 613,
-              "end": 622,
+              "commentStart": 631,
+              "end": 640,
               "moduleId": 0,
-              "start": 613,
+              "start": 631,
               "type": "TagDeclarator",
               "value": "topBridge"
             },
@@ -1505,10 +1505,10 @@ description: Variables in memory after executing c-shape-solid.kcl
             ],
             "radius": 10.000000000190047,
             "tag": {
-              "commentStart": 699,
-              "end": 707,
+              "commentStart": 717,
+              "end": 725,
               "moduleId": 0,
-              "start": 699,
+              "start": 717,
               "type": "TagDeclarator",
               "value": "outerArc"
             },
@@ -1529,10 +1529,10 @@ description: Variables in memory after executing c-shape-solid.kcl
               -0.9999999999243478
             ],
             "tag": {
-              "commentStart": 813,
-              "end": 825,
+              "commentStart": 831,
+              "end": 843,
               "moduleId": 0,
-              "start": 813,
+              "start": 831,
               "type": "TagDeclarator",
               "value": "bottomBridge"
             },

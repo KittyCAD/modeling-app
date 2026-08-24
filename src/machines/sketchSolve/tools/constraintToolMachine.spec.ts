@@ -166,7 +166,7 @@ describe('constraintToolMachine', () => {
         type: 'Constraint',
         constraint: {
           type: 'Distance',
-          points: [1, 2],
+          segments: [1, 2],
           distance: { value: 5, units: 'Mm' },
           source: { expr: '5', is_literal: true },
         },

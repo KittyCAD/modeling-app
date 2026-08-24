@@ -3,7 +3,7 @@
 // Categories: Construction
 // Sketch-solve reconstruction with matching feature order.
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 depth = 450
 height = 1250

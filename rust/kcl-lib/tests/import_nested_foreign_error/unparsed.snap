@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_nested_foreign_error.kcl
+---
+// An engine failure importing a foreign file inside a nested KCL import
+// must keep the import chain back to this file.
+import theModel from "assembly.kcl"
+
+theModel

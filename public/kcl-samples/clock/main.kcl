@@ -1,0 +1,491 @@
+// Clock
+// A clock with roman numerals
+// Categories: Maker
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Define parameters
+clockDiameter = 500
+clockThickness = 50
+minuteHandLength = 100
+nubDiameter = 30
+numHeight = 10
+minuteHandWidth = 25
+hourHandWidth = 25
+hourHandLargeDiameter = 230
+minuteHandLargeDiameter = 310
+filletRadius = 5
+ridgeThickness = 10
+numberThickness = 10
+
+// Calculated parameters
+ridgeDiameter = clockDiameter - 50
+hourHandArmLength = clockDiameter / 2 * .25
+minuteHandArmLength = clockDiameter / 2 * .40
+
+// Add assert for clockDiameter
+assert(clockDiameter, isGreaterThan = 450, error = "clock diameter needs to be greater than 400")
+
+// What time is it?
+hour = 9
+minute = 29
+
+// Calculate hand angles
+hourHandAngle = 90deg - (hour * 30deg)
+minuteHandAngle = 90deg - (minute * 6deg)
+
+// Create the clock body
+profile001 = sketch(on = XY) {
+  circle1 = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+region001 = region(segments = [profile001.circle1])
+clockBody = extrude(region001, length = clockThickness, tagStart = $capStart001)
+  |> fillet(
+       radius = filletRadius,
+       edges = [
+         {
+           sideFaces = [region001.tags.circle1, capStart001]
+         }
+       ],
+     )
+
+// Create the ridge as one annular region on the body. The inner loop removes
+// the center before extrusion, so this does not need a cutter solid or CSG.
+profile002 = sketch(on = faceOf(clockBody, face = END)) {
+  outerCircle = circle(start = [var 250mm, var 0mm], center = [var 0mm, var 0mm])
+  innerCircle = circle(start = [var 225mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [profile002.outerCircle])
+clockRidge = extrude(region002, length = ridgeThickness, tagEnd = $capEnd001)
+  |> fillet(
+       radius = filletRadius,
+       edges = [
+         {
+           sideFaces = [region002.tags.outerCircle, capEnd001]
+         }
+       ],
+     )
+  |> appearance(color = "#ab4321")
+
+// Create an object that has all of the x and y starting positions of every number
+numberObject = {
+  // one = { i = [90, 160] },
+  one = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(60deg),
+      clockDiameter / 2 * 3 / 4 * sin(60deg)
+    ]
+  },
+  two = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(30deg) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(30deg)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(30deg) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(30deg)
+    ]
+  },
+  three = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(0) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(0),
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ],
+    i3 = [
+      clockDiameter / 2 * 3 / 4 * cos(0) + 15,
+      clockDiameter / 2 * 3 / 4 * sin(0)
+    ]
+  },
+  four = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-30deg) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-30deg)
+    ],
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-30deg) + 13,
+      clockDiameter / 2 * 3 / 4 * sin(-30deg)
+    ]
+  },
+  five = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-60deg),
+      clockDiameter / 2 * 3 / 4 * sin(-60deg)
+    ]
+  },
+  six = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-90deg) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-90deg)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-90deg) + 12,
+      clockDiameter / 2 * 3 / 4 * sin(-90deg)
+    ]
+  },
+  seven = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-120deg) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(-120deg)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-120deg) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(-120deg)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(-120deg) + 20,
+      clockDiameter / 2 * 3 / 4 * sin(-120deg)
+    ]
+  },
+  eight = {
+    v = [
+      clockDiameter / 2 * 3 / 4 * cos(-150deg) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(-150deg)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(-150deg) + 10,
+      clockDiameter / 2 * 3 / 4 * sin(-150deg)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(-150deg) + 25,
+      clockDiameter / 2 * 3 / 4 * sin(-150deg)
+    ],
+    i3 = [
+      clockDiameter / 2 * 3 / 4 * cos(-150deg) + 40,
+      clockDiameter / 2 * 3 / 4 * sin(-150deg)
+    ]
+  },
+  nine = {
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(180deg) - 15,
+      clockDiameter / 2 * 3 / 4 * sin(180deg)
+    ],
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(180deg) + 15,
+      clockDiameter / 2 * 3 / 4 * sin(180deg)
+    ]
+  },
+  ten = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(150deg) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(150deg)
+    ]
+  },
+  eleven = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(120deg),
+      clockDiameter / 2 * 3 / 4 * sin(120deg)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(120deg) + 10,
+      clockDiameter / 2 * 3 / 4 * sin(120deg)
+    ]
+  },
+  twelve = {
+    x = [
+      clockDiameter / 2 * 3 / 4 * cos(90deg) - 10,
+      clockDiameter / 2 * 3 / 4 * sin(90deg)
+    ],
+    i = [
+      clockDiameter / 2 * 3 / 4 * cos(90deg) + 5,
+      clockDiameter / 2 * 3 / 4 * sin(90deg)
+    ],
+    i2 = [
+      clockDiameter / 2 * 3 / 4 * cos(90deg) + 20,
+      clockDiameter / 2 * 3 / 4 * sin(90deg)
+    ]
+  }
+}
+
+// Build each Roman-numeral glyph once, then clone and translate it. This keeps
+// the function calls parametric without relying on sketch-v1 inside functions.
+iGlyphSketch = sketch(on = offsetPlane(XY, offset = clockThickness)) {
+  line1 = line(start = [var -4mm, var 20mm], end = [var 4mm, var 20mm])
+  line2 = line(start = [var 4mm, var 20mm], end = [var 4mm, var -20mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 4mm, var -20mm], end = [var -4mm, var -20mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -4mm, var -20mm], end = [var -4mm, var 20mm])
+  coincident([line3.end, line4.start])
+}
+iGlyph = extrude(region(segments = [iGlyphSketch.line1, iGlyphSketch.line2]), length = numberThickness)
+  |> appearance(color = "#140f0f")
+
+xGlyphSketch = sketch(on = offsetPlane(XY, offset = clockThickness)) {
+  line1 = line(start = [var -20mm, var 20mm], end = [var -13.333333333mm, var 20mm])
+  line2 = line(start = [var -13.333333333mm, var 20mm], end = [var -8.480396876mm, var 6.666666667mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -8.480396876mm, var 6.666666667mm], end = [var -3.62746042mm, var 20mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -3.62746042mm, var 20mm], end = [var 3.039206247mm, var 20mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 3.039206247mm, var 20mm], end = [var -4.240198438mm, var 0mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var -4.240198438mm, var 0mm], end = [var 3.039206247mm, var -20mm])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 3.039206247mm, var -20mm], end = [var -3.62746042mm, var -20mm])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var -3.62746042mm, var -20mm], end = [var -8.480396876mm, var -6.666666667mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var -8.480396876mm, var -6.666666667mm], end = [var -13.333333333mm, var -20mm])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var -13.333333333mm, var -20mm], end = [var -20mm, var -20mm])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var -20mm, var -20mm], end = [var -12.720595315mm, var 0mm])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var -12.720595315mm, var 0mm], end = [var -20mm, var 20mm])
+  coincident([line11.end, line12.start])
+}
+xGlyph = extrude(region(segments = [xGlyphSketch.line1, xGlyphSketch.line2]), length = numberThickness)
+  |> appearance(color = "#140f0f")
+
+vGlyphSketch = sketch(on = offsetPlane(XY, offset = clockThickness)) {
+  line1 = line(start = [var -12.5mm, var 20mm], end = [var -4.166666667mm, var 20mm])
+  line2 = line(start = [var -4.166666667mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0mm, var 0mm], end = [var 4.166666667mm, var 20mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 4.166666667mm, var 20mm], end = [var 12.5mm, var 20mm])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 12.5mm, var 20mm], end = [var 0mm, var -20mm])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0mm, var -20mm], end = [var -12.5mm, var 20mm])
+  coincident([line5.end, line6.start])
+}
+vGlyph = extrude(region(segments = [vGlyphSketch.line1, vGlyphSketch.line2]), length = numberThickness)
+  |> appearance(color = "#140f0f")
+
+fn letterI(startX, startY) {
+  return clone(iGlyph)
+    |> translate(x = startX, y = startY)
+}
+fn letterX(startX, startY) {
+  return clone(xGlyph)
+    |> translate(x = startX, y = startY)
+}
+fn letterV(startX, startY) {
+  return clone(vGlyph)
+    |> translate(x = startX, y = startY)
+}
+
+// Create the numbers on the face of the clock
+
+// 1 //
+letterI(startX = numberObject.one.i[0], startY = numberObject.one.i[1])
+
+// 2 //
+letterI(startX = numberObject.two.i[0], startY = numberObject.two.i[1])
+letterI(startX = numberObject.two.i2[0], startY = numberObject.two.i2[1])
+
+// 3 //
+letterI(startX = numberObject.three.i[0], startY = numberObject.three.i[1])
+letterI(startX = numberObject.three.i2[0], startY = numberObject.three.i2[1])
+letterI(startX = numberObject.three.i3[0], startY = numberObject.three.i3[1])
+
+// 4 //
+letterI(startX = numberObject.four.i[0], startY = numberObject.four.i[1])
+letterV(startX = numberObject.four.v[0], startY = numberObject.four.v[1])
+
+// 5 //
+letterV(startX = numberObject.five.v[0], startY = numberObject.five.v[1])
+
+// 6 //
+letterV(startX = numberObject.six.v[0], startY = numberObject.six.v[1])
+letterI(startX = numberObject.six.i[0], startY = numberObject.six.i[1])
+
+// 7 //
+letterV(startX = numberObject.seven.v[0], startY = numberObject.seven.v[1])
+letterI(startX = numberObject.seven.i[0], startY = numberObject.seven.i[1])
+letterI(startX = numberObject.seven.i2[0], startY = numberObject.seven.i2[1])
+
+// 8 //
+letterV(startX = numberObject.eight.v[0], startY = numberObject.eight.v[1])
+letterI(startX = numberObject.eight.i[0], startY = numberObject.eight.i[1])
+letterI(startX = numberObject.eight.i2[0], startY = numberObject.eight.i2[1])
+letterI(startX = numberObject.eight.i3[0], startY = numberObject.eight.i3[1])
+
+// 9 //
+letterI(startX = numberObject.nine.i[0], startY = numberObject.nine.i[1])
+letterX(startX = numberObject.nine.x[0], startY = numberObject.nine.x[1])
+
+// 10 //
+letterX(startX = numberObject.ten.x[0], startY = numberObject.ten.x[1])
+
+// 11 //
+letterX(startX = numberObject.eleven.x[0], startY = numberObject.eleven.x[1])
+letterI(startX = numberObject.eleven.i[0], startY = numberObject.eleven.i[1])
+
+// 12 //
+letterX(startX = numberObject.twelve.x[0], startY = numberObject.twelve.x[1])
+letterI(startX = numberObject.twelve.i[0], startY = numberObject.twelve.i[1])
+letterI(startX = numberObject.twelve.i2[0], startY = numberObject.twelve.i2[1])
+hide(iGlyph)
+hide(xGlyph)
+hide(vGlyph)
+
+// Create nub for the minute and hour hands
+sketch002 = sketch(on = faceOf(clockBody, face = END)) {
+  circle1 = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region004 = region(segments = [sketch002.circle1])
+nub = extrude(region004, length = numHeight)
+
+// Create the hour hand
+profile007 = sketch(on = offsetPlane(XY, offset = 55)) {
+  arc1 = arc(
+    start = [
+      var -19.381160304mm,
+      var -7.054165456mm
+    ],
+    end = [var -19.381160304mm, var 7.054165456mm],
+    center = [var 0mm, var 0mm],
+  )
+  line2 = line(start = [var -19.381160304mm, var 7.054165456mm], end = [var -81.881160304mm, var 7.054165456mm])
+  coincident([arc1.end, line2.start])
+  line3 = line(
+    start = [var -81.881160304mm, var 7.054165456mm],
+    end = [
+      var -81.881160304mm,
+      var 19.554165456mm
+    ],
+  )
+  coincident([line2.end, line3.start])
+  line4 = line(
+    start = [
+      var -81.881160304mm,
+      var 19.554165456mm
+    ],
+    end = [var -115mm, var 0mm],
+  )
+  coincident([line3.end, line4.start])
+  line5 = line(
+    start = [var -115mm, var 0mm],
+    end = [
+      var -81.506176117mm,
+      var -18.904673793mm
+    ],
+  )
+  coincident([line4.end, line5.start])
+  line6 = line(
+    start = [
+      var -81.506176117mm,
+      var -18.904673793mm
+    ],
+    end = [
+      var -81.506176117mm,
+      var -6.404673793mm
+    ],
+  )
+  coincident([line5.end, line6.start])
+  line7 = line(
+    start = [
+      var -81.506176117mm,
+      var -6.404673793mm
+    ],
+    end = [
+      var -19.381160304mm,
+      var -7.054165456mm
+    ],
+  )
+  coincident([line6.end, line7.start])
+  bore = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region005 = region(segments = [profile007.arc1, profile007.line2])
+hourHand = extrude(region005, length = 5)
+  |> appearance(color = "#404040")
+
+// create the minute hand
+profile009 = sketch(on = offsetPlane(XY, offset = 50)) {
+  arc1 = arc(
+    start = [var 9.041404903mm, var -18.537627205mm],
+    end = [
+      var -4.989639097mm,
+      var -20.012349354mm
+    ],
+    center = [var 0mm, var 0mm],
+  )
+  line2 = line(
+    start = [
+      var -4.989639097mm,
+      var -20.012349354mm
+    ],
+    end = [var 5.46320723mm, var -119.464538891mm],
+  )
+  coincident([arc1.end, line2.start])
+  line3 = line(
+    start = [var 5.46320723mm, var -119.464538891mm],
+    end = [
+      var -6.968316462mm,
+      var -120.771144682mm
+    ],
+  )
+  coincident([line2.end, line3.start])
+  line4 = line(
+    start = [
+      var -6.968316462mm,
+      var -120.771144682mm
+    ],
+    end = [
+      var 16.201911806mm,
+      var -154.150893782mm
+    ],
+  )
+  coincident([line3.end, line4.start])
+  line5 = line(
+    start = [
+      var 16.201911806mm,
+      var -154.150893782mm
+    ],
+    end = [
+      var 33.524508365mm,
+      var -117.39501294mm
+    ],
+  )
+  coincident([line4.end, line5.start])
+  line6 = line(
+    start = [
+      var 33.524508365mm,
+      var -117.39501294mm
+    ],
+    end = [
+      var 21.092984673mm,
+      var -118.701618731mm
+    ],
+  )
+  coincident([line5.end, line6.start])
+  line7 = line(
+    start = [
+      var 21.092984673mm,
+      var -118.701618731mm
+    ],
+    end = [var 9.041404903mm, var -18.537627205mm],
+  )
+  coincident([line6.end, line7.start])
+  bore = circle(start = [var 15mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region007 = region(segments = [profile009.arc1, profile009.line2])
+minuteHand = extrude(region007, length = 5)
+  |> appearance(color = "#404040")
+
+// Define parameters of the screw slot for hanging the clock
+screwHeadDiameter = 9.53
+screwTolerance = .5
+slotWidth = (screwHeadDiameter + screwTolerance) / 2
+slotLength = 40
+
+// Create the screw slot directly on the back face.
+sketch008 = sketch(on = faceOf(clockBody, face = START)) {
+  line1 = line(start = [var -2.5075mm, var 200mm], end = [var -2.5075mm, var 160mm])
+  arc2 = arc(start = [var -2.5075mm, var 160mm], end = [var 2.7575mm, var 160mm], center = [var 0.125mm, var 155.440376249mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 2.7575mm, var 160mm], end = [var 2.7575mm, var 200mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 2.7575mm, var 200mm], end = [var -2.5075mm, var 200mm], center = [var 0.125mm, var 200mm])
+  coincident([line3.end, arc4.start])
+}
+region009 = region(segments = [sketch008.line1, sketch008.arc2])
+extrude(region009, length = -20)

@@ -1234,7 +1234,35 @@ async fn execute_pattern_circular<T: GeometryTrait>(
     T::flush_batch(&args, exec_state, &geometry_set).await?;
     let starting: Vec<T> = geometry_set.into();
     if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting);
+        let seed = starting
+            .first()
+            .cloned()
+            .ok_or(KclError::new_internal(KclErrorDetails::new(
+                "Unexpected empty set".to_owned(),
+                vec![args.source_range],
+            )))?;
+        let mut mock_responses = starting;
+        let num_repetitions = match data.repetitions() {
+            RepetitionsNeeded::More(n) => n,
+            RepetitionsNeeded::None => {
+                return Ok(mock_responses);
+            }
+            RepetitionsNeeded::Invalid => {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    MUST_HAVE_ONE_INSTANCE.to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+        };
+        for _ in 0..num_repetitions {
+            let new_id = exec_state.next_uuid();
+            let mut new_geometry = seed.clone();
+            new_geometry.set_id(new_id);
+            new_geometry.set_artifact_id(new_id);
+            mock_responses.push(new_geometry);
+        }
+
+        return Ok(mock_responses);
     }
 
     let mut output = Vec::new();
