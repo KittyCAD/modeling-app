@@ -20,6 +20,7 @@ import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerM
 import {
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
+  hasBeenInterruptedOnLast,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
@@ -65,7 +66,10 @@ export const ZookeeperConversationPane = (props: {
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
   const [isCheckingBilling, setIsCheckingBilling] = useState(false)
+  const [isResumingInterruptedTurn, setIsResumingInterruptedTurn] =
+    useState(false)
   const billingCheckInFlight = useRef(false)
+  const resumeInterruptedTurnInFlight = useRef(false)
   const checkBillingWhenFocused = useRef(false)
   const [showManualConnect, setShowManualConnect] = useState(
     typeof navigator !== 'undefined' && navigator.onLine === false
@@ -108,6 +112,12 @@ export const ZookeeperConversationPane = (props: {
   const isReady = useSelector(props.zookeeperManagerActor, (actor) => {
     return actor.matches(ZookeeperManagerStates.Ready)
   })
+  const interruptedTurnAwaitingResume = useSelector(
+    props.zookeeperManagerActor,
+    (actor) =>
+      actor.matches(ZookeeperManagerStates.WaitForContinueCheck) &&
+      hasBeenInterruptedOnLast(actor.context.conversation?.exchanges ?? [])
+  )
 
   const isPromptRunning = useSelector(
     props.zookeeperManagerActor,
@@ -257,6 +267,52 @@ export const ZookeeperConversationPane = (props: {
   const onOpenBilling = useCallback(() => {
     checkBillingWhenFocused.current = true
   }, [])
+
+  const resumeInterruptedTurn = useCallback(async () => {
+    if (
+      resumeInterruptedTurnInFlight.current ||
+      !interruptedTurnAwaitingResume ||
+      props.theProject === undefined
+    ) {
+      return
+    }
+
+    resumeInterruptedTurnInFlight.current = true
+    setIsResumingInterruptedTurn(true)
+    try {
+      const project = props.theProject
+      const currentLoaderFile = loaderFileRef.current
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: props.kclManager.code,
+        selectedFilePath: props.kclManager.path,
+        fileNames: props.kclManager.execState.filenames,
+        projectContext: project,
+      })
+      props.zookeeperManagerActor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: project.name,
+        projectFiles,
+        engineApiCallId: props.contextModeling.engineCommandManager?.apiCallId,
+        activeFile: currentLoaderFile
+          ? activeFileRelativeToProject({
+              currentFileEntry: currentLoaderFile,
+              applicationProjectDirectory: getParentAbsolutePath(project.path),
+            })
+          : undefined,
+      })
+    } catch (error: unknown) {
+      reportRejection(error)
+    } finally {
+      resumeInterruptedTurnInFlight.current = false
+      setIsResumingInterruptedTurn(false)
+    }
+  }, [
+    interruptedTurnAwaitingResume,
+    props.contextModeling.engineCommandManager?.apiCallId,
+    props.kclManager,
+    props.theProject,
+    props.zookeeperManagerActor,
+  ])
 
   useEffect(() => {
     if (!setupFailed || accessDeniedCode === undefined) {
@@ -564,30 +620,14 @@ export const ZookeeperConversationPane = (props: {
           ) &&
           props.theProject !== undefined
         ) {
-          const project: Project = props.theProject
+          if (hasBeenInterruptedOnLast(context.conversation?.exchanges ?? [])) {
+            return
+          }
 
-          const currentLoaderFile = loaderFileRef.current
-          void collectProjectFiles({
-            selectedFileContents: props.kclManager.code,
-            selectedFilePath: props.kclManager.path,
-            fileNames: props.kclManager.execState.filenames,
-            projectContext: project,
-          }).then((projectFiles) => {
-            props.zookeeperManagerActor.send({
-              type: ZookeeperManagerStates.ContinueCheck,
-              projectName: project.name,
-              projectFiles,
-              engineApiCallId:
-                props.contextModeling.engineCommandManager.apiCallId,
-              activeFile: currentLoaderFile
-                ? activeFileRelativeToProject({
-                    currentFileEntry: currentLoaderFile,
-                    applicationProjectDirectory: getParentAbsolutePath(
-                      project.path
-                    ),
-                  })
-                : undefined,
-            })
+          props.zookeeperManagerActor.send({
+            type: ZookeeperManagerStates.ContinueCheck,
+            projectName: props.theProject.name,
+            projectFiles: [],
           })
           return
         }
@@ -726,6 +766,11 @@ export const ZookeeperConversationPane = (props: {
       onCheckBilling={() => {
         void checkBillingAccess()
       }}
+      interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
+      isResumingInterruptedTurn={isResumingInterruptedTurn}
+      onResumeInterruptedTurn={() => {
+        void resumeInterruptedTurn()
+      }}
       onOpenBilling={onOpenBilling}
       connectionError={
         showManualConnect ? 'No internet connection.' : closeReason
@@ -744,9 +789,14 @@ export const ZookeeperConversationPane = (props: {
             : undefined
       }
       onCancel={onCancel}
-      disabled={needsReconnect || isClearingChatPending}
+      disabled={
+        needsReconnect ||
+        isClearingChatPending ||
+        interruptedTurnAwaitingResume ||
+        isResumingInterruptedTurn
+      }
       needsReconnect={needsReconnect}
-      hasPromptCompleted={!isPromptRunning}
+      hasPromptCompleted={!isPromptRunning && !interruptedTurnAwaitingResume}
       isProcessing={isPromptRunning}
       queue={queue}
       onRemoveFromQueue={onRemoveFromQueue}

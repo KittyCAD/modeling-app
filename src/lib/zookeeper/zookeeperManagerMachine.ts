@@ -698,7 +698,7 @@ function isMlCopilotServerMessage(
   return true
 }
 
-const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
+export const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
   const lastExchange = exchanges.slice(-1)[0]
   const lastResponse = lastExchange?.responses.slice(-1)[0]
   return (

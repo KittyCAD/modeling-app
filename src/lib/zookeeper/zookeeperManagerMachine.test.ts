@@ -822,6 +822,8 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
+      expect(ws.sentPayloads).toHaveLength(0)
+
       actor.send({
         type: ZookeeperManagerStates.ContinueCheck,
         projectName: 'zoo-project',

@@ -36,7 +36,10 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { ZookeeperManagerTransitions } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  ZookeeperManagerStates,
+  ZookeeperManagerTransitions,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -53,6 +56,26 @@ const completedConversation: Conversation = {
         },
       ],
       deltasAggregated: 'Done.',
+    },
+  ],
+}
+
+const interruptedConversation: Conversation = {
+  exchanges: [
+    {
+      request: {
+        type: 'user',
+        content: 'finish the bracket',
+      },
+      responses: [
+        {
+          reasoning: {
+            type: 'text',
+            content: 'Working on it.',
+          },
+        },
+      ],
+      deltasAggregated: '',
     },
   ],
 }
@@ -363,6 +386,9 @@ const createPaneElement = ({
               graphSelections: [],
               otherSelections: [],
             },
+            engineCommandManager: {
+              apiCallId: 'engine-api-call-id',
+            },
           } as any
         }
         sendModeling={vi.fn() as any}
@@ -411,6 +437,107 @@ beforeAll(async () => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('restores an interrupted conversation but waits for the user to resume it', async () => {
+    const projectRoot = fsZds.join(
+      '/tmp',
+      `zookeeper-manual-resume-${Date.now()}`
+    )
+    const projectPath = fsZds.join(projectRoot, 'demo-project')
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const editorCode = 'width = 25mm\n'
+    const zookeeperManagerActor = createFakeActor({
+      conversation: interruptedConversation,
+      value: ZookeeperManagerStates.WaitForContinueCheck,
+      awaitingResponse: false,
+    })
+    zookeeperManagerActor.subscribe = (listener) => {
+      listener?.(zookeeperManagerActor.getSnapshot())
+      return { unsubscribe: vi.fn() }
+    }
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode(editorCode))
+
+    try {
+      renderPane({
+        zookeeperManagerActor,
+        theProject: {
+          name: 'demo-project',
+          path: projectPath,
+        },
+        loaderFile: {
+          name: 'main.kcl',
+          path: mainPath,
+          children: null,
+        },
+        kclManager: {
+          code: editorCode,
+          path: mainPath,
+          execState: {
+            filenames: {
+              0: {
+                type: 'Local',
+                value: mainPath,
+                original_import_path: null,
+              },
+            },
+          },
+          artifactGraph: {},
+        },
+      })
+
+      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerStates.ContinueCheck,
+        })
+      )
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Resume interrupted request' })
+      )
+
+      await waitFor(() => {
+        expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: ZookeeperManagerStates.ContinueCheck,
+            projectName: 'demo-project',
+            engineApiCallId: 'engine-api-call-id',
+          })
+        )
+      })
+    } finally {
+      await fsZds.rm(projectRoot, { recursive: true, force: true })
+    }
+  })
+
+  test('automatically finishes replay setup when the conversation is complete', async () => {
+    const zookeeperManagerActor = createFakeActor({
+      conversation: completedConversation,
+      value: ZookeeperManagerStates.WaitForContinueCheck,
+      awaitingResponse: false,
+    })
+    zookeeperManagerActor.subscribe = (listener) => {
+      listener?.(zookeeperManagerActor.getSnapshot())
+      return { unsubscribe: vi.fn() }
+    }
+
+    renderPane({
+      zookeeperManagerActor,
+      theProject: {
+        name: 'demo-project',
+        path: '/tmp/demo-project',
+      },
+    })
+
+    await waitFor(() => {
+      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo-project',
+        projectFiles: [],
+      })
+    })
+  })
+
   test('refreshes account state and reconnects once after returning from Billing', async () => {
     const refreshUser = vi.fn().mockResolvedValue({ block_message: undefined })
     const sendBillingUpdate = vi.fn()

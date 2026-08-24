@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -55,6 +56,9 @@ export interface ZookeeperConversationProps {
   onReconnect: () => void
   onCheckBilling?: () => void
   onOpenBilling?: () => void
+  interruptedTurnAwaitingResume?: boolean
+  isResumingInterruptedTurn?: boolean
+  onResumeInterruptedTurn?: () => void
   connectionError?: string
   accessDeniedCode?: ZookeeperAccessDenialCode
   connectionFailed?: boolean
@@ -754,9 +758,40 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   {hasMessages ? (
                     <>
                       {exchangeCards}
-                      {lastExchange && !isEndOfStream && (
+                      {lastExchange &&
+                      !isEndOfStream &&
+                      props.interruptedTurnAwaitingResume ? (
+                        <div
+                          className="m-4 flex flex-col gap-2 rounded-md border border-ml-green bg-ml-green/10 p-4 text-left dark:border-ml-green dark:bg-ml-green/10"
+                          role="status"
+                        >
+                          <p className="font-semibold">
+                            Zookeeper stopped before finishing this request.
+                          </p>
+                          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                            Review the current project, then resume when you're
+                            ready.
+                          </p>
+                          <ActionButton
+                            Element="button"
+                            type="button"
+                            aria-label="Resume interrupted request"
+                            className="h-7 w-fit focus-visible:outline-appForeground"
+                            iconStart={{ icon: 'arrowRight' }}
+                            onClick={props.onResumeInterruptedTurn}
+                            disabled={props.isResumingInterruptedTurn}
+                            tabIndex={0}
+                          >
+                            {props.isResumingInterruptedTurn
+                              ? 'Resuming...'
+                              : 'Resume interrupted request'}
+                          </ActionButton>
+                        </div>
+                      ) : lastExchange &&
+                        !isEndOfStream &&
+                        props.isProcessing ? (
                         <div className="absolute z-10 bottom-0 h-[1px] bg-ml-green animate-shimmer w-full" />
-                      )}
+                      ) : null}
                     </>
                   ) : null}
                 </>

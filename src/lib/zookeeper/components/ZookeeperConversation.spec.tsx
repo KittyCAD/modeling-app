@@ -192,6 +192,62 @@ describe('ZookeeperConversation', () => {
     expect(screen.getByRole('alert')).not.toHaveTextContent('a last resort')
   })
 
+  test('requires confirmation before resuming an interrupted request', () => {
+    const onResumeInterruptedTurn = vi.fn()
+    const interruptedConversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'finish the bracket',
+          },
+          responses: [
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Working on it.',
+              },
+            },
+          ],
+          deltasAggregated: '',
+        },
+      ],
+    }
+
+    render(
+      <ZookeeperConversation
+        isLoading={false}
+        conversation={interruptedConversation}
+        interruptedTurnAwaitingResume={true}
+        onResumeInterruptedTurn={onResumeInterruptedTurn}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={true}
+        hasPromptCompleted={false}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Zookeeper stopped before finishing this request.'
+    )
+    const resumeButton = screen.getByRole('button', {
+      name: 'Resume interrupted request',
+    })
+    fireEvent.click(resumeButton)
+    expect(onResumeInterruptedTurn).toHaveBeenCalledOnce()
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toBeDisabled()
+  })
+
   test('shows billing recovery without offering to clear the chat', () => {
     const onCheckBilling = vi.fn()
     const onOpenBilling = vi.fn()
