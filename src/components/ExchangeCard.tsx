@@ -400,14 +400,8 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     ) : null
   }, [props.deltasAggregated])
 
-  const exportDownloadFiles = useMemo(
-    () =>
-      props.items.flatMap((response) =>
-        'files' in response
-          ? response.files.files.filter(isExportDownloadFile)
-          : []
-      ),
-    [props.items]
+  const exportDownloadFiles = props.items.flatMap((response) =>
+    'files' in response ? response.files.files.filter(isExportDownloadFile) : []
   )
 
   const children = [
