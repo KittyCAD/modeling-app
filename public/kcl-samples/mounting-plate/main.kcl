@@ -1,0 +1,86 @@
+// Mounting Plate
+// A flat support plate with four mounting holes, a center opening, and rounded vertical corners.
+// Categories: Manufacturing, Construction
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+plateLength = 10
+plateWidth = 6
+filletRadius = 0.5
+plateThickness = 0.5
+centerHoleRadius = 2
+holeRadius = 0.25
+holeIndex = 0.75
+
+plateSketch = sketch(on = XY) {
+  topEdge = line(start = [var -3in, var 5in], end = [var 3in, var 5in])
+  rightEdge = line(start = [var 3in, var 5in], end = [var 3in, var -5in])
+  bottomEdge = line(start = [var 3in, var -5in], end = [var -3in, var -5in])
+  leftEdge = line(start = [var -3in, var -5in], end = [var -3in, var 5in])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  coincident([leftEdge.end, topEdge.start])
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+  vertical(leftEdge)
+  horizontalDistance([topEdge.start, topEdge.end]) == plateWidth
+  verticalDistance([rightEdge.end, rightEdge.start]) == plateLength
+  horizontalDistance([ORIGIN, topEdge.start]) == -plateWidth / 2
+  verticalDistance([ORIGIN, topEdge.start]) == plateLength / 2
+
+  upperLeft = circle(start = [var -2in, var 4.25in], center = [var -2.25in, var 4.25in])
+  upperRight = circle(start = [var 2.5in, var 4.25in], center = [var 2.25in, var 4.25in])
+  lowerLeft = circle(start = [var -2in, var -4.25in], center = [var -2.25in, var -4.25in])
+  lowerRight = circle(start = [var 2.5in, var -4.25in], center = [var 2.25in, var -4.25in])
+  centerHole = circle(start = [var 2in, var 0in], center = [var 0in, var 0in])
+
+  horizontalDistance([ORIGIN, upperLeft.center]) == -plateWidth / 2 + holeIndex
+  verticalDistance([ORIGIN, upperLeft.center]) == plateLength / 2 - holeIndex
+  horizontalDistance([ORIGIN, upperRight.center]) == plateWidth / 2 - holeIndex
+  verticalDistance([ORIGIN, upperRight.center]) == plateLength / 2 - holeIndex
+  horizontalDistance([ORIGIN, lowerLeft.center]) == -plateWidth / 2 + holeIndex
+  verticalDistance([ORIGIN, lowerLeft.center]) == -plateLength / 2 + holeIndex
+  horizontalDistance([ORIGIN, lowerRight.center]) == plateWidth / 2 - holeIndex
+  verticalDistance([ORIGIN, lowerRight.center]) == -plateLength / 2 + holeIndex
+  coincident([centerHole.center, ORIGIN])
+
+  radius(upperLeft) == holeRadius
+  radius(upperRight) == holeRadius
+  radius(lowerLeft) == holeRadius
+  radius(lowerRight) == holeRadius
+  radius(centerHole) == centerHoleRadius
+}
+plateRegion = region(
+  segments = [
+    plateSketch.topEdge,
+    plateSketch.rightEdge
+  ],
+  direction = CW,
+)
+plateWithHoles = extrude(plateRegion, length = plateThickness)
+part = fillet(
+  plateWithHoles,
+  radius = filletRadius,
+  tags = [
+    getCommonEdge(faces = [
+      plateRegion.tags.bottomEdge,
+      plateRegion.tags.rightEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.leftEdge,
+      plateRegion.tags.bottomEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.leftEdge,
+      plateRegion.tags.topEdge
+    ]),
+    getCommonEdge(faces = [
+      plateRegion.tags.rightEdge,
+      plateRegion.tags.topEdge
+    ])
+  ],
+)
+
+hide(plateSketch)

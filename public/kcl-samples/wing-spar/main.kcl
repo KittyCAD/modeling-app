@@ -1,0 +1,211 @@
+// Wing Spar
+// In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+chordLength = 355
+rearSpar = 205
+frontSpar = 33
+upperCamber = 30
+lowerCamber = 18
+foilThickness = 8
+nSections = 5
+sparSpan = 700
+sparStockThickness = 2.102
+sparBendRadius = 2.102
+
+ribProfile = sketch(on = offsetPlane(-XZ, offset = -foilThickness)) {
+  line1 = line(start = [var 355mm, var 0mm], end = [var 205mm, var 30mm])
+  arc2 = arc(
+    start = [var 205mm, var 30mm],
+    end = [var 33mm, var 39mm],
+    center = [
+      var 88.208661417mm,
+      var -553.956692913mm
+    ],
+  )
+  coincident([line1.end, arc2.start])
+  arc3 = arc(start = [var 33mm, var 39mm], end = [var 0mm, var 0mm], center = [var 36.381958651mm, var 2.676804218mm])
+  coincident([arc2.end, arc3.start])
+  arc4 = arc(start = [var 0mm, var 0mm], end = [var 14.89016981mm, var -16.416986772mm], center = [var 17.951477328mm, var 1.320780739mm])
+  coincident([arc3.end, arc4.start])
+  arc5 = arc(
+    start = [var 14.89016981mm, var -16.416986772mm],
+    end = [var 205mm, var -18mm],
+    center = [
+      var 114.770626417mm,
+      var 562.308380748mm
+    ],
+  )
+  coincident([arc4.end, arc5.start])
+  arc6 = arc(
+    start = [var 355mm, var 0mm],
+    end = [var 205mm, var -18mm],
+    center = [
+      var 538.358979295mm,
+      var -2161.991494127mm
+    ],
+  )
+  coincident([arc5.end, arc6.end])
+
+  hole1 = circle(start = [var 79mm, var 9mm], center = [var 62mm, var 9mm])
+  hole2 = circle(start = [var 132mm, var 10mm], center = [var 113mm, var 10mm])
+  hole3 = circle(start = [var 181mm, var 9mm], center = [var 164mm, var 9mm])
+  hole4 = circle(start = [var 239mm, var 5mm], center = [var 228mm, var 5mm])
+  hole5 = circle(start = [var 266.5mm, var 3.5mm], center = [var 260mm, var 3.5mm])
+}
+region001 = region(segments = [ribProfile.line1, ribProfile.arc2])
+rib = extrude(region001, length = -foilThickness)
+ribSketch = patternLinear3d(
+  rib,
+  instances = nSections,
+  distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
+  axis = [0, -1, 0],
+)
+
+sketch001 = sketch(on = -XZ) {
+  line1 = line(start = [var 33mm, var -15.3mm], end = [var 33mm, var 30mm])
+  arc2 = arc(start = [var 37.204mm, var 34.204mm], end = [var 33mm, var 30mm], center = [var 37.204mm, var 30mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 37.204mm, var 34.204mm], end = [var 41.204mm, var 34.204mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 45.408mm, var 30mm], end = [var 41.204mm, var 34.204mm], center = [var 41.204mm, var 30mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var 45.408mm, var 30mm], end = [var 45.408mm, var 26mm])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var 41.204mm, var 21.796mm], end = [var 45.408mm, var 26mm], center = [var 41.204mm, var 26mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var 41.204mm, var 21.796mm], end = [var 38.204mm, var 21.796mm])
+  coincident([arc6.start, line7.start])
+  line8 = line(start = [var 38.204mm, var 21.796mm], end = [var 38.204mm, var 23.898mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 38.204mm, var 23.898mm], end = [var 41.204mm, var 23.898mm])
+  coincident([line8.end, line9.start])
+  arc10 = arc(start = [var 41.204mm, var 23.898mm], end = [var 43.306mm, var 26mm], center = [var 41.204mm, var 26mm])
+  coincident([line9.end, arc10.start])
+  line11 = line(start = [var 43.306mm, var 26mm], end = [var 43.306mm, var 30mm])
+  coincident([arc10.end, line11.start])
+  arc12 = arc(start = [var 43.306mm, var 30mm], end = [var 41.204mm, var 32.102mm], center = [var 41.204mm, var 30mm])
+  coincident([line11.end, arc12.start])
+  line13 = line(start = [var 41.204mm, var 32.102mm], end = [var 37.204mm, var 32.102mm])
+  coincident([arc12.end, line13.start])
+  arc14 = arc(start = [var 37.204mm, var 32.102mm], end = [var 35.102mm, var 30mm], center = [var 37.204mm, var 30mm])
+  coincident([line13.end, arc14.start])
+  line15 = line(start = [var 35.102mm, var 30mm], end = [var 35.102mm, var -15.3mm])
+  coincident([arc14.end, line15.start])
+  line16 = line(start = [var 35.102mm, var -15.3mm], end = [var 33mm, var -15.3mm])
+  coincident([line15.end, line16.start])
+}
+region002 = region(segments = [sketch001.line1, sketch001.arc2])
+frontSparProfile = extrude(region002, length = -sparSpan)
+
+sketch002 = sketch(on = -XZ) {
+  line1 = line(start = [var 205mm, var -12.6mm], end = [var 205mm, var 21mm])
+  arc2 = arc(start = [var 205mm, var 21mm], end = [var 200.796mm, var 25.204mm], center = [var 200.796mm, var 21mm])
+  coincident([line1.end, arc2.start])
+  line3 = line(start = [var 200.796mm, var 25.204mm], end = [var 196.796mm, var 25.204mm])
+  coincident([arc2.end, line3.start])
+  arc4 = arc(start = [var 196.796mm, var 25.204mm], end = [var 192.592mm, var 21mm], center = [var 196.796mm, var 21mm])
+  coincident([line3.end, arc4.start])
+  line5 = line(start = [var 192.592mm, var 21mm], end = [var 192.592mm, var 17mm])
+  coincident([arc4.end, line5.start])
+  arc6 = arc(start = [var 192.592mm, var 17mm], end = [var 196.796mm, var 12.796mm], center = [var 196.796mm, var 17mm])
+  coincident([line5.end, arc6.start])
+  line7 = line(start = [var 196.796mm, var 12.796mm], end = [var 199.796mm, var 12.796mm])
+  coincident([arc6.end, line7.start])
+  line8 = line(start = [var 199.796mm, var 12.796mm], end = [var 199.796mm, var 14.898mm])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 199.796mm, var 14.898mm], end = [var 196.796mm, var 14.898mm])
+  coincident([line8.end, line9.start])
+  arc10 = arc(start = [var 194.694mm, var 17mm], end = [var 196.796mm, var 14.898mm], center = [var 196.796mm, var 17mm])
+  coincident([line9.end, arc10.end])
+  line11 = line(start = [var 194.694mm, var 17mm], end = [var 194.694mm, var 21mm])
+  coincident([arc10.start, line11.start])
+  arc12 = arc(start = [var 196.796mm, var 23.102mm], end = [var 194.694mm, var 21mm], center = [var 196.796mm, var 21mm])
+  coincident([line11.end, arc12.end])
+  line13 = line(start = [var 196.796mm, var 23.102mm], end = [var 200.796mm, var 23.102mm])
+  coincident([arc12.start, line13.start])
+  arc14 = arc(start = [var 202.898mm, var 21mm], end = [var 200.796mm, var 23.102mm], center = [var 200.796mm, var 21mm])
+  coincident([line13.end, arc14.end])
+  line15 = line(start = [var 202.898mm, var 21mm], end = [var 202.898mm, var -12.6mm])
+  coincident([arc14.start, line15.start])
+  line16 = line(start = [var 202.898mm, var -12.6mm], end = [var 205mm, var -12.6mm])
+  coincident([line15.end, line16.start])
+}
+region003 = region(segments = [sketch002.line1, sketch002.arc2])
+rearSparProfile = extrude(region003, length = -sparSpan)
+
+frontSparHolePlane = {
+  origin = [-35.102, 0, 0],
+  xAxis = [0, 0, 1],
+  yAxis = [0, 1, 0]
+}
+frontSparHoleSketch = sketch(on = frontSparHolePlane) {
+  line1 = line(start = [var -1.8mm, var -24mm], end = [var 12mm, var -24mm])
+  arc2 = arc(start = [var 17mm, var -29mm], end = [var 12mm, var -24mm], center = [var 12mm, var -29mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 17mm, var -29mm], end = [var 17mm, var -164mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var 12mm, var -169mm], end = [var 17mm, var -164mm], center = [var 12mm, var -164mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var 12mm, var -169mm], end = [var -1.8mm, var -169mm])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -6.8mm, var -164mm], end = [var -1.8mm, var -169mm], center = [var -1.8mm, var -164mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -6.8mm, var -164mm], end = [var -6.8mm, var -29mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -1.8mm, var -24mm], end = [var -6.8mm, var -29mm], center = [var -1.8mm, var -29mm])
+  coincident([line7.end, arc8.end])
+}
+frontSparHoleSeed = extrude(
+  region(segments = [
+    frontSparHoleSketch.line1,
+    frontSparHoleSketch.arc2
+  ]),
+  length = -10,
+)
+frontSparHoleCutters = patternLinear3d(
+  frontSparHoleSeed,
+  instances = nSections - 1,
+  distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
+  axis = [0, -1, 0],
+)
+frontSparFinal = subtract(frontSparProfile, tools = frontSparHoleCutters)
+
+rearSparHolePlane = {
+  origin = [-202.898, 0, 0],
+  xAxis = [0, 0, -1],
+  yAxis = [0, 1, 0]
+}
+rearSparHoleSketch = sketch(on = rearSparHolePlane) {
+  line1 = line(start = [var -5.4mm, var -24mm], end = [var -0.3mm, var -24mm])
+  arc2 = arc(start = [var 4.7mm, var -29mm], end = [var -0.3mm, var -24mm], center = [var -0.3mm, var -29mm])
+  coincident([line1.end, arc2.end])
+  line3 = line(start = [var 4.7mm, var -29mm], end = [var 4.7mm, var -164mm])
+  coincident([arc2.start, line3.start])
+  arc4 = arc(start = [var -0.3mm, var -169mm], end = [var 4.7mm, var -164mm], center = [var -0.3mm, var -164mm])
+  coincident([line3.end, arc4.end])
+  line5 = line(start = [var -0.3mm, var -169mm], end = [var -5.4mm, var -169mm])
+  coincident([arc4.start, line5.start])
+  arc6 = arc(start = [var -10.4mm, var -164mm], end = [var -5.4mm, var -169mm], center = [var -5.4mm, var -164mm])
+  coincident([line5.end, arc6.end])
+  line7 = line(start = [var -10.4mm, var -164mm], end = [var -10.4mm, var -29mm])
+  coincident([arc6.start, line7.start])
+  arc8 = arc(start = [var -5.4mm, var -24mm], end = [var -10.4mm, var -29mm], center = [var -5.4mm, var -29mm])
+  coincident([line7.end, arc8.end])
+}
+rearSparHoleSeed = extrude(
+  region(segments = [
+    rearSparHoleSketch.line1,
+    rearSparHoleSketch.arc2
+  ]),
+  length = -10,
+)
+rearSparHoleCutters = patternLinear3d(
+  rearSparHoleSeed,
+  instances = nSections - 1,
+  distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
+  axis = [0, -1, 0],
+)
+rearSparFinal = subtract(rearSparProfile, tools = rearSparHoleCutters)
