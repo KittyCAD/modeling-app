@@ -39,14 +39,18 @@ jobs:
           python-version-file: .tool-versions
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # The workspace sets `[profile.release] debug = true`, but no wheel
+          # ships debug info: Linux embeds DWARF in the .so and --strip removes
+          # it, while mac and Windows write it to .dSYM and .pdb sidecars that
+          # are not packaged. Generating it costs build time for output that is
+          # then discarded.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: x86_64
-          # --strip removes debug symbols from the .so. The workspace sets
-          # `[profile.release] debug = true`, which on Linux embeds DWARF debug
-          # info directly into the .so (mac/Windows keep it in sidecar
-          # .dSYM/.pdb files that aren't packaged), pushing the wheel past
-          # PyPI's 100MB limit. Stripping keeps the published wheel small.
+          # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
+          # limit.
           args: --release --out dist --find-interpreter --strip
           sccache: 'true'
           manylinux: auto
@@ -69,10 +73,19 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version-file: .tool-versions
+          # Same reason as the macos job: install the set instead of letting
+          # the runner image decide what gets published.
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
           architecture: ${{ matrix.target }}
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
@@ -85,13 +98,7 @@ jobs:
           path: rust/kcl-python-bindings/dist
   macos:
     name: kcl-python-bindings (macos)
-    runs-on: macos-latest
-    # runs-on: namespace-profile-macos-6-cores
-    # TODO: Figure out if there is a way to make this work with Namespace
-    # Enabling this results in the following error on GitHub Actions:
-    #   $ /opt/homebrew/bin/python3 -m pip install sccache>=0.10.0
-    #   error: externally-managed-environment
-    #   To install Python packages system-wide, try brew install <package>
+    runs-on: namespace-profile-macos-6-cores
     strategy:
       matrix:
         target:
@@ -101,14 +108,39 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version-file: .tool-versions
+          # `--find-interpreter` builds a wheel for every interpreter it finds,
+          # so the runner image would otherwise decide what gets published.
+          # This image carries 3.13 and 3.14; GitHub's carried 3.11 to 3.14.
+          # Installing the set makes it the same on any image.
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
+      - name: Install sccache
+        uses: taiki-e/install-action@sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # maturin-action sets these itself when its own `sccache` input is
+          # on. They are set here because that input is off.
+          RUSTC_WRAPPER: sccache
+          SCCACHE_GHA_ENABLED: 'true'
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter --strip
-          sccache: 'true'
+          # Off because maturin-action installs sccache with
+          # `python3 -m pip install`, which this image's Homebrew Python
+          # refuses under PEP 668. The step above installs it instead.
+          sccache: 'false'
+      - name: sccache stats
+        # maturin-action prints these itself only when its own `sccache` input
+        # is on.
+        if: always()
+        run: sccache --show-stats
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
