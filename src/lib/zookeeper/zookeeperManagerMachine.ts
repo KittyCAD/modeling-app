@@ -611,11 +611,36 @@ function isAttachmentsLoadedMessage(
   )
 }
 
-async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+const ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE =
+  "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again."
+
+class ZookeeperAttachmentReadError extends Error {
+  constructor(cause: unknown) {
+    super(ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE, { cause })
+    this.name = 'ZookeeperAttachmentReadError'
+  }
+}
+
+export async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+  let data: ArrayBuffer
+  try {
+    data = await file.arrayBuffer()
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      error.name === 'NotFoundError'
+    ) {
+      throw new ZookeeperAttachmentReadError(error)
+    }
+    throw error
+  }
+
   return {
     name: file.name,
     mimetype: file.type || 'application/octet-stream',
-    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+    data: Array.from(new Uint8Array(data)),
   }
 }
 
