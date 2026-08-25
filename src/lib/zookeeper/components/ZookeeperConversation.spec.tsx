@@ -203,9 +203,8 @@ describe('ZookeeperConversation', () => {
           },
           responses: [
             {
-              reasoning: {
-                type: 'text',
-                content: 'Working on it.',
+              info: {
+                text: 'Temporary connection issue. Retrying automatically…',
               },
             },
           ],

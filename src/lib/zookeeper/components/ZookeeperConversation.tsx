@@ -14,11 +14,12 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
-import type {
-  Conversation,
-  Exchange,
-  MlCopilotModeId,
-  MlCopilotModeOption,
+import {
+  type Conversation,
+  type Exchange,
+  isResponseComplete,
+  type MlCopilotModeId,
+  type MlCopilotModeOption,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -668,9 +669,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
-  const isEndOfStream = lastExchange?.responses.some(
-    (ex) => 'end_of_stream' in ex || 'error' in ex || 'info' in ex
-  )
+  const isEndOfStream =
+    lastExchange?.responses.some(isResponseComplete) ?? false
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {

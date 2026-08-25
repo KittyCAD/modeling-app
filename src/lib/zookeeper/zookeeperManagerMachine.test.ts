@@ -4,6 +4,7 @@ import type { FileMeta } from '@src/lib/types'
 import {
   type Conversation,
   createZookeeperCorrelation,
+  hasBeenInterruptedOnLast,
   type MlCopilotModeOption,
   ZookeeperConversationToMarkdown,
   type ZookeeperManagerContext,
@@ -131,6 +132,43 @@ describe('createZookeeperCorrelation', () => {
     expect(createZookeeperCorrelation(undefined)).not.toHaveProperty(
       'engine_api_call_id'
     )
+  })
+})
+
+describe('hasBeenInterruptedOnLast', () => {
+  const conversationEndingWith = (
+    response: Conversation['exchanges'][number]['responses'][number]
+  ): Conversation => ({
+    exchanges: [
+      {
+        responses: [response],
+        deltasAggregated: '',
+      },
+    ],
+  })
+
+  it('treats error and end-of-stream responses as complete', () => {
+    expect(
+      hasBeenInterruptedOnLast(
+        conversationEndingWith({ error: { detail: 'Request failed.' } })
+          .exchanges
+      )
+    ).toBe(false)
+    expect(
+      hasBeenInterruptedOnLast(
+        conversationEndingWith({
+          end_of_stream: { whole_response: 'Done.' },
+        }).exchanges
+      )
+    ).toBe(false)
+  })
+
+  it('treats an info response as an interrupted exchange', () => {
+    expect(
+      hasBeenInterruptedOnLast(
+        conversationEndingWith({ info: { text: 'Retrying…' } }).exchanges
+      )
+    ).toBe(true)
   })
 })
 

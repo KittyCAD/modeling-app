@@ -601,7 +601,7 @@ function isBackendShutdownMessage(
   return typeof candidate.backend_shutdown === 'object'
 }
 
-function isResponseComplete(response: MlCopilotServerMessage): boolean {
+export function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
 }
 
@@ -740,14 +740,13 @@ function isMlCopilotServerMessage(
 }
 
 export const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
-  const lastExchange = exchanges.slice(-1)[0]
-  const lastResponse = lastExchange?.responses.slice(-1)[0]
-  return (
-    (lastExchange?.responses?.length > 0 &&
-      lastResponse !== undefined &&
-      !('end_of_stream' in lastResponse)) ||
-    lastExchange?.responses?.length === 0
-  )
+  const lastExchange = exchanges.at(-1)
+  if (lastExchange === undefined) {
+    return false
+  }
+
+  const lastResponse = lastExchange.responses.at(-1)
+  return lastResponse === undefined || !isResponseComplete(lastResponse)
 }
 
 type XSInput<T> = {

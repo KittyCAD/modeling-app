@@ -538,6 +538,44 @@ describe('ZookeeperConversationPane', () => {
     })
   })
 
+  test('automatically finishes replay setup after a terminal error', async () => {
+    const zookeeperManagerActor = createFakeActor({
+      conversation: {
+        exchanges: [
+          {
+            responses: [{ error: { detail: 'Request failed.' } }],
+            deltasAggregated: '',
+          },
+        ],
+      },
+      value: ZookeeperManagerStates.WaitForContinueCheck,
+      awaitingResponse: false,
+    })
+    zookeeperManagerActor.subscribe = (listener) => {
+      listener?.(zookeeperManagerActor.getSnapshot())
+      return { unsubscribe: vi.fn() }
+    }
+
+    renderPane({
+      zookeeperManagerActor,
+      theProject: {
+        name: 'demo-project',
+        path: '/tmp/demo-project',
+      },
+    })
+
+    await waitFor(() => {
+      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'demo-project',
+        projectFiles: [],
+      })
+    })
+    expect(
+      screen.queryByRole('button', { name: 'Resume interrupted request' })
+    ).not.toBeInTheDocument()
+  })
+
   test('refreshes account state and reconnects once after returning from Billing', async () => {
     const refreshUser = vi.fn().mockResolvedValue({ block_message: undefined })
     const sendBillingUpdate = vi.fn()
