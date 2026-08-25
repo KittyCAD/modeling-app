@@ -244,10 +244,11 @@ export class Connection extends EventTarget {
     this._pingIntervalId = setInterval(() => {
       const now = Date.now()
       const lastPingSentAt = this._lastPingSentAt
+      const lastPongReceivedAt = this._lastPongReceivedAt
       const isWaitingForPong =
         lastPingSentAt !== undefined &&
-        (this._lastPongReceivedAt === undefined ||
-          this._lastPongReceivedAt < lastPingSentAt)
+        (lastPongReceivedAt === undefined ||
+          lastPongReceivedAt < lastPingSentAt)
 
       if (isWaitingForPong) {
         const elapsedMs = now - lastPingSentAt
@@ -258,8 +259,8 @@ export class Connection extends EventTarget {
             metadata: {
               id: this.id,
               apiCallId: this.apiCallId,
-              lastPingSentAt: this._lastPingSentAt,
-              lastPongReceivedAt: this._lastPongReceivedAt,
+              lastPingSentAt,
+              lastPongReceivedAt,
               elapsedMs,
             },
           })
