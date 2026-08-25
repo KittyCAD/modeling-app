@@ -46,12 +46,19 @@ test(
 
 type SnapshotTestContext = Pick<
   Fixtures,
-  'cmdBar' | 'editor' | 'toolbar' | 'scene' | 'fs' | 'folderSetupFn'
+  | 'homePage'
+  | 'cmdBar'
+  | 'editor'
+  | 'toolbar'
+  | 'scene'
+  | 'fs'
+  | 'folderSetupFn'
 > & { page: Page }
 
 function runTestForTheme(mode: Themes) {
   return async ({
     page,
+    homePage,
     scene,
     toolbar,
     editor,
@@ -91,6 +98,7 @@ function runTestForTheme(mode: Themes) {
     })
 
     await page.setViewportSize(SCREENSHOT_SIZE)
+    await homePage.openProject('demo-project')
     await scene.settled()
     await waitForThemeApplied(page, mode)
     let step = 1

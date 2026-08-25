@@ -10,7 +10,11 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { PROJECT_FOLDER, SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  OPFS_CLOUD_FEATURE_FLAG,
+  PROJECT_FOLDER,
+  SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
@@ -418,8 +422,14 @@ const fixturesForWeb = {
       return disposable
     }
 
+    // Force every web test into the multi-project experience, which is already
+    // the default on production. The feature flag will be removed soon.
+    const webUserFeatures = userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG)
+      ? userFeatures
+      : [...userFeatures, OPFS_CLOUD_FEATURE_FLAG]
+
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures)
+    await webApp.initialise('', webUserFeatures)
 
     await use(page)
   },

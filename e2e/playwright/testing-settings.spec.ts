@@ -461,7 +461,7 @@ test.describe(
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           const toastMessage = page.getByText(
-            `Successfully created "testDefault"`
+            `Successfully created "test-project"`
           )
           await expect(toastMessage).not.toBeVisible()
           await page
