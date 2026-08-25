@@ -31,6 +31,7 @@ export enum ClientErrorCode {
   LegacySketchMode = 'legacy_sketch_mode',
   SystemIOError = 'system_io_error',
   ToolbarDropdownAnchorPositioningError = 'toolbar_dropdown_anchor_positioning_error',
+  UnsupportedBrowserFeature = 'unsupported_browser_feature',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
   ZookeeperSetupError = 'zookeeper_setup_error',

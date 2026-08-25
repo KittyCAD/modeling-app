@@ -1,0 +1,3 @@
+import brokenValue from "broken.kcl"
+
+export assemblyValue = brokenValue

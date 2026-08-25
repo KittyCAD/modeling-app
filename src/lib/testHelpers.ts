@@ -183,7 +183,9 @@ export async function runNewAstAndCheckForSweep(
   rustContext: RustContext
 ) {
   const { artifactGraph } = await enginelessExecutor(ast, rustContext)
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
+  const sweepArtifact = Array.from(artifactGraph.values()).find(
+    (a) => a.type === 'sweep'
+  )
   expect(sweepArtifact).toBeDefined()
 }
 

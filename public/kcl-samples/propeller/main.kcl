@@ -1,0 +1,337 @@
+// Propeller
+// A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward
+// Categories: Aerospace
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+bladeCount = 2
+bladeDiameter = 86
+hubDiameter = 8
+hubThickness = 4
+holeDiameter = .25
+twistAngle = 45deg
+tolerance = 0.000000005
+
+// Build the hub and its circular mounting-hole pattern in one solver sketch.
+holePatternRadius = hubDiameter / 3
+hubSketch = sketch(on = XY) {
+  outerCircle = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
+  coincident([outerCircle.center, ORIGIN])
+  radius(outerCircle) == hubDiameter / 2
+
+  hole0 = circle(start = [var 0.125in, var 2.667in], center = [var 0in, var 2.667in])
+  fixed([
+    hole0.center,
+    polar(angle = 90deg, length = holePatternRadius)
+  ])
+  radius(hole0) == holeDiameter / 2
+
+  hole1 = circle(start = [var -1.443in, var 2.157in], center = [var -1.568in, var 2.157in])
+  fixed([
+    hole1.center,
+    polar(angle = 126deg, length = holePatternRadius)
+  ])
+  radius(hole1) == holeDiameter / 2
+
+  hole2 = circle(start = [var -2.411in, var 0.824in], center = [var -2.536in, var 0.824in])
+  fixed([
+    hole2.center,
+    polar(angle = 162deg, length = holePatternRadius)
+  ])
+  radius(hole2) == holeDiameter / 2
+
+  hole3 = circle(start = [var -2.411in, var -0.824in], center = [var -2.536in, var -0.824in])
+  fixed([
+    hole3.center,
+    polar(angle = 198deg, length = holePatternRadius)
+  ])
+  radius(hole3) == holeDiameter / 2
+
+  hole4 = circle(start = [var -1.443in, var -2.157in], center = [var -1.568in, var -2.157in])
+  fixed([
+    hole4.center,
+    polar(angle = 234deg, length = holePatternRadius)
+  ])
+  radius(hole4) == holeDiameter / 2
+
+  hole5 = circle(start = [var 0.125in, var -2.667in], center = [var 0in, var -2.667in])
+  fixed([
+    hole5.center,
+    polar(angle = 270deg, length = holePatternRadius)
+  ])
+  radius(hole5) == holeDiameter / 2
+
+  hole6 = circle(start = [var 1.693in, var -2.157in], center = [var 1.568in, var -2.157in])
+  fixed([
+    hole6.center,
+    polar(angle = 306deg, length = holePatternRadius)
+  ])
+  radius(hole6) == holeDiameter / 2
+
+  hole7 = circle(start = [var 2.661in, var -0.824in], center = [var 2.536in, var -0.824in])
+  fixed([
+    hole7.center,
+    polar(angle = 342deg, length = holePatternRadius)
+  ])
+  radius(hole7) == holeDiameter / 2
+
+  hole8 = circle(start = [var 2.661in, var 0.824in], center = [var 2.536in, var 0.824in])
+  fixed([
+    hole8.center,
+    polar(angle = 18deg, length = holePatternRadius)
+  ])
+  radius(hole8) == holeDiameter / 2
+
+  hole9 = circle(start = [var 1.693in, var 2.157in], center = [var 1.568in, var 2.157in])
+  fixed([
+    hole9.center,
+    polar(angle = 54deg, length = holePatternRadius)
+  ])
+  radius(hole9) == holeDiameter / 2
+}
+
+hubRegion = region(segments = [hubSketch.outerCircle])
+hubBlank = extrude(
+  hubRegion,
+  length = hubThickness,
+  symmetric = true,
+  tagEnd = $hubEnd,
+  tagStart = $hubStart,
+)
+hubRounded = fillet(
+  hubBlank,
+  tags = [
+    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubEnd]),
+    getCommonEdge(faces = [hubRegion.tags.outerCircle, hubStart])
+  ],
+  radius = hubThickness / 6,
+)
+
+// Match the original one-sided chamfer on the central bore by using a revolved cutter.
+boreRadius = hubDiameter / 8
+boreChamfer = hubThickness / 10
+boreCutterSketch = sketch(on = XZ) {
+  bottomRadius = line(start = [var 0in, var -2in], end = [var 1in, var -2in])
+  boreWall = line(start = [var 1in, var -2in], end = [var 1in, var 1.6in])
+  chamferEdge = line(start = [var 1in, var 1.6in], end = [var 1.4in, var 2in])
+  topRadius = line(start = [var 1.4in, var 2in], end = [var 0in, var 2in])
+  axisEdge = line(start = [var 0in, var 2in], end = [var 0in, var -2in])
+
+  fixed([
+    bottomRadius.start,
+    [0, -hubThickness / 2]
+  ])
+  fixed([
+    bottomRadius.end,
+    [boreRadius, -hubThickness / 2]
+  ])
+  coincident([bottomRadius.end, boreWall.start])
+  fixed([
+    boreWall.end,
+    [
+      boreRadius,
+      hubThickness / 2 - boreChamfer
+    ]
+  ])
+  coincident([boreWall.end, chamferEdge.start])
+  fixed([
+    chamferEdge.end,
+    [
+      boreRadius + boreChamfer,
+      hubThickness / 2
+    ]
+  ])
+  coincident([chamferEdge.end, topRadius.start])
+  fixed([topRadius.end, [0, hubThickness / 2]])
+  coincident([topRadius.end, axisEdge.start])
+  coincident([axisEdge.end, bottomRadius.start])
+}
+boreCutterRegion = region(segments = [
+  boreCutterSketch.bottomRadius,
+  boreCutterSketch.boreWall
+])
+boreCutter = revolve(boreCutterRegion, axis = Y)
+hub = subtract(hubRounded, tools = boreCutter)
+
+// Reconstruct the revolved design envelope for each blade.
+bladeRootPoint = polar(angle = 40deg, length = hubDiameter / 2.01)
+bladeArcRadius = bladeDiameter / 50
+bladeArcCenter = [
+  bladeRootPoint[0] - (bladeArcRadius * cos(230deg)),
+  bladeRootPoint[1] - (bladeArcRadius * sin(230deg))
+]
+bladeArcEnd = [
+  bladeArcCenter[0] + bladeArcRadius * cos(280deg),
+  bladeArcCenter[1] + bladeArcRadius * sin(280deg)
+]
+bladeWidePoint = [
+  bladeArcEnd[0] + bladeDiameter / 2.6,
+  bladeArcEnd[1] + bladeDiameter / 30
+]
+bladeTipPoint = [bladeDiameter / 2, 0.01]
+
+bladeEnvelopeSketch = sketch(on = YZ) {
+  rootArc = arc(start = [var 3.05in, var 2.56in], end = [var 4.45in, var 2.18in], center = [var 4.15in, var 3.88in])
+  fixed([rootArc.start, bladeRootPoint])
+  fixed([rootArc.center, bladeArcCenter])
+  fixed([rootArc.end, bladeArcEnd])
+
+  wideArc = arc(start = [var 37.53in, var 5.05in], end = [var 4.45in, var 2.18in], center = [var 37.22in, var -183.66in])
+  fixed([wideArc.start, bladeWidePoint])
+  coincident([wideArc.end, rootArc.end])
+  tangent([rootArc, wideArc])
+
+  tipArc = arc(start = [var 43in, var 0.01in], end = [var 37.53in, var 5.05in], center = [var 37.52in, var -0.45in])
+  fixed([tipArc.start, bladeTipPoint])
+  coincident([tipArc.end, wideArc.start])
+  tangent([wideArc, tipArc])
+
+  tipDrop = line(start = [var 43in, var 0.01in], end = [var 43in, var 0in])
+  coincident([tipDrop.start, tipArc.start])
+  fixed([tipDrop.end, [bladeDiameter / 2, 0]])
+
+  neutralEdge = line(start = [var 43in, var 0in], end = [var 3.05in, var 0in])
+  coincident([neutralEdge.start, tipDrop.end])
+  fixed([
+    neutralEdge.end,
+    [bladeRootPoint[0], 0]
+  ])
+
+  rootEdge = line(start = [var 3.05in, var 0in], end = [var 3.05in, var 2.56in])
+  coincident([rootEdge.start, neutralEdge.end])
+  coincident([rootEdge.end, rootArc.start])
+}
+bladeEnvelopeRegion = region(segments = [
+  bladeEnvelopeSketch.rootArc,
+  bladeEnvelopeSketch.wideArc
+])
+bladeEnvelope = revolve(bladeEnvelopeRegion, axis = X)
+
+hubClearanceSketch = sketch(on = XY) {
+  hubClearanceCircle = circle(start = [var 4in, var 0in], center = [var 0in, var 0in])
+  coincident([hubClearanceCircle.center, ORIGIN])
+  radius(hubClearanceCircle) == hubDiameter / 2
+}
+hubClearanceRegion = region(segments = [hubClearanceSketch.hubClearanceCircle])
+hubClearance = extrude(hubClearanceRegion, length = hubThickness * 5, symmetric = true)
+bladeEnvelopeTrimmed = subtract(bladeEnvelope, tools = hubClearance, tolerance = tolerance)
+
+// Reconstruct the mirrored airfoil section and twist it along the blade radius.
+sectionHalfChord = bladeDiameter / 10
+sectionNoseRadius = 0.05
+sectionUpperEnd = [
+  sectionHalfChord - sectionNoseRadius + sectionNoseRadius * cos(83deg),
+  sectionNoseRadius * sin(83deg)
+]
+sectionOppositeEnd = [
+  -sectionUpperEnd[0],
+  sectionUpperEnd[1]
+]
+sectionLowerEnd = [
+  sectionUpperEnd[0],
+  -sectionUpperEnd[1]
+]
+sectionLowerOppositeEnd = [
+  -sectionUpperEnd[0],
+  -sectionUpperEnd[1]
+]
+sectionUpperCamberCenter = [
+  0,
+  -(sectionHalfChord - sectionNoseRadius) * tan(83deg)
+]
+sectionLowerCamberCenter = [
+  0,
+  (sectionHalfChord - sectionNoseRadius) * tan(83deg)
+]
+
+bladeSectionSketch = sketch(on = -XZ) {
+  upperNose = arc(start = [var 8.6in, var 0in], end = [var 8.56in, var 0.05in], center = [var 8.55in, var 0in])
+  fixed([upperNose.start, [sectionHalfChord, 0]])
+  fixed([
+    upperNose.center,
+    [
+      sectionHalfChord - sectionNoseRadius,
+      0
+    ]
+  ])
+  fixed([upperNose.end, sectionUpperEnd])
+
+  upperCamber = arc(start = [var 8.56in, var 0.05in], end = [var -8.56in, var 0.05in], center = [var 0in, var -69.63in])
+  fixed([upperCamber.start, sectionUpperEnd])
+  fixed([upperCamber.end, sectionOppositeEnd])
+  fixed([
+    upperCamber.center,
+    sectionUpperCamberCenter
+  ])
+
+  upperTail = arc(start = [var -8.56in, var 0.05in], end = [var -8.6in, var 0in], center = [var -8.55in, var 0in])
+  fixed([upperTail.start, sectionOppositeEnd])
+  fixed([upperTail.end, [-sectionHalfChord, 0]])
+  fixed([
+    upperTail.center,
+    [
+      -sectionHalfChord + sectionNoseRadius,
+      0
+    ]
+  ])
+
+  lowerTail = arc(start = [var -8.6in, var 0in], end = [var -8.56in, var -0.05in], center = [var -8.55in, var 0in])
+  fixed([
+    lowerTail.start,
+    [-sectionHalfChord, 0]
+  ])
+  fixed([lowerTail.end, sectionLowerOppositeEnd])
+  fixed([
+    lowerTail.center,
+    [
+      -sectionHalfChord + sectionNoseRadius,
+      0
+    ]
+  ])
+
+  lowerCamber = arc(start = [var -8.56in, var -0.05in], end = [var 8.56in, var -0.05in], center = [var 0in, var 69.63in])
+  fixed([
+    lowerCamber.start,
+    sectionLowerOppositeEnd
+  ])
+  fixed([lowerCamber.end, sectionLowerEnd])
+  fixed([
+    lowerCamber.center,
+    sectionLowerCamberCenter
+  ])
+
+  lowerNose = arc(start = [var 8.56in, var -0.05in], end = [var 8.6in, var 0in], center = [var 8.55in, var 0in])
+  fixed([lowerNose.start, sectionLowerEnd])
+  fixed([lowerNose.end, [sectionHalfChord, 0]])
+  fixed([
+    lowerNose.center,
+    [
+      sectionHalfChord - sectionNoseRadius,
+      0
+    ]
+  ])
+}
+bladeSectionRegion = region(segments = [
+  bladeSectionSketch.upperNose,
+  bladeSectionSketch.upperCamber
+])
+bladeTwist = extrude(bladeSectionRegion, length = bladeDiameter / 1.9, twistAngle = twistAngle)
+
+blade = intersect([bladeEnvelopeTrimmed, bladeTwist], tolerance = tolerance)
+blades = patternCircular3d(
+  blade,
+  instances = bladeCount,
+  axis = Z,
+  center = [0, 0, 0],
+)
+
+[hub, blades]
+  |> appearance(color = "#8b5a2b")
+
+hide([
+  hubSketch,
+  boreCutterSketch,
+  bladeEnvelopeSketch,
+  hubClearanceSketch,
+  bladeSectionSketch
+])
