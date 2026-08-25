@@ -154,7 +154,7 @@ describe('keymap extension', () => {
         command: 'test.keystrokes',
         source: 'test',
         keystrokes: ['q', 'w'],
-        scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
       },
     ])
 
@@ -175,7 +175,7 @@ describe('keymap extension', () => {
         command: 'test.full',
         source: 'test',
         keystrokes: ['x'],
-        scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
       },
     ])
 
@@ -196,7 +196,7 @@ describe('keymap extension', () => {
         command: 'test.alt-d',
         source: 'test',
         keystrokes: ['alt+d'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       },
     ])
 
@@ -223,7 +223,7 @@ describe('keymap extension', () => {
         source: 'test',
         keystrokes: ['k'],
         arguments: { tab: 'keybindings' },
-        scopes: ['settings-open'],
+        when: ['settings-open'],
       },
     ])
 
@@ -413,7 +413,7 @@ describe('keymap extension', () => {
         {
           command: 'zds.toolbar.sketch.line',
           keystrokes: ['shift+q'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+          when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
         },
       ],
     })
@@ -435,6 +435,38 @@ describe('keymap extension', () => {
         { source: 'global' }
       )
     ).toBe(true)
+
+    registry[Symbol.dispose]()
+  })
+
+  it('normalizes legacy scopes before storing and writing user bindings', async () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const legacyKeymap = {
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: 'test.legacy',
+          keystrokes: ['mod+l'],
+          scopes: ['legacy-context'],
+        },
+      ],
+    } as const
+
+    await keymap.savePersistedKeymap(legacyKeymap)
+
+    const expected = {
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: 'test.legacy',
+          keystrokes: ['mod+l'],
+          when: ['legacy-context'],
+        },
+      ],
+    }
+    expect(keymap.persistedKeymap.value).toEqual(expected)
+    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith(expected)
 
     registry[Symbol.dispose]()
   })
@@ -474,7 +506,7 @@ describe('keymap extension', () => {
         command: 'test.sketch-solve-line',
         source: 'test',
         keystrokes: ['l'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       },
     ])
     const keymap = registry.get(keymapService)
@@ -511,7 +543,7 @@ describe('keymap extension', () => {
           command: 'test.sketch-select-all',
           source: 'test',
           keystrokes: ['mod+a'],
-          scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+          when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
         },
       ],
       {
@@ -552,7 +584,7 @@ describe('keymap extension', () => {
         command: 'test.sketch-solve-line',
         source: 'test',
         keystrokes: ['l'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       },
     ])
     const keymap = registry.get(keymapService)
@@ -611,7 +643,7 @@ describe('keymap extension', () => {
         command: 'test.sketch-solve-line',
         source: 'test',
         keystrokes: ['l'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       },
     ])
     const keymap = registry.get(keymapService)
@@ -658,7 +690,7 @@ describe('keymap extension', () => {
         command: 'test.sketch-solve-line',
         source: 'test',
         keystrokes: ['l'],
-        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       },
     ])
     const keymap = registry.get(keymapService)
@@ -793,7 +825,7 @@ describe('keymap extension', () => {
                   title: 'Test document',
                   command: 'zds.settings.tab',
                   keystrokes: ['j'],
-                  scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+                  when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
                 },
               ],
             }),
