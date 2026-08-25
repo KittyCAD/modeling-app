@@ -480,11 +480,41 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await editor.expectEditor.toContain('circle(start = [')
     })
 
+    await test.step('Equip the center arc tool with its keybinding and draw an arc', async () => {
+      await page.keyboard.press('a')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+
+      let previousCode = await editor.getCurrentCode()
+      const [arcCenter] = scene.makeMouseHelpers(0.25, 0.7, {
+        format: 'ratio',
+      })
+      const [arcStart] = scene.makeMouseHelpers(0.35, 0.7, {
+        format: 'ratio',
+      })
+      const [arcEnd] = scene.makeMouseHelpers(0.31, 0.62, {
+        format: 'ratio',
+      })
+
+      await arcCenter()
+      await arcStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await arcEnd()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('arc(start = [')
+    })
+
     await test.step('Pick hovered tools with Q and unequip over empty space', async () => {
       const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
         format: 'ratio',
       })
       const [, moveToCircle] = scene.makeMouseHelpers(0.78, 0.62, {
+        format: 'ratio',
+      })
+      const [, moveToArc] = scene.makeMouseHelpers(0.35, 0.7, {
         format: 'ratio',
       })
       const [, moveToEmptySpace] = scene.makeMouseHelpers(0.1, 0.85, {
@@ -506,7 +536,10 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await moveAndWaitForScenePointer(moveToEmptySpace)
       await page.keyboard.press('q')
-      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
 
       await moveAndWaitForScenePointer(moveToLine)
       await page.keyboard.press('q')
@@ -523,6 +556,20 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await moveAndWaitForScenePointer(moveToEmptySpace)
       await page.keyboard.press('q')
       await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await moveAndWaitForScenePointer(moveToArc)
+      await page.keyboard.press('q')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('q')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
     })
   })
 

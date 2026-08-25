@@ -3,6 +3,7 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
+  isArcSegment,
   isCircleSegment,
   isConstraint,
   isLineSegment,
@@ -39,6 +40,10 @@ export function getToolForApiObject(
 ): EquipTool | undefined {
   if (isLineSegment(apiObject)) {
     return 'lineTool'
+  }
+
+  if (isArcSegment(apiObject)) {
+    return 'centerArcTool'
   }
 
   if (isCircleSegment(apiObject)) {

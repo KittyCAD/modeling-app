@@ -6,6 +6,7 @@ import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   createArcApiObject,
   createCircleApiObject,
+  createControlPointSplineApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
@@ -61,12 +62,14 @@ describe('toolPicker', () => {
     }
   })
 
-  it('maps lines, circles, and constraint objects to their tools', () => {
+  it('maps lines, arcs, circles, and constraint objects to their tools', () => {
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
-    const circle = createCircleApiObject({ id: 6, center: 4, start: 5 })
-    const constraint = createHorizontalConstraintApiObject(7)
+    const arc = createArcApiObject({ id: 7, center: 4, start: 5, end: 6 })
+    const circle = createCircleApiObject({ id: 10, center: 8, start: 9 })
+    const constraint = createHorizontalConstraintApiObject(11)
 
     expect(getToolForApiObject(line)).toBe('lineTool')
+    expect(getToolForApiObject(arc)).toBe('centerArcTool')
     expect(getToolForApiObject(circle)).toBe('circleTool')
     expect(getToolForApiObject(constraint)).toBe('horizontalConstraintTool')
   })
@@ -91,14 +94,14 @@ describe('toolPicker', () => {
   })
 
   it('distinguishes unsupported geometry from empty space', () => {
-    const arc = createArcApiObject({
+    const spline = createControlPointSplineApiObject({
       id: 4,
-      center: 1,
-      start: 2,
-      end: 3,
+      controls: [1, 2, 3],
     })
 
-    expect(resolveToolPickerSelection([arc])).toEqual({ type: 'unsupported' })
+    expect(resolveToolPickerSelection([spline])).toEqual({
+      type: 'unsupported',
+    })
     expect(resolveToolPickerSelection([])).toEqual({ type: 'empty' })
   })
 })

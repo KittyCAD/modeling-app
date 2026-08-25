@@ -5,6 +5,7 @@ import { Themes } from '@src/lib/theme'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { CHILD_TOOL_DONE_EVENT } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  createArcApiObject,
   createCircleApiObject,
   createLineApiObject,
   createMockRustContext,
@@ -252,6 +253,27 @@ describe('sketchSolveMachine hovered tool picker', () => {
 
     expect(actor.getSnapshot().matches('using tool')).toBe(true)
     expect(actor.getSnapshot().context.sketchSolveToolName).toBe('circleTool')
+  })
+
+  it('equips the center arc tool over an arc', () => {
+    const objects = [
+      createSketchApiObject({ id: 0, segments: [1, 2, 3, 4] }),
+      createPointApiObject({ id: 1, x: 0, y: 0, owner: 4 }),
+      createPointApiObject({ id: 2, x: 10, y: 0, owner: 4 }),
+      createPointApiObject({ id: 3, x: 0, y: 10, owner: 4 }),
+      createArcApiObject({ id: 4, center: 1, start: 2, end: 3 }),
+    ]
+    const { actor, getPlaneIntersectPoint } = createSketchSolveHarness(objects)
+    getPlaneIntersectPoint.mockReturnValue({
+      twoD: { x: Math.SQRT1_2 * 10, y: Math.SQRT1_2 * 10 },
+    })
+
+    actor.send({ type: 'pick hovered tool' })
+
+    expect(actor.getSnapshot().matches('using tool')).toBe(true)
+    expect(actor.getSnapshot().context.sketchSolveToolName).toBe(
+      'centerArcTool'
+    )
   })
 
   it('unequips at a draft endpoint after excluding draft geometry', async () => {
