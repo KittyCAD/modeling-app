@@ -3392,6 +3392,21 @@ impl Node<Name> {
     }
 }
 
+fn mock_array_may_have_engine_dependent_cardinality(ty: &RuntimeType) -> bool {
+    match ty {
+        RuntimeType::Primitive(
+            PrimitiveType::Sketch
+            | PrimitiveType::Solid
+            | PrimitiveType::Face
+            | PrimitiveType::Edge
+            | PrimitiveType::BoundedEdge
+            | PrimitiveType::ImportedGeometry,
+        ) => true,
+        RuntimeType::Union(types) => types.iter().any(mock_array_may_have_engine_dependent_cardinality),
+        _ => false,
+    }
+}
+
 impl Node<MemberExpression> {
     async fn get_result(
         &self,
@@ -4300,7 +4315,7 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
+            (KclValue::HomArray { value: arr, ty }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 // Out-of-bounds error.
                 let oob_error = KclError::new_undefined_value(
@@ -4313,12 +4328,15 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
-                } else if ctx.no_engine_commands().await && !exec_state.is_sketch_mode_execution() {
+                } else if ctx.no_engine_commands().await
+                    && !exec_state.is_sketch_mode_execution()
+                    && mock_array_may_have_engine_dependent_cardinality(&ty)
+                {
                     // In mock execution, we handle OOB errors
-                    // by trying to get index 0. This is because the array value might have
-                    // come from the engine, so the array's actual length isn't
-                    // known during mock execution runtime. Because it's mock execution
-                    // the specific value is hopefully not important.
+                    // by trying to get index 0 only for geometry-handle arrays. Those
+                    // values may have come from the engine, so their actual length is
+                    // not known during mock execution runtime. Frontend-only arrays
+                    // have exact cardinality and must preserve their OOB errors.
                     //
                     // We don't do this in sketch mode execution since it's
                     // forbidden from contacting the engine, meaning array
