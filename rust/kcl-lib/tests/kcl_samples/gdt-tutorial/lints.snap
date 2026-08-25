@@ -13,8 +13,8 @@ description: Lints gdt-tutorial.kcl
     },
     "description": "gdt::distance uses 'edges' with deprecated stdlib; prefer edge specifier objects",
     "pos": [
-      1492,
-      1676,
+      1520,
+      1704,
       0
     ],
     "overridden": false,

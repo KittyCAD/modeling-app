@@ -5,6 +5,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
 import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
@@ -100,6 +101,7 @@ export class Connection extends EventTarget {
   tearDownManager: (options?: ManagerTearDown) => void
   rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
   handleMessage: ((event: MessageEvent<any>) => void) | null
+  private readonly getCloudProjectId: () => string | undefined
 
   constructor({
     url,
@@ -109,6 +111,7 @@ export class Connection extends EventTarget {
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
     handleMessage,
+    getCloudProjectId,
   }: {
     url: string
     token: string
@@ -117,6 +120,7 @@ export class Connection extends EventTarget {
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     handleMessage: (event: MessageEvent<any>) => void
+    getCloudProjectId: () => string | undefined
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -132,6 +136,7 @@ export class Connection extends EventTarget {
     this.tearDownManager = tearDownManager
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
+    this.getCloudProjectId = getCloudProjectId
     this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
@@ -179,6 +184,7 @@ export class Connection extends EventTarget {
         if (message.errors.length > 0) {
           const firstError = message.errors[0]
           if (firstError.error_code === 'auth_token_invalid') {
+            notifySessionExpired('legacy-engine-websocket')
             callback('auth_token_invalid')
           }
         }
@@ -623,6 +629,7 @@ export class Connection extends EventTarget {
       setApiCallId: (apiCallId) => {
         this.apiCallId = apiCallId
       },
+      getCloudProjectId: this.getCloudProjectId,
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,

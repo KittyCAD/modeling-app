@@ -139,7 +139,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7.0.0
         with:
-          python-version: '3.x'
+          python-version-file: .tool-versions
 
       - name: Install dependencies
         run: |

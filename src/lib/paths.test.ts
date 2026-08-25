@@ -1,5 +1,5 @@
 import { APP_NAME } from '@src/lib/constants'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
   fileNameHasExtension,
   getFilePathRelativeToProject,
@@ -11,6 +11,7 @@ import {
   toProjectRelativePath,
   toWebSafePath,
 } from '@src/lib/paths'
+import path from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
@@ -20,16 +21,19 @@ beforeAll(async () => {
   })
 })
 
+const absolutePath = (...parts: string[]) => fsZds.join(fsZds.sep, ...parts)
+
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route = '/home/somebody/projects/project'
+    const route = fsZds.join(projectDirectory, 'project')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'project',
       projectPath: route,
@@ -38,14 +42,15 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project as the project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route = '/home/somebody/projects'
+    const route = projectDirectory
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: null,
       projectPath: route,
@@ -54,94 +59,242 @@ describe('testing parseProjectRoute', () => {
     })
   })
   it('should parse a project with file in the project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route = '/home/somebody/projects/assembly/main.kcl'
+    const projectPath = fsZds.join(projectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'main.kcl')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'assembly',
-      projectPath: '/home/somebody/projects/assembly',
+      projectPath,
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
   })
   it('should parse a project with file in a subdir in the project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route = '/home/somebody/projects/assembly/subdir/main.kcl'
+    const projectPath = fsZds.join(projectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'subdir', 'main.kcl')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'assembly',
-      projectPath: '/home/somebody/projects/assembly',
+      projectPath,
       currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should parse a nested file relative to the active project directory', async () => {
+    const defaultProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'local-projects'
+    )
+    const activeProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Zoo',
+      'personal'
+    )
+    const config = {
+      settings: {
+        project: {
+          directory: defaultProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(activeProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, { activeProjectPath: projectPath })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should prefer the most specific candidate project directory', async () => {
+    const outerProjectDirectory = absolutePath('home', 'somebody', 'projects')
+    const nestedProjectDirectory = fsZds.join(outerProjectDirectory, 'client')
+    const config = {
+      settings: {
+        project: {
+          directory: outerProjectDirectory,
+        },
+      },
+    }
+    const projectPath = fsZds.join(nestedProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'parts', 'bolt.kcl')
+    expect(
+      parseProjectRoute(config, route, {
+        candidateProjectDirectories: [
+          outerProjectDirectory,
+          nestedProjectDirectory,
+        ],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
+      currentFilePath: route,
+    })
+  })
+
+  it('should keep the active project when it contains a nested library', async () => {
+    const projectDirectory = absolutePath('home', 'somebody', 'projects')
+    const projectPath = fsZds.join(projectDirectory, 'assembly')
+    const nestedLibraryPath = fsZds.join(projectPath, 'vendor')
+    const route = fsZds.join(nestedLibraryPath, 'parts', 'bolt.kcl')
+    const config = {
+      settings: {
+        project: {
+          directory: projectDirectory,
+        },
+      },
+    }
+    expect(
+      parseProjectRoute(config, route, {
+        activeProjectPath: projectPath,
+        candidateProjectDirectories: [nestedLibraryPath],
+      })
+    ).toEqual({
+      projectName: 'assembly',
+      projectPath,
+      currentFileName: 'bolt.kcl',
       currentFilePath: route,
     })
   })
 
   it('should prefer the default directory library over the legacy project directory', async () => {
-    let config = {
+    const libraryProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'library-projects'
+    )
+    const config = {
       settings: {
         app: {
           libraries: [
             {
               title: 'Projects',
-              path: '/home/somebody/library-projects',
+              path: libraryProjectDirectory,
               type: 'directory',
             },
           ],
         },
         project: {
-          directory: '/home/somebody/legacy-projects',
+          directory: absolutePath('home', 'somebody', 'legacy-projects'),
         },
       },
     }
-    const route = '/home/somebody/library-projects/assembly/main.kcl'
+    const projectPath = fsZds.join(libraryProjectDirectory, 'assembly')
+    const route = fsZds.join(projectPath, 'main.kcl')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'assembly',
-      projectPath: '/home/somebody/library-projects/assembly',
+      projectPath,
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
   })
 
+  it('should parse a Windows project route with mixed separators as the project root', async () => {
+    const originalFsPathFunctions = {
+      sep: fsZds.sep,
+      relative: fsZds.relative,
+      join: fsZds.join,
+      basename: fsZds.basename,
+      dirname: fsZds.dirname,
+      extname: fsZds.extname,
+      resolve: fsZds.resolve,
+    }
+    Object.assign(fsZds, {
+      sep: path.win32.sep,
+      relative: path.win32.relative.bind(path.win32),
+      join: path.win32.join.bind(path.win32),
+      basename: path.win32.basename.bind(path.win32),
+      dirname: path.win32.dirname.bind(path.win32),
+      extname: path.win32.extname.bind(path.win32),
+      resolve: path.win32.resolve.bind(path.win32),
+    })
+
+    try {
+      const projectDirectory =
+        'C:\\Users\\runneradmin\\work\\modeling-app\\test-results\\electron-test-projects-dir'
+      const route =
+        'C:/Users/runneradmin/work/modeling-app/test-results/electron-test-projects-dir\\testProject'
+      const config = {
+        settings: {
+          project: {
+            directory: projectDirectory,
+          },
+        },
+      }
+
+      expect(parseProjectRoute(config, route)).toEqual({
+        projectName: 'testProject',
+        projectPath: path.win32.join(projectDirectory, 'testProject'),
+        currentFileName: null,
+        currentFilePath: null,
+      })
+    } finally {
+      Object.assign(fsZds, originalFsPathFunctions)
+    }
+  })
+
   it('should respect an explicit empty libraries setting', async () => {
-    let config = {
+    const legacyProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'legacy-projects'
+    )
+    const config = {
       settings: {
         app: {
           libraries: [],
         },
         project: {
-          directory: '/home/somebody/legacy-projects',
+          directory: legacyProjectDirectory,
         },
       },
     }
-    const route = '/home/somebody/legacy-projects/assembly/subdir/main.kcl'
+    const projectPath = fsZds.join(legacyProjectDirectory, 'assembly', 'subdir')
+    const route = fsZds.join(projectPath, 'main.kcl')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'subdir',
-      projectPath: '/home/somebody/legacy-projects/assembly/subdir',
+      projectPath,
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
   })
 
   it('should not parse a sibling path with the same prefix as inside the project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/Documents/zoo-design-studio-projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route =
-      '/home/somebody/Documents/zoo-design-studio-projects-2/project'
+    const route = fsZds.join(`${projectDirectory}-2`, 'project')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'project',
       projectPath: route,
@@ -151,19 +304,24 @@ describe('testing parseProjectRoute', () => {
   })
 
   it('should not parse a file in a sibling path with the same prefix as inside the project dir', async () => {
-    let config = {
+    const projectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
+    const config = {
       settings: {
         project: {
-          directory: '/home/somebody/Documents/zoo-design-studio-projects',
+          directory: projectDirectory,
         },
       },
     }
-    const route =
-      '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl'
+    const siblingProjectPath = fsZds.join(`${projectDirectory}-2`, 'project')
+    const route = fsZds.join(siblingProjectPath, 'main.kcl')
     expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'project',
-      projectPath:
-        '/home/somebody/Documents/zoo-design-studio-projects-2/project',
+      projectPath: siblingProjectPath,
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
@@ -190,10 +348,11 @@ describe('testing web-safe project paths', () => {
   })
 
   it('should return a project-relative file path', () => {
+    const projectPath = absolutePath('some', 'path', 'Simple Box')
     expect(
       toProjectRelativePath(
-        '/some/path/Simple Box',
-        '/some/path/Simple Box/parts/generated/nested-part.kcl'
+        projectPath,
+        fsZds.join(projectPath, 'parts', 'generated', 'nested-part.kcl')
       )
     ).toEqual('parts/generated/nested-part.kcl')
   })
@@ -215,37 +374,61 @@ describe('testing web-safe project paths', () => {
 
 describe('testing project-relative paths', () => {
   it('returns the file path relative to the project when the file is inside the project directory', () => {
+    const applicationProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
     expect(
       parentPathRelativeToProject(
-        '/home/somebody/Documents/zoo-design-studio-projects/project/main.kcl',
-        '/home/somebody/Documents/zoo-design-studio-projects'
+        fsZds.join(applicationProjectDirectory, 'project', 'main.kcl'),
+        applicationProjectDirectory
       )
     ).toEqual('main.kcl')
   })
 
   it('returns an empty path when the file is in a sibling directory with the same prefix', () => {
+    const applicationProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
     expect(
       parentPathRelativeToProject(
-        '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl',
-        '/home/somebody/Documents/zoo-design-studio-projects'
+        fsZds.join(`${applicationProjectDirectory}-2`, 'project', 'main.kcl'),
+        applicationProjectDirectory
       )
     ).toEqual('')
   })
 
   it('returns the file path relative to the application directory when contained', () => {
+    const applicationProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
     expect(
       parentPathRelativeToApplicationDirectory(
-        '/home/somebody/Documents/zoo-design-studio-projects/project/main.kcl',
-        '/home/somebody/Documents/zoo-design-studio-projects'
+        fsZds.join(applicationProjectDirectory, 'project', 'main.kcl'),
+        applicationProjectDirectory
       )
-    ).toEqual('project/main.kcl')
+    ).toEqual(fsZds.join('project', 'main.kcl'))
   })
 
   it('returns an empty path relative to the application directory when the file is in a sibling prefix directory', () => {
+    const applicationProjectDirectory = absolutePath(
+      'home',
+      'somebody',
+      'Documents',
+      'zoo-design-studio-projects'
+    )
     expect(
       parentPathRelativeToApplicationDirectory(
-        '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl',
-        '/home/somebody/Documents/zoo-design-studio-projects'
+        fsZds.join(`${applicationProjectDirectory}-2`, 'project', 'main.kcl'),
+        applicationProjectDirectory
       )
     ).toEqual('')
   })

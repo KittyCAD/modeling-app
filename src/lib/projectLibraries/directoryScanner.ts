@@ -3,8 +3,10 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
+import { reportCloudSyncConflictCopyDetected } from '@src/lib/cloudSync/clientErrorReporting'
 import {
-  clearOutboxEntriesForProject,
+  clearLegacyConflictCopyReferences,
+  clearOutboxEntriesTouchingProject,
   deleteProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
@@ -228,8 +230,10 @@ async function deleteLegacyCloudConflictCopyProject(projectPath: string) {
     }
   }
 
-  await clearOutboxEntriesForProject(projectPath)
+  await clearOutboxEntriesTouchingProject(projectPath)
+  await clearLegacyConflictCopyReferences(projectPath)
   await deleteProjectMetadata(projectPath)
+  reportCloudSyncConflictCopyDetected()
 }
 
 export function shouldSendProjectFolderReadProgress(
@@ -238,6 +242,11 @@ export function shouldSendProjectFolderReadProgress(
   return !folders?.length
 }
 
+/**
+ * Scans one directory library for concrete project folders. Cloud sync metadata
+ * is used only to enrich local observations with modified/conflict/cloud ID
+ * hints; duplicate detection and cleanup policy are handled after discovery.
+ */
 export async function readProjectsFromProjectDirectory({
   projectDirectoryPath,
   wasmInstancePromise,

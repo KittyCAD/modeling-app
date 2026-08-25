@@ -378,6 +378,10 @@ const isImageMimetype = (mimetype: string): boolean => {
   return mimetype.startsWith('image/')
 }
 
+export const isExportDownloadFile = (file: MlCopilotFile): boolean => {
+  return file.metadata?.export_format !== undefined
+}
+
 /**
  * Component for displaying an image file with error handling
  */
@@ -426,7 +430,7 @@ const ImageFileItem = (props: {
   )
 }
 
-export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
+const FileList = (props: { files: MlCopilotFile[] }) => {
   const [objectUrls, setObjectUrls] = useState<string[]>([])
 
   useEffect(() => {
@@ -459,6 +463,44 @@ export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
   )
 
   return (
+    <div className="flex max-w-full min-w-0 flex-col gap-3">
+      {imageFiles.map((file, index) => {
+        const fileIndex = props.files.indexOf(file)
+        const url = objectUrls[fileIndex]
+        return (
+          <ImageFileItem
+            key={`${file.name}-${index}`}
+            file={file}
+            url={url}
+            onDownload={handleDownload}
+          />
+        )
+      })}
+      {otherFiles.map((file, index) => {
+        const fileIndex = props.files.indexOf(file)
+        const url = objectUrls[fileIndex]
+        return (
+          <button
+            key={`${file.name}-${index}`}
+            onClick={() => url && handleDownload(url, file.name)}
+            className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
+            title={`Click to download ${file.name}`}
+          >
+            <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
+            <span className="text-sm truncate">{file.name}</span>
+            <CustomIcon
+              name="download"
+              className="w-4 h-4 ml-auto flex-shrink-0"
+            />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
+  return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="file" className="w-6 h-6" />}>
@@ -470,41 +512,20 @@ export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
     >
       {/* Using a custom content wrapper without height restriction for images */}
       <div className="min-w-0 max-w-full pt-4 pb-4 border-l pl-5 ml-3 b-3">
-        <div className="flex max-w-full min-w-0 flex-col gap-3">
-          {imageFiles.map((file, index) => {
-            const fileIndex = props.files.indexOf(file)
-            const url = objectUrls[fileIndex]
-            return (
-              <ImageFileItem
-                key={index}
-                file={file}
-                url={url}
-                onDownload={handleDownload}
-              />
-            )
-          })}
-          {otherFiles.map((file, index) => {
-            const fileIndex = props.files.indexOf(file)
-            const url = objectUrls[fileIndex]
-            return (
-              <button
-                key={`other-${index}`}
-                onClick={() => url && handleDownload(url, file.name)}
-                className="flex flex-row gap-2 items-center cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90 p-2 rounded transition-colors text-left w-full"
-                title={`Click to download ${file.name}`}
-              >
-                <CustomIcon name="file" className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm truncate">{file.name}</span>
-                <CustomIcon
-                  name="download"
-                  className="w-4 h-4 ml-auto flex-shrink-0"
-                />
-              </button>
-            )
-          })}
-        </div>
+        <FileList files={props.files} />
       </div>
     </ThoughtContainer>
+  )
+}
+
+export const ExportDownloadFiles = (props: { files: MlCopilotFile[] }) => {
+  return (
+    <div
+      className="mt-3 min-w-0 max-w-full rounded-sm border b-4"
+      data-testid="ml-response-download-files"
+    >
+      <FileList files={props.files} />
+    </div>
   )
 }
 
@@ -695,7 +716,12 @@ const fromDataToComponent = (
   }
 
   if ('files' in thought) {
-    return <FilesSnapshot key={options.key} files={thought.files.files} />
+    const reasoningFiles = thought.files.files.filter(
+      (file) => !isExportDownloadFile(file)
+    )
+    return reasoningFiles.length > 0 ? (
+      <FilesSnapshot key={options.key} files={reasoningFiles} />
+    ) : null
   }
 
   return null
@@ -720,7 +746,11 @@ export const Thinking = (props: {
 
   const reasoningThoughts =
     props.thoughts?.filter((x: MlCopilotServerMessage) => {
-      return 'reasoning' in x || 'files' in x
+      return (
+        'reasoning' in x ||
+        ('files' in x &&
+          x.files.files.some((file) => !isExportDownloadFile(file)))
+      )
     }) ?? []
 
   // Resume reasoning autoscroll when a new prompt is sent

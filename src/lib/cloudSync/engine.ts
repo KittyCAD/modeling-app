@@ -2,7 +2,6 @@ import { signal } from '@preact/signals-core'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
-  reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
@@ -37,7 +36,9 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
+  clearLegacyConflictCopyReferences,
   clearOutboxEntriesForProject as clearSyncDbOutboxEntriesForProject,
+  clearOutboxEntriesTouchingProject as clearSyncDbOutboxEntriesTouchingProject,
   deleteProjectMetadata,
   getAllOutboxEntries,
   getAllProjectMetadata,
@@ -131,7 +132,10 @@ export function isCloudSyncConflictRevisionChangedError(error: unknown) {
 }
 
 const SYNC_DEBOUNCE_MS = 2500
-const SYNC_RETRY_MS = 30_000
+const SYNC_RETRY_MS = 10_000
+const SYNC_RETRY_MAX_MS = 5 * 60 * 1000
+const PROJECT_API_THROTTLE_MS = 250
+const PROJECT_API_THROTTLE_JITTER_MS = 250
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
 const REMOTE_UPLOAD_FORBIDDEN_MESSAGE =
   'Cloud sync cannot upload local changes because this account does not have edit access to the linked cloud project. Local changes are safe on this device.'
@@ -143,6 +147,7 @@ let config: CloudSyncConfig = {
 }
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
+let syncRetryAttempt = 0
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
@@ -150,6 +155,15 @@ let detachVisibilityChangeListener: (() => void) | undefined
 let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
+
+/**
+ * Per-run throttle for automatic full-library syncs. It spaces project API
+ * request starts so large local backlogs drain without a tight startup burst.
+ */
+type CloudSyncProjectApiRequestThrottle = () => Promise<void>
+
+const unthrottledCloudSyncProjectApiRequest: CloudSyncProjectApiRequestThrottle =
+  async () => undefined
 
 export const cloudSyncStatus = signal<CloudSyncStatus>({
   enabled: false,
@@ -193,10 +207,15 @@ function projectFailureKind(error: unknown) {
 
 function projectFailureError(
   kind: ProjectSyncFailureKind,
-  message: string
-): Error & { kind: ProjectSyncFailureKind } {
-  const error = new Error(message) as Error & { kind: ProjectSyncFailureKind }
+  message: string,
+  options: { retryAfterMs?: number } = {}
+): Error & { kind: ProjectSyncFailureKind; retryAfterMs?: number } {
+  const error = new Error(message) as Error & {
+    kind: ProjectSyncFailureKind
+    retryAfterMs?: number
+  }
   error.kind = kind
+  error.retryAfterMs = options.retryAfterMs
   return error
 }
 
@@ -204,13 +223,142 @@ function remoteUploadFailureFromError(error: unknown) {
   return error instanceof CloudApiError && error.status === 403
     ? projectFailureError(
         'remote-upload-forbidden',
-        REMOTE_UPLOAD_FORBIDDEN_MESSAGE
+        REMOTE_UPLOAD_FORBIDDEN_MESSAGE,
+        { retryAfterMs: error.retryAfterMs }
       )
     : error
 }
 
 function rejectRemoteUploadFailure(error: unknown): Promise<never> {
   return Promise.reject(remoteUploadFailureFromError(error))
+}
+
+function cloudApiRetryAfterMs(error: unknown): number | undefined {
+  if (error instanceof CloudApiError) {
+    return error.retryAfterMs
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'retryAfterMs' in error &&
+    typeof error.retryAfterMs === 'number'
+  ) {
+    return error.retryAfterMs
+  }
+  if (error instanceof Error && error.cause !== undefined) {
+    return cloudApiRetryAfterMs(error.cause)
+  }
+  return undefined
+}
+
+export function getCloudSyncRetryDelayMs({
+  attempt,
+  retryAfterMs,
+}: {
+  attempt: number
+  retryAfterMs?: number
+}) {
+  const normalizedAttempt = Math.max(0, Math.floor(attempt))
+  const exponentialDelay = Math.min(
+    SYNC_RETRY_MAX_MS,
+    SYNC_RETRY_MS * 2 ** normalizedAttempt
+  )
+
+  return Math.max(exponentialDelay, retryAfterMs ?? 0)
+}
+
+function nextSyncRetryDelayMs(error: unknown) {
+  const retryDelay = getCloudSyncRetryDelayMs({
+    attempt: syncRetryAttempt,
+    retryAfterMs: cloudApiRetryAfterMs(error),
+  })
+  syncRetryAttempt =
+    retryDelay >= SYNC_RETRY_MAX_MS ? syncRetryAttempt : syncRetryAttempt + 1
+
+  return retryDelay
+}
+
+function resetSyncRetryBackoff() {
+  syncRetryAttempt = 0
+}
+
+export function getCloudSyncProjectApiThrottleDelayMs({
+  elapsedMs,
+  jitterRatio,
+}: {
+  elapsedMs: number
+  jitterRatio: number
+}) {
+  const clamp = (value: number, min: number, max: number) => {
+    if (!Number.isFinite(value)) {
+      return min
+    }
+    return Math.min(max, Math.max(min, value))
+  }
+  const intervalMs =
+    PROJECT_API_THROTTLE_MS +
+    Math.round(PROJECT_API_THROTTLE_JITTER_MS * clamp(jitterRatio, 0, 1))
+
+  return Math.max(0, intervalMs - Math.max(0, Math.floor(elapsedMs)))
+}
+
+export function shouldThrottleCloudSyncProjectApiRequests({
+  hasSyncScope,
+  projectCount,
+}: {
+  hasSyncScope: boolean
+  projectCount: number
+}) {
+  return !hasSyncScope && projectCount > 1
+}
+
+function createCloudSyncProjectApiRequestThrottle({
+  enabled,
+}: {
+  enabled: boolean
+}): CloudSyncProjectApiRequestThrottle {
+  if (!enabled) {
+    return unthrottledCloudSyncProjectApiRequest
+  }
+
+  const sleep = (ms: number) =>
+    new Promise<void>((resolve) => {
+      setTimeout(resolve, ms)
+    })
+
+  let lastRequestStartedAt: number | undefined
+  return async () => {
+    if (lastRequestStartedAt !== undefined) {
+      const delayMs = getCloudSyncProjectApiThrottleDelayMs({
+        elapsedMs: Date.now() - lastRequestStartedAt,
+        jitterRatio: Math.random(),
+      })
+      if (delayMs > 0) {
+        await sleep(delayMs)
+      }
+    }
+    lastRequestStartedAt = Date.now()
+  }
+}
+
+async function runCloudSyncProjectApiRequest<T>(
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle,
+  request: () => Promise<T>
+) {
+  await throttleProjectApiRequest()
+  return request()
+}
+
+export function shouldScheduleCloudSyncPendingWork({
+  pendingCount,
+  state,
+  failureRetryScheduled,
+}: {
+  pendingCount: number
+  state: CloudSyncStatus['state']
+  failureRetryScheduled: boolean
+}) {
+  return pendingCount > 0 && state !== 'conflict' && !failureRetryScheduled
 }
 
 export function getCloudSyncProjectRootInDirectory(
@@ -1060,6 +1208,11 @@ async function clearOutboxEntriesForProject(projectPath: string) {
   await refreshPendingCount()
 }
 
+async function clearOutboxEntriesTouchingProject(projectPath: string) {
+  await clearSyncDbOutboxEntriesTouchingProject(projectPath)
+  await refreshPendingCount()
+}
+
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
@@ -1499,6 +1652,53 @@ export async function deleteCloudSyncLocalProjectRealizations(
   await refreshPendingCount()
 }
 
+export async function deleteCloudSyncDuplicateProjectRealizations({
+  remoteProjectId,
+  canonicalProjectPath,
+  duplicateProjectPaths,
+}: {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  duplicateProjectPaths: readonly string[]
+}) {
+  if (!isConfiguredForCloud()) {
+    return
+  }
+
+  const projectId = remoteProjectId.trim()
+  const normalizedCanonicalProjectPath = canonicalProjectPath
+    ? normalizePathForSync(canonicalProjectPath)
+    : undefined
+  if (!projectId) {
+    return
+  }
+
+  const selectedProjectPaths = Array.from(
+    new Set(duplicateProjectPaths.map(normalizePathForSync).filter(Boolean))
+  )
+
+  for (const projectPath of selectedProjectPaths) {
+    if (projectPath === normalizedCanonicalProjectPath) {
+      continue
+    }
+
+    const metadata = await getProjectMetadata(projectPath)
+    const projectTomlCloudProjectId = await readProjectTomlCloudProjectId(
+      projectPath
+    ).catch(() => undefined)
+    if (
+      metadata?.remoteProjectId !== projectId &&
+      projectTomlCloudProjectId !== projectId
+    ) {
+      continue
+    }
+
+    await deleteLocalProjectRealization(projectPath)
+  }
+
+  await refreshPendingCount()
+}
+
 async function cloneRemoteProjectToLocal(
   remoteProject: RemoteProject,
   projectDirectory: string,
@@ -1690,7 +1890,7 @@ export async function renameRemoteCloudProject(
   const updated = await updateRemoteProject({
     config,
     projectPath: localProjectNameForRemoteProject(remoteProject),
-    projectId,
+    project: remoteProject,
     files,
     expectedRevision: getRevision(remoteProject),
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -1948,7 +2148,7 @@ function markCloudMetadataFailure(error: unknown) {
     lastFailure: errorMessage(error),
     lastFailureAt: nowIso(),
   })
-  scheduleSync(SYNC_RETRY_MS)
+  scheduleSyncFailureRetry(error)
 }
 
 async function markProjectSynced(
@@ -2002,7 +2202,8 @@ async function deleteLegacyConflictCopy(
     return
   }
 
-  await clearOutboxEntriesForProject(conflictProjectPath)
+  await clearOutboxEntriesTouchingProject(conflictProjectPath)
+  await clearLegacyConflictCopyReferences(conflictProjectPath)
   await deleteProjectMetadata(conflictProjectPath)
   if (await exists(conflictProjectPath)) {
     await localFs.rm(conflictProjectPath, { recursive: true })
@@ -2060,7 +2261,7 @@ async function applyLocalDataForConflict(
   const updated = await updateRemoteProject({
     config,
     projectPath: metadata.localProjectPath,
-    projectId: metadata.remoteProjectId,
+    project: remoteProject,
     files: localFiles,
     expectedRevision,
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
@@ -2197,7 +2398,11 @@ async function hydrateCleanLocalProjectTitle(
 async function markProjectConflict(
   metadata: ProjectMetadata,
   remoteRevision: Revision | undefined,
-  remoteUpdatedAt: string | undefined
+  remoteUpdatedAt: string | undefined,
+  manifests: {
+    localManifest?: ProjectManifest
+    remoteManifest?: ProjectManifest
+  } = {}
 ) {
   const createdAt = nowIso()
   const existingConflict = metadata.conflict
@@ -2220,7 +2425,6 @@ async function markProjectConflict(
   }
   await putProjectMetadata(nextMetadata)
   publishScopedProjectCloudProjectId(nextMetadata)
-  reportCloudSyncConflictCopyDetected()
   if (projectPathMatchesSyncScope(metadata.localProjectPath)) {
     updateStatus({
       state: 'conflict',
@@ -2229,7 +2433,18 @@ async function markProjectConflict(
       lastFailureAt: createdAt,
     })
   }
-  reportCloudSyncConflict()
+  reportCloudSyncConflict({
+    localProjectPath: metadata.localProjectPath,
+    remoteProjectId: metadata.remoteProjectId,
+    syncBaseRemoteRevision: metadata.remoteRevision,
+    conflictRemoteRevision: remoteRevision,
+    conflictRemoteUpdatedAt: remoteUpdatedAt,
+    baseManifest: metadata.baseManifest,
+    localManifest: manifests.localManifest,
+    remoteManifest: manifests.remoteManifest,
+    existingConflictCreatedAt: existingConflict?.createdAt,
+    reportedAt: createdAt,
+  })
 }
 
 function latestOutboxKind(entries: OutboxEntry[]) {
@@ -2447,10 +2662,16 @@ export function getCloudSyncKnownLocalRemoteIndexAction({
   return 'index-known-local'
 }
 
-async function syncDeletedProject(metadata: ProjectMetadata) {
-  if (metadata.remoteProjectId) {
+async function syncDeletedProject(
+  metadata: ProjectMetadata,
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
+) {
+  const remoteProjectId = metadata.remoteProjectId
+  if (remoteProjectId) {
     try {
-      await deleteRemoteProject(config, metadata.remoteProjectId)
+      await runCloudSyncProjectApiRequest(throttleProjectApiRequest, () =>
+        deleteRemoteProject(config, remoteProjectId)
+      )
     } catch (error) {
       if (!(error instanceof CloudApiError && error.status === 404)) {
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -2540,7 +2761,11 @@ async function localProjectChangedFromSyncBase(metadata: ProjectMetadata) {
   return !projectManifestsEqual(localManifest, metadata.baseManifest)
 }
 
-async function syncProject(projectPath: string, entries: OutboxEntry[]) {
+async function syncProject(
+  projectPath: string,
+  entries: OutboxEntry[],
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
+) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -2578,7 +2803,7 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       hasRemoteRevision: Boolean(metadata.remoteRevision),
     })
     if (initialAction === 'delete-remote') {
-      await syncDeletedProject(metadata)
+      await syncDeletedProject(metadata, throttleProjectApiRequest)
       return
     }
 
@@ -2599,8 +2824,12 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     let remoteChanged = false
     let localChanged = true
     if (metadata.remoteProjectId) {
+      const remoteProjectId = metadata.remoteProjectId
       try {
-        remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
+        remoteProject = await runCloudSyncProjectApiRequest(
+          throttleProjectApiRequest,
+          () => getRemoteProject(config, remoteProjectId)
+        )
       } catch (error) {
         if (error instanceof CloudApiError && error.status === 404) {
           await reconcileMissingRemoteProject(metadata, {
@@ -2651,10 +2880,9 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     })
 
     if (preflightAction === 'create-remote') {
-      const created = await createRemoteProject(
-        config,
-        metadata.localProjectPath,
-        localFiles
+      const created = await runCloudSyncProjectApiRequest(
+        throttleProjectApiRequest,
+        () => createRemoteProject(config, metadata.localProjectPath, localFiles)
       )
       await writeLocalProjectCloudProjectId(
         metadata.localProjectPath,
@@ -2696,14 +2924,18 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     }
 
     if (preflightAction === 'push-local-with-expected-revision') {
-      const updated = await updateRemoteProject({
-        config,
-        projectPath: metadata.localProjectPath,
-        projectId: remoteProjectId,
-        files: localFiles,
-        expectedRevision: metadata.remoteRevision,
-        entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
-      }).catch(rejectRemoteUploadFailure)
+      const updated = await runCloudSyncProjectApiRequest(
+        throttleProjectApiRequest,
+        () =>
+          updateRemoteProject({
+            config,
+            projectPath: metadata.localProjectPath,
+            project: remoteProject,
+            files: localFiles,
+            expectedRevision: metadata.remoteRevision,
+            entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+          })
+      ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
       await markProjectSynced(
         metadata,
@@ -2713,9 +2945,9 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       return
     }
 
-    const remoteArchive = await downloadRemoteProjectArchive(
-      config,
-      remoteProjectId
+    const remoteArchive = await runCloudSyncProjectApiRequest(
+      throttleProjectApiRequest,
+      () => downloadRemoteProjectArchive(config, remoteProjectId)
     )
     const remoteFiles = filterCloudSyncProjectFilesForSync(
       withRemoteProjectMetadataInArchiveFiles(
@@ -2779,13 +3011,17 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     if (reconciliationAction === 'auto-reconcile' && autoReconciledFiles) {
       const autoReconciledManifest =
         await projectManifestFromFiles(autoReconciledFiles)
-      const updated = await updateRemoteProject({
-        config,
-        projectPath: metadata.localProjectPath,
-        projectId: remoteProjectId,
-        files: autoReconciledFiles,
-        expectedRevision: remoteRevision,
-      }).catch(rejectRemoteUploadFailure)
+      const updated = await runCloudSyncProjectApiRequest(
+        throttleProjectApiRequest,
+        () =>
+          updateRemoteProject({
+            config,
+            projectPath: metadata.localProjectPath,
+            project: remoteProject,
+            files: autoReconciledFiles,
+            expectedRevision: remoteRevision,
+          })
+      ).catch(rejectRemoteUploadFailure)
       await replaceLocalProjectWithFiles(
         metadata.localProjectPath,
         autoReconciledFiles
@@ -2802,7 +3038,11 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     await markProjectConflict(
       metadata,
       remoteRevision,
-      getRemoteUpdatedAt(remoteProject)
+      getRemoteUpdatedAt(remoteProject),
+      {
+        localManifest,
+        remoteManifest,
+      }
     )
   } catch (error) {
     await markProjectFailure(metadata, error)
@@ -2811,7 +3051,9 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   }
 }
 
-async function syncRemoteIndex() {
+async function syncRemoteIndex(
+  throttleProjectApiRequest: CloudSyncProjectApiRequestThrottle = unthrottledCloudSyncProjectApiRequest
+) {
   const now = Date.now()
   if (now - lastRemoteIndexSyncAt < REMOTE_INDEX_INTERVAL_MS) {
     return
@@ -2822,7 +3064,10 @@ async function syncRemoteIndex() {
     await localFs.mkdir(projectDirectory, { recursive: true })
   }
 
-  const remoteProjects = await listRemoteProjects(config)
+  const remoteProjects = await runCloudSyncProjectApiRequest(
+    throttleProjectApiRequest,
+    () => listRemoteProjects(config)
+  )
   cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
@@ -2995,7 +3240,11 @@ async function syncRemoteIndex() {
         }
 
         if (knownLocalRemoteIndexAction === 'sync-known-local') {
-          await syncProject(nextLocalMetadata.localProjectPath, [])
+          await syncProject(
+            nextLocalMetadata.localProjectPath,
+            [],
+            throttleProjectApiRequest
+          )
           const syncedMetadata = await getProjectMetadata(
             nextLocalMetadata.localProjectPath
           )
@@ -3064,7 +3313,11 @@ async function syncRemoteIndex() {
           removeMetadata(existingProjectPath)
         }
         upsertMetadata(nextMetadata)
-        await syncProject(nextMetadata.localProjectPath, [])
+        await syncProject(
+          nextMetadata.localProjectPath,
+          [],
+          throttleProjectApiRequest
+        )
         const syncedMetadata = await getProjectMetadata(existingProjectPath)
         const nextSyncedMetadata =
           syncedMetadata ??
@@ -3169,16 +3422,33 @@ async function runCloudSync() {
     : undefined
   let remoteIndexFailed = false
   let remoteIndexFailureMessage: string | undefined
+  let remoteIndexFailure: unknown
+  let failureRetryScheduled = false
 
   try {
     let entries = await getAllOutboxEntries()
     let syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
+    let throttleProjectApiRequest = createCloudSyncProjectApiRequestThrottle({
+      enabled: shouldThrottleCloudSyncProjectApiRequests({
+        hasSyncScope: Boolean(scopedScope),
+        projectCount: syncScopePlan.projectPaths.length,
+      }),
+    })
     if (syncScopePlan.shouldSyncRemoteIndex) {
       updateStatus({ state: 'syncing' })
       await enqueueExistingCloudLibraryProjectsForInitialSync()
-      await syncRemoteIndex().catch((error) => {
+      entries = await getAllOutboxEntries()
+      syncScopePlan = getCloudSyncScopePlanForScope(entries, scopedScope)
+      throttleProjectApiRequest = createCloudSyncProjectApiRequestThrottle({
+        enabled: shouldThrottleCloudSyncProjectApiRequests({
+          hasSyncScope: Boolean(scopedScope),
+          projectCount: syncScopePlan.projectPaths.length,
+        }),
+      })
+      await syncRemoteIndex(throttleProjectApiRequest).catch((error) => {
         remoteIndexFailed = true
         remoteIndexFailureMessage = errorMessage(error)
+        remoteIndexFailure = error
         reportCloudSyncFailure('remote-index', error)
         updateStatus({
           state: 'failed',
@@ -3194,7 +3464,8 @@ async function runCloudSync() {
     for (const projectPath of syncScopePlan.projectPaths) {
       await syncProject(
         projectPath,
-        outboxEntriesForProject(entries, projectPath)
+        outboxEntriesForProject(entries, projectPath),
+        throttleProjectApiRequest
       )
     }
 
@@ -3211,8 +3482,12 @@ async function runCloudSync() {
         lastFailureAt: nowIso(),
         ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
       })
-      scheduleSync(SYNC_RETRY_MS)
+      scheduleSyncFailureRetry(
+        remoteIndexFailure ?? new Error(remoteIndexFailureMessage)
+      )
+      failureRetryScheduled = true
     } else if (cloudSyncStatus.value.state !== 'conflict') {
+      resetSyncRetryBackoff()
       updateStatus({
         state: 'idle',
         activeProjectPath: undefined,
@@ -3226,8 +3501,11 @@ async function runCloudSync() {
       })
     }
     if (
-      cloudSyncStatus.value.pendingCount > 0 &&
-      cloudSyncStatus.value.state !== 'conflict'
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: cloudSyncStatus.value.pendingCount,
+        state: cloudSyncStatus.value.state,
+        failureRetryScheduled,
+      })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
@@ -3243,13 +3521,17 @@ async function runCloudSync() {
       activeProjectPath: scopedScope?.syncable ? scopedProjectPath : undefined,
       ...(syncedAt ? { lastSyncedAt: syncedAt } : {}),
     })
-    scheduleSync(SYNC_RETRY_MS)
+    scheduleSyncFailureRetry(error)
+    failureRetryScheduled = true
   } finally {
     syncInProgress = false
     pendingStatusSyncedAt = undefined
     if (
-      cloudSyncStatus.value.pendingCount > 0 &&
-      cloudSyncStatus.value.state !== 'conflict'
+      shouldScheduleCloudSyncPendingWork({
+        pendingCount: cloudSyncStatus.value.pendingCount,
+        state: cloudSyncStatus.value.state,
+        failureRetryScheduled,
+      })
     ) {
       scheduleSync(SYNC_DEBOUNCE_MS)
     }
@@ -3260,6 +3542,7 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
   if (!isConfiguredForCloud()) {
     return
   }
+
   if (syncTimer) {
     clearTimeout(syncTimer)
   }
@@ -3268,6 +3551,10 @@ function scheduleSync(delay = SYNC_DEBOUNCE_MS) {
     syncTimer = undefined
     void runCloudSync()
   }, delay)
+}
+
+function scheduleSyncFailureRetry(error: unknown) {
+  scheduleSync(nextSyncRetryDelayMs(error))
 }
 
 function scheduleRemoteIndexSync(delay = 0) {
@@ -3718,6 +4005,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   ) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
+    resetSyncRetryBackoff()
   }
 
   if (!config.enabled) {
@@ -3728,6 +4016,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     detachVisibilityChangeListener?.()
     initialLocalScanComplete = false
     lastRemoteIndexSyncAt = 0
+    resetSyncRetryBackoff()
     cloudSyncRemoteProjects.value = []
     updateStatus({
       enabled: false,
@@ -3773,10 +4062,11 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
 }
 
 export function retryCloudSyncEngine() {
+  resetSyncRetryBackoff()
   if (syncScopeProjectPath) {
     scheduleSync(0)
     return
   }
 
-  scheduleRemoteIndexSync()
+  scheduleRemoteIndexSync(0)
 }

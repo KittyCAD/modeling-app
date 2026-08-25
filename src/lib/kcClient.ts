@@ -2,6 +2,7 @@ import { Client } from '@kittycad/lib'
 import type { ApiError } from '@kittycad/lib'
 import env from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
+import { notifySessionExpiredFromResponse } from '@src/lib/sessionExpired'
 import isomorphicFetch from 'isomorphic-fetch'
 
 export function createKCClient(
@@ -9,13 +10,15 @@ export function createKCClient(
   baseUrlOverride?: string
 ): Client {
   const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
-  const injectedFetch = ((input: any, init?: any) => {
+  const injectedFetch = (async (input: any, init?: any) => {
     const impl = typeof fetch !== 'undefined' ? fetch : isomorphicFetch
     const opts: RequestInit = { ...(init || {}) }
     if (!isDesktop()) {
       opts.credentials = 'include'
     }
-    return impl(input, opts)
+    const response = await impl(input, opts)
+    notifySessionExpiredFromResponse(response)
+    return response
   }) as typeof fetch
   return new Client({ token, baseUrl, fetch: injectedFetch })
 }

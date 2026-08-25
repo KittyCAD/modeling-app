@@ -20,8 +20,9 @@ export enum DefaultLayoutPaneID {
   Debug = 'debug',
   Code = 'code',
   FeatureTree = 'feature-tree',
+  NamedViews = 'named-views',
   Files = 'files',
-  TTC = 'ttc',
+  Zookeeper = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
 }
@@ -64,6 +65,14 @@ export const featureTreePaneConfig: PaneChild = {
   ],
 }
 
+export const namedViewsPaneConfig: PaneChild = {
+  id: DefaultLayoutPaneID.NamedViews,
+  label: 'Views',
+  type: LayoutType.Simple,
+  areaType: AreaType.NamedViews,
+  icon: 'namedView',
+}
+
 const primaryPane: Layout = {
   id: DefaultLayoutToolbarID.Left,
   label: 'left-toolbar',
@@ -76,10 +85,10 @@ const primaryPane: Layout = {
     ...(isMobile()
       ? [
           {
-            id: DefaultLayoutPaneID.TTC,
+            id: DefaultLayoutPaneID.Zookeeper,
             label: 'Zookeeper',
             type: LayoutType.Simple,
-            areaType: AreaType.TTC,
+            areaType: AreaType.Zookeeper,
             icon: 'sparkles',
           } satisfies PaneChild,
         ]
@@ -120,6 +129,8 @@ const primaryPane: Layout = {
       type: LayoutType.Simple,
       areaType: AreaType.Debug,
     },
+    // Appended, so the indices `activeIndices` refers to do not shift.
+    namedViewsPaneConfig,
   ],
   actions: [
     ...(isMobile()
@@ -174,10 +185,10 @@ const secondaryPane: Layout = {
   splitOrientation: 'block',
   children: [
     {
-      id: DefaultLayoutPaneID.TTC,
+      id: DefaultLayoutPaneID.Zookeeper,
       label: 'Zookeeper',
       type: LayoutType.Simple,
-      areaType: AreaType.TTC,
+      areaType: AreaType.Zookeeper,
       icon: 'sparkles',
     },
   ],

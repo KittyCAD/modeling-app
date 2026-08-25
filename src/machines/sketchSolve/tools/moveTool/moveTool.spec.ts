@@ -64,6 +64,7 @@ function createConstraintApiObject({
   type,
   line = 3,
   arc = 3,
+  segments,
   points,
   labelPosition,
 }: {
@@ -76,8 +77,10 @@ function createConstraintApiObject({
     | 'Vertical'
     | 'Radius'
     | 'Diameter'
+    | 'Angle'
   line?: number
   arc?: number
+  segments?: Array<number | 'ORIGIN'>
   points?: Array<number | 'ORIGIN'>
   labelPosition?: {
     x: { value: number; units: 'Mm' }
@@ -92,7 +95,7 @@ function createConstraintApiObject({
   ) {
     constraint = {
       type,
-      points: points ?? [1, 2],
+      segments: segments ?? [1, 2],
       distance: { value: 10, units: 'Mm' },
       ...(labelPosition ? { labelPosition } : {}),
       source: {
@@ -119,6 +122,17 @@ function createConstraintApiObject({
       ...(labelPosition ? { labelPosition } : {}),
       source: {
         expr: '10',
+        is_literal: true,
+      },
+    }
+  } else if (type === 'Angle') {
+    constraint = {
+      type,
+      lines: [3, 4],
+      angle: { value: 60, units: 'Deg' },
+      ...(labelPosition ? { labelPosition } : {}),
+      source: {
+        expr: '60',
         is_literal: true,
       },
     }
@@ -165,6 +179,7 @@ function createDragSnappingDeps() {
     getLastGoodPreview: vi.fn(() => null),
     setLastGoodPreview: vi.fn(),
     getDragStartOutcome: vi.fn(() => null),
+    onClearDragSnapping: vi.fn(),
   }
 }
 
@@ -486,6 +501,8 @@ describe('createOnDragStartCallback', () => {
     }))
     const getCurrentCommittedCheckpointId = vi.fn(() => 12)
     const dismissConstraintHoverPopup = vi.fn()
+    const getDraggedEntityId = vi.fn(() => null)
+    const onUpdateHoveredId = vi.fn()
 
     const callback = createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
@@ -496,6 +513,8 @@ describe('createOnDragStartCallback', () => {
       getCurrentSketchOutcome,
       getCurrentCommittedCheckpointId,
       dismissConstraintHoverPopup,
+      getDraggedEntityId,
+      onUpdateHoveredId,
     })
 
     const intersectionPoint = {
@@ -799,6 +818,7 @@ describe('createOnDragCallback', () => {
     'VerticalDistance',
     'Radius',
     'Diameter',
+    'Angle',
   ] as const)(
     'should edit a dragged %s constraint label instead of editing segments',
     async (constraintType) => {
@@ -885,7 +905,7 @@ describe('createOnDragCallback', () => {
       const distanceConstraint = createConstraintApiObject({
         id: 8,
         type: constraintType,
-        points: [1, 2],
+        segments: [1, 2],
         labelPosition: {
           x: { value: 5, units: 'Mm' },
           y: { value: 4, units: 'Mm' },
@@ -1549,7 +1569,7 @@ describe('createOnDragCallback', () => {
     const distanceConstraint = createConstraintApiObject({
       id: 8,
       type: 'Distance',
-      points: [1, 5],
+      segments: [1, 5],
       labelPosition: {
         x: { value: 5, units: 'Mm' },
         y: { value: 5, units: 'Mm' },
@@ -1585,7 +1605,7 @@ describe('createOnDragCallback', () => {
     const committedConstraint = createConstraintApiObject({
       id: 8,
       type: 'Distance',
-      points: [1, 5],
+      segments: [1, 5],
       labelPosition: {
         x: { value: 9, units: 'Mm' },
         y: { value: 11, units: 'Mm' },
@@ -2371,7 +2391,7 @@ describe('createOnDragCallback', () => {
     const distanceConstraint = createConstraintApiObject({
       id: 8,
       type: 'HorizontalDistance',
-      points: [4, 5],
+      segments: [4, 5],
       labelPosition: {
         x: { value: 25, units: 'Mm' },
         y: { value: 14, units: 'Mm' },
@@ -2387,7 +2407,7 @@ describe('createOnDragCallback', () => {
     const snappedConstraint = createConstraintApiObject({
       id: 8,
       type: 'HorizontalDistance',
-      points: [4, 5],
+      segments: [4, 5],
       labelPosition: {
         x: { value: 25, units: 'Mm' },
         y: { value: 9, units: 'Mm' },
@@ -4134,6 +4154,9 @@ describe('createOnClickCallback', () => {
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [5],
       duringAreaSelectIds: [],
+      selectionCoordinates: {
+        5: [20, 0],
+      },
     })
   })
 
@@ -4168,6 +4191,9 @@ describe('createOnClickCallback', () => {
     expect(onUpdateSelectedIds).toHaveBeenCalledWith({
       selectedIds: [11],
       duringAreaSelectIds: [],
+      selectionCoordinates: {
+        11: [5, 10],
+      },
     })
   })
 
@@ -4355,98 +4381,112 @@ describe('createOnClickCallback', () => {
 })
 
 describe('setUpOnDragAndSelectionClickCallbacks constraint label dragging', () => {
-  it('keeps dragging a radius label when drag start fires after the cursor leaves the label hit area', async () => {
-    const radiusConstraint = createConstraintApiObject({
-      id: 8,
-      type: 'Radius',
-    })
-    const constraintGroup = new Group()
-    constraintGroup.name = String(radiusConstraint.id)
-    const labelChild = new Group()
-    labelChild.userData.type = DISTANCE_CONSTRAINT_LABEL
-    labelChild.userData.hitObjects = [
-      {
-        type: 'line',
-        line: [
-          [-8, -8],
-          [8, -8],
-        ],
-      },
-      {
-        type: 'line',
-        line: [
-          [8, -8],
-          [8, 8],
-        ],
-      },
-      {
-        type: 'line',
-        line: [
-          [8, 8],
-          [-8, 8],
-        ],
-      },
-      {
-        type: 'line',
-        line: [
-          [-8, 8],
-          [-8, -8],
-        ],
-      },
-    ]
-    constraintGroup.add(labelChild)
+  it.each(['Radius', 'Angle'] as const)(
+    'keeps dragging a %s label when drag start fires after the cursor leaves the label hit area',
+    async (constraintType) => {
+      const constraint = createConstraintApiObject({
+        id: 8,
+        type: constraintType,
+      })
+      const constraintGroup = new Group()
+      constraintGroup.name = String(constraint.id)
+      const labelChild = new Group()
+      labelChild.userData.type = DISTANCE_CONSTRAINT_LABEL
+      labelChild.userData.hitObjects = [
+        {
+          type: 'line',
+          line: [
+            [-8, -8],
+            [8, -8],
+          ],
+        },
+        {
+          type: 'line',
+          line: [
+            [8, -8],
+            [8, 8],
+          ],
+        },
+        {
+          type: 'line',
+          line: [
+            [8, 8],
+            [-8, 8],
+          ],
+        },
+        {
+          type: 'line',
+          line: [
+            [-8, 8],
+            [-8, -8],
+          ],
+        },
+      ]
+      constraintGroup.add(labelChild)
 
-    const {
-      onMouseDownSelection,
-      setPlaneIntersectPoint,
-      onDragStart,
-      onDrag,
-      rustContext,
-    } = setUpMoveToolCallbacks({
-      apiObjects: [radiusConstraint],
-      hoveredId: radiusConstraint.id,
-      getSceneObjectByName: (name) =>
-        name === String(radiusConstraint.id) ? constraintGroup : null,
-    })
+      const {
+        onMouseDownSelection,
+        setPlaneIntersectPoint,
+        onDragStart,
+        onDrag,
+        rustContext,
+        send,
+      } = setUpMoveToolCallbacks({
+        apiObjects: [constraint],
+        hoveredId: constraint.id,
+        getSceneObjectByName: (name) =>
+          name === String(constraint.id) ? constraintGroup : null,
+      })
 
-    setPlaneIntersectPoint(new Vector2(0, 0))
-    expect(onMouseDownSelection()).toBe(true)
+      setPlaneIntersectPoint(new Vector2(0, 0))
+      expect(onMouseDownSelection()).toBe(true)
 
-    setPlaneIntersectPoint(new Vector2(0, 30))
-    onDragStart({
-      intersectionPoint: {
-        twoD: new Vector2(0, 30),
-        threeD: new Vector3(0, 30, 0),
-      },
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
+      setPlaneIntersectPoint(new Vector2(0, 30))
+      onDragStart({
+        intersectionPoint: {
+          twoD: new Vector2(0, 30),
+          threeD: new Vector3(0, 30, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
 
-    await onDrag({
-      intersectionPoint: {
-        twoD: new Vector2(1, 31),
-        threeD: new Vector3(1, 31, 0),
-      },
-      mouseEvent: createTestMouseEvent(),
-      intersects: [],
-    })
+      expect(send).toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: { hoveredId: constraint.id },
+      })
 
-    expect(
-      rustContext.editDistanceConstraintLabelPosition
-    ).toHaveBeenCalledWith(
-      0,
-      0,
-      radiusConstraint.id,
-      {
-        x: { value: 1, units: 'Mm' },
-        y: { value: 31, units: 'Mm' },
-      },
-      expect.any(Object),
-      false,
-      undefined,
-      false
-    )
-  })
+      await onDrag({
+        intersectionPoint: {
+          twoD: new Vector2(1, 31),
+          threeD: new Vector3(1, 31, 0),
+        },
+        mouseEvent: createTestMouseEvent(),
+        intersects: [],
+      })
+
+      expect(
+        rustContext.editDistanceConstraintLabelPosition
+      ).toHaveBeenCalledWith(
+        0,
+        0,
+        constraint.id,
+        {
+          x: { value: 1, units: 'Mm' },
+          y: { value: 31, units: 'Mm' },
+        },
+        expect.any(Object),
+        false,
+        undefined,
+        false
+      )
+
+      expect(send).not.toHaveBeenCalledWith({
+        type: 'update hovered id',
+        data: { hoveredId: null },
+      })
+    }
+  )
 })
 
 describe('setUpOnDragAndSelectionClickCallbacks onMove', () => {

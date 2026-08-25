@@ -1,0 +1,12 @@
+// Pins that a distance must be greater than zero. A distance is a separation
+// between the camera and what it looks at: zero puts the camera on that point
+// and leaves no direction to look along, and a negative value puts it behind
+// the point, which is not what the argument means.
+//
+// A negative value is the case pinned here rather than zero because it is the
+// one that survives review unnoticed -- it looks like a deliberate number, and
+// a sign error in an expression produces it silently. Zero is covered by the
+// unit tests, which also cover -0.0.
+@settings(experimentalFeatures = allow)
+
+bad = view::oriented(view::Orientation::Front, distance = -50)

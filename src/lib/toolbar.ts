@@ -2502,11 +2502,15 @@ export function buildToolbarConfig(
         {
           id: 'Dimension',
           command: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'Dimension',
-              keepSelection,
-            }),
+          onClick: ({ modelingSend, isActive, keepSelection }) =>
+            isActive
+              ? modelingSend({
+                  type: 'unequip tool',
+                })
+              : modelingSend({
+                  type: 'Dimension',
+                  keepSelection,
+                }),
           icon: 'dimension',
           status: 'available',
           title: 'Dimension',
@@ -2514,39 +2518,9 @@ export function buildToolbarConfig(
             'Constrain distance between points, length of lines, or radius of arcs.',
           extraInfo: constraintsExtraInfo,
           links: [],
-          isActive: (state) => false,
-        },
-        {
-          id: 'HorizontalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'HorizontalDistance',
-              keepSelection,
-            }),
-          icon: 'horizontalDimension',
-          status: 'available',
-          title: 'Horizontal Distance',
-          description: 'Constrain horizontal distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
-        },
-        {
-          id: 'VerticalDistance',
-          command: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-          onClick: ({ modelingSend, keepSelection }) =>
-            modelingSend({
-              type: 'VerticalDistance',
-              keepSelection,
-            }),
-          icon: 'verticalDimension',
-          status: 'available',
-          title: 'Vertical Distance',
-          description: 'Constrain vertical distance between two points.',
-          extraInfo: constraintsExtraInfo,
-          links: [],
-          isActive: (state) => false,
+          isActive: (state) =>
+            state.matches('sketchSolveMode') &&
+            state.context.sketchSolveToolName === 'dimensionTool',
         },
         {
           id: 'construction',

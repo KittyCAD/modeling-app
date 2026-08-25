@@ -9,7 +9,7 @@ import type { PlaneName } from "./PlaneName";
 import type { SketchCheckpointId } from "./SketchCheckpointId";
 import type { SourceRange } from "./SourceRange";
 
-export type Angle = { lines: Array<ApiObjectId>, angle: Number, source: ConstraintSource, };
+export type Angle = { lines: Array<ApiObjectId>, angle: Number, sector?: number, inverse?: boolean, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
 export type ApiArc = { start: ApiObjectId, end: ApiObjectId, center: ApiObjectId, ctor: SegmentCtor, ctor_applicable: boolean, construction: boolean, 
 /**
@@ -94,7 +94,7 @@ export type ControlPointSplineCtor = { points: Array<ApiPoint2d<Expr>>, construc
 
 export type Diameter = { arc: ApiObjectId, diameter: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
-export type Distance = { points: Array<ConstraintSegment>, distance: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
+export type Distance = { segments: Array<ConstraintSegment>, distance: Number, labelPosition?: ApiPoint2d<Number>, source: ConstraintSource, };
 
 export type EditSketchOutcome = { sceneGraphDelta: SceneGraphDelta, checkpointId: SketchCheckpointId | null, };
 

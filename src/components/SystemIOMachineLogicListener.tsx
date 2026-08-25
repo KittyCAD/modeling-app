@@ -29,9 +29,9 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
   const { settings, systemIOActor, registry } = useApp()
@@ -44,6 +44,7 @@ export function SystemIOMachineLogicListener() {
   const lastOperation = useLastOperation()
 
   const navigate = useNavigate()
+  const navigation = useNavigation()
   const settingsValues = settings.useSettings()
   const lsp = registry.get(lspService)
   const defaultDirectoryLibraryPath =
@@ -61,6 +62,16 @@ export function SystemIOMachineLogicListener() {
     requestedFilePathWithExtension: string | null
     requestedProjectDirectory: string | null
   }) {
+    if (
+      !shouldNavigateToRequestedPath({
+        currentPathname: navigation.location?.pathname ?? pathname,
+        onboardingStatus: settingsValues.app.onboardingStatus.current,
+        requestedPath,
+      })
+    ) {
+      return
+    }
+
     let filePathWithExtension = null
     let projectDirectory = null
     // assumes /file/<encodedURIComponent>
@@ -115,7 +126,9 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''))
+    void navigate(requestedPath + (search ? `?${search}` : ''), {
+      replace: requestedPath.includes(String(PATHS.ONBOARDING)),
+    })
   }
 
   /**

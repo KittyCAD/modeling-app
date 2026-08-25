@@ -26,12 +26,14 @@ import {
 } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import {
+  clonedRegionBody,
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
   getAstAndSketchSelections,
   getCapFromCylinder,
+  getClonedSweepEdges,
   getKclCommandValue,
   getWalls,
   runNewAstAndCheckForSweep,
@@ -340,9 +342,9 @@ extrude002 = extrude(seg01, length = 3)`)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch = artifactGraph
-        .values()
-        .find((a) => a.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -383,9 +385,9 @@ extrude001 = extrude(region001, length = 1)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch = artifactGraph
-        .values()
-        .find((a) => a.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -424,9 +426,9 @@ extrude001 = extrude(region001, length = 1)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch = artifactGraph
-        .values()
-        .find((a) => a.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -465,9 +467,9 @@ extrude001 = extrude(region001, length = 1)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch = artifactGraph
-        .values()
-        .find((a) => a.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -884,10 +886,8 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
         kclManagerInThisFile
       )
       const segment = createSelectionFromArtifacts(
-        artifactGraph
-          .values()
+        Array.from(artifactGraph.values())
           .filter((a) => a.type === 'segment')
-          .toArray()
           .slice(0, 2),
         artifactGraph
       )
@@ -951,6 +951,45 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`extrude002 = extrude(
   getOppositeEdge(extrude001.sketch.tags.line1),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
+    })
+
+    it('should add a surface extrude from an edge on a cloned body', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        clonedRegionBody,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = getClonedSweepEdges(artifactGraph)[0]
+      if (!edge) throw new Error('Expected a cloned sweep edge')
+
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches: createSelectionFromArtifacts([edge], artifactGraph),
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`extrude001 = extrude(
+  getOppositeEdge(cube2.sketch.tags.line2),
   length = 2,
   method = NEW,
   bodyType = SURFACE,
@@ -1606,9 +1645,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
         rustContextInThisFile
       )
 
-      const sketch = artifactGraph
-        .values()
-        .find((s) => s.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (s) => s.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -1663,9 +1702,9 @@ sketch002 = sketch(on = XZ) {
         rustContextInThisFile
       )
 
-      const sketch = artifactGraph
-        .values()
-        .find((s) => s.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (s) => s.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -1851,13 +1890,11 @@ s2 = sketch(on = XZ) {
         kclManagerInThisFile
       )
       const segment = createSelectionFromArtifacts(
-        [artifactGraph.values().find((a) => a.type === 'segment')!],
+        [Array.from(artifactGraph.values()).find((a) => a.type === 'segment')!],
         artifactGraph
       )
       const path = createSelectionFromArtifacts(
-        artifactGraph
-          .values()
-          .toArray()
+        Array.from(artifactGraph.values())
           .filter((a) => a.type === 'segment')
           .slice(-2),
         artifactGraph
@@ -2152,9 +2189,9 @@ t = sketch(on = plane001) {
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch1 = artifactGraph
-        .values()
-        .find((s) => s.type === 'sketchBlock')
+      const sketch1 = Array.from(artifactGraph.values()).find(
+        (s) => s.type === 'sketchBlock'
+      )
       const sketch2 = [...artifactGraph.values()].findLast(
         (s) => s.type === 'sketchBlock'
       )
@@ -2501,9 +2538,9 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         instanceInThisFile,
         rustContextInThisFile
       )
-      const sketch = artifactGraph
-        .values()
-        .find((s) => s.type === 'sketchBlock')
+      const sketch = Array.from(artifactGraph.values()).find(
+        (s) => s.type === 'sketchBlock'
+      )
       const sketches: Selections = {
         graphSelections: [],
         otherSelections: [
@@ -2619,7 +2656,7 @@ revolve001 = revolve(region001, angle = 10, axis = X)`
         kclManagerInThisFile
       )
       const segment = createSelectionFromArtifacts(
-        [artifactGraph.values().find((a) => a.type === 'segment')!],
+        [Array.from(artifactGraph.values()).find((a) => a.type === 'segment')!],
         artifactGraph
       )
       const angle = await getKclCommandValue(

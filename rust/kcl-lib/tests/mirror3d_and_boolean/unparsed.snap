@@ -1,0 +1,175 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing mirror3d_and_boolean.kcl
+---
+// FANUC M-10iD/12 hollow-wrist adapter flange
+// Direct-mount robot interface with robot-side pilot and bolt pattern.
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+flangeOuterDiameter = 110mm
+flangeThickness = 18mm
+hollowBoreDiameter = 55
+robotPilotDiameter = 71.05mm
+robotPilotDepth = 5mm
+robotBoltCircleDiameter = 64mm
+robotBoltHoleDiameter = 4.5mm
+robotBoltCount = 8
+robotBoltPatternOffset = 22.5deg
+
+robotBoltCircleRadius = robotBoltCircleDiameter / 2
+
+flangeBlankSketch = sketch(on = XY) {
+  outerProfile = circle(start = [var 55mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([outerProfile.center, ORIGIN])
+  horizontal([
+    outerProfile.center,
+    outerProfile.start
+  ])
+  diameter(outerProfile) == flangeOuterDiameter
+}
+flangeBlank = extrude(region(point = [40mm, 0mm], sketch = flangeBlankSketch), length = flangeThickness)
+flangeBlankSketchHidden = hide(flangeBlankSketch)
+
+hollowBoreSketch = sketch(on = XY) {
+  boreProfile = circle(start = [var 28.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([boreProfile.center, ORIGIN])
+  horizontal([boreProfile.center, boreProfile.start])
+  diameter(boreProfile) == hollowBoreDiameter
+}
+hollowBoreCutter = extrude(region(point = [0mm, 0mm], sketch = hollowBoreSketch), length = 40mm, symmetric = true)
+flangeWithHollowBore = subtract(flangeBlank, tools = [hollowBoreCutter])
+hollowBoreSketchHidden = hide(hollowBoreSketch)
+
+robotPilotRecessSketch = sketch(on = XY) {
+  recessProfile = circle(start = [var 35.525mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([recessProfile.center, ORIGIN])
+  horizontal([
+    recessProfile.center,
+    recessProfile.start
+  ])
+  diameter(recessProfile) == robotPilotDiameter
+}
+robotPilotRecessCutter = extrude(region(point = [34mm, 0mm], sketch = robotPilotRecessSketch), length = robotPilotDepth)
+flangeWithRobotPilot = subtract(flangeWithHollowBore, tools = [robotPilotRecessCutter])
+robotPilotRecessSketchHidden = hide(robotPilotRecessSketch)
+
+robotBoltHoleSketch = sketch(on = XY) {
+  holeProfile = circle(start = [var 2.25mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([holeProfile.center, ORIGIN])
+  horizontal([holeProfile.center, holeProfile.start])
+  diameter(holeProfile) == robotBoltHoleDiameter
+}
+robotBoltHoleSeed = extrude(region(point = [0mm, 0mm], sketch = robotBoltHoleSketch), length = 40mm, symmetric = true)
+  |> translate(xyz = [robotBoltCircleRadius, 0mm, 0mm], global = true)
+  |> rotate(axis = [0, 0, 1], angle = robotBoltPatternOffset, global = true)
+robotBoltHoleCutters = patternCircular3d(
+  robotBoltHoleSeed,
+  instances = robotBoltCount,
+  axis = Z,
+  center = [0mm, 0mm, 0mm],
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+flangeWithRobotBolts = subtract(flangeWithRobotPilot, tools = robotBoltHoleCutters)
+robotBoltHoleSketchHidden = hide(robotBoltHoleSketch)
+
+face001 = faceOf(flangeWithRobotBolts, face = END)
+sketch001 = sketch(on = face001) {
+  line1 = line(start = [var -38mm, var 47.5mm], end = [var -38mm, var 17.5mm])
+  line2 = line(start = [var -38mm, var 17.5mm], end = [var -28mm, var 17.5mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var -28mm, var 17.5mm], end = [var -28mm, var 47.5mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -28mm, var 47.5mm], end = [var -38mm, var 47.5mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  vertical(line1)
+  vertical(line3)
+  horizontal(line4)
+  horizontal(line2)
+  line5 = line(start = [var -28mm, var 17.5mm], end = [var -28mm, var 0mm], construction = true)
+  coincident([line5.start, line2.end])
+  line6 = line(start = [var -28mm, var 0mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line5.end, line6.start])
+  coincident([line6.end, ORIGIN])
+  vertical(line5)
+  horizontal(line6)
+  distance([line6.start, line6.end]) == 28
+  distance([line3.start, line3.end]) == 30
+  line7 = line(start = [var 0mm, var 0mm], end = [var 0mm, var -37.5mm], construction = true)
+  coincident([line7.start, line6.end])
+  vertical([line7.end, ORIGIN])
+  line8 = line(start = [var 0mm, var -37.5mm], end = [var -28mm, var -37.5mm], construction = true)
+  coincident([line8.start, line7.end])
+  horizontal(line8)
+  line9 = line(start = [var -28mm, var -37.5mm], end = [var -28mm, var 0mm], construction = true)
+  coincident([line9.start, line8.end])
+  coincident([line9.end, line6.start])
+  vertical(line9)
+  distance([line7.start, line7.end]) == 37.5
+  line10 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 47.5mm], construction = true)
+  coincident([line10.start, line6.end])
+  vertical([line10.end, ORIGIN])
+  line11 = line(start = [var 0mm, var 47.5mm], end = [var -28mm, var 47.5mm], construction = true)
+  coincident([line10.end, line11.start])
+  coincident([line11.end, line4.start])
+  horizontal(line11)
+  distance([line8, line11]) == 85
+  distance([line2.start, line2.end]) == 10
+}
+hidden001 = hide(sketch001)
+
+region001 = region(point = [-35mm, 30mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 45, method = NEW)
+
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 47.5mm, var 0mm], construction = true)
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  distance([line1.start, line1.end]) == 47.5
+  line2 = line(start = [var 47.5mm, var 0mm], end = [var 47.5mm, var 52mm], construction = true)
+  coincident([line2.start, line1.end])
+  vertical(line2)
+  line3 = line(start = [var 47.5mm, var 52mm], end = [var 35mm, var 52mm], construction = true)
+  coincident([line3.start, line2.end])
+  line4 = line(start = [var 47.5mm, var 29mm], end = [var 35mm, var 29mm], construction = true)
+  coincident([line4.start, line2])
+  horizontal(line3)
+  horizontal(line4)
+  line5 = line(start = [var 35mm, var 29mm], end = [var 35mm, var 52mm], construction = true)
+  coincident([line5.start, line4.end])
+  coincident([line5.end, line3.end])
+  vertical(line5)
+  distance([line3.start, line3.end]) == 12.5
+  distance([line2.start, line2.end]) == 34 + flangeThickness
+  distance([line5.start, line5.end]) == 23
+  circle1 = circle(start = [var 36.95mm, var 53.57mm], center = [var 35mm, var 52mm])
+  coincident([circle1.center, line5.end])
+  circle2 = circle(start = [var 35.43mm, var 26.54mm], center = [var 35mm, var 29mm])
+  coincident([circle2.center, line5.start])
+  equalRadius([circle2, circle1])
+  diameter(circle1) == 5
+}
+hidden002 = hide(sketch002)
+region002 = region(point = [34.5699653mm, 31.4601985mm], sketch = sketch002)
+region003 = region(point = [33.054656mm, 50.4337487mm], sketch = sketch002)
+extrude002 = extrude(
+  [region002, region003],
+  length = 100,
+  symmetric = true,
+  method = NEW,
+)
+solid001 = subtract(extrude001, tools = [extrude002[1], extrude002[0]])
+sketch003 = sketch(on = face001) {
+  circle1 = circle(start = [var 37.14mm, var 40.56mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 49.71mm, var 47.49mm], center = [var 0mm, var 0mm])
+  coincident([circle2.center, circle1.center])
+  diameter(circle1) == flangeOuterDiameter
+  diameter(circle2) == flangeOuterDiameter * 1.25
+}
+hidden003 = hide(sketch003)
+region004 = region(point = [-49.70913mm, -47.4891688mm], sketch = sketch003)
+extrude003 = extrude(region004, length = 100, method = NEW)
+solid002 = subtract(solid001, tools = extrude003)
+solid003 = mirror3d(solid002, across = YZ)

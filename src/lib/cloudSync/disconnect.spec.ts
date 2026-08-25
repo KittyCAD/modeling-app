@@ -258,6 +258,8 @@ describe('cloud sync upload failures', () => {
         return jsonResponse({
           id: remoteProjectId,
           title: 'Bracket',
+          description: 'Existing description',
+          category_ids: ['existing-category'],
           revision: remoteRevision,
         })
       }

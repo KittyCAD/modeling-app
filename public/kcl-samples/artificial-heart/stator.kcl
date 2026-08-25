@@ -1,7 +1,7 @@
 // Stator
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Sketch the PCB profile
 sketch001 = sketch(on = offsetPlane(XZ, offset = -.26)) {
@@ -42,7 +42,7 @@ sketch002 = sketch(on = XZ) {
   symmetric([line2, line1], axis = line3)
   symmetric([arc2, arc1], axis = line3)
   tangent([arc3, arc1])
-  angle([line1, line2]) == 180 - 30
+  angleDimension(lines = [line1, line2], sector = 2, labelPosition = [0in, 1.16in]) == 30
   tangent([arc5, arc6])
   verticalDistance([line3.start, arc2.center]) == 1
   horizontalDistance([arc1.center, arc2.center]) == .1
@@ -86,13 +86,13 @@ sketch002 = sketch(on = XZ) {
 hide(sketch002)
 
 // Select and extrude the stator cores
-region001 = region(point = [-0.1799838in, 1.0991161in], sketch = sketch002)
+region001 = region(segments = [sketch002.line1, sketch002.arc1])
 extrude001 = extrude(region001, length = .35, symmetric = true)
 
 hide(sketch002)
 
 // Select and extrude the stator windings
-region002 = region(point = [-0.2755823in, 1.3716893in], sketch = sketch002)
+region002 = region(segments = [sketch002.line4, sketch002.arc8])
 extrude002 = extrude(region002, length = .3, symmetric = true)
   |> appearance(color = "#d54b10")
 
@@ -106,6 +106,6 @@ pattern001 = patternCircular3d(
 hidden001 = hide(sketch001)
 
 // Extrude the motor board
-region003 = region(point = [-1.1699188in, -0.7999444in], sketch = sketch001)
+region003 = region(segments = [sketch001.circle1])
 extrude003 = extrude(region003, length = .1)
   |> appearance(color = "#115D33")

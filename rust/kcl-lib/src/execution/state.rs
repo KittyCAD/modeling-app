@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -74,6 +75,13 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
+    /// The deepest machine-executor call depth reached by executions sharing
+    /// this state: the root module, its callbacks, and module bodies executed
+    /// inline on it. Imported modules pre-executed in parallel run on cloned
+    /// state whose counter is dropped, so their depths are not aggregated
+    /// here. Used to survey real-world depth against the runaway guard's
+    /// limit; see `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
+    pub(crate) machine_depth_high_water: usize,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -204,6 +212,17 @@ pub struct DirectTagFilletMeta {
     pub tags: Vec<DirectTagFilletTagEntry>,
 }
 
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
 /// Unified metadata stream for Z0006 and future execution-backed refactors.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -211,6 +230,14 @@ pub struct DirectTagFilletMeta {
 pub enum RefactorMetadata {
     EdgeRefactor(Box<EdgeRefactorMeta>),
     DirectTagFillet(DirectTagFilletMeta),
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
 }
 
 /// Artifact state for a single module.
@@ -260,6 +287,9 @@ pub(super) struct ModuleState {
     /// recursive function calls. In general, this doesn't match `stack`'s size
     /// since it's conservative in reclaiming frames between executions.
     pub(super) call_stack_size: usize,
+    /// Live call depth of the machine executor within this module, for its
+    /// runaway-recursion guard. The machine's analog of `call_stack_size`.
+    pub(crate) machine_call_depth: usize,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -450,6 +480,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -589,7 +620,7 @@ impl ExecState {
         self.global
             .deprecation_version_override
             .as_deref()
-            .unwrap_or(&self.mod_local.settings.kcl_version)
+            .unwrap_or(self.mod_local.settings.kcl_version.as_str())
     }
 
     #[cfg(test)]
@@ -647,10 +678,14 @@ impl ExecState {
     pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
         // If you change this, make sure to test in WebAssembly in the app since
         // that's the limiting factor.
-        if self.mod_local.call_stack_size >= 50 {
-            return Err(KclError::MaxCallStack {
-                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
-            });
+        const LIMIT: usize = 50;
+        if self.mod_local.call_stack_size >= LIMIT {
+            return Err(KclError::new_max_call_stack(KclErrorDetails::new(
+                format!(
+                    "Call depth limit ({LIMIT}) exceeded. This usually means a function is recursing without a base case."
+                ),
+                vec![range],
+            )));
         }
         self.mod_local.call_stack_size += 1;
         Ok(())
@@ -667,6 +702,16 @@ impl ExecState {
         }
         self.mod_local.call_stack_size -= 1;
         Ok(())
+    }
+
+    /// The deepest machine-executor call depth reached in this execution.
+    /// The machine maintains the counter in all builds; today only the test
+    /// harnesses' depth survey reads it.
+    // Unused outside test builds, but kept available so release diagnostics
+    // can read the counter the machine already maintains.
+    #[allow(dead_code)]
+    pub(crate) fn machine_depth_high_water(&self) -> usize {
+        self.global.machine_depth_high_water
     }
 
     /// Returns true if we're executing in sketch mode for the current module.
@@ -900,6 +945,38 @@ impl ExecState {
         self.mod_local.artifacts.artifacts.insert(id, artifact);
     }
 
+    /// The declaring module and display name of every named view registered so
+    /// far. `view::named` needs these to reject a name that a view declared by
+    /// the same module already uses.
+    ///
+    /// Both artifact maps are scanned, because incremental re-execution divides
+    /// the views between them:
+    /// - a run that clears the scene empties `global.artifacts` beforehand, so
+    ///   every view it can see is one the current run registered into
+    ///   `mod_local.artifacts`;
+    /// - a run that only appends statements to an unchanged prefix does not
+    ///   re-execute that prefix, so the views the prefix declared stay in
+    ///   `global.artifacts` from the previous run while the appended
+    ///   declarations register into `mod_local.artifacts`.
+    ///
+    /// Reading one map alone would accept a duplicate name on one of those
+    /// paths and reject it on the other, which an author would see as the same
+    /// file being accepted while typed and rejected after an unrelated edit.
+    /// Neither path can report a view against its own earlier registration: a
+    /// re-executed declaration is only reached after `global.artifacts` was
+    /// cleared, and an appended declaration has no earlier registration.
+    pub(crate) fn registered_named_views(&self) -> impl Iterator<Item = (ModuleId, &str)> {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .filter_map(|artifact| match artifact {
+                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                _ => None,
+            })
+    }
+
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
         self.mod_local.artifacts.artifacts.get_mut(&id)
     }
@@ -1090,7 +1167,7 @@ impl ExecState {
             .iter()
             .filter_map(|m| match m {
                 RefactorMetadata::EdgeRefactor(meta) => Some(meta.as_ref().clone()),
-                RefactorMetadata::DirectTagFillet(_) => None,
+                RefactorMetadata::DirectTagFillet(_) | RefactorMetadata::LegacyAngle(_) => None,
             })
             .collect()
     }
@@ -1102,7 +1179,7 @@ impl ExecState {
             .refactor_metadata
             .iter()
             .filter_map(|m| match m {
-                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::LegacyAngle(_) => None,
                 RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
             })
             .collect()
@@ -1247,15 +1324,30 @@ impl ExecState {
     }
 
     pub(crate) fn kcl_version(&self) -> KclVersion {
-        self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+        self.mod_local.settings.kcl_version
     }
 }
 
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
+#[ts(export)]
 pub enum KclVersion {
     #[default]
+    #[serde(rename = "1.0")]
     V1,
+    #[serde(rename = "2.0")]
     V2,
+    #[serde(rename = "3.0-preview")]
+    V3Preview,
+}
+
+impl KclVersion {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::V1 => "1.0",
+            Self::V2 => "2.0",
+            Self::V3Preview => "3.0-preview",
+        }
+    }
 }
 
 impl FromStr for KclVersion {
@@ -1265,10 +1357,13 @@ impl FromStr for KclVersion {
         match s {
             "1" | "1.0" | "1.0.0" => Ok(Self::V1),
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
+            "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
             other => Err(KclError::new_semantic(KclErrorDetails {
                 source_ranges: Default::default(),
                 backtrace: Default::default(),
-                message: format!("Unrecognized version {other}. Valid versions are 1.0 and 2.0"),
+                message: format!(
+                    "Unrecognized version {other}. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
+                ),
             })),
         }
     }
@@ -1277,6 +1372,7 @@ impl FromStr for KclVersion {
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
+            machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
@@ -1334,6 +1430,16 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .filter_map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => Some(*metadata),
+                RefactorMetadata::EdgeRefactor(_) | RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();
@@ -1445,6 +1551,7 @@ impl ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,
+            machine_call_depth: 0,
             pipe_value: Default::default(),
             being_declared: Default::default(),
             sketch_block: Default::default(),
@@ -1528,7 +1635,7 @@ pub struct MetaSettings {
     pub default_length_units: UnitLength,
     pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
-    pub kcl_version: String,
+    pub kcl_version: KclVersion,
 }
 
 impl Default for MetaSettings {
@@ -1537,7 +1644,7 @@ impl Default for MetaSettings {
             default_length_units: UnitLength::Millimeters,
             default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
-            kcl_version: "1.0".to_owned(),
+            kcl_version: KclVersion::default(),
         }
     }
 }
@@ -1566,8 +1673,8 @@ impl MetaSettings {
                     updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
-                    let value = annotations::expect_number(&p.inner.value)?;
-                    self.kcl_version = value;
+                    let value = annotations::expect_kcl_version(&p.inner.value)?;
+                    self.kcl_version = value.parse()?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
@@ -1602,8 +1709,11 @@ impl MetaSettings {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use uuid::Uuid;
 
+    use super::KclVersion;
     use super::ModuleArtifactState;
     use crate::NodePath;
     use crate::NodePathExt;
@@ -1614,6 +1724,27 @@ mod tests {
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
+
+    #[test]
+    fn kcl_version_parses_supported_spellings() {
+        assert_eq!(KclVersion::from_str("1"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("1.0.0"), Ok(KclVersion::V1));
+        assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
+        assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
+        // No such version.
+        KclVersion::from_str("99.123").unwrap_err();
+    }
+
+    #[test]
+    fn kcl_version_serializes_as_canonical_setting_value() {
+        assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(
+            serde_json::to_string(&KclVersion::V3Preview).unwrap(),
+            r#""3.0-preview""#
+        );
+    }
 
     #[test]
     fn restore_scene_objects_rebuilds_lookup_maps() {

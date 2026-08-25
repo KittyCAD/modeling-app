@@ -53,8 +53,12 @@ const mocks = vi.hoisted(() => {
       mkdirOrNOOP: vi.fn(),
     },
     cloudSyncDb: {
-      clearOutboxEntriesForProject: vi.fn(),
+      clearLegacyConflictCopyReferences: vi.fn(),
+      clearOutboxEntriesTouchingProject: vi.fn(),
       deleteProjectMetadata: vi.fn(),
+    },
+    clientErrorReporting: {
+      reportCloudSyncConflictCopyDetected: vi.fn(),
     },
     fsZds: {
       cp: vi.fn(),
@@ -83,6 +87,11 @@ vi.mock('@src/lib/cloudSync', () => ({
 }))
 
 vi.mock('@src/lib/cloudSync/syncDb', () => mocks.cloudSyncDb)
+
+vi.mock(
+  '@src/lib/cloudSync/clientErrorReporting',
+  () => mocks.clientErrorReporting
+)
 
 vi.mock('@src/lib/desktop', () => mocks.desktop)
 
@@ -295,12 +304,18 @@ describe('directory project scanner', () => {
     expect(mocks.fsZds.rm).toHaveBeenCalledWith(conflictCopyPath, {
       recursive: true,
     })
-    expect(mocks.cloudSyncDb.clearOutboxEntriesForProject).toHaveBeenCalledWith(
-      conflictCopyPath
-    )
+    expect(
+      mocks.cloudSyncDb.clearOutboxEntriesTouchingProject
+    ).toHaveBeenCalledWith(conflictCopyPath)
+    expect(
+      mocks.cloudSyncDb.clearLegacyConflictCopyReferences
+    ).toHaveBeenCalledWith(conflictCopyPath)
     expect(mocks.cloudSyncDb.deleteProjectMetadata).toHaveBeenCalledWith(
       conflictCopyPath
     )
+    expect(
+      mocks.clientErrorReporting.reportCloudSyncConflictCopyDetected
+    ).toHaveBeenCalledTimes(1)
   })
 
   it('keeps legacy cloud conflict-copy metadata when folder deletion fails', async () => {
@@ -344,9 +359,15 @@ describe('directory project scanner', () => {
     )
     expect(mocks.trap.reportRejection).toHaveBeenCalledWith(deleteError)
     expect(
-      mocks.cloudSyncDb.clearOutboxEntriesForProject
+      mocks.cloudSyncDb.clearOutboxEntriesTouchingProject
+    ).not.toHaveBeenCalled()
+    expect(
+      mocks.cloudSyncDb.clearLegacyConflictCopyReferences
     ).not.toHaveBeenCalled()
     expect(mocks.cloudSyncDb.deleteProjectMetadata).not.toHaveBeenCalled()
+    expect(
+      mocks.clientErrorReporting.reportCloudSyncConflictCopyDetected
+    ).not.toHaveBeenCalled()
   })
 
   it('batches scheduled directory name sync refreshes', async () => {

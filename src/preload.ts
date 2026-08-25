@@ -129,13 +129,17 @@ let fsWatchListeners = new Map<
 const watchFileOn = (
   path: string,
   key: string,
-  callback: (eventType: string, path: string) => void
+  callback: (eventType: string, path: string) => void,
+  options: { depth?: number } = {}
 ) => {
   let watchers = fsWatchListeners.get(path)
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
+  const watcher = chokidar.watch(path, {
+    depth: options.depth ?? 1,
+    ignoreInitial: true,
+  })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
@@ -152,6 +156,9 @@ const watchFileOff = (path: string, key: string) => {
   }
   const { watcher, callback } = data
   watcher.off('all', callback)
+  void watcher.close().catch((error) => {
+    console.warn('Failed to close file watcher.', error)
+  })
   watchers.delete(key)
   if (watchers.size === 0) {
     fsWatchListeners.delete(path)
@@ -382,8 +389,9 @@ contextBridge.exposeInMainWorld('electron', {
       exposeProcessEnvs([
         'NODE_ENV',
         'VITE_ZOO_BASE_DOMAIN',
+        'VITE_ZOO_API_BASE_URL',
         'VITE_KITTYCAD_WEBSOCKET_URL',
-        'VITE_MLEPHANT_WEBSOCKET_URL',
+        'VITE_ZOOKEEPER_WEBSOCKET_URL',
         'VITE_ZOO_API_TOKEN',
       ])
     ),

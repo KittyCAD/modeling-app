@@ -958,6 +958,14 @@ surface003 = deleteFace(loft002, faces = capStart001)`)
   holeBody = hole::blind(depth = 5, diameter = 1),
   holeType = hole::simple(),
 )`
+    const secondSimpleHole = `hole002 = hole::hole(
+  hole001,
+  face = capEnd001,
+  cutAt = [3, 3],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 3, diameter = 2),
+  holeType = hole::simple(),
+)`
 
     it('should add a simple hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -1114,6 +1122,61 @@ hole002 = hole::hole(
   holeType = hole::counterbore(depth = 1, diameter = 2),
 )`
       )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should preserve the solid input when editing a hole with a downstream hole', async () => {
+      const twoHoleCode = `${cylinderWithEndTag}
+${simpleHole}
+${secondSimpleHole}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoHoleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const astThroughFirstHole = {
+        ...ast,
+        body: ast.body.slice(0, -1),
+      }
+      const nodeToEdit = createPathToNodeForLastVariable(
+        astThroughFirstHole,
+        false
+      )
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[0, 0]',
+        rustContextInThisFile,
+        { allowArrays: true }
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '5',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addHole({
+        ast,
+        artifactGraph,
+        nodeToEdit,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${simpleHole}
+${secondSimpleHole}`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

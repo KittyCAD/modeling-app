@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing named_views_hide_helix.kcl
+---
+// Pins that a helix is engine-addressable by the id hide() sends (a helix's
+// engine id and artifact id are the same uuid). The rendered snapshot must
+// show the anchor box and exactly ONE helix curve: the wide outer one.
+helixVisible = helix(
+  axis = Z,
+  radius = 15,
+  length = 20,
+  revolutions = 5,
+  angleStart = 0,
+)
+
+helixHidden = helix(
+  axis = Z,
+  radius = 8,
+  length = 20,
+  revolutions = 5,
+  angleStart = 0,
+)
+
+anchorSketch = sketch(on = XY) {
+  line1 = line(start = [var 25, var 0], end = [var 35, var 0])
+  line2 = line(start = [var 35, var 0], end = [var 35, var 10])
+  line3 = line(start = [var 35, var 10], end = [var 25, var 10])
+  line4 = line(start = [var 25, var 10], end = [var 25, var 0])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+boxVisible = extrude(region(point = [30, 5], sketch = anchorSketch), length = 10)
+
+hide(helixHidden)

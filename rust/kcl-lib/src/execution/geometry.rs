@@ -1298,6 +1298,14 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) pattern_source_artifact_id: Option<ArtifactId>,
+    /// Body type known from the KCL operation that created this value.
+    ///
+    /// Mock execution cannot query the engine for this, so retain it when it
+    /// is known locally. Procedural operations whose result depends on engine
+    /// topology may leave it unset.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) best_guess_body_type: Option<kcmc::shared::BodyType>,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
@@ -2559,6 +2567,26 @@ pub struct SketchConstraint {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleRayDirection {
+    Forward,
+    Reverse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleSector {
+    One,
+    Two,
+    Three,
+    Four,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum AngleConstraintMode {
+    LinesAtAngle,
+    PointsAtAngle { sector: AngleSector, inverse: bool },
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -2566,6 +2594,14 @@ pub enum SketchConstraintKind {
     Angle {
         line0: ConstrainableLine2d,
         line1: ConstrainableLine2d,
+        #[serde(skip)]
+        #[ts(skip)]
+        mode: AngleConstraintMode,
+        #[serde(rename = "labelPosition")]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        #[ts(rename = "labelPosition")]
+        #[ts(optional)]
+        label_position: Option<ApiPoint2d<Number>>,
     },
     Distance {
         points: [ConstrainablePoint2dOrOrigin; 2],

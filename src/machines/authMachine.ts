@@ -3,7 +3,7 @@ import { oauth2, users } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentKittycadWebSocketUrl,
-  updateEnvironmentMlephantWebSocketUrl,
+  updateEnvironmentZookeeperWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import {
@@ -23,7 +23,7 @@ import {
 } from '@src/lib/clientErrors'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
-  readEnvironmentConfigurationMlephantWebSocketUrl,
+  readEnvironmentConfigurationZookeeperWebSocketUrl,
 } from '@src/lib/desktop'
 import {
   listAllEnvironments,
@@ -91,6 +91,12 @@ export type Events =
     }
   | {
       type: 'Log out all'
+    }
+  | {
+      type: 'Session expired'
+    }
+  | {
+      type: 'Acknowledge session expired'
     }
   | {
       type: 'Log in'
@@ -174,6 +180,33 @@ export const authMachine = setup({
         'Log out all': {
           target: 'loggingOutAllEnvironments',
         },
+        'Session expired': {
+          target: 'sessionExpired',
+          actions: assign({
+            user: () => undefined,
+            token: () => '',
+          }),
+        },
+      },
+    },
+    sessionExpired: {
+      on: {
+        'Acknowledge session expired': {
+          target: 'loggedOut',
+          actions: assign({
+            user: () => undefined,
+            token: () => '',
+          }),
+        },
+        'Log in': {
+          target: 'checkIfLoggedIn',
+          actions: assign({
+            token: ({ event }) => {
+              const token = event.token || ''
+              return token
+            },
+          }),
+        },
       },
     },
     loggingOut: {
@@ -244,7 +277,7 @@ export const authMachine = setup({
       },
     },
   },
-  schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
+  schema: { events: {} as Events },
 })
 
 async function getUser(input: { token?: string }) {
@@ -261,7 +294,7 @@ async function getUser(input: { token?: string }) {
         VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
         VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
         VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
-        VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+        VITE_ZOOKEEPER_WEBSOCKET_URL: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
       },
     },
   })
@@ -277,12 +310,12 @@ async function getUser(input: { token?: string }) {
   }
 
   // Update the Zookeeper WebSocket URL override
-  const cachedMlephantWebSocketUrl =
-    await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
-  if (cachedMlephantWebSocketUrl) {
-    updateEnvironmentMlephantWebSocketUrl(
+  const cachedZookeeperWebSocketUrl =
+    await readEnvironmentConfigurationZookeeperWebSocketUrl(environment)
+  if (cachedZookeeperWebSocketUrl) {
+    updateEnvironmentZookeeperWebSocketUrl(
       environment,
-      cachedMlephantWebSocketUrl
+      cachedZookeeperWebSocketUrl
     )
   }
 

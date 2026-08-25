@@ -2,7 +2,7 @@
 // Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.
 // Categories: Automotive
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 radius = 29
 radiusInner = 22

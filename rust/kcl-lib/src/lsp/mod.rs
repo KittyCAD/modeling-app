@@ -22,7 +22,7 @@ use crate::errors::Suggestion;
 use crate::errors::Tag;
 
 impl IntoDiagnostic for CompilationIssue {
-    fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
+    fn to_lsp_diagnostics(&self, code: &str, _uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
         let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
         vec![Diagnostic {

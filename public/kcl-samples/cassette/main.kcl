@@ -1,0 +1,159 @@
+// Sprocket Cassette
+// A sprocket cassette is a stack of sprockets on a splined hub for multiple gear ratios.
+// Categories: Automotive
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+chainPitch = 0.25in
+rollerWidth = 0.09375in
+rollerRadius = 0.065in
+flankRadius = chainPitch - rollerRadius
+shaftDiameter = 12mm
+shaftRadius = shaftDiameter / 2
+splineInnerRadius = shaftRadius - 0.01in
+sprocketThickness = rollerWidth / 2
+speedCount = 7
+
+// Build one 20-degree spline module and pattern it into the shared cutter.
+splineSeed = sketch(on = offsetPlane(XZ, offset = -speedCount * rollerWidth)) {
+  outerArc = arc(
+    start = [shaftRadius, 0mm],
+    end = [
+      shaftRadius * cos(10deg),
+      shaftRadius * sin(10deg)
+    ],
+    center = [0mm, 0mm],
+  )
+  radialIn = line(
+    start = [
+      shaftRadius * cos(10deg),
+      shaftRadius * sin(10deg)
+    ],
+    end = [
+      splineInnerRadius * cos(10deg),
+      splineInnerRadius * sin(10deg)
+    ],
+  )
+  innerArc = arc(
+    start = [
+      splineInnerRadius * cos(10deg),
+      splineInnerRadius * sin(10deg)
+    ],
+    end = [
+      splineInnerRadius * cos(20deg),
+      splineInnerRadius * sin(20deg)
+    ],
+    center = [0mm, 0mm],
+  )
+  radialOut = line(
+    start = [
+      splineInnerRadius * cos(20deg),
+      splineInnerRadius * sin(20deg)
+    ],
+    end = [
+      shaftRadius * cos(20deg),
+      shaftRadius * sin(20deg)
+    ],
+  )
+}
+splineOutline = patternCircular2d(
+  splineSeed,
+  instances = 18,
+  center = [0mm, 0mm],
+  arcDegrees = 360deg,
+  rotateDuplicates = true,
+)
+splineRegion = region(segments = [
+  splineSeed.outerArc,
+  splineSeed.radialIn
+])
+splineCutter = extrude(splineRegion, length = speedCount * rollerWidth)
+
+fn cassetteSprocket(@speed, nTeeth) {
+  toothPitch = 360deg / nTeeth
+  pitchRadius = chainPitch / (2 * sin(180deg / nTeeth))
+  rootEndAngle = 90deg + toothPitch
+  flankExitAngle = toothPitch + 28deg
+
+  rootEnd = [
+    pitchRadius + rollerRadius * cos(rootEndAngle),
+    rollerRadius * sin(rootEndAngle)
+  ]
+  flankCenter = [
+    rootEnd[0] - (flankRadius * sin(toothPitch)),
+    rootEnd[1] + flankRadius * cos(toothPitch)
+  ]
+  flankEnd = [
+    flankCenter[0] + flankRadius * sin(flankExitAngle),
+    flankCenter[1] - (flankRadius * cos(flankExitAngle))
+  ]
+
+  // Reflect the first half-tooth, then rotate it into the next tooth position.
+  flankEndMirrorNext = [
+    flankEnd[0] * cos(toothPitch) + flankEnd[1] * sin(toothPitch),
+    flankEnd[0] * sin(toothPitch) - (flankEnd[1] * cos(toothPitch))
+  ]
+  rootEndMirrorNext = [
+    rootEnd[0] * cos(toothPitch) + rootEnd[1] * sin(toothPitch),
+    rootEnd[0] * sin(toothPitch) - (rootEnd[1] * cos(toothPitch))
+  ]
+  flankCenterMirrorNext = [
+    flankCenter[0] * cos(toothPitch) + flankCenter[1] * sin(toothPitch),
+    flankCenter[0] * sin(toothPitch) - (flankCenter[1] * cos(toothPitch))
+  ]
+  rootEndNext = [
+    rootEnd[0] * cos(toothPitch) - (rootEnd[1] * sin(toothPitch)),
+    rootEnd[0] * sin(toothPitch) + rootEnd[1] * cos(toothPitch)
+  ]
+  rootCenterNext = [
+    pitchRadius * cos(toothPitch),
+    pitchRadius * sin(toothPitch)
+  ]
+
+  toothSeed = sketch(on = offsetPlane(XZ, offset = -speed * rollerWidth)) {
+    flankOut = arc(start = rootEnd, end = flankEnd, center = flankCenter)
+    tip = arc(start = flankEnd, end = flankEndMirrorNext, center = [0in, 0in])
+    flankIn = arc(start = flankEndMirrorNext, end = rootEndMirrorNext, center = flankCenterMirrorNext)
+    root = arc(
+      start = rootEndMirrorNext,
+      end = rootEndNext,
+      center = rootCenterNext,
+      direction = CW,
+    )
+  }
+  toothOutline = patternCircular2d(
+    toothSeed,
+    instances = nTeeth,
+    center = [0in, 0in],
+    arcDegrees = 360deg,
+    rotateDuplicates = true,
+  )
+  toothRegion = region(segments = [toothSeed.flankOut, toothSeed.tip])
+  blank = extrude(toothRegion, length = sprocketThickness)
+  splineTool = clone(splineCutter)
+  sprocket = subtract(blank, tools = splineTool)
+
+  // Each spacer fills the first half of this speed's axial interval.
+  spacerSketch = sketch(on = offsetPlane(XZ, offset = -(speed - 0.5) * rollerWidth)) {
+    outer = circle(start = [shaftRadius * 1.3, 0mm], center = [0mm, 0mm])
+    inner = circle(start = [shaftRadius, 0mm], center = [0mm, 0mm])
+  }
+  spacerRegion = region(segments = [spacerSketch.outer])
+  spacer = extrude(spacerRegion, length = sprocketThickness)
+    |> appearance(color = "#0f0f0f")
+
+  hide(toothSeed)
+  hide(spacerSketch)
+  return [sprocket, spacer]
+}
+
+speed1 = cassetteSprocket(1, nTeeth = 11)
+speed2 = cassetteSprocket(2, nTeeth = 15)
+speed3 = cassetteSprocket(3, nTeeth = 19)
+speed4 = cassetteSprocket(4, nTeeth = 23)
+speed5 = cassetteSprocket(5, nTeeth = 27)
+speed6 = cassetteSprocket(6, nTeeth = 31)
+speed7 = cassetteSprocket(7, nTeeth = 36)
+
+hide(splineSeed)
+hide(splineCutter)

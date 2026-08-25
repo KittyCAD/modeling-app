@@ -35,8 +35,11 @@ import {
   KCL_DEFAULT_ORIGIN,
   KCL_DEFAULT_ORIGIN_2D,
   KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_ROTATE_ANGLE,
   KCL_DEFAULT_SCALE,
+  KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_TRANSLATE_X,
   KCL_DEFAULT_TRANSFORM,
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
@@ -1162,6 +1165,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         cylinder: {
           ...objectsTypesAndFilters,
+          selectionTypes: [
+            ...objectsTypesAndFilters.selectionTypes,
+            'pathRegion',
+          ],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1540,7 +1547,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           x: {
-            defaultValue: KCL_DEFAULT_TRANSFORM,
+            defaultValue: KCL_DEFAULT_TRANSLATE_X,
+            prepopulate: true,
           },
           y: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
@@ -1584,6 +1592,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         axis: {
           inputType: 'options',
           defaultValue: KCL_AXIS_Z,
+          prepopulate: true,
           options: [
             { name: 'X-axis', value: KCL_AXIS_X },
             { name: 'Y-axis', value: KCL_AXIS_Y },
@@ -1591,7 +1600,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ],
         },
         angle: {
-          defaultValue: KCL_DEFAULT_DEGREE,
+          defaultValue: KCL_DEFAULT_ROTATE_ANGLE,
+          prepopulate: true,
         },
       },
     }),
@@ -1622,7 +1632,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_SCALE,
         },
         factor: {
-          defaultValue: KCL_DEFAULT_SCALE,
+          defaultValue: KCL_DEFAULT_SCALE_FACTOR,
+          prepopulate: true,
         },
       },
     }),

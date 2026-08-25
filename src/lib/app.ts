@@ -17,25 +17,15 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { isDesktop } from '@src/lib/isDesktop'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
-import {
-  areProjectLibrarySettingsEqual,
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
-  getDefaultCloudProjectLibrarySetting,
-  isLegacyPersonalCloudProjectLibraryPathSetting,
-  isPersonalCloudProjectLibrarySetting,
-  mergeProjectLibrarySettings,
-  projectLibrariesFromSettings,
-  type ProjectLibrarySetting,
-} from '@src/lib/projectLibraries'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -49,7 +39,7 @@ import {
   buildZookeeperHistoryExtension,
   type PreparedZookeeperPatchFileReplay,
 } from '@src/lib/zookeeper/editorPlugin'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -93,7 +83,10 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
+import {
+  type ZdsPluginActivationSetting,
+  zdsPluginActivationSettingsValueSpec,
+} from '@src/registry/createZdsPlugin'
 import {
   appRegistryOverridesSlot,
   appRegistryServicesSlot,
@@ -102,7 +95,6 @@ import {
 import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
 
-const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
@@ -129,10 +121,6 @@ function getZookeeperReplayFallbackFilePath(
   ].filter((path, index, paths) => paths.indexOf(path) === index)
 
   return candidates.find((path) => path && !deletedPaths.has(path))
-}
-
-function normalizeProjectLibrarySettingPath(path: string) {
-  return path.trim().replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -166,7 +154,7 @@ export type AppLayoutSystem = LayoutService
 export type AppRegistrySystem = Registry
 
 export type AppDebug = {
-  mlEphantManagerActor?: MlEphantManagerActor
+  zookeeperManagerActor?: ZookeeperManagerActor
 }
 
 /** All of the subsystems needed to run the ZDS app */
@@ -260,8 +248,6 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
-    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
     this.userFeatures.actor.subscribe(this.syncPluginSettingsFromCurrent)
@@ -272,13 +258,11 @@ export class App implements AppSubsystems {
       .then(this.setActiveWasmInstance)
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
   }
@@ -495,42 +479,6 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncCloudSyncRuntimePolicy = () => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const authSnapshot = this.auth.actor.getSnapshot()
-    const token = authSnapshot.matches('loggedIn')
-      ? authSnapshot.context.token
-      : undefined
-    const enabled =
-      Boolean(token) &&
-      this.cloudSyncPluginSettingEnabled() &&
-      userFeaturesContextHas(
-        this.userFeatures.actor.getSnapshot().context,
-        OPFS_CLOUD_FEATURE_FLAG,
-        false
-      )
-
-    this.registry.get(cloudSyncService).configure({
-      enabled,
-      token,
-      autoEnrollCloudLibraryProjects: true,
-    })
-  }
-
-  private cloudSyncPluginSettingEnabled = () => {
-    const cloudSyncSetting = (
-      this.settings.actor.getSnapshot().context as unknown as Record<
-        string,
-        Record<string, { current?: unknown } | undefined> | undefined
-      >
-    ).plugins?.[CLOUD_SYNC_PLUGIN_ID]
-
-    return cloudSyncSetting?.current === true
-  }
-
   setActiveWasmInstance = (wasmInstance: ModuleType) => {
     this.activeWasmInstance = wasmInstance
     this.syncKclRuntimeFlags()
@@ -628,166 +576,90 @@ export class App implements AppSubsystems {
     )[activationSetting.category]?.[activationSetting.settingName]
   }
 
-  /**
-   * Product policy: Cloud sync is feature-gated, but feature-flagged users
-   * should get the plugin enabled by default.
-   *
-   * Keep the plugin's static default off so registry startup stays
-   * deterministic. Once settings and user features are both settled in the app
-   * runtime, this writes the user-level enablement.
-   *
-   * Desktop is opt-in: only write when there is no existing user preference, so
-   * an explicit opt-out is respected. Web treats cloud sync as the project
-   * storage layer rather than an optional feature, so it is mandatory for
-   * eligible users regardless of any prior opt-out (the toggle is also hidden
-   * on web via the plugin activation setting). This makes the setting the
-   * single source of truth that everything downstream follows.
-   */
-  private maybeEnableCloudSyncPluginForFeature = (
-    snapshot: SnapshotFrom<typeof this.settings.actor>,
-    pluginActivationSettings: Map<
-      string,
-      {
-        category: string
-        settingName: string
-      }
-    >
+  private getPluginActivationPlatform = () => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    return window.electron ? 'desktop' : 'web'
+  }
+
+  private hasPluginActivationFeature = (
+    activationSetting: ZdsPluginActivationSetting | undefined
   ) => {
-    if (!snapshot.matches('idle')) {
-      return false
+    const feature = activationSetting?.featurePolicy?.feature
+    if (!feature) {
+      return true
     }
 
-    const activationSetting = pluginActivationSettings.get(CLOUD_SYNC_PLUGIN_ID)
-    if (!activationSetting) {
-      return false
-    }
-
-    const settingValue = this.getPluginActivationSettingValue(
-      snapshot,
-      activationSetting
+    return userFeaturesContextHas(
+      this.userFeatures.actor.getSnapshot().context,
+      feature,
+      false
     )
-    if (!settingValue || settingValue.current === true) {
-      return false
-    }
-
-    const isWeb = typeof window !== 'undefined' && !window.electron
-    if (!isWeb && settingValue.user !== undefined) {
-      return false
-    }
-
-    if (
-      !userFeaturesContextHas(
-        this.userFeatures.actor.getSnapshot().context,
-        OPFS_CLOUD_FEATURE_FLAG,
-        false
-      )
-    ) {
-      return false
-    }
-
-    this.settings.actor.send({
-      type: `set.${activationSetting.category}.${activationSetting.settingName}`,
-      data: {
-        level: 'user',
-        value: true,
-      },
-    } as never)
-    return true
   }
 
   /**
-   * Product policy: enabling Cloud sync materializes the explicit Personal
-   * Cloud library row in user settings.
+   * Apply declarative plugin activation policy after settings have settled.
    *
-   * This is intentionally tied to the plugin activation lifecycle instead of a
-   * plugin-side startup reconciliation pass. Desktop keeps directory and cloud
-   * libraries side by side; web treats Personal Cloud as the canonical project
-   * library and replaces only the recognized default directory row.
+   * Static plugin defaults stay deterministic during registry startup. Runtime
+   * policy can then opt feature-flagged users into plugins at the user setting
+   * level, while preserving explicit opt-outs unless a plugin declares that it is
+   * required infrastructure on the current platform.
    */
-  private materializePersonalCloudLibraryOnEnable = async (
-    snapshot: SnapshotFrom<typeof this.settings.actor>
+  private maybeApplyPluginActivationPolicy = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    pluginActivationSettings: Map<string, ZdsPluginActivationSetting>
   ) => {
     if (!snapshot.matches('idle')) {
       return false
     }
 
-    const currentLibraries = snapshot.context.app.libraries?.current ?? []
-    const defaultDirectoryLibraryPaths = new Set(
-      [
-        snapshot.context.app.projectDirectory?.current,
-        snapshot.context.app.projectDirectory?.default,
-        ...(snapshot.context.app.libraries?.default ?? [])
-          .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
-          .map((library) => library.path),
-      ]
-        .filter((path): path is string => Boolean(path?.trim()))
-        .map(normalizeProjectLibrarySettingPath)
-    )
-    const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
-    const isDefaultCloudLibrary = (library: ProjectLibrarySetting) =>
-      isPersonalCloudProjectLibrarySetting(library)
-    const shouldReplaceDirectoryLibraryOnWeb = (
-      library: ProjectLibrarySetting
-    ) =>
-      !isDesktop() &&
-      library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
-      defaultDirectoryLibraryPaths.has(
-        normalizeProjectLibrarySettingPath(library.path)
+    const platform = this.getPluginActivationPlatform()
+    for (const activationSetting of pluginActivationSettings.values()) {
+      const featurePolicy = activationSetting.featurePolicy
+      if (!featurePolicy?.defaultEnabled) {
+        continue
+      }
+
+      const settingValue = this.getPluginActivationSettingValue(
+        snapshot,
+        activationSetting
       )
+      if (!settingValue || settingValue.current === true) {
+        continue
+      }
 
-    let hasPersonalCloudLibrary = false
-    const nextLibraries = mergeProjectLibrarySettings(
-      currentLibraries.flatMap((library) => {
-        if (isDefaultCloudLibrary(library)) {
-          hasPersonalCloudLibrary = true
-          return [
-            isLegacyPersonalCloudProjectLibraryPathSetting(library)
-              ? {
-                  ...library,
-                  path: defaultCloudLibrary.path,
-                  ...(defaultCloudLibrary.source
-                    ? { source: defaultCloudLibrary.source }
-                    : {}),
-                }
-              : library,
-          ]
-        }
+      if (!this.hasPluginActivationFeature(activationSetting)) {
+        continue
+      }
 
-        if (shouldReplaceDirectoryLibraryOnWeb(library)) {
-          if (hasPersonalCloudLibrary) {
-            return []
-          }
+      const forceEnabled =
+        platform !== undefined &&
+        featurePolicy.forceEnabledOnPlatform === platform
+      if (!forceEnabled && settingValue.user !== undefined) {
+        continue
+      }
 
-          hasPersonalCloudLibrary = true
-          return [defaultCloudLibrary]
-        }
-
-        return [library]
-      }),
-      hasPersonalCloudLibrary ? [] : [defaultCloudLibrary]
-    )
-
-    if (areProjectLibrarySettingsEqual(nextLibraries, currentLibraries)) {
-      return false
+      this.settings.actor.send({
+        type: `set.${activationSetting.category}.${activationSetting.settingName}`,
+        data: {
+          level: 'user',
+          value: true,
+        },
+      } as never)
+      return true
     }
 
-    this.settings.actor.send({
-      type: 'set.app.libraries',
-      data: {
-        level: 'user',
-        value: nextLibraries,
-      },
-    })
-    return true
+    return false
   }
 
   /**
    * Keep plugin runtime state aligned with the persisted settings model.
    *
    * Settings stay the source of truth. Plugin toggle services are an imperative
-   * projection of settled settings, and cloud-sync's feature-flag auto-enable
-   * policy is applied here so plugins do not mutate settings while the registry
-   * graph is being built.
+   * projection of settled settings, and activation policy is applied here so
+   * plugins do not mutate settings while the registry graph is being built.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
     const pluginActivationSettings = new Map(
@@ -801,16 +673,12 @@ export class App implements AppSubsystems {
     }
 
     if (
-      this.maybeEnableCloudSyncPluginForFeature(
-        snapshot,
-        pluginActivationSettings
-      )
+      this.maybeApplyPluginActivationPolicy(snapshot, pluginActivationSettings)
     ) {
       return
     }
 
     const activePluginIds: string[] = []
-    let shouldMaterializePersonalCloudLibrary = false
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -826,29 +694,21 @@ export class App implements AppSubsystems {
       if (typeof settingDesiredActive !== 'boolean') {
         continue
       }
-      const featureAllowsCloudSyncPlugin =
-        plugin.id !== CLOUD_SYNC_PLUGIN_ID ||
-        userFeaturesContextHas(
-          this.userFeatures.actor.getSnapshot().context,
-          OPFS_CLOUD_FEATURE_FLAG,
-          false
-        )
-      const desiredActive = settingDesiredActive && featureAllowsCloudSyncPlugin
+      const desiredActive =
+        settingDesiredActive &&
+        (!activationSetting.featurePolicy?.disableWithoutFeature ||
+          this.hasPluginActivationFeature(activationSetting))
       if (desiredActive) {
         activePluginIds.push(plugin.id)
       }
 
       const toggle = this.registry.get(plugin.service)
-      const wasActive = toggle.active.value
       if (toggle.active.value === desiredActive) {
         continue
       }
 
       if (desiredActive) {
         toggle.enable()
-        if (plugin.id === CLOUD_SYNC_PLUGIN_ID && !wasActive) {
-          shouldMaterializePersonalCloudLibrary = true
-        }
         continue
       }
 
@@ -861,12 +721,6 @@ export class App implements AppSubsystems {
         : undefined
     if (syncActivePlugins) {
       void syncActivePlugins(activePluginIds).catch(reportRejection)
-    }
-
-    if (shouldMaterializePersonalCloudLibrary) {
-      void this.materializePersonalCloudLibraryOnEnable(snapshot).catch(
-        reportRejection
-      )
     }
   }
 
@@ -883,6 +737,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
 
@@ -1051,7 +906,8 @@ export class App implements AppSubsystems {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch')
+      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
+      !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
     ) {
       this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection

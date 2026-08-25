@@ -2,7 +2,7 @@
 // Solver sketch version of the full tire profile.
 
 // Set units and version
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -46,7 +46,7 @@ tireSketch = sketch(on = XY) {
   coincident([line10.end, line1.start])
 }
 
-tireRegion = region(point = [11.5in, 0.1in], sketch = tireSketch)
+tireRegion = region(segments = [tireSketch.line1, tireSketch.arc1])
 tireBody = revolve(tireRegion, axis = Y)
 hide([tireSketch])
 
