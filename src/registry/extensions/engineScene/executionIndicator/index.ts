@@ -27,7 +27,7 @@ const executionIndicator = defineRegistryItemFactory((ctx) => {
               element: 'text' as const,
               icon: 'loading' as const,
               label: 'Engine executing',
-              hideLabel: true,
+              hideLabel: false,
               order: 0,
               scopes: ['file'],
               toolTip: {
