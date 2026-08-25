@@ -6,6 +6,12 @@ import {
   createZookeeperCorrelation,
   hasBeenInterruptedOnLast,
   type MlCopilotModeOption,
+  NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+  parseMlCopilotModesResult,
+  ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
+  ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
+  ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
+  ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
   ZookeeperConversationToMarkdown,
   type ZookeeperManagerContext,
   type ZookeeperManagerEvents,
@@ -13,12 +19,6 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
-  NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
-  parseMlCopilotModesResult,
-  ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
-  ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
-  ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
-  ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -293,7 +293,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -324,6 +324,87 @@ describe('zookeeperManagerMachine', () => {
       stubClientErrorFetch()
     })
 
+    it('waits for auth hydration before opening the setup websocket', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: '' },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      expect(ControllableSetupWebSocket.instances).toHaveLength(0)
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AuthTokenChanged,
+        apiToken: 'hydrated-token',
+      })
+
+      await vi.waitFor(() => {
+        expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+      })
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({
+            type: 'headers',
+            headers: { Authorization: 'Bearer hydrated-token' },
+          })
+        )
+      })
+
+      actor.stop()
+    })
+
+    it('restarts an in-flight setup with a rotated auth token', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'old-token' },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await vi.waitFor(() => {
+        expect(ControllableSetupWebSocket.instances).toHaveLength(1)
+      })
+      const oldSocket = ControllableSetupWebSocket.instances[0]
+
+      actor.send({
+        type: ZookeeperManagerTransitions.AuthTokenChanged,
+        apiToken: 'new-token',
+      })
+
+      await vi.waitFor(() => {
+        expect(ControllableSetupWebSocket.instances).toHaveLength(2)
+      })
+      const newSocket = ControllableSetupWebSocket.instances[1]
+      newSocket.open()
+
+      await vi.waitFor(() => {
+        expect(newSocket.sentPayloads).toContain(
+          JSON.stringify({
+            type: 'headers',
+            headers: { Authorization: 'Bearer new-token' },
+          })
+        )
+      })
+      expect(oldSocket.close).toHaveBeenCalledOnce()
+      expect(oldSocket.sentPayloads).not.toContain(
+        expect.stringContaining('old-token')
+      )
+
+      actor.stop()
+    })
+
     it('stops retrying and exposes a recoverable failure after repeated setup errors', async () => {
       const { fetchMock, reports } = stubClientErrorFetch()
       let setupAttempts = 0
@@ -346,7 +427,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -541,7 +622,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -590,7 +671,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -639,7 +720,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -807,7 +888,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -884,7 +965,7 @@ describe('zookeeperManagerMachine', () => {
         },
       })
       const actor = createActor(machine, {
-        input: { apiToken: '' },
+        input: { apiToken: 'token' },
       }).start()
 
       actor.send({
@@ -956,7 +1037,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -1001,7 +1082,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -1057,7 +1138,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -1116,7 +1197,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
@@ -1186,7 +1267,7 @@ describe('zookeeperManagerMachine', () => {
       })
       const actor = createActor(machine, {
         input: {
-          apiToken: '',
+          apiToken: 'token',
         },
       }).start()
 
