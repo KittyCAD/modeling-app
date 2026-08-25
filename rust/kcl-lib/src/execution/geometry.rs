@@ -1403,10 +1403,22 @@ impl Solid {
         self.topology_id
     }
 
-    /// Make this solid a brand-new body produced by an operation. It now owns
-    /// the topology of `engine_id`, and any retained pattern provenance no
-    /// longer applies.
+    /// Make this solid a brand-new body produced by an operation. It becomes
+    /// the engine entity `engine_id` and owns that entity's topology, and any
+    /// retained pattern provenance no longer applies.
+    ///
+    /// This sets every identity field, including the embedded sketch's ID, so
+    /// callers must not assign IDs separately. A caller that represents
+    /// several outputs of one operation as one KCL value generation may
+    /// overwrite `value_id` after this returns.
     pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+        self.id = engine_id;
+        self.value_id = engine_id;
+        // Keep the embedded sketch consistent for sketch-on-face in
+        // extrude.rs.
+        if let Some(sketch) = self.sketch_mut() {
+            sketch.id = engine_id;
+        }
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;

@@ -23,7 +23,6 @@ use crate::execution::Solid;
 use crate::execution::annotations;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
-use crate::std::patterns::GeometryTrait;
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -102,7 +101,6 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
 
@@ -155,9 +153,8 @@ pub(crate) async fn inner_union(
             continue;
         }
         let mut new_solid = solid.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.value_id = solid_out_id;
         new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.value_id = solid_out_id;
         new_solids.push(new_solid);
     }
 
@@ -197,7 +194,6 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
-    solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
 
@@ -249,9 +245,8 @@ pub(crate) async fn inner_intersect(
             continue;
         }
         let mut new_solid = solid.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.value_id = solid_out_id;
         new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.value_id = solid_out_id;
         new_solids.push(new_solid);
     }
 
@@ -302,7 +297,6 @@ pub(crate) async fn inner_subtract(
                     exec_state.next_uuid()
                 };
                 let mut new_solid = solid.clone();
-                new_solid.set_id(output_id);
                 new_solid.become_new_body(output_id, output_id.into());
                 new_solid
             })
@@ -356,9 +350,8 @@ pub(crate) async fn inner_subtract(
         .into_iter()
         .map(|output_id| {
             let mut new_solid = solids[0].clone();
-            new_solid.set_id(output_id);
-            new_solid.value_id = solid_out_id;
             new_solid.become_new_body(output_id, output_id.into());
+            new_solid.value_id = solid_out_id;
             new_solid
         })
         .collect::<Vec<_>>();
@@ -423,7 +416,6 @@ pub(crate) async fn inner_imprint(
     let body_out_id = exec_state.next_uuid();
 
     let mut body = targets[0].clone();
-    body.set_id(body_out_id);
     body.become_new_body(body_out_id, body_out_id.into());
     let mut new_solids = vec![body.clone()];
     let separate_bodies = !merge;
@@ -432,9 +424,8 @@ pub(crate) async fn inner_imprint(
         if separate_bodies {
             let extra_solid_id = exec_state.next_uuid();
             let mut new_solid = body.clone();
-            new_solid.set_id(extra_solid_id);
-            new_solid.value_id = body_out_id;
             new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+            new_solid.value_id = body_out_id;
             new_solids.push(new_solid);
         }
         record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
@@ -496,9 +487,8 @@ pub(crate) async fn inner_imprint(
             continue;
         }
         let mut new_solid = body.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.value_id = body_out_id;
         new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
+        new_solid.value_id = body_out_id;
         new_solids.push(new_solid);
     }
 
