@@ -12,11 +12,10 @@ import type { Connection } from '@src/lib/engineConnection/connection'
 export const PING_INTERVAL_MS = 1_000
 
 // The API closes modeling WebSockets after 30 seconds without a heartbeat.
-// Detect an unanswered pong sooner so the client can reconnect with a useful
-// close reason instead of waiting for a statusless server close.
+// Detect an unanswered pong sooner so the client can reconnect instead of
+// waiting for a statusless server close.
 export const PONG_TIMEOUT_MS = 10_000
-export const PONG_TIMEOUT_CLOSE_CODE = 4_000
-export const PONG_TIMEOUT_CLOSE_REASON = 'pong timeout'
+export const PONG_TIMEOUT_REASON = 'pong timeout'
 
 export type ModelTypes = OkModelingCmdResponse['type']
 // TODO: Should eventually be replaced with native EventTarget event system,
@@ -263,6 +262,9 @@ export enum EngineConnectionManagerEvents {
   // websocket event listener for close was called
   WebsocketClosed = 'websocket-closed',
 
+  // the client did not receive a pong within the heartbeat timeout
+  pingPongTimeout = 'ping-pong-timeout',
+
   // RTCPeerConnection processed a failed state in onConnectionStateChange
   peerConnectionFailed = 'peer-connection-failed',
 
@@ -394,6 +396,7 @@ function validateStreamDimension(dimension: number, label: string) {
 
 export interface ManagerTearDown {
   websocketClosed?: boolean
+  pingPongTimeout?: boolean
   peerConnectionFailed?: boolean
   peerConnectionDisconnected?: boolean
   peerConnectionClosed?: boolean
@@ -490,7 +493,6 @@ export const WebSocketStatusCodes: Readonly<Record<string, string>> =
      * (e.g., the server certificate can't be verified).
      */
     '1015': 'TLS handshake failure',
-    '4000': PONG_TIMEOUT_CLOSE_REASON,
   } as const)
 
 export const REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE = `Rejected because send was too early, WebSocket.readyState was not WebSocket.OPEN`

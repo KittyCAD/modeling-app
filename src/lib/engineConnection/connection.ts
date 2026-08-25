@@ -29,8 +29,7 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   PING_INTERVAL_MS,
-  PONG_TIMEOUT_CLOSE_CODE,
-  PONG_TIMEOUT_CLOSE_REASON,
+  PONG_TIMEOUT_REASON,
   PONG_TIMEOUT_MS,
   WebSocketStatusCodes,
 } from '@src/lib/engineConnection/utils'
@@ -255,7 +254,7 @@ export class Connection extends EventTarget {
         if (elapsedMs >= PONG_TIMEOUT_MS) {
           EngineDebugger.addLog({
             label: 'connection',
-            message: PONG_TIMEOUT_CLOSE_REASON,
+            message: PONG_TIMEOUT_REASON,
             metadata: {
               id: this.id,
               apiCallId: this.apiCallId,
@@ -264,11 +263,7 @@ export class Connection extends EventTarget {
               elapsedMs,
             },
           })
-          this.stopPingPong()
-          this.tearDownManager({
-            websocketClosed: true,
-            code: PONG_TIMEOUT_CLOSE_CODE.toString(),
-          })
+          this.tearDownManager({ pingPongTimeout: true })
         }
         return
       }

@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Connection } from '@src/lib/engineConnection/connection'
 import {
   PING_INTERVAL_MS,
-  PONG_TIMEOUT_CLOSE_CODE,
   PONG_TIMEOUT_MS,
 } from '@src/lib/engineConnection/utils'
 
@@ -24,6 +23,7 @@ const createConnection = () => {
     readyState: WebSocket.OPEN,
     send,
   } as unknown as WebSocket
+  tearDownManager.mockImplementation(() => connection.stopPingPong())
 
   return { connection, send, tearDownManager }
 }
@@ -51,10 +51,7 @@ describe('Connection heartbeat', () => {
     vi.advanceTimersByTime(PONG_TIMEOUT_MS)
 
     expect(tearDownManager).toHaveBeenCalledOnce()
-    expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
-      code: PONG_TIMEOUT_CLOSE_CODE.toString(),
-    })
+    expect(tearDownManager).toHaveBeenCalledWith({ pingPongTimeout: true })
 
     vi.advanceTimersByTime(PONG_TIMEOUT_MS)
     expect(tearDownManager).toHaveBeenCalledOnce()
