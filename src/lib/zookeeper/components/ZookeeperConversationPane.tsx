@@ -531,6 +531,10 @@ export const ZookeeperConversationPane = (props: {
           return
         }
 
+        if (context.cachedSetup !== undefined) {
+          return
+        }
+
         tryToGetExchanges()
       })
 
