@@ -34,6 +34,8 @@ import {
   isPointSegment,
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   buildSegmentCtorFromObject,
@@ -72,6 +74,7 @@ import {
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { buildDraftLineConstraintPlan } from '@src/machines/sketchSolve/tools/draftLineConstraint'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import { resolveToolPickerSelection } from '@src/machines/sketchSolve/tools/toolPicker'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
@@ -251,6 +254,29 @@ function isConstraintToolName(
   return constraintToolNameSet.has(toolName)
 }
 
+function getToolPickerSelection(context: SketchSolveContext) {
+  const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
+  if (!planeIntersectPoint?.twoD) {
+    return null
+  }
+
+  const objects = getCurrentSketchObjectsById(
+    context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ?? [],
+    context.sketchId
+  )
+  const candidates = findClosestApiObjects(
+    [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
+    objects,
+    context.sceneInfra
+  ).map(({ apiObject }) => apiObject)
+  const excludedIds = new Set([
+    ...(context.draftEntities?.segmentIds ?? []),
+    ...(context.draftEntities?.constraintIds ?? []),
+  ])
+
+  return resolveToolPickerSelection(candidates, excludedIds)
+}
+
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
@@ -282,6 +308,33 @@ export const sketchSolveMachine = setup({
     },
     'send escape to tool': ({ context }) => {
       sendToActorIfActive(context.childTool, { type: 'escape' })
+    },
+    'pick hovered tool': ({ context, self }) => {
+      const selection = getToolPickerSelection(context)
+      if (!selection || selection.type === 'unsupported') {
+        return
+      }
+
+      if (selection.type === 'empty') {
+        if (context.sketchSolveToolName !== null) {
+          sendToActorIfActive(self, { type: 'unequip tool' })
+        }
+        return
+      }
+
+      if (selection.tool === context.sketchSolveToolName) {
+        return
+      }
+
+      sendToActorIfActive(self, {
+        type: 'update selected ids',
+        data: { selectedIds: [], duringAreaSelectIds: [] },
+      })
+      sendToActorIfActive(self, {
+        type: 'equip tool',
+        data: { tool: selection.tool },
+        forceEquip: true,
+      })
     },
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
@@ -473,6 +526,11 @@ export const sketchSolveMachine = setup({
       ],
       description:
         'Toggles whether non-visual constraints should be shown in sketch solve mode.',
+    },
+    'pick hovered tool': {
+      actions: 'pick hovered tool',
+      description:
+        'Equips the sketch tool matching the object under the cursor, or unequips over empty sketch space.',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state
@@ -885,7 +943,7 @@ export const sketchSolveMachine = setup({
           {
             guard: ({ context, event }) => {
               assertEvent(event, 'equip tool')
-              if (!isConstraintToolName(event.data.tool)) {
+              if (event.forceEquip || !isConstraintToolName(event.data.tool)) {
                 return false
               }
 
@@ -955,6 +1013,7 @@ export const sketchSolveMachine = setup({
             guard: ({ context, event }) => {
               assertEvent(event, 'equip tool')
               return (
+                !event.forceEquip &&
                 context.sketchSolveToolName === 'lineTool' &&
                 buildDraftLineConstraintPlan(
                   event.data.tool,

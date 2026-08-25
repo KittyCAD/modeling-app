@@ -479,6 +479,51 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await editor.expectEditor.toContain('circle(start = [')
     })
+
+    await test.step('Pick hovered tools with Q and unequip over empty space', async () => {
+      const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
+        format: 'ratio',
+      })
+      const [, moveToCircle] = scene.makeMouseHelpers(0.78, 0.62, {
+        format: 'ratio',
+      })
+      const [, moveToEmptySpace] = scene.makeMouseHelpers(0.1, 0.85, {
+        format: 'ratio',
+      })
+      const getPlanePointerKey = () =>
+        page.evaluate(() => {
+          const point =
+            window.app.singletons.kclManager.sceneInfra.getPlaneIntersectPoint()
+          return point?.twoD ? `${point.twoD.x}:${point.twoD.y}` : null
+        })
+      const moveAndWaitForScenePointer = async (
+        move: () => Promise<unknown>
+      ) => {
+        const previousPointer = await getPlanePointerKey()
+        await move()
+        await expect.poll(getPlanePointerKey).not.toBe(previousPointer)
+      }
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('q')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await moveAndWaitForScenePointer(moveToLine)
+      await page.keyboard.press('q')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('q')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await moveAndWaitForScenePointer(moveToCircle)
+      await page.keyboard.press('q')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('q')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+    })
   })
 
   test('horizontal and vertical hotkeys constrain the draft line while drawing', async ({

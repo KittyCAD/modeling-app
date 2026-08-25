@@ -40,6 +40,7 @@ export const TOOLBAR_COMMAND_IDS = {
   sketchSolve: {
     exit: 'zds.toolbar.sketch.exit',
     cancel: 'zds.toolbar.sketch.cancel',
+    toolPicker: 'zds.toolbar.sketch.toolPicker',
     line: 'zds.toolbar.sketch.line',
     point: 'zds.toolbar.sketch.point',
     spline: 'zds.toolbar.sketch.spline',
@@ -423,6 +424,13 @@ export const toolbarCommands: readonly Command[] = [
     displayName: 'Cancel sketch solve action',
     description: 'Cancel the active sketch solve action.',
     onSubmit: (input) => sendModelingEvent(input, { type: 'Cancel' }),
+  }),
+  createToolbarCommand({
+    id: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
+    displayName: 'Pick hovered sketch tool',
+    description: 'Equip the sketch tool matching the object under the cursor.',
+    onSubmit: (input) =>
+      sendModelingEvent(input, { type: 'pick hovered tool' }),
   }),
   createSketchSolveToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.line,

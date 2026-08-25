@@ -93,6 +93,20 @@ describe('keymap extension', () => {
     expect(sketchLine?.hidden).toBeUndefined()
   })
 
+  it('uses Q for the hovered tool picker and Shift+Q for construction', () => {
+    const toolPicker = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.tool-picker'
+    )
+    expect(toolPicker?.keystrokes).toEqual(['q'])
+    expect(toolPicker?.command).toBe('zds.toolbar.sketch.toolPicker')
+
+    const construction = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.construction'
+    )
+    expect(construction?.keystrokes).toEqual(['shift+q'])
+    expect(construction?.command).toBe('zds.toolbar.sketch.construction')
+  })
+
   it('marks a partial match and awaits more input', () => {
     const registry = createRegistryWithKeymapItems([
       {
