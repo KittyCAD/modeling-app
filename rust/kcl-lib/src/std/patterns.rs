@@ -744,9 +744,11 @@ patterned = patternTransform(cube, instances = 3, transform = shift)
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_pattern_circular_2d_warns_that_cardinality_is_geometry_dependent() {
         let code = r#"
-profile = startSketchOn(XY)
-  |> startProfile(at = [10, 0])
-  |> line(end = [1, 0])
+@settings(kclVersion = 2.0)
+
+profile = sketch(on = XY) {
+  line1 = line(start = [var 10, var 0], end = [var 11, var 0])
+}
 
 patterned = patternCircular2d(
   profile,
