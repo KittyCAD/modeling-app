@@ -66,6 +66,7 @@ export type OutboxEntry = {
   kind: 'upsert' | 'delete'
   targetPath: string
   sourcePath?: string
+  deletedPaths?: string[]
   createdAt: string
 }
 
@@ -89,6 +90,7 @@ export type ProjectUploadBody = {
   entrypoint_path: string
   project_toml_path: string
   expected_revision?: Revision
+  deleted_paths?: string[]
 }
 
 /** Publication metadata that whole-project replacements must preserve. */
