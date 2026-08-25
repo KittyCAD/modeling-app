@@ -440,7 +440,7 @@ async fn inner_get_common_edge(
     check_tag_not_ambiguous(&face2, &args)?;
 
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
-    let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?.clone();
+    let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
     if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
         return Err(KclError::new_type(KclErrorDetails::new(
