@@ -1,5 +1,8 @@
 import { ConstraintBadgeTooltipOverlay } from '@src/clientSideScene/ConstraintBadgeTooltipOverlay'
-import { TOOLTIP_RICH_CONTENT_DELAY_MS } from '@src/components/tooltipTiming'
+import {
+  TOOLTIP_RICH_CONTENT_CLEAR_DELAY_MS,
+  TOOLTIP_RICH_CONTENT_DELAY_MS,
+} from '@src/hooks/useRichTooltipContent'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { useRef } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -171,7 +174,7 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
-  it('cancels and resets expansion when the actor hover changes', () => {
+  it('cancels a pending expansion when the actor hover leaves', () => {
     const { rerender } = render(<TestScene />)
     const scene = screen.getByTestId('scene')
 
@@ -183,7 +186,7 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     rerender(<TestScene />)
 
     act(() => {
-      vi.advanceTimersByTime(1)
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS)
     })
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 
@@ -194,6 +197,59 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     )
 
     act(() => {
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS - 1)
+    })
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+  })
+
+  it('restarts a pending expansion when the hovered badge changes', () => {
+    const { rerender } = render(<TestScene />)
+    const scene = screen.getByTestId('scene')
+
+    fireEvent.mouseMove(scene, { clientX: 200, clientY: 120, buttons: 0 })
+    act(() => {
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS - 1)
+    })
+
+    mocks.snapshot.context.hoveredId = 21
+    rerender(<TestScene />)
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS - 2)
+    })
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(1)
+    })
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+  })
+
+  it('matches the toolbar rich-content grace period between hovers', () => {
+    const { rerender } = render(<TestScene />)
+    const scene = screen.getByTestId('scene')
+
+    fireEvent.mouseMove(scene, { clientX: 200, clientY: 120, buttons: 0 })
+    act(() => {
       vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS)
     })
     expect(screen.getByRole('tooltip')).toHaveTextContent(
@@ -202,27 +258,38 @@ describe('ConstraintBadgeTooltipOverlay', () => {
 
     mocks.snapshot.context.hoveredId = 21
     rerender(<TestScene />)
-    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
+
+    mocks.snapshot.context.hoveredId = null
+    rerender(<TestScene />)
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    act(() => {
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_CLEAR_DELAY_MS - 1)
+    })
+    mocks.snapshot.context.hoveredId = 20
+    rerender(<TestScene />)
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
       'Constrain lines or curves to be parallel.'
     )
 
     act(() => {
-      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS / 2)
-    })
-    mocks.secondConstraint.kind.constraint.type = 'Perpendicular'
-    rerender(<TestScene />)
-    act(() => {
-      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS / 2)
-    })
-    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
-      'Constrain lines or curves to be perpendicular.'
-    )
-
-    act(() => {
-      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_DELAY_MS / 2)
+      vi.advanceTimersByTime(1)
     })
     expect(screen.getByRole('tooltip')).toHaveTextContent(
-      'Constrain lines or curves to be perpendicular.'
+      'Constrain lines or curves to be parallel.'
+    )
+
+    mocks.snapshot.context.hoveredId = null
+    rerender(<TestScene />)
+    act(() => {
+      vi.advanceTimersByTime(TOOLTIP_RICH_CONTENT_CLEAR_DELAY_MS)
+    })
+    mocks.snapshot.context.hoveredId = 20
+    rerender(<TestScene />)
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
     )
   })
 
@@ -254,7 +321,7 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     fireEvent.mouseMove(scene, { clientX: 494, clientY: 343, buttons: 1 })
     fireEvent.mouseUp(scene, { clientX: 494, clientY: 343, buttons: 0 })
     expect(screen.getByRole('tooltip')).toHaveTextContent('Parallel')
-    expect(screen.getByRole('tooltip')).not.toHaveTextContent(
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
       'Constrain lines or curves to be parallel.'
     )
   })

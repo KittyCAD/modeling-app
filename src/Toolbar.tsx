@@ -8,11 +8,11 @@ import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDr
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { TOOLTIP_RICH_CONTENT_DELAY_MS } from '@src/components/tooltipTiming'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import usePlatform from '@src/hooks/usePlatform'
+import { useRichTooltipContent } from '@src/hooks/useRichTooltipContent'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import {
@@ -111,7 +111,8 @@ const Toolbar_ = memo(
     }, [kclManager.artifactGraph, props.context.selectionRanges])
 
     const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-    const [showRichContent, setShowRichContent] = useState(false)
+    const { showRichContent, handleMouseEnter, handleMouseLeave } =
+      useRichTooltipContent()
 
     const disableAllButtons =
       (props.overallState !== NetworkHealthState.Ok &&
@@ -221,36 +222,6 @@ const Toolbar_ = memo(
     const tooltipContentClassName = !showRichContent
       ? ''
       : '!text-left text-wrap !text-xs !p-0 !pb-2 flex !max-w-none !w-72 flex-col items-stretch'
-    const richContentTimeout = useRef<number | null>(null)
-    const richContentClearTimeout = useRef<number | null>(null)
-    // On mouse enter, show rich content after a 1s delay
-    const handleMouseEnter = useCallback(() => {
-      // Cancel the clear timeout if it's already set
-      if (richContentClearTimeout.current) {
-        clearTimeout(richContentClearTimeout.current)
-      }
-      // Start our own timeout to show the rich content
-      richContentTimeout.current = window.setTimeout(() => {
-        setShowRichContent(true)
-        if (richContentClearTimeout.current) {
-          clearTimeout(richContentClearTimeout.current)
-        }
-      }, TOOLTIP_RICH_CONTENT_DELAY_MS)
-    }, [setShowRichContent])
-    // On mouse leave, clear the timeout and hide rich content
-    const handleMouseLeave = useCallback(() => {
-      // Clear the timeout to show rich content
-      if (richContentTimeout.current) {
-        clearTimeout(richContentTimeout.current)
-      }
-      // Start a timeout to hide the rich content
-      richContentClearTimeout.current = window.setTimeout(() => {
-        setShowRichContent(false)
-        if (richContentClearTimeout.current) {
-          clearTimeout(richContentClearTimeout.current)
-        }
-      }, 500)
-    }, [setShowRichContent])
 
     /**
      * Resolve all the callbacks and values for the current mode,

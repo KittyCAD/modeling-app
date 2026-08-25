@@ -1,7 +1,7 @@
 import { CANVAS_DRAG_THRESHOLD_PX } from '@src/clientSideScene/sceneConstants'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
-import { TOOLTIP_RICH_CONTENT_DELAY_MS } from '@src/components/tooltipTiming'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useRichTooltipContent } from '@src/hooks/useRichTooltipContent'
 import {
   type ConstraintBadgeTooltipBounds,
   type ConstraintBadgeTooltipPoint,
@@ -49,9 +49,8 @@ export function ConstraintBadgeTooltipOverlay({
     ? `${hoveredConstraint.id}:${hoveredConstraint.type}`
     : null
   const [pointerState, setPointerState] = useState<PointerState | null>(null)
-  const [richConstraintKey, setRichConstraintKey] = useState<string | null>(
-    null
-  )
+  const { showRichContent, handleMouseEnter, handleMouseLeave } =
+    useRichTooltipContent()
   const [tooltipPosition, setTooltipPosition] =
     useState<ConstraintBadgeTooltipPoint | null>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -71,7 +70,6 @@ export function ConstraintBadgeTooltipOverlay({
     const clearPointer = () => {
       latestPointerStateRef.current = null
       setPointerState(null)
-      setRichConstraintKey(null)
     }
     const updatePointer = (event: MouseEvent) => {
       if (event.buttons !== 0) {
@@ -152,25 +150,18 @@ export function ConstraintBadgeTooltipOverlay({
     setPointerState(
       hoveredConstraintKey === null ? null : latestPointerStateRef.current
     )
-    setRichConstraintKey(null)
   }, [constraintType, hoveredConstraintKey])
 
-  const pointerIsActive = pointerState !== null
-  useEffect(() => {
-    if (hoveredConstraintKey === null || !pointerIsActive) {
+  const activeTooltipKey = pointerState ? hoveredConstraintKey : null
+  useLayoutEffect(() => {
+    if (activeTooltipKey === null) {
       return
     }
 
-    const richContentTimeout = window.setTimeout(() => {
-      setRichConstraintKey(hoveredConstraintKey)
-    }, TOOLTIP_RICH_CONTENT_DELAY_MS)
-    return () => {
-      clearTimeout(richContentTimeout)
-    }
-  }, [hoveredConstraintKey, pointerIsActive])
+    handleMouseEnter()
+    return handleMouseLeave
+  }, [activeTooltipKey, handleMouseEnter, handleMouseLeave])
 
-  const showRichContent =
-    pointerIsActive && richConstraintKey === hoveredConstraintKey
   const tooltipVariant = showRichContent ? 'rich' : 'compact'
 
   useLayoutEffect(() => {

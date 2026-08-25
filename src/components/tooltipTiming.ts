@@ -1,1 +1,0 @@
-export const TOOLTIP_RICH_CONTENT_DELAY_MS = 1000
