@@ -1,3 +1,4 @@
+import type { BlockReason } from '@kittycad/lib'
 import {
   ZookeeperConversation,
   type QueuedMessage,
@@ -33,7 +34,7 @@ import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
 type ZookeeperConversationPaneUser = {
-  block_message?: string
+  block?: BlockReason
   image?: string
 }
 
@@ -252,10 +253,7 @@ export const ZookeeperConversationPane = (props: {
     try {
       const refreshedUser = await refreshUserForBilling()
       sendBillingUpdateForBilling()
-      if (
-        accessDeniedCode !== 'pay_as_you_go_disabled' &&
-        refreshedUser?.block_message
-      ) {
+      if (refreshedUser === undefined || refreshedUser.block !== undefined) {
         return
       }
       onReconnect()
@@ -265,12 +263,7 @@ export const ZookeeperConversationPane = (props: {
       billingCheckInFlight.current = false
       setIsCheckingBilling(false)
     }
-  }, [
-    accessDeniedCode,
-    onReconnect,
-    refreshUserForBilling,
-    sendBillingUpdateForBilling,
-  ])
+  }, [onReconnect, refreshUserForBilling, sendBillingUpdateForBilling])
 
   const onOpenBilling = useCallback(() => {
     checkBillingWhenFocused.current = true
@@ -723,7 +716,6 @@ export const ZookeeperConversationPane = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPaymentReason = props.user?.block_message
   const isLoadingAttachments =
     !attachmentsLoadedForCurrentPrompt && conversation !== undefined
   const wasPromptRunningRef = useRef(false)
@@ -813,7 +805,6 @@ export const ZookeeperConversationPane = (props: {
       onSteer={onSteer}
       userAvatarSrc={props.user?.image}
       showMakeathonAnnouncement={props.showMakeathonAnnouncement}
-      blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}
       initialMlCopilotMode={initialMlCopilotMode}
       onMlCopilotModeChange={props.onMlCopilotModeChange}

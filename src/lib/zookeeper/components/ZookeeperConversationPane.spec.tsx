@@ -1,3 +1,4 @@
+import type { BlockReason } from '@kittycad/lib'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -349,7 +350,7 @@ type RenderPaneOptions = {
   sendBillingUsageStarted?: () => void
   sendBillingUsageEnded?: () => void
   refreshUser?: () => Promise<
-    { block_message?: string; image?: string } | undefined
+    { block?: BlockReason; image?: string } | undefined
   >
 }
 
@@ -576,8 +577,8 @@ describe('ZookeeperConversationPane', () => {
     ).not.toBeInTheDocument()
   })
 
-  test('refreshes account state and reconnects once after returning from Billing', async () => {
-    const refreshUser = vi.fn().mockResolvedValue({ block_message: undefined })
+  test('updates billing state and reconnects once after returning from Billing', async () => {
+    const refreshUser = vi.fn().mockResolvedValue({ block: undefined })
     const sendBillingUpdate = vi.fn()
     const zookeeperManagerActor = createFakeActor({
       abruptlyClosed: true,
@@ -616,10 +617,10 @@ describe('ZookeeperConversationPane', () => {
     expect(refreshUser).toHaveBeenCalledOnce()
   })
 
-  test('keeps the billing recovery visible when Check again finds the account still blocked', async () => {
+  test('does not reconnect when the refreshed account remains blocked', async () => {
     const refreshUser = vi
       .fn()
-      .mockResolvedValue({ block_message: 'Payment is still required.' })
+      .mockResolvedValue({ block: 'payment_method_failed' as const })
     const sendBillingUpdate = vi.fn()
     const zookeeperManagerActor = createFakeActor({
       abruptlyClosed: true,

@@ -1072,41 +1072,6 @@ describe('ZookeeperConversation', () => {
     expect(within(attachments).getByText('+ more')).toBeInTheDocument()
   })
 
-  test('renders the blocked reason from the API response without extra copy', () => {
-    const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
-
-    render(
-      <ZookeeperConversation
-        isLoading={false}
-        onProcess={vi.fn()}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={false}
-        disabled={false}
-        hasPromptCompleted={true}
-        contexts={[]}
-        blockedReason={blockedReason}
-        isProcessing={false}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
-    )
-
-    expect(
-      screen.getByText(/You need a payment method to keep using Zookeeper/i)
-    ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'account' })).toHaveAttribute(
-      'href',
-      withSiteBaseURL('/account')
-    )
-    expect(screen.queryByText(/The user/i)).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId('ml-ephant-conversation-input-button')
-    ).toBeDisabled()
-  })
-
   test('renders a provided welcome message when the conversation is empty', () => {
     render(
       <ZookeeperConversation

@@ -73,7 +73,6 @@ export interface ZookeeperConversationProps {
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   showMakeathonAnnouncement?: boolean
-  blockedReason?: string
   defaultPrompt?: string
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
@@ -640,28 +639,6 @@ export const ZookeeperConversationInput = (
   )
 }
 
-const StarterCard = ({ text }: { text: string }) => {
-  const [, setTrigger] = useState<number>(0)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTrigger((t) => t + 1)
-    }, 500)
-    return () => {
-      clearInterval(i)
-    }
-  }, [])
-
-  return (
-    <ExchangeCard
-      onClickClearChat={() => {}}
-      isLastResponse={false}
-      responses={[]}
-      deltasAggregated={text}
-    />
-  )
-}
-
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
@@ -739,8 +716,6 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   onOpenBilling={props.onOpenBilling}
                   onClickClearChat={props.onClickClearChat}
                 />
-              ) : props.blockedReason ? (
-                <StarterCard text={props.blockedReason} />
               ) : props.isLoading === false ? (
                 <>
                   {shouldShowWelcomeMessage && (
@@ -860,11 +835,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
-              disabled={
-                Boolean(props.blockedReason) ||
-                props.disabled ||
-                props.isLoading
-              }
+              disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={props.onProcess}
