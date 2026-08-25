@@ -70,12 +70,22 @@ export type OutboxEntry = {
   createdAt: string
 }
 
+/** Effective capabilities and ownership scope returned for a cloud project. */
+export type RemoteProjectAccess = {
+  scope: 'personal' | 'organization'
+  organization_id?: string
+  can_edit: boolean
+  can_delete: boolean
+}
+
 /** Project metadata shape returned by cloud project list/detail endpoints. */
 export type RemoteProjectSummary = {
   id: string
   title?: string
   updated_at?: string
   revision?: Revision | number
+  /** Absent while older Projects API deployments roll out access metadata. */
+  access?: RemoteProjectAccess
   [key: string]: unknown
 }
 

@@ -3136,13 +3136,21 @@ async function syncRemoteIndex(
     await localFs.mkdir(projectDirectory, { recursive: true })
   }
 
-  const remoteProjects = await runCloudSyncProjectApiRequest(
+  const listedRemoteProjects = await runCloudSyncProjectApiRequest(
     throttleProjectApiRequest,
     () => listRemoteProjects(config)
   )
+  const remoteProjects = listedRemoteProjects.filter(
+    (remoteProject) => remoteProject.access?.scope !== 'organization'
+  )
   cloudSyncRemoteProjects.value = remoteProjects
+
+  // Keep filtered organization projects in the existence index. Otherwise an
+  // already-linked local realization could be treated as remotely deleted.
   const remoteProjectIds = new Set(
-    remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
+    listedRemoteProjects
+      .map((remoteProject) => remoteProject.id)
+      .filter(Boolean)
   )
   let metadata: ProjectMetadata[] = []
   for (const entry of await getAllProjectMetadata()) {

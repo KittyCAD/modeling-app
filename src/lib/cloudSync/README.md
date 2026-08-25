@@ -38,6 +38,8 @@ The cloud sync system supports syncing on a per-project basis. However, cloud sy
 
 Cloud sync is technically keyed by per-project `project.toml` IDs, but the user-facing model is library membership. A project is normally made cloud-backed by moving it into a cloud-type project library, and made local-only by moving it out of a cloud-type project library.
 
+Organization-owned projects returned by the Projects API are excluded from the cloud sync remote index until ZDS has a read-only and versioning policy for them. Their IDs still count as existing during reconciliation so an already-linked local realization is not mistaken for a remotely deleted project.
+
 ### Duplicate local realizations
 
 Duplicate cleanup operates on local realizations, not Home entries. A local realization is eligible for silent deletion only when cloudSync can prove it is an exact non-canonical duplicate in a cloud-type library. Directory-library copies are never silently deleted. Pending, conflicted, unreadable, tombstoned, sync-excluded, or divergent realizations must remain visible for user review.
