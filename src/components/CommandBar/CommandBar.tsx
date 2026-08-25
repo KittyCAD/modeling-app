@@ -1,5 +1,5 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -15,6 +15,10 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   commandScopeService,
+  commandScopesValueSpec,
+  getCommandPaletteScopes,
+  getEffectiveCommandScopeSet,
+  isCommandSearchable,
 } from '@src/registry/contracts/commands'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
@@ -26,6 +30,28 @@ export const CommandBar = () => {
   const commandScopes = registry.optional(commandScopeService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
+  const [commandPaletteSession, setCommandPaletteSession] = useState(() => ({
+    isOpen: isCommandBarOpen,
+    scopes: isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : [],
+  }))
+  let commandPaletteScopes = commandPaletteSession.scopes
+  if (commandPaletteSession.isOpen !== isCommandBarOpen) {
+    // Capture the launch context before the palette input's autofocus changes
+    // the active focus scope. React applies this update before committing.
+    commandPaletteScopes = isCommandBarOpen
+      ? getCommandPaletteScopes(commandScopes?.getCurrentScopes() ?? [])
+      : []
+    setCommandPaletteSession({
+      isOpen: isCommandBarOpen,
+      scopes: commandPaletteScopes,
+    })
+  }
+  const effectiveCommandScopes = getEffectiveCommandScopeSet(
+    commandPaletteScopes,
+    registry.signal(commandScopesValueSpec).value
+  )
   const {
     context: {
       selectedCommand,
@@ -174,7 +200,8 @@ export const CommandBar = () => {
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
                 options={commands.filter((command: Command) =>
-                  isCommandVisibleInSearch(command)
+                  isCommandVisibleInSearch(command) &&
+                  isCommandSearchable(command, effectiveCommandScopes)
                 )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
