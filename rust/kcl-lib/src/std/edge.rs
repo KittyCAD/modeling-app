@@ -438,16 +438,9 @@ async fn inner_get_common_edge(
 ) -> Result<Uuid, KclError> {
     check_tag_not_ambiguous(&face1, &args)?;
     check_tag_not_ambiguous(&face2, &args)?;
-    let id = exec_state.next_uuid();
-    if args.ctx.no_engine_commands().await {
-        return Ok(id);
-    }
-
-    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false).await?;
-    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false).await?;
 
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
-    let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
+    let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?.clone();
 
     if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
         return Err(KclError::new_type(KclErrorDetails::new(
@@ -455,6 +448,14 @@ async fn inner_get_common_edge(
             vec![args.source_range],
         )));
     }
+
+    let id = exec_state.next_uuid();
+    if args.ctx.no_engine_commands().await {
+        return Ok(id);
+    }
+
+    let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false).await?;
+    let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false).await?;
 
     // Flush the batch for our fillets/chamfers if there are any.
     // If we have a chamfer/fillet, flush the batch.
@@ -1017,6 +1018,47 @@ mod tests {
     use super::combination_count;
     use super::edge_combinations_exceed_limit;
     use super::face_id_combinations;
+    use crate::errors::KclError;
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_get_common_edge_rejects_faces_from_different_sketches() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+firstRegion = region(point = [5mm, 0.0025mm], sketch = firstSketch)
+firstSolid = extrude(firstRegion, length = 5mm, tagEnd = $firstEnd)
+
+secondSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+secondRegion = region(point = [5mm, 0.0025mm], sketch = secondSketch)
+secondSolid = extrude(secondRegion, length = 5mm, tagEnd = $secondEnd)
+
+edge = getCommonEdge(faces = [firstEnd, secondEnd])
+"#;
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Type { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("getCommonEdge requires the faces to be in the same original sketch"),
+            "{message}"
+        );
+    }
 
     #[test]
     fn face_id_combinations_empty_input_is_one_empty_combination() {
