@@ -196,6 +196,7 @@ export enum ZookeeperManagerTransitions {
   Cancel = 'cancel',
   Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
+  ResumeSuperseded = 'resume-superseded',
   NetworkOffline = 'network-offline',
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
@@ -207,6 +208,7 @@ export const ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS = 60_000
 export const ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS = 120_000
 export const ZOOKEEPER_HEARTBEAT_INTERVAL_MS = 4_000
 export const ZOOKEEPER_HEARTBEAT_TIMEOUT_MS = 30_000
+export const ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE = 4409
 const ZOOKEEPER_HEARTBEAT_TIMER_DRIFT_GRACE_MS = 5_000
 
 const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
@@ -313,6 +315,10 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.AbruptClose
       closeReason?: string
+    }
+  | {
+      type: ZookeeperManagerTransitions.ResumeSuperseded
+      webSocket: WebSocket
     }
   | {
       type: ZookeeperManagerTransitions.NetworkOffline
@@ -691,6 +697,10 @@ export const zookeeperManagerMachine = setup({
       assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
       return event.apiToken.trim().length === 0
     },
+    isCurrentZookeeperWebSocket: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.ResumeSuperseded)
+      return context.ws === event.webSocket
+    },
   },
   actions: {
     assignApiToken: assign(({ event }) => {
@@ -740,19 +750,28 @@ export const zookeeperManagerMachine = setup({
       })
     },
     handleAbruptClose: assign(({ event, context }) => {
-      assertEvent(event, ZookeeperManagerTransitions.AbruptClose)
+      assertEvent(event, [
+        ZookeeperManagerTransitions.AbruptClose,
+        ZookeeperManagerTransitions.ResumeSuperseded,
+      ])
+      const closeReason =
+        event.type === ZookeeperManagerTransitions.AbruptClose
+          ? event.closeReason
+          : undefined
       logZookeeperDisconnect('machine handling abrupt websocket close', {
-        closeReason: event.closeReason,
+        closeReason,
+        resumeSuperseded:
+          event.type === ZookeeperManagerTransitions.ResumeSuperseded,
         ...zookeeperErrorContext(context),
       })
-      if (event.closeReason && !isZookeeperBillingError(event.closeReason)) {
-        toast.error(event.closeReason)
+      if (closeReason && !isZookeeperBillingError(closeReason)) {
+        toast.error(closeReason)
       }
       return {
         abruptlyClosed: true,
         setupFailed: false,
         setupFailureReason: undefined,
-        closeReason: event.closeReason,
+        closeReason,
       }
     }),
     handleNetworkOffline: assign(({ context }) => {
@@ -1284,6 +1303,14 @@ export const zookeeperManagerMachine = setup({
             }
 
             if (theRefParentSend !== undefined) {
+              if (event.code === ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE) {
+                theRefParentSend({
+                  type: ZookeeperManagerTransitions.ResumeSuperseded,
+                  webSocket: ws,
+                })
+                return
+              }
+
               const closeReason =
                 event.code === 1009
                   ? ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON
@@ -1485,6 +1512,11 @@ export const zookeeperManagerMachine = setup({
       actions: ['assignModeOptions'],
     },
     [ZookeeperManagerTransitions.AbruptClose]: {
+      target: '#zookeeper-abrupt-close',
+      actions: ['handleAbruptClose'],
+    },
+    [ZookeeperManagerTransitions.ResumeSuperseded]: {
+      guard: 'isCurrentZookeeperWebSocket',
       target: '#zookeeper-abrupt-close',
       actions: ['handleAbruptClose'],
     },

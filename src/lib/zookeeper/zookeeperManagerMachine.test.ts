@@ -18,6 +18,7 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
+  ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -987,6 +988,115 @@ describe('zookeeperManagerMachine', () => {
   })
 
   describe('ConversationClose', () => {
+    it('silently makes the current socket recoverable when its resume is superseded', async () => {
+      const { fetchMock } = stubClientErrorFetch()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify({ type: 'list_modes' })
+        )
+      })
+      socket.receive({
+        conversation_id: { conversation_id: 'conversation-id' },
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      socket.closeWithCode(
+        ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
+        'zookeeper_resume_superseded'
+      )
+      await waitFor(actor, (state) => state.matches(S.Await))
+
+      expect(actor.getSnapshot().context).toMatchObject({
+        abruptlyClosed: true,
+        setupFailed: false,
+        closeReason: undefined,
+        conversation: { exchanges: [] },
+        conversationId: 'conversation-id',
+      })
+      expect(fetchMock).not.toHaveBeenCalled()
+
+      actor.stop()
+    })
+
+    it('ignores a superseded close from an obsolete socket', async () => {
+      const currentSocket = new TestSocket() as TestWebSocket
+      const obsoleteSocket = new TestSocket() as TestWebSocket
+      const machine = zookeeperManagerMachine.provide({
+        actors: {
+          [ZookeeperManagerStates.Setup]: fromPromise<
+            Partial<ZookeeperManagerContext>,
+            SetupActorInput
+          >(async () => ({
+            ws: currentSocket,
+            conversation: completedConversation,
+            conversationId: 'conversation-id',
+          })),
+        },
+      })
+      const actor = createActor(machine, {
+        input: {
+          apiToken: 'token',
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+      )
+      actor.send({
+        type: ZookeeperManagerStates.ContinueCheck,
+        projectName: 'zoo-project',
+        projectFiles: [],
+      })
+      await waitFor(actor, (state) =>
+        state.matches(ZookeeperManagerStates.Ready)
+      )
+
+      actor.send({
+        type: ZookeeperManagerTransitions.ResumeSuperseded,
+        webSocket: obsoleteSocket,
+      })
+
+      expect(actor.getSnapshot().matches(ZookeeperManagerStates.Ready)).toBe(
+        true
+      )
+      expect(actor.getSnapshot().context).toMatchObject({
+        ws: currentSocket,
+        abruptlyClosed: false,
+        conversationId: 'conversation-id',
+      })
+
+      actor.stop()
+    })
+
     it('stops setup without retrying when the browser goes offline', async () => {
       let setupAttempts = 0
       const machine = zookeeperManagerMachine.provide({
