@@ -650,7 +650,7 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('keeps editor focus priority while typing in the CodeMirror search field', () => {
+  it('reconciles stale editable focus before matching a global keydown', () => {
     const registry = createRegistryWithKeymapItems([
       {
         id: 'test.sketch-solve-line',
@@ -662,27 +662,115 @@ describe('keymap extension', () => {
       },
     ])
     const keymap = registry.get(keymapService)
-    const editor = document.createElement('div')
-    const searchPanel = document.createElement('div')
-    const searchInput = document.createElement('input')
-
-    editor.className = 'cm-editor'
-    searchPanel.className = 'cm-panel cm-search'
-    searchPanel.append(searchInput)
-    editor.append(searchPanel)
-    document.body.append(editor)
+    const input = document.createElement('input')
+    document.body.append(input)
 
     keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
-    searchInput.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    input.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    input.remove()
+
+    expect(keymap.getCurrentScopes()).toContain(EDITABLE_FOCUSED_KEYMAP_SCOPE)
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', document.body), {
+        source: 'global',
+      })
+    ).toBe(true)
+    expect(keymap.getCurrentScopes()).not.toContain(
+      EDITABLE_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    )
+
+    registry[Symbol.dispose]()
+  })
+
+  it('preserves editor scope for command palette trigger pointerdown', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const editor = document.createElement('div')
+    const content = document.createElement('div')
+    const commandPaletteTrigger = document.createElement('button')
+
+    editor.className = 'cm-editor'
+    content.className = 'cm-content'
+    content.contentEditable = 'true'
+    editor.append(content)
+    commandPaletteTrigger.dataset.commandScopePreserveFocus = 'true'
+    document.body.append(editor, commandPaletteTrigger)
+
+    content.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    commandPaletteTrigger.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true })
+    )
 
     expect(keymap.getCurrentScopes()).toContain(
       CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
     )
-    expect(
-      keymap.handleKeyDown(createKeyboardEventWithTarget('l', searchInput), {
-        source: 'global',
-      })
-    ).toBe(false)
+    expect(keymap.getCurrentScopes()).not.toContain(
+      CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    )
+
+    editor.remove()
+    commandPaletteTrigger.remove()
+    registry[Symbol.dispose]()
+  })
+
+  it('treats CodeMirror form controls as editable, not editor content', () => {
+    const send = vi.fn()
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'test.code-editor-undo',
+          title: 'Test code editor undo',
+          command: 'test.code-editor-undo',
+          source: 'test',
+          keystrokes: ['mod+z'],
+          scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        },
+      ],
+      {
+        commands: [
+          createTestCommand('test.code-editor-undo', [
+            CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+          ]),
+        ],
+        send,
+      }
+    )
+    const keymap = registry.get(keymapService)
+    const editor = document.createElement('div')
+    const content = document.createElement('div')
+    const searchPanel = document.createElement('div')
+    const searchInput = document.createElement('input')
+
+    editor.className = 'cm-editor'
+    content.className = 'cm-content'
+    content.contentEditable = 'true'
+    searchPanel.className = 'cm-panel cm-search'
+    searchPanel.append(searchInput)
+    editor.append(content, searchPanel)
+    document.body.append(editor)
+
+    content.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+
+    searchInput.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).not.toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(keymap.getCurrentScopes()).toContain(EDITABLE_FOCUSED_KEYMAP_SCOPE)
+    const undoEvent = createKeyboardEventWithTarget('z', searchInput, {
+      ctrlKey: true,
+      metaKey: true,
+      cancelable: true,
+    })
+    expect(keymap.handleKeyDown(undoEvent, { source: 'global' })).toBe(false)
+    expect(undoEvent.defaultPrevented).toBe(false)
+    expect(send).not.toHaveBeenCalled()
 
     editor.remove()
     registry[Symbol.dispose]()

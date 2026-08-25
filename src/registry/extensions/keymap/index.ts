@@ -130,6 +130,38 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }),
   }
 
+  const focusScopes = new Set([
+    CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+    CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+    EDITABLE_FOCUSED_COMMAND_SCOPE,
+  ])
+
+  const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
+    let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
+    if (isEventFromFormControl(target)) {
+      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+    } else if (isEventFromCodeEditor(target)) {
+      nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    } else if (isEventFromContentEditableTarget(target)) {
+      nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
+    }
+
+    const currentFocusScopes = activeScopes.value.filter((scope) =>
+      focusScopes.has(scope)
+    )
+    if (
+      currentFocusScopes.length === 1 &&
+      currentFocusScopes[0] === nextFocusScope
+    ) {
+      return
+    }
+
+    activeScopes.value = [
+      ...activeScopes.value.filter((scope) => !focusScopes.has(scope)),
+      nextFocusScope,
+    ]
+  }
+
   const pendingKeystrokesBySource: Record<KeymapSource, string[]> = {
     global: [],
     codeMirror: [],
@@ -205,6 +237,12 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   const handleKeyDown: KeymapService['handleKeyDown'] = (event, { source }) => {
     if (suspendListeningCount > 0) {
       return false
+    }
+
+    if (source === 'global') {
+      // A focused editable can be removed without another focusin event. Use
+      // the event target to reconcile focus before checking availability.
+      syncFocusScopeFromEventTarget(event.target)
     }
 
     const chord = keyboardEventToKeymapChord(event)
@@ -425,30 +463,14 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     handleKeyDown(event, { source: 'global' })
   }
 
-  const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
-    if (isEventFromCodeEditor(target)) {
-      scopeServiceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
-      scopeServiceImpl.removeScope(EDITABLE_FOCUSED_COMMAND_SCOPE)
-      scopeServiceImpl.applyScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
-      return
-    }
-
-    scopeServiceImpl.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
-    if (isEventFromEditableTarget(target)) {
-      scopeServiceImpl.removeScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
-      scopeServiceImpl.applyScope(EDITABLE_FOCUSED_COMMAND_SCOPE)
-      return
-    }
-
-    scopeServiceImpl.removeScope(EDITABLE_FOCUSED_COMMAND_SCOPE)
-    scopeServiceImpl.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
-  }
-
   const handleGlobalFocusIn = (event: FocusEvent) => {
     syncFocusScopeFromEventTarget(event.target)
   }
 
   const handleGlobalPointerDown = (event: PointerEvent) => {
+    if (shouldPreserveFocusScope(event.target)) {
+      return
+    }
     syncFocusScopeFromEventTarget(event.target)
   }
 
@@ -573,12 +595,6 @@ function isEventFromCodeEditor(target: EventTarget | null) {
   return target instanceof Element && target.closest('.cm-editor') !== null
 }
 
-function isEventFromEditableTarget(target: EventTarget | null) {
-  return (
-    isEventFromContentEditableTarget(target) || isEventFromFormControl(target)
-  )
-}
-
 function isEventFromContentEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
@@ -592,6 +608,13 @@ function isEventFromFormControl(target: EventTarget | null) {
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement
+  )
+}
+
+function shouldPreserveFocusScope(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    target.closest('[data-command-scope-preserve-focus="true"]') !== null
   )
 }
 

@@ -52,7 +52,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await page.keyboard.press('Escape')
 
     await page.locator('.cm-content').click()
-    await openCommandPalette()
+    await page.getByRole('button', { name: 'Commands' }).click()
+    await expect(cmdSearchBar).toBeFocused()
     await expect(formatCodeCommand).toBeVisible()
     await expect(resetViewCommand).toHaveCount(0)
     await page.keyboard.press('Escape')
@@ -467,6 +468,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     await page.mouse.click(700, 200)
     await expect(toolbar.exitSketchBtn).toBeVisible()
+    await rectangleToolButton.click()
+    await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
 
     await page.keyboard.press('ControlOrMeta+K')
     await expect(page.getByPlaceholder('Search commands')).toBeFocused()
@@ -480,6 +483,9 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       })
     ).toHaveCount(0)
     await page.keyboard.press('Escape')
+    await expect(page.getByPlaceholder('Search commands')).not.toBeVisible()
+    await page.keyboard.press('l')
+    await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
 
     // Switch between sketch tools via the command bar
     if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
