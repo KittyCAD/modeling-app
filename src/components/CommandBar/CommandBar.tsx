@@ -12,7 +12,10 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { commandScopeService } from '@src/registry/contracts/commands'
+import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  commandScopeService,
+} from '@src/registry/contracts/commands'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -61,10 +64,10 @@ export const CommandBar = () => {
       return
     }
 
-    commandScopes.applyScope('cmd-palette-open')
+    commandScopes.applyScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
 
     return () => {
-      commandScopes.removeScope('cmd-palette-open')
+      commandScopes.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
     }
   }, [commandScopes, isCommandBarOpen])
 

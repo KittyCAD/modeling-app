@@ -681,10 +681,11 @@ export const keymapContract = defineContract({
     defaultValue: createKeymapTree([]),
     combine: createKeymapTreeFromContributions,
   }),
+  keymapScopesValueSpec: commandScopesValueSpec,
 })
 
-export const { keymapService, keymapValueSpec } = keymapContract
-export const keymapScopesValueSpec = commandScopesValueSpec
+export const { keymapService, keymapValueSpec, keymapScopesValueSpec } =
+  keymapContract
 
 export function provideKeymapItem(item: KeymapItem) {
   return provide(keymapValueSpec, item, { key: item.id })

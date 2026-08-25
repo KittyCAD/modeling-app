@@ -18,6 +18,8 @@ export const MODE_SKETCHING_COMMAND_SCOPE = 'mode-sketching'
 export const MODE_SKETCH_NO_FACE_COMMAND_SCOPE = 'mode-sketch-no-face'
 export const MODE_SKETCH_SOLVE_COMMAND_SCOPE = 'mode-sketch-solve'
 export const HOME_COMMAND_SCOPE = 'home'
+export const COMMAND_PALETTE_OPEN_COMMAND_SCOPE = 'cmd-palette-open'
+export const SETTINGS_COMMAND_SCOPE = 'settings-open'
 export const PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE = 'project-explorer.focused'
 export const PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE =
   'project-explorer.renaming'
@@ -41,13 +43,13 @@ export const DEFAULT_COMMAND_SCOPES: readonly CommandScope[] = [
     userEditable: false,
   },
   {
-    id: 'cmd-palette-open',
+    id: COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
     displayName: 'Command palette open',
     priority: 2000,
     userEditable: false,
   },
   {
-    id: 'settings-open',
+    id: SETTINGS_COMMAND_SCOPE,
     displayName: 'Settings open',
     priority: 1900,
     userEditable: false,

@@ -17,6 +17,7 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   type PersistedKeymap,
+  keymapContract,
   keymapScopesValueSpec,
   keymapService,
   provideKeymapDocument,
@@ -74,6 +75,7 @@ describe('keymap extension', () => {
 
   it('keeps the keymap scope ValueSpec as a command scope alias', () => {
     expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
+    expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
