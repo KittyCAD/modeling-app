@@ -286,6 +286,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)
   * [`Segment`](/docs/kcl-std/types/std-types-Segment) Experimental
   * [`Sketch`](/docs/kcl-std/types/std-types-Sketch)
+  * [`SketchBlock`](/docs/kcl-std/types/std-types-SketchBlock)
   * [`Solid`](/docs/kcl-std/types/std-types-Solid)
   * [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge)
   * [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace)

@@ -283,6 +283,13 @@ export type Segment
 @(impl = std_rust)
 export type Sketch
 
+/// The result of a KCL 2 sketch block.
+///
+/// A sketch block result contains the underlying sketch geometry together with
+/// the block-local members declared while constructing it. Functions that
+/// preserve this type also preserve access to those members.
+export type SketchBlock = { meta: { sketch: Sketch } }
+
 /// A solid is a collection of extruded surfaces.
 ///
 /// When you define a solid to a variable like:

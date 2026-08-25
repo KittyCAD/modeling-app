@@ -9,13 +9,13 @@ Scale a solid, a sketch, or a helix.
 
 ```kcl
 scale(
-  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
+  @objects: [SketchBlock; 1+] | [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   x?: number(_),
   y?: number(_),
   z?: number(_),
   global?: bool,
   factor?: number(_),
-): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
+): [SketchBlock; 1+] | [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry
 ```
 
 This is really useful for resizing parts. You can create a part and then scale it to the
@@ -39,11 +39,18 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 **NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
 way (i.e. scaled differently along each axis).
 
+
+
+
+When the input is a KCL 2 sketch block result, `scale` preserves its
+block-local members. The scale is an object transform, so segment values
+continue to describe the sketch's local coordinates.
+
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, helix, or set of solids, sketches, or helices to scale. | Yes |
+| `objects` | [[`SketchBlock`](/docs/kcl-std/types/std-types-SketchBlock); 1+] or [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, sketch block result, helix, or set of them to scale. | Yes |
 | `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the x axis. | No |
 | `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the y axis. | No |
 | `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The dimensionless scale factor for the z axis. | No |
@@ -52,7 +59,7 @@ way (i.e. scaled differently along each axis).
 
 ### Returns
 
-[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`SketchBlock`](/docs/kcl-std/types/std-types-SketchBlock); 1+] or [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [[`Helix`](/docs/kcl-std/types/std-types-Helix); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples

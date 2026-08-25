@@ -3,7 +3,7 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sketch, Solid from "std::types"
+import Axis2d, Axis3d, Edge, GdtAnnotation, Helix, Plane, Point3d, Segment, Sketch, SketchBlock, Solid from "std::types"
 
 /// Mirror a sketch.
 ///
@@ -735,10 +735,14 @@ export fn rotate(
 ///   z = targetHeight / seedSize,
 /// )
 /// ```
+///
+/// When the input is a KCL 2 sketch block result, `scale` preserves its
+/// block-local members. The scale is an object transform, so segment values
+/// continue to describe the sketch's local coordinates.
 @(impl = std_rust, feature_tree = true)
 export fn scale(
-  /// The solid, sketch, helix, or set of solids, sketches, or helices to scale.
-  @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
+  /// The solid, sketch, sketch block result, helix, or set of them to scale.
+  @objects: [SketchBlock; 1+] | [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
   /// The dimensionless scale factor for the x axis.
   @(includeInSnippet = true)
   x?: number(Count) = 1,
@@ -754,7 +758,7 @@ export fn scale(
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
-): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
+): [SketchBlock; 1+] | [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry {}
 
 /// Hide solids, planes, sketches, helices, or imported objects.
 ///

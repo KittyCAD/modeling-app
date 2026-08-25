@@ -2994,6 +2994,43 @@ sketch001 = sketch(on = -YZ) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn scale_preserves_sketch_block_members() {
+        let code = r#"@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+profile = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
+  right = line(start = [var 30mm, var 0mm], end = [var 30mm, var 20mm])
+  top = line(start = [var 30mm, var 20mm], end = [var 0mm, var 20mm])
+  left = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+}
+
+originalBottom = profile.bottom
+scaledProfile = scale(profile, x = 2, y = 2)
+scaledBottom = scaledProfile.bottom
+scaledProfiles = scale([profile, profile], factor = 1.5)
+scaledArrayBottom = scaledProfiles[0].bottom
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(matches!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "originalBottom"),
+            KclValue::Segment { .. }
+        ));
+        assert!(matches!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "scaledProfile"),
+            KclValue::Object { .. }
+        ));
+        assert!(matches!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "scaledBottom"),
+            KclValue::Segment { .. }
+        ));
+        assert!(matches!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "scaledArrayBottom"),
+            KclValue::Segment { .. }
+        ));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn issue_10639_blend_example_with_two_sketch_blocks_executes() {
         let code = r#"
 sketch001 = sketch(on = YZ) {

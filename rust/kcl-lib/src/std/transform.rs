@@ -47,6 +47,11 @@ fn validate_rotation_angle(angle: &Option<TyF64>, argument_name: &str, args: &Ar
 
 /// Scale a solid, a sketch, or a helix.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    // Keep the sketch-block wrapper that the KCL signature deliberately
+    // preserves. Geometry coercion below extracts its hidden Sketch so the
+    // engine transform can run, but returning that extracted value would drop
+    // every block-local segment member.
+    let original_objects = args.unlabeled_kw_arg_unconverted().map(|arg| arg.value.clone());
     let objects = args.get_unlabeled_kw_arg(
         "objects",
         &RuntimeType::Union(vec![
@@ -100,6 +105,13 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args,
     )
     .await?;
+    if let Some(original_objects) = original_objects
+        && (matches!(original_objects, KclValue::Object { .. })
+            || matches!(&original_objects, KclValue::HomArray { value, .. } if value.iter().all(|value| matches!(value, KclValue::Object { .. }))))
+    {
+        return Ok(original_objects);
+    }
+
     Ok(objects.into())
 }
 

@@ -29,6 +29,7 @@ does.
 * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)
 * [`Segment`](/docs/kcl-std/types/std-types-Segment)
 * [`Sketch`](/docs/kcl-std/types/std-types-Sketch)
+* [`SketchBlock`](/docs/kcl-std/types/std-types-SketchBlock)
 * [`Solid`](/docs/kcl-std/types/std-types-Solid)
 * [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl)
 * [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge)
