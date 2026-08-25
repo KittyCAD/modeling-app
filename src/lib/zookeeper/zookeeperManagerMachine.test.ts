@@ -133,14 +133,15 @@ describe('toMlCopilotFile', () => {
         ),
     } as unknown as File
 
-    const result = toMlCopilotFile(file)
+    const result = await toMlCopilotFile(file)
 
-    await expect(result).rejects.toMatchObject({
+    expect(result).toMatchObject({
       name: 'ZookeeperAttachmentReadError',
       message:
         "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again.",
     })
-    await expect(result).rejects.not.toThrow(file.name)
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).not.toContain(file.name)
   })
 
   it('preserves unexpected attachment read errors', async () => {
@@ -151,7 +152,7 @@ describe('toMlCopilotFile', () => {
       arrayBuffer: vi.fn().mockRejectedValue(readError),
     } as unknown as File
 
-    await expect(toMlCopilotFile(file)).rejects.toBe(readError)
+    await expect(toMlCopilotFile(file)).resolves.toBe(readError)
   })
 })
 
