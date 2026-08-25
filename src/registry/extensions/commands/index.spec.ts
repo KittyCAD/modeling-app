@@ -4,12 +4,14 @@ import {
   defineRegistryItem,
   provideService,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
   FILE_COMMAND_SCOPES,
   GLOBAL_COMMAND_SCOPES,
@@ -20,6 +22,7 @@ import {
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
   SKETCH_COMMAND_SCOPES,
+  commandScopeService,
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
@@ -103,6 +106,76 @@ describe('commands extension', () => {
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([])
 
     registry[Symbol.dispose]()
+  })
+
+  it('syncs the command palette scope with command machine state', () => {
+    const activeScopes = signal<readonly string[]>([])
+    const applyScope = (scope: string) => {
+      if (!activeScopes.value.includes(scope)) {
+        activeScopes.value = [...activeScopes.value, scope]
+      }
+    }
+    const removeScope = (scope: string) => {
+      activeScopes.value = activeScopes.value.filter(
+        (activeScope) => activeScope !== scope
+      )
+    }
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-wasm-promise',
+        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
+      }),
+      defineRegistryItem({
+        id: 'test-machine-manager',
+        providesServices: [
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test-command-scopes',
+        providesServices: [
+          provideService(commandScopeService, {
+            activeScopes,
+            applyScope,
+            removeScope,
+            getCurrentScopes: () => activeScopes.value,
+            focusScope: (scope) => ({
+              onFocus: () => applyScope(scope),
+              onBlur: () => removeScope(scope),
+            }),
+          }),
+        ],
+      }),
+      commandsExtension,
+      defineRegistryItem({
+        id: 'test-command',
+        provides: [
+          provideCommand({
+            scopes: GLOBAL_COMMAND_SCOPES,
+            groupId: 'test',
+            name: 'test-command',
+            needsReview: false,
+            onSubmit: vi.fn(),
+          }),
+        ],
+      }),
+    ])
+
+    const commandSystem = registry.get(commandSystemService)
+    expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+
+    commandSystem.send({ type: 'Open' })
+    expect(activeScopes.value).toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+
+    commandSystem.send({ type: 'Close' })
+    expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+
+    commandSystem.send({ type: 'Open' })
+    registry[Symbol.dispose]()
+    expect(activeScopes.value).not.toContain(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
   })
 
   it('provides a toolbar command for every toolbar command id', () => {
