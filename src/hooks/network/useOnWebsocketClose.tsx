@@ -1,11 +1,19 @@
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type {
+  EngineConnectionError,
+  EngineDisconnectEventDetail,
+} from '@src/lib/engineConnection/utils'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export interface IUseOnWebsocketClose {
   callback: (code: string | undefined) => void
   infiniteDetectionLoopCallback: (code: string | undefined) => void
+  terminalErrorCallback: (
+    error: EngineConnectionError,
+    code: string | undefined
+  ) => void
   engineCommandManager: ConnectionManager
 }
 
@@ -17,10 +25,26 @@ export interface IUseOnWebsocketClose {
 export function useOnWebsocketClose({
   callback,
   infiniteDetectionLoopCallback,
+  terminalErrorCallback,
   engineCommandManager,
 }: IUseOnWebsocketClose) {
   useEffect(() => {
-    const onWebsocketClose = (event: CustomEvent<{ code?: string }>) => {
+    const onWebsocketClose = (
+      event: CustomEvent<EngineDisconnectEventDetail>
+    ) => {
+      if (event.detail?.connectionError?.terminal) {
+        EngineDebugger.addLog({
+          label: 'useOnWebsocketClose',
+          message: 'terminal Engine connection error',
+          metadata: {
+            code: event.detail.code,
+            connectionError: event.detail.connectionError,
+          },
+        })
+        terminalErrorCallback(event.detail.connectionError, event.detail.code)
+        return
+      }
+
       if (event?.detail?.code === '1006') {
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
@@ -50,5 +74,10 @@ export function useOnWebsocketClose({
         onWebsocketClose as EventListener
       )
     }
-  }, [callback, infiniteDetectionLoopCallback, engineCommandManager])
+  }, [
+    callback,
+    infiniteDetectionLoopCallback,
+    terminalErrorCallback,
+    engineCommandManager,
+  ])
 }

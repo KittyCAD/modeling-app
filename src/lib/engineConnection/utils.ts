@@ -271,6 +271,23 @@ export enum EngineConnectionManagerEvents {
   dataChannelClose = 'data-channel-closed',
 }
 
+export enum EngineConnectionErrorKind {
+  AuthTokenInvalid = 'auth-token-invalid',
+  BackendDisconnect = 'backend-disconnect',
+  TooManyConnections = 'too-many-connections',
+}
+
+export type EngineConnectionError = {
+  kind: EngineConnectionErrorKind
+  message: string
+  terminal: boolean
+}
+
+export type EngineDisconnectEventDetail = {
+  code?: string
+  connectionError?: EngineConnectionError
+}
+
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
   callback: (data: Extract<UnreliableResponses, { type: T }>) => void
@@ -392,6 +409,7 @@ export interface ManagerTearDown {
   peerConnectionClosed?: boolean
   dataChannelClosed?: boolean
   code?: string
+  connectionError?: EngineConnectionError
 }
 
 // 7.4.1 Defined Status Codes from RFC 6455 The WebSocket Protocol

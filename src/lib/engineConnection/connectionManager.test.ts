@@ -1,4 +1,8 @@
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  EngineConnectionErrorKind,
+  EngineConnectionManagerEvents,
+} from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -61,5 +65,58 @@ describe('ConnectionManager', () => {
 
     expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
     expect(send).not.toHaveBeenCalled()
+  })
+
+  it('includes classified connection errors in websocket close events', () => {
+    const manager = createConnectionManager()
+    const onWebsocketClose = vi.fn()
+    const connectionError = {
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'backend disconnected',
+      terminal: true,
+    }
+    manager.addEventListener(
+      EngineConnectionManagerEvents.WebsocketClosed,
+      onWebsocketClose
+    )
+
+    manager.tearDown({
+      websocketClosed: true,
+      code: '1011',
+      connectionError,
+    })
+
+    expect(onWebsocketClose).toHaveBeenCalledOnce()
+    expect(onWebsocketClose.mock.calls[0][0]).toMatchObject({
+      detail: {
+        code: '1011',
+        connectionError,
+      },
+    })
+  })
+
+  it('preserves a classified connection error for peer failures', () => {
+    const manager = createConnectionManager()
+    const onPeerConnectionFailed = vi.fn()
+    const connectionError = {
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'backend disconnected',
+      terminal: true,
+    }
+    manager.connection = {
+      connectionError,
+      disconnectAll: vi.fn(),
+    } as unknown as NonNullable<ConnectionManager['connection']>
+    manager.addEventListener(
+      EngineConnectionManagerEvents.peerConnectionFailed,
+      onPeerConnectionFailed
+    )
+
+    manager.tearDown({ peerConnectionFailed: true })
+
+    expect(onPeerConnectionFailed).toHaveBeenCalledOnce()
+    expect(onPeerConnectionFailed.mock.calls[0][0]).toMatchObject({
+      detail: { connectionError },
+    })
   })
 })

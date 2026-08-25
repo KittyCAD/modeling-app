@@ -1,5 +1,8 @@
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionErrorKind,
+  EngineConnectionManagerEvents,
+} from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -200,6 +203,38 @@ describe('useOnPeerConnectionClose', () => {
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
+      })
+      test('routes terminal errors without invoking automatic reconnect callbacks', async () => {
+        const callback = vi.fn(() => 1)
+        const terminalErrorCallback = vi.fn(() => 1)
+        const { engineCommandManager } =
+          await buildTheWorldAndNoEngineConnection(true)
+        const { unmount } = renderHook(() =>
+          useOnPeerConnectionClose({
+            callback,
+            terminalErrorCallback,
+            engineCommandManager,
+          })
+        )
+        const connectionError = {
+          kind: EngineConnectionErrorKind.BackendDisconnect,
+          message: 'backend disconnected',
+          terminal: true,
+        }
+
+        engineCommandManager.dispatchEvent(
+          new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {
+            detail: { connectionError },
+          })
+        )
+        unmount()
+
+        expect(terminalErrorCallback).toHaveBeenCalledOnce()
+        expect(terminalErrorCallback).toHaveBeenCalledWith(
+          connectionError,
+          EngineConnectionManagerEvents.peerConnectionFailed
+        )
+        expect(callback).not.toHaveBeenCalled()
       })
     })
   })

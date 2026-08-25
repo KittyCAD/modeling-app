@@ -8,6 +8,8 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
   ConnectingType,
+  type EngineConnectionError,
+  EngineConnectionErrorKind,
   EngineConnectionEvents,
   EngineConnectionStateType,
   type ManagerTearDown,
@@ -19,6 +21,8 @@ import { reportRejection } from '@src/lib/trap'
 
 const MODELING_BACKEND_DISCONNECTED_MESSAGE =
   'modeling connection interrupted; please reconnect and retry'
+const MODELING_CONCURRENCY_LIMIT_MESSAGE =
+  /^Too many active connections, only \d+ allowed per user\.$/
 
 /**
  * 4 different event listeners to clean up
@@ -103,6 +107,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  setConnectionError,
+  tearDownManager,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -119,6 +125,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  setConnectionError: (connectionError: EngineConnectionError) => void
+  tearDownManager: (options?: ManagerTearDown) => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -138,6 +146,40 @@ export const createOnWebSocketMessage = ({
       const backendDisconnectError = message.errors.find(
         (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
       )
+      const authTokenInvalidError = message.errors.find(
+        (error) => error.error_code === 'auth_token_invalid'
+      )
+      const concurrencyLimitError = message.errors.find(
+        (error) =>
+          error.error_code === 'bad_request' &&
+          MODELING_CONCURRENCY_LIMIT_MESSAGE.test(error.message)
+      )
+
+      const terminalConnectionError: EngineConnectionError | undefined =
+        backendDisconnectError
+          ? {
+              kind: EngineConnectionErrorKind.BackendDisconnect,
+              message: backendDisconnectError.message,
+              terminal: true,
+            }
+          : authTokenInvalidError
+            ? {
+                kind: EngineConnectionErrorKind.AuthTokenInvalid,
+                message: authTokenInvalidError.message,
+                terminal: true,
+              }
+            : concurrencyLimitError
+              ? {
+                  kind: EngineConnectionErrorKind.TooManyConnections,
+                  message: concurrencyLimitError.message,
+                  terminal: true,
+                }
+              : undefined
+
+      if (terminalConnectionError) {
+        setConnectionError(terminalConnectionError)
+      }
+
       if (backendDisconnectError) {
         const cloudProjectId = getCloudProjectId()
         void reportClientError({
@@ -171,12 +213,19 @@ export const createOnWebSocketMessage = ({
         console.error(`Error from server:\n${errorsString}`)
       }
 
-      const firstError = message.errors[0]
-      if (firstError.error_code === 'auth_token_invalid') {
+      if (authTokenInvalidError) {
         notifySessionExpired('engine-websocket')
-        disconnectAll()
       }
 
+      if (authTokenInvalidError || concurrencyLimitError) {
+        tearDownManager({
+          websocketClosed: true,
+          connectionError: terminalConnectionError,
+        })
+        return
+      }
+
+      const firstError = message.errors[0]
       if (firstError.error_code === 'internal_api') {
         console.warn(
           'internal_api from server consider calling the request again'
@@ -432,6 +481,7 @@ export const createOnWebSocketClose = ({
   onWebSocketMessage,
   tearDownManager,
   dispatchEvent,
+  getConnectionError,
 }: {
   websocket: WebSocket
   onWebSocketOpen: (event: Event) => void
@@ -439,6 +489,7 @@ export const createOnWebSocketClose = ({
   onWebSocketMessage: (event: MessageEvent<any>) => void
   tearDownManager: (options?: ManagerTearDown) => void
   dispatchEvent: (event: Event) => boolean
+  getConnectionError: () => EngineConnectionError | undefined
 }) => {
   const onDataChannelClose = (event: CloseEvent) => {
     websocket.removeEventListener('open', onWebSocketOpen)
@@ -449,7 +500,11 @@ export const createOnWebSocketClose = ({
         detail: { name: event.code },
       })
     )
-    tearDownManager({ websocketClosed: true, code: event.code.toString() })
+    tearDownManager({
+      websocketClosed: true,
+      code: event.code.toString(),
+      connectionError: getConnectionError(),
+    })
   }
   return onDataChannelClose
 }
