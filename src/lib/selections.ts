@@ -2644,14 +2644,13 @@ export function selectAllInCurrentSketch(
   sceneEntitiesManager: SceneEntities
 ): Selections {
   const graphSelections: Selection[] = []
+  const artifacts = Array.from(artifactGraph.values())
 
   Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
-    const artifact = artifactGraph
-      .values()
-      .find(
-        (g) =>
-          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
-      )
+    const artifact = artifacts.find(
+      (g) =>
+        'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
+    )
     if (artifact && ['path', 'segment'].includes(artifact.type)) {
       const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
       if (codeRefs?.length) {

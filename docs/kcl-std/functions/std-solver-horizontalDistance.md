@@ -20,6 +20,8 @@ X coordinate. A positive value places the second point at a greater X
 than the first, and swapping the points negates the sign. For example,
 `horizontalDistance([ORIGIN, point]) == 5mm` places `point` at X = 5mm,
 while `horizontalDistance([point, ORIGIN]) == 5mm` places it at X = -5mm.
+Negative values are valid: if the second point is left of the first, use a
+negative value (or swap the points and use the corresponding positive value).
 
 ### Arguments
 

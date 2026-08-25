@@ -10,7 +10,7 @@ function makeRemoteProject(
     access: {
       can_delete: true,
       can_edit: true,
-      can_manage_organization: true,
+      can_manage_organization: false,
       scope: 'personal',
     },
     category_ids: [],

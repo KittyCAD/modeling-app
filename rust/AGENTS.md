@@ -31,7 +31,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 - Run KCL snapshot tests (requires a Zoo dev token):
   - `export ZOO_API_TOKEN=your-token-here`
   - `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast`
-- Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs`
+- Generate stdlib markdown docs (from `rust/`): `just redo-kcl-stdlib-docs-no-imgs`
 
 ## Simulation tests
 
