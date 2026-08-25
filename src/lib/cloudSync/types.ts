@@ -150,6 +150,7 @@ export type CloudSyncLocalProject = {
 /** Project metadata index entry enriched with pending local-change state. */
 export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
   hasPendingChanges: boolean
+  pendingSince?: string
 }
 
 /** Remote revision/update metadata extracted from cloud API responses. */

@@ -4,6 +4,7 @@ import {
   clearLegacyConflictCopyReferences,
   clearOutboxEntriesTouchingProject,
   getAllOutboxEntries,
+  getCloudSyncProjectMetadataIndex,
   getProjectMetadata,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
@@ -102,6 +103,34 @@ describe('cloud sync outbox persistence', () => {
         deletedPaths: ['first.kcl', 'second.kcl'],
       },
     ])
+  })
+
+  it('exposes the oldest durable pending time in the project metadata index', async () => {
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: '/projects/bracket',
+      projectName: 'bracket',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-08-24T12:00:00.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/other.kcl',
+      createdAt: '2026-08-24T12:01:00.000Z',
+    })
+
+    const metadata = (await getCloudSyncProjectMetadataIndex()).get(
+      '/projects/bracket'
+    )
+    expect(metadata).toMatchObject({
+      hasPendingChanges: true,
+      pendingSince: '2026-08-24T12:00:00.000Z',
+    })
   })
 
   it('keeps project delete work when a later upsert is registered for the tombstoned project', async () => {

@@ -100,9 +100,14 @@ export async function getCloudSyncProjectMetadataIndex() {
     getAllProjectMetadata(),
     getAllOutboxEntries(),
   ])
-  const pendingProjectPaths = new Set(
-    outboxEntries.map((entry) => normalizePathForSync(entry.projectPath))
-  )
+  const pendingSinceByProjectPath = new Map<string, string>()
+  for (const entry of outboxEntries) {
+    const projectPath = normalizePathForSync(entry.projectPath)
+    const pendingSince = pendingSinceByProjectPath.get(projectPath)
+    if (!pendingSince || entry.createdAt < pendingSince) {
+      pendingSinceByProjectPath.set(projectPath, entry.createdAt)
+    }
+  }
 
   return new Map<string, CloudSyncProjectMetadataIndexEntry>(
     metadata.map((entry) => [
@@ -110,9 +115,12 @@ export async function getCloudSyncProjectMetadataIndex() {
       {
         ...entry,
         hasPendingChanges:
-          pendingProjectPaths.has(
+          pendingSinceByProjectPath.has(
             normalizePathForSync(entry.localProjectPath)
           ) || Boolean(entry.tombstone),
+        pendingSince: pendingSinceByProjectPath.get(
+          normalizePathForSync(entry.localProjectPath)
+        ),
       },
     ])
   )
