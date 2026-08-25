@@ -1064,8 +1064,8 @@ export function retrieveFaceSelectionsFromOpArgs(
     return solids
   }
 
-  const sweepIds = solids.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'sweep' ? s.artifact.id : []
+  const sweepIds = solids.graphSelections.flatMap((selection) =>
+    getTargetSweepIdsFromBodyArtifact(selection.artifact, artifactGraph)
   )
   if (sweepIds.length === 0) {
     return new Error('No sweep artifact found in solids selection')
@@ -1151,6 +1151,33 @@ export function retrieveFaceSelectionsFromOpArgs(
 
   const faces = { graphSelections, otherSelections: [] }
   return { solids, faces }
+}
+
+function getTargetSweepIdsFromBodyArtifact(
+  artifact: Artifact | undefined,
+  artifactGraph: ArtifactGraph
+): string[] {
+  const sweepIds = new Set<string>()
+  const visited = new Set<string>()
+
+  const visit = (candidate: Artifact | undefined) => {
+    if (!candidate || visited.has(candidate.id)) return
+    visited.add(candidate.id)
+
+    if (candidate.type === 'sweep') {
+      sweepIds.add(candidate.id)
+    } else if (candidate.type === 'path' && candidate.sweepId) {
+      const sweep = artifactGraph.get(candidate.sweepId)
+      if (sweep?.type === 'sweep') {
+        sweepIds.add(sweep.id)
+      }
+    } else if (candidate.type === 'compositeSolid') {
+      candidate.solidIds.forEach((id) => visit(artifactGraph.get(id)))
+    }
+  }
+
+  visit(artifact)
+  return [...sweepIds]
 }
 
 export function retrieveNonDefaultPlaneSelectionFromOpArg(

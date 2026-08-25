@@ -4,26 +4,22 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
-import { createActorContext } from '@xstate/react'
-import ms from 'ms'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { ActorRefFrom } from 'xstate'
-
 import {
   type CustomIconName,
   isCustomIconName,
 } from '@src/components/CustomIcon'
-
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { getKclVersion } from '@src/lib/kclVersion'
+import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { isErr } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
-
-import { getKclVersion } from '@src/lib/kclVersion'
-import { S, transitions, xstateEventError } from '@src/machines/utils'
-
-import { Socket, SocketConnectionError } from '@src/lib/socket'
+import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { isZookeeperBillingError } from '@src/lib/zookeeper/zookeeperBilling'
+import { S, transitions, xstateEventError } from '@src/machines/utils'
+import { createActorContext } from '@xstate/react'
+import ms from 'ms'
+import type { ActorRefFrom } from 'xstate'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -34,12 +30,11 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-
 import {
-  type KittyCadLibFile,
   constructZookeeperUserPromptRequest,
+  type KittyCadLibFile,
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import toast from 'react-hot-toast'
 
@@ -193,6 +188,7 @@ export enum ZookeeperManagerStates {
 }
 
 export enum ZookeeperManagerTransitions {
+  AuthTokenChanged = 'auth-token-changed',
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ModesReceive = 'modes-receive',
@@ -250,6 +246,10 @@ function getSetupFailureReason(event: unknown): string | undefined {
 }
 
 export type ZookeeperManagerEvents =
+  | {
+      type: ZookeeperManagerTransitions.AuthTokenChanged
+      apiToken: string
+    }
   | {
       type: 'xstate.done.state.(machine).ready'
       conversationId: undefined
@@ -676,8 +676,27 @@ export const zookeeperManagerMachine = setup({
   guards: {
     canRetrySetup: ({ context }) =>
       context.setupAttempt < NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS,
+    hasApiToken: ({ context }) => context.apiToken.trim().length > 0,
+    canResumeSetupWithApiToken: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
+      return (
+        context.cachedSetup !== undefined && event.apiToken.trim().length > 0
+      )
+    },
+    apiTokenChanged: ({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
+      return event.apiToken !== context.apiToken
+    },
+    apiTokenCleared: ({ event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
+      return event.apiToken.trim().length === 0
+    },
   },
   actions: {
+    assignApiToken: assign(({ event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.AuthTokenChanged)
+      return { apiToken: event.apiToken }
+    }),
     toastError: ({ event, context }) => {
       console.error(event)
       const error = xstateEventError(event)
@@ -1459,6 +1478,9 @@ export const zookeeperManagerMachine = setup({
     closeZookeeperWebSocket(args.context?.ws)
   },
   on: {
+    [ZookeeperManagerTransitions.AuthTokenChanged]: {
+      actions: ['assignApiToken'],
+    },
     [ZookeeperManagerTransitions.ModesReceive]: {
       actions: ['assignModeOptions'],
     },
@@ -1474,10 +1496,26 @@ export const zookeeperManagerMachine = setup({
   states: {
     [S.Await]: {
       on: {
-        [ZookeeperManagerTransitions.CacheSetupAndConnect]: {
-          target: ZookeeperManagerStates.Setup,
-          actions: ['prepareSetup'],
-        },
+        [ZookeeperManagerTransitions.CacheSetupAndConnect]: [
+          {
+            guard: 'hasApiToken',
+            target: ZookeeperManagerStates.Setup,
+            actions: ['prepareSetup'],
+          },
+          {
+            actions: ['prepareSetup'],
+          },
+        ],
+        [ZookeeperManagerTransitions.AuthTokenChanged]: [
+          {
+            guard: 'canResumeSetupWithApiToken',
+            target: ZookeeperManagerStates.Setup,
+            actions: ['assignApiToken'],
+          },
+          {
+            actions: ['assignApiToken'],
+          },
+        ],
         ...transitions([ZookeeperManagerStates.Setup]),
       },
     },
@@ -1568,6 +1606,19 @@ export const zookeeperManagerMachine = setup({
         ],
       },
       on: {
+        [ZookeeperManagerTransitions.AuthTokenChanged]: [
+          {
+            guard: 'apiTokenCleared',
+            target: S.Await,
+            actions: ['assignApiToken'],
+          },
+          {
+            guard: 'apiTokenChanged',
+            target: ZookeeperManagerStates.Setup,
+            actions: ['assignApiToken'],
+            reenter: true,
+          },
+        ],
         ...transitions([ZookeeperManagerTransitions.ConversationClose]),
         [ZookeeperManagerTransitions.AbruptClose]: [
           {
@@ -1733,6 +1784,7 @@ export const zookeeperManagerMachine = setup({
                       'delta',
                       'tool_output',
                       'reasoning',
+                      'files',
                       'replay',
                     ]
                     const lastMessageType:

@@ -30,6 +30,21 @@ fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::Transf
         .build()
 }
 
+fn validate_rotation_angle(angle: &Option<TyF64>, argument_name: &str, args: &Args) -> Result<(), KclError> {
+    let Some(angle) = angle else {
+        return Ok(());
+    };
+
+    if !angle.n.is_finite() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("`{argument_name}` must be a finite number."),
+            vec![args.source_range],
+        )));
+    }
+
+    Ok(())
+}
+
 /// Scale a solid, a sketch, or a helix.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let objects = args.get_unlabeled_kw_arg(
@@ -320,41 +335,10 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }
     }
 
-    // Validate the roll, pitch, and yaw values.
-    if let Some(roll) = &roll
-        && !(-360.0..=360.0).contains(&roll.n)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Expected roll to be between -360 and 360, found `{}`", roll.n),
-            vec![args.source_range],
-        )));
-    }
-    if let Some(pitch) = &pitch
-        && !(-360.0..=360.0).contains(&pitch.n)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Expected pitch to be between -360 and 360, found `{}`", pitch.n),
-            vec![args.source_range],
-        )));
-    }
-    if let Some(yaw) = &yaw
-        && !(-360.0..=360.0).contains(&yaw.n)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Expected yaw to be between -360 and 360, found `{}`", yaw.n),
-            vec![args.source_range],
-        )));
-    }
-
-    // Validate the axis and angle values.
-    if let Some(angle) = &angle
-        && !(-360.0..=360.0).contains(&angle.n)
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Expected angle to be between -360 and 360, found `{}`", angle.n),
-            vec![args.source_range],
-        )));
-    }
+    validate_rotation_angle(&roll, "roll", &args)?;
+    validate_rotation_angle(&pitch, "pitch", &args)?;
+    validate_rotation_angle(&yaw, "yaw", &args)?;
+    validate_rotation_angle(&angle, "angle", &args)?;
 
     let objects = inner_rotate(
         objects,
@@ -539,6 +523,7 @@ async fn delete_inner(mut objects: HideableGeometry, exec_state: &mut ExecState,
 #[cfg(test)]
 mod tests {
     use kittycad_modeling_cmds::ModelingCmd;
+    use kittycad_modeling_cmds::shared::ComponentTransform;
     use pretty_assertions::assert_eq;
 
     use crate::errors::Severity;
@@ -569,6 +554,24 @@ sweepSketch = startSketchOn(XY)
     |> sweep(
         path = sweepPath,
     )"#;
+
+    async fn rotate_transform(arguments: &str) -> ComponentTransform {
+        let ast = format!("{PIPE}\n    |> rotate({arguments})");
+        let result = parse_execute(&ast).await.unwrap();
+
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::SetObjectTransform(command) => command
+                    .transforms
+                    .iter()
+                    .find(|transform| transform.rotate_angle_axis.is_some() || transform.rotate_rpy.is_some()),
+                _ => None,
+            })
+            .cloned()
+            .expect("expected rotate() to dispatch a rotation transform")
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_rotate_empty() {
@@ -617,20 +620,15 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_rotate_angle_out_of_range() {
-        let ast = PIPE.to_string()
-            + r#"
-    |> rotate(
-    axis =  [0, 0, 1.0],
-    angle = 900,
-    )
-"#;
-        let result = parse_execute(&ast).await;
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().message(),
-            r#"Expected angle to be between -360 and 360, found `900`"#.to_string()
-        );
+    async fn test_rotate_accepts_axis_angles_outside_one_turn() {
+        for (input, expected) in [("371.5", 371.5), ("-371.5", -371.5), ("720", 720.0)] {
+            let transform = rotate_transform(&format!("axis = [0, 0, 1], angle = {input}")).await;
+            let rotation = transform
+                .rotate_angle_axis
+                .expect("expected an axis-angle rotation transform");
+
+            assert_eq!(rotation.property.w, expected, "input angle: {input}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -686,57 +684,29 @@ sweepSketch = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_rotate_yaw_out_of_range() {
-        let ast = PIPE.to_string()
-            + r#"
-    |> rotate(
-    yaw = 900,
-    pitch = 90,
-    roll = 90,
-    )
-"#;
-        let result = parse_execute(&ast).await;
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().message(),
-            r#"Expected yaw to be between -360 and 360, found `900`"#.to_string()
-        );
+    async fn test_rotate_accepts_roll_pitch_and_yaw_outside_one_turn() {
+        let transform = rotate_transform("roll = 371.5, pitch = -371.5, yaw = 720").await;
+        let rotation = transform.rotate_rpy.expect("expected an RPY rotation transform");
+
+        assert_eq!(rotation.property.x, 371.5);
+        assert_eq!(rotation.property.y, -371.5);
+        assert_eq!(rotation.property.z, 720.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_rotate_roll_out_of_range() {
-        let ast = PIPE.to_string()
-            + r#"
-    |> rotate(
-    yaw = 90,
-    pitch = 90,
-    roll = 900,
-    )
-"#;
-        let result = parse_execute(&ast).await;
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().message(),
-            r#"Expected roll to be between -360 and 360, found `900`"#.to_string()
-        );
-    }
+    async fn test_rotate_rejects_non_finite_angles() {
+        for (arguments, argument_name) in [
+            ("axis = [0, 0, 1], angle = 1 / 0", "angle"),
+            ("roll = 1 / 0", "roll"),
+            ("pitch = 0 / 0", "pitch"),
+            ("yaw = -1 / 0", "yaw"),
+        ] {
+            let ast = format!("{PIPE}\n    |> rotate({arguments})");
+            let err = parse_execute(&ast).await.unwrap_err();
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_rotate_pitch_out_of_range() {
-        let ast = PIPE.to_string()
-            + r#"
-    |> rotate(
-    yaw = 90,
-    pitch = 900,
-    roll = 90,
-    )
-"#;
-        let result = parse_execute(&ast).await;
-        assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().message(),
-            r#"Expected pitch to be between -360 and 360, found `900`"#.to_string()
-        );
+            assert!(matches!(err, crate::errors::KclError::Semantic { .. }));
+            assert_eq!(err.message(), format!("`{argument_name}` must be a finite number."));
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
