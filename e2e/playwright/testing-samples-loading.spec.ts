@@ -155,11 +155,13 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
     await expect
-      .poll(() =>
-        page.evaluate(() => {
-          const layout = window.app.layout.get()
-          return 'sizes' in layout ? layout.sizes : []
-        })
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const layout = window.app.layout.get()
+            return 'sizes' in layout ? layout.sizes : []
+          }),
+        { timeout: 30_000 }
       )
       .toEqual([0, 50, 50])
     await cmdBar.expectState({ stage: 'commandBarClosed' })

@@ -12,7 +12,6 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
     homePage,
     scene,
     toolbar,
-    cmdBar,
     copilot,
   }) => {
     await page.setBodyDimensions({ width: 1500, height: 1000 })
