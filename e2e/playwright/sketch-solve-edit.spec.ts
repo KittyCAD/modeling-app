@@ -507,7 +507,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await editor.expectEditor.toContain('arc(start = [')
     })
 
-    await test.step('Pick hovered tools with Q and unequip over empty space', async () => {
+    await test.step('Pick hovered tools with P and unequip over empty space', async () => {
       const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
         format: 'ratio',
       })
@@ -535,37 +535,37 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       }
 
       await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(page.getByTestId('center-arc')).toHaveAttribute(
         'aria-pressed',
         'false'
       )
 
       await moveAndWaitForScenePointer(moveToLine)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
       await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
 
       await moveAndWaitForScenePointer(moveToCircle)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
 
       await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
 
       await moveAndWaitForScenePointer(moveToArc)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(page.getByTestId('center-arc')).toHaveAttribute(
         'aria-pressed',
         'true'
       )
 
       await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('q')
+      await page.keyboard.press('p')
       await expect(page.getByTestId('center-arc')).toHaveAttribute(
         'aria-pressed',
         'false'

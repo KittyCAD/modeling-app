@@ -93,17 +93,23 @@ describe('keymap extension', () => {
     expect(sketchLine?.hidden).toBeUndefined()
   })
 
-  it('uses Q for the hovered tool picker and Shift+Q for construction', () => {
+  it('uses P for the hovered tool picker while preserving sketch shortcuts', () => {
     const toolPicker = defaultKeymap.bindings.find(
       (binding) => binding.id === 'toolbar.sketch.tool-picker'
     )
-    expect(toolPicker?.keystrokes).toEqual(['q'])
+    expect(toolPicker?.keystrokes).toEqual(['p'])
     expect(toolPicker?.command).toBe('zds.toolbar.sketch.toolPicker')
+
+    const spline = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.spline'
+    )
+    expect(spline?.keystrokes).toEqual(['s'])
+    expect(spline?.command).toBe('zds.toolbar.sketch.spline')
 
     const construction = defaultKeymap.bindings.find(
       (binding) => binding.id === 'toolbar.sketch.construction'
     )
-    expect(construction?.keystrokes).toEqual(['shift+q'])
+    expect(construction?.keystrokes).toEqual(['q'])
     expect(construction?.command).toBe('zds.toolbar.sketch.construction')
   })
 

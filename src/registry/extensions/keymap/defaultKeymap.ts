@@ -522,7 +522,7 @@ export const defaultKeymap: KeymapDocument = {
       id: 'toolbar.sketch.tool-picker',
       title: 'Pick hovered sketch tool',
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-      keystrokes: ['q'],
+      keystrokes: ['p'],
       command: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
     },
     {
@@ -683,7 +683,7 @@ export const defaultKeymap: KeymapDocument = {
       id: 'toolbar.sketch.construction',
       title: 'Construction',
       scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
-      keystrokes: ['shift+q'],
+      keystrokes: ['q'],
       command: TOOLBAR_COMMAND_IDS.sketchSolve.construction,
     },
   ],
