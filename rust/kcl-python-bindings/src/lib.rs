@@ -299,7 +299,7 @@ impl CompilationIssue {
 #[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 struct ExecOutcome {
-    issues: Vec<CompilationIssue>,
+    inner: kcl_lib::ExecOutcome,
     code: String,
     filename: String,
 }
@@ -308,7 +308,7 @@ struct ExecOutcome {
 #[pymethods]
 impl ExecOutcome {
     fn issues(&self) -> PyResult<Vec<CompilationIssue>> {
-        Ok(self.issues.clone())
+        Ok(self.inner.issues.iter().cloned().map(CompilationIssue::from).collect())
     }
 
     /// Render the given compilation issue as a miette report string, using
@@ -316,14 +316,28 @@ impl ExecOutcome {
     fn report(&self, issue: &CompilationIssue) -> String {
         kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
     }
+
+    /// Analyze all sketches from this execution and group them by constraint
+    /// status.
+    fn sketch_constraint_report(&self) -> SketchConstraintReport {
+        let mut report: SketchConstraintReport = self.inner.sketch_constraint_report().into();
+        add_execution_issues(&mut report, &self.filename, &self.code, self.inner.issues.clone());
+        report
+    }
+
+    /// Render one sketch from this execution as a PNG, colored by solver
+    /// freedom.
+    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
+        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    }
 }
 
 struct ExecutedKcl {
     ctx: ExecutorContext,
+    outcome: kcl_lib::ExecOutcome,
     program: kcl_lib::Program,
     code: String,
     filename: String,
-    issues: Vec<kcl_lib::CompilationIssue>,
 }
 
 async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
@@ -337,33 +351,41 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
     let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
         .await
         .map_err(to_py_exception)?;
-    if let Err(err) = ctx.run(&program, &mut state).await {
-        ctx.close().await;
-        return Err(into_miette(err, &code));
-    }
-
-    let issues = state.issues().to_vec();
+    let (env_ref, _) = match ctx.run(&program, &mut state).await {
+        Ok(result) => result,
+        Err(err) => {
+            ctx.close().await;
+            return Err(into_miette(err, &code));
+        }
+    };
+    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+        Ok(outcome) => outcome,
+        Err(err) => {
+            ctx.close().await;
+            return Err(to_py_exception(err));
+        }
+    };
 
     Ok(ExecutedKcl {
         ctx,
+        outcome,
         program,
         code,
         filename,
-        issues,
     })
 }
 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
-        issues,
+        outcome,
         code,
         filename,
         ..
     } = run_kcl(input, mock, None).await?;
     ctx.close().await;
     Ok(ExecOutcome {
-        issues: issues.into_iter().map(CompilationIssue::from).collect(),
+        inner: outcome,
         code,
         filename,
     })
@@ -463,7 +485,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         program,
         code,
         filename,
-        issues: _,
+        ..
     } = run_kcl(input, false, None).await?;
 
     let settings = match program.meta_settings() {
@@ -1366,11 +1388,11 @@ result = subtract(cube, tools = [cylinder])
             .await
             .expect("execute_impl should succeed for valid non-overlapping subtract");
 
-        let warning = outcome
-            .issues
+        let issues = outcome.issues().expect("issues should convert");
+        let warning = issues
             .iter()
             .find(|issue| issue.is_warning())
-            .unwrap_or_else(|| panic!("expected at least one warning issue, got: {:?}", outcome.issues));
+            .unwrap_or_else(|| panic!("expected at least one warning issue, got: {issues:?}"));
         assert!(!warning.is_err());
         assert!(!warning.is_fatal());
 

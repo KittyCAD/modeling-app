@@ -193,6 +193,16 @@ class ExecOutcome:
         Render the given compilation issue as a miette report string, using
         the source code and filename captured at execution time.
         """
+    def sketch_constraint_report(self) -> SketchConstraintReport:
+        r"""
+        Analyze all sketches from this execution and group them by constraint
+        status.
+        """
+    def render_sketch_png(self, sketch_name: builtins.str) -> builtins.list[builtins.int]:
+        r"""
+        Render one sketch from this execution as a PNG, colored by solver
+        freedom.
+        """
 
 @typing.final
 class ExportFile:
@@ -638,11 +648,6 @@ class SketchConstraintStatus:
     def conflict_count(self) -> builtins.int: ...
     @property
     def total_count(self) -> builtins.int: ...
-    @property
-    def png(self) -> typing.Optional[builtins.list[builtins.int]]:
-        r"""
-        PNG rendering of the sketch, colored by solver freedom.
-        """
 
 @typing.final
 class SldprtImportOptions:

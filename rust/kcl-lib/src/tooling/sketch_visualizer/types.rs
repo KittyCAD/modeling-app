@@ -48,7 +48,11 @@ pub(super) enum SketchVisualizationSegmentKind {
 }
 
 #[derive(Debug, Error)]
-pub(crate) enum SketchVisualizationError {
+pub enum SketchVisualizationError {
+    #[error("no sketch named `{name}` was found in the execution outcome")]
+    SketchNotFound { name: String },
+    #[error("found {count} sketches named `{name}` in the execution outcome")]
+    AmbiguousSketchName { name: String, count: usize },
     #[error("object id {id} was missing from the execution scene objects")]
     MissingObject { id: usize },
     #[error("object id {id} was expected to be {expected}, found {actual}")]

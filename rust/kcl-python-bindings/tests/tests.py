@@ -704,7 +704,6 @@ async def test_sketch_constraint_status_fully_constrained():
     assert report.is_complete is True
     assert report.kcl_error is None
     assert report.fully_constrained[0].status == kcl.ConstraintKind.FullyConstrained
-    assert bytes(report.fully_constrained[0].png).startswith(b"\x89PNG\r\n\x1a\n")
     assert report.total_sketches() == 1
 
 
@@ -720,25 +719,23 @@ async def test_sketch_constraint_status_under_constrained():
     assert len(report.errors) == 0
     assert report.under_constrained[0].status == kcl.ConstraintKind.UnderConstrained
     assert report.under_constrained[0].free_count > 0
-    assert bytes(report.under_constrained[0].png).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_mixed():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, mixed_sketches_code
-    )
+    outcome = await execute_with_retries(kcl.execute_code, mixed_sketches_code)
+    report = outcome.sketch_constraint_report()
     assert report.total_sketches() == 2
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 1
     assert len(report.errors) == 0
     assert report.is_complete is True
     assert report.kcl_error is None
-    assert all(
-        sketch.png is not None
-        for sketch in report.fully_constrained + report.under_constrained
-    )
+    assert report.fully_constrained[0].name == "s1"
+    assert report.under_constrained[0].name == "s2"
+    assert bytes(outcome.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+    assert bytes(outcome.render_sketch_png("s2")).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @requires_engine

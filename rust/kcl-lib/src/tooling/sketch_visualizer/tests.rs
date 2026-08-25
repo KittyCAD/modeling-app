@@ -15,7 +15,7 @@ use crate::front::Object;
 use crate::front::ObjectKind;
 
 #[tokio::test(flavor = "multi_thread")]
-async fn constraint_report_includes_png_for_each_sketch() {
+async fn exec_outcome_renders_sketch_png_separately_from_constraint_report() {
     let outcome = execute_visualizer_kcl(&sketch_visualizer_test_root().join("connected_profile/input.kcl")).await;
     let report = outcome.sketch_constraint_report();
     let statuses = report
@@ -27,12 +27,10 @@ async fn constraint_report_includes_png_for_each_sketch() {
         .collect::<Vec<_>>();
 
     assert_eq!(statuses.len(), 1);
-    assert!(
-        statuses[0]
-            .png
-            .as_deref()
-            .is_some_and(|png| png.starts_with(b"\x89PNG\r\n\x1a\n"))
-    );
+    let png = outcome
+        .render_sketch_png(&statuses[0].name)
+        .expect("the sketch should render from the same execution outcome");
+    assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"));
 }
 
 #[tokio::test(flavor = "multi_thread")]

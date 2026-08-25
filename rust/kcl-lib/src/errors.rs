@@ -243,7 +243,7 @@ impl KclErrorWithOutputs {
     }
 
     pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
-        crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
+        crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects, &self.variables)
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {

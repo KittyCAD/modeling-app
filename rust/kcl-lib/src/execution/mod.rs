@@ -396,10 +396,6 @@ pub struct SketchConstraintStatus {
     pub conflict_count: usize,
     /// Total number of segments analyzed.
     pub total_count: usize,
-    /// A PNG rendering of this sketch, colored by solver freedom. This is
-    /// `None` only if the scene objects could not be rendered.
-    #[serde(default)]
-    pub png: Option<Vec<u8>>,
 }
 
 /// Grouped report of all sketches by constraint status.
@@ -493,21 +489,61 @@ pub(crate) fn sketch_constraint_status_for_sketch(
         free_count,
         conflict_count,
         total_count,
-        png: None,
     })
 }
 
-pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+fn sketch_value(value: &KclValueView) -> Option<&Sketch> {
+    match value {
+        KclValueView::Sketch { value } => Some(value),
+        KclValueView::Object { value, .. } => {
+            let KclValueView::Object { value: meta, .. } = value.get(SKETCH_OBJECT_META)? else {
+                return None;
+            };
+            let KclValueView::Sketch { value: sketch } = meta.get(SKETCH_OBJECT_META_SKETCH)? else {
+                return None;
+            };
+            Some(sketch)
+        }
+        _ => None,
+    }
+}
+
+fn sketch_value_matches_object(sketch: &Sketch, object: &Object) -> bool {
+    if sketch.artifact_id == object.artifact_id {
+        return true;
+    }
+
+    sketch.meta.iter().any(|metadata| match &object.source {
+        crate::front::SourceRef::Simple { range, .. } => *range == metadata.source_range,
+        crate::front::SourceRef::BackTrace { ranges } => {
+            ranges.iter().any(|(range, _)| *range == metadata.source_range)
+        }
+    })
+}
+
+fn sketch_name_for_object<'a>(variables: &'a IndexMap<String, KclValueView>, object: &Object) -> Option<&'a str> {
+    variables.iter().find_map(|(name, value)| {
+        sketch_value(value)
+            .is_some_and(|sketch| sketch_value_matches_object(sketch, object))
+            .then_some(name.as_str())
+    })
+}
+
+pub(crate) fn sketch_constraint_report_from_scene_objects(
+    scene_objects: &[Object],
+    variables: &IndexMap<String, KclValueView>,
+) -> SketchConstraintReport {
     let mut fully_constrained = Vec::new();
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
-
     for obj in scene_objects {
         let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
-        entry.png = crate::tooling::sketch_visualizer::render_sketch_png(scene_objects, obj).ok();
+        if let Some(name) = sketch_name_for_object(variables, obj) {
+            entry.name = name.to_owned();
+        }
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
@@ -547,7 +583,44 @@ impl ExecOutcome {
     /// freedom of its constituent points. Owned points (belonging to a
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        sketch_constraint_report_from_scene_objects(&self.scene_objects)
+        sketch_constraint_report_from_scene_objects(&self.scene_objects, &self.variables)
+    }
+
+    /// Render one sketch from this execution result as a PNG, colored by
+    /// solver freedom.
+    pub fn render_sketch_png(
+        &self,
+        sketch_name: &str,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use crate::front::ObjectKind;
+        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+        let variable_sketch = self.variables.get(sketch_name).and_then(sketch_value);
+        let sketches = self
+            .scene_objects
+            .iter()
+            .filter(|object| {
+                matches!(object.kind, ObjectKind::Sketch(_))
+                    && (object.label == sketch_name
+                        || variable_sketch.is_some_and(|sketch| sketch_value_matches_object(sketch, object)))
+            })
+            .collect::<Vec<_>>();
+        let sketch = match sketches.as_slice() {
+            [] => {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            }
+            [sketch] => *sketch,
+            _ => {
+                return Err(SketchVisualizationError::AmbiguousSketchName {
+                    name: sketch_name.to_owned(),
+                    count: sketches.len(),
+                });
+            }
+        };
+
+        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
     }
 }
 
