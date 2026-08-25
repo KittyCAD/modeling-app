@@ -42,6 +42,7 @@ import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
@@ -203,7 +204,8 @@ export const fileLoader =
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
     const appSettings = await loadRouteSettings(app, wasmInstance)
-    const currentProjectPath = app.project?.projectIORefSignal.value.path
+    const currentProjectPath = app.registry.get(projectSession).getProject()
+      ?.projectIORefSignal.value.path
     const targetLibraryPath = params.id
       ? (
           await getProjectLibraryOwnership(
