@@ -43,11 +43,13 @@ vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
   beforeEach(() => {
-    persistenceMocks.readUserKeymapFile.mockResolvedValue({
+    persistenceMocks.readUserKeymapFile.mockReset().mockResolvedValue({
       version: KEYMAP_SCHEMA_VERSION,
       bindings: [],
     })
-    persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
+    persistenceMocks.writeUserKeymapFile
+      .mockReset()
+      .mockResolvedValue(undefined)
   })
 
   it('contributes the default keymap as the Base source', () => {
@@ -424,6 +426,17 @@ describe('keymap extension', () => {
     resolveInitialRead?.({ version: KEYMAP_SCHEMA_VERSION, bindings: [] })
     await savePromise
 
+    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledOnce()
+    expect(persistenceMocks.writeUserKeymapFile).toHaveBeenCalledWith({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [
+        {
+          command: 'zds.toolbar.sketch.line',
+          keystrokes: ['shift+q'],
+          when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        },
+      ],
+    })
     expect(
       keymap.handleKeyDown(new KeyboardEvent('keydown', { key: 'l' }), {
         source: 'global',
