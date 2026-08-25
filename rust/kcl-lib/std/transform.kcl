@@ -583,18 +583,18 @@ export fn translate(
 export fn rotate(
   /// The solid, sketch, helix, or set of solids, sketches, or helices to rotate.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry,
-  /// The roll angle. Must be between -360deg and 360deg.
+  /// The roll angle.
   @(includeInSnippet = true)
   roll?: number(Angle),
-  /// The pitch angle. Must be between -360deg and 360deg.
+  /// The pitch angle.
   @(includeInSnippet = true)
   pitch?: number(Angle),
-  /// The yaw angle. Must be between -360deg and 360deg.
+  /// The yaw angle.
   @(includeInSnippet = true)
   yaw?: number(Angle),
   /// The axis to rotate around. Must be used with `angle`.
   axis?: Axis3d | Point3d,
-  /// The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.
+  /// The angle to rotate. Must be used with `axis`.
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,
