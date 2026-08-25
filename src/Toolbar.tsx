@@ -7,7 +7,9 @@ import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
+import Tooltip, {
+  RICH_TOOLTIP_SURFACE_CLASS_NAME,
+} from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -221,7 +223,7 @@ const Toolbar_ = memo(
 
     const tooltipContentClassName = !showRichContent
       ? ''
-      : '!text-left text-wrap !text-xs !p-0 !pb-2 flex !max-w-none !w-72 flex-col items-stretch'
+      : `${RICH_TOOLTIP_SURFACE_CLASS_NAME} !max-w-none`
 
     /**
      * Resolve all the callbacks and values for the current mode,

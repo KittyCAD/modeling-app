@@ -1,5 +1,9 @@
 import { CANVAS_DRAG_THRESHOLD_PX } from '@src/clientSideScene/sceneConstants'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
+import {
+  RICH_TOOLTIP_SURFACE_CLASS_NAME,
+  TooltipSurface,
+} from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useRichTooltipContent } from '@src/hooks/useRichTooltipContent'
 import {
@@ -207,9 +211,7 @@ export function ConstraintBadgeTooltipOverlay({
       role="tooltip"
       data-testid="constraint-badge-tooltip"
       data-variant={tooltipVariant}
-      className={`fixed pointer-events-none z-[9999] overflow-hidden rounded-sm border border-chalkboard-20/50 bg-chalkboard-10 text-chalkboard-110 shadow-lg dark:border-chalkboard-80/50 dark:bg-chalkboard-90 dark:text-chalkboard-10 ${
-        showRichContent ? 'w-72' : 'w-max'
-      }`}
+      className="fixed pointer-events-none z-[9999]"
       style={{
         left: tooltipPosition?.x ?? pointerState.point.x,
         top: tooltipPosition?.y ?? pointerState.point.y,
@@ -217,30 +219,31 @@ export function ConstraintBadgeTooltipOverlay({
         visibility: tooltipPosition ? 'visible' : 'hidden',
       }}
     >
-      {showRichContent ? (
-        <>
-          <div className="flex items-center gap-2 bg-chalkboard-20/50 px-3 py-2.5 dark:bg-chalkboard-80/50">
-            <svg
-              aria-hidden="true"
-              className="h-5 w-5 flex-none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d={constraintIconPaths[constraintType]}
-                fill="currentColor"
-              />
-            </svg>
-            <span className="text-sm">{content.title}</span>
+      <TooltipSurface
+        className={showRichContent ? RICH_TOOLTIP_SURFACE_CLASS_NAME : ''}
+        style={{ maxWidth }}
+      >
+        {showRichContent ? (
+          <>
+            <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+              <svg aria-hidden="true" className="w-5 h-5" viewBox="0 0 20 20">
+                <path
+                  d={constraintIconPaths[constraintType]}
+                  fill="currentColor"
+                />
+              </svg>
+              <div className="text-sm flex-1 flex flex-col gap-1">
+                {content.title}
+              </div>
+            </div>
+            <p className="px-2 my-2 text-ch font-sans">{content.description}</p>
+          </>
+        ) : (
+          <div className="text-sm flex flex-col">
+            <div className="flex gap-4 p-0">{content.title}</div>
           </div>
-          <p className="m-0 px-3 py-2 text-sm leading-5 font-sans">
-            {content.description}
-          </p>
-        </>
-      ) : (
-        <div className="whitespace-nowrap px-3 py-2 text-sm">
-          {content.title}
-        </div>
-      )}
+        )}
+      </TooltipSurface>
     </div>
   )
 }

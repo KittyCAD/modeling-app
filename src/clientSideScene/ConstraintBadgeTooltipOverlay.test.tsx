@@ -1,4 +1,5 @@
 import { ConstraintBadgeTooltipOverlay } from '@src/clientSideScene/ConstraintBadgeTooltipOverlay'
+import * as TooltipModule from '@src/components/Tooltip'
 import {
   TOOLTIP_RICH_CONTENT_CLEAR_DELAY_MS,
   TOOLTIP_RICH_CONTENT_DELAY_MS,
@@ -53,6 +54,25 @@ vi.mock('@src/hooks/useModelingContext', () => ({
     state: { children: { sketchSolveMachine: {} } },
   }),
 }))
+
+vi.mock('@src/components/Tooltip', async (importOriginal) => {
+  const actual = await importOriginal<typeof TooltipModule>()
+  const { forwardRef } = await import('react')
+
+  return {
+    ...actual,
+    TooltipSurface: forwardRef<
+      HTMLDivElement,
+      React.ComponentPropsWithoutRef<'div'>
+    >(function MockTooltipSurface({ children, ...props }, ref) {
+      return (
+        <div ref={ref} {...props} data-testid="shared-tooltip-surface">
+          {children}
+        </div>
+      )
+    }),
+  }
+})
 
 function TestScene() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -123,11 +143,13 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     })
 
     const tooltip = screen.getByRole('tooltip')
+    const surface = screen.getByTestId('shared-tooltip-surface')
+    expect(tooltip).toContainElement(surface)
     expect(tooltip).toHaveTextContent('Parallel')
     expect(tooltip).not.toHaveTextContent(
       'Constrain lines or curves to be parallel.'
     )
-    expect(tooltip).toHaveClass('w-max')
+    expect(tooltip).toHaveAttribute('data-variant', 'compact')
     expect(tooltip).toHaveClass('pointer-events-none')
     expect(tooltip).toHaveStyle({
       left: '208px',
@@ -148,7 +170,10 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     expect(tooltip).toHaveTextContent(
       'Constrain lines or curves to be parallel.'
     )
-    expect(tooltip).toHaveClass('w-72')
+    expect(surface).toHaveClass(
+      ...TooltipModule.RICH_TOOLTIP_SURFACE_CLASS_NAME.split(' ')
+    )
+    expect(tooltip).toHaveAttribute('data-variant', 'rich')
   })
 
   it('follows the pointer and hides during pointer actions', () => {
