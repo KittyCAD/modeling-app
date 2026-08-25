@@ -398,8 +398,9 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// The report carries no other sketch identifier, so a caller cannot tell
-    /// apart two entries that share a name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
+    /// the report carries no other sketch identifier, rendering returns an
+    /// ambiguity error when multiple sketches share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -505,58 +506,15 @@ pub(crate) fn sketch_constraint_status_for_sketch(
     })
 }
 
-fn sketch_value(value: &KclValueView) -> Option<&Sketch> {
-    match value {
-        KclValueView::Sketch { value } => Some(value),
-        KclValueView::Object { value, .. } => {
-            let KclValueView::Object { value: meta, .. } = value.get(SKETCH_OBJECT_META)? else {
-                return None;
-            };
-            let KclValueView::Sketch { value: sketch } = meta.get(SKETCH_OBJECT_META_SKETCH)? else {
-                return None;
-            };
-            Some(sketch)
-        }
-        _ => None,
-    }
-}
-
-fn sketch_value_matches_object(sketch: &Sketch, object: &Object) -> bool {
-    if sketch.artifact_id == object.artifact_id {
-        return true;
-    }
-
-    sketch.meta.iter().any(|metadata| match &object.source {
-        crate::front::SourceRef::Simple { range, .. } => *range == metadata.source_range,
-        crate::front::SourceRef::BackTrace { ranges } => {
-            ranges.iter().any(|(range, _)| *range == metadata.source_range)
-        }
-    })
-}
-
-fn sketch_name_for_object<'a>(variables: &'a IndexMap<String, KclValueView>, object: &Object) -> Option<&'a str> {
-    variables.iter().find_map(|(name, value)| {
-        sketch_value(value)
-            .is_some_and(|sketch| sketch_value_matches_object(sketch, object))
-            .then_some(name.as_str())
-    })
-}
-
-pub(crate) fn sketch_constraint_report_from_scene_objects(
-    scene_objects: &[Object],
-    variables: &IndexMap<String, KclValueView>,
-) -> SketchConstraintReport {
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
     let mut fully_constrained = Vec::new();
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
     for obj in scene_objects {
-        let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
-        if let Some(name) = sketch_name_for_object(variables, obj) {
-            entry.name = name.to_owned();
-        }
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),
@@ -596,7 +554,7 @@ impl ExecOutcome {
     /// freedom of its constituent points. Owned points (belonging to a
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
-        sketch_constraint_report_from_scene_objects(&self.scene_objects, &self.variables)
+        sketch_constraint_report_from_scene_objects(&self.scene_objects)
     }
 
     /// Render one sketch from this execution result as a PNG, colored by
@@ -608,15 +566,10 @@ impl ExecOutcome {
         use crate::front::ObjectKind;
         use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
-        let variable_sketch = self.variables.get(sketch_name).and_then(sketch_value);
         let sketches = self
             .scene_objects
             .iter()
-            .filter(|object| {
-                matches!(object.kind, ObjectKind::Sketch(_))
-                    && (object.label == sketch_name
-                        || variable_sketch.is_some_and(|sketch| sketch_value_matches_object(sketch, object)))
-            })
+            .filter(|object| matches!(object.kind, ObjectKind::Sketch(_)) && object.label == sketch_name)
             .collect::<Vec<_>>();
         let sketch = match sketches.as_slice() {
             [] => {

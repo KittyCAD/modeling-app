@@ -645,8 +645,9 @@ class SketchConstraintStatus:
         r"""
         Name of the variable the sketch was assigned to. Empty when the sketch
         has no enclosing variable declaration, and shared between entries when
-        two sketches resolve to the same declaration. The report carries no
-        other sketch identifier.
+        two sketches resolve to the same declaration. This name can be passed
+        to `ExecOutcome.render_sketch_png`, which returns an ambiguity error
+        when multiple sketches share it.
         """
     @property
     def status(self) -> zooConstraintKind: ...
