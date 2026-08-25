@@ -396,6 +396,10 @@ pub struct SketchConstraintStatus {
     pub conflict_count: usize,
     /// Total number of segments analyzed.
     pub total_count: usize,
+    /// A PNG rendering of this sketch, colored by solver freedom. This is
+    /// `None` only if the scene objects could not be rendered.
+    #[serde(default)]
+    pub png: Option<Vec<u8>>,
 }
 
 /// Grouped report of all sketches by constraint status.
@@ -489,6 +493,7 @@ pub(crate) fn sketch_constraint_status_for_sketch(
         free_count,
         conflict_count,
         total_count,
+        png: None,
     })
 }
 
@@ -499,9 +504,10 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut errors = Vec::new();
 
     for obj in scene_objects {
-        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+        let Some(mut entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
         };
+        entry.png = crate::tooling::sketch_visualizer::render_sketch_png(scene_objects, obj).ok();
         match entry.status {
             ConstraintKind::FullyConstrained => fully_constrained.push(entry),
             ConstraintKind::UnderConstrained => under_constrained.push(entry),

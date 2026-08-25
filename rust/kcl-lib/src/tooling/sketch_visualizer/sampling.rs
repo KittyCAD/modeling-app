@@ -1,9 +1,7 @@
 //! Curve sampling and world-space bounds helpers.
 //!
 //! Rendering is intentionally polyline-based: extraction samples arcs, circles,
-//! and splines here, then `render` only has to draw straight segments. This keeps
-//! the PNG path deterministic and keeps sidecar bounds aligned with the rendered
-//! geometry.
+//! and splines here, then `render` only has to draw straight segments.
 
 use std::f64::consts::TAU;
 

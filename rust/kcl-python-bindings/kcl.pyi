@@ -638,6 +638,11 @@ class SketchConstraintStatus:
     def conflict_count(self) -> builtins.int: ...
     @property
     def total_count(self) -> builtins.int: ...
+    @property
+    def png(self) -> typing.Optional[builtins.list[builtins.int]]:
+        r"""
+        PNG rendering of the sketch, colored by solver freedom.
+        """
 
 @typing.final
 class SldprtImportOptions:

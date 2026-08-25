@@ -39,6 +39,9 @@ pub struct SketchConstraintStatus {
     pub conflict_count: usize,
     #[pyo3(get)]
     pub total_count: usize,
+    /// PNG rendering of the sketch, colored by solver freedom.
+    #[pyo3(get)]
+    pub png: Option<Vec<u8>>,
 }
 
 impl From<kcl_lib::SketchConstraintStatus> for SketchConstraintStatus {
@@ -49,6 +52,7 @@ impl From<kcl_lib::SketchConstraintStatus> for SketchConstraintStatus {
             free_count: s.free_count,
             conflict_count: s.conflict_count,
             total_count: s.total_count,
+            png: s.png,
         }
     }
 }

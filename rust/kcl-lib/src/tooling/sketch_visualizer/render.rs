@@ -1,11 +1,11 @@
 //! Deterministic raster rendering for sampled sketch geometry.
 //!
 //! By the time data reaches this module, curves have already been sampled into
-//! polylines and colors have been decided by extraction. Rendering can therefore
-//! be a small pixel pipeline: fit world bounds to the canvas, draw optional
-//! helper polylines, draw primary polylines, then draw points on top.
+//! polylines. Rendering fits those polylines to the canvas and colors them by
+//! solver freedom.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::io::Cursor;
 
 use image::DynamicImage;
@@ -14,30 +14,23 @@ use image::Rgba;
 use image::RgbaImage;
 
 use super::model::InternalPoint;
-use super::model::InternalPolyline;
 use super::model::InternalSegment;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
 use super::types::SketchVisualizationSegmentKind;
-use super::types::SketchVisualizationTheme;
 use crate::front::Freedom;
 
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
-const CONTROL_POLYGON_LINE_WIDTH: f64 = 1.25;
 const POINT_RADIUS: f64 = 4.0;
-const GROUPED_POINT_RADIUS: f64 = 5.0;
+const CONTACT_POINT_RADIUS: f64 = 5.0;
 
-pub(super) const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
+const FREE_COLOR: Color = Color::rgb(0x3c, 0x73, 0xff);
 const CONFLICT_COLOR: Color = Color::rgb(0xff, 0x5e, 0x5b);
-const FIXED_DARK_THEME_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
-const FIXED_LIGHT_THEME_COLOR: Color = Color::rgb(0x00, 0x00, 0x00);
+const FIXED_COLOR: Color = Color::rgb(0xff, 0xff, 0xff);
 const DARK_BACKGROUND: Color = Color::rgb(0x18, 0x1a, 0x1f);
-const LIGHT_BACKGROUND: Color = Color::rgb(0xfa, 0xfa, 0xfa);
-const CONTROL_POLYGON_COLOR: Color = Color::rgb(0x8a, 0x8a, 0x8a);
 const POINT_OUTLINE_DARK: Color = Color::rgb(0x18, 0x1a, 0x1f);
-const POINT_OUTLINE_LIGHT: Color = Color::rgb(0xfa, 0xfa, 0xfa);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) struct Color {
@@ -55,65 +48,30 @@ impl Color {
     fn to_rgba(self) -> Rgba<u8> {
         Rgba([self.r, self.g, self.b, self.a])
     }
-
-    pub(super) fn to_hex_string(self) -> String {
-        format!("#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
-    }
 }
 
-pub(super) fn dof_color(freedom: Option<Freedom>, theme: SketchVisualizationTheme) -> Color {
+fn dof_color(freedom: Option<Freedom>) -> Color {
     match freedom {
         Some(Freedom::Conflict) => CONFLICT_COLOR,
-        Some(Freedom::Fixed) => match theme {
-            SketchVisualizationTheme::Dark => FIXED_DARK_THEME_COLOR,
-            SketchVisualizationTheme::Light => FIXED_LIGHT_THEME_COLOR,
-        },
+        Some(Freedom::Fixed) => FIXED_COLOR,
         Some(Freedom::Free) | None => FREE_COLOR,
     }
 }
 
 pub(super) fn render_png(
     segments: &BTreeMap<usize, InternalSegment>,
-    control_polygons: &[InternalPolyline],
     points: &BTreeMap<usize, InternalPoint>,
-    rendered_colors: &BTreeMap<usize, String>,
-    point_contact_group: &BTreeMap<usize, usize>,
+    contact_point_ids: &BTreeSet<usize>,
     bounds: SketchVisualizationBounds,
     options: &SketchVisualizationOptions,
 ) -> Result<Vec<u8>, SketchVisualizationError> {
-    let background = match options.theme {
-        SketchVisualizationTheme::Dark => DARK_BACKGROUND,
-        SketchVisualizationTheme::Light => LIGHT_BACKGROUND,
-    };
-    let point_outline = match options.theme {
-        SketchVisualizationTheme::Dark => POINT_OUTLINE_DARK,
-        SketchVisualizationTheme::Light => POINT_OUTLINE_LIGHT,
-    };
-    let mut image = RgbaImage::from_pixel(options.width, options.height, background.to_rgba());
+    let mut image = RgbaImage::from_pixel(options.width, options.height, DARK_BACKGROUND.to_rgba());
     let transform = Transform::new(bounds, options);
-
-    // Draw control polygons first so primary geometry and endpoint points remain
-    // visually dominant.
-    if options.show_control_polygons {
-        for polyline in control_polygons {
-            draw_polyline(
-                &mut image,
-                &polyline.points,
-                CONTROL_POLYGON_COLOR,
-                CONTROL_POLYGON_LINE_WIDTH,
-                polyline.dashed,
-                &transform,
-            );
-        }
-    }
 
     // Segment polylines were sampled in world coordinates by extraction. The
     // transform below is the only world-to-screen conversion in the raster path.
     for segment in segments.values() {
-        let color = rendered_colors
-            .get(&segment.id)
-            .and_then(|hex| Color::from_hex(hex))
-            .unwrap_or(FREE_COLOR);
+        let color = dof_color(segment.freedom);
         for polyline in &segment.polylines {
             if segment.kind == SketchVisualizationSegmentKind::Point {
                 continue;
@@ -129,19 +87,19 @@ pub(super) fn render_png(
         }
     }
 
-    for point in points.values() {
+    for (point_id, point) in points {
         let owner_color = point
             .owner
-            .and_then(|owner| rendered_colors.get(&owner))
-            .and_then(|hex| Color::from_hex(hex));
-        let color = owner_color.unwrap_or_else(|| dof_color(Some(point.freedom), options.theme));
-        let radius = if point_contact_group.contains_key(&point.id) {
-            GROUPED_POINT_RADIUS
+            .and_then(|owner| segments.get(&owner))
+            .map(|segment| dof_color(segment.freedom));
+        let color = owner_color.unwrap_or_else(|| dof_color(Some(point.freedom)));
+        let radius = if contact_point_ids.contains(point_id) {
+            CONTACT_POINT_RADIUS
         } else {
             POINT_RADIUS
         };
         let screen = transform.point(point.position);
-        draw_filled_circle(&mut image, screen, radius + 1.5, point_outline);
+        draw_filled_circle(&mut image, screen, radius + 1.5, POINT_OUTLINE_DARK);
         draw_filled_circle(&mut image, screen, radius, color);
     }
 
@@ -149,19 +107,6 @@ pub(super) fn render_png(
     let mut cursor = Cursor::new(Vec::new());
     dynamic.write_to(&mut cursor, ImageFormat::Png)?;
     Ok(cursor.into_inner())
-}
-
-impl Color {
-    fn from_hex(hex: &str) -> Option<Self> {
-        let hex = hex.strip_prefix('#').unwrap_or(hex);
-        if hex.len() != 6 {
-            return None;
-        }
-        let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
-        let g = u8::from_str_radix(&hex[2..4], 16).ok()?;
-        let b = u8::from_str_radix(&hex[4..6], 16).ok()?;
-        Some(Self::rgb(r, g, b))
-    }
 }
 
 #[derive(Debug, Clone, Copy)]
