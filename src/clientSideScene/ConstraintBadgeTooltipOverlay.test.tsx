@@ -122,8 +122,8 @@ describe('ConstraintBadgeTooltipOverlay', () => {
     fireEvent.mouseDown(scene)
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
 
-    fireEvent.mouseMove(scene, { clientX: 250, clientY: 120, buttons: 0 })
-    expect(screen.getByRole('tooltip')).toBeInTheDocument()
+    fireEvent.mouseUp(scene, { clientX: 250, clientY: 120, buttons: 0 })
+    expect(screen.getByRole('tooltip')).toHaveStyle({ left: '258px' })
 
     fireEvent.mouseLeave(scene)
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()

@@ -78,10 +78,12 @@ export function ConstraintBadgeTooltipOverlay({
     container.addEventListener('mousemove', updatePointer)
     container.addEventListener('mouseleave', clearPointer)
     container.addEventListener('mousedown', clearPointer)
+    container.addEventListener('mouseup', updatePointer)
     return () => {
       container.removeEventListener('mousemove', updatePointer)
       container.removeEventListener('mouseleave', clearPointer)
       container.removeEventListener('mousedown', clearPointer)
+      container.removeEventListener('mouseup', updatePointer)
     }
   }, [containerRef])
 
