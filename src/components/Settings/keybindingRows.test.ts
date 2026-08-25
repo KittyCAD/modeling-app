@@ -3,10 +3,7 @@ import {
   findKeybindingConflict,
   getKeybindingRows,
 } from '@src/components/Settings/keybindingRows'
-import type {
-  KeymapBinding,
-  KeymapItem,
-} from '@src/registry/contracts/keymap'
+import type { KeymapBinding, KeymapItem } from '@src/registry/contracts/keymap'
 import { describe, expect, it } from 'vitest'
 
 describe('keybinding rows', () => {
