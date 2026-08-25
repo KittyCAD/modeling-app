@@ -1,4 +1,6 @@
+import { CANVAS_DRAG_THRESHOLD_PX } from '@src/clientSideScene/sceneConstants'
 import { constraintIconPaths } from '@src/components/constraintIconPaths'
+import { TOOLTIP_RICH_CONTENT_DELAY_MS } from '@src/components/tooltipTiming'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   type ConstraintBadgeTooltipBounds,
@@ -26,17 +28,30 @@ type PointerState = {
   bounds: ConstraintBadgeTooltipBounds
 }
 
+type HoveredInvisibleConstraint = {
+  id: number
+  type: InvisibleConstraint['type']
+}
+
 export function ConstraintBadgeTooltipOverlay({
   containerRef,
 }: {
   containerRef: RefObject<HTMLDivElement | null>
 }) {
   const { state } = useModelingContext()
-  const constraintType = useSelector(
+  const hoveredConstraint = useSelector(
     state.children.sketchSolveMachine,
-    selectHoveredInvisibleConstraintType
+    selectHoveredInvisibleConstraint,
+    areHoveredConstraintsEqual
   )
+  const constraintType = hoveredConstraint?.type ?? null
+  const hoveredConstraintKey = hoveredConstraint
+    ? `${hoveredConstraint.id}:${hoveredConstraint.type}`
+    : null
   const [pointerState, setPointerState] = useState<PointerState | null>(null)
+  const [richConstraintKey, setRichConstraintKey] = useState<string | null>(
+    null
+  )
   const [tooltipPosition, setTooltipPosition] =
     useState<ConstraintBadgeTooltipPoint | null>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -49,53 +64,122 @@ export function ConstraintBadgeTooltipOverlay({
       return
     }
 
+    let containerBounds = getElementBounds(container)
+    let pointerDownPoint: ConstraintBadgeTooltipPoint | null = null
+    let pointerWasDragged = false
+
     const clearPointer = () => {
       latestPointerStateRef.current = null
       setPointerState(null)
+      setRichConstraintKey(null)
     }
     const updatePointer = (event: MouseEvent) => {
       if (event.buttons !== 0) {
+        if (pointerDownPoint) {
+          const deltaX = event.clientX - pointerDownPoint.x
+          const deltaY = event.clientY - pointerDownPoint.y
+          pointerWasDragged ||=
+            deltaX * deltaX + deltaY * deltaY >=
+            CANVAS_DRAG_THRESHOLD_PX * CANVAS_DRAG_THRESHOLD_PX
+        }
         clearPointer()
         return
       }
 
-      const containerRect = container.getBoundingClientRect()
       const nextPointerState = {
         point: { x: event.clientX, y: event.clientY },
-        bounds: {
-          left: containerRect.left,
-          top: containerRect.top,
-          right: containerRect.right,
-          bottom: containerRect.bottom,
-        },
+        bounds: containerBounds,
       }
       latestPointerStateRef.current = nextPointerState
       if (constraintTypeRef.current) {
         setPointerState(nextPointerState)
       }
     }
+    const handlePointerDown = (event: MouseEvent) => {
+      pointerDownPoint = { x: event.clientX, y: event.clientY }
+      pointerWasDragged = false
+      clearPointer()
+    }
+    const handlePointerUp = (event: MouseEvent) => {
+      const shouldRestorePointer =
+        pointerDownPoint !== null && !pointerWasDragged
+      pointerDownPoint = null
+      pointerWasDragged = false
+      if (shouldRestorePointer) {
+        updatePointer(event)
+      }
+    }
+    const handlePointerLeave = () => {
+      pointerDownPoint = null
+      pointerWasDragged = false
+      clearPointer()
+    }
+    const updateBounds = () => {
+      containerBounds = getElementBounds(container)
+      const latestPointerState = latestPointerStateRef.current
+      if (!latestPointerState) {
+        return
+      }
+
+      const nextPointerState = {
+        point: latestPointerState.point,
+        bounds: containerBounds,
+      }
+      latestPointerStateRef.current = nextPointerState
+      if (constraintTypeRef.current) {
+        setPointerState(nextPointerState)
+      }
+    }
+    const resizeObserver = new ResizeObserver(updateBounds)
+    resizeObserver.observe(container)
 
     container.addEventListener('mousemove', updatePointer)
-    container.addEventListener('mouseleave', clearPointer)
-    container.addEventListener('mousedown', clearPointer)
-    container.addEventListener('mouseup', updatePointer)
+    container.addEventListener('mouseleave', handlePointerLeave)
+    container.addEventListener('mousedown', handlePointerDown)
+    container.addEventListener('mouseup', handlePointerUp)
     return () => {
+      resizeObserver.disconnect()
       container.removeEventListener('mousemove', updatePointer)
-      container.removeEventListener('mouseleave', clearPointer)
-      container.removeEventListener('mousedown', clearPointer)
-      container.removeEventListener('mouseup', updatePointer)
+      container.removeEventListener('mouseleave', handlePointerLeave)
+      container.removeEventListener('mousedown', handlePointerDown)
+      container.removeEventListener('mouseup', handlePointerUp)
     }
   }, [containerRef])
 
   useLayoutEffect(() => {
-    constraintTypeRef.current = constraintType
-    setPointerState(constraintType ? latestPointerStateRef.current : null)
-  }, [constraintType])
+    constraintTypeRef.current =
+      hoveredConstraintKey === null ? null : constraintType
+    setPointerState(
+      hoveredConstraintKey === null ? null : latestPointerStateRef.current
+    )
+    setRichConstraintKey(null)
+  }, [constraintType, hoveredConstraintKey])
+
+  const pointerIsActive = pointerState !== null
+  useEffect(() => {
+    if (hoveredConstraintKey === null || !pointerIsActive) {
+      return
+    }
+
+    const richContentTimeout = window.setTimeout(() => {
+      setRichConstraintKey(hoveredConstraintKey)
+    }, TOOLTIP_RICH_CONTENT_DELAY_MS)
+    return () => {
+      clearTimeout(richContentTimeout)
+    }
+  }, [hoveredConstraintKey, pointerIsActive])
+
+  const showRichContent =
+    pointerIsActive && richConstraintKey === hoveredConstraintKey
+  const tooltipVariant = showRichContent ? 'rich' : 'compact'
 
   useLayoutEffect(() => {
     const tooltip = tooltipRef.current
     if (!tooltip || !pointerState || !constraintType) {
       setTooltipPosition(null)
+      return
+    }
+    if (tooltip.dataset.variant !== tooltipVariant) {
       return
     }
 
@@ -114,7 +198,7 @@ export function ConstraintBadgeTooltipOverlay({
         ? currentPosition
         : nextPosition
     )
-  }, [constraintType, pointerState])
+  }, [constraintType, pointerState, tooltipVariant])
 
   if (!constraintType || !pointerState) {
     return null
@@ -131,7 +215,10 @@ export function ConstraintBadgeTooltipOverlay({
       ref={tooltipRef}
       role="tooltip"
       data-testid="constraint-badge-tooltip"
-      className="fixed pointer-events-none z-[9999] w-72 overflow-hidden rounded-sm border border-chalkboard-20/50 bg-chalkboard-10 text-chalkboard-110 shadow-lg dark:border-chalkboard-80/50 dark:bg-chalkboard-90 dark:text-chalkboard-10"
+      data-variant={tooltipVariant}
+      className={`fixed pointer-events-none z-[9999] overflow-hidden rounded-sm border border-chalkboard-20/50 bg-chalkboard-10 text-chalkboard-110 shadow-lg dark:border-chalkboard-80/50 dark:bg-chalkboard-90 dark:text-chalkboard-10 ${
+        showRichContent ? 'w-72' : 'w-max'
+      }`}
       style={{
         left: tooltipPosition?.x ?? pointerState.point.x,
         top: tooltipPosition?.y ?? pointerState.point.y,
@@ -139,26 +226,47 @@ export function ConstraintBadgeTooltipOverlay({
         visibility: tooltipPosition ? 'visible' : 'hidden',
       }}
     >
-      <div className="flex items-center gap-2 bg-chalkboard-20/50 px-3 py-2.5 dark:bg-chalkboard-80/50">
-        <svg
-          aria-hidden="true"
-          className="h-5 w-5 flex-none"
-          viewBox="0 0 20 20"
-        >
-          <path d={constraintIconPaths[constraintType]} fill="currentColor" />
-        </svg>
-        <span className="text-sm">{content.title}</span>
-      </div>
-      <p className="m-0 px-3 py-2 text-sm leading-5 font-sans">
-        {content.description}
-      </p>
+      {showRichContent ? (
+        <>
+          <div className="flex items-center gap-2 bg-chalkboard-20/50 px-3 py-2.5 dark:bg-chalkboard-80/50">
+            <svg
+              aria-hidden="true"
+              className="h-5 w-5 flex-none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d={constraintIconPaths[constraintType]}
+                fill="currentColor"
+              />
+            </svg>
+            <span className="text-sm">{content.title}</span>
+          </div>
+          <p className="m-0 px-3 py-2 text-sm leading-5 font-sans">
+            {content.description}
+          </p>
+        </>
+      ) : (
+        <div className="whitespace-nowrap px-3 py-2 text-sm">
+          {content.title}
+        </div>
+      )}
     </div>
   )
 }
 
-function selectHoveredInvisibleConstraintType(
+function getElementBounds(element: HTMLElement): ConstraintBadgeTooltipBounds {
+  const rect = element.getBoundingClientRect()
+  return {
+    left: rect.left,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+  }
+}
+
+function selectHoveredInvisibleConstraint(
   snapshot: unknown
-): InvisibleConstraint['type'] | null {
+): HoveredInvisibleConstraint | null {
   if (!isSketchSolveSnapshot(snapshot)) {
     return null
   }
@@ -171,9 +279,21 @@ function selectHoveredInvisibleConstraintType(
   const objects =
     snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ?? []
   const hoveredObject = objects[hoveredId]
-  return isInvisibleConstraintObject(hoveredObject, objects)
-    ? hoveredObject.kind.constraint.type
-    : null
+  if (!isInvisibleConstraintObject(hoveredObject, objects)) {
+    return null
+  }
+
+  return {
+    id: hoveredId,
+    type: hoveredObject.kind.constraint.type,
+  }
+}
+
+function areHoveredConstraintsEqual(
+  previous: HoveredInvisibleConstraint | null,
+  next: HoveredInvisibleConstraint | null
+) {
+  return previous?.id === next?.id && previous?.type === next?.type
 }
 
 function isSketchSolveSnapshot(

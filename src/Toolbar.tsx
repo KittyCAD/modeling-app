@@ -8,6 +8,7 @@ import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDr
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { TOOLTIP_RICH_CONTENT_DELAY_MS } from '@src/components/tooltipTiming'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -234,7 +235,7 @@ const Toolbar_ = memo(
         if (richContentClearTimeout.current) {
           clearTimeout(richContentClearTimeout.current)
         }
-      }, 1000)
+      }, TOOLTIP_RICH_CONTENT_DELAY_MS)
     }, [setShowRichContent])
     // On mouse leave, clear the timeout and hide rich content
     const handleMouseLeave = useCallback(() => {
