@@ -3,9 +3,9 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   type ConstraintBadgeTooltipBounds,
   type ConstraintBadgeTooltipPoint,
-  constraintBadgeTooltipContent,
   getConstraintBadgeTooltipPosition,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeTooltip'
+import { invisibleConstraintMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import {
   type InvisibleConstraint,
   isInvisibleConstraintObject,
@@ -118,7 +118,7 @@ export function ConstraintBadgeTooltipOverlay({
     return null
   }
 
-  const content = constraintBadgeTooltipContent[constraintType]
+  const content = invisibleConstraintMetadata[constraintType]
   const maxWidth = Math.max(
     0,
     pointerState.bounds.right - pointerState.bounds.left - 16

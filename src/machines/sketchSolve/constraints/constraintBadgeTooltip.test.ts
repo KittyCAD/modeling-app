@@ -1,12 +1,13 @@
+import { getConstraintBadgeTooltipPosition } from '@src/machines/sketchSolve/constraints/constraintBadgeTooltip'
 import {
-  constraintBadgeTooltipContent,
-  getConstraintBadgeTooltipPosition,
-} from '@src/machines/sketchSolve/constraints/constraintBadgeTooltip'
+  constraintToolMetadata,
+  invisibleConstraintMetadata,
+} from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import { describe, expect, it } from 'vitest'
 
 describe('constraint badge tooltip content', () => {
   it('covers every invisible constraint type', () => {
-    expect(Object.keys(constraintBadgeTooltipContent).sort()).toEqual([
+    expect(Object.keys(invisibleConstraintMetadata).sort()).toEqual([
       'Coincident',
       'EqualRadius',
       'Horizontal',
@@ -20,12 +21,36 @@ describe('constraint badge tooltip content', () => {
     ])
   })
 
+  it.each([
+    {
+      constraintType: 'Coincident',
+      toolName: 'coincidentConstraintTool',
+    },
+    { constraintType: 'Horizontal', toolName: 'horizontalConstraintTool' },
+    { constraintType: 'Vertical', toolName: 'verticalConstraintTool' },
+    { constraintType: 'Midpoint', toolName: 'midpointConstraintTool' },
+    { constraintType: 'Parallel', toolName: 'parallelConstraintTool' },
+    {
+      constraintType: 'Perpendicular',
+      toolName: 'perpendicularConstraintTool',
+    },
+    { constraintType: 'Tangent', toolName: 'tangentConstraintTool' },
+    { constraintType: 'Symmetric', toolName: 'symmetricConstraintTool' },
+  ] as const)(
+    'reuses $toolName metadata for $constraintType',
+    ({ constraintType, toolName }) => {
+      expect(invisibleConstraintMetadata[constraintType]).toBe(
+        constraintToolMetadata[toolName]
+      )
+    }
+  )
+
   it('uses the realized equal constraint names', () => {
-    expect(constraintBadgeTooltipContent.LinesEqualLength).toEqual({
+    expect(invisibleConstraintMetadata.LinesEqualLength).toEqual({
       title: 'Equal length',
       description: 'Constrain lines to have equal length.',
     })
-    expect(constraintBadgeTooltipContent.EqualRadius).toEqual({
+    expect(invisibleConstraintMetadata.EqualRadius).toEqual({
       title: 'Equal radius',
       description: 'Constrain arcs and circles to have equal radius.',
     })

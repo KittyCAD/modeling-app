@@ -98,7 +98,9 @@ describe('ConstraintBadgeTooltipOverlay', () => {
 
     const tooltip = screen.getByRole('tooltip')
     expect(tooltip).toHaveTextContent('Parallel')
-    expect(tooltip).toHaveTextContent('Constrain lines to be parallel.')
+    expect(tooltip).toHaveTextContent(
+      'Constrain lines or curves to be parallel.'
+    )
     expect(tooltip).toHaveClass('pointer-events-none')
     expect(tooltip).toHaveStyle({
       left: '208px',
