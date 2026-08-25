@@ -115,8 +115,6 @@ type SetupActorInput = {
 
 const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 
-const billingError = 'no API credits available'
-
 describe('createZookeeperCorrelation', () => {
   it('creates a unique correlation ID and includes the Engine API call ID', () => {
     const first = createZookeeperCorrelation('engine-api-call-id')
@@ -385,50 +383,6 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('surfaces a legacy billing error without retrying setup', async () => {
-      const { fetchMock, reports } = stubClientErrorFetch()
-      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
-      const actor = createActor(zookeeperManagerMachine, {
-        input: {
-          apiToken: 'token',
-        },
-      }).start()
-
-      actor.send({
-        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-        refParentSend: vi.fn(),
-      })
-
-      const socket = ControllableSetupWebSocket.instances[0]
-      socket.open()
-      await vi.waitFor(() => {
-        expect(socket.sentPayloads).toContain(
-          JSON.stringify({ type: 'list_modes' })
-        )
-      })
-      socket.receive({ error: { detail: billingError } })
-
-      await waitFor(
-        actor,
-        (state) => state.matches(S.Await) && state.context.setupFailed
-      )
-
-      expect(ControllableSetupWebSocket.instances).toHaveLength(1)
-      expect(actor.getSnapshot().context.closeReason).toBe(billingError)
-      expect(actor.getSnapshot().context.accessDeniedCode).toBe(
-        'pay_as_you_go_disabled'
-      )
-      expect(socket.close).toHaveBeenCalledOnce()
-      expect(fetchMock).toHaveBeenCalledTimes(1)
-      expect(reports).toHaveLength(1)
-      expect(reports[0]).toMatchObject({
-        code: 'zookeeper_setup_error',
-        message: billingError,
-      })
-
-      actor.stop()
-    })
-
     it('preserves a typed payment denial and does not retry it', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
@@ -473,7 +427,7 @@ describe('zookeeperManagerMachine', () => {
       actor.stop()
     })
 
-    it('turns a billing response on an active connection into a recoverable close', async () => {
+    it('turns an access denial on an active connection into a recoverable close', async () => {
       vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
       const actor = createActor(zookeeperManagerMachine, {
         input: {
@@ -509,7 +463,13 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.Ready)
       )
 
-      socket.receive({ error: { detail: billingError } })
+      socket.receive({
+        access_denied: {
+          code: 'pay_as_you_go_disabled',
+          detail: 'Enable pay as you go to continue.',
+          retryable: false,
+        },
+      })
 
       await waitFor(actor, (state) => state.matches(S.Await))
 
@@ -517,7 +477,7 @@ describe('zookeeperManagerMachine', () => {
         abruptlyClosed: true,
         setupFailed: true,
         accessDeniedCode: 'pay_as_you_go_disabled',
-        closeReason: billingError,
+        closeReason: 'Enable pay as you go to continue.',
         conversation: { exchanges: [] },
         conversationId: 'conversation-id',
       })

@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -13,7 +14,6 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
-import type { ZookeeperAccessDenialCode } from '@src/lib/zookeeper/zookeeperBilling'
 import type {
   Conversation,
   Exchange,
@@ -60,7 +60,7 @@ export interface ZookeeperConversationProps {
   isResumingInterruptedTurn?: boolean
   onResumeInterruptedTurn?: () => void
   connectionError?: string
-  accessDeniedCode?: ZookeeperAccessDenialCode
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   connectionFailed?: boolean
   showManualConnect?: boolean
   canClearChat?: boolean

@@ -1,11 +1,7 @@
+import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  type ZookeeperAccessDenialCode,
-  getZookeeperAccessDenialCode,
-  isZookeeperBillingError,
-} from '@src/lib/zookeeper/zookeeperBilling'
 import type { MouseEventHandler } from 'react'
 
 const terminalRecoveryButtonClassName =
@@ -16,7 +12,7 @@ const billingButtonClassName =
 
 export interface ZookeeperConnectionErrorBannerProps {
   connectionError?: string
-  accessDeniedCode?: ZookeeperAccessDenialCode
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   canClearChat?: boolean
   isClearingChat?: boolean
   isCheckingBilling?: boolean
@@ -37,7 +33,7 @@ const BILLING_URL = withSiteBaseURL('/account/billing')
 const SUPPORT_URL = 'https://community.zoo.dev/'
 
 const BILLING_RECOVERY_CONTENT: Record<
-  ZookeeperAccessDenialCode,
+  MlCopilotAccessDeniedCode,
   BillingRecoveryContent
 > = {
   pay_as_you_go_disabled: {
@@ -81,14 +77,8 @@ const BILLING_RECOVERY_CONTENT: Record<
 export function ZookeeperConnectionErrorBanner(
   props: ZookeeperConnectionErrorBannerProps
 ) {
-  const accessDeniedCode =
-    props.accessDeniedCode ??
-    getZookeeperAccessDenialCode(props.connectionError) ??
-    (isZookeeperBillingError(props.connectionError)
-      ? 'pay_as_you_go_disabled'
-      : undefined)
-  const billingRecovery = accessDeniedCode
-    ? BILLING_RECOVERY_CONTENT[accessDeniedCode]
+  const billingRecovery = props.accessDeniedCode
+    ? BILLING_RECOVERY_CONTENT[props.accessDeniedCode]
     : undefined
   const isBillingError = billingRecovery !== undefined
   const handleBillingAction: MouseEventHandler<HTMLAnchorElement> = (event) => {

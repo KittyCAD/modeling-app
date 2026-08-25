@@ -1,4 +1,5 @@
 import type {
+  MlCopilotAccessDeniedCode,
   MlCopilotClientMessage,
   MlCopilotFile,
   MlCopilotServerMessage,
@@ -23,13 +24,6 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import {
-  type ZookeeperAccessDenialCode,
-  getZookeeperAccessDenialCode,
-  isZookeeperAccessDenialCode,
-  isZookeeperBillingError,
-  parseZookeeperAccessDeniedMessage,
-} from '@src/lib/zookeeper/zookeeperBilling'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -56,6 +50,53 @@ export enum ZookeeperSetupErrors {
 }
 
 type TypeVariant<T, U = T> = U extends T ? keyof U : never
+type MlCopilotAccessDeniedMessage = Extract<
+  MlCopilotServerMessage,
+  { access_denied: unknown }
+>
+
+const ML_COPILOT_ACCESS_DENIED_CODES: Record<MlCopilotAccessDeniedCode, true> =
+  {
+    missing_payment_method: true,
+    payment_method_failed: true,
+    billing_threshold_reached: true,
+    pay_as_you_go_disabled: true,
+    upgrade_downgrade_abuse: true,
+    admin: true,
+  }
+
+function isMlCopilotAccessDeniedCode(
+  value: unknown
+): value is MlCopilotAccessDeniedCode {
+  return (
+    typeof value === 'string' &&
+    Object.hasOwn(ML_COPILOT_ACCESS_DENIED_CODES, value)
+  )
+}
+
+function isMlCopilotAccessDeniedMessage(
+  response: unknown
+): response is MlCopilotAccessDeniedMessage {
+  if (
+    typeof response !== 'object' ||
+    response === null ||
+    !('access_denied' in response) ||
+    typeof response.access_denied !== 'object' ||
+    response.access_denied === null
+  ) {
+    return false
+  }
+
+  const { access_denied: accessDenied } = response
+  return (
+    'code' in accessDenied &&
+    isMlCopilotAccessDeniedCode(accessDenied.code) &&
+    'detail' in accessDenied &&
+    typeof accessDenied.detail === 'string' &&
+    'retryable' in accessDenied &&
+    typeof accessDenied.retryable === 'boolean'
+  )
+}
 
 type MlCopilotListModesRequest = { type: 'list_modes' }
 export type MlCopilotModeId = string
@@ -224,13 +265,13 @@ const ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON =
 
 class ZookeeperSetupConnectionError extends Error {
   closeReason?: string
-  accessDeniedCode?: ZookeeperAccessDenialCode
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   retryable: boolean
 
   constructor(
     message: string,
     closeReason?: string,
-    accessDeniedCode?: ZookeeperAccessDenialCode,
+    accessDeniedCode?: MlCopilotAccessDeniedCode,
     retryable = true
   ) {
     super(message)
@@ -266,13 +307,13 @@ function getSetupFailureReason(event: unknown): string | undefined {
 
 function getSetupAccessDeniedCode(
   event: unknown
-): ZookeeperAccessDenialCode | undefined {
+): MlCopilotAccessDeniedCode | undefined {
   if (typeof event !== 'object' || event === null) {
     return undefined
   }
   if (
     'accessDeniedCode' in event &&
-    isZookeeperAccessDenialCode(event.accessDeniedCode)
+    isMlCopilotAccessDeniedCode(event.accessDeniedCode)
   ) {
     return event.accessDeniedCode
   }
@@ -359,7 +400,7 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.AbruptClose
       closeReason?: string
-      accessDeniedCode?: ZookeeperAccessDenialCode
+      accessDeniedCode?: MlCopilotAccessDeniedCode
     }
   | {
       type: ZookeeperManagerTransitions.NetworkOffline
@@ -402,7 +443,7 @@ export interface ZookeeperManagerContext {
   setupFailed: boolean
   setupAttempt: number
   setupFailureReason?: string
-  accessDeniedCode?: ZookeeperAccessDenialCode
+  accessDeniedCode?: MlCopilotAccessDeniedCode
   closeReason?: string
   conversation?: Conversation
   conversationId?: string
@@ -778,11 +819,7 @@ export const zookeeperManagerMachine = setup({
         closeReason: event.closeReason,
         ...zookeeperErrorContext(context),
       })
-      if (
-        event.closeReason &&
-        event.accessDeniedCode === undefined &&
-        !isZookeeperBillingError(event.closeReason)
-      ) {
+      if (event.closeReason && event.accessDeniedCode === undefined) {
         toast.error(event.closeReason)
       }
       return {
@@ -1131,8 +1168,8 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
-            const accessDenied = parseZookeeperAccessDeniedMessage(response)
-            if (accessDenied) {
+            if (isMlCopilotAccessDeniedMessage(response)) {
+              const { access_denied: accessDenied } = response
               if (setupResolved) {
                 theRefParentSend({
                   type: ZookeeperManagerTransitions.AbruptClose,
@@ -1170,33 +1207,6 @@ export const zookeeperManagerMachine = setup({
 
             // Ignore pong
             if ('pong' in response) {
-              return
-            }
-
-            if (
-              'error' in response &&
-              isZookeeperBillingError(response.error.detail)
-            ) {
-              const accessDeniedCode =
-                getZookeeperAccessDenialCode(response.error.detail) ??
-                'pay_as_you_go_disabled'
-              if (setupResolved) {
-                theRefParentSend({
-                  type: ZookeeperManagerTransitions.AbruptClose,
-                  closeReason: response.error.detail,
-                  accessDeniedCode,
-                })
-              } else {
-                cancelSetupAttempt()
-                onRejected(
-                  new ZookeeperSetupConnectionError(
-                    response.error.detail,
-                    response.error.detail,
-                    accessDeniedCode,
-                    false
-                  )
-                )
-              }
               return
             }
 
