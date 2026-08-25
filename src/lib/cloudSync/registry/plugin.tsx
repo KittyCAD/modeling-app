@@ -23,6 +23,7 @@ import {
   openCloudSyncErrorDialog,
   useCloudSyncProjectConflicts,
   useCloudSyncProjectConflict,
+  useCloudSyncProjectMetadata,
 } from '@src/components/CloudConflictDialog'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
@@ -111,6 +112,43 @@ import { Fragment, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
+const CLOUD_SYNC_STALLED_AFTER_MS = 5 * 60_000
+
+function cloudSyncProjectIsStalled(
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined,
+  now = Date.now()
+) {
+  if (!metadata?.hasPendingChanges || !metadata.pendingSince) {
+    return false
+  }
+  const pendingSince = Date.parse(metadata.pendingSince)
+  return Number.isFinite(pendingSince)
+    ? now - pendingSince >= CLOUD_SYNC_STALLED_AFTER_MS
+    : false
+}
+
+function useCloudSyncProjectIsStalled(
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined
+) {
+  const [now, setNow] = useState(Date.now)
+
+  useEffect(() => {
+    if (!metadata?.hasPendingChanges || !metadata.pendingSince) {
+      return
+    }
+    const pendingSince = Date.parse(metadata.pendingSince)
+    if (!Number.isFinite(pendingSince)) {
+      return
+    }
+    const timeout = setTimeout(
+      () => setNow(Date.now()),
+      Math.max(0, CLOUD_SYNC_STALLED_AFTER_MS - (Date.now() - pendingSince))
+    )
+    return () => clearTimeout(timeout)
+  }, [metadata?.hasPendingChanges, metadata?.pendingSince])
+
+  return cloudSyncProjectIsStalled(metadata, now)
+}
 
 type CloudSyncStatusBarPresentation = {
   label: string
@@ -394,20 +432,30 @@ function CloudSyncProjectMenuItem({
   useSignals()
   const status = cloudSyncStatus.value
   const conflictMetadata = useCloudSyncProjectConflict(context.projectPath)
+  const projectMetadata = useCloudSyncProjectMetadata(context.projectPath)
   const projectName = getProjectDisplayName(context.project)
   const presentation = getCloudSyncStatusBarPresentation(status)
   const isActiveProjectStatus = cloudSyncStatusAppliesToProject(
     status,
     context.projectPath
   )
+  const durableFailure = projectMetadata?.lastFailure
+  const hasStalledProjectWork = useCloudSyncProjectIsStalled(projectMetadata)
   const isError =
     status.enabled &&
-    status.state !== 'conflict' &&
-    cloudSyncFailureAppliesToProject(status, context.projectPath)
+    !conflictMetadata &&
+    (Boolean(durableFailure) ||
+      (status.state !== 'conflict' &&
+        cloudSyncFailureAppliesToProject(status, context.projectPath)))
+  const isStalled =
+    status.enabled && !isError && !conflictMetadata && hasStalledProjectWork
   const errorMessage = isError
-    ? status.lastFailure ||
+    ? durableFailure?.message ||
+      status.lastFailure ||
       'Cloud sync failed without a reported error message.'
-    : undefined
+    : isStalled
+      ? 'Cloud sync has local changes that have not reached the cloud after several retries.'
+      : undefined
 
   if (!status.enabled) {
     return null
@@ -419,6 +467,7 @@ function CloudSyncProjectMenuItem({
   const hasCloudSyncProjectStatus =
     isConflict ||
     isError ||
+    isStalled ||
     Boolean(status.scopedProjectCloudProjectId) ||
     (isActiveProjectStatus &&
       (status.state === 'syncing' || status.pendingCount > 0))
@@ -433,23 +482,32 @@ function CloudSyncProjectMenuItem({
       ? status.lastFailureKind === 'remote-upload-forbidden'
         ? 'Cloud sync blocked'
         : 'Cloud sync failed'
-      : presentation.label
-  const icon = isConflict ? 'triangleExclamation' : presentation.icon
+      : isStalled
+        ? 'Cloud sync stalled'
+        : presentation.label
+  const icon =
+    isConflict || isStalled ? 'triangleExclamation' : presentation.icon
   const iconClassName = isConflict
     ? '!text-warn-80 dark:!text-warn-10'
     : isError
       ? '!text-destroy-80 dark:!text-destroy-20'
-      : `!text-chalkboard-60 dark:!text-chalkboard-40 ${presentation.iconClassName}`
+      : isStalled
+        ? '!text-warn-80 dark:!text-warn-10'
+        : `!text-chalkboard-60 dark:!text-chalkboard-40 ${presentation.iconClassName}`
   const statusClassName = isConflict
     ? 'bg-warn-10/60 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30'
     : isError
       ? 'bg-destroy-10/60 text-destroy-80 hover:!bg-destroy-10 focus:!bg-destroy-10 dark:bg-destroy-80/20 dark:text-destroy-20 dark:hover:!bg-destroy-80/30 dark:focus:!bg-destroy-80/30'
-      : 'hover:!bg-chalkboard-20 focus:!bg-chalkboard-20 dark:hover:!bg-chalkboard-80 dark:focus:!bg-chalkboard-80'
+      : isStalled
+        ? 'bg-warn-10/60 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30'
+        : 'hover:!bg-chalkboard-20 focus:!bg-chalkboard-20 dark:hover:!bg-chalkboard-80 dark:focus:!bg-chalkboard-80'
   const dataTestId = isConflict
     ? 'project-sidebar-inspect-cloud-conflicts'
     : isError
       ? 'project-sidebar-inspect-cloud-sync-error'
-      : 'project-sidebar-cloud-sync-status'
+      : isStalled
+        ? 'project-sidebar-inspect-cloud-sync-stalled'
+        : 'project-sidebar-cloud-sync-status'
 
   return (
     <li className="contents">
@@ -473,10 +531,13 @@ function CloudSyncProjectMenuItem({
           }
           if (errorMessage) {
             openCloudSyncErrorDialog({
-              title: presentation.label,
+              title: label,
               message: errorMessage,
               projectName,
-              occurredAt: status.lastFailureAt,
+              occurredAt:
+                durableFailure?.at ||
+                status.lastFailureAt ||
+                projectMetadata?.pendingSince,
             })
             close()
             return
@@ -500,6 +561,8 @@ function CloudSyncProjectBreadcrumbBadge({
 }: ProjectExplorerProjectBreadcrumbBadgeComponentProps) {
   useSignals()
   const conflictMetadata = useCloudSyncProjectConflict(context.projectPath)
+  const projectMetadata = useCloudSyncProjectMetadata(context.projectPath)
+  const hasStalledProjectWork = useCloudSyncProjectIsStalled(projectMetadata)
   const status = cloudSyncStatus.value
   const isActiveProjectStatus = cloudSyncStatusAppliesToProject(
     status,
@@ -510,10 +573,14 @@ function CloudSyncProjectBreadcrumbBadge({
     (status.enabled && status.state === 'conflict' && isActiveProjectStatus)
   const isError =
     status.enabled &&
-    status.state !== 'conflict' &&
-    cloudSyncFailureAppliesToProject(status, context.projectPath)
+    !isConflict &&
+    (Boolean(projectMetadata?.lastFailure) ||
+      (status.state !== 'conflict' &&
+        cloudSyncFailureAppliesToProject(status, context.projectPath)))
+  const isStalled =
+    status.enabled && !isConflict && !isError && hasStalledProjectWork
 
-  if (!isConflict && !isError) {
+  if (!isConflict && !isError && !isStalled) {
     return null
   }
 
@@ -523,12 +590,19 @@ function CloudSyncProjectBreadcrumbBadge({
         className: 'bg-warn-20 text-warn-90 dark:bg-warn-80 dark:text-warn-10',
         dataTestId: 'project-sidebar-cloud-conflict-badge',
       }
-    : {
-        label: 'Cloud error',
-        className:
-          'bg-destroy-10 text-destroy-80 ring-1 ring-inset ring-destroy-40 dark:bg-destroy-80 dark:text-destroy-10 dark:ring-destroy-70',
-        dataTestId: 'project-sidebar-cloud-error-badge',
-      }
+    : isError
+      ? {
+          label: 'Cloud error',
+          className:
+            'bg-destroy-10 text-destroy-80 ring-1 ring-inset ring-destroy-40 dark:bg-destroy-80 dark:text-destroy-10 dark:ring-destroy-70',
+          dataTestId: 'project-sidebar-cloud-error-badge',
+        }
+      : {
+          label: 'Cloud sync stalled',
+          className:
+            'bg-warn-20 text-warn-90 ring-1 ring-inset ring-warn-40 dark:bg-warn-80 dark:text-warn-10 dark:ring-warn-70',
+          dataTestId: 'project-sidebar-cloud-stalled-badge',
+        }
 
   return (
     <span

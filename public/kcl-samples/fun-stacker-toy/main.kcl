@@ -2,7 +2,7 @@
 // The fun stacking toy from Zoo for babies 6 months and older made using zds.
 // Categories: Maker
 
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 ringradius = 1in
 numrings = 5
@@ -99,7 +99,7 @@ sketch002 = sketch(on = XY) {
   parallel([line6, line5])
   equalLength([line6, line5])
 }
-region007 = region(point = [0mm, -0in], sketch = sketch002)
+region007 = region(segments = [sketch002.line1, sketch002.line2])
 extrude001 = extrude(region007, length = -1in)
   |> appearance(color = "#ffffff")
 fillet001 = fillet(
@@ -111,7 +111,7 @@ fillet001 = fillet(
     ]),
     getCommonEdge(faces = [
       region007.tags.line3,
-      region007.tags.line1
+      region007.tags.line2
     ]),
     getCommonEdge(faces = [
       region007.tags.line3,
@@ -119,7 +119,7 @@ fillet001 = fillet(
     ]),
     getCommonEdge(faces = [
       region007.tags.line4,
-      region007.tags.line2
+      region007.tags.line1
     ])
   ],
   radius = 3in,

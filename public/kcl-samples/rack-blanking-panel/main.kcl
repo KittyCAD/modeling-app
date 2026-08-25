@@ -2,7 +2,7 @@
 // A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks
 // Categories: Computer Hardware
 
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 width = 19
 height = 1.75
@@ -79,7 +79,7 @@ baseSketch = sketch(on = YZ) {
   radius(arc4) == bendRadius
   radius(arc3) == bendRadius
 }
-region004 = region(point = [-5.5725mm, 0.0025mm], sketch = baseSketch)
+region004 = region(segments = [baseSketch.line1, baseSketch.arc1])
 baseExtrusion = extrude(region004, length = width, symmetric = true)
 
 // Sketch the hole positions
@@ -106,11 +106,11 @@ holeSketch = sketch(on = XZ) {
   diameter(circle2) == holeDiameter
   diameter(circle1) == holeDiameter
 }
-region001 = region(point = [233.4933mm, 10.752mm], sketch = holeSketch)
-region002 = region(point = [233.7022mm, 33.769mm], sketch = holeSketch)
+region001 = region(segments = [holeSketch.circle2])
+region002 = region(segments = [holeSketch.circle1])
 extrudeHoles = extrude([region001, region002], length = 5, symmetric = true)
   // Position two identical holes on the other side of the plate
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
 // Cut the holes from the blanking plate
-holesCut = subtract(baseExtrusion, tools = extrudeHoles, legacyMethod = true)
+holesCut = subtract(baseExtrusion, tools = extrudeHoles)

@@ -2,7 +2,7 @@
 // A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit magnets with a diameter of 6mm and thickness of 3 mm.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 magnetDiameter = 6.2
 magnetThickness = 3
@@ -21,7 +21,7 @@ magnetSketch = sketch(on = XY) {
   horizontalDistance([line1.start, line1.end]) == 17mm
   diameter(circle1) == magnetDiameter
 }
-magnetRegion = region(point = [18.6017mm, 2.652mm], sketch = magnetSketch)
+magnetRegion = region(segments = [magnetSketch.circle1])
 magnets = extrude(magnetRegion, length = magnetThickness)
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
@@ -65,7 +65,7 @@ fillet001 = fillet(
     ]),
     getCommonEdge(faces = [
       baseRegion.tags.line3,
-      baseRegion.tags.line1
+      baseRegion.tags.line2
     ]),
     getCommonEdge(faces = [
       baseRegion.tags.line3,
@@ -73,7 +73,7 @@ fillet001 = fillet(
     ]),
     getCommonEdge(faces = [
       baseRegion.tags.line4,
-      baseRegion.tags.line2
+      baseRegion.tags.line1
     ])
   ],
   radius = 5,

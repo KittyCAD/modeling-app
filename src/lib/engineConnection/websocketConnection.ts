@@ -4,10 +4,8 @@ import type {
   WebSocketRequest,
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
-import { mark } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -15,6 +13,12 @@ import {
   type ManagerTearDown,
   toRTCSessionDescriptionInit,
 } from '@src/lib/engineConnection/utils'
+import { mark } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { reportRejection } from '@src/lib/trap'
+
+const MODELING_BACKEND_DISCONNECTED_MESSAGE =
+  'modeling connection interrupted; please reconnect and retry'
 
 /**
  * 4 different event listeners to clean up
@@ -98,6 +102,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerResolve,
   sdpAnswerReject,
   setApiCallId,
+  getCloudProjectId,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -113,6 +118,7 @@ export const createOnWebSocketMessage = ({
   sdpAnswerResolve: (value: any) => void
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
+  getCloudProjectId: () => string | undefined
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -129,6 +135,23 @@ export const createOnWebSocketMessage = ({
     const message: WebSocketResponse = JSON.parse(event.data)
 
     if (!message.success && 'errors' in message) {
+      const backendDisconnectError = message.errors.find(
+        (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
+      )
+      if (backendDisconnectError) {
+        const cloudProjectId = getCloudProjectId()
+        void reportClientError({
+          code: ClientErrorCode.EngineBackendDisconnect,
+          message: backendDisconnectError.message,
+          extra: {
+            source: 'EngineWebSocket',
+            errorCode: backendDisconnectError.error_code,
+            requestId: message.request_id,
+            ...(cloudProjectId ? { cloudProjectId } : {}),
+          },
+        })
+      }
+
       const errorsString = message?.errors
         ?.map((error) => {
           return `  - ${error.error_code}: ${error.message}`

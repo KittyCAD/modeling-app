@@ -1,0 +1,60 @@
+// Walkie talkie talk button
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import talkButtonHeight from "parameters.kcl"
+
+talkButtonSketch = sketch(on = YZ) {
+  line1 = line(start = [var -0.25in, var 0.25in], end = [var 0.25in, var 0.25in])
+  line2 = line(start = [var 0.25in, var 0.25in], end = [var 0.25in, var -0.25in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.25in, var -0.25in], end = [var -0.25in, var -0.25in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -0.25in, var -0.25in], end = [var -0.25in, var 0.25in])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  horizontal(line1)
+  vertical(line2)
+  horizontal(line3)
+  vertical(line4)
+}
+
+talkButtonRegion = region(segments = [
+  talkButtonSketch.line1,
+  talkButtonSketch.line2
+])
+talkButtonBlank = extrude(talkButtonRegion, length = talkButtonHeight)
+talkButton = fillet(
+  talkButtonBlank,
+  radius = 0.050,
+  edges = [
+    {
+      sideFaces = [
+        talkButtonRegion.tags.line1,
+        talkButtonRegion.tags.line2
+      ]
+    },
+    {
+      sideFaces = [
+        talkButtonRegion.tags.line2,
+        talkButtonRegion.tags.line3
+      ]
+    },
+    {
+      sideFaces = [
+        talkButtonRegion.tags.line3,
+        talkButtonRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        talkButtonRegion.tags.line4,
+        talkButtonRegion.tags.line1
+      ]
+    }
+  ],
+)
+  |> appearance(color = "#D0FF01", metalness = 90, roughness = 90)
+hide(talkButtonSketch)
+
+talkButton

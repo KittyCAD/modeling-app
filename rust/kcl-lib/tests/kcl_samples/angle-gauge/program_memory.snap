@@ -94,10 +94,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 402,
-            "end": 415,
+            "commentStart": 420,
+            "end": 433,
             "moduleId": 0,
-            "start": 402,
+            "start": 420,
             "type": "TagDeclarator",
             "value": "leftOuterEdge"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 482,
-            "end": 494,
+            "commentStart": 500,
+            "end": 512,
             "moduleId": 0,
-            "start": 482,
+            "start": 500,
             "type": "TagDeclarator",
             "value": "topOuterEdge"
           },
@@ -122,10 +122,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 566,
-            "end": 585,
+            "commentStart": 584,
+            "end": 603,
             "moduleId": 0,
-            "start": 566,
+            "start": 584,
             "type": "TagDeclarator",
             "value": "upperRightOuterEdge"
           },
@@ -136,10 +136,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 800,
+            "commentStart": 799,
+            "end": 818,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "lowerRightOuterEdge"
           },
@@ -150,10 +150,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 871,
-            "end": 886,
+            "commentStart": 889,
+            "end": 904,
             "moduleId": 0,
-            "start": 871,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "bottomOuterEdge"
           },
@@ -164,10 +164,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1688,
+            "commentStart": 1690,
+            "end": 1706,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1690,
             "type": "TagDeclarator",
             "value": "cutoutAngledEdge"
           },
@@ -178,10 +178,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1762,
-            "end": 1784,
+            "commentStart": 1780,
+            "end": 1802,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "cutoutLeftVerticalEdge"
           },
@@ -192,10 +192,10 @@ description: Variables in memory after executing angle-gauge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1859,
-            "end": 1872,
+            "commentStart": 1877,
+            "end": 1890,
             "moduleId": 0,
-            "start": 1859,
+            "start": 1877,
             "type": "TagDeclarator",
             "value": "cutoutTopEdge"
           },
@@ -217,10 +217,10 @@ description: Variables in memory after executing angle-gauge.kcl
               -0.00000000000000038680060133802227
             ],
             "tag": {
-              "commentStart": 402,
-              "end": 415,
+              "commentStart": 420,
+              "end": 433,
               "moduleId": 0,
-              "start": 402,
+              "start": 420,
               "type": "TagDeclarator",
               "value": "leftOuterEdge"
             },
@@ -241,10 +241,10 @@ description: Variables in memory after executing angle-gauge.kcl
               1.2499999999999998
             ],
             "tag": {
-              "commentStart": 482,
-              "end": 494,
+              "commentStart": 500,
+              "end": 512,
               "moduleId": 0,
-              "start": 482,
+              "start": 500,
               "type": "TagDeclarator",
               "value": "topOuterEdge"
             },
@@ -265,10 +265,10 @@ description: Variables in memory after executing angle-gauge.kcl
               1.2499999999999998
             ],
             "tag": {
-              "commentStart": 566,
-              "end": 585,
+              "commentStart": 584,
+              "end": 603,
               "moduleId": 0,
-              "start": 566,
+              "start": 584,
               "type": "TagDeclarator",
               "value": "upperRightOuterEdge"
             },
@@ -289,10 +289,10 @@ description: Variables in memory after executing angle-gauge.kcl
               0.2999999999999981
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 800,
+              "commentStart": 799,
+              "end": 818,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "lowerRightOuterEdge"
             },
@@ -313,10 +313,10 @@ description: Variables in memory after executing angle-gauge.kcl
               -0.0000000000000015456785757091857
             ],
             "tag": {
-              "commentStart": 871,
-              "end": 886,
+              "commentStart": 889,
+              "end": 904,
               "moduleId": 0,
-              "start": 871,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "bottomOuterEdge"
             },
@@ -337,10 +337,10 @@ description: Variables in memory after executing angle-gauge.kcl
               0.2999999999999977
             ],
             "tag": {
-              "commentStart": 1672,
-              "end": 1688,
+              "commentStart": 1690,
+              "end": 1706,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1690,
               "type": "TagDeclarator",
               "value": "cutoutAngledEdge"
             },
@@ -361,10 +361,10 @@ description: Variables in memory after executing angle-gauge.kcl
               0.4763269807081948
             ],
             "tag": {
-              "commentStart": 1762,
-              "end": 1784,
+              "commentStart": 1780,
+              "end": 1802,
               "moduleId": 0,
-              "start": 1762,
+              "start": 1780,
               "type": "TagDeclarator",
               "value": "cutoutLeftVerticalEdge"
             },
@@ -385,10 +385,10 @@ description: Variables in memory after executing angle-gauge.kcl
               0.8199999999999981
             ],
             "tag": {
-              "commentStart": 1859,
-              "end": 1872,
+              "commentStart": 1877,
+              "end": 1890,
               "moduleId": 0,
-              "start": 1859,
+              "start": 1877,
               "type": "TagDeclarator",
               "value": "cutoutTopEdge"
             },
@@ -1364,10 +1364,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     -0.00000000000000038680060133802227
                   ],
                   "tag": {
-                    "commentStart": 402,
-                    "end": 415,
+                    "commentStart": 420,
+                    "end": 433,
                     "moduleId": 0,
-                    "start": 402,
+                    "start": 420,
                     "type": "TagDeclarator",
                     "value": "leftOuterEdge"
                   },
@@ -1388,10 +1388,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     1.2499999999999998
                   ],
                   "tag": {
-                    "commentStart": 482,
-                    "end": 494,
+                    "commentStart": 500,
+                    "end": 512,
                     "moduleId": 0,
-                    "start": 482,
+                    "start": 500,
                     "type": "TagDeclarator",
                     "value": "topOuterEdge"
                   },
@@ -1412,10 +1412,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     1.2499999999999998
                   ],
                   "tag": {
-                    "commentStart": 566,
-                    "end": 585,
+                    "commentStart": 584,
+                    "end": 603,
                     "moduleId": 0,
-                    "start": 566,
+                    "start": 584,
                     "type": "TagDeclarator",
                     "value": "upperRightOuterEdge"
                   },
@@ -1453,10 +1453,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     0.2999999999999981
                   ],
                   "tag": {
-                    "commentStart": 781,
-                    "end": 800,
+                    "commentStart": 799,
+                    "end": 818,
                     "moduleId": 0,
-                    "start": 781,
+                    "start": 799,
                     "type": "TagDeclarator",
                     "value": "lowerRightOuterEdge"
                   },
@@ -1477,10 +1477,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     -0.0000000000000015456785757091857
                   ],
                   "tag": {
-                    "commentStart": 871,
-                    "end": 886,
+                    "commentStart": 889,
+                    "end": 904,
                     "moduleId": 0,
-                    "start": 871,
+                    "start": 889,
                     "type": "TagDeclarator",
                     "value": "bottomOuterEdge"
                   },
@@ -1518,10 +1518,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     0.2999999999999977
                   ],
                   "tag": {
-                    "commentStart": 1672,
-                    "end": 1688,
+                    "commentStart": 1690,
+                    "end": 1706,
                     "moduleId": 0,
-                    "start": 1672,
+                    "start": 1690,
                     "type": "TagDeclarator",
                     "value": "cutoutAngledEdge"
                   },
@@ -1542,10 +1542,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     0.4763269807081948
                   ],
                   "tag": {
-                    "commentStart": 1762,
-                    "end": 1784,
+                    "commentStart": 1780,
+                    "end": 1802,
                     "moduleId": 0,
-                    "start": 1762,
+                    "start": 1780,
                     "type": "TagDeclarator",
                     "value": "cutoutLeftVerticalEdge"
                   },
@@ -1566,10 +1566,10 @@ description: Variables in memory after executing angle-gauge.kcl
                     0.8199999999999981
                   ],
                   "tag": {
-                    "commentStart": 1859,
-                    "end": 1872,
+                    "commentStart": 1877,
+                    "end": 1890,
                     "moduleId": 0,
-                    "start": 1859,
+                    "start": 1877,
                     "type": "TagDeclarator",
                     "value": "cutoutTopEdge"
                   },
@@ -2051,10 +2051,10 @@ description: Variables in memory after executing angle-gauge.kcl
             -0.00000000000000038680060133802227
           ],
           "tag": {
-            "commentStart": 402,
-            "end": 415,
+            "commentStart": 420,
+            "end": 433,
             "moduleId": 0,
-            "start": 402,
+            "start": 420,
             "type": "TagDeclarator",
             "value": "leftOuterEdge"
           },
@@ -2075,10 +2075,10 @@ description: Variables in memory after executing angle-gauge.kcl
             1.2499999999999998
           ],
           "tag": {
-            "commentStart": 482,
-            "end": 494,
+            "commentStart": 500,
+            "end": 512,
             "moduleId": 0,
-            "start": 482,
+            "start": 500,
             "type": "TagDeclarator",
             "value": "topOuterEdge"
           },
@@ -2099,10 +2099,10 @@ description: Variables in memory after executing angle-gauge.kcl
             1.2499999999999998
           ],
           "tag": {
-            "commentStart": 566,
-            "end": 585,
+            "commentStart": 584,
+            "end": 603,
             "moduleId": 0,
-            "start": 566,
+            "start": 584,
             "type": "TagDeclarator",
             "value": "upperRightOuterEdge"
           },
@@ -2123,10 +2123,10 @@ description: Variables in memory after executing angle-gauge.kcl
             0.2999999999999981
           ],
           "tag": {
-            "commentStart": 781,
-            "end": 800,
+            "commentStart": 799,
+            "end": 818,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "lowerRightOuterEdge"
           },
@@ -2147,10 +2147,10 @@ description: Variables in memory after executing angle-gauge.kcl
             -0.0000000000000015456785757091857
           ],
           "tag": {
-            "commentStart": 871,
-            "end": 886,
+            "commentStart": 889,
+            "end": 904,
             "moduleId": 0,
-            "start": 871,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "bottomOuterEdge"
           },
@@ -2171,10 +2171,10 @@ description: Variables in memory after executing angle-gauge.kcl
             0.2999999999999977
           ],
           "tag": {
-            "commentStart": 1672,
-            "end": 1688,
+            "commentStart": 1690,
+            "end": 1706,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1690,
             "type": "TagDeclarator",
             "value": "cutoutAngledEdge"
           },
@@ -2195,10 +2195,10 @@ description: Variables in memory after executing angle-gauge.kcl
             0.4763269807081948
           ],
           "tag": {
-            "commentStart": 1762,
-            "end": 1784,
+            "commentStart": 1780,
+            "end": 1802,
             "moduleId": 0,
-            "start": 1762,
+            "start": 1780,
             "type": "TagDeclarator",
             "value": "cutoutLeftVerticalEdge"
           },
@@ -2219,10 +2219,10 @@ description: Variables in memory after executing angle-gauge.kcl
             0.8199999999999981
           ],
           "tag": {
-            "commentStart": 1859,
-            "end": 1872,
+            "commentStart": 1877,
+            "end": 1890,
             "moduleId": 0,
-            "start": 1859,
+            "start": 1877,
             "type": "TagDeclarator",
             "value": "cutoutTopEdge"
           },

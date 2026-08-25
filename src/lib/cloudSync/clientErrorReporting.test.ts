@@ -14,6 +14,7 @@ vi.mock('@src/lib/clientErrors', () => ({
     CloudSyncConflict: 'cloud_sync_conflict',
     CloudSyncConflictCopyDetected: 'cloud_sync_conflict_copy_detected',
     CloudSyncFailure: 'cloud_sync_failure',
+    CloudSyncUntrackedLocalChanges: 'cloud_sync_untracked_local_changes',
   },
   reportClientError: mocks.reportClientError,
 }))
@@ -26,6 +27,7 @@ import {
   reportCloudSyncConflict,
   reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
+  reportCloudSyncUntrackedLocalChanges,
 } from '@src/lib/cloudSync/clientErrorReporting'
 
 describe('cloud sync client error reporting', () => {
@@ -35,19 +37,75 @@ describe('cloud sync client error reporting', () => {
     mocks.reportRejection.mockClear()
   })
 
-  it('reports conflicts without project details', () => {
-    reportCloudSyncConflict()
+  it('reports conflicts with privacy-safe project fingerprints', () => {
+    reportCloudSyncConflict({
+      localProjectPath: '/Users/someone/Projects/secret-project',
+      remoteProjectId: 'remote-123',
+      syncBaseRemoteRevision: 'rev-1',
+      conflictRemoteRevision: 'rev-2',
+      conflictRemoteUpdatedAt: '2026-07-17T12:00:00.000Z',
+      existingConflictCreatedAt: '2026-07-17T11:58:30.000Z',
+      reportedAt: '2026-07-17T12:00:00.000Z',
+      baseManifest: {
+        files: {
+          'main.kcl': { byteSize: 10, sha256: 'base-main' },
+          'notes.txt': { byteSize: 5, sha256: 'same' },
+        },
+      },
+      localManifest: {
+        files: {
+          'main.kcl': { byteSize: 11, sha256: 'local-main' },
+          'notes.txt': { byteSize: 5, sha256: 'same' },
+        },
+      },
+      remoteManifest: {
+        files: {
+          'main.kcl': { byteSize: 12, sha256: 'remote-main' },
+          'notes.txt': { byteSize: 5, sha256: 'same' },
+          'remote-only.kcl': { byteSize: 8, sha256: 'remote-only' },
+        },
+      },
+    })
 
     expect(mocks.reportClientError).toHaveBeenCalledWith({
       code: 'cloud_sync_conflict',
       errorName: 'CloudSyncConflict',
       message: 'Cloud sync conflict: local and remote both changed.',
       route: '/cloud-sync',
-      extra: {
+      dedupeKey: expect.stringMatching(
+        /^CloudSync:conflict:remote-project-id:remote-123:rev-1:rev-2:/
+      ),
+      extra: expect.objectContaining({
         source: 'CloudSyncEngine',
         operation: 'reconcile-project',
-      },
+        clientInstanceId: expect.any(String),
+        projectIdentityKind: 'remote-project-id',
+        projectIdentity: 'remote-123',
+        remoteProjectId: 'remote-123',
+        localProjectPathHash: expect.any(String),
+        syncBaseRemoteRevision: 'rev-1',
+        conflictRemoteRevision: 'rev-2',
+        conflictRemoteUpdatedAt: '2026-07-17T12:00:00.000Z',
+        conflictAlreadyRecorded: true,
+        existingConflictAgeMs: 90_000,
+        baseManifestFingerprint: expect.any(String),
+        localManifestFingerprint: expect.any(String),
+        remoteManifestFingerprint: expect.any(String),
+        baseManifestFileCount: 2,
+        localManifestFileCount: 2,
+        remoteManifestFileCount: 3,
+        localChangedFileCount: 1,
+        remoteChangedFileCount: 2,
+        overlappingChangedFileCount: 1,
+        divergentChangedFileCount: 1,
+      }),
     })
+    expect(JSON.stringify(mocks.reportClientError.mock.calls)).not.toContain(
+      '/Users/someone'
+    )
+    expect(JSON.stringify(mocks.reportClientError.mock.calls)).not.toContain(
+      'secret-project'
+    )
   })
 
   it('reports legacy conflict-copy detections without project details', () => {
@@ -61,6 +119,32 @@ describe('cloud sync client error reporting', () => {
       extra: {
         source: 'CloudSyncEngine',
         operation: 'reconcile-project',
+      },
+    })
+  })
+
+  it('reports recovery of local changes that were missing queued work', () => {
+    reportCloudSyncUntrackedLocalChanges({
+      remoteProjectId: 'remote-123',
+      remoteRevision: 'rev-1',
+      baseFileCount: 4,
+      localFileCount: 5,
+    })
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith({
+      code: 'cloud_sync_untracked_local_changes',
+      errorName: 'CloudSyncUntrackedLocalChanges',
+      message: 'Cloud sync detected local changes without queued work.',
+      route: '/cloud-sync',
+      dedupeKey: 'CloudSync:untracked-local-changes:remote-123:rev-1',
+      extra: {
+        source: 'CloudSyncEngine',
+        operation: 'reconcile-project',
+        remoteProjectId: 'remote-123',
+        remoteRevision: 'rev-1',
+        baseFileCount: 4,
+        localFileCount: 5,
+        recoveryAction: 'sync-project',
       },
     })
   })

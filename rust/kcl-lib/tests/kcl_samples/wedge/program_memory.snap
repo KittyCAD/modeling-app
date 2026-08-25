@@ -435,10 +435,10 @@ description: Variables in memory after executing wedge.kcl
                     10.0
                   ],
                   "tag": {
-                    "commentStart": 282,
-                    "end": 287,
+                    "commentStart": 300,
+                    "end": 305,
                     "moduleId": 0,
-                    "start": 282,
+                    "start": 300,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -459,10 +459,10 @@ description: Variables in memory after executing wedge.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 352,
-                    "end": 357,
+                    "commentStart": 370,
+                    "end": 375,
                     "moduleId": 0,
-                    "start": 352,
+                    "start": 370,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -483,10 +483,10 @@ description: Variables in memory after executing wedge.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 461,
-                    "end": 466,
+                    "commentStart": 479,
+                    "end": 484,
                     "moduleId": 0,
-                    "start": 461,
+                    "start": 479,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -587,10 +587,10 @@ description: Variables in memory after executing wedge.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 282,
-            "end": 287,
+            "commentStart": 300,
+            "end": 305,
             "moduleId": 0,
-            "start": 282,
+            "start": 300,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -611,10 +611,10 @@ description: Variables in memory after executing wedge.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 352,
-            "end": 357,
+            "commentStart": 370,
+            "end": 375,
             "moduleId": 0,
-            "start": 352,
+            "start": 370,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -635,10 +635,10 @@ description: Variables in memory after executing wedge.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 461,
-            "end": 466,
+            "commentStart": 479,
+            "end": 484,
             "moduleId": 0,
-            "start": 461,
+            "start": 479,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -729,10 +729,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 282,
-            "end": 287,
+            "commentStart": 300,
+            "end": 305,
             "moduleId": 0,
-            "start": 282,
+            "start": 300,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -743,10 +743,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 352,
-            "end": 357,
+            "commentStart": 370,
+            "end": 375,
             "moduleId": 0,
-            "start": 352,
+            "start": 370,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -757,10 +757,10 @@ description: Variables in memory after executing wedge.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 461,
-            "end": 466,
+            "commentStart": 479,
+            "end": 484,
             "moduleId": 0,
-            "start": 461,
+            "start": 479,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -782,10 +782,10 @@ description: Variables in memory after executing wedge.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 282,
-              "end": 287,
+              "commentStart": 300,
+              "end": 305,
               "moduleId": 0,
-              "start": 282,
+              "start": 300,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -806,10 +806,10 @@ description: Variables in memory after executing wedge.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 352,
-              "end": 357,
+              "commentStart": 370,
+              "end": 375,
               "moduleId": 0,
-              "start": 352,
+              "start": 370,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -830,10 +830,10 @@ description: Variables in memory after executing wedge.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 461,
-              "end": 466,
+              "commentStart": 479,
+              "end": 484,
               "moduleId": 0,
-              "start": 461,
+              "start": 479,
               "type": "TagDeclarator",
               "value": "line3"
             },

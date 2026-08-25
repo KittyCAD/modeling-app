@@ -42,6 +42,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::bridge::bounding_box::BoundingBoxResponse;
+use crate::bridge::compilation_issue::CompilationIssue;
 use crate::bridge::physical_properties::PhysicalPropertiesRequest;
 use crate::bridge::physical_properties::PhysicalPropertiesResponse;
 use crate::bridge::sketch_constraints::KclErrorInfo;
@@ -89,6 +90,7 @@ fn render_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError
         kcl_source: input.to_string(),
         error,
         filename: filename.to_string(),
+        label: filename.to_string(),
     };
     let report = miette::Report::new(report);
     format!("{report:?}")
@@ -264,36 +266,6 @@ async fn new_context_state(
     Ok((ctx, state))
 }
 
-/// Wrapper for [kcl_lib::kcl_error::CompilationIssue].
-#[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass(from_py_object)]
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CompilationIssue {
-    inner: kcl_lib::CompilationIssue,
-}
-
-impl From<kcl_lib::kcl_error::CompilationIssue> for CompilationIssue {
-    fn from(value: kcl_lib::kcl_error::CompilationIssue) -> Self {
-        Self { inner: value }
-    }
-}
-
-#[pyo3_stub_gen::derive::gen_stub_pymethods]
-#[pymethods]
-impl CompilationIssue {
-    pub fn is_warning(&self) -> bool {
-        self.inner.severity.is_warning()
-    }
-
-    pub fn is_err(&self) -> bool {
-        self.inner.severity.is_err()
-    }
-
-    pub fn is_fatal(&self) -> bool {
-        self.inner.severity.is_fatal()
-    }
-}
-
 /// Returned from execution functions.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass(from_py_object)]
@@ -329,6 +301,16 @@ impl ExecOutcome {
     /// freedom.
     fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
         self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    }
+
+    fn report_all(&self) -> Vec<String> {
+        self.inner
+            .issues
+            .iter()
+            .cloned()
+            .map(CompilationIssue::from)
+            .map(|issue| self.report(&issue))
+            .collect()
     }
 }
 
@@ -597,23 +579,15 @@ async fn execute_code(code: String) -> PyResult<ExecOutcome> {
 /// Mock execute the kcl code.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn mock_execute_code(code: String) -> PyResult<bool> {
-    spawn_py(async move {
-        execute_impl(KclInput::Code(code), true).await?;
-        Ok(true)
-    })
-    .await
+async fn mock_execute_code(code: String) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Code(code), true).await }).await
 }
 
 /// Mock execute the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-async fn mock_execute(path: String) -> PyResult<bool> {
-    spawn_py(async move {
-        execute_impl(KclInput::Path(path), true).await?;
-        Ok(true)
-    })
-    .await
+async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
+    spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
 }
 
 /// Execute a kcl file and return a report of sketch constraint status.

@@ -16,9 +16,7 @@ kcl_dir = os.path.join(
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 
-engine_error_file = os.path.join(
-    tests_dir, "error_large_fillet_radius", "input.kcl"
-)
+engine_error_file = os.path.join(tests_dir, "error_large_fillet_radius", "input.kcl")
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
 )
@@ -160,10 +158,27 @@ async def test_kcl_mock_execute_with_exception():
 
 
 @pytest.mark.asyncio
+async def test_kcl_mock_execute_with_warnings():
+    # Read from a file.
+    outcome = await kcl.mock_execute(
+        os.path.join(files_dir, "experimentalfeatures.kcl")
+    )
+
+    # Check the outcome contained the expected issues
+    issues = outcome.issues()
+    assert len(issues) == 1
+    issue = issues[0]
+    assert (
+        issue.message()
+        == "Use of `conic` is experimental and may change or be removed."
+    )
+
+
+@pytest.mark.asyncio
 async def test_kcl_mock_execute_with_engine_exception_should_pass():
     # Read from a file.
-    result = await kcl.mock_execute(engine_error_file)
-    assert result is True
+    outcome = await kcl.mock_execute(engine_error_file)
+    assert outcome.issues() == []
 
 
 @requires_engine
@@ -181,8 +196,8 @@ async def test_kcl_execute_with_engine_exception_should_fail():
 @pytest.mark.asyncio
 async def test_kcl_mock_execute():
     # Read from a file.
-    result = await kcl.mock_execute(lego_file)
-    assert result is True
+    outcome = await kcl.mock_execute(lego_file)
+    assert outcome.issues() == []
 
 
 @pytest.mark.asyncio
@@ -192,8 +207,8 @@ async def test_kcl_mock_execute_code():
         code = str(f.read())
         assert code is not None
         assert len(code) > 0
-        result = await kcl.mock_execute_code(code)
-        assert result is True
+        outcome = await kcl.mock_execute_code(code)
+        assert outcome.issues() == []
 
 
 @requires_engine
@@ -639,6 +654,31 @@ s2 = sketch(on = XZ) {
 }
 """
 
+named_sketches_all_statuses_code = """
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"""
+
 execution_error_after_sketch_code = """
 @settings(experimentalFeatures = allow)
 
@@ -736,6 +776,26 @@ async def test_sketch_constraint_status_mixed():
     assert report.under_constrained[0].name == "s2"
     assert bytes(outcome.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
     assert bytes(outcome.render_sketch_png("s2")).startswith(b"\x89PNG\r\n\x1a\n")
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_reports_names():
+    # One file holding a fully constrained, an under-constrained, and an
+    # over-constrained sketch. Every entry carries the name of the variable its
+    # sketch was assigned to, so a caller can say which sketch needs
+    # correcting.
+    report = await execute_with_retries(
+        kcl.get_sketch_constraint_status_code, named_sketches_all_statuses_code
+    )
+    assert report.total_sketches() == 3
+    assert len(report.errors) == 0
+    assert len(report.fully_constrained) == 1
+    assert len(report.under_constrained) == 1
+    assert len(report.over_constrained) == 1
+    assert report.fully_constrained[0].name == "fixedSketch"
+    assert report.under_constrained[0].name == "looseSketch"
+    assert report.over_constrained[0].name == "conflictSketch"
 
 
 @requires_engine

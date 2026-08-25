@@ -263,8 +263,8 @@ pub struct EditDistanceConstraintLabelPositionOptions {
     pub commit_solved_initial_guesses: bool,
 }
 
-/// Options for editing an angle constraint during sketch dragging.
-pub struct EditAngleConstraintOptions {
+/// Options for editing a constraint during sketch dragging.
+pub struct EditConstraintOptions {
     /// Whether solver-updated initial guesses should be written back to KCL.
     pub commit_solved_initial_guesses: bool,
 }
@@ -431,6 +431,20 @@ impl FrontendState {
         result
     }
 
+    /// Edit a distance constraint with optional solver writeback.
+    pub async fn edit_distance_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, constraint, options)
+            .await
+    }
+
     /// Edit an angle constraint with optional solver writeback.
     pub async fn edit_angle_constraint_with_options(
         &mut self,
@@ -439,14 +453,92 @@ impl FrontendState {
         sketch: ObjectId,
         constraint_id: ObjectId,
         angle: Angle,
-        options: EditAngleConstraintOptions,
+        options: EditConstraintOptions,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        let previous_commit_mode = self
-            .next_edit_commits_solver_solutions
-            .replace(options.commit_solved_initial_guesses);
-        let result = SketchApi::edit_angle_constraint(self, ctx, version, sketch, constraint_id, angle).await;
-        self.next_edit_commits_solver_solutions = previous_commit_mode;
-        result
+        self.edit_constraint_with_options(ctx, version, sketch, constraint_id, Constraint::Angle(angle), options)
+            .await
+    }
+
+    /// Edit an angle or distance-family constraint with optional solver writeback.
+    pub async fn edit_constraint_with_options(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        constraint: Constraint,
+        options: EditConstraintOptions,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let sketch_block_ref =
+            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
+
+        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
+        })?;
+
+        let mut new_ast = self.program.ast.clone();
+        let command = match &object.kind {
+            ObjectKind::Constraint {
+                constraint:
+                    Constraint::Distance(_) | Constraint::HorizontalDistance(_) | Constraint::VerticalDistance(_),
+            } => {
+                let (function_name, distance) = match &constraint {
+                    Constraint::Distance(distance) => (DISTANCE_FN, distance),
+                    Constraint::HorizontalDistance(distance) => (HORIZONTAL_DISTANCE_FN, distance),
+                    Constraint::VerticalDistance(distance) => (VERTICAL_DISTANCE_FN, distance),
+                    _ => {
+                        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                            "A distance constraint can only be replaced by another distance constraint".to_owned(),
+                        )));
+                    }
+                };
+                let (call, value) = self
+                    .distance_constraint_ast_parts(function_name, distance, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditDistanceConstraint { call, value }
+            }
+            ObjectKind::Constraint {
+                constraint: Constraint::Angle(_),
+            } => {
+                let Constraint::Angle(angle) = &constraint else {
+                    return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                        "An angle constraint can only be replaced by another angle constraint".to_owned(),
+                    )));
+                };
+                let (call, value) = self
+                    .angle_constraint_ast_parts(angle, &mut new_ast)
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                AstMutateCommand::EditAngleConstraint { call, value }
+            }
+            ObjectKind::Constraint { .. } => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Editing {} is not supported",
+                    object.kind.human_friendly_kind_with_article(),
+                ))));
+            }
+            _ => {
+                return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
+                    "Object is not a constraint: {constraint_id:?}"
+                ))));
+            }
+        };
+
+        self.mutate_ast(&mut new_ast, constraint_id, command)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            sketch_block_ref,
+            &mut new_ast,
+            ExecuteAfterEditOptions {
+                segment_ids_edited: Default::default(),
+                edit_kind: EditDeleteKind::Edit,
+                commit_solved_initial_guesses: options.commit_solved_initial_guesses,
+            },
+        )
+        .await
     }
 
     pub async fn restore_sketch_checkpoint(
@@ -660,11 +752,11 @@ impl SketchApi for FrontendState {
             );
             new_ast
                 .body
-                .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                     face_decl,
                 ))));
             defined_names.insert(face_name.clone());
-            plane_ast = ast::Expr::Name(Box::new(ast::Name::new(&face_name)));
+            plane_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(&face_name)));
         }
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
@@ -683,14 +775,14 @@ impl SketchApi for FrontendState {
         let sketch_decl = ast::VariableDeclaration::new(
             ast::VariableDeclarator::new(
                 &sketch_name,
-                ast::Expr::SketchBlock(Box::new(ast::Node::no_src(sketch_ast))),
+                ast::Expr::SketchBlock(BoxNode::new(ast::Node::no_src(sketch_ast))),
             ),
             ast::ItemVisibility::Default,
             ast::VariableKind::Const,
         );
         new_ast
             .body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 sketch_decl,
             ))));
         // Convert to string source to create real source ranges.
@@ -1494,7 +1586,8 @@ impl SketchApi for FrontendState {
         Ok((final_src_delta, scene_graph_delta))
     }
 
-    async fn edit_constraint(
+    // Edit only the value, e.g. `distance(...) == 5mm` to `distance(...) == 7mm`.
+    async fn edit_constraint_value(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
@@ -1596,60 +1689,6 @@ impl SketchApi for FrontendState {
             &mut new_ast,
             ExecuteAfterEditOptions {
                 segment_ids_edited: anchor_segment_ids.into_iter().collect(),
-                edit_kind: EditDeleteKind::Edit,
-                commit_solved_initial_guesses,
-            },
-        )
-        .await
-    }
-
-    async fn edit_angle_constraint(
-        &mut self,
-        ctx: &ExecutorContext,
-        _version: Version,
-        sketch: ObjectId,
-        constraint_id: ObjectId,
-        angle: Angle,
-    ) -> ExecResult<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let sketch_block_ref =
-            sketch_block_ref_from_id(&self.scene_graph, sketch).map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| {
-            KclErrorWithOutputs::no_outputs(KclError::refactor(format!("Object not found: {constraint_id:?}")))
-        })?;
-        if !matches!(
-            &object.kind,
-            ObjectKind::Constraint {
-                constraint: Constraint::Angle(_),
-            }
-        ) {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Object should be an angle constraint but it was {}",
-                object.kind.human_friendly_kind_with_article(),
-            ))));
-        }
-
-        let mut new_ast = self.program.ast.clone();
-        let (call, value) = self
-            .angle_constraint_ast_parts(&angle, &mut new_ast)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.mutate_ast(
-            &mut new_ast,
-            constraint_id,
-            AstMutateCommand::EditAngleConstraint { call, value },
-        )
-        .map_err(KclErrorWithOutputs::no_outputs)?;
-        let commit_solved_initial_guesses = self.next_edit_commits_solver_solutions.take().unwrap_or(true);
-
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            sketch_block_ref,
-            &mut new_ast,
-            ExecuteAfterEditOptions {
-                segment_ids_edited: Default::default(),
                 edit_kind: EditDeleteKind::Edit,
                 commit_solved_initial_guesses,
             },
@@ -2018,11 +2057,7 @@ impl FrontendState {
             ..
         } = err;
 
-        if let Some(source_range) = error.source_ranges().first() {
-            non_fatal.push(CompilationIssue::fatal(*source_range, error.get_message()));
-        } else {
-            non_fatal.push(CompilationIssue::fatal(SourceRange::synthetic(), error.get_message()));
-        }
+        non_fatal.push(CompilationIssue::fatal(issue_source_range(&error), error.get_message()));
 
         Ok(ExecOutcome {
             variables,
@@ -2047,7 +2082,7 @@ impl FrontendState {
         // Create updated KCL source from args.
         let at_ast = to_ast_point2d(&ctor.position)
             .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        let point_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let point_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(POINT_FN)),
             unlabeled: None,
             arguments: vec![ast::LabeledArg {
@@ -2180,14 +2215,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let line_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
             unlabeled: None,
             arguments,
@@ -2315,21 +2350,21 @@ impl FrontendState {
         if ctor.direction == Some(ArcDirection::Cw) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ARC_DIRECTION_PARAM)),
-                arg: ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
+                arg: ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME))),
             });
         }
         // Add construction kwarg if construction is Some(true)
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let arc_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
             arguments,
@@ -2451,14 +2486,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let circle_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let circle_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
             unlabeled: None,
             arguments,
@@ -2576,14 +2611,14 @@ impl FrontendState {
         if ctor.construction == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: "true".to_string(),
                     digest: None,
                 }))),
             });
         }
-        let spline_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let spline_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(CONTROL_POINT_SPLINE_FN)),
             unlabeled: None,
             arguments,
@@ -3136,7 +3171,7 @@ impl FrontendState {
             .map(|segment| self.coincident_segment_to_ast(segment, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: segment_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3187,7 +3222,7 @@ impl FrontendState {
             .map(|point| self.axis_constraint_segment_to_ast(point, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: point_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3240,7 +3275,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3293,7 +3328,7 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: line_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3326,7 +3361,7 @@ impl FrontendState {
             .map(|segment_id| self.equal_radius_segment_id_to_ast_reference(*segment_id, new_ast))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: input_asts,
             digest: None,
             non_code_meta: Default::default(),
@@ -3703,16 +3738,24 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
+        self.add_distance_constraint(sketch, DISTANCE_FN, distance, new_ast)
+    }
+
+    fn distance_constraint_ast_parts(
+        &self,
+        function_name: &str,
+        distance: &Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<(ast::BinaryPart, ast::BinaryPart), KclError> {
+        let [segment0_ast, segment1_ast] = match distance.segments.as_slice() {
             [pt0, pt1] => [
                 self.coincident_segment_to_ast(pt0, new_ast)?,
                 self.coincident_segment_to_ast(pt1, new_ast)?,
             ],
             _ => {
                 return Err(KclError::refactor(format!(
-                    "Distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
+                    "Distance constraint must have exactly 2 segments, got {}",
+                    distance.segments.len()
                 )));
             }
         };
@@ -3725,12 +3768,11 @@ impl FrontendState {
             None => Default::default(),
         };
 
-        // Create the distance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(function_name)),
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
+                    elements: vec![segment0_ast, segment1_ast],
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -3739,29 +3781,41 @@ impl FrontendState {
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Number {
+                value: distance.distance.value,
+                suffix: distance.distance.units,
+            },
+            raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
+                KclError::refactor(format!(
+                    "Could not format numeric suffix: {:?}",
+                    distance.distance.units
+                ))
+            })?,
             digest: None,
         })));
 
-        // Add the line to the AST of the sketch block.
+        Ok((call, value))
+    }
+
+    fn add_distance_constraint(
+        &mut self,
+        sketch: ObjectId,
+        function_name: &str,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> Result<AstNodeRef, KclError> {
+        let (call, value) = self.distance_constraint_ast_parts(function_name, &distance, new_ast)?;
+        let distance_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
+            left: call,
+            operator: ast::BinaryOperator::Eq,
+            right: value,
+            digest: None,
+        })));
+
         let (sketch_block_ref, _) = self.mutate_ast(
             new_ast,
-            sketch_id,
+            sketch,
             AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
         )?;
         Ok(sketch_block_ref)
@@ -3775,7 +3829,7 @@ impl FrontendState {
     ) -> Result<AstNodeRef, KclError> {
         let sketch_id = sketch;
         let (angle_call_ast, angle_value_ast) = self.angle_constraint_ast_parts(&angle, new_ast)?;
-        let angle_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let angle_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: angle_call_ast,
             operator: ast::BinaryOperator::Eq,
             right: angle_value_ast,
@@ -3805,7 +3859,7 @@ impl FrontendState {
 
         let l0_ast = self.line_id_to_ast_reference(l0_id, new_ast)?;
         let l1_ast = self.line_id_to_ast_reference(l1_id, new_ast)?;
-        let lines_ast = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+        let lines_ast = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
             elements: vec![l0_ast, l1_ast],
             digest: None,
             non_code_meta: Default::default(),
@@ -3828,7 +3882,7 @@ impl FrontendState {
         if let Some(sector) = angle.sector {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_SECTOR_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Number {
                         value: f64::from(sector),
                         suffix: NumericSuffix::None,
@@ -3842,7 +3896,7 @@ impl FrontendState {
         if angle.inverse == Some(true) {
             arguments.push(ast::LabeledArg {
                 label: Some(ast::Identifier::new(ANGLE_INVERSE_PARAM)),
-                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                     value: ast::LiteralValue::Bool(true),
                     raw: true.to_string(),
                     digest: None,
@@ -3857,7 +3911,7 @@ impl FrontendState {
             });
         }
 
-        let call = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(if uses_angle_dimension {
                 ANGLE_DIMENSION_FN
             } else {
@@ -3868,7 +3922,7 @@ impl FrontendState {
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let value = ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+        let value = ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
             value: ast::LiteralValue::Number {
                 value: angle.angle.value,
                 suffix: angle.angle.units,
@@ -4146,17 +4200,17 @@ impl FrontendState {
         };
 
         // Create the function call.
-        let call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::BinaryPart::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(params.function_name)),
             unlabeled: Some(arc_ast),
             arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
-        let constraint_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+        let constraint_ast = ast::Expr::BinaryExpression(BoxNode::new(ast::Node::no_src(ast::BinaryExpression {
             left: call_ast,
             operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            right: ast::BinaryPart::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                 value: ast::LiteralValue::Number {
                     value: params.value,
                     suffix: params.units,
@@ -4183,68 +4237,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Horizontal distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the horizontalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, HORIZONTAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_vertical_distance(
@@ -4253,68 +4246,7 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> Result<AstNodeRef, KclError> {
-        let sketch_id = sketch;
-        let [pt0_ast, pt1_ast] = match distance.points.as_slice() {
-            [pt0, pt1] => [
-                self.coincident_segment_to_ast(pt0, new_ast)?,
-                self.coincident_segment_to_ast(pt1, new_ast)?,
-            ],
-            _ => {
-                return Err(KclError::refactor(format!(
-                    "Vertical distance constraint must have exactly 2 points, got {}",
-                    distance.points.len()
-                )));
-            }
-        };
-
-        let arguments = match &distance.label_position {
-            Some(label_position) => vec![ast::LabeledArg {
-                label: Some(ast::Identifier::new(LABEL_POSITION_PARAM)),
-                arg: to_ast_point2d_number(label_position).map_err(|err| KclError::refactor(err.to_string()))?,
-            }],
-            None => Default::default(),
-        };
-
-        // Create the verticalDistance() call.
-        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_DISTANCE_FN)),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
-                ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
-                    digest: None,
-                    non_code_meta: Default::default(),
-                },
-            )))),
-            arguments,
-            digest: None,
-            non_code_meta: Default::default(),
-        })));
-        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
-            left: distance_call_ast,
-            operator: ast::BinaryOperator::Eq,
-            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                value: ast::LiteralValue::Number {
-                    value: distance.distance.value,
-                    suffix: distance.distance.units,
-                },
-                raw: format_number_literal(distance.distance.value, distance.distance.units, None).map_err(|_| {
-                    KclError::refactor(format!(
-                        "Could not format numeric suffix: {:?}",
-                        distance.distance.units
-                    ))
-                })?,
-                digest: None,
-            }))),
-            digest: None,
-        })));
-
-        // Add the line to the AST of the sketch block.
-        let (sketch_block_ref, _) = self.mutate_ast(
-            new_ast,
-            sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-        )?;
-        Ok(sketch_block_ref)
+        self.add_distance_constraint(sketch, VERTICAL_DISTANCE_FN, distance, new_ast)
     }
 
     async fn add_horizontal(
@@ -4546,9 +4478,9 @@ impl FrontendState {
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(LinesAtAngleKind::Parallel.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: line_asts,
                     digest: None,
@@ -4637,9 +4569,9 @@ impl FrontendState {
         let line1_ast = self.line_id_to_ast_reference(line1_id, new_ast)?;
 
         // Create the parallel() or perpendicular() call.
-        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        let call_ast = ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(angle_kind.to_function_name())),
-            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+            unlabeled: Some(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: vec![line0_ast, line1_ast],
                     digest: None,
@@ -4919,7 +4851,7 @@ impl FrontendState {
             };
             let depends_on_segment = match constraint {
                 Constraint::Coincident(c) => c.segment_ids().any(segment_or_owner_matches),
-                Constraint::Distance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::Distance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Fixed(fixed) => fixed
                     .points
                     .iter()
@@ -4929,8 +4861,8 @@ impl FrontendState {
                 Constraint::EqualRadius(equal_radius) => {
                     equal_radius.input.iter().copied().any(segment_or_owner_matches)
                 }
-                Constraint::HorizontalDistance(d) => d.point_ids().any(segment_or_owner_matches),
-                Constraint::VerticalDistance(d) => d.point_ids().any(segment_or_owner_matches),
+                Constraint::HorizontalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
+                Constraint::VerticalDistance(d) => d.segment_ids().any(segment_or_owner_matches),
                 Constraint::Horizontal(h) => match h {
                     Horizontal::Line { line } => segment_or_owner_matches(*line),
                     Horizontal::Points { points } => points.iter().any(|point| match point {
@@ -5221,53 +5153,29 @@ fn only_sketch_block(
         );
         return only_sketch_block_from_range(ast, sketch_block_ref.range, edit_kind);
     };
-    let mut found = false;
-    for item in ast.body.iter_mut() {
-        match item {
-            ast::BodyItem::ImportStatement(_) => {}
-            ast::BodyItem::ExpressionStatement(node) => {
-                // Check the statement.
-                if let Some(node_path) = &node.node_path
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-                // Check the expression.
-                if let Some(node_path) = node.expression.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::VariableDeclaration(node) => {
-                if let Some(node_path) = node.declaration.init.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-            ast::BodyItem::TypeDeclaration(_) => {}
-            ast::BodyItem::ReturnStatement(node) => {
-                if let Some(node_path) = node.argument.node_path()
-                    && node_path == target_node_path
-                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
-                {
-                    sketch_block.is_being_edited = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
+    struct MarkSketchBlockBeingEdited<'a> {
+        target_node_path: &'a ast::NodePath,
     }
+
+    impl Visitor for MarkSketchBlockBeingEdited<'_> {
+        type Break = ();
+        type Continue = ();
+
+        fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+            if let NodeMut::SketchBlock(sketch_block) = node
+                && sketch_block.node_path.as_ref() == Some(self.target_node_path)
+            {
+                sketch_block.is_being_edited = true;
+                return TraversalReturn::new_break(());
+            }
+            TraversalReturn::new_continue(())
+        }
+
+        fn finish(&mut self, _node: NodeMut<'_>) {}
+    }
+
+    let mut marker = MarkSketchBlockBeingEdited { target_node_path };
+    let found = dfs_mut(ast, &mut marker).is_break();
     if !found {
         return Err(KclError::refactor(format!(
             "Sketch block node path not found in AST: {sketch_block_ref:?}, edit_kind={edit_kind:?}"
@@ -5723,14 +5631,14 @@ fn default_plane_ast_expr(name: crate::engine::PlaneName) -> ast::Expr {
 }
 
 fn negated_plane_ast_expr(name: &str) -> ast::Expr {
-    ast::Expr::UnaryExpression(Box::new(ast::UnaryExpression::new(
+    ast::Expr::UnaryExpression(BoxNode::new(ast::UnaryExpression::new(
         ast::UnaryOperator::Neg,
-        ast::BinaryPart::Name(Box::new(ast_name(name.to_owned()))),
+        ast::BinaryPart::Name(BoxNode::new(ast_name(name.to_owned()))),
     )))
 }
 
 fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceOf")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
@@ -5743,17 +5651,19 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
 }
 
 fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name("faceId")),
         unlabeled: Some(solid_expr),
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("index")),
-            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-                value: index as f64,
-                suffix: NumericSuffix::None,
-                raw: index.to_string(),
-                digest: None,
-            })))),
+            arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+                ast::NumericLiteral {
+                    value: index as f64,
+                    suffix: NumericSuffix::None,
+                    raw: index.to_string(),
+                    digest: None,
+                },
+            )))),
         }],
         digest: None,
         non_code_meta: Default::default(),
@@ -5819,7 +5729,7 @@ fn get_or_insert_ast_reference(
             "Expected variable name returned from AddVariableDeclaration".to_owned(),
         ));
     };
-    let var_expr = ast::Expr::Name(Box::new(ast::Name::new(&var_name)));
+    let var_expr = ast::Expr::Name(BoxNode::new(ast::Name::new(&var_name)));
     let Some(property) = property else {
         // No property; just return the variable name.
         return Ok(var_expr);
@@ -5939,6 +5849,10 @@ enum AstMutateCommand {
         value: ast::BinaryPart,
     },
     EditAngleConstraint {
+        call: ast::BinaryPart,
+        value: ast::BinaryPart,
+    },
+    EditDistanceConstraint {
         call: ast::BinaryPart,
         value: ast::BinaryPart,
     },
@@ -6153,6 +6067,10 @@ fn is_angle_constraint_call_name(name: &str) -> bool {
     matches!(name, ANGLE_FN | ANGLE_DIMENSION_FN)
 }
 
+fn is_distance_constraint_call_name(name: &str) -> bool {
+    matches!(name, DISTANCE_FN | HORIZONTAL_DISTANCE_FN | VERTICAL_DISTANCE_FN)
+}
+
 fn is_constraint_call_name(name: &str) -> bool {
     matches!(
         name,
@@ -6209,7 +6127,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 sketch_block
                     .body
                     .items
-                    .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                    .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                         ast::VariableDeclaration::new(
                             ast::VariableDeclarator::new(&name, expr.clone()),
                             ast::ItemVisibility::Default,
@@ -6231,7 +6149,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
                 let mutate_node =
-                    ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration::new(
+                    ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(ast::VariableDeclaration::new(
                         ast::VariableDeclarator::new(&name, expr_stmt.expression.clone()),
                         ast::ItemVisibility::Default,
                         ast::VariableKind::Const,
@@ -6286,18 +6204,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6343,7 +6262,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         .iter()
                         .any(|arg| arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_DIRECTION_PARAM));
                     if direction_value.is_clockwise() {
-                        let direction_ast = ast::Expr::Name(Box::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
+                        let direction_ast = ast::Expr::Name(BoxNode::new(ast::Name::new(ARC_DIRECTION_CW_NAME)));
                         if direction_exists {
                             // Update existing direction kwarg
                             for labeled_arg in &mut call.arguments {
@@ -6377,18 +6296,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6433,18 +6353,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                             // Update existing construction kwarg
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             // Add new construction kwarg
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6481,17 +6402,18 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         if construction_exists {
                             for labeled_arg in &mut call.arguments {
                                 if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(CONSTRUCTION_PARAM) {
-                                    labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
-                                        value: ast::LiteralValue::Bool(true),
-                                        raw: "true".to_string(),
-                                        digest: None,
-                                    })));
+                                    labeled_arg.arg =
+                                        ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
+                                            value: ast::LiteralValue::Bool(true),
+                                            raw: "true".to_string(),
+                                            digest: None,
+                                        })));
                                 }
                             }
                         } else {
                             call.arguments.push(ast::LabeledArg {
                                 label: Some(ast::Identifier::new(CONSTRUCTION_PARAM)),
-                                arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                                arg: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal {
                                     value: ast::LiteralValue::Bool(true),
                                     raw: "true".to_string(),
                                     digest: None,
@@ -6549,6 +6471,34 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
+        AstMutateCommand::EditDistanceConstraint { call, value } => {
+            if let NodeMut::BinaryExpression(binary_expr) = node {
+                let left_is_distance = matches!(
+                    &binary_expr.left,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+                let right_is_distance = matches!(
+                    &binary_expr.right,
+                    ast::BinaryPart::CallExpressionKw(existing_call)
+                        if is_distance_constraint_call_name(existing_call.callee.name.name.as_str())
+                );
+
+                match (left_is_distance, right_is_distance) {
+                    (true, _) => {
+                        binary_expr.left = call.clone();
+                        binary_expr.right = value.clone();
+                    }
+                    (false, true) => {
+                        binary_expr.left = value.clone();
+                        binary_expr.right = call.clone();
+                    }
+                    (false, false) => return TraversalReturn::new_continue(()),
+                }
+
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
         AstMutateCommand::EditDistanceConstraintLabelPosition { label_position } => {
             if let NodeMut::BinaryExpression(binary_expr) = node {
                 let call = if let Some(call) = constraint_supports_label_position(&mut binary_expr.left) {
@@ -6592,7 +6542,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
+                sketch_var.initial = Some(BoxNode::new(ast::Node::no_src(literal)));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6956,7 +6906,7 @@ fn preserve_var_solution_literal_style(
 }
 
 pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node {
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node {
         inner: ast::ArrayExpression {
             elements: vec![to_source_expr(&point.x)?, to_source_expr(&point.y)?],
             non_code_meta: Default::default(),
@@ -6973,7 +6923,7 @@ pub(crate) fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr>
 }
 
 pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: points.iter().map(to_ast_point2d).collect::<anyhow::Result<Vec<_>>>()?,
             digest: None,
@@ -6983,13 +6933,13 @@ pub(crate) fn to_ast_point2d_array(points: &[Point2d<Expr>]) -> anyhow::Result<a
 }
 
 fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
-    Ok(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(
         ast::ArrayExpression {
             elements: vec![
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.x,
                 )?)))),
-                ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+                ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
                     point.y,
                 )?)))),
             ],
@@ -7001,7 +6951,7 @@ fn to_ast_point2d_number(point: &Point2d<Number>) -> anyhow::Result<ast::Expr> {
 
 fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
     match expr {
-        Expr::Number(number) => Ok(ast::Expr::Literal(Box::new(ast::Node {
+        Expr::Number(number) => Ok(ast::Expr::Literal(BoxNode::new(ast::Node {
             inner: ast::Literal::from(to_source_number(*number)?),
             start: Default::default(),
             end: Default::default(),
@@ -7011,9 +6961,9 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
             pre_comments: Default::default(),
             comment_start: Default::default(),
         }))),
-        Expr::Var(number) => Ok(ast::Expr::SketchVar(Box::new(ast::Node {
+        Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(Box::new(ast::Node {
+                initial: Some(BoxNode::new(ast::Node {
                     inner: to_source_number(*number)?,
                     start: Default::default(),
                     end: Default::default(),
@@ -7047,7 +6997,7 @@ fn to_source_number(number: Number) -> anyhow::Result<ast::NumericLiteral> {
 }
 
 pub(crate) fn ast_name_expr(name: String) -> ast::Expr {
-    ast::Expr::Name(Box::new(ast_name(name)))
+    ast::Expr::Name(BoxNode::new(ast_name(name)))
 }
 
 fn ast_name(name: String) -> ast::Node<ast::Name> {
@@ -7106,14 +7056,14 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
     debug_assert!(elements.len() >= 2, "Coincident AST should have at least 2 inputs");
 
     // Create array [expr1, expr2, ...]
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create coincident([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7124,7 +7074,7 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
 
 /// Create an AST node for line(start = [...], end = [...])
 pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7144,7 +7094,7 @@ pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::
 
 /// Create an AST node for arc(start = [...], end = [...], center = [...])
 pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7168,7 +7118,7 @@ pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_as
 
 /// Create an AST node for circle(start = [...], center = [...])
 pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
         unlabeled: None,
         arguments: vec![
@@ -7188,7 +7138,7 @@ pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> 
 
 /// Create an AST node for horizontal(line)
 pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(HORIZONTAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7199,7 +7149,7 @@ pub(crate) fn create_horizontal_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create an AST node for vertical(line)
 pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(VERTICAL_FN)),
         unlabeled: Some(line_expr),
         arguments: Default::default(),
@@ -7210,9 +7160,9 @@ pub(crate) fn create_vertical_ast(line_expr: ast::Expr) -> ast::Expr {
 
 /// Create a member expression like object.property (e.g., line1.end)
 pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Name(Box::new(ast::Node::no_src(ast::Name {
+        property: ast::Expr::Name(BoxNode::new(ast::Node::no_src(ast::Name {
             name: ast::Node::no_src(ast::Identifier {
                 name: property.to_string(),
                 digest: None,
@@ -7227,14 +7177,16 @@ pub(crate) fn create_member_expression(object_expr: ast::Expr, property: &str) -
 }
 
 pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> ast::Expr {
-    ast::Expr::MemberExpression(Box::new(ast::Node::no_src(ast::MemberExpression {
+    ast::Expr::MemberExpression(BoxNode::new(ast::Node::no_src(ast::MemberExpression {
         object: object_expr,
-        property: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
-            value: index as f64,
-            suffix: NumericSuffix::None,
-            raw: index.to_string(),
-            digest: None,
-        })))),
+        property: ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(
+            ast::NumericLiteral {
+                value: index as f64,
+                suffix: NumericSuffix::None,
+                raw: index.to_string(),
+                digest: None,
+            },
+        )))),
         computed: true,
         digest: None,
     })))
@@ -7243,27 +7195,27 @@ pub(crate) fn create_index_expression(object_expr: ast::Expr, index: usize) -> a
 /// Create an AST node for `fixed([point, [x, y]])`.
 fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Number>) -> anyhow::Result<ast::Expr> {
     // Create [x, y] array literal.
-    let x_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let x_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.x,
     )?))));
-    let y_literal = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(to_source_number(
+    let y_literal = ast::Expr::Literal(BoxNode::new(ast::Node::no_src(ast::Literal::from(to_source_number(
         position.y,
     )?))));
-    let point_array = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let point_array = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![x_literal, y_literal],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create [point, [x, y]] outer array.
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![point_expr, point_array],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create fixed([...])
-    Ok(ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(
+    Ok(ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(
         ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(FIXED_FN)),
             unlabeled: Some(array_expr),
@@ -7276,14 +7228,14 @@ fn create_fixed_point_constraint_ast(point_expr: ast::Expr, position: Point2d<Nu
 
 /// Create an AST node for equalLength([line1, line2, ...])
 pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: line_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
     // Create equalLength([...])
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7294,13 +7246,13 @@ pub(crate) fn create_equal_length_ast(line_exprs: Vec<ast::Expr>) -> ast::Expr {
 
 /// Create an AST node for equalRadius([seg1, seg2, ...])
 pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: segment_exprs,
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(EQUAL_RADIUS_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7311,13 +7263,13 @@ pub(crate) fn create_equal_radius_ast(segment_exprs: Vec<ast::Expr>) -> ast::Exp
 
 /// Create an AST node for tangent([seg1, seg2])
 pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: vec![seg1_expr, seg2_expr],
         digest: None,
         non_code_meta: Default::default(),
     })));
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(TANGENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
@@ -7328,7 +7280,7 @@ pub(crate) fn create_tangent_ast(seg1_expr: ast::Expr, seg2_expr: ast::Expr) -> 
 
 /// Create an AST node for symmetric([input1, input2], axis = line)
 pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::Expr) -> ast::Expr {
-    let array_expr = ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(ast::ArrayExpression {
+    let array_expr = ast::Expr::ArrayExpression(BoxNode::new(ast::Node::no_src(ast::ArrayExpression {
         elements: input_exprs,
         digest: None,
         non_code_meta: Default::default(),
@@ -7338,7 +7290,7 @@ pub(crate) fn create_symmetric_ast(input_exprs: Vec<ast::Expr>, axis_expr: ast::
         arg: axis_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(SYMMETRIC_FN)),
         unlabeled: Some(array_expr),
         arguments,
@@ -7354,13 +7306,27 @@ pub(crate) fn create_midpoint_ast(segment_expr: ast::Expr, point_expr: ast::Expr
         arg: point_expr,
     }];
 
-    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
         callee: ast::Node::no_src(ast_sketch2_name(MIDPOINT_FN)),
         unlabeled: Some(segment_expr),
         arguments,
         digest: None,
         non_code_meta: Default::default(),
     })))
+}
+
+/// The source range to attach to a diagnostic for `error` in the top-level
+/// module. Source ranges are ordered innermost first and may point into
+/// imported modules, so prefer the innermost range that is in the top-level
+/// module; otherwise fall back to the innermost range.
+fn issue_source_range(error: &KclError) -> SourceRange {
+    let source_ranges = error.source_ranges();
+    source_ranges
+        .iter()
+        .find(|range| range.is_top_level_module())
+        .or_else(|| source_ranges.first())
+        .copied()
+        .unwrap_or_else(SourceRange::synthetic)
 }
 
 #[cfg(test)]
@@ -7424,6 +7390,30 @@ mod tests {
             }
         }
         None
+    }
+
+    #[test]
+    fn issue_source_range_prefers_top_level_module() {
+        use kcl_error::ModuleId;
+
+        let top = SourceRange::new(10, 20, ModuleId::default());
+        let imported = SourceRange::new(0, 5, ModuleId::from_usize(7));
+
+        // Innermost frame is in an imported module; the diagnostic should
+        // land on the innermost top-level range instead.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new(
+            "boom".to_owned(),
+            vec![imported, top],
+        ));
+        assert_eq!(super::issue_source_range(&error), top);
+
+        // No top-level range at all: fall back to the innermost one.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![imported]));
+        assert_eq!(super::issue_source_range(&error), imported);
+
+        // No ranges: synthetic.
+        let error = KclError::new_semantic(crate::errors::KclErrorDetails::new("boom".to_owned(), vec![]));
+        assert_eq!(super::issue_source_range(&error), SourceRange::synthetic());
     }
 
     #[test]
@@ -7651,7 +7641,7 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_parse_error_messages_are_user_facing() {
+    async fn test_edit_constraint_value_parse_error_messages_are_user_facing() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7675,7 +7665,7 @@ sketch(on = XY) {
             ("3'", "Invalid constraint value: found unknown token '''"),
         ] {
             let err = frontend
-                .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
+                .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
                 .await
                 .expect_err("expected invalid constraint expression to fail");
             let message = err.error.message();
@@ -7690,7 +7680,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_failed_edit_constraint_does_not_update_program() {
+    async fn test_failed_edit_constraint_value_does_not_update_program() {
         let initial_source = "\
 sketch(on = XY) {
   line1 = line(start = [var 0, var 0], end = [var 10, var 0])
@@ -7711,7 +7701,7 @@ sketch(on = XY) {
         let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
 
         frontend
-            .edit_constraint(
+            .edit_constraint_value(
                 &mock_ctx,
                 version,
                 sketch_id,
@@ -7728,7 +7718,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_edit_constraint_array_index_oob_fails_in_sketch_mode() {
+    async fn test_edit_constraint_value_array_index_oob_fails_in_sketch_mode() {
         let initial_source = "\
 arr = [0]
 sketch(on = XY) {
@@ -7752,7 +7742,7 @@ sketch(on = XY) {
         // It should not fall back to the first element of the array the way
         // plain mock execution does.
         let err = frontend
-            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
+            .edit_constraint_value(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
             .await
             .expect_err("expected out-of-bounds array index to be an error in sketch mode execution");
         let message = err.error.message();
@@ -11004,7 +10994,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11064,7 +11054,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11118,7 +11108,7 @@ sketch(on = XY) {
         let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -11164,6 +11154,84 @@ sketch(on = XY) {
         let Constraint::Distance(distance) = constraint else {
             panic!("Expected distance constraint");
         };
+        assert_eq!(distance.label_position, Some(label_position));
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_distance_constraint_type_and_value() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  distance([line1.start, line1.end]) == 5mm
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.program = program.clone();
+        let outcome = mock_ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        frontend.update_state_after_exec(outcome, true);
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = sketch.constraints[0];
+        let point0_id = sketch.segments[0];
+        let point1_id = sketch.segments[1];
+        let label_position = Point2d {
+            x: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+            y: Number {
+                value: 5.0,
+                units: NumericSuffix::Mm,
+            },
+        };
+
+        let (source_delta, scene_delta) = frontend
+            .edit_distance_constraint_with_options(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                Constraint::HorizontalDistance(Distance {
+                    segments: vec![point0_id.into(), point1_id.into()],
+                    distance: Number {
+                        value: 4.0,
+                        units: NumericSuffix::Mm,
+                    },
+                    label_position: Some(label_position.clone()),
+                    source: Default::default(),
+                }),
+                EditConstraintOptions {
+                    commit_solved_initial_guesses: false,
+                },
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            source_delta.text,
+            "\
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 3mm])
+  horizontalDistance([line1.start, line1.end], labelPosition = [2mm, 5mm]) == 4mm
+}
+"
+        );
+
+        let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
+        let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
+            panic!("Expected constraint object");
+        };
+        let Constraint::HorizontalDistance(distance) = constraint else {
+            panic!("Expected horizontal distance constraint");
+        };
+        assert_eq!(distance.distance.value, 4.0);
         assert_eq!(distance.label_position, Some(label_position));
 
         mock_ctx.close().await;
@@ -11355,7 +11423,7 @@ sketch(on = XY) {
                     label_position: Some(label_position.clone()),
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11429,7 +11497,7 @@ sketch(on = XY) {
                     label_position: None,
                     source: Default::default(),
                 },
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: false,
                 },
             )
@@ -11716,7 +11784,7 @@ sketch(on = XY) {
             },
         };
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), line_id.into()],
+            segments: vec![point_id.into(), line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -11780,7 +11848,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![point_id.into(), arc_id.into()],
+            segments: vec![point_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11833,7 +11901,7 @@ sketch001 = sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![arc_id.into(), ConstraintSegment::ORIGIN],
+            segments: vec![arc_id.into(), ConstraintSegment::ORIGIN],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -11885,7 +11953,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![ConstraintSegment::ORIGIN, line_id.into()],
+            segments: vec![ConstraintSegment::ORIGIN, line_id.into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -11949,7 +12017,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_id.into(), circle_id.into()],
+            segments: vec![line_id.into(), circle_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12014,7 +12082,7 @@ sketch(on = XY) {
             .unwrap();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![circle_id.into(), arc_id.into()],
+            segments: vec![circle_id.into(), arc_id.into()],
             distance: Number {
                 value: 3.0,
                 units: NumericSuffix::Mm,
@@ -12068,7 +12136,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12126,7 +12194,7 @@ sketch(on = XY) {
             .collect::<Vec<_>>();
 
         let constraint = Constraint::Distance(Distance {
-            points: vec![line_ids[0].into(), line_ids[1].into()],
+            segments: vec![line_ids[0].into(), line_ids[1].into()],
             distance: Number {
                 value: 5.0,
                 units: NumericSuffix::Mm,
@@ -12183,7 +12251,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::HorizontalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -12444,7 +12512,7 @@ sketch(on = XY) {
         };
 
         let constraint = Constraint::VerticalDistance(Distance {
-            points: vec![point0_id.into(), point1_id.into()],
+            segments: vec![point0_id.into(), point1_id.into()],
             distance: Number {
                 value: 2.0,
                 units: NumericSuffix::Mm,
@@ -14301,7 +14369,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 face_decl,
             ))));
         let face_source = source_from_ast(&ast);
@@ -14613,7 +14681,7 @@ part = subtract(boxSolid, tools = [cutSolid])
             ast::VariableKind::Const,
         );
         ast.body
-            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+            .push(ast::BodyItem::VariableDeclaration(BoxNode::new(ast::Node::no_src(
                 cap_face_decl,
             ))));
         let generated_source = source_from_ast(&ast);
@@ -14798,6 +14866,118 @@ sketch(on = offsetPlane(XY, offset = width)) {
         assert_eq!(scene_delta.new_graph.objects.len(), initial_object_count);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_sketch_nested_in_pipe() {
+        clear_mem_cache().await;
+        let source = r#"
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+  |> translate(x = 2mm)
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_id = find_first_sketch_object(&frontend.scene_graph)
+            .expect("Expected piped sketch object")
+            .id;
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+        assert!(
+            scene_delta
+                .new_graph
+                .objects
+                .iter()
+                .any(|object| matches!(&object.kind, ObjectKind::Segment { .. })),
+            "Expected the piped sketch's segments to be present in sketch mode"
+        );
+
+        clear_mem_cache().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_issue_9409_edit_sketch_nested_in_if_with_var_feedback() {
+        clear_mem_cache().await;
+        let source = r#"
+useFirstProfile = true
+
+profile = if useFirstProfile {
+  sketch(on = XY) {
+    line1 = line(start = [0mm, 0mm], end = [var 20mm, var 10mm])
+  }
+} else {
+  sketch(on = XY) {
+    line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])
+  }
+}
+"#;
+        let program = Program::parse_no_errs(source).unwrap();
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object =
+            find_first_sketch_object(&frontend.scene_graph).expect("Expected active branch's sketch object");
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_end_id = *sketch
+            .segments
+            .get(1)
+            .expect("Expected the active branch's line end point");
+
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_id)
+            .await
+            .unwrap();
+        assert_eq!(scene_delta.new_graph.sketch_mode, Some(sketch_id));
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 30.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 15.0,
+                        units: NumericSuffix::Mm,
+                    }),
+                },
+            }),
+        }];
+        let (source_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert!(
+            source_delta
+                .text
+                .contains("line1 = line(start = [0mm, 0mm], end = [var 30mm, var 15mm])"),
+            "Expected the active branch's dragged variables to be updated:\n{}",
+            source_delta.text
+        );
+        assert!(
+            source_delta
+                .text
+                .contains("line2 = line(start = [0mm, 0mm], end = [var 10mm, var 20mm])"),
+            "Expected the inactive branch to remain unchanged:\n{}",
+            source_delta.text
+        );
+
+        clear_mem_cache().await;
         mock_ctx.close().await;
     }
 

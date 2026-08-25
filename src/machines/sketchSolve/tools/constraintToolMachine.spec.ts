@@ -166,7 +166,7 @@ describe('constraintToolMachine', () => {
         type: 'Constraint',
         constraint: {
           type: 'Distance',
-          points: [1, 2],
+          segments: [1, 2],
           distance: { value: 5, units: 'Mm' },
           source: { expr: '5', is_literal: true },
         },
@@ -268,6 +268,62 @@ describe('constraintToolMachine', () => {
       0,
       {
         type: 'LinesEqualLength',
+        lines: [10, 11, 12],
+      },
+      expect.anything(),
+      true
+    )
+  })
+
+  it('applies one grouped parallel constraint for an area selection', async () => {
+    const pointA = createPointApiObject({ id: 1 })
+    const pointB = createPointApiObject({ id: 2 })
+    const pointC = createPointApiObject({ id: 3 })
+    const pointD = createPointApiObject({ id: 4 })
+    const pointE = createPointApiObject({ id: 5 })
+    const pointF = createPointApiObject({ id: 6 })
+    const lineA = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const lineB = createLineApiObject({ id: 11, start: 3, end: 4 })
+    const lineC = createLineApiObject({ id: 12, start: 5, end: 6 })
+    const objects = [
+      pointA,
+      pointB,
+      pointC,
+      pointD,
+      pointE,
+      pointF,
+      lineA,
+      lineB,
+      lineC,
+    ]
+    const { child, rustContext } = createHarness({
+      childMachine: parallelConstraintTool,
+      objects,
+    })
+    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+
+    addConstraintMock.mockResolvedValue({
+      kclSource: { text: 'parallel' },
+      sceneGraphDelta: createSceneGraphDelta(objects),
+      checkpointId: 1,
+    })
+
+    child.send({
+      type: 'commit area selection',
+      currentSelectionIds: [],
+      candidateSelectionIds: [10, 11, 12],
+      objects: createSceneGraphDelta(objects).new_graph.objects,
+      modifierKeepSelection: false,
+    })
+
+    await waitFor(child, () => addConstraintMock.mock.calls.length > 0)
+
+    expect(addConstraintMock).toHaveBeenCalledOnce()
+    expect(addConstraintMock).toHaveBeenCalledWith(
+      0,
+      0,
+      {
+        type: 'Parallel',
         lines: [10, 11, 12],
       },
       expect.anything(),

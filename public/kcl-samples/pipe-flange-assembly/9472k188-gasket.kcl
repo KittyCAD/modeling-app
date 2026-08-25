@@ -1,0 +1,14 @@
+// Gasket
+// A seal between the two mating flange surfaces
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import gasketOutsideDiameter, gasketInnerDiameter, gasketThickness from "parameters.kcl"
+
+gasketSketch = sketch(on = XY) {
+  outerCircle = circle(start = [var 2.0625in, var 0in], center = [var 0in, var 0in])
+  innerCircle = circle(start = [var 1.1875in, var 0in], center = [var 0in, var 0in])
+}
+gasketRegion = region(segments = [gasketSketch.outerCircle])
+extrude(gasketRegion, length = gasketThickness)
+  |> appearance(color = "#d0cb3e")

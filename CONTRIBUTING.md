@@ -137,7 +137,7 @@ Integration tests will be slower, require more dependencies, and could be flaky.
 
 Prepare these system dependencies:
 
-- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/developer
 
 #### Desktop tests (Electron on all platforms)
 
@@ -243,14 +243,15 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
-- Install `just` following [these instructions](https://just.systems/man/en/packages.html)
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/developer
+- Confirm that `just` is installed via the asdf instructions earlier.
 
 then run tests that target the KCL language:
 
 ```
 npm run test:e2e:kcl
 ```
+Note that the `TS-RS` typescript bindings generation runs as a series of "test" jobs alongside other Rust tests and under the multithreaded conditions of this command these jobs are expected to result in failures or flakiness. You may disregard test failures whose names start with `export_bindings`.
 
 ### Fuzzing the parser
 

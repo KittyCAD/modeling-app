@@ -120,7 +120,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
           ...extra,
           kclSourceLength: kclSource.length,
-          kclSource,
         },
       })
     },
