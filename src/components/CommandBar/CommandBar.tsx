@@ -12,14 +12,14 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { keymapService } from '@src/registry/contracts/keymap'
+import { commandScopeService } from '@src/registry/contracts/commands'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commands: cmd, project, registry } = useApp()
-  const keymap = registry.optional(keymapService)
+  const commandScopes = registry.optional(commandScopeService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
@@ -57,16 +57,16 @@ export const CommandBar = () => {
   }, [pathname])
 
   useEffect(() => {
-    if (!keymap || !isCommandBarOpen) {
+    if (!commandScopes || !isCommandBarOpen) {
       return
     }
 
-    keymap.applyScope('cmd-palette-open')
+    commandScopes.applyScope('cmd-palette-open')
 
     return () => {
-      keymap.removeScope('cmd-palette-open')
+      commandScopes.removeScope('cmd-palette-open')
     }
-  }, [isCommandBarOpen, keymap])
+  }, [commandScopes, isCommandBarOpen])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper(
