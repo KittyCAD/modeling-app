@@ -442,22 +442,15 @@ async fn inner_get_common_edge(
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
     let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
-    let no_engine_commands = args.ctx.no_engine_commands().await;
-    // Clone and CSG mock execution can retain different current geometry IDs
-    // for tags on the same derived body. Their source sketch remains stable.
-    let shared_mock_origin = no_engine_commands
-        && original_sketch_id(&first_tagged_path.geometry)
-            .is_some_and(|first_origin| original_sketch_id(&second_tagged_path.geometry) == Some(first_origin));
-
-    if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() && !shared_mock_origin {
+    if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
         return Err(KclError::new_type(KclErrorDetails::new(
-            "getCommonEdge requires the faces to be in the same original sketch".to_string(),
+            "getCommonEdge requires both faces to belong to the same body".to_string(),
             vec![args.source_range],
         )));
     }
 
     let id = exec_state.next_uuid();
-    if no_engine_commands {
+    if args.ctx.no_engine_commands().await {
         return Ok(id);
     }
 
@@ -517,13 +510,6 @@ async fn inner_get_common_edge(
         stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
     });
     Ok(edge_id)
-}
-
-fn original_sketch_id(geometry: &crate::execution::Geometry) -> Option<Uuid> {
-    match geometry {
-        crate::execution::Geometry::Sketch(sketch) => sketch.origin_sketch_id,
-        crate::execution::Geometry::Solid(solid) => solid.sketch().and_then(|sketch| sketch.origin_sketch_id),
-    }
 }
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1069,7 +1055,7 @@ edge = getCommonEdge(faces = [firstEnd, secondEnd])
         assert!(matches!(&err.error, KclError::Type { .. }), "{:?}", err.error);
         let message = err.error.message();
         assert!(
-            message.contains("getCommonEdge requires the faces to be in the same original sketch"),
+            message.contains("getCommonEdge requires both faces to belong to the same body"),
             "{message}"
         );
     }
@@ -1098,6 +1084,38 @@ edge = getCommonEdge(faces = [clonedSolid.sketch.tags.line2, clonedSolid.faces.e
         ctx.close().await;
 
         result.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_get_common_edge_rejects_faces_from_different_cloned_bodies() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+rectangleRegion = region(point = [5mm, 5mm], sketch = rectangleSketch)
+firstSolid = extrude(rectangleRegion, length = 5mm, tagEnd = $endFace)
+clonedSolid = clone(firstSolid)
+  |> translate(x = 20mm)
+
+edge = getCommonEdge(faces = [firstSolid.sketch.tags.line2, clonedSolid.faces.endFace])
+"#;
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(matches!(&err.error, KclError::Type { .. }), "{:?}", err.error);
+        let message = err.error.message();
+        assert!(
+            message.contains("getCommonEdge requires both faces to belong to the same body"),
+            "{message}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

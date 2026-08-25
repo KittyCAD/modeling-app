@@ -1410,6 +1410,45 @@ impl Solid {
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;
+        self.retarget_current_tags_to_self();
+    }
+
+    /// Keep carried tags owned by this body after an operation creates a new
+    /// topological body from an existing [`Solid`] value.
+    ///
+    /// Clone, CSG, and mirror start from a copy of an input solid. Without
+    /// retargeting, some tags retain the source body's geometry while other
+    /// tags already point at the result body. That makes same-body validation
+    /// unreliable and can also make tags from two cloned bodies appear to
+    /// share an owner.
+    fn retarget_current_tags_to_self(&mut self) {
+        let mut owner = self.clone();
+        if let Some(sketch) = owner.sketch_mut() {
+            sketch.tags.clear();
+        }
+        owner.faces.clear();
+        let owner = Geometry::Solid(owner);
+
+        fn retarget(tag: &mut TagIdentifier, owner: &Geometry) {
+            let Some(current_epoch) = tag.info.last().map(|(epoch, _)| *epoch) else {
+                return;
+            };
+            for (epoch, info) in tag.info.iter_mut().rev() {
+                if *epoch != current_epoch {
+                    break;
+                }
+                info.geometry = owner.clone();
+            }
+        }
+
+        if let Some(sketch) = self.sketch_mut() {
+            for tag in sketch.tags.values_mut() {
+                retarget(tag, &owner);
+            }
+        }
+        for tag in self.faces.values_mut() {
+            retarget(tag, &owner);
+        }
     }
 
     /// Make this solid a pattern copy. It gets a new top-level entity artifact
