@@ -27,6 +27,7 @@ use crate::util::execute_with_retries;
 use crate::walk::Node;
 use crate::walk::walk;
 
+mod get_common_edge_engine_contract;
 mod kcl_samples;
 mod region_liveness_engine_contract;
 

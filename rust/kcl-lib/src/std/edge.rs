@@ -441,22 +441,26 @@ async fn inner_get_common_edge(
 ) -> Result<Uuid, KclError> {
     check_tag_not_ambiguous(&face1, &args)?;
     check_tag_not_ambiguous(&face2, &args)?;
-    let id = exec_state.next_uuid();
-    if args.ctx.no_engine_commands().await {
-        return Ok(id);
-    }
 
+    // These lookups use only locally recorded tag metadata, so even mock
+    // execution can run the same face and same-body validation as real
+    // execution before substituting a synthetic edge ID.
     let first_face_id = args.get_adjacent_face_to_tag(exec_state, &face1, false).await?;
     let second_face_id = args.get_adjacent_face_to_tag(exec_state, &face2, false).await?;
 
-    let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
+    let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?;
     let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
     if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
         return Err(KclError::new_type(KclErrorDetails::new(
-            "getCommonEdge requires the faces to be in the same original sketch".to_string(),
+            "getCommonEdge requires both faces to belong to the same body".to_string(),
             vec![args.source_range],
         )));
+    }
+
+    let id = exec_state.next_uuid();
+    if args.ctx.no_engine_commands().await {
+        return Ok(id);
     }
 
     // Flush the batch for our fillets/chamfers if there are any.

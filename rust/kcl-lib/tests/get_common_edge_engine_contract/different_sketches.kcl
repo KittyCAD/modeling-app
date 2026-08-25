@@ -1,0 +1,21 @@
+@settings(kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+firstRegion = region(point = [5mm, 5mm], sketch = firstSketch)
+firstSolid = extrude(firstRegion, length = 5mm, tagEnd = $firstEnd)
+
+secondSketch = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+secondRegion = region(point = [5mm, 5mm], sketch = secondSketch)
+secondSolid = extrude(secondRegion, length = 5mm, tagEnd = $secondEnd)
+
+edge = getCommonEdge(faces = [firstEnd, secondEnd])
