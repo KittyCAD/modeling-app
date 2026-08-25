@@ -1618,9 +1618,6 @@ export const zookeeperManagerMachine = setup({
             actions: ['assignApiToken'],
             reenter: true,
           },
-          {
-            actions: ['assignApiToken'],
-          },
         ],
         ...transitions([ZookeeperManagerTransitions.ConversationClose]),
         [ZookeeperManagerTransitions.AbruptClose]: [
