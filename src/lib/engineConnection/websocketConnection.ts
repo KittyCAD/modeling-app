@@ -24,6 +24,50 @@ const MODELING_BACKEND_DISCONNECTED_MESSAGE =
 const MODELING_CONCURRENCY_LIMIT_MESSAGE =
   /^Too many active connections, only \d+ allowed per user\.$/
 
+// TODO: Replace these compatibility types with the generated SDK types after
+// KittyCAD/api#4472 is released in @kittycad/lib.
+type ModelingConnectionErrorCode =
+  | 'auth_token_invalid'
+  | 'insufficient_scope'
+  | 'missing_payment_method'
+  | 'payment_method_failed'
+  | 'billing_threshold_reached'
+  | 'pay_as_you_go_disabled'
+  | 'upgrade_downgrade_abuse'
+  | 'admin'
+  | 'too_many_connections'
+  | 'backend_disconnected'
+
+type ConnectionErrorWebSocketResponse = {
+  success: false
+  request_id?: string | null
+  connection_error: {
+    code: ModelingConnectionErrorCode
+    detail: string
+    retryable: boolean
+  }
+}
+
+type ModelingWebSocketResponse =
+  | WebSocketResponse
+  | ConnectionErrorWebSocketResponse
+
+const CONNECTION_ERROR_KINDS: Record<
+  ModelingConnectionErrorCode,
+  EngineConnectionErrorKind
+> = {
+  auth_token_invalid: EngineConnectionErrorKind.AuthTokenInvalid,
+  insufficient_scope: EngineConnectionErrorKind.InsufficientScope,
+  missing_payment_method: EngineConnectionErrorKind.AccessDenied,
+  payment_method_failed: EngineConnectionErrorKind.AccessDenied,
+  billing_threshold_reached: EngineConnectionErrorKind.AccessDenied,
+  pay_as_you_go_disabled: EngineConnectionErrorKind.AccessDenied,
+  upgrade_downgrade_abuse: EngineConnectionErrorKind.AccessDenied,
+  admin: EngineConnectionErrorKind.AccessDenied,
+  too_many_connections: EngineConnectionErrorKind.TooManyConnections,
+  backend_disconnected: EngineConnectionErrorKind.BackendDisconnect,
+}
+
 /**
  * 4 different event listeners to clean up
  * onWebSocketOpen
@@ -128,6 +172,28 @@ export const createOnWebSocketMessage = ({
   setConnectionError: (connectionError: EngineConnectionError) => void
   tearDownManager: (options?: ManagerTearDown) => void
 }) => {
+  const reportBackendDisconnect = ({
+    message,
+    errorCode,
+    requestId,
+  }: {
+    message: string
+    errorCode: string
+    requestId?: string | null
+  }) => {
+    const cloudProjectId = getCloudProjectId()
+    void reportClientError({
+      code: ClientErrorCode.EngineBackendDisconnect,
+      message,
+      extra: {
+        source: 'EngineWebSocket',
+        errorCode,
+        requestId,
+        ...(cloudProjectId ? { cloudProjectId } : {}),
+      },
+    })
+  }
+
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
     // the server that relate to the ICE handshake, or WebRTC
@@ -140,7 +206,35 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    const message: WebSocketResponse = JSON.parse(event.data)
+    const message: ModelingWebSocketResponse = JSON.parse(event.data)
+
+    if (!message.success && 'connection_error' in message) {
+      const { code, detail, retryable } = message.connection_error
+      const connectionError: EngineConnectionError = {
+        kind: CONNECTION_ERROR_KINDS[code],
+        message: detail,
+        terminal: !retryable,
+      }
+      setConnectionError(connectionError)
+
+      if (code === 'backend_disconnected') {
+        reportBackendDisconnect({
+          message: detail,
+          errorCode: code,
+          requestId: message.request_id,
+        })
+      } else if (code === 'auth_token_invalid') {
+        notifySessionExpired('engine-websocket')
+      }
+
+      if (!retryable) {
+        tearDownManager({
+          websocketClosed: true,
+          connectionError,
+        })
+      }
+      return
+    }
 
     if (!message.success && 'errors' in message) {
       const backendDisconnectError = message.errors.find(
@@ -181,16 +275,10 @@ export const createOnWebSocketMessage = ({
       }
 
       if (backendDisconnectError) {
-        const cloudProjectId = getCloudProjectId()
-        void reportClientError({
-          code: ClientErrorCode.EngineBackendDisconnect,
+        reportBackendDisconnect({
           message: backendDisconnectError.message,
-          extra: {
-            source: 'EngineWebSocket',
-            errorCode: backendDisconnectError.error_code,
-            requestId: message.request_id,
-            ...(cloudProjectId ? { cloudProjectId } : {}),
-          },
+          errorCode: backendDisconnectError.error_code,
+          requestId: message.request_id,
         })
       }
 
