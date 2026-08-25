@@ -1,4 +1,3 @@
-import type { BlockReason } from '@kittycad/lib'
 import {
   ZookeeperConversation,
   type QueuedMessage,
@@ -34,7 +33,6 @@ import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom } from 'xstate'
 
 type ZookeeperConversationPaneUser = {
-  block?: BlockReason
   image?: string
 }
 
@@ -51,7 +49,6 @@ export const ZookeeperConversationPane = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
-  refreshUser: () => Promise<ZookeeperConversationPaneUser | undefined>
   sendBillingUsageStarted: () => void
   sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
@@ -63,7 +60,6 @@ export const ZookeeperConversationPane = (props: {
   const {
     contextModeling: resumeContextModeling,
     kclManager: resumeKclManager,
-    refreshUser: refreshUserForBilling,
     sendBillingUpdate: sendBillingUpdateForBilling,
     theProject: resumeProject,
     zookeeperManagerActor: resumeZookeeperManagerActor,
@@ -74,10 +70,8 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
-  const [isCheckingBilling, setIsCheckingBilling] = useState(false)
   const [isResumingInterruptedTurn, setIsResumingInterruptedTurn] =
     useState(false)
-  const billingCheckInFlight = useRef(false)
   const resumeInterruptedTurnInFlight = useRef(false)
   const checkBillingWhenFocused = useRef(false)
   const [showManualConnect, setShowManualConnect] = useState(
@@ -243,27 +237,12 @@ export const ZookeeperConversationPane = (props: {
     reconnect()
   }, [reconnect])
 
-  const checkBillingAccess = useCallback(async () => {
-    if (billingCheckInFlight.current) {
-      return
-    }
-
-    billingCheckInFlight.current = true
-    setIsCheckingBilling(true)
-    try {
-      const refreshedUser = await refreshUserForBilling()
-      sendBillingUpdateForBilling()
-      if (refreshedUser === undefined || refreshedUser.block !== undefined) {
-        return
-      }
-      onReconnect()
-    } catch (error: unknown) {
-      reportRejection(error)
-    } finally {
-      billingCheckInFlight.current = false
-      setIsCheckingBilling(false)
-    }
-  }, [onReconnect, refreshUserForBilling, sendBillingUpdateForBilling])
+  const checkBillingAccess = useCallback(() => {
+    // Refresh billing for display, then let the WebSocket's typed response be
+    // the sole authority on whether Zookeeper access has been restored.
+    sendBillingUpdateForBilling()
+    onReconnect()
+  }, [onReconnect, sendBillingUpdateForBilling])
 
   const onOpenBilling = useCallback(() => {
     checkBillingWhenFocused.current = true
@@ -331,7 +310,7 @@ export const ZookeeperConversationPane = (props: {
       }
 
       checkBillingWhenFocused.current = false
-      void checkBillingAccess()
+      checkBillingAccess()
     }
 
     window.addEventListener('focus', checkAfterBilling)
@@ -765,9 +744,7 @@ export const ZookeeperConversationPane = (props: {
         void onClickClearChat()
       }}
       onReconnect={onReconnect}
-      onCheckBilling={() => {
-        void checkBillingAccess()
-      }}
+      onCheckBilling={checkBillingAccess}
       interruptedTurnAwaitingResume={interruptedTurnAwaitingResume}
       isResumingInterruptedTurn={isResumingInterruptedTurn}
       onResumeInterruptedTurn={() => {
@@ -782,7 +759,6 @@ export const ZookeeperConversationPane = (props: {
       showManualConnect={showManualConnect}
       canClearChat={setupFailed && conversationId !== undefined}
       isClearingChat={isClearingChatPending}
-      isCheckingBilling={isCheckingBilling}
       loadingMessage={
         isSettingUp
           ? 'Connecting to Zookeeper...'

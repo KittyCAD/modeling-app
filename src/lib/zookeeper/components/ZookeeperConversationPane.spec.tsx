@@ -1,4 +1,3 @@
-import type { BlockReason } from '@kittycad/lib'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -349,9 +348,6 @@ type RenderPaneOptions = {
   sendBillingUpdate?: () => void
   sendBillingUsageStarted?: () => void
   sendBillingUsageEnded?: () => void
-  refreshUser?: () => Promise<
-    { block?: BlockReason; image?: string } | undefined
-  >
 }
 
 const createPaneElement = ({
@@ -372,7 +368,6 @@ const createPaneElement = ({
   sendBillingUpdate = vi.fn(),
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
-  refreshUser = vi.fn().mockResolvedValue(undefined),
 }: RenderPaneOptions = {}) => {
   return (
     <MemoryRouter>
@@ -394,7 +389,6 @@ const createPaneElement = ({
         }
         sendModeling={vi.fn() as any}
         sendBillingUpdate={sendBillingUpdate}
-        refreshUser={refreshUser}
         sendBillingUsageStarted={sendBillingUsageStarted}
         sendBillingUsageEnded={sendBillingUsageEnded}
         settings={
@@ -578,7 +572,6 @@ describe('ZookeeperConversationPane', () => {
   })
 
   test('updates billing state and reconnects once after returning from Billing', async () => {
-    const refreshUser = vi.fn().mockResolvedValue({ block: undefined })
     const sendBillingUpdate = vi.fn()
     const zookeeperManagerActor = createFakeActor({
       abruptlyClosed: true,
@@ -589,7 +582,6 @@ describe('ZookeeperConversationPane', () => {
     })
 
     renderPane({
-      refreshUser,
       sendBillingUpdate,
       zookeeperManagerActor,
     })
@@ -602,7 +594,6 @@ describe('ZookeeperConversationPane', () => {
     })
 
     await waitFor(() => {
-      expect(refreshUser).toHaveBeenCalledOnce()
       expect(sendBillingUpdate).toHaveBeenCalledOnce()
       expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,
@@ -614,41 +605,7 @@ describe('ZookeeperConversationPane', () => {
     act(() => {
       window.dispatchEvent(new Event('focus'))
     })
-    expect(refreshUser).toHaveBeenCalledOnce()
-  })
-
-  test('does not reconnect when the refreshed account remains blocked', async () => {
-    const refreshUser = vi
-      .fn()
-      .mockResolvedValue({ block: 'payment_method_failed' as const })
-    const sendBillingUpdate = vi.fn()
-    const zookeeperManagerActor = createFakeActor({
-      abruptlyClosed: true,
-      setupFailed: true,
-      awaitingResponse: false,
-      value: 'await',
-      accessDeniedCode: 'payment_method_failed',
-    })
-
-    renderPane({
-      refreshUser,
-      sendBillingUpdate,
-      zookeeperManagerActor,
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Check again' }))
-
-    await waitFor(() => {
-      expect(refreshUser).toHaveBeenCalledOnce()
-      expect(sendBillingUpdate).toHaveBeenCalledOnce()
-    })
-    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-      })
-    )
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Your payment needs attention.'
-    )
+    expect(sendBillingUpdate).toHaveBeenCalledOnce()
   })
 
   test('shows recovery while offline and reconnects when the browser comes online', async () => {
@@ -1128,7 +1085,6 @@ describe('ZookeeperConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
-          refreshUser={vi.fn().mockResolvedValue(undefined)}
           sendBillingUsageStarted={vi.fn()}
           sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}

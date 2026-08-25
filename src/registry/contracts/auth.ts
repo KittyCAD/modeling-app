@@ -29,7 +29,6 @@ export type AuthRegistryService = {
   isLoggedIn: ReadonlySignal<boolean>
   sessionExpiredNotice: ReadonlySignal<SessionExpiredNotice | undefined>
   clearSessionExpiredNotice: () => void
-  refreshUser: () => Promise<UserResponse | undefined>
   useAuthState: () => SnapshotFrom<typeof authMachine>
   useToken: () => string
   useUser: () => UserResponse | undefined

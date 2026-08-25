@@ -66,7 +66,6 @@ export interface ZookeeperConversationProps {
   showManualConnect?: boolean
   canClearChat?: boolean
   isClearingChat?: boolean
-  isCheckingBilling?: boolean
   loadingMessage?: string
   disabled?: boolean
   needsReconnect: boolean
@@ -710,7 +709,6 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   accessDeniedCode={props.accessDeniedCode}
                   canClearChat={props.canClearChat}
                   isClearingChat={props.isClearingChat}
-                  isCheckingBilling={props.isCheckingBilling}
                   onReconnect={props.onReconnect}
                   onCheckBilling={props.onCheckBilling}
                   onOpenBilling={props.onOpenBilling}

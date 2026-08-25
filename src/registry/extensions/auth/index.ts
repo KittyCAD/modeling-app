@@ -11,7 +11,7 @@ import {
   sessionExpiredNotice,
 } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
-import { authMachine, getUser } from '@src/machines/authMachine'
+import { authMachine } from '@src/machines/authMachine'
 import {
   type AuthSessionExpiredListener,
   type AuthRegistryService,
@@ -49,28 +49,6 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
     isLoggedIn,
     sessionExpiredNotice,
     clearSessionExpiredNotice,
-    refreshUser: async () => {
-      const beforeRefresh = authActor.getSnapshot()
-      if (!beforeRefresh.matches('loggedIn')) {
-        return undefined
-      }
-
-      const refreshed = await getUser({ token: beforeRefresh.context.token })
-      const afterRefresh = authActor.getSnapshot()
-      if (
-        !afterRefresh.matches('loggedIn') ||
-        afterRefresh.context.token !== beforeRefresh.context.token
-      ) {
-        return undefined
-      }
-
-      authActor.send({
-        type: 'User refreshed',
-        user: refreshed.user,
-        token: refreshed.token,
-      })
-      return refreshed.user
-    },
     useAuthState: () => useSelector(authActor, (state) => state),
     useToken: () => useSelector(authActor, (state) => state.context.token),
     useUser: () => useSelector(authActor, (state) => state.context.user),

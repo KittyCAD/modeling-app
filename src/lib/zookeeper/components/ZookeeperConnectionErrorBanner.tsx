@@ -15,7 +15,6 @@ export interface ZookeeperConnectionErrorBannerProps {
   accessDeniedCode?: MlCopilotAccessDeniedCode
   canClearChat?: boolean
   isClearingChat?: boolean
-  isCheckingBilling?: boolean
   onReconnect: () => void
   onCheckBilling?: () => void
   onOpenBilling?: () => void
@@ -131,13 +130,7 @@ export function ZookeeperConnectionErrorBanner(
         )}
         <ActionButton
           Element="button"
-          aria-label={
-            isBillingError
-              ? props.isCheckingBilling
-                ? 'Checking...'
-                : 'Check again'
-              : 'Reconnect'
-          }
+          aria-label={isBillingError ? 'Check again' : 'Reconnect'}
           type="button"
           className={terminalRecoveryButtonClassName}
           iconStart={{ icon: 'refresh', bgClassName: '!bg-transparent ml-1' }}
@@ -146,14 +139,10 @@ export function ZookeeperConnectionErrorBanner(
               ? (props.onCheckBilling ?? props.onReconnect)
               : props.onReconnect
           }
-          disabled={props.isClearingChat || props.isCheckingBilling}
+          disabled={props.isClearingChat}
           tabIndex={0}
         >
-          {isBillingError
-            ? props.isCheckingBilling
-              ? 'Checking...'
-              : 'Check again'
-            : 'Reconnect'}
+          {isBillingError ? 'Check again' : 'Reconnect'}
         </ActionButton>
       </div>
       {!isBillingError && props.canClearChat && (
