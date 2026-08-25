@@ -50,6 +50,8 @@ function projectFile(
 
 function remoteProject(revision = remoteRevision) {
   return {
+    category_ids: [],
+    description: '',
     id: remoteProjectId,
     title: 'Bracket',
     revision,
@@ -68,6 +70,10 @@ function installFetchMock(onUpdate?: (formData: FormData) => Promise<void>) {
     if (url.startsWith(remoteProjectUrl) && method === 'PUT') {
       await onUpdate?.(init?.body as FormData)
       return jsonResponse(remoteProject(updatedRemoteRevision))
+    }
+
+    if (url.endsWith('/user/client-errors') && method === 'POST') {
+      return jsonResponse({})
     }
 
     return jsonResponse({ message: `Unexpected fetch: ${method} ${url}` }, 500)
@@ -101,47 +107,44 @@ describe('cloud sync reliability', () => {
     await deleteCloudSyncTestDatabase()
   })
 
-  it.fails(
-    'drains project writes when a direct file-route reload omitted library ownership',
-    async () => {
-      const files = new Map([
-        [`${projectPath}/main.kcl`, 'local = 2\n'],
-        [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
-      ])
-      configureCloudSyncLocalFileSystem(
-        createCloudSyncTestFs(files, { projectDirectory })
-      )
-      await seedSyncedProject([
-        projectFile('main.kcl', 'base = 1\n'),
-        projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
-      ])
-      installFetchMock()
+  it('drains project writes when a direct file-route reload omitted library ownership', async () => {
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'local = 2\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await seedSyncedProject([
+      projectFile('main.kcl', 'base = 1\n'),
+      projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+    ])
+    installFetchMock()
 
-      // A direct browser reload can restore the project path before project
-      // library ownership has been resolved.
-      setCloudSyncOpenedProject({ projectPath })
-      configureCloudSyncEngine({
-        enabled: true,
-        baseUrl,
-        environmentName,
-        cloudProjectDirectoryPaths: [projectDirectory],
-        autoEnrollCloudLibraryProjects: true,
-      })
+    // A direct browser reload can restore the project path before project
+    // library ownership has been resolved.
+    setCloudSyncOpenedProject({ projectPath })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName,
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: true,
+    })
 
-      await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
+    await notifyCloudSyncWriteLikeMutation(`${projectPath}/main.kcl`)
 
-      await vi.waitFor(() => {
-        expect(
-          fetchMock.mock.calls.filter(
-            ([input, init]) =>
-              getFetchUrl(input).startsWith(remoteProjectUrl) &&
-              getFetchMethod(input, init) === 'PUT'
-          )
-        ).toHaveLength(1)
-      })
-      await expect(getAllOutboxEntries()).resolves.toEqual([])
-    }
-  )
+    await vi.waitFor(() => {
+      expect(
+        fetchMock.mock.calls.filter(
+          ([input, init]) =>
+            getFetchUrl(input).startsWith(remoteProjectUrl) &&
+            getFetchMethod(input, init) === 'PUT'
+        )
+      ).toHaveLength(1)
+    })
+    await expect(getAllOutboxEntries()).resolves.toEqual([])
+  })
 
   it.fails(
     'declares observed local file deletions in a replacement upload',

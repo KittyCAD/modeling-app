@@ -3,6 +3,7 @@ import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
   reportCloudSyncFailure,
+  reportCloudSyncUntrackedLocalChanges,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
   CloudApiError,
@@ -152,6 +153,7 @@ let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
+let openedProjectContext: CloudSyncOpenedProject | undefined
 let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
@@ -581,8 +583,9 @@ function normalizeCloudSyncOpenedProject(
   return {
     projectPath: normalizedProjectPath,
     syncable:
-      openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
-      Boolean(openedProject.libraryPath?.trim()),
+      (openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
+        Boolean(openedProject.libraryPath?.trim())) ||
+      Boolean(getCloudLibraryProjectRoot(normalizedProjectPath)),
   }
 }
 
@@ -2869,6 +2872,20 @@ async function syncProject(
         : true
     }
 
+    if (
+      entries.length === 0 &&
+      metadata.remoteProjectId &&
+      metadata.baseManifest &&
+      localChanged
+    ) {
+      reportCloudSyncUntrackedLocalChanges({
+        remoteProjectId: metadata.remoteProjectId,
+        remoteRevision: metadata.remoteRevision,
+        baseFileCount: Object.keys(metadata.baseManifest.files).length,
+        localFileCount: Object.keys(localManifest.files).length,
+      })
+    }
+
     const preflightAction = getCloudSyncProjectSyncPreflightAction({
       latestKind,
       tombstone: metadata.tombstone,
@@ -3567,6 +3584,7 @@ function scheduleRemoteIndexSync(delay = 0) {
 export function setCloudSyncOpenedProject(
   openedProject?: CloudSyncOpenedProject
 ) {
+  openedProjectContext = openedProject
   const nextScope = normalizeCloudSyncOpenedProject(openedProject)
   const nextSyncScopeProjectPath = nextScope?.projectPath
   const nextSyncScopeSyncable = nextScope?.syncable ?? false
@@ -4006,6 +4024,10 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
     resetSyncRetryBackoff()
+  }
+
+  if (projectDirectoryChanged && openedProjectContext) {
+    setCloudSyncOpenedProject(openedProjectContext)
   }
 
   if (!config.enabled) {
