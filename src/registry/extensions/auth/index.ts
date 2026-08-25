@@ -57,7 +57,10 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
 
       const refreshed = await getUser({ token: beforeRefresh.context.token })
       const afterRefresh = authActor.getSnapshot()
-      if (!afterRefresh.matches('loggedIn')) {
+      if (
+        !afterRefresh.matches('loggedIn') ||
+        afterRefresh.context.token !== beforeRefresh.context.token
+      ) {
         return undefined
       }
 
