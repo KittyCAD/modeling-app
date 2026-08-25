@@ -125,6 +125,12 @@ async fn inner_clone(
         };
 
         if args.ctx.no_engine_commands().await {
+            // Real execution rebuilds carried face tags below in
+            // fix_tags_and_references; keep mock same-body validation
+            // consistent with that.
+            if let GeometryWithImportedGeometry::Solid(new_solid) = &mut new_geometry {
+                new_solid.retarget_face_tags_to_self(exec_state.stack().current_epoch());
+            }
             res.push(new_geometry);
         } else {
             exec_state

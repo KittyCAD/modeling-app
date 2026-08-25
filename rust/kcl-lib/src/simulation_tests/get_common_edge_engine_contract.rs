@@ -15,6 +15,13 @@ use crate::util::RetryConfig;
 use crate::util::execute_with_retries;
 
 const TEST_DIR: &str = "tests/get_common_edge_engine_contract";
+
+#[derive(Debug, Clone, Copy)]
+enum Expectation {
+    Accepts,
+    RejectsWith(&'static str),
+}
+
 const SAME_BODY_ERROR: &str = "getCommonEdge requires both faces to belong to the same body";
 const FACE_TAG_ERROR: &str = "refers to a sketch edge, but this operation requires a face tag";
 
@@ -49,7 +56,7 @@ async fn real_execution_error(case_name: &str, input: &str, path: PathBuf) -> Op
     }
 }
 
-async fn assert_common_edge_contract(case_name: &str, file_name: &str, expected_message: &str) {
+async fn assert_common_edge_contract(case_name: &str, file_name: &str, expectation: Expectation) {
     let (path, input, program) = read_fixture(file_name);
 
     let mock_error = mock_execution_error(&program).await;
@@ -60,16 +67,26 @@ async fn assert_common_edge_contract(case_name: &str, file_name: &str, expected_
         "mock and real getCommonEdge outcomes differ for `{case_name}`"
     );
 
-    let error = real_error.unwrap_or_else(|| panic!("expected `{case_name}` to fail, but it executed successfully"));
-    assert!(
-        matches!(&error, KclError::Type { .. }),
-        "expected a type error for `{case_name}`, got: {error:?}"
-    );
-    assert!(
-        error.message().contains(expected_message),
-        "unexpected error message for `{case_name}`: {}",
-        error.message()
-    );
+    match expectation {
+        Expectation::Accepts => {
+            if let Some(error) = real_error {
+                panic!("expected `{case_name}` to execute, but it failed with: {error:?}");
+            }
+        }
+        Expectation::RejectsWith(expected_message) => {
+            let error =
+                real_error.unwrap_or_else(|| panic!("expected `{case_name}` to fail, but it executed successfully"));
+            assert!(
+                matches!(&error, KclError::Type { .. }),
+                "expected a type error for `{case_name}`, got: {error:?}"
+            );
+            assert!(
+                error.message().contains(expected_message),
+                "unexpected error message for `{case_name}`: {}",
+                error.message()
+            );
+        }
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -77,7 +94,7 @@ async fn faces_from_different_sketches_are_rejected() {
     assert_common_edge_contract(
         "faces_from_different_sketches_are_rejected",
         "different_sketches.kcl",
-        SAME_BODY_ERROR,
+        Expectation::RejectsWith(SAME_BODY_ERROR),
     )
     .await;
 }
@@ -87,7 +104,7 @@ async fn unextruded_region_tags_are_rejected() {
     assert_common_edge_contract(
         "unextruded_region_tags_are_rejected",
         "unextruded_region_tags.kcl",
-        FACE_TAG_ERROR,
+        Expectation::RejectsWith(FACE_TAG_ERROR),
     )
     .await;
 }
@@ -99,7 +116,7 @@ async fn csg_region_tag_vs_face_tag_is_rejected() {
     assert_common_edge_contract(
         "csg_region_tag_vs_face_tag_is_rejected",
         "csg_region_tag_vs_face_tag.kcl",
-        SAME_BODY_ERROR,
+        Expectation::RejectsWith(SAME_BODY_ERROR),
     )
     .await;
 }
@@ -109,7 +126,7 @@ async fn csg_sketch_tag_vs_face_tag_is_rejected() {
     assert_common_edge_contract(
         "csg_sketch_tag_vs_face_tag_is_rejected",
         "csg_sketch_tag_vs_face_tag.kcl",
-        SAME_BODY_ERROR,
+        Expectation::RejectsWith(SAME_BODY_ERROR),
     )
     .await;
 }
@@ -119,7 +136,7 @@ async fn union_same_output_stale_face_tag_is_rejected() {
     assert_common_edge_contract(
         "union_same_output_stale_face_tag_is_rejected",
         "union_same_output.kcl",
-        SAME_BODY_ERROR,
+        Expectation::RejectsWith(SAME_BODY_ERROR),
     )
     .await;
 }
@@ -129,7 +146,47 @@ async fn union_cross_bodies_are_rejected() {
     assert_common_edge_contract(
         "union_cross_bodies_are_rejected",
         "union_cross_bodies.kcl",
-        SAME_BODY_ERROR,
+        Expectation::RejectsWith(SAME_BODY_ERROR),
+    )
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn cloned_body_face_tags_are_accepted() {
+    assert_common_edge_contract(
+        "cloned_body_face_tags_are_accepted",
+        "cloned_body_same_body.kcl",
+        Expectation::Accepts,
+    )
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn cloned_body_cross_bodies_are_rejected() {
+    assert_common_edge_contract(
+        "cloned_body_cross_bodies_are_rejected",
+        "cloned_body_cross_bodies.kcl",
+        Expectation::RejectsWith(SAME_BODY_ERROR),
+    )
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn mirrored_body_face_tags_are_accepted() {
+    assert_common_edge_contract(
+        "mirrored_body_face_tags_are_accepted",
+        "mirrored_body_same_body.kcl",
+        Expectation::Accepts,
+    )
+    .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn mirrored_body_cross_bodies_are_rejected() {
+    assert_common_edge_contract(
+        "mirrored_body_cross_bodies_are_rejected",
+        "mirrored_body_cross_bodies.kcl",
+        Expectation::RejectsWith(SAME_BODY_ERROR),
     )
     .await;
 }

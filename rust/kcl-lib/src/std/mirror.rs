@@ -59,6 +59,10 @@ async fn inner_mirror_3d(
         for mirrored_body in &mut unmapped_mirrored_bodies {
             let id = exec_state.next_uuid();
             mirrored_body.become_new_body(id, id.into());
+            // Real execution rebuilds carried face tags in
+            // fix_tags_and_references; keep mock same-body validation
+            // consistent with that.
+            mirrored_body.retarget_face_tags_to_self(exec_state.stack().current_epoch());
         }
         return Ok(unmapped_mirrored_bodies);
     }
