@@ -632,6 +632,8 @@ export const ZookeeperConversationPane = (props: {
             return
           }
 
+          // Completed conversations short-circuit ContinueCheck before reading
+          // projectFiles; only interrupted conversations need file collection.
           props.zookeeperManagerActor.send({
             type: ZookeeperManagerStates.ContinueCheck,
             projectName: props.theProject.name,
