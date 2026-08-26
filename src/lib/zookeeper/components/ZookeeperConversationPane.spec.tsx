@@ -187,14 +187,14 @@ const createFakeConversationStore = ({
   }
 }
 
-const createStatefulClearChatActor = () => {
+const createStatefulClearChatActor = (awaitingResponse = false) => {
   let snapshot: FakeZookeeperSnapshot = {
     value: 'ready',
     context: {
       abruptlyClosed: false,
       setupFailed: false,
       setupAttempt: 0,
-      awaitingResponse: false,
+      awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation: completedConversation,
       conversationId: 'old-conversation-id',
@@ -394,6 +394,16 @@ const createPaneElement = ({
 
 const renderPane = (options: RenderPaneOptions = {}) =>
   render(createPaneElement(options))
+
+const openClearChatConfirmation = () => {
+  fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+  return screen.getByRole('dialog', { name: 'Start a new chat?' })
+}
+
+const clearChatWithConfirmation = () => {
+  openClearChatConfirmation()
+  fireEvent.click(screen.getByRole('button', { name: /Start new chat/ }))
+}
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -1002,8 +1012,123 @@ describe('ZookeeperConversationPane', () => {
     })
   })
 
-  test('clearing chat forgets the saved project conversation before starting a fresh one', async () => {
-    const zookeeperManagerActor = createStatefulClearChatActor()
+  test.each([
+    { chatState: 'idle', awaitingResponse: false },
+    { chatState: 'active', awaitingResponse: true },
+  ])(
+    'requires confirmation before clearing an $chatState chat',
+    async ({ awaitingResponse }) => {
+      const zookeeperManagerActor =
+        createStatefulClearChatActor(awaitingResponse)
+      const conversationStore = createFakeConversationStore({
+        projectConversations: new Map([['project-id', 'old-conversation-id']]),
+      })
+
+      renderPane({
+        zookeeperManagerActor,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+        },
+      })
+      await waitFor(() => {
+        expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+            conversationId: 'old-conversation-id',
+          })
+        )
+      })
+      zookeeperManagerActor.send.mockClear()
+
+      if (awaitingResponse) {
+        fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+          target: { value: 'keep this queued prompt' },
+        })
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-conversation-input-button')
+        )
+        expect(screen.getByText('keep this queued prompt')).toBeInTheDocument()
+      }
+
+      const dialog = openClearChatConfirmation()
+
+      expect(dialog).toHaveTextContent(
+        'Your current chat will no longer be accessible from this project.'
+      )
+      expect(dialog).toHaveTextContent(
+        'Changes already made to project files will not be undone.'
+      )
+      if (awaitingResponse) {
+        expect(dialog).toHaveTextContent(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+      } else {
+        expect(dialog).not.toHaveTextContent(
+          'This will stop the current Zookeeper response'
+        )
+      }
+
+      const dismissButton = screen.getByRole('button', {
+        name: 'Keep current chat',
+      })
+      await waitFor(() => expect(dismissButton).toHaveFocus())
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).not.toHaveBeenCalled()
+      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+        type: ZookeeperManagerTransitions.ConversationClose,
+      })
+
+      fireEvent.click(dismissButton)
+
+      expect(
+        screen.queryByRole('dialog', { name: 'Start a new chat?' })
+      ).not.toBeInTheDocument()
+      expect(
+        conversationStore.deleteProjectConversationId
+      ).not.toHaveBeenCalled()
+      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+        type: ZookeeperManagerTransitions.ConversationClose,
+      })
+      if (awaitingResponse) {
+        expect(screen.getByText('keep this queued prompt')).toBeInTheDocument()
+      }
+
+      clearChatWithConfirmation()
+
+      await waitFor(() => {
+        expect(
+          conversationStore.deleteProjectConversationId
+        ).toHaveBeenCalledWith('project-id')
+        expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
+          type: ZookeeperManagerTransitions.ConversationClose,
+        })
+      })
+      await waitFor(() => {
+        expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+            conversationId: undefined,
+          })
+        )
+      })
+      expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'old-conversation-id',
+        })
+      )
+      expect(
+        screen.queryByText('keep this queued prompt')
+      ).not.toBeInTheDocument()
+    }
+  )
+
+  test('dismisses clear chat with Escape without changing the conversation', () => {
+    const zookeeperManagerActor = createStatefulClearChatActor(true)
     const conversationStore = createFakeConversationStore({
       projectConversations: new Map([['project-id', 'old-conversation-id']]),
     })
@@ -1019,30 +1144,51 @@ describe('ZookeeperConversationPane', () => {
     })
     zookeeperManagerActor.send.mockClear()
 
-    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+    openClearChatConfirmation()
+    fireEvent.keyDown(window, { key: 'Escape' })
 
+    expect(
+      screen.queryByRole('dialog', { name: 'Start a new chat?' })
+    ).not.toBeInTheDocument()
+    expect(conversationStore.deleteProjectConversationId).not.toHaveBeenCalled()
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.ConversationClose,
+    })
+  })
+
+  test('dismisses clear chat by clicking outside without changing the conversation', async () => {
+    const zookeeperManagerActor = createStatefulClearChatActor(true)
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'old-conversation-id']]),
+    })
+
+    renderPane({
+      zookeeperManagerActor,
+      conversationStore,
+      settingsMetaId: 'project-id',
+      theProject: {
+        name: 'sample-project',
+        path: '/tmp/sample-project',
+      },
+    })
+    zookeeperManagerActor.send.mockClear()
+
+    openClearChatConfirmation()
     await waitFor(() => {
       expect(
-        conversationStore.deleteProjectConversationId
-      ).toHaveBeenCalledWith('project-id')
-      expect(zookeeperManagerActor.send).toHaveBeenCalledWith({
-        type: ZookeeperManagerTransitions.ConversationClose,
-      })
+        screen.getByRole('button', { name: 'Keep current chat' })
+      ).toHaveFocus()
     })
-    await waitFor(() => {
-      expect(zookeeperManagerActor.send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-          conversationId: undefined,
-        })
-      )
+    fireEvent.mouseDown(document.body)
+    fireEvent.click(document.body)
+
+    expect(
+      screen.queryByRole('dialog', { name: 'Start a new chat?' })
+    ).not.toBeInTheDocument()
+    expect(conversationStore.deleteProjectConversationId).not.toHaveBeenCalled()
+    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith({
+      type: ZookeeperManagerTransitions.ConversationClose,
     })
-    expect(zookeeperManagerActor.send).not.toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
-        conversationId: 'old-conversation-id',
-      })
-    )
   })
 
   test('waits for the saved project conversation delete before starting a fresh one', async () => {
@@ -1063,7 +1209,7 @@ describe('ZookeeperConversationPane', () => {
     })
     zookeeperManagerActor.send.mockClear()
 
-    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+    clearChatWithConfirmation()
 
     await waitFor(() => {
       expect(
@@ -1113,7 +1259,7 @@ describe('ZookeeperConversationPane', () => {
       })
       zookeeperManagerActor.send.mockClear()
 
-      fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+      clearChatWithConfirmation()
 
       await waitFor(() => {
         expect(errorSpy).toHaveBeenCalled()
@@ -1159,7 +1305,7 @@ describe('ZookeeperConversationPane', () => {
     })
     zookeeperManagerActor.send.mockClear()
 
-    fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+    clearChatWithConfirmation()
     await waitFor(() => {
       expect(
         conversationStore.deleteProjectConversationId
