@@ -12,6 +12,10 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import {
+  getModelingData as getModelingDataForResponse,
+  getResponseErrorMessage as getResponseErrorMessageWithFallback,
+} from '@src/lib/engineConnection/utils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
@@ -24,10 +28,6 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
-import {
-  getModelingData as getModelingDataForResponse,
-  getResponseErrorMessage as getResponseErrorMessageWithFallback,
-} from './engineResponseUtils'
 import {
   getDefaultDistanceModeForTarget,
   getDistanceMeasurementLabel,

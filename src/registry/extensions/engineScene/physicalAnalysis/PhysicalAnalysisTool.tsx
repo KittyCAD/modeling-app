@@ -14,6 +14,10 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import {
+  getModelingData,
+  getResponseErrorMessage,
+} from '@src/lib/engineConnection/utils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
@@ -26,7 +30,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
-import { getModelingData, getResponseErrorMessage } from './engineResponseUtils'
+import { measurementToolService } from '../measurementToolService'
 import {
   formatDistance,
   formatPoint3d,
@@ -34,7 +38,7 @@ import {
   getVolumeUnit,
   unitAreaLabels,
   unitVolumeLabels,
-} from './measurementUtils'
+} from '../measurementUtils'
 import { physicalAnalysisService } from './physicalAnalysisService'
 import {
   convertMaterialDensity,
@@ -616,7 +620,7 @@ export function PhysicalAnalysisDraggablePanel({
         // right corner; a bottom anchored box grows upward and the grip
         // stops tracking the pointer.
         top,
-        left: 344,
+        left: measurementToolService.isOpen.value ? 344 : panelMargin,
         width: defaultPanelWidth,
         height: defaultPanelHeight,
         minWidth: 280,
