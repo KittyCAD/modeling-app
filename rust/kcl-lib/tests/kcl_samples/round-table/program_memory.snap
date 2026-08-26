@@ -113,10 +113,10 @@ description: Variables in memory after executing round-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 676,
-            "end": 683,
+            "commentStart": 694,
+            "end": 701,
             "moduleId": 0,
-            "start": 676,
+            "start": 694,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -144,10 +144,10 @@ description: Variables in memory after executing round-table.kcl
             ],
             "radius": 150.0,
             "tag": {
-              "commentStart": 676,
-              "end": 683,
+              "commentStart": 694,
+              "end": 701,
               "moduleId": 0,
-              "start": 676,
+              "start": 694,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -371,10 +371,10 @@ description: Variables in memory after executing round-table.kcl
                   ],
                   "radius": 150.0,
                   "tag": {
-                    "commentStart": 676,
-                    "end": 683,
+                    "commentStart": 694,
+                    "end": 701,
                     "moduleId": 0,
-                    "start": 676,
+                    "start": 694,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -481,10 +481,10 @@ description: Variables in memory after executing round-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1057,
-            "end": 1064,
+            "commentStart": 1075,
+            "end": 1082,
             "moduleId": 0,
-            "start": 1057,
+            "start": 1075,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -512,10 +512,10 @@ description: Variables in memory after executing round-table.kcl
             ],
             "radius": 40.0,
             "tag": {
-              "commentStart": 1057,
-              "end": 1064,
+              "commentStart": 1075,
+              "end": 1082,
               "moduleId": 0,
-              "start": 1057,
+              "start": 1075,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -781,10 +781,10 @@ description: Variables in memory after executing round-table.kcl
                   ],
                   "radius": 40.0,
                   "tag": {
-                    "commentStart": 1057,
-                    "end": 1064,
+                    "commentStart": 1075,
+                    "end": 1082,
                     "moduleId": 0,
-                    "start": 1057,
+                    "start": 1075,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -892,10 +892,10 @@ description: Variables in memory after executing round-table.kcl
           ],
           "radius": 350.0,
           "tag": {
-            "commentStart": 396,
-            "end": 403,
+            "commentStart": 414,
+            "end": 421,
             "moduleId": 0,
-            "start": 396,
+            "start": 414,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -988,10 +988,10 @@ description: Variables in memory after executing round-table.kcl
           ],
           "radius": 150.0,
           "tag": {
-            "commentStart": 676,
-            "end": 683,
+            "commentStart": 694,
+            "end": 701,
             "moduleId": 0,
-            "start": 676,
+            "start": 694,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1084,10 +1084,10 @@ description: Variables in memory after executing round-table.kcl
           ],
           "radius": 40.0,
           "tag": {
-            "commentStart": 1057,
-            "end": 1064,
+            "commentStart": 1075,
+            "end": 1082,
             "moduleId": 0,
-            "start": 1057,
+            "start": 1075,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1170,10 +1170,10 @@ description: Variables in memory after executing round-table.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 396,
-            "end": 403,
+            "commentStart": 414,
+            "end": 421,
             "moduleId": 0,
-            "start": 396,
+            "start": 414,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1201,10 +1201,10 @@ description: Variables in memory after executing round-table.kcl
             ],
             "radius": 350.0,
             "tag": {
-              "commentStart": 396,
-              "end": 403,
+              "commentStart": 414,
+              "end": 421,
               "moduleId": 0,
-              "start": 396,
+              "start": 414,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -1470,10 +1470,10 @@ description: Variables in memory after executing round-table.kcl
                   ],
                   "radius": 350.0,
                   "tag": {
-                    "commentStart": 396,
-                    "end": 403,
+                    "commentStart": 414,
+                    "end": 421,
                     "moduleId": 0,
-                    "start": 396,
+                    "start": 414,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

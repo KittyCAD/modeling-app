@@ -326,12 +326,13 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 19.621499999999997,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -879,12 +880,13 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 19.621499999999997,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1891,12 +1893,13 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": -22.86,
-          "y": 0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": true,
+        "version": "V1"
       }
     },
     {
@@ -1974,10 +1977,12 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -2014,10 +2019,12 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -2054,10 +2061,12 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
@@ -2094,10 +2103,12 @@ description: Artifact commands exhaust-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {

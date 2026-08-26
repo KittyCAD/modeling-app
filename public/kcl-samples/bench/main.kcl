@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define the bench length
 benchLength = 56mm
@@ -213,7 +213,10 @@ connectorProfile = sketch(on = connectorPlane) {
   verticalDistance([ORIGIN, guide.center]) == 8mm
 }
 
-connectorRegion = region(point = connectorProfile.guide.center)
+connectorRegion = region(segments = [
+  connectorProfile.line1,
+  connectorProfile.line2
+])
 connectorSeed = extrude(connectorRegion, length = benchLength)
 hide(connectorProfile)
 connectorArray = patternLinear3d(
@@ -264,7 +267,10 @@ seatSlatProfile = sketch(on = seatSlatPlane) {
   equalLength([line3, line5])
 }
 
-seatSlatRegion = region(point = [-12mm, 21mm], sketch = seatSlatProfile)
+seatSlatRegion = region(segments = [
+  seatSlatProfile.line1,
+  seatSlatProfile.line2
+])
 seatSlatSeed = extrude(seatSlatRegion, length = benchLength + dividerThickness)
 hide(seatSlatProfile)
 seatSlatArray = patternLinear3d(
@@ -316,7 +322,10 @@ backSlatProfile = sketch(on = backSlatPlane) {
   parallel([line1, line5])
 }
 
-backSlatRegion = region(point = [21mm, 43mm], sketch = backSlatProfile)
+backSlatRegion = region(segments = [
+  backSlatProfile.line1,
+  backSlatProfile.line2
+])
 backSlatSeed = extrude(backSlatRegion, length = benchLength + dividerThickness)
 hide(backSlatProfile)
 backSlatArray = patternLinear3d(
@@ -420,7 +429,10 @@ rightArmRestProfileSketch = sketch(on = offsetPlane(-XZ, offset = 20mm)) {
   ])
 }
 
-rightArmRestProfileRegion = region(point = [rightArmRestProfileOffset, 33mm], sketch = rightArmRestProfileSketch)
+rightArmRestProfileRegion = region(segments = [
+  rightArmRestProfileSketch.line1,
+  rightArmRestProfileSketch.line2
+])
 rightArmRest = sweep(
   rightArmRestProfileRegion,
   path = [

@@ -9,8 +9,7 @@ KCL Semantic error
    ╭─[4:3]
  3 │   l1 = line(start = [var 0mm, var 2mm], end = [var 10mm, var 2mm])
  4 │   tangent([l0, l1])
-   ·   ────────┬────────┬
-   ·           ╰── tests/tangent_line_line_error/input.kcl
+   ·   ────────┬────────
    ·           ╰── tests/tangent_line_line_error/input.kcl
  5 │ }
    ╰────

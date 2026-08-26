@@ -1970,7 +1970,7 @@ description: Result of parsing gdt-tutorial.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1979,29 +1979,93 @@ description: Result of parsing gdt-tutorial.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0.64mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch001",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.64,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "2.7875mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch001",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 2.7875,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -2009,35 +2073,6 @@ description: Result of parsing gdt-tutorial.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch001",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -3906,6 +3941,18 @@ description: Result of parsing gdt-tutorial.kcl
           "value": {
             "type": "blockComment",
             "value": "A simple sample project demonstrating how to use GD&T in Zoo Design Studio. This project keeps the geometry and annotations intentionally minimal so users can quickly understand what GD&T is, how it works in the app, and how to start applying it to their own designs. Future updates may add more examples while keeping the project beginner-friendly.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Manufacturing",
             "style": "line"
           }
         },

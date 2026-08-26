@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
 import { beforeAll, describe, expect, test, vi } from 'vitest'
+import { createActor } from 'xstate'
 
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -36,7 +37,11 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import { ZookeeperManagerTransitions } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  zookeeperManagerMachine,
+  ZookeeperManagerTransitions,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { S } from '@src/machines/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -448,6 +453,52 @@ describe('ZookeeperConversationPane', () => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     } finally {
       vi.useRealTimers()
+    }
+  })
+
+  test('does not repeatedly request setup while waiting for an API token', async () => {
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'saved-conversation-id']]),
+    })
+    const zookeeperManagerActor = createActor(zookeeperManagerMachine, {
+      input: { apiToken: '' },
+    }).start()
+    const send = zookeeperManagerActor.send.bind(zookeeperManagerActor)
+    let setupRequestCount = 0
+
+    zookeeperManagerActor.send = (event) => {
+      if (event.type === ZookeeperManagerTransitions.CacheSetupAndConnect) {
+        setupRequestCount += 1
+        if (setupRequestCount > 5) {
+          return
+        }
+      }
+
+      send(event)
+    }
+
+    try {
+      renderPane({
+        zookeeperManagerActor: zookeeperManagerActor as any,
+        conversationStore,
+        settingsMetaId: 'project-id',
+        theProject: {
+          name: 'sample-project',
+          path: '/tmp/sample-project',
+        },
+      })
+
+      await waitFor(() => {
+        expect(
+          zookeeperManagerActor.getSnapshot().context.cachedSetup
+        ).toBeDefined()
+      })
+
+      expect(setupRequestCount).toBe(1)
+      expect(zookeeperManagerActor.getSnapshot().matches(S.Await)).toBe(true)
+      expect(zookeeperManagerActor.getSnapshot().context.apiToken).toBe('')
+    } finally {
+      zookeeperManagerActor.stop()
     }
   })
 

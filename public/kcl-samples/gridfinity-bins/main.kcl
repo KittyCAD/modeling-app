@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 binLength = 41.5
 binHeight = 7.0

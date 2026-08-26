@@ -10520,7 +10520,7 @@ description: Result of parsing fun-stacker-toy.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -10529,38 +10529,93 @@ description: Result of parsing fun-stacker-toy.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "argument": {
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "0in",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "Inch"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "operator": "-",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -10568,35 +10623,6 @@ description: Result of parsing fun-stacker-toy.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -11164,7 +11190,7 @@ description: Result of parsing fun-stacker-toy.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line1",
+                                    "name": "line2",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -11550,7 +11576,7 @@ description: Result of parsing fun-stacker-toy.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line2",
+                                    "name": "line1",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -11783,6 +11809,34 @@ description: Result of parsing fun-stacker-toy.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

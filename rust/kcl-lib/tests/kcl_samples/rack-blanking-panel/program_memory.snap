@@ -79,10 +79,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 563,
-            "end": 568,
+            "commentStart": 581,
+            "end": 586,
             "moduleId": 0,
-            "start": 563,
+            "start": 581,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -93,10 +93,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 646,
-            "end": 650,
+            "commentStart": 664,
+            "end": 668,
             "moduleId": 0,
-            "start": 646,
+            "start": 664,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -107,10 +107,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 822,
-            "end": 827,
+            "commentStart": 840,
+            "end": 845,
             "moduleId": 0,
-            "start": 822,
+            "start": 840,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -121,10 +121,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 935,
-            "end": 939,
+            "commentStart": 953,
+            "end": 957,
             "moduleId": 0,
-            "start": 935,
+            "start": 953,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -135,10 +135,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1111,
-            "end": 1116,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1111,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -149,10 +149,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1231,
-            "end": 1236,
+            "commentStart": 1249,
+            "end": 1254,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1249,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -163,10 +163,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1351,
-            "end": 1356,
+            "commentStart": 1369,
+            "end": 1374,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1369,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -177,10 +177,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1472,
-            "end": 1476,
+            "commentStart": 1490,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1472,
+            "start": 1490,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -191,10 +191,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1650,
-            "end": 1655,
+            "commentStart": 1668,
+            "end": 1673,
             "moduleId": 0,
-            "start": 1650,
+            "start": 1668,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -205,10 +205,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -219,10 +219,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1951,
-            "end": 1956,
+            "commentStart": 1969,
+            "end": 1974,
             "moduleId": 0,
-            "start": 1951,
+            "start": 1969,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -233,10 +233,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2074,
-            "end": 2079,
+            "commentStart": 2092,
+            "end": 2097,
             "moduleId": 0,
-            "start": 2074,
+            "start": 2092,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -258,10 +258,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.00000000000000000003964582253532365
             ],
             "tag": {
-              "commentStart": 563,
-              "end": 568,
+              "commentStart": 581,
+              "end": 586,
               "moduleId": 0,
-              "start": 563,
+              "start": 581,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -288,10 +288,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.09847205265225509,
             "tag": {
-              "commentStart": 646,
-              "end": 650,
+              "commentStart": 664,
+              "end": 668,
               "moduleId": 0,
-              "start": 646,
+              "start": 664,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -312,10 +312,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.08246483760575939
             ],
             "tag": {
-              "commentStart": 822,
-              "end": 827,
+              "commentStart": 840,
+              "end": 845,
               "moduleId": 0,
-              "start": 822,
+              "start": 840,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -342,10 +342,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.09715576507278147,
             "tag": {
-              "commentStart": 935,
-              "end": 939,
+              "commentStart": 953,
+              "end": 957,
               "moduleId": 0,
-              "start": 935,
+              "start": 953,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -366,10 +366,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.7499999997947306
             ],
             "tag": {
-              "commentStart": 1111,
-              "end": 1116,
+              "commentStart": 1129,
+              "end": 1134,
               "moduleId": 0,
-              "start": 1111,
+              "start": 1129,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -390,10 +390,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.75
             ],
             "tag": {
-              "commentStart": 1231,
-              "end": 1236,
+              "commentStart": 1249,
+              "end": 1254,
               "moduleId": 0,
-              "start": 1231,
+              "start": 1249,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -414,10 +414,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.6902
             ],
             "tag": {
-              "commentStart": 1351,
-              "end": 1356,
+              "commentStart": 1369,
+              "end": 1374,
               "moduleId": 0,
-              "start": 1351,
+              "start": 1369,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -444,10 +444,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.030000000110619755,
             "tag": {
-              "commentStart": 1472,
-              "end": 1476,
+              "commentStart": 1490,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1472,
+              "start": 1490,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -468,10 +468,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.660197643424215
             ],
             "tag": {
-              "commentStart": 1650,
-              "end": 1655,
+              "commentStart": 1668,
+              "end": 1673,
               "moduleId": 0,
-              "start": 1650,
+              "start": 1668,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -498,10 +498,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.030000003970205434,
             "tag": {
-              "commentStart": 1773,
-              "end": 1777,
+              "commentStart": 1791,
+              "end": 1795,
               "moduleId": 0,
-              "start": 1773,
+              "start": 1791,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -522,10 +522,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.0598
             ],
             "tag": {
-              "commentStart": 1951,
-              "end": 1956,
+              "commentStart": 1969,
+              "end": 1974,
               "moduleId": 0,
-              "start": 1951,
+              "start": 1969,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -546,10 +546,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.0598
             ],
             "tag": {
-              "commentStart": 2074,
-              "end": 2079,
+              "commentStart": 2092,
+              "end": 2097,
               "moduleId": 0,
-              "start": 2074,
+              "start": 2092,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -2622,10 +2622,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     0.00000000000000000003964582253532365
                   ],
                   "tag": {
-                    "commentStart": 563,
-                    "end": 568,
+                    "commentStart": 581,
+                    "end": 586,
                     "moduleId": 0,
-                    "start": 563,
+                    "start": 581,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2652,10 +2652,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09847205265225509,
                   "tag": {
-                    "commentStart": 646,
-                    "end": 650,
+                    "commentStart": 664,
+                    "end": 668,
                     "moduleId": 0,
-                    "start": 646,
+                    "start": 664,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -2693,10 +2693,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     0.08246483760575939
                   ],
                   "tag": {
-                    "commentStart": 822,
-                    "end": 827,
+                    "commentStart": 840,
+                    "end": 845,
                     "moduleId": 0,
-                    "start": 822,
+                    "start": 840,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2723,10 +2723,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09715576507278147,
                   "tag": {
-                    "commentStart": 935,
-                    "end": 939,
+                    "commentStart": 953,
+                    "end": 957,
                     "moduleId": 0,
-                    "start": 935,
+                    "start": 953,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -2747,10 +2747,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     1.7499999997947306
                   ],
                   "tag": {
-                    "commentStart": 1111,
-                    "end": 1116,
+                    "commentStart": 1129,
+                    "end": 1134,
                     "moduleId": 0,
-                    "start": 1111,
+                    "start": 1129,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2771,10 +2771,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     1.75
                   ],
                   "tag": {
-                    "commentStart": 1231,
-                    "end": 1236,
+                    "commentStart": 1249,
+                    "end": 1254,
                     "moduleId": 0,
-                    "start": 1231,
+                    "start": 1249,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2795,10 +2795,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     1.6902
                   ],
                   "tag": {
-                    "commentStart": 1351,
-                    "end": 1356,
+                    "commentStart": 1369,
+                    "end": 1374,
                     "moduleId": 0,
-                    "start": 1351,
+                    "start": 1369,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2825,10 +2825,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.030000000110619755,
                   "tag": {
-                    "commentStart": 1472,
-                    "end": 1476,
+                    "commentStart": 1490,
+                    "end": 1494,
                     "moduleId": 0,
-                    "start": 1472,
+                    "start": 1490,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -2849,10 +2849,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     1.660197643424215
                   ],
                   "tag": {
-                    "commentStart": 1650,
-                    "end": 1655,
+                    "commentStart": 1668,
+                    "end": 1673,
                     "moduleId": 0,
-                    "start": 1650,
+                    "start": 1668,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2879,10 +2879,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.030000003970205434,
                   "tag": {
-                    "commentStart": 1773,
-                    "end": 1777,
+                    "commentStart": 1791,
+                    "end": 1795,
                     "moduleId": 0,
-                    "start": 1773,
+                    "start": 1791,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -2920,10 +2920,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     0.0598
                   ],
                   "tag": {
-                    "commentStart": 1951,
-                    "end": 1956,
+                    "commentStart": 1969,
+                    "end": 1974,
                     "moduleId": 0,
-                    "start": 1951,
+                    "start": 1969,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -2944,10 +2944,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     0.0598
                   ],
                   "tag": {
-                    "commentStart": 2074,
-                    "end": 2079,
+                    "commentStart": 2092,
+                    "end": 2097,
                     "moduleId": 0,
-                    "start": 2074,
+                    "start": 2092,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -3092,10 +3092,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4662,
-                "end": 4669,
+                "commentStart": 4676,
+                "end": 4683,
                 "moduleId": 0,
-                "start": 4662,
+                "start": 4676,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -3123,10 +3123,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000001925,
                 "tag": {
-                  "commentStart": 4662,
-                  "end": 4669,
+                  "commentStart": 4676,
+                  "end": 4683,
                   "moduleId": 0,
-                  "start": 4662,
+                  "start": 4676,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -3218,10 +3218,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4662,
-                "end": 4669,
+                "commentStart": 4676,
+                "end": 4683,
                 "moduleId": 0,
-                "start": 4662,
+                "start": 4676,
                 "type": "TagDeclarator",
                 "value": "circle2"
               },
@@ -3249,10 +3249,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000001925,
                 "tag": {
-                  "commentStart": 4662,
-                  "end": 4669,
+                  "commentStart": 4676,
+                  "end": 4683,
                   "moduleId": 0,
-                  "start": 4662,
+                  "start": 4676,
                   "type": "TagDeclarator",
                   "value": "circle2"
                 },
@@ -3344,10 +3344,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4532,
-                "end": 4539,
+                "commentStart": 4546,
+                "end": 4553,
                 "moduleId": 0,
-                "start": 4532,
+                "start": 4546,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3375,10 +3375,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000002136,
                 "tag": {
-                  "commentStart": 4532,
-                  "end": 4539,
+                  "commentStart": 4546,
+                  "end": 4553,
                   "moduleId": 0,
-                  "start": 4532,
+                  "start": 4546,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -3470,10 +3470,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4532,
-                "end": 4539,
+                "commentStart": 4546,
+                "end": 4553,
                 "moduleId": 0,
-                "start": 4532,
+                "start": 4546,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -3501,10 +3501,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 ],
                 "radius": 0.09375000000002136,
                 "tag": {
-                  "commentStart": 4532,
-                  "end": 4539,
+                  "commentStart": 4546,
+                  "end": 4553,
                   "moduleId": 0,
-                  "start": 4532,
+                  "start": 4546,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -4365,10 +4365,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09375000000002136,
                   "tag": {
-                    "commentStart": 4532,
-                    "end": 4539,
+                    "commentStart": 4546,
+                    "end": 4553,
                     "moduleId": 0,
-                    "start": 4532,
+                    "start": 4546,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4412,10 +4412,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "radius": 0.09375000000001925,
                   "tag": {
-                    "commentStart": 4662,
-                    "end": 4669,
+                    "commentStart": 4676,
+                    "end": 4683,
                     "moduleId": 0,
-                    "start": 4662,
+                    "start": 4676,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -4508,10 +4508,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 563,
-            "end": 568,
+            "commentStart": 581,
+            "end": 586,
             "moduleId": 0,
-            "start": 563,
+            "start": 581,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4522,10 +4522,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 646,
-            "end": 650,
+            "commentStart": 664,
+            "end": 668,
             "moduleId": 0,
-            "start": 646,
+            "start": 664,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -4536,10 +4536,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 822,
-            "end": 827,
+            "commentStart": 840,
+            "end": 845,
             "moduleId": 0,
-            "start": 822,
+            "start": 840,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4550,10 +4550,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 935,
-            "end": 939,
+            "commentStart": 953,
+            "end": 957,
             "moduleId": 0,
-            "start": 935,
+            "start": 953,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -4564,10 +4564,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1111,
-            "end": 1116,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1111,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4578,10 +4578,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1231,
-            "end": 1236,
+            "commentStart": 1249,
+            "end": 1254,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1249,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4592,10 +4592,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1351,
-            "end": 1356,
+            "commentStart": 1369,
+            "end": 1374,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1369,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -4606,10 +4606,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1472,
-            "end": 1476,
+            "commentStart": 1490,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1472,
+            "start": 1490,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -4620,10 +4620,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1650,
-            "end": 1655,
+            "commentStart": 1668,
+            "end": 1673,
             "moduleId": 0,
-            "start": 1650,
+            "start": 1668,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -4634,10 +4634,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -4648,10 +4648,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1951,
-            "end": 1956,
+            "commentStart": 1969,
+            "end": 1974,
             "moduleId": 0,
-            "start": 1951,
+            "start": 1969,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -4662,10 +4662,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2074,
-            "end": 2079,
+            "commentStart": 2092,
+            "end": 2097,
             "moduleId": 0,
-            "start": 2074,
+            "start": 2092,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -4687,10 +4687,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.00000000000000000003964582253532365
             ],
             "tag": {
-              "commentStart": 563,
-              "end": 568,
+              "commentStart": 581,
+              "end": 586,
               "moduleId": 0,
-              "start": 563,
+              "start": 581,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4717,10 +4717,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.09847205265225509,
             "tag": {
-              "commentStart": 646,
-              "end": 650,
+              "commentStart": 664,
+              "end": 668,
               "moduleId": 0,
-              "start": 646,
+              "start": 664,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -4741,10 +4741,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.08246483760575939
             ],
             "tag": {
-              "commentStart": 822,
-              "end": 827,
+              "commentStart": 840,
+              "end": 845,
               "moduleId": 0,
-              "start": 822,
+              "start": 840,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4771,10 +4771,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.09715576507278147,
             "tag": {
-              "commentStart": 935,
-              "end": 939,
+              "commentStart": 953,
+              "end": 957,
               "moduleId": 0,
-              "start": 935,
+              "start": 953,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -4795,10 +4795,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.7499999997947306
             ],
             "tag": {
-              "commentStart": 1111,
-              "end": 1116,
+              "commentStart": 1129,
+              "end": 1134,
               "moduleId": 0,
-              "start": 1111,
+              "start": 1129,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4819,10 +4819,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.75
             ],
             "tag": {
-              "commentStart": 1231,
-              "end": 1236,
+              "commentStart": 1249,
+              "end": 1254,
               "moduleId": 0,
-              "start": 1231,
+              "start": 1249,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4843,10 +4843,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.6902
             ],
             "tag": {
-              "commentStart": 1351,
-              "end": 1356,
+              "commentStart": 1369,
+              "end": 1374,
               "moduleId": 0,
-              "start": 1351,
+              "start": 1369,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -4873,10 +4873,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.030000000110619755,
             "tag": {
-              "commentStart": 1472,
-              "end": 1476,
+              "commentStart": 1490,
+              "end": 1494,
               "moduleId": 0,
-              "start": 1472,
+              "start": 1490,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -4897,10 +4897,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               1.660197643424215
             ],
             "tag": {
-              "commentStart": 1650,
-              "end": 1655,
+              "commentStart": 1668,
+              "end": 1673,
               "moduleId": 0,
-              "start": 1650,
+              "start": 1668,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -4927,10 +4927,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "radius": 0.030000003970205434,
             "tag": {
-              "commentStart": 1773,
-              "end": 1777,
+              "commentStart": 1791,
+              "end": 1795,
               "moduleId": 0,
-              "start": 1773,
+              "start": 1791,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -4951,10 +4951,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.0598
             ],
             "tag": {
-              "commentStart": 1951,
-              "end": 1956,
+              "commentStart": 1969,
+              "end": 1974,
               "moduleId": 0,
-              "start": 1951,
+              "start": 1969,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -4975,10 +4975,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               0.0598
             ],
             "tag": {
-              "commentStart": 2074,
-              "end": 2079,
+              "commentStart": 2092,
+              "end": 2097,
               "moduleId": 0,
-              "start": 2074,
+              "start": 2092,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -5120,10 +5120,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09375000000001925,
           "tag": {
-            "commentStart": 4662,
-            "end": 4669,
+            "commentStart": 4676,
+            "end": 4683,
             "moduleId": 0,
-            "start": 4662,
+            "start": 4676,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -5220,10 +5220,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09375000000002136,
           "tag": {
-            "commentStart": 4532,
-            "end": 4539,
+            "commentStart": 4546,
+            "end": 4553,
             "moduleId": 0,
-            "start": 4532,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -5314,10 +5314,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             0.00000000000000000003964582253532365
           ],
           "tag": {
-            "commentStart": 563,
-            "end": 568,
+            "commentStart": 581,
+            "end": 586,
             "moduleId": 0,
-            "start": 563,
+            "start": 581,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5344,10 +5344,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09847205265225509,
           "tag": {
-            "commentStart": 646,
-            "end": 650,
+            "commentStart": 664,
+            "end": 668,
             "moduleId": 0,
-            "start": 646,
+            "start": 664,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -5368,10 +5368,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             0.08246483760575939
           ],
           "tag": {
-            "commentStart": 822,
-            "end": 827,
+            "commentStart": 840,
+            "end": 845,
             "moduleId": 0,
-            "start": 822,
+            "start": 840,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5398,10 +5398,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.09715576507278147,
           "tag": {
-            "commentStart": 935,
-            "end": 939,
+            "commentStart": 953,
+            "end": 957,
             "moduleId": 0,
-            "start": 935,
+            "start": 953,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5422,10 +5422,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             1.7499999997947306
           ],
           "tag": {
-            "commentStart": 1111,
-            "end": 1116,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1111,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5446,10 +5446,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             1.75
           ],
           "tag": {
-            "commentStart": 1231,
-            "end": 1236,
+            "commentStart": 1249,
+            "end": 1254,
             "moduleId": 0,
-            "start": 1231,
+            "start": 1249,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5470,10 +5470,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             1.6902
           ],
           "tag": {
-            "commentStart": 1351,
-            "end": 1356,
+            "commentStart": 1369,
+            "end": 1374,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1369,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -5500,10 +5500,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.030000000110619755,
           "tag": {
-            "commentStart": 1472,
-            "end": 1476,
+            "commentStart": 1490,
+            "end": 1494,
             "moduleId": 0,
-            "start": 1472,
+            "start": 1490,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -5524,10 +5524,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             1.660197643424215
           ],
           "tag": {
-            "commentStart": 1650,
-            "end": 1655,
+            "commentStart": 1668,
+            "end": 1673,
             "moduleId": 0,
-            "start": 1650,
+            "start": 1668,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -5554,10 +5554,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "radius": 0.030000003970205434,
           "tag": {
-            "commentStart": 1773,
-            "end": 1777,
+            "commentStart": 1791,
+            "end": 1795,
             "moduleId": 0,
-            "start": 1773,
+            "start": 1791,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -5578,10 +5578,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             0.0598
           ],
           "tag": {
-            "commentStart": 1951,
-            "end": 1956,
+            "commentStart": 1969,
+            "end": 1974,
             "moduleId": 0,
-            "start": 1951,
+            "start": 1969,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -5602,10 +5602,10 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             0.0598
           ],
           "tag": {
-            "commentStart": 2074,
-            "end": 2079,
+            "commentStart": 2092,
+            "end": 2097,
             "moduleId": 0,
-            "start": 2074,
+            "start": 2092,
             "type": "TagDeclarator",
             "value": "line8"
           },

@@ -110,12 +110,13 @@ description: Artifact commands scrub-daddy-holder.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 18.6017,
-          "y": 2.652
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -355,7 +356,8 @@ description: Artifact commands scrub-daddy-holder.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -561,7 +563,8 @@ description: Artifact commands scrub-daddy-holder.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

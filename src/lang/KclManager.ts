@@ -13,6 +13,10 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
+import {
+  ensureDefaultKclVersionOnBlankMain,
+  isMainKclPath,
+} from '@src/lang/project'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -43,6 +47,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
@@ -173,6 +178,10 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import {
+  type UserFeaturesSettleService,
+  waitForUserFeaturesSettled,
+} from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -296,6 +305,7 @@ interface SystemDeps {
   projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  userFeatures: UserFeaturesSettleService
   keymap?: KeymapService
 }
 
@@ -394,10 +404,7 @@ export class ZDSProject {
     this.#executingPath.value = foundPathSignal[0]
   }
   findEditor(path: string) {
-    return this.editors
-      .entries()
-      .toArray()
-      .find(([p]) => p.value === path)
+    return Array.from(this.editors.entries()).find(([p]) => p.value === path)
   }
 
   // Saving some keystrokes
@@ -431,6 +438,7 @@ export class ZDSProject {
       settings: this.app.settings.actor,
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
+      userFeatures: this.app.userFeatures,
       projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
@@ -521,10 +529,9 @@ export class ZDSProject {
 
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
-    const foundEditorKey = this.editors
-      .keys()
-      .toArray()
-      .find((pathSignal) => pathSignal.value === path)
+    const foundEditorKey = Array.from(this.editors.keys()).find(
+      (pathSignal) => pathSignal.value === path
+    )
 
     // We ignore all currently-opened editors. The project watcher is meant
     // only to notify about the rest of the project's updates, and pass them
@@ -652,6 +659,13 @@ const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
+
+function notifyDefaultKclVersionSeeded() {
+  toast.success(
+    `Set project to use the default version (KCL ${DEFAULT_KCL_VERSION}).`,
+    { duration: 5_000 }
+  )
+}
 
 const modelingMachineAnnotation = Annotation.define<boolean>()
 export const modelingMachineEvent = modelingMachineAnnotation.of(true)
@@ -895,6 +909,14 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  /**
+   * Counts the executions that rebuilt the engine scene.
+   *
+   * Sketch-solve syncs and mock executions replace `execState` without sending
+   * an engine command.  A consumer that must act only on a rebuilt scene
+   * subscribes here rather than to `execStateSignal`.
+   */
+  private _engineSceneGeneration = signal(0)
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1185,30 +1207,50 @@ export class KclManager extends File {
   }
 
   private createExecutionCallbacks(executionId: number): ExecCallbacks {
+    let liveOperationUpdatesFailed = false
+
     return {
       onOperation: (callback: OperationCallbackArgs) => {
-        if (
-          this.activeLiveOperationExecutionId !== executionId ||
-          this._cancelTokens.get(executionId)
-        ) {
-          return
+        try {
+          if (
+            liveOperationUpdatesFailed ||
+            this.activeLiveOperationExecutionId !== executionId ||
+            this._cancelTokens.get(executionId)
+          ) {
+            return
+          }
+
+          this._liveActiveModuleId.value = callback.moduleId
+          this._liveLatestOperationKey.value = getOperationKey(
+            callback.operation
+          )
+
+          const operationsByModule = applyOperationCallbackToOperationsByModule(
+            {
+              operationsByModule: this._liveOperationsByModule.value,
+              callback,
+            }
+          )
+          this._liveOperationsByModule.value = operationsByModule
+          this.dispatchUpdateOperations(
+            getOperationsForCurrentFile({
+              operationsByModule,
+              filenames: this.execState.filenames,
+              currentPath: this.path,
+            })
+          )
+        } catch (error) {
+          // An exception escaping into WASM can strand its async execution.
+          // Stop progressive updates for this run and let finalization continue.
+          liveOperationUpdatesFailed = true
+          const message =
+            error instanceof Error
+              ? (error.stack ?? error.message)
+              : String(error)
+          queueMicrotask(() =>
+            reportRejection(`Live operation updates failed: ${message}`)
+          )
         }
-
-        this._liveActiveModuleId.value = callback.moduleId
-        this._liveLatestOperationKey.value = getOperationKey(callback.operation)
-
-        const operationsByModule = applyOperationCallbackToOperationsByModule({
-          operationsByModule: this._liveOperationsByModule.value,
-          callback,
-        })
-        this._liveOperationsByModule.value = operationsByModule
-        this.dispatchUpdateOperations(
-          getOperationsForCurrentFile({
-            operationsByModule,
-            filenames: this.execState.filenames,
-            currentPath: this.path,
-          })
-        )
       },
     }
   }
@@ -1218,6 +1260,9 @@ export class KclManager extends File {
   }
   get execStateSignal() {
     return this._execState
+  }
+  get engineSceneGenerationSignal() {
+    return this._engineSceneGeneration
   }
   get pendingFeatureTreeSourceSelection() {
     return this._pendingFeatureTreeSourceSelection.value
@@ -2511,6 +2556,7 @@ export class KclManager extends File {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
+    this._engineSceneGeneration.value += 1
     this.dispatchUpdateOperations(
       getOperationsForCurrentFile({
         operationsByModule: execState.operations,
@@ -2609,6 +2655,11 @@ export class KclManager extends File {
       console.warn('`executeCode` called before engine connection started')
       return
     }
+    // Runtime feature flags (e.g. the KCL executor selection) come from user
+    // features fetched over the network after login; the first execution must
+    // not race that fetch, or it runs with the flags' defaults. Settled
+    // features make this await instant.
+    await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
     this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
@@ -3745,6 +3796,10 @@ export class KclManager extends File {
       return
     }
 
+    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+      return
+    }
+
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
@@ -3824,6 +3879,43 @@ export class KclManager extends File {
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }
+  }
+
+  /**
+   * When the user clears `main.kcl`, seed the editor with the default KCL
+   * version to prevent them from implicitly falling back to a legacy version.
+   */
+  private async seedDefaultKclVersionOnBlankMain(
+    requestedDocumentVersion: number
+  ): Promise<boolean> {
+    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+      return false
+    }
+
+    const wasmInstance = await this.wasmInstancePromise
+    if (typeof wasmInstance === 'string') {
+      return false
+    }
+    if (requestedDocumentVersion !== this._documentVersion) {
+      return false
+    }
+
+    const currentCode = this.code
+    const seeded = ensureDefaultKclVersionOnBlankMain(
+      this.path,
+      currentCode,
+      wasmInstance
+    )
+    if (err(seeded) || seeded === currentCode) {
+      return false
+    }
+
+    this.updateCodeEditor(seeded, {
+      shouldExecute: true,
+      shouldWriteToDisk: true,
+    })
+    notifyDefaultKclVersionSeeded()
+    return true
   }
 
   async updateEditorWithAstAndWriteToFile(

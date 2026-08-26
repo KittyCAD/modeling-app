@@ -9716,7 +9716,7 @@ description: Result of parsing helium-tank.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -9725,29 +9725,48 @@ description: Result of parsing helium-tank.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0.4in",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "valvePortSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "innerCircle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.4,
-                        "suffix": "Inch"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "30.3in",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 30.3,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -9755,35 +9774,6 @@ description: Result of parsing helium-tank.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "valvePortSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -18950,7 +18940,7 @@ description: Result of parsing helium-tank.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -18959,29 +18949,93 @@ description: Result of parsing helium-tank.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0in",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "bracketSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "outerLine6",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "5.35in",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "bracketSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 5.35,
-                        "suffix": "Inch"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -18997,7 +19051,7 @@ description: Result of parsing helium-tank.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -19010,7 +19064,7 @@ description: Result of parsing helium-tank.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "bracketSketch",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -23686,6 +23740,34 @@ description: Result of parsing helium-tank.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

@@ -3,7 +3,7 @@
 // Categories: Maker
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Parameters used to construct the cube faces
 size = 100
@@ -42,7 +42,10 @@ faceSketch = sketch(on = XY) {
   distance([rightEdge.start, rightEdge.end]) == size
 }
 
-faceRegion = region(point = [0mm, 0mm], sketch = faceSketch)
+faceRegion = region(segments = [
+  faceSketch.bottomEdge,
+  faceSketch.rightEdge
+])
 faceBody = extrude(faceRegion, length = extrudeLength)
   |> translate(z = -extrudeLength / 2, global = true)
 hide(faceSketch)

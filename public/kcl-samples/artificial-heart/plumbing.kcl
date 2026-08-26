@@ -1,7 +1,7 @@
 // Plumbing
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Draw the sweep path for the aorta and pulmonary artery
 sketch002 = sketch(on = XZ) {
@@ -51,13 +51,13 @@ sketch003 = sketch(on = offsetPlane(-YZ, offset = 1.65)) {
 hide(sketch003)
 
 // Sweep the pulmonary artery
-region003 = region(point = [-0.5707679in, -0.0595579in], sketch = sketch003)
+region003 = region(segments = [sketch003.circle2])
   |> rotate(pitch = 45, global = true)
   |> sweep(path = clone(sketch002))
   |> appearance(color = "#0e23be")
 
 // Sweep the aorta
-region004 = region(point = [0.2134512in, 0.2177397in], sketch = sketch003)
+region004 = region(segments = [sketch003.circle1])
   |> rotate(pitch = 45, global = true)
   |> sweep(path = sketch002)
   |> appearance(color = "#a60c0c")
@@ -87,7 +87,7 @@ sketch010 = sketch(on = offsetPlane(YZ, offset = 0.8)) {
   radius(circle1) == 0.2in
 }
 hide(sketch010)
-region007 = region(point = [-1.3010016in, 0.1495594in], sketch = sketch010)
+region007 = region(segments = [sketch010.circle2])
 sweep003 = sweep(region007, path = clone(sketch009))
   // Move the vein into position at the inlet bung
   |> rotate(pitch = 80)
@@ -105,7 +105,7 @@ sketch011 = sketch(on = offsetPlane(YZ, offset = 0.8)) {
   radius(circle1) == 0.2in
 }
 hide(sketch011)
-region0011 = region(point = [1.3010016in, 0.1495594in], sketch = sketch011)
+region0011 = region(segments = [sketch011.circle2])
 sweep004 = sweep(region0011, path = sketch009)
   // Move it into position at the inlet bung
   |> rotate(pitch = 75)

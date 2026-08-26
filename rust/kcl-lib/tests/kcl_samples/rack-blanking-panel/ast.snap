@@ -8005,7 +8005,7 @@ description: Result of parsing rack-blanking-panel.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -8013,39 +8013,94 @@ description: Result of parsing rack-blanking-panel.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "5.5725mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "baseSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 5.5725,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0.0025mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "baseSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0025,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -8053,35 +8108,6 @@ description: Result of parsing rack-blanking-panel.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "baseSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -11282,7 +11308,7 @@ description: Result of parsing rack-blanking-panel.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -11291,29 +11317,48 @@ description: Result of parsing rack-blanking-panel.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "233.4933mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "holeSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 233.4933,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "10.752mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 10.752,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -11321,35 +11366,6 @@ description: Result of parsing rack-blanking-panel.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "holeSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -11410,7 +11426,7 @@ description: Result of parsing rack-blanking-panel.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -11419,29 +11435,48 @@ description: Result of parsing rack-blanking-panel.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "233.7022mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "holeSketch",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 233.7022,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "33.769mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 33.769,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -11449,35 +11484,6 @@ description: Result of parsing rack-blanking-panel.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "holeSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -11872,27 +11878,6 @@ description: Result of parsing rack-blanking-panel.kcl
                   "type": "Name",
                   "type": "Name"
                 }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "legacyMethod",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "raw": "true",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": true
-                }
               }
             ],
             "callee": {
@@ -11999,6 +11984,34 @@ description: Result of parsing rack-blanking-panel.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

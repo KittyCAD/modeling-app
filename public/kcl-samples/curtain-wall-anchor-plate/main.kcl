@@ -3,7 +3,7 @@
 // Categories: Construction
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 slabPlateBaseLength = 300
@@ -73,17 +73,17 @@ anchorPlateBody = extrude(anchorPlateRegion, length = slabPlateWidth)
 insideBendFillRegion = fillet(
   anchorPlateBody,
   tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line5,
+    anchorPlateRegion.tags.line3,
     anchorPlateRegion.tags.line4
   ]),
   radius = insideBendRadius,
 )
 
 anchorPlateOutsideFillet = fillet(
-  anchorPlateBody,
+  insideBendFillRegion,
   tags = getCommonEdge(faces = [
-    anchorPlateRegion.tags.line1,
-    anchorPlateRegion.tags.line2
+    anchorPlateRegion.tags.line6,
+    anchorPlateRegion.tags.line1
   ]),
   radius = outsideBendRadius,
 )
@@ -145,13 +145,7 @@ slotProfile = sketch(on = XY) {
   ])
 }
 
-slotRegion = region(
-  point = [
-    offsetSlabRail,
-    wideHoleOffset - (slabPlateWidth / 2)
-  ],
-  sketch = slotProfile,
-)
+slotRegion = region(segments = [slotProfile.line1, slotProfile.arc2], direction = CW)
 hiddenSlotProfile = hide(slotProfile)
 slotCutterLeft = extrude(slotRegion, length = slabPlateThickness + 2, method = NEW)
   |> translate(z = -1, global = true)
@@ -218,7 +212,13 @@ boltHeadProfile = sketch(on = XY) {
 ]) == boltHeadRadius
 }
 
-boltHeadRegion = region(point = [0mm, 0mm], sketch = boltHeadProfile)
+boltHeadRegion = region(
+  segments = [
+    boltHeadProfile.line1,
+    boltHeadProfile.line2
+  ],
+  direction = CW,
+)
 hiddenBoltHeadProfile = hide(boltHeadProfile)
 boltHeadBody = extrude(boltHeadRegion, length = boltDiameter * 0.7)
 
@@ -322,7 +322,7 @@ nutProfile = sketch(on = faceOf(clampPlateBody, face = START)) {
 ]) == nutRadius
 }
 
-nutRegion = region(point = [0mm, 0mm], sketch = nutProfile)
+nutRegion = region(segments = [nutProfile.line1, nutProfile.line2], direction = CW)
 hiddenNutProfile = hide(nutProfile)
 clampBody = extrude(nutRegion, length = boltDiameter * 0.7)
 
