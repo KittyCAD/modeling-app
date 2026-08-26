@@ -1,5 +1,3 @@
-import { describe, expect, test, vi } from 'vitest'
-
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
@@ -17,11 +15,16 @@ import {
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   handleSelectionBatch,
+  removeReferenceFromSelections,
   selectSketchPlane,
 } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlaneSelection,
+  Selection,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1195,7 +1198,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   // Build the index locally instead of using engineCommandManager
   const artifactIndex = buildArtifactIndex(___artifactGraph)
 
-  function createPrimitiveEngineCommandManager({
+  function createPrimitiveEngineConnectionManager({
     parentEntityId,
     primitiveIndex,
     primitiveType,
@@ -1414,9 +1417,10 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 2,
         primitiveType: 'edge',
@@ -1458,6 +1462,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1468,7 +1473,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         },
       ],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 3,
         primitiveType: 'face',
@@ -1481,6 +1486,90 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
 
     expect(references).toHaveLength(1)
     expect(references[0].code).toBe('seg01')
+  })
+
+  test('resolves graph-only region wall selections to generated tag references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+cubeSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+}
+cubeRegion = region(segments = [cubeSketch.right])
+cube = extrude(cubeRegion, length = 10)
+`
+    const ast = assertParse(code, instance)
+    const sourceRangeForSnippet = (snippet: string): SourceRange => {
+      const start = code.indexOf(snippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      return [start, start + snippet.length, 0]
+    }
+    const codeRefForSnippet = (snippet: string) => {
+      const range = sourceRangeForSnippet(snippet)
+      return {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+
+    const originalRightSegment = {
+      type: 'segment',
+      id: 'original-right-segment',
+      codeRef: codeRefForSnippet('right = line(end = [10, 0])'),
+    } as Artifact
+    const regionRightCodeRef = codeRefForSnippet(
+      'cubeRegion = region(segments = [cubeSketch.right])'
+    )
+    const regionRightSegment = {
+      type: 'segment',
+      id: 'region-right-segment',
+      originalSegId: originalRightSegment.id,
+      codeRef: regionRightCodeRef,
+    } as Artifact
+    const cubeSweep = {
+      type: 'sweep',
+      id: 'cube-sweep',
+      codeRef: codeRefForSnippet('extrude(cubeRegion, length = 10)'),
+    } as Artifact
+    const cubeWallRight = {
+      type: 'wall',
+      id: 'cube-wall-right',
+      sweepId: cubeSweep.id,
+      segId: regionRightSegment.id,
+    } as Artifact
+    const artifactGraph = new Map<string, Artifact>([
+      [originalRightSegment.id, originalRightSegment],
+      [regionRightSegment.id, regionRightSegment],
+      [cubeSweep.id, cubeSweep],
+      [cubeWallRight.id, cubeWallRight],
+    ])
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: cubeWallRight,
+          codeRef: regionRightCodeRef,
+        },
+      ],
+      defaultPlaneSelections: [],
+      enginePrimitives: [],
+      artifactGraph,
+      engineCommandManager: createPrimitiveEngineConnectionManager({
+        parentEntityId: cubeSweep.id,
+        primitiveIndex: 2,
+        primitiveType: 'face',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0]).toMatchObject({
+      label: 'Face',
+      code: 'cubeRegion.tags.right',
+    })
   })
 
   test('prefers directly tagged edge references over primitive index references', async () => {
@@ -1506,6 +1595,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           codeRef: segmentArtifact.codeRef,
         },
       ],
+      defaultPlaneSelections: [],
       enginePrimitives: [
         {
           type: 'enginePrimitive',
@@ -1516,7 +1606,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         },
       ],
       artifactGraph: ___artifactGraph,
-      engineCommandManager: createPrimitiveEngineCommandManager({
+      engineCommandManager: createPrimitiveEngineConnectionManager({
         parentEntityId: sweepArtifact.id,
         primitiveIndex: 1,
         primitiveType: 'edge',
@@ -1530,6 +1620,43 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     expect(
       references.find((reference) => reference.label === 'Edge')?.code
     ).toBe('seg01')
+  })
+
+  test('includes selected default planes and lets them be removed', async () => {
+    const defaultPlaneSelection = {
+      id: 'default-plane-xy',
+      name: 'xy',
+    } as unknown as DefaultPlaneSelection
+    const references = await getSelectionReferences({
+      graphSelections: [],
+      defaultPlaneSelections: [defaultPlaneSelection],
+      enginePrimitives: [],
+      artifactGraph: new Map(),
+      engineCommandManager: null as never,
+      kclManager: null as never,
+      wasmInstance: null as never,
+    })
+
+    expect(references).toEqual([
+      {
+        id: 'plane:default-plane-xy',
+        label: 'XY Plane',
+        code: 'XY',
+        defaultPlaneSelection,
+      },
+    ])
+    expect(
+      removeReferenceFromSelections(
+        {
+          graphSelections: [],
+          otherSelections: [defaultPlaneSelection, 'x-axis'],
+        },
+        references[0]
+      )
+    ).toEqual({
+      graphSelections: [],
+      otherSelections: ['x-axis'],
+    })
   })
 })
 

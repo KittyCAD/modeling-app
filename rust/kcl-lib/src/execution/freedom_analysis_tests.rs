@@ -5,6 +5,7 @@ use crate::ExecutorSettings;
 use crate::engine::engine_manager::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
+use crate::execution::machine::ExecutorKind;
 use crate::front::Freedom;
 use crate::front::ObjectKind;
 use crate::frontend::api::ObjectId;
@@ -19,6 +20,8 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
+        executor_kind: ExecutorKind::resolve(),
+        machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
     };
 
     let mock_config = MockConfig {

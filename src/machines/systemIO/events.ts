@@ -9,6 +9,7 @@ export enum SystemIOMachineEvents {
   navigateToProject = 'navigate to project',
   navigateToFile = 'navigate to file',
   createProject = 'create project',
+  duplicateProject = 'duplicate project',
   renameProject = 'rename project',
   done_renameProject = donePrefix + 'rename project',
   deleteProject = 'delete project',
@@ -19,7 +20,7 @@ export enum SystemIOMachineEvents {
   /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   done_importFileFromURL = donePrefix + 'import file from URL',
-  generateTextToCAD = 'generate text to CAD',
+  generateZookeeper = 'generate zookeeper',
   deleteKCLFile = 'delete kcl file',
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',

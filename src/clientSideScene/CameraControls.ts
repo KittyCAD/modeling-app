@@ -1,4 +1,8 @@
-import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
+import type {
+  CameraDragInteractionType,
+  CameraViewState,
+  Point3d,
+} from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray, toSync } from '@src/lib/utils'
 
@@ -40,8 +44,11 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { type ConnectionManager } from '@src/network/connectionManager'
-import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type {
+  Subscription,
+  UnreliableSubscription,
+} from '@src/lib/engineConnection/utils'
 import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
@@ -738,6 +745,26 @@ export class CameraControls {
     )
     direction.normalize()
   }
+  async setCameraProjection(projection: CameraProjectionType): Promise<void> {
+    if (projection === 'perspective') {
+      await this.usePerspectiveCamera(true)
+      return
+    }
+
+    if (this.camera instanceof OrthographicCamera) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_orthographic',
+        },
+      })
+      return
+    }
+
+    this.useOrthographicCamera()
+  }
+
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
     if (forceSend || this.syncDirection === 'clientToEngine') {
@@ -964,7 +991,7 @@ export class CameraControls {
     this.camera.updateMatrixWorld()
   }
 
-  private async getCameraView(): Promise<CameraViewState | Error> {
+  async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1001,7 +1028,29 @@ export class CameraControls {
     return modelingResponse.data.view
   }
 
-  private async setCameraViewAlongZ(direction: StandardView) {
+  async setCameraView(view: CameraViewState): Promise<void> {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_view',
+        view,
+      },
+    })
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  private async setCameraViewAlongZ(
+    direction: StandardView,
+    overrides?: { pivotPosition?: Point3d; eyeOffset?: number }
+  ) {
     // Sets the camera view along the Z axis, giving us a top-down or bottom-up view.
     // The approach first retrieves current camera setup, then alters pivot params,
     // ultimately preserving other camera settings, e.g., ortho vs. perspective projection.
@@ -1029,11 +1078,16 @@ export class CameraControls {
     const cameraViewTarget: CameraViewState = {
       ...cameraView,
       pivot_rotation: Z_AXIS_QUATERNIONS[direction],
-      pivot_position: {
+      pivot_position: overrides?.pivotPosition ?? {
         x: this.target.x,
         y: this.target.y,
         z: this.target.z,
       },
+    }
+
+    // `eye_offset` is the target-to-eye distance.
+    if (overrides?.eyeOffset !== undefined) {
+      cameraViewTarget.eye_offset = overrides.eyeOffset
     }
 
     await this.engineCommandManager.sendSceneCommand({
@@ -1057,28 +1111,42 @@ export class CameraControls {
   async updateCameraToAxis(
     axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
-    // TODO: We currently use both `default_camera_look_at` and `default_camera_set_view`
-    // (via `setCameraViewAlongZ`). We should unify these during future camera work.
+    await this.setCameraToAxis({ axis })
+  }
 
-    const distance = this.camera.position.distanceTo(this.target)
+  async setCameraToAxis({
+    axis,
+    target,
+    distance,
+  }: {
+    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
+    target?: Point3d
+    distance?: number
+  }): Promise<void> {
+    const center = target ?? {
+      x: this.target.x,
+      y: this.target.y,
+      z: this.target.z,
+    }
+    const eyeDistance = distance ?? this.camera.position.distanceTo(this.target)
 
-    const vantage = this.target.clone()
-    const up = { x: 0, y: 0, z: 1 }
+    if (axis === 'z' || axis === '-z') {
+      await this.setCameraViewAlongZ(
+        axis === 'z' ? StandardView.TOP : StandardView.BOTTOM,
+        { pivotPosition: center, eyeOffset: distance }
+      )
+      return
+    }
 
+    const vantage = { ...center }
     if (axis === 'x') {
-      vantage.x += distance
+      vantage.x += eyeDistance
     } else if (axis === 'y') {
-      vantage.y += distance
-    } else if (axis === 'z') {
-      await this.setCameraViewAlongZ(StandardView.TOP)
-      return
+      vantage.y += eyeDistance
     } else if (axis === '-x') {
-      vantage.x -= distance
+      vantage.x -= eyeDistance
     } else if (axis === '-y') {
-      vantage.y -= distance
-    } else if (axis === '-z') {
-      await this.setCameraViewAlongZ(StandardView.BOTTOM)
-      return
+      vantage.y -= eyeDistance
     }
 
     await this.engineCommandManager.sendSceneCommand({
@@ -1086,9 +1154,9 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_look_at',
-        center: this.target,
-        vantage: vantage,
-        up: up,
+        center,
+        vantage,
+        up: { x: 0, y: 0, z: 1 },
       },
     })
     await this.engineCommandManager.sendSceneCommand({

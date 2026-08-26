@@ -1,4 +1,3 @@
-import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
@@ -16,6 +15,8 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -28,12 +29,12 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor } = useApp()
+  const { settings, systemIOActor, registry } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -43,8 +44,13 @@ export function SystemIOMachineLogicListener() {
   const lastOperation = useLastOperation()
 
   const navigate = useNavigate()
+  const navigation = useNavigation()
   const settingsValues = settings.useSettings()
-  const { onFileOpen, onFileClose } = useLspContext()
+  const lsp = registry.get(lspService)
+  const defaultDirectoryLibraryPath =
+    getDefaultDirectoryProjectLibraryPath(
+      settingsValues.app.libraries.current
+    ) || ''
   const { pathname } = useLocation()
 
   function safestNavigateToFile({
@@ -56,6 +62,16 @@ export function SystemIOMachineLogicListener() {
     requestedFilePathWithExtension: string | null
     requestedProjectDirectory: string | null
   }) {
+    if (
+      !shouldNavigateToRequestedPath({
+        currentPathname: navigation.location?.pathname ?? pathname,
+        onboardingStatus: settingsValues.app.onboardingStatus.current,
+        requestedPath,
+      })
+    ) {
+      return
+    }
+
     let filePathWithExtension = null
     let projectDirectory = null
     // assumes /file/<encodedURIComponent>
@@ -67,18 +83,16 @@ export function SystemIOMachineLogicListener() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory =
-        settingsValues.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
-        applicationProjectDirectory
+        defaultDirectoryLibraryPath
       )
     }
 
     // Close current file in current project if it exists
-    onFileClose(filePathWithExtension, projectDirectory)
+    lsp.onFileClose(filePathWithExtension, projectDirectory)
     // Open the requested file in the requested project
-    onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
+    lsp.onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
     kclManager.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -112,7 +126,9 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''))
+    void navigate(requestedPath + (search ? `?${search}` : ''), {
+      replace: requestedPath.includes(String(PATHS.ONBOARDING)),
+    })
   }
 
   /**
@@ -156,10 +172,9 @@ export function SystemIOMachineLogicListener() {
         return
       }
 
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
-        requestedProjectName.name
-      )
+      const projectPathWithoutSpecificKCLFile =
+        requestedProjectName.path ??
+        joinOSPaths(projectDirectoryPath, requestedProjectName.name)
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
@@ -215,13 +230,12 @@ export function SystemIOMachineLogicListener() {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
-            requestedProjectDirectoryPath:
-              settingsValues.app.projectDirectory.current || '',
+            requestedProjectDirectoryPath: defaultDirectoryLibraryPath,
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settingsValues.app.projectDirectory.current, pathname])
+    }, [defaultDirectoryLibraryPath, pathname])
   }
 
   const useDefaultProjectName = () => {
@@ -267,9 +281,7 @@ export function SystemIOMachineLogicListener() {
           })
         }
       },
-      settingsValues.app.projectDirectory.current
-        ? [settingsValues.app.projectDirectory.current]
-        : []
+      defaultDirectoryLibraryPath ? [defaultDirectoryLibraryPath] : []
     )
   }
 

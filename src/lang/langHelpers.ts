@@ -2,6 +2,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
@@ -23,7 +24,7 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
+import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/utils'
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
@@ -151,6 +152,7 @@ export async function lintAst({
   rustContext,
   edgeRefactorMetadata,
   directTagFilletMetadata,
+  legacyAngleRefactorMetadata,
   artifactGraph,
 }: {
   ast: Node<Program>
@@ -159,10 +161,12 @@ export async function lintAst({
   rustContext?: RustContext
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
+  legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    let discovered_findings = await kclLint(ast, instance)
+    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
+    let discovered_findings = await kclLint(ast, instance, shouldShowZ0006)
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
@@ -179,13 +183,6 @@ export async function lintAst({
     if (!shouldShowZ0005) {
       discovered_findings = discovered_findings.filter(
         (lint) => lint.finding.code !== 'Z0005'
-      )
-    }
-
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    if (!shouldShowZ0006) {
-      discovered_findings = discovered_findings.filter(
-        (lint) => lint.finding.code !== 'Z0006'
       )
     }
 
@@ -222,6 +219,7 @@ export async function lintAst({
           shouldShowZ0005,
           edgeRefactorMetadata,
           directTagFilletMetadata,
+          legacyAngleRefactorMetadata,
           artifactGraph,
           z0006RefactorCache,
         })

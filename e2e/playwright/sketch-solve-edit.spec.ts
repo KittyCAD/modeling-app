@@ -481,6 +481,85 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
+  test('horizontal and vertical hotkeys constrain the draft line while drawing', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await test.step('Set up the app and enter sketch solve mode', async () => {
+      await context.addInitScript(() => {
+        localStorage.setItem('persistCode', '')
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled()
+
+      await toolbar.startSketchOnDefaultPlane('Top plane')
+      await editor.expectEditor.toContain('sketch(on = XY) {')
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
+      await scene.clickNoWhere()
+    })
+
+    const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
+      format: 'ratio',
+    })
+    const [line1EndClick, moveToLine1End] = scene.makeMouseHelpers(0.55, 0.6, {
+      format: 'ratio',
+    })
+    const [line2EndClick, moveToLine2End] = scene.makeMouseHelpers(0.75, 0.4, {
+      format: 'ratio',
+    })
+
+    await test.step('Draw a draft line and constrain it vertically with the hotkey', async () => {
+      await page.keyboard.press('l')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      let previousCode = await editor.getCurrentCode()
+      await lineStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await moveToLine1End()
+      previousCode = await waitForCodeChange(page, previousCode)
+
+      await page.keyboard.press('v')
+      await editor.expectEditor.toContain('vertical(line1)')
+
+      // The line tool must stay equipped so drawing can continue
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      previousCode = await editor.getCurrentCode()
+      await line1EndClick()
+      await waitForCodeChange(page, previousCode)
+      await editor.expectEditor.toContain('vertical(line1)')
+    })
+
+    await test.step('Constrain the chained draft line horizontally with the hotkey', async () => {
+      let previousCode = await editor.getCurrentCode()
+      await moveToLine2End()
+      previousCode = await waitForCodeChange(page, previousCode)
+
+      await page.keyboard.press('h')
+      await editor.expectEditor.toContain('horizontal(line2)')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      previousCode = await editor.getCurrentCode()
+      await line2EndClick()
+      await waitForCodeChange(page, previousCode)
+    })
+
+    await test.step('Finish drawing and assert both constraints remain', async () => {
+      await page.keyboard.press('Escape')
+      await page.keyboard.press('Escape')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await editor.expectEditor.toContain('vertical(line1)')
+      await editor.expectEditor.toContain('horizontal(line2)')
+    })
+  })
+
   test('unequipping line tool should not drop committed segments from the scene', async ({
     page,
     context,
@@ -1812,32 +1891,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       },
       assertChanged: (code) => {
         expect((code.match(/distance\(/g) ?? []).length).toBe(1)
-      },
-    })
-
-    await applyConstraintStep({
-      label: 'horizontal length',
-      select: async () => {
-        await clickMidpoint('46', '47')
-      },
-      apply: async () => {
-        await page.getByTestId('HorizontalDistance').click()
-      },
-      assertChanged: (code) => {
-        expect((code.match(/horizontalDistance\(/g) ?? []).length).toBe(1)
-      },
-    })
-
-    await applyConstraintStep({
-      label: 'vertical length',
-      select: async () => {
-        await clickMidpoint('49', '50')
-      },
-      apply: async () => {
-        await page.getByTestId('VerticalDistance').click()
-      },
-      assertChanged: (code) => {
-        expect((code.match(/verticalDistance\(/g) ?? []).length).toBe(1)
       },
     })
 

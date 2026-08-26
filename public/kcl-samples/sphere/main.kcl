@@ -2,16 +2,13 @@
 // A sphere is a primitive shape defined by its diameter.
 // Categories: Maker
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 diameter = 10
 
-// create a sketch for the sphere profile on the XY plane
-sketch = startSketchOn(XY)
-
 // create the profile centered at the origin
-profile = sketch(on = sketch) {
+profile = sketch(on = XY) {
   line1 = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
   coincident([line1.end, arc2.start])

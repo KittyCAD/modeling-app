@@ -1,0 +1,83 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing rotate_helix.kcl
+---
+{
+  "helix001": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 5.0,
+      "angleStart": 0.0,
+      "ccw": false,
+      "cylinderId": null,
+      "units": "mm"
+    }
+  },
+  "helix002": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 5.0,
+      "angleStart": 0.0,
+      "ccw": true,
+      "cylinderId": null,
+      "units": "mm"
+    }
+  },
+  "helix003": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 8.0,
+      "angleStart": 0.0,
+      "ccw": false,
+      "cylinderId": null,
+      "units": "mm"
+    }
+  },
+  "helix004": {
+    "type": "Helix",
+    "value": {
+      "value": "[uuid]",
+      "artifactId": "[uuid]",
+      "revolutions": 5.0,
+      "angleStart": 0.0,
+      "ccw": false,
+      "cylinderId": null,
+      "units": "mm"
+    }
+  },
+  "rotatedHelices": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Helix",
+        "value": {
+          "value": "[uuid]",
+          "artifactId": "[uuid]",
+          "revolutions": 5.0,
+          "angleStart": 0.0,
+          "ccw": true,
+          "cylinderId": null,
+          "units": "mm"
+        }
+      },
+      {
+        "type": "Helix",
+        "value": {
+          "value": "[uuid]",
+          "artifactId": "[uuid]",
+          "revolutions": 8.0,
+          "angleStart": 0.0,
+          "ccw": false,
+          "cylinderId": null,
+          "units": "mm"
+        }
+      }
+    ]
+  }
+}

@@ -9,6 +9,7 @@
     ```
 3. Commit the changes:
     ```bash
+    git checkout -b "release/VERSION_GOES_HERE"
     git add .
     git commit -m "Bump versions"
     ```

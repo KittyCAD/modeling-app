@@ -35,7 +35,7 @@ profile = sketch(on = XY) {
   vertical(edge2)
 }
 
-solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 
 ```
 
@@ -63,18 +63,6 @@ profile = sketch(on = XY) {
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the solver::vertical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-vertical1_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-vertical1.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 ```kcl
 sketch001 = sketch(on = XY) {
@@ -85,17 +73,5 @@ sketch001 = sketch(on = XY) {
 ```
 
 
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the solver::vertical function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solver-vertical2_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solver-vertical2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
 
 

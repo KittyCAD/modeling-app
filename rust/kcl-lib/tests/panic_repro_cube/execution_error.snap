@@ -6,12 +6,11 @@ KCL Argument error
 
   × argument: The input argument of `getNextAdjacentEdge` requires a value
   │ with type `TaggedEdge`, but found a unique ID (uuid) (with type `Edge`).
-    ╭─[43:5]
+    ╭─[43:25]
  42 │     // these double wrapped functions are the point of this test
  43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
-    ·     ───────────────────────┬───────────────────────┬
-    ·                            │                       ╰── tests/panic_repro_cube/input.kcl
-    ·                            ╰── tests/panic_repro_cube/input.kcl
+    ·                         ─────────────┬────────────
+    ·                                      ╰── tests/panic_repro_cube/input.kcl
  44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
     ╰────
   ╰─▶ KCL Argument error
@@ -19,11 +18,10 @@ KCL Argument error
         × argument: The input argument of `getNextAdjacentEdge` requires a
         │ value with type `TaggedEdge`, but found a unique ID (uuid) (with
         │ type `Edge`).
-          ╭─[43:25]
+          ╭─[43:5]
        42 │     // these double wrapped functions are the point of this test
        43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
-          ·                         ─────────────┬────────────
-          ·                                      ╰── tests/panic_repro_cube/
-      input.kcl
+          ·     ───────────────────────┬───────────────────────
+          ·                            ╰── tests/panic_repro_cube/input.kcl
        44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
           ╰────

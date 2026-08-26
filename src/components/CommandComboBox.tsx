@@ -1,10 +1,15 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import {
+  rankCommandSearchResults,
+  readCommandPaletteUsage,
+  recordCommandPaletteUsage,
+} from '@src/lib/commandPaletteUsage'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
 import { getActorNextEvents } from '@src/lib/utils'
@@ -17,8 +22,8 @@ function CommandComboBox({
   placeholder?: string
 }) {
   const [query, setQuery] = useState('')
-  const [filteredOptions, setFilteredOptions] = useState<typeof options>()
   const { commands } = useApp()
+  const usageHistory = useMemo(() => readCommandPaletteUsage(), [])
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
@@ -35,19 +40,31 @@ function CommandComboBox({
     [options]
   )
 
-  const fuse = new Fuse(sortedOptions, {
-    keys: ['displayName', 'name', 'description'],
-    threshold: 0.3,
-    ignoreLocation: true,
-  })
+  const fuse = useMemo(
+    () =>
+      new Fuse(sortedOptions, {
+        keys: ['displayName', 'name', 'description'],
+        threshold: 0.3,
+        ignoreLocation: true,
+        includeScore: true,
+      }),
+    [sortedOptions]
+  )
 
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : sortedOptions)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query, sortedOptions])
+  const filteredOptions = useMemo(
+    () =>
+      query.length > 0
+        ? rankCommandSearchResults(
+            fuse.search(query),
+            usageHistory,
+            optionIsDisabled
+          )
+        : sortedOptions,
+    [fuse, query, sortedOptions, usageHistory]
+  )
 
   function handleSelection(command: Command) {
+    recordCommandPaletteUsage(command)
     commands.send({ type: 'Select command', data: { command } })
   }
 
@@ -56,7 +73,7 @@ function CommandComboBox({
       <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
         <CustomIcon
           name="search"
-          className="w-5 h-5 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
+          className="w-5 h-5 shrink-0 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
         />
         <Combobox.Input
           {...noAutofillInputProps}
@@ -94,9 +111,9 @@ function CommandComboBox({
               data-testid={`cmd-bar-option`}
             >
               {'icon' in option && option.icon && (
-                <CustomIcon name={option.icon} className="w-5 h-5" />
+                <CustomIcon name={option.icon} className="w-5 h-5 shrink-0" />
               )}
-              <div className="flex-grow flex flex-col">
+              <div className="min-w-0 flex-grow flex flex-col">
                 <p
                   className={
                     'my-0 leading-tight' +
@@ -112,14 +129,17 @@ function CommandComboBox({
                 )}
               </div>
               {option.status === 'experimental' && (
-                <div className="text-xs flex items-center justify-center gap-1 text-primary">
-                  <CustomIcon name="beaker" className="w-4 h-4" />
+                <div className="shrink-0 text-xs flex items-center justify-center gap-1 text-primary">
+                  <CustomIcon name="beaker" className="w-4 h-4 shrink-0" />
                   <span>Experimental</span>
                 </div>
               )}
               {option.status === 'deprecated' && (
-                <div className="text-xs flex items-center justify-center gap-1 text-warn-80 dark:text-warn-40">
-                  <CustomIcon name="triangleExclamation" className="w-4 h-4" />
+                <div className="shrink-0 text-xs flex items-center justify-center gap-1 text-warn-80 dark:text-warn-40">
+                  <CustomIcon
+                    name="triangleExclamation"
+                    className="w-4 h-4 shrink-0"
+                  />
                   <span>Deprecated</span>
                 </div>
               )}

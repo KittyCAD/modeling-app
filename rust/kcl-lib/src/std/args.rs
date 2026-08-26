@@ -36,6 +36,7 @@ use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
@@ -188,7 +189,7 @@ impl Args {
             )));
         };
 
-        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()
@@ -310,7 +311,7 @@ impl Args {
                 vec![self.source_range],
             )))?;
 
-        let arg = arg.value.coerce(ty, true, exec_state).map_err(|_| {
+        let arg = arg.value.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
             let actual_type = arg.value.principal_type();
             let actual_type_name = actual_type
                 .as_ref()
@@ -1040,18 +1041,23 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry 
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
             KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::Helix { value } => Some(Self::HelixSet(vec![(**value).clone()])),
             KclValue::HomArray { value, .. } => {
                 let mut solids = vec![];
                 let mut sketches = vec![];
+                let mut helices = vec![];
                 for item in value {
                     match item {
                         KclValue::Solid { value } => solids.push((**value).clone()),
                         KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        KclValue::Helix { value } => helices.push((**value).clone()),
                         _ => return None,
                     }
                 }
                 if !solids.is_empty() {
                     Some(Self::SolidSet(solids))
+                } else if !helices.is_empty() {
+                    Some(Self::HelixSet(helices))
                 } else {
                     Some(Self::SketchSet(sketches))
                 }
@@ -1358,6 +1364,45 @@ impl<'a> FromKclValue<'a> for TyF64 {
             KclValue::Number { value, ty, .. } => Some(TyF64::new(*value, *ty)),
             _ => None,
         }
+    }
+}
+
+// The next three impls map by variant name alone. The declared KCL signature
+// has already coerced the argument, and enum coercion is nominal, so a value
+// reaching them is a variant of the right enum.
+impl<'a> FromKclValue<'a> for crate::execution::Orientation {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Visibility {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Projection {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::CameraView {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::CameraView { value } = arg else {
+            return None;
+        };
+        Some((**value).clone())
     }
 }
 

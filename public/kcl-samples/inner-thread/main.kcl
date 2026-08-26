@@ -2,6 +2,8 @@
 // An example of an inner thread on a cylinder.
 // Categories: Fasteners
 
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
 outerCylinderRadius = 5mm
 
 outerCylinderSketch = sketch(on = XY) {

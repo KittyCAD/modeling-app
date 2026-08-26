@@ -13,9 +13,12 @@ export * from '@src/lib/cloudSync/engine'
 export { retryCloudSyncEngine as retryCloudSync } from '@src/lib/cloudSync/engine'
 export type {
   CloudSyncConfig,
+  CloudSyncOpenedProject,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
   ProjectMetadata as CloudSyncProjectMetadata,
+  ProjectSyncFailure,
+  ProjectSyncFailureKind,
 } from '@src/lib/cloudSync/types'
 
 let fsObserverInstalled = false

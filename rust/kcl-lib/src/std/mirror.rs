@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
-use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
@@ -22,23 +21,26 @@ use crate::execution::Solid;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::axis_or_reference::Axis2dOrEdgeReference;
 use crate::std::axis_or_reference::MirrorAcross3d;
 use crate::std::clone::fix_tags_and_references;
+use crate::std::patterns::GeometryTrait;
 
 /// Mirror a solid.
 pub async fn mirror_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let bodies = args.get_unlabeled_kw_arg("bodies", &RuntimeType::solids(), exec_state)?;
-    let across = args.get_kw_arg(
-        "across",
-        &RuntimeType::Union(vec![
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::Primitive(PrimitiveType::Axis3d),
-            RuntimeType::Primitive(PrimitiveType::Plane),
-            RuntimeType::segment(),
-        ]),
-        exec_state,
-    )?;
+    let across_value: KclValue = args.get_kw_arg("across", &RuntimeType::any(), exec_state)?;
+    let across = if crate::std::edge::is_edge_specifier_object(&across_value) {
+        MirrorAcross3d::EdgeSpecifier(crate::std::edge::parse_edge_specifier_value(&across_value, &args)?)
+    } else {
+        MirrorAcross3d::from_kcl_val(&across_value).ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                "across must be an Edge, Plane, Axis3d, Segment, or an edge specifier object".to_owned(),
+                vec![args.source_range],
+            ))
+        })?
+    };
 
     let bodies = inner_mirror_3d(bodies, across, exec_state, args).await?;
     Ok(bodies.into())
@@ -54,6 +56,12 @@ async fn inner_mirror_3d(
     let unmapped_mirrored_bodies = bodies.clone();
 
     if args.ctx.no_engine_commands().await {
+        let mut unmapped_mirrored_bodies = unmapped_mirrored_bodies;
+        for mirrored_body in &mut unmapped_mirrored_bodies {
+            let id = exec_state.next_uuid();
+            mirrored_body.set_id(id);
+            mirrored_body.become_new_body(id, id.into());
+        }
         return Ok(unmapped_mirrored_bodies);
     }
 
@@ -74,8 +82,21 @@ async fn inner_mirror_3d(
                 z: LengthUnit(origin[2].to_mm()),
             },
         },
-        MirrorAcross3d::Edge(edge) => MirrorAcross::Edge {
-            id: edge.get_engine_id(exec_state, &args)?,
+        MirrorAcross3d::Edge(edge) => {
+            let edge_id = edge.get_engine_id(exec_state, &args)?;
+            let source_range = args
+                .labeled
+                .get("across")
+                .map(|arg| arg.source_range)
+                .unwrap_or(args.source_range);
+            crate::std::edge::record_refactor_meta_for_consumed_edge(exec_state, edge_id, source_range, &args).await;
+            MirrorAcross::Edge { id: edge_id }
+        }
+        MirrorAcross3d::EdgeSpecifier(specifier) => MirrorAcross::EdgeReference {
+            reference: crate::std::edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
+                &specifier, exec_state, &args,
+            )
+            .await?,
         },
         MirrorAcross3d::Plane(mut plane) => {
             if plane.is_uninitialized() {
@@ -127,15 +148,16 @@ async fn inner_mirror_3d(
     }
 
     let mut mirrored_bodies = Vec::with_capacity(unmapped_mirrored_bodies.len());
-    for ((mut mirrored_body, old_id), info) in unmapped_mirrored_bodies
+    for (mut mirrored_body, info) in unmapped_mirrored_bodies
         .into_iter()
-        .zip(old_body_ids)
         .zip(mirror_info.entity_face_edge_ids.iter())
     {
+        let old_id = mirrored_body.id;
+        let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
-        mirrored_body.artifact_id = ArtifactId::new(info.object_id);
+        mirrored_body.become_new_body(info.object_id, info.object_id.into());
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
-        fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+        fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await
             .map_err(|e| {
                 KclError::new_internal(KclErrorDetails::new(
@@ -307,4 +329,91 @@ async fn inner_mirror_2d(
     }
 
     Ok(starting_sketches)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_mirror_has_independent_consumption_identity() {
+        let code = r#"// Mirrored rectangular cut blocks
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseStartX = 1mm
+baseWidth = 10mm
+baseHeight = 10mm
+partThickness = 5mm
+cutStartX = 3mm
+cutStartY = 3mm
+cutWidth = 2mm
+cutHeight = 2mm
+
+baseSketch = sketch(on = XY) {
+  baseBottom = line(start = [var 1mm, var 0mm], end = [var 11mm, var 0mm])
+  baseRight = line(start = [var 11mm, var 0mm], end = [var 11mm, var 10mm])
+  baseTop = line(start = [var 11mm, var 10mm], end = [var 1mm, var 10mm])
+  baseLeft = line(start = [var 1mm, var 10mm], end = [var 1mm, var 0mm])
+
+  coincident([baseBottom.end, baseRight.start])
+  coincident([baseRight.end, baseTop.start])
+  coincident([baseTop.end, baseLeft.start])
+  coincident([baseLeft.end, baseBottom.start])
+  horizontal(baseBottom)
+  horizontal(baseTop)
+  vertical(baseRight)
+  vertical(baseLeft)
+  horizontalDistance([ORIGIN, baseBottom.start]) == baseStartX
+  verticalDistance([ORIGIN, baseBottom.start]) == 0mm
+  horizontalDistance([baseBottom.start, baseBottom.end]) == baseWidth
+  verticalDistance([baseBottom.start, baseLeft.start]) == baseHeight
+}
+
+baseRegion = region(segments = [
+  baseSketch.baseBottom,
+  baseSketch.baseRight
+])
+base = extrude(baseRegion, length = partThickness)
+hiddenBaseSketch = hide(baseSketch)
+
+mirroredBase = mirror3d([base], across = YZ)
+
+cutSketch = sketch(on = XY) {
+  cutBottom = line(start = [var 3mm, var 3mm], end = [var 5mm, var 3mm])
+  cutRight = line(start = [var 5mm, var 3mm], end = [var 5mm, var 5mm])
+  cutTop = line(start = [var 5mm, var 5mm], end = [var 3mm, var 5mm])
+  cutLeft = line(start = [var 3mm, var 5mm], end = [var 3mm, var 3mm])
+
+  coincident([cutBottom.end, cutRight.start])
+  coincident([cutRight.end, cutTop.start])
+  coincident([cutTop.end, cutLeft.start])
+  coincident([cutLeft.end, cutBottom.start])
+  horizontal(cutBottom)
+  horizontal(cutTop)
+  vertical(cutRight)
+  vertical(cutLeft)
+  horizontalDistance([ORIGIN, cutBottom.start]) == cutStartX
+  verticalDistance([ORIGIN, cutBottom.start]) == cutStartY
+  horizontalDistance([cutBottom.start, cutBottom.end]) == cutWidth
+  verticalDistance([cutBottom.start, cutLeft.start]) == cutHeight
+}
+
+cutRegion = region(segments = [
+  cutSketch.cutBottom,
+  cutSketch.cutRight
+])
+tool = extrude(cutRegion, length = partThickness)
+hiddenCutSketch = hide(cutSketch)
+
+mirroredTool = mirror3d([tool], across = YZ)
+firstCut = subtract(base, tools = [tool])
+secondCut = subtract(mirroredBase, tools = [mirroredTool])
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        result.unwrap();
+    }
 }

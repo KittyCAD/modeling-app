@@ -1,5 +1,6 @@
 use anyhow::Result;
 
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::walk::Node;
 
 /// Walk-specific trait adding the ability to traverse the KCL AST.
@@ -101,13 +102,19 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 vec![(&n.object).into(), (&n.property).into()]
             }
             Node::IfExpression(n) => {
-                let mut children = n.else_ifs.iter().map(|v| v.into()).collect::<Vec<Node>>();
-                children.insert(0, n.cond.as_ref().into());
+                let mut children = vec![n.cond.as_ref().into(), n.then_val.as_ref().into()];
+                children.extend(n.else_ifs.iter().map(Node::from));
                 children.push(n.final_else.as_ref().into());
                 children
             }
             Node::VariableDeclaration(n) => vec![(&n.declaration).into()],
-            Node::TypeDeclaration(n) => vec![(&n.name).into()],
+            Node::TypeDeclaration(n) => {
+                let mut children: Vec<Node> = vec![(&n.name).into()];
+                if let TypeDeclarationDefinition::Enum(e) = &n.definition {
+                    children.extend(e.variants.iter().map(|v| Node::from(&v.name)));
+                }
+                children
+            }
             Node::ReturnStatement(n) => {
                 vec![(&n.argument).into()]
             }
@@ -216,5 +223,36 @@ fn crow3() {
         let count_crows: CountCrows = Default::default();
         Visitable::visit(&prog, &count_crows).unwrap();
         assert_eq!(*count_crows.n.lock().unwrap(), 4);
+    }
+
+    /// All if-expression branches are visited, including the then branch.
+    #[test]
+    fn visits_all_if_expression_branches() {
+        let program = kcl!(
+            "\
+x = if true {
+  crow1 = 1
+  crow1
+} else if false {
+  crow2 = 2
+  crow2
+} else {
+  crow3 = 3
+  crow3
+}
+"
+        );
+
+        let count = Mutex::new(0usize);
+        crate::walk::walk(&program, |node| {
+            if let Node::VariableDeclarator(vd) = node
+                && vd.id.name.starts_with("crow")
+            {
+                *count.lock().unwrap() += 1;
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })
+        .unwrap();
+        assert_eq!(*count.lock().unwrap(), 3);
     }
 }

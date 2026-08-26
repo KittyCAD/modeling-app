@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test'
 
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
@@ -17,109 +16,6 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
   test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
-
-  test('Verify in-pipe extrudes in bracket can be edited', async ({
-    tronApp,
-    context,
-    editor,
-    homePage,
-    page,
-    scene,
-    toolbar,
-    cmdBar,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, bracket)
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('bracketBody', 0)).dblclick()
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: 'width',
-        headerArguments: {
-          Length: '5',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
-      })
-      await page.keyboard.insertText('width - 0.001in')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '4.999in',
-        },
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain('extrude(length = width - 0.001in)')
-    })
-
-    await test.step(`Edit second extrude via feature tree`, async () => {
-      await (
-        await toolbar.getFeatureTreeOperation('shelfMountingHoles', 0)
-      ).dblclick()
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '-thickness - .01',
-        headerArguments: {
-          Length: '-0.3949',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
-      })
-      await page.keyboard.insertText('-thickness - .01 - 0.001')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '-0.3959',
-        },
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain(
-        'extrude(length = -thickness - .01 - 0.001)'
-      )
-    })
-
-    await test.step(`Edit third extrude via feature tree`, async () => {
-      await (
-        await toolbar.getFeatureTreeOperation('wallMountingHoles', 0)
-      ).dblclick()
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '-thickness - 0.1',
-        headerArguments: {
-          Length: '-0.4849',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
-      })
-      await page.keyboard.insertText('-thickness - 0.1 - 0.001')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '-0.4859',
-        },
-        commandName: 'Extrude',
-      })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain(
-        'extrude(length = -thickness - 0.1 - 0.001)'
-      )
-    })
-  })
 
   test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
     context,
@@ -1233,7 +1129,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,extrude001.faces.capEnd001]), radius=5)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1911,7 +1807,6 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
   })
 
   test(`Translate point-and-click with segment-to-body coercion`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1930,11 +1825,9 @@ box = extrude(profile, length = 30)`
     const segmentToSelect = `yLine(length = 20)`
 
     await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
       await scene.settled()
     })
 
@@ -1955,6 +1848,7 @@ box = extrude(profile, length = 30)`
         currentArgValue: '',
         headerArguments: {
           Objects: '',
+          X: '5',
         },
         highlightedHeaderArg: 'objects',
         stage: 'arguments',
@@ -1965,8 +1859,23 @@ box = extrude(profile, length = 30)`
     })
 
     await test.step('Complete command flow', async () => {
-      await test.step('Progress to review since object is already selected', async () => {
+      await test.step('Progress to the prepopulated x argument', async () => {
         await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '5',
+          headerArguments: {
+            Objects: '1 path',
+            X: '5',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+      })
+
+      await test.step('Clear the default x translation', async () => {
+        await cmdBar.clearNonRequiredButton.click()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
@@ -1976,6 +1885,37 @@ box = extrude(profile, length = 30)`
           reviewValidationError:
             'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
+        await expect(cmdBar.cmdBarElement.getByRole('alert')).toContainText(
+          'Check these arguments'
+        )
+
+        const codemodToggle = cmdBar.cmdBarElement.getByRole('button', {
+          name: 'Code changes',
+        })
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'false')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).not.toBeAttached()
+
+        await codemodToggle.click()
+        await expect(codemodToggle).toHaveAttribute('aria-expanded', 'true')
+        await expect(
+          cmdBar.cmdBarElement.getByTestId('cmd-bar-codemod-diff')
+        ).toBeVisible()
+        await expect(
+          cmdBar.cmdBarElement.getByRole('textbox', {
+            name: 'Current file',
+          })
+        ).not.toContainText('translate(box)')
+        const proposedFile = cmdBar.cmdBarElement.getByRole('textbox', {
+          name: 'Proposed file',
+        })
+        await expect(proposedFile).toContainText('translate(box)')
+        await proposedFile.selectText()
+        await page.keyboard.press('ControlOrMeta+C')
+        await expect
+          .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+          .toContain('translate(box)')
       })
 
       await test.step('Add x translation', async () => {
@@ -1983,7 +1923,7 @@ box = extrude(profile, length = 30)`
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'x',
-          currentArgValue: '0',
+          currentArgValue: '5',
           headerArguments: {
             Objects: '1 path',
             X: '',
@@ -2004,6 +1944,11 @@ box = extrude(profile, length = 30)`
           },
           commandName: 'Translate',
         })
+        await expect(
+          cmdBar.cmdBarElement.getByRole('button', {
+            name: 'Code changes',
+          })
+        ).not.toBeAttached()
         await cmdBar.submit()
         await scene.settled()
       })

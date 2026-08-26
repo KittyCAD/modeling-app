@@ -3,6 +3,7 @@ import type {
   Number as ApiNumber,
   ApiObject,
   ApiPoint2d,
+  ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
   SceneGraphDelta,
   SegmentCtor,
@@ -22,17 +23,25 @@ import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray, roundOff } from '@src/lib/utils'
-import { distance2d } from '@src/lib/utils2d'
+import { distance2d, polar2d } from '@src/lib/utils2d'
+import { calculateArcRenderInput } from '@src/machines/sketchSolve/constraints/AngleConstraintBuilder'
+import { getArcLabelOffset } from '@src/machines/sketchSolve/constraints/ArcDimensionLine'
 import { isConstraintHoverPopup } from '@src/machines/sketchSolve/constraints/InvisibleConstraintSpriteBuilder'
 import {
+  type AngleConstraint,
+  type DiameterConstraint,
+  type DistanceConstraint,
+  type RadiusConstraint,
   axisConstraintIncludesOrigin,
   getAxisConstraintPointIds,
   getCoincidentCluster,
+  isAngleConstraint,
   isArcLikeSegment,
   isConstraint,
   isControlPointSplineSegment,
   isDiameterConstraint,
   isDistanceConstraint,
+  isLineSegment,
   isOwnedLineSegment,
   isPointSegment,
   isRadiusConstraint,
@@ -49,9 +58,13 @@ import {
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import {
+  getSketchSolveBlockingIssues,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   ORIGIN_TARGET,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   type SolveActionArgs,
   buildSegmentCtorFromObject,
@@ -85,14 +98,9 @@ type DragSketchOutcome = {
   sceneGraphDelta: SceneGraphDelta
 }
 
-type ConstraintLabelEdit = {
-  constraintId: number
-  labelPosition: ApiPoint2d<ApiNumber>
-}
-
 type DragCommitCandidate = DragSketchOutcome & {
   segmentsToEdit: ExistingSegmentCtor[]
-  constraintLabelEdits: ConstraintLabelEdit[]
+  constraintLabelEdits: ConstraintLabelPositionEdit[]
   dragAnchorSegmentIds: number[]
   dragAnchors: SegmentDragAnchor[]
 }
@@ -272,6 +280,7 @@ function buildSegmentCtorWithDrag({
       center: newCenter,
       start: newStart,
       end: newEnd,
+      direction: baseCtor.direction,
     }
   } else if (baseCtor.type === 'Circle') {
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
@@ -355,12 +364,19 @@ function buildSegmentDragAnchors({
   ]
 }
 
-function isConstraintWithDraggableLabel(obj: ApiObject | undefined) {
+function isConstraintWithDraggableLabel(
+  obj: ApiObject | undefined
+): obj is
+  | DistanceConstraint
+  | RadiusConstraint
+  | DiameterConstraint
+  | AngleConstraint {
   return (
     obj !== undefined &&
     (isDistanceConstraint(obj) ||
       isRadiusConstraint(obj) ||
-      isDiameterConstraint(obj))
+      isDiameterConstraint(obj) ||
+      isAngleConstraint(obj))
   )
 }
 
@@ -384,7 +400,7 @@ function buildConstraintLabelEditsForMovedSegments({
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
+}): ConstraintLabelPositionEdit[] {
   return objectsBeforeDrag.flatMap((obj) => {
     if (isDistanceConstraint(obj)) {
       return buildDistanceLabelEditsForMovedSegments({
@@ -404,7 +420,54 @@ function buildConstraintLabelEditsForMovedSegments({
       })
     }
 
+    if (isAngleConstraint(obj)) {
+      return buildAngleLabelEditsForMovedSegments({
+        obj,
+        objectsBeforeDrag,
+        objectsAfterDrag,
+        units,
+      })
+    }
+
     return []
+  })
+}
+
+function buildConstraintLabelEditsForSnappedPoint({
+  objectsBeforeSnap,
+  pointId,
+  position,
+  units,
+}: {
+  objectsBeforeSnap: ApiObject[]
+  pointId: number
+  position: Coords2d
+  units: NumericSuffix
+}): ConstraintLabelPositionEdit[] {
+  const point = objectsBeforeSnap[pointId]
+  if (!isPointSegment(point)) {
+    return []
+  }
+
+  const objectsAtSnapPosition = [...objectsBeforeSnap]
+  objectsAtSnapPosition[pointId] = {
+    ...point,
+    kind: {
+      ...point.kind,
+      segment: {
+        ...point.kind.segment,
+        position: buildConstraintLabelPosition(
+          new Vector2(position[0], position[1]),
+          units
+        ),
+      },
+    },
+  }
+
+  return buildConstraintLabelEditsForMovedSegments({
+    objectsBeforeDrag: objectsBeforeSnap,
+    objectsAfterDrag: objectsAtSnapPosition,
+    units,
   })
 }
 
@@ -414,24 +477,23 @@ function buildDistanceLabelEditsForMovedSegments({
   objectsAfterDrag,
   units,
 }: {
-  obj: ApiObject
+  obj: DistanceConstraint
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
-  if (!isDistanceConstraint(obj)) {
-    return []
-  }
-
-  const { points, labelPosition } = obj.kind.constraint
+}): ConstraintLabelPositionEdit[] {
+  const { segments, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
   }
 
   const pointPairs: Array<{ before: Vector2; after: Vector2 }> = []
-  for (const point of points) {
-    const before = getDistanceConstraintPointPosition(point, objectsBeforeDrag)
-    const after = getDistanceConstraintPointPosition(point, objectsAfterDrag)
+  for (const segment of segments) {
+    const before = getDistanceConstraintPointPosition(
+      segment,
+      objectsBeforeDrag
+    )
+    const after = getDistanceConstraintPointPosition(segment, objectsAfterDrag)
     if (!before || !after) {
       return []
     }
@@ -469,15 +531,11 @@ function buildCircularLabelEditsForMovedSegments({
   objectsAfterDrag,
   units,
 }: {
-  obj: ApiObject
+  obj: RadiusConstraint | DiameterConstraint
   objectsBeforeDrag: ApiObject[]
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
-}): ConstraintLabelEdit[] {
-  if (!isRadiusConstraint(obj) && !isDiameterConstraint(obj)) {
-    return []
-  }
-
+}): ConstraintLabelPositionEdit[] {
   const { arc, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
@@ -516,6 +574,76 @@ function buildCircularLabelEditsForMovedSegments({
       labelPosition: buildConstraintLabelPosition(transformedLabel, units),
     },
   ]
+}
+
+function buildAngleLabelEditsForMovedSegments({
+  obj,
+  objectsBeforeDrag,
+  objectsAfterDrag,
+  units,
+}: {
+  obj: ApiObject
+  objectsBeforeDrag: ApiObject[]
+  objectsAfterDrag: ApiObject[]
+  units: NumericSuffix
+}): ConstraintLabelPositionEdit[] {
+  if (!isAngleConstraint(obj)) {
+    return []
+  }
+
+  const { labelPosition } = obj.kind.constraint
+  if (!labelPosition) {
+    return []
+  }
+
+  const afterObj = objectsAfterDrag[obj.id]
+  if (!isAngleConstraint(afterObj)) {
+    return []
+  }
+
+  const beforeArc = calculateArcRenderInput(obj, objectsBeforeDrag, 1)
+  const afterArc = calculateArcRenderInput(afterObj, objectsAfterDrag, 1)
+  if (!beforeArc || !afterArc || beforeArc.labelAngle === undefined) {
+    return []
+  }
+
+  if (
+    !lineSegmentMoved(beforeArc.line1, afterArc.line1) &&
+    !lineSegmentMoved(beforeArc.line2, afterArc.line2)
+  ) {
+    return []
+  }
+
+  const labelRadius = new Vector2(
+    labelPosition.x.value,
+    labelPosition.y.value
+  ).distanceTo(new Vector2(beforeArc.center[0], beforeArc.center[1]))
+  const labelOffset = getArcLabelOffset(
+    beforeArc.startAngle,
+    beforeArc.sweepAngle,
+    beforeArc.labelAngle
+  )
+  const labelAngle = afterArc.startAngle + labelOffset
+  const transformedLabel = new Vector2(
+    ...polar2d(afterArc.center, labelRadius, labelAngle)
+  )
+
+  return [
+    {
+      constraintId: obj.id,
+      labelPosition: buildConstraintLabelPosition(transformedLabel, units),
+    },
+  ]
+}
+
+function lineSegmentMoved(
+  before: readonly [Coords2d, Coords2d],
+  after: readonly [Coords2d, Coords2d]
+) {
+  return (
+    distance2d(before[0], after[0]) > 1e-4 ||
+    distance2d(before[1], after[1]) > 1e-4
+  )
 }
 
 function getDistanceConstraintPointPosition(
@@ -619,49 +747,68 @@ function transformDistanceLabelWithAxes(
     .add(afterPerp.multiplyScalar(perpOffset))
 }
 
-async function applyConstraintLabelPreviewEdits({
-  result,
-  labelEdits,
-  editDistanceConstraintLabelPosition,
-  version,
-  sketchId,
-  settings,
-  anchorSegmentIds,
+function mergeConstraintLabelPreviewEdits({
+  pendingLabelEdits,
+  movedLabelEdits,
 }: {
-  result: DragSketchOutcome
-  labelEdits: ConstraintLabelEdit[]
-  editDistanceConstraintLabelPosition: (
-    version: number,
-    sketchId: number,
-    constraintId: number,
-    labelPosition: ApiPoint2d<ApiNumber>,
-    settings: DeepPartial<Configuration>,
-    anchorSegmentIds?: number[]
-  ) => Promise<DragSketchOutcome | null>
-  version: number
-  sketchId: number
-  settings: DeepPartial<Configuration>
-  anchorSegmentIds: number[]
-}): Promise<DragSketchOutcome | null> {
-  let latestResult = result
+  pendingLabelEdits: ConstraintLabelPositionEdit[]
+  movedLabelEdits: ConstraintLabelPositionEdit[]
+}): ConstraintLabelPositionEdit[] {
+  const mergedEdits = new Map(
+    pendingLabelEdits.map((edit) => [edit.constraintId, edit])
+  )
 
-  for (const { constraintId, labelPosition } of labelEdits) {
-    const nextResult = await editDistanceConstraintLabelPosition(
-      version,
-      sketchId,
-      constraintId,
-      labelPosition,
-      settings,
-      anchorSegmentIds
-    )
-    if (!nextResult) {
-      return null
-    }
-
-    latestResult = nextResult
+  for (const edit of movedLabelEdits) {
+    mergedEdits.set(edit.constraintId, edit)
   }
 
-  return latestResult
+  return Array.from(mergedEdits.values())
+}
+
+function applyConstraintLabelPreviewEdits({
+  result,
+  labelEdits,
+}: {
+  result: DragSketchOutcome
+  labelEdits: ConstraintLabelPositionEdit[]
+}): DragSketchOutcome {
+  // labelPosition is solver-neutral. Keep it as a UI-only override during the
+  // drag, then commit it with the final segment edit in one AST execution.
+  const labelPositions = new Map(
+    labelEdits.map(({ constraintId, labelPosition }) => [
+      constraintId,
+      labelPosition,
+    ])
+  )
+  const sceneGraph = result.sceneGraphDelta.new_graph
+  const objects = sceneGraph.objects.map((obj) => {
+    const labelPosition = labelPositions.get(obj.id)
+    if (!labelPosition || !isConstraintWithDraggableLabel(obj)) {
+      return obj
+    }
+
+    return {
+      ...obj,
+      kind: {
+        ...obj.kind,
+        constraint: {
+          ...obj.kind.constraint,
+          labelPosition,
+        },
+      },
+    }
+  })
+
+  return {
+    ...result,
+    sceneGraphDelta: {
+      ...result.sceneGraphDelta,
+      new_graph: {
+        ...sceneGraph,
+        objects,
+      },
+    },
+  }
 }
 
 function getDragPointSnappingCandidate({
@@ -845,7 +992,7 @@ function getAxisConstraintWithOrigin(
 }
 
 function hasSketchSolveIssues(sceneGraphDelta?: SceneGraphDelta): boolean {
-  return (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0
+  return getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
 }
 
 function buildPreviewOutcomeWithPreservedGeometry({
@@ -881,6 +1028,8 @@ type CreateOnDragStartCallbackArgs = {
   getCurrentCommittedCheckpointId: () => number | null
   // Clears transient hover UI that should not remain visible during drag.
   dismissConstraintHoverPopup: () => void
+  getDraggedEntityId: () => number | null
+  onUpdateHoveredId: (hoveredId: number | null) => void
 }
 
 /**
@@ -899,6 +1048,8 @@ export function createOnDragStartCallback({
   getCurrentSketchOutcome,
   getCurrentCommittedCheckpointId,
   dismissConstraintHoverPopup,
+  getDraggedEntityId,
+  onUpdateHoveredId,
 }: CreateOnDragStartCallbackArgs): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
   selected?: Object3D
@@ -908,9 +1059,17 @@ export function createOnDragStartCallback({
   return ({ intersectionPoint }) => {
     dismissConstraintHoverPopup()
     beginDragSession()
+    const currentSketchOutcome = getCurrentSketchOutcome()
+    const draggedConstraintLabelId = getConstraintLabelId(
+      getDraggedEntityId(),
+      currentSketchOutcome?.sceneGraphDelta
+    )
+    if (draggedConstraintLabelId !== null) {
+      onUpdateHoveredId(draggedConstraintLabelId)
+    }
     setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
     setLastGoodPreview(null)
-    setDragStartOutcome(getCurrentSketchOutcome())
+    setDragStartOutcome(currentSketchOutcome)
     setPreDragCheckpointId(getCurrentCommittedCheckpointId())
   }
 }
@@ -976,6 +1135,7 @@ export function createOnClickCallback({
     selectedIds: Array<SketchSolveSelectionId>
     duringAreaSelectIds: Array<number>
     replaceExistingSelection?: boolean
+    selectionCoordinates?: SelectionCoordinates
   }) => void
   onEditConstraint: (constraintId: number) => void
 }): (arg: {
@@ -1024,10 +1184,18 @@ export function createOnClickCallback({
           sceneInfra
         )
       }
+      const selectionCoordinates =
+        closestSelection &&
+        typeof closestSelection.selectionId === 'number' &&
+        isLineSegment(selectedApiObject) &&
+        mousePosition
+          ? { [closestSelection.selectionId]: mousePosition }
+          : undefined
       onUpdateSelectedIds({
         selectedIds: closestSelection ? [closestSelection.selectionId] : [],
         duringAreaSelectIds: [],
         ...(shouldReplaceSelection ? { replaceExistingSelection: true } : {}),
+        ...(selectionCoordinates ? { selectionCoordinates } : {}),
       })
     }
   }
@@ -1224,6 +1392,7 @@ export function createOnDragCallback({
   getDefaultLengthUnit,
   getJsAppSettings,
   sceneInfra,
+  onClearDragSnapping,
   onUpdateDragSnapping,
   onPreviewSolveStarted,
   onPreviewSolveSettled,
@@ -1277,6 +1446,7 @@ export function createOnDragCallback({
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
   sceneInfra: SceneInfra
+  onClearDragSnapping: () => void
   onUpdateDragSnapping: (candidate: SnappingCandidate | null) => void
   onPreviewSolveStarted?: () => void
   onPreviewSolveSettled?: () => void
@@ -1342,7 +1512,7 @@ export function createOnDragCallback({
         })
 
         if (result && isActiveDragSession()) {
-          onUpdateDragSnapping(null)
+          onClearDragSnapping()
           onNewSketchOutcome({
             ...result,
             writeToDisk: false,
@@ -1485,53 +1655,32 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result && isActiveDragSession()) {
         if (!hasSketchSolveIssues(result.sceneGraphDelta)) {
-          let appliedConstraintLabelEdits: ConstraintLabelEdit[] = []
-          const constraintLabelEdits =
+          const labelEditBaselineObjects =
+            getDragStartOutcome()?.sceneGraphDelta.new_graph.objects ?? objects
+          const movedConstraintLabelEdits =
             buildConstraintLabelEditsForMovedSegments({
-              objectsBeforeDrag: objects,
+              objectsBeforeDrag: labelEditBaselineObjects,
               objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
               units,
-            }).filter(({ constraintId }) => {
-              if (dragAnchors.length === 0) {
-                return true
-              }
-
-              const constraint = objects[constraintId]
-              return (
-                !isRadiusConstraint(constraint) &&
-                !isDiameterConstraint(constraint)
-              )
             })
+          const constraintLabelEdits = mergeConstraintLabelPreviewEdits({
+            // A sub-threshold endpoint movement produces no new transform.
+            // Keep the prior transient label instead of reverting to the
+            // persisted label returned by Rust.
+            pendingLabelEdits: getLastGoodPreview()?.constraintLabelEdits ?? [],
+            movedLabelEdits: movedConstraintLabelEdits,
+          })
           if (constraintLabelEdits.length > 0) {
-            const labelResult = await applyConstraintLabelPreviewEdits({
+            result = applyConstraintLabelPreviewEdits({
               result,
               labelEdits: constraintLabelEdits,
-              editDistanceConstraintLabelPosition,
-              version: 0,
-              sketchId,
-              settings,
-              anchorSegmentIds: dragAnchorSegmentIds,
-            }).catch((err) => {
-              if (!isActiveDragSession()) {
-                return null
-              }
-              console.error('failed to edit constraint label', err)
-              toastSketchSolveError(err)
-              return null
             })
-            if (!isActiveDragSession()) {
-              return
-            }
-            if (labelResult) {
-              result = labelResult
-              appliedConstraintLabelEdits = constraintLabelEdits
-            }
           }
 
           setLastGoodPreview({
             ...result,
             segmentsToEdit,
-            constraintLabelEdits: appliedConstraintLabelEdits,
+            constraintLabelEdits,
             dragAnchorSegmentIds,
             dragAnchors,
           })
@@ -1839,6 +1988,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getCurrentCommittedCheckpointId: () =>
         context.kclManager.currentSketchCheckpointId,
       dismissConstraintHoverPopup: dismissConstraintHoverPopupOnDragStart,
+      getDraggedEntityId,
+      onUpdateHoveredId: sendHoveredState,
     }),
     onDragEnd: createOnDragEndCallback({
       getDraggedEntityId,
@@ -1868,6 +2019,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             currentSceneGraphDelta
           )
           if (draggedConstraintLabelId != null) {
+            // Directly dragging a constraint -> shortcut
             if (!intersectionPoint?.twoD) {
               return
             }
@@ -1941,39 +2093,21 @@ export function setUpOnDragAndSelectionClickCallbacks({
           let restoredPreDragOutcome: DragSketchOutcome | null = null
           const commitSegmentAndLabelEdits = async (
             segmentsToEdit: ExistingSegmentCtor[],
-            constraintLabelEdits: ConstraintLabelEdit[] = [],
+            constraintLabelEdits: ConstraintLabelPositionEdit[] = [],
             dragAnchorSegmentIds = segmentsToEdit.map(({ id }) => id),
             dragAnchors: SegmentDragAnchor[] = []
-          ) => {
-            let latestResult = await context.rustContext.editSegments(
+          ) =>
+            context.rustContext.editSegments(
               0,
               context.sketchId,
               segmentsToEdit,
               settings,
-              constraintLabelEdits.length === 0,
+              true,
               dragAnchorSegmentIds,
               true,
-              dragAnchors
+              dragAnchors,
+              constraintLabelEdits
             )
-
-            for (const [
-              index,
-              { constraintId, labelPosition },
-            ] of constraintLabelEdits.entries()) {
-              latestResult =
-                await context.rustContext.editDistanceConstraintLabelPosition(
-                  SKETCH_FILE_VERSION,
-                  context.sketchId,
-                  constraintId,
-                  labelPosition,
-                  settings,
-                  index === constraintLabelEdits.length - 1,
-                  dragAnchorSegmentIds
-                )
-            }
-
-            return latestResult
-          }
 
           const ensureRestoredBaseline = async () => {
             if (restoredPreDragOutcome) {
@@ -2024,13 +2158,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
           }
 
           if (shouldRecoverInvalidPreview) {
+            // Current preview is invalid -> recover last good result to prevent an invalid result becoming the committed sketch
             result = await recoverKnownGoodResult('invalid preview on drag end')
           } else if (
             snappingCandidate &&
+            currentSceneGraphDelta &&
             draggedEntityId !== null &&
             snapConstraints.length > 0
           ) {
+            // The endpoint should snap
             const [x, y] = snappingCandidate.position
+            const objectsBeforeSnap = currentSceneGraphDelta.new_graph.objects
+            const snapConstraintLabelEdits = mergeConstraintLabelPreviewEdits({
+              pendingLabelEdits: lastGoodPreview?.constraintLabelEdits ?? [],
+              movedLabelEdits: buildConstraintLabelEditsForSnappedPoint({
+                objectsBeforeSnap,
+                pointId: draggedEntityId,
+                position: snappingCandidate.position,
+                units,
+              }),
+            })
+            const shouldFinalizeConstraintLabels =
+              snapConstraintLabelEdits.length > 0
             const editResult = await context.rustContext.editSegments(
               0,
               context.sketchId,
@@ -2055,8 +2204,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 },
               ],
               settings,
+              !shouldFinalizeConstraintLabels,
+              [draggedEntityId],
               true,
-              [draggedEntityId]
+              [],
+              snapConstraintLabelEdits
             )
 
             const axisConstraint = snapConstraints.find(
@@ -2066,11 +2218,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
             )
 
             if (axisConstraint) {
-              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const existingSameConstraint = getAxisConstraintWithOrigin(
                 draggedEntityId,
                 axisConstraint.type,
-                objects
+                objectsBeforeSnap
               )
               if (existingSameConstraint) {
                 // Same zero distance constraint already exists -> don't add it again
@@ -2083,7 +2234,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 const existingOppositeConstraint = getAxisConstraintWithOrigin(
                   draggedEntityId,
                   oppositeConstraintType,
-                  objects
+                  objectsBeforeSnap
                 )
                 if (existingOppositeConstraint) {
                   // If there is already a 0 distance opposite constraint:
@@ -2115,6 +2266,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                         deleteResult.sceneGraphDelta.invalidates_ids ||
                         addResult.sceneGraphDelta.invalidates_ids,
                     },
+                    checkpointId: addResult.checkpointId,
                   }
                 } else {
                   result = await context.rustContext.addConstraint(
@@ -2122,18 +2274,17 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     axisConstraint,
                     settings,
-                    true
+                    !shouldFinalizeConstraintLabels
                   )
                 }
               }
             } else {
-              const objects = currentSceneGraphDelta?.new_graph.objects ?? []
               const constraintsToAdd = snapConstraints.filter((constraint) => {
                 if (constraint.type === 'Coincident') {
                   return !hasCoincidentConstraintForSnapTarget(
                     draggedEntityId,
                     snappingCandidate.target,
-                    objects
+                    objectsBeforeSnap
                   )
                 }
 
@@ -2141,7 +2292,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                   return !hasMidpointConstraintForSnapTarget(
                     draggedEntityId,
                     snappingCandidate.target,
-                    objects
+                    objectsBeforeSnap
                   )
                 }
 
@@ -2159,14 +2310,49 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     context.sketchId,
                     constraint,
                     settings,
-                    index === constraintsToAdd.length - 1
+                    !shouldFinalizeConstraintLabels &&
+                      index === constraintsToAdd.length - 1
                   )
                 }
 
                 result = latestResult
               }
             }
+
+            if (
+              shouldFinalizeConstraintLabels &&
+              !result.sceneGraphDelta.invalidates_ids &&
+              !hasSketchSolveIssues(result.sceneGraphDelta)
+            ) {
+              const movedConstraintLabelEdits =
+                buildConstraintLabelEditsForMovedSegments({
+                  objectsBeforeDrag: objectsBeforeSnap,
+                  objectsAfterDrag: result.sceneGraphDelta.new_graph.objects,
+                  units,
+                })
+              const finalConstraintLabelEdits =
+                mergeConstraintLabelPreviewEdits({
+                  pendingLabelEdits: snapConstraintLabelEdits,
+                  movedLabelEdits: movedConstraintLabelEdits,
+                })
+
+              // The snap and any added constraint have now settled the final
+              // endpoint positions into the AST. Commit the labels from those
+              // exact endpoints and create one checkpoint for the whole snap.
+              result = await context.rustContext.editSegments(
+                0,
+                context.sketchId,
+                [],
+                settings,
+                true,
+                [draggedEntityId],
+                true,
+                [],
+                finalConstraintLabelEdits
+              )
+            }
           } else {
+            // No snap, this is the normal drag completion
             if (lastGoodPreview?.segmentsToEdit.length) {
               result = await commitSegmentAndLabelEdits(
                 lastGoodPreview.segmentsToEdit,
@@ -2324,6 +2510,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
             sceneGraphDelta: outcome.sceneGraphDelta,
             writeToDisk: false,
             suppressExecOutcomeIssues: outcome.suppressExecOutcomeIssues,
+            refreshLintDiagnostics: false,
           },
         })
       },
@@ -2332,6 +2519,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getJsAppSettings: async () =>
         jsAppSettings(context.rustContext.settingsActor),
       sceneInfra: context.sceneInfra,
+      onClearDragSnapping: clearDragSnappingState,
       onUpdateDragSnapping: updateDragSnappingState,
       onPreviewSolveStarted: markPreviewSolveStarted,
       onPreviewSolveSettled: markPreviewSolveSettled,
@@ -2391,6 +2579,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         selectedIds: Array<SketchSolveSelectionId>
         duringAreaSelectIds: Array<number>
         replaceExistingSelection?: boolean
+        selectionCoordinates?: SelectionCoordinates
       }) => self.send({ type: 'update selected ids', data }),
       onEditConstraint: (constraintId: number) => {
         self.send({

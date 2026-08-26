@@ -186,10 +186,15 @@ fn canonicalize_duplicate_edge_pairings(
     }
 }
 
-impl Artifact {
+trait ArtifactMermaidExt {
+    fn back_edges(&self) -> Vec<ArtifactId>;
+    fn child_ids(&self) -> Vec<ArtifactId>;
+}
+
+impl ArtifactMermaidExt for Artifact {
     /// The IDs pointing back to prior nodes in a depth-first traversal of
     /// the graph.  This should be disjoint with `child_ids`.
-    pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
+    fn back_edges(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::CompositeSolid(a) => {
                 let mut ids = a.solid_ids.clone();
@@ -241,14 +246,22 @@ impl Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
+            // A view names objects that already exist when it is declared, so
+            // its lists point back at prior nodes rather than owning them.
+            Artifact::NamedView(a) => {
+                let mut ids = a.show_ids.clone();
+                ids.extend(a.hide_ids.iter());
+                ids
+            }
             Artifact::Pattern(a) => vec![a.source_id],
         }
     }
 
     /// The child IDs of this artifact, used to do a depth-first traversal of
     /// the graph.
-    pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
+    fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
             Artifact::CompositeSolid(a) => {
                 // Note: Don't include these since they're parents: solid_ids,
@@ -383,7 +396,10 @@ impl Artifact {
                 }
                 ids
             }
+            Artifact::ImportedGeometry(_) => Vec::new(),
             Artifact::GdtAnnotation(_) => Vec::new(),
+            // Note: Don't include show_ids or hide_ids since they're parents.
+            Artifact::NamedView(_) => Vec::new(),
             Artifact::Pattern(a) => {
                 // Note: Don't include source_id since it's the parent.
                 let mut ids = a.copy_ids.clone();
@@ -395,9 +411,34 @@ impl Artifact {
     }
 }
 
-impl ArtifactGraph {
+pub(crate) trait ArtifactGraphMermaidExt {
+    fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error>;
+    fn flowchart_nodes<W: Write>(
+        &self,
+        output: &mut W,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
+        prefix: &str,
+    ) -> std::fmt::Result;
+    fn flowchart_node<W: Write>(
+        &self,
+        output: &mut W,
+        artifact: &Artifact,
+        id: NodeId,
+        prefix: &str,
+    ) -> std::fmt::Result;
+    fn flowchart_duplicate_segment_key(artifact: &Artifact) -> Option<String>;
+    fn flowchart_basic_sort_key(artifact: &Artifact) -> String;
+    fn flowchart_edges<W: Write>(
+        &self,
+        output: &mut W,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
+        prefix: &str,
+    ) -> Result<(), std::fmt::Error>;
+}
+
+impl ArtifactGraphMermaidExt for ArtifactGraph {
     /// Output the Mermaid flowchart for the artifact graph.
-    pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
+    fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
         let mut output = String::new();
         output.push_str("```mermaid\n");
         output.push_str("flowchart LR\n");
@@ -405,7 +446,7 @@ impl ArtifactGraph {
         let mut next_id = 1_u32;
         let mut stable_id_map = AHashMap::default();
 
-        for id in self.map.keys() {
+        for (id, _) in self.iter() {
             stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
@@ -433,7 +474,7 @@ impl ArtifactGraph {
         let mut groups = IndexMap::new();
         let mut ungrouped = Vec::new();
 
-        for artifact in self.map.values() {
+        for artifact in self.values() {
             let id = artifact.id();
 
             let grouped = match artifact {
@@ -466,7 +507,9 @@ impl ArtifactGraph {
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
+                | Artifact::ImportedGeometry(_)
                 | Artifact::GdtAnnotation(_)
+                | Artifact::NamedView(_)
                 | Artifact::Pattern(_) => false,
             };
             if !grouped {
@@ -479,7 +522,7 @@ impl ArtifactGraph {
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
             for artifact_id in artifact_ids {
-                let artifact = self.map.get(&artifact_id).unwrap();
+                let artifact = self.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
                 self.flowchart_node(output, artifact, id, &indented)?;
             }
@@ -487,7 +530,7 @@ impl ArtifactGraph {
         }
 
         for artifact_id in ungrouped {
-            let artifact = self.map.get(&artifact_id).unwrap();
+            let artifact = self.get(&artifact_id).unwrap();
             let id = *stable_id_map.get(&artifact_id).unwrap();
             self.flowchart_node(output, artifact, id, prefix)?;
         }
@@ -665,6 +708,14 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::ImportedGeometry(imported_geometry) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"ImportedGeometry<br>{:?}\"]",
+                    code_ref_display(&imported_geometry.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &imported_geometry.code_ref)?;
+            }
             Artifact::GdtAnnotation(annotation) => {
                 writeln!(
                     output,
@@ -672,6 +723,21 @@ impl ArtifactGraph {
                     code_ref_display(&annotation.code_ref)
                 )?;
                 node_path_display(output, prefix, None, &annotation.code_ref)?;
+            }
+            Artifact::NamedView(named_view) => {
+                // The name is written with `{:?}` because it is author-supplied
+                // text: the quoting escapes a name containing a quotation mark
+                // or a newline, which would otherwise break the diagram. The
+                // baseline is shown because it decides which of the two id
+                // lists takes effect.
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"NamedView {:?}<br>Baseline: {:?}<br>{:?}\"]",
+                    named_view.name,
+                    named_view.baseline,
+                    code_ref_display(&named_view.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &named_view.code_ref)?;
             }
             Artifact::Pattern(pattern) => {
                 writeln!(
@@ -803,7 +869,16 @@ impl ArtifactGraph {
             }
             Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
             Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::ImportedGeometry(imported_geometry) => {
+                format!("ImportedGeometry:{}", code_ref_key(&imported_geometry.code_ref))
+            }
             Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
+            // The name is part of the key so that two views declared in one
+            // module sort deterministically by name before falling back to
+            // source position.
+            Artifact::NamedView(named_view) => {
+                format!("NamedView:{}:{}", named_view.name, code_ref_key(&named_view.code_ref))
+            }
             Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
         }
     }
@@ -818,7 +893,7 @@ impl ArtifactGraph {
         // edge under a canonical `(min, max)` key and merges duplicates; Mermaid
         // would otherwise render `a --- b` and `b --- a` as two edges.
         let mut edges = IndexMap::default();
-        for artifact in self.map.values() {
+        for artifact in self.values() {
             let source_id = *stable_id_map.get(&artifact.id()).unwrap();
             // In Mermaid, the textual order defines the rank, even though the
             // edge arrow can go in either direction.
@@ -836,7 +911,7 @@ impl ArtifactGraph {
                         .zip(std::iter::repeat(EdgeFlow::SourceToTarget)),
                 )
             {
-                let Some(target) = self.map.get(&target_id) else {
+                let Some(target) = self.get(&target_id) else {
                     continue;
                 };
                 let edge_kind = match (artifact, target) {
@@ -894,7 +969,7 @@ impl ArtifactGraph {
         let node_key = |node_id: NodeId| {
             reverse_stable_id_map
                 .get(&node_id)
-                .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(|artifact_id| self.get(artifact_id))
                 .and_then(Self::flowchart_duplicate_segment_key)
                 .unwrap_or_else(|| format!("Node:{node_id}"))
         };
@@ -909,7 +984,7 @@ impl ArtifactGraph {
         let signature_node_key = |node_id: NodeId| {
             reverse_stable_id_map
                 .get(&node_id)
-                .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(|artifact_id| self.get(artifact_id))
                 .map(Self::flowchart_basic_sort_key)
                 .unwrap_or_else(|| format!("Node:{node_id}"))
         };
@@ -1162,6 +1237,7 @@ fn segment_artifact(original_seg_id: Option<ArtifactId>) -> Artifact {
     Artifact::Segment(Segment {
         id: ArtifactId::new(Uuid::new_v4()),
         path_id: ArtifactId::new(Uuid::new_v4()),
+        source_segment_id: None,
         original_seg_id,
         surface_id: None,
         edge_ids: Vec::new(),

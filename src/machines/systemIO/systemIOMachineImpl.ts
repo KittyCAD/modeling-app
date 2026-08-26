@@ -26,11 +26,16 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  ExpectedSystemIOError,
+  reportSystemIOError,
+} from '@src/machines/systemIO/errorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -50,7 +55,7 @@ import { fromPromise } from 'xstate'
 export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
-} from '@src/lib/projectDirectoryScanner'
+} from '@src/lib/projectLibraries/directoryScanner'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -341,7 +346,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
   }
 }
 
-const sharedBulkDeleteWorkflow = async ({
+export const sharedBulkDeleteWorkflow = async ({
   input,
 }: {
   input: {
@@ -352,6 +357,10 @@ const sharedBulkDeleteWorkflow = async ({
     wasmInstance: ModuleType
   }
 }) => {
+  if (!input.filesToDelete?.length) {
+    return 0
+  }
+
   if (!input.context.folders) {
     console.warn('no folders')
     return
@@ -410,7 +419,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return []
         }
 
-        return readProjectsFromProjectDirectory({
+        const projects = await readProjectsFromProjectDirectory({
           projectDirectoryPath,
           wasmInstancePromise: context.wasmInstancePromise,
           previousProjects: context.folders,
@@ -421,7 +430,23 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               data: { folders },
             })
           },
+          onProjectStatFailures: ({ error, count }) => {
+            reportSystemIOError({
+              error,
+              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+              risk: 'read',
+              source: 'SystemIOMachine',
+              dedupeKey:
+                'SystemIO:SystemIOMachine:read folders from project directory:stat_project',
+              extra: {
+                phase: 'stat_project',
+                skippedProjectCount: count,
+              },
+            })
+          },
         })
+
+        return projects
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
@@ -467,6 +492,34 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          projectPath: string
+          requestedProjectName: string
+        }
+      }) => {
+        const projectDirectoryPath = fsZds.dirname(input.projectPath)
+        const result = await duplicateProjectInDirectory({
+          source: {
+            directoryName: input.projectName,
+            displayName: input.requestedProjectName,
+            path: input.projectPath,
+          },
+          projectDirectoryPath,
+          requestedProjectTitle: input.requestedProjectName,
+          wasmInstance: await input.context.wasmInstancePromise,
+        })
+        return {
+          ...result,
+          projectPath: fsZds.join(projectDirectoryPath, result.name),
+        }
+      }
+    ),
     [SystemIOMachineActors.renameProject]: fromPromise(
       async ({
         input,
@@ -506,7 +559,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         ) {
           return Promise.reject(
-            new Error(
+            new ExpectedSystemIOError(
               `Project with title "${requestedProjectTitle}" already exists`
             )
           )
@@ -743,8 +796,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             onSuccess?: () => void
           }
         }) => {
+          let potentialError = new Error('wasmInstancePromise')
           try {
             const wasmInstance = await input.context.wasmInstancePromise
+            potentialError = new Error('sharedBulkCreateWorkflow')
             const message = await sharedBulkCreateWorkflow({
               input: {
                 ...input,
@@ -753,6 +808,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               },
             })
             // We won't delete until everything's created / updated first.
+            potentialError = new Error('sharedBulkDeleteWorkflow')
             const totalDeleted = await sharedBulkDeleteWorkflow({
               input: {
                 ...input,
@@ -761,8 +817,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             })
 
             message.message += `, ${totalDeleted} deleted`
+            potentialError = new Error('onFileSystemSuccess')
             input.onFileSystemSuccess?.()
 
+            potentialError = new Error('prepareNavigation')
             const project = input.context.app.project
             const requestedRelativePath = normalizeKCLFileDeletePath(
               input.requestedFileNameWithExtension
@@ -782,6 +840,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               deletesRequestedFile
 
             if (!shouldNavigate) {
+              potentialError = new Error('onSuccess')
               input.onSuccess?.()
             }
 
@@ -801,7 +860,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             }
           } catch (error: unknown) {
             input.onFileSystemError?.()
-            return Promise.reject(error)
+            potentialError.cause = error
+            return Promise.reject(potentialError)
           }
         }
       ),
@@ -863,7 +923,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       for (const entry of entries) {
         if (entry === requestedFolderName) {
-          return Promise.reject(new Error('Folder name already exists.'))
+          return Promise.reject(
+            new ExpectedSystemIOError('Folder name already exists.')
+          )
         }
       }
 
@@ -930,7 +992,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
       for (const entry of entries) {
         if (entry === requestedFileNameWithExtension) {
-          return Promise.reject(new Error('Filename already exists.'))
+          return Promise.reject(
+            new ExpectedSystemIOError('Filename already exists.')
+          )
         }
       }
 
@@ -989,7 +1053,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`File ${fileNameWithExtension} already exists`)
+              new ExpectedSystemIOError(
+                `File ${fileNameWithExtension} already exists`
+              )
             )
           }
         } catch (e) {
@@ -1036,7 +1102,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
-              new Error(`Folder ${folderName} already exists`)
+              new ExpectedSystemIOError(`Folder ${folderName} already exists`)
             )
           }
         } catch (e) {

@@ -6,12 +6,14 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -166,6 +168,74 @@ describe('systemIOMachine - XState', () => {
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
       })
+      it('routes project duplication through its actor', async () => {
+        const duplicate = deferred<{
+          message: string
+          name: string
+          title: string
+          projectPath: string
+        }>()
+        let receivedInput: unknown
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.duplicateProject]: fromPromise(
+                async ({ input }) => {
+                  receivedInput = input
+                  return duplicate.promise
+                }
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'bracket',
+              projectPath: '/custom-projects/bracket',
+              requestedProjectName: 'Bracket',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.duplicatingProject)
+          )
+          expect(receivedInput).toMatchObject({
+            projectName: 'bracket',
+            projectPath: '/custom-projects/bracket',
+            requestedProjectName: 'Bracket',
+          })
+
+          duplicate.resolve({
+            message: 'Successfully duplicated "Bracket" as "Bracket-copy"',
+            name: 'bracket-copy',
+            title: 'Bracket-copy',
+            projectPath: '/custom-projects/bracket-copy',
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+          expect(actor.getSnapshot().context).toMatchObject({
+            lastOperation: SystemIOMachineStates.duplicatingProject,
+            requestedProjectName: {
+              name: 'bracket-copy',
+              path: '/custom-projects/bracket-copy',
+            },
+          })
+        } finally {
+          actor.stop()
+        }
+      })
       it('defers bulk edit success until file navigation completes', async () => {
         const onSuccess = vi.fn()
         const actor = createActor(
@@ -260,6 +330,22 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it.each([undefined, []])(
+        'skips project lookup when filesToDelete is %j',
+        async (filesToDelete) => {
+          const totalDeleted = await sharedBulkDeleteWorkflow({
+            input: {
+              requestedProjectName: 'project-not-in-folder-snapshot',
+              context: { folders: undefined } as SystemIOContext,
+              files: [],
+              filesToDelete,
+              wasmInstance: instanceInThisFile,
+            },
+          })
+
+          expect(totalDeleted).toBe(0)
+        }
+      )
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {

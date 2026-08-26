@@ -2,14 +2,14 @@ export interface ModelingStateMatcher {
   matches: (...args: any[]) => boolean
 }
 
-export type MlEphantProjectReloadBehavior =
+export type ZookeeperProjectReloadBehavior =
   | 'exit-sketch-solve'
   | 'execute-without-camera-reset'
   | 'execute-and-reset-camera'
 
-export function getMlEphantProjectReloadBehavior(
+export function getZookeeperProjectReloadBehavior(
   modelingState?: ModelingStateMatcher | null
-): MlEphantProjectReloadBehavior {
+): ZookeeperProjectReloadBehavior {
   if (modelingState?.matches('sketchSolveMode')) {
     return 'exit-sketch-solve'
   }

@@ -1,8 +1,8 @@
 import { ActionButton } from '@src/components/ActionButton'
+import type { Feature } from '@kittycad/lib'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -24,7 +24,11 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
-import { acceptOnboarding } from '@src/routes/Onboarding/utils'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import {
+  acceptOnboarding,
+  reportOnboardingStartFailure,
+} from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
@@ -42,13 +46,14 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout, systemIOActor } = useApp()
-    const { kclManager } = useSingletons()
+    const app = useApp()
+    const { settings, layout, userFeatures } = app
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
-    const executingPath = useAbsoluteFilePath()
-
+    const userFeaturesContext = userFeatures.useContext()
+    const hasFeature = (feature: Feature) =>
+      userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
         .replace(PATHS.FILE, '')
@@ -66,16 +71,12 @@ export const AllSettingsFields = forwardRef(
       return projectPath
     }, [location.pathname, isFileSettings])
 
-    async function restartOnboarding() {
-      const props = {
+    function restartOnboarding() {
+      return acceptOnboarding({
+        app,
         onboardingStatus: onboardingStartPath,
         navigate,
-        kclManager,
-        systemIOActor,
-        settingsActor: settings.actor,
-        executingPath,
-      }
-      acceptOnboarding(props)
+      })
     }
 
     return (
@@ -85,7 +86,8 @@ export const AllSettingsFields = forwardRef(
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
-                (setting) => !shouldHideSetting(setting, searchParamTab)
+                (setting) =>
+                  !shouldHideSetting(setting, searchParamTab, hasFeature)
               )
             )
             .map(([category, categorySettings]) => (
@@ -98,7 +100,7 @@ export const AllSettingsFields = forwardRef(
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
-                    shouldShowSettingInput(item[1], searchParamTab)
+                    shouldShowSettingInput(item[1], searchParamTab, hasFeature)
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting
@@ -155,7 +157,7 @@ export const AllSettingsFields = forwardRef(
             <ActionButton
               Element="button"
               onClick={() => {
-                restartOnboarding().catch(reportRejection)
+                void restartOnboarding().catch(reportOnboardingStartFailure)
               }}
               iconStart={{
                 icon: 'refresh',
@@ -239,19 +241,17 @@ export const AllSettingsFields = forwardRef(
             About Design Studio
           </h2>
           <div className="text-sm mb-12">
-            <p>
-              {/* This uses a Vite plugin, set in vite.config.ts
-                  to inject the version from package.json */}
-              App version {APP_VERSION}.{' '}
-            </p>
+            {APP_VERSION && <p>App version {APP_VERSION}. </p>}
             <div className="flex gap-2 flex-wrap my-4">
-              <ActionButton
-                Element="externalLink"
-                to={getReleaseUrl()}
-                iconStart={{ icon: 'file', className: 'p-1' }}
-              >
-                View Release on GitHub
-              </ActionButton>
+              {APP_VERSION && (
+                <ActionButton
+                  Element="externalLink"
+                  to={getReleaseUrl()}
+                  iconStart={{ icon: 'file', className: 'p-1' }}
+                >
+                  View version on GitHub
+                </ActionButton>
+              )}
               <ActionButton
                 Element="button"
                 onClick={() => {

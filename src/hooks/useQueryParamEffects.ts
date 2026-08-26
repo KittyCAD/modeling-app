@@ -1,12 +1,6 @@
-import { useEffect } from 'react'
-import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { waitFor } from 'xstate'
-
-import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
+import type { App } from '@src/lib/app'
 import { useApp } from '@src/lib/boot'
-import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -18,23 +12,30 @@ import {
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
+  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
+import { downloadKclSample } from '@src/lib/kclSamples'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { waitFor } from 'xstate'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -45,13 +46,42 @@ export type CreateFileSchemaMethodOptional = Omit<
   method?: 'newProject' | 'existingProject'
 }
 
+let pendingWebLayoutProjectCreation: Promise<string> | undefined
+
+async function createFreshWebLayoutProject(app: App) {
+  await waitForIdleState({ systemIOActor: app.systemIOActor })
+  await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+  const targets = app.getCreateProjectLibraryTargets()
+  const projectLibraryTarget =
+    targets.find(
+      (target) => target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+    ) ?? targets[0]
+  if (!projectLibraryTarget) {
+    return Promise.reject(
+      new Error('No writable project library is available.')
+    )
+  }
+
+  const project = await projectLibraryTarget.createProject.run({
+    library: projectLibraryTarget.library,
+    requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
+    requestedProjectTitle: DEFAULT_WEB_PROJECT_NAME,
+  })
+  if (!project?.default_file) {
+    return Promise.reject(new Error('Unable to create a blank project.'))
+  }
+
+  return project.default_file
+}
+
 /**
  * A set of hooks that watch for query parameters and dispatch a callback.
  * Currently watches for:
  * `?createFile`
  * "?cmd=<some-command-name>&groupId=<some-group-id>"
  */
-export function useQueryParamEffects(kclManager: KclManager) {
+export function useQueryParamEffects() {
   const app = useApp()
   const { auth, commands } = app
   const authState = auth.useAuthState()
@@ -126,30 +156,21 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const localCloudProject = await ensureCloudProjectLocallySynced(
-        projectId
-      ).catch(() => undefined)
+      await waitFor(app.settings.actor, (state) => state.matches('idle'))
       if (cancelled) {
         return
       }
-      if (localCloudProject) {
-        app.systemIOActor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
-        void navigate(
-          `${PATHS.FILE}/${safeEncodeForRouterPaths(
-            localCloudProject.projectPath
-          )}`
+
+      const projectLibraryTarget = app.getCreateProjectLibraryTargets()[0]
+      if (!projectLibraryTarget) {
+        return Promise.reject(
+          new Error('No writable project library is available.')
         )
-        return
       }
 
-      const reservedProjectDestination =
-        await getReservedProjectDestination(projectId)
-      if (err(reservedProjectDestination)) {
-        clearProjectIdSearchParam()
-        toast.error(reservedProjectDestination.message)
-        return
+      const projectName = await getPublicProjectNameById(projectId)
+      if (err(projectName)) {
+        return Promise.reject(projectName)
       }
       if (cancelled) {
         return
@@ -157,43 +178,37 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
       const downloadedProject = await downloadProjectById(projectId)
       if (err(downloadedProject)) {
-        clearProjectIdSearchParam()
-        toast.error(downloadedProject.message)
-        return
+        return Promise.reject(downloadedProject)
       }
       if (cancelled) {
         return
       }
 
-      const files = !isDesktop()
-        ? downloadedProject.files.map((file) => ({
-            ...file,
-            requestedProjectName:
-              reservedProjectDestination.requestedProjectName,
-            requestedFileName: fsZds.join(
-              reservedProjectDestination.requestedSubDirectoryName,
-              file.requestedFileName
-            ),
-          }))
-        : downloadedProject.files
-      const requestedFileNameWithExtension =
-        !isDesktop() && downloadedProject.entrypointFilePath
-          ? fsZds.join(
-              reservedProjectDestination.requestedSubDirectoryName,
-              downloadedProject.entrypointFilePath
-            )
-          : downloadedProject.entrypointFilePath
-
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
-        data: {
-          files,
-          requestedProjectName: reservedProjectDestination.requestedProjectName,
-          requestedFileNameWithExtension,
+      const importedProject = await projectLibraryTarget.createProject.run({
+        library: projectLibraryTarget.library,
+        requestedProjectName: getProjectDirectoryNameFromTitle(
+          projectName,
+          'shared-project'
+        ),
+        requestedProjectTitle: projectName,
+        initialProject: {
+          files: downloadedProject.files,
+          entrypointFilePath:
+            downloadedProject.entrypointFilePath ?? PROJECT_ENTRYPOINT,
         },
       })
+      if (!importedProject?.default_file) {
+        return Promise.reject(new Error('Unable to create the shared project.'))
+      }
+      if (cancelled) {
+        return
+      }
 
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      void navigate(
+        `${PATHS.FILE}/${safeEncodeForRouterPaths(
+          importedProject.default_file
+        )}`
+      )
     })().catch((error) => {
       if (cancelled) {
         return
@@ -211,72 +226,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldOpenProjectId, setSearchParams, authState])
 
-  async function getReservedProjectDestination(projectId: string): Promise<
-    | {
-        requestedProjectName: string
-        requestedSubDirectoryName: string
-      }
-    | Error
-  > {
-    const projectName = await getPublicProjectNameById(projectId)
-    if (projectName instanceof Error) {
-      return projectName
-    }
-
-    await waitFor(app.settings.actor, (state) => state.matches('idle'))
-
-    const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
-    if (!projectDirectoryPath) {
-      return new Error('Unable to determine the project directory.')
-    }
-
-    if (isDesktop()) {
-      const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
-      const requestedProjectName = getUniqueProjectName(
-        projectName,
-        projectDirectoryEntries.map((name) => ({
-          name,
-          path: fsZds.join(projectDirectoryPath, name),
-          children: [],
-        }))
-      )
-      await fsZds.mkdir(
-        fsZds.join(projectDirectoryPath, requestedProjectName),
-        {
-          recursive: true,
-        }
-      )
-      return {
-        requestedProjectName,
-        requestedSubDirectoryName: projectName,
-      }
-    }
-
-    const requestedProjectName =
-      app.settings.actor.getSnapshot().context.currentProject?.name ??
-      DEFAULT_WEB_PROJECT_NAME
-    const requestedSubDirectoryName = getUniqueProjectName(
-      projectName,
-      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
-        projectFolderName: requestedProjectName,
-      })
-    )
-    await fsZds.mkdir(
-      fsZds.join(
-        projectDirectoryPath,
-        requestedProjectName,
-        requestedSubDirectoryName
-      ),
-      { recursive: true }
-    )
-
-    return {
-      requestedProjectName,
-      requestedSubDirectoryName,
-    }
-  }
-
   /**
    * Generic commands are triggered by query parameters
    * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
@@ -287,7 +236,125 @@ export function useQueryParamEffects(kclManager: KclManager) {
     const rawCommandData = buildGenericCommandArgs(searchParams)
     if (!rawCommandData) return
     const commandData = rawCommandData
+    const shouldCreateWebLayoutProject =
+      !isDesktop() &&
+      commandData.groupId === 'application' &&
+      commandData.name === 'set-layout' &&
+      !app.project
+
+    if (shouldCreateWebLayoutProject) {
+      let cancelled = false
+      pendingWebLayoutProjectCreation ??= createFreshWebLayoutProject(app)
+
+      void pendingWebLayoutProjectCreation
+        .then((defaultFile) => {
+          if (cancelled) {
+            return
+          }
+
+          void navigate(
+            {
+              pathname: `${PATHS.FILE}/${safeEncodeForRouterPaths(defaultFile)}`,
+              search: searchParams.toString(),
+            },
+            { replace: true }
+          )
+        })
+        .catch((error) => {
+          pendingWebLayoutProjectCreation = undefined
+          if (!cancelled) {
+            toast.error(
+              err(error) ? error.message : 'Failed to create a blank project.'
+            )
+          }
+        })
+
+      return () => {
+        cancelled = true
+      }
+    }
+
+    if (
+      !isDesktop() &&
+      commandData.groupId === 'application' &&
+      commandData.name === 'set-layout'
+    ) {
+      pendingWebLayoutProjectCreation = undefined
+    }
+
     let shouldCreateDefaultWebProject = false
+    const samplePath = commandData.argDefaultValues?.sample
+    const requestedProjectName = commandData.argDefaultValues?.projectName
+    const shouldCreateWebSampleProject =
+      !isDesktop() &&
+      commandData.name === 'add-kcl-file-to-project' &&
+      commandData.groupId === 'application' &&
+      commandData.argDefaultValues?.source === 'kcl-samples' &&
+      typeof samplePath === 'string' &&
+      (requestedProjectName === 'browser' ||
+        requestedProjectName === DEFAULT_WEB_PROJECT_NAME)
+
+    if (shouldCreateWebSampleProject) {
+      let cancelled = false
+
+      void (async () => {
+        await waitForIdleState({ systemIOActor: app.systemIOActor })
+        if (cancelled) {
+          return
+        }
+
+        await waitFor(app.settings.actor, (state) => state.matches('idle'))
+        if (cancelled) {
+          return
+        }
+
+        const projectLibraryTarget = app.getCreateProjectLibraryTargets()[0]
+        if (!projectLibraryTarget) {
+          return Promise.reject(
+            new Error('No writable project library is available.')
+          )
+        }
+
+        const downloadedSample = await downloadKclSample(samplePath)
+        if (cancelled) {
+          return
+        }
+
+        const importedProject = await projectLibraryTarget.createProject.run({
+          library: projectLibraryTarget.library,
+          requestedProjectName: downloadedSample.requestedProjectName,
+          requestedProjectTitle: downloadedSample.sample.title,
+          initialProject: downloadedSample.initialProject,
+        })
+        if (!importedProject?.default_file) {
+          return Promise.reject(
+            new Error('Unable to create the sample project.')
+          )
+        }
+        if (cancelled) {
+          return
+        }
+
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            importedProject.default_file
+          )}`
+        )
+      })().catch((error) => {
+        if (cancelled) {
+          return
+        }
+
+        cleanupQueryParams()
+        toast.error(
+          err(error) ? error.message : 'Failed to open the KCL sample.'
+        )
+      })
+
+      return () => {
+        cancelled = true
+      }
+    }
 
     // Web-only: prefill command data to automatically add to the demo project
     if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
@@ -385,6 +452,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
             CMD_GROUP_QUERY_PARAM,
             CREATE_FILE_URL_PARAM,
             POOL_QUERY_PARAM,
+            SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+            LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
           ]
 
           return !reservedKeys.includes(key)

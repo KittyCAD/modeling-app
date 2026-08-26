@@ -16,6 +16,7 @@ const shouldAlwaysShowOverlays = () =>
   localStorage.getItem('showAllOverlays') === 'true'
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
+import { ConstraintBadgeTooltipOverlay } from '@src/clientSideScene/ConstraintBadgeTooltipOverlay'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -233,9 +234,14 @@ export const ClientSideScene = ({
             : ''
         }`}
       ></div>
-      {!forceHide && <Overlays />}
-      {!forceHide && <SketchSolveToolIconOverlay />}
-      {!forceHide && <EditingConstraintInput />}
+      {!forceHide && (
+        <>
+          <ConstraintBadgeTooltipOverlay containerRef={containerRef} />
+          <Overlays />
+          <SketchSolveToolIconOverlay />
+          <EditingConstraintInput />
+        </>
+      )}
     </>
   )
 }

@@ -2,12 +2,16 @@ import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { Thinking } from '@src/components/Thinking'
+import {
+  ExportDownloadFiles,
+  isExportDownloadFile,
+  Thinking,
+} from '@src/components/Thinking'
 import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import ms from 'ms'
 import {
   type ComponentProps,
@@ -34,9 +38,12 @@ type MlCopilotServerMessageEndOfStream = Extract<
   { end_of_stream: unknown }
 >
 
+const TRANSIENT_RETRY_STATUS_TEXT =
+  'Temporary connection issue. Retrying automatically…'
+
 const NON_TERMINAL_INFO_TEXTS = [
   'Manual edits detected since the last Zookeeper state.',
-  'Transient model streaming error; retrying.',
+  TRANSIENT_RETRY_STATUS_TEXT,
 ]
 
 const getEndOfStreamResponse = (
@@ -52,6 +59,12 @@ const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
   NON_TERMINAL_INFO_TEXTS.some((infoText) =>
     response.info.text.startsWith(infoText)
   )
+
+const isTransientRetryInfoResponse = (
+  response: MlCopilotServerMessage
+): boolean =>
+  'info' in response &&
+  response.info.text.startsWith(TRANSIENT_RETRY_STATUS_TEXT)
 
 const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
   responses?.some(
@@ -350,6 +363,10 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
+  const hasTransientRetry = props.items.some((response) =>
+    isTransientRetryInfoResponse(response)
+  )
+
   const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       // This is INTENTIONALLY left here for documentation.
@@ -359,7 +376,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       // if ('delta' in response) {
       //   return response.delta.delta
       // }
-      if ('info' in response) {
+      if ('info' in response && !isTransientRetryInfoResponse(response)) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
       return null
@@ -376,22 +393,40 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
       <MarkdownText
+        key="response"
         text={props.deltasAggregated}
         className="whitespace-normal"
       />
     ) : null
   }, [props.deltasAggregated])
 
+  const exportDownloadFiles = props.items.flatMap((response) =>
+    'files' in response ? response.files.files.filter(isExportDownloadFile) : []
+  )
+
   const children = [
     maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
     deltasAggregatedMarkdown,
+    exportDownloadFiles.length > 0 ? (
+      <ExportDownloadFiles key="downloads" files={exportDownloadFiles} />
+    ) : null,
   ].filter((x: ReactNode) => x !== null)
 
   const shouldShowResponseBubble =
     hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
 
-  return infoItemsFilteredNulls.length > 0 || shouldShowResponseBubble ? (
+  return hasTransientRetry ||
+    infoItemsFilteredNulls.length > 0 ||
+    shouldShowResponseBubble ? (
     <>
+      {hasTransientRetry && (
+        <p
+          className="text-xs text-chalkboard-70 dark:text-chalkboard-30"
+          data-testid="ml-response-retry-status"
+        >
+          {TRANSIENT_RETRY_STATUS_TEXT}
+        </p>
+      )}
       {infoItemsFilteredNulls.length > 0 && (
         <ChatBubble
           side={'left'}

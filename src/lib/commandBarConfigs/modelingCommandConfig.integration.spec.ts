@@ -22,6 +22,16 @@ import type {
   CommandArgumentConfig,
   KclCommandValue,
 } from '@src/lib/commandTypes'
+import {
+  KCL_AXIS_Z,
+  KCL_DEFAULT_ROTATE_ANGLE,
+  KCL_DEFAULT_SCALE_FACTOR,
+  KCL_DEFAULT_TRANSLATE_X,
+} from '@src/lib/constants'
+import {
+  canSubmitSelectionArg,
+  type ResolvedSelectionType,
+} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -269,18 +279,6 @@ describe('Extrude surface arguments', () => {
     ).toBe(false)
   })
 
-  it('uses experimental features for explicit direction selections', () => {
-    expect(
-      modelingStdLibCommandUsesExperimentalFeatures('Extrude', {
-        direction: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-      })
-    ).toBe(true)
-
-    expect(modelingStdLibCommandUsesExperimentalFeatures('Extrude', {})).toBe(
-      false
-    )
-  })
-
   it('keeps bodyType optional for sketch segments before length is confirmed', () => {
     expect(
       extrudeSelectionRequiresBodyType({
@@ -323,6 +321,32 @@ describe('Extrude surface arguments', () => {
           length: parsedLength(),
         },
       })
+    ).toBe(true)
+  })
+})
+
+describe('Helix cylinder selection', () => {
+  it('accepts a region-backed cylinder', () => {
+    const commandConfig = modelingMachineCommandConfig.Helix
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Helix should have a single command config')
+    }
+
+    const cylinderArg = commandConfig.args?.cylinder
+    if (!cylinderArg || cylinderArg.inputType !== 'selection') {
+      throw new Error('Helix should expose a cylinder selection argument')
+    }
+
+    expect(
+      canSubmitSelectionArg(
+        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
+        {
+          inputType: 'selection',
+          selectionTypes: cylinderArg.selectionTypes,
+          multiple: cylinderArg.multiple,
+          required: true,
+        }
+      )
     ).toBe(true)
   })
 })
@@ -386,6 +410,57 @@ describe('Sweep-like bodyType argument', () => {
   })
 })
 
+describe('Transform arguments', () => {
+  it('prepopulates clearable transform values', () => {
+    for (const [commandName, argName, defaultValue] of [
+      ['Translate', 'x', KCL_DEFAULT_TRANSLATE_X],
+      ['Rotate', 'axis', KCL_AXIS_Z],
+      ['Rotate', 'angle', KCL_DEFAULT_ROTATE_ANGLE],
+      ['Scale', 'factor', KCL_DEFAULT_SCALE_FACTOR],
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const args = commandConfig.args as Record<string, unknown> | undefined
+      expect(args?.[argName]).toMatchObject({
+        defaultValue,
+        prepopulate: true,
+      })
+    }
+  })
+
+  it('accepts helices only for supported transforms', () => {
+    for (const commandName of [
+      'Translate',
+      'Rotate',
+      'Scale',
+      'Clone',
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const objectsArg = commandConfig.args?.objects
+      if (!objectsArg || !('selectionTypes' in objectsArg)) {
+        throw new Error(`${commandName}.objects should be a selection argument`)
+      }
+      const selectionTypes = objectsArg.selectionTypes
+      if (
+        commandName === 'Translate' ||
+        commandName === 'Scale' ||
+        commandName === 'Rotate'
+      ) {
+        expect(selectionTypes).toContain('helix')
+      } else {
+        expect(selectionTypes).not.toContain('helix')
+      }
+    }
+  })
+})
+
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
 describe('stdlib command arg derivation', () => {
@@ -427,8 +502,8 @@ describe('stdlib command arg derivation', () => {
     })
     expect(args.direction).toMatchObject({
       required: false,
-      status: 'experimental',
     })
+    expect(args.direction.status).toBeUndefined()
   })
 
   it('derives command status from KCL stdlib metadata', () => {
@@ -445,7 +520,7 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
-      ['Extrude', { direction: selectionsForArtifact() }, true],
+      ['Extrude', { direction: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
       ['Helical Gear', {}, true],

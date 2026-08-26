@@ -2,6 +2,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
+import type { Feature } from '@kittycad/lib'
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -28,11 +29,13 @@ import {
   parseLayoutWithMigrations,
 } from '@src/lib/layout/utils'
 import {
-  getDefaultProjectLibrarySettings,
+  getDefaultDirectoryProjectLibraryPath,
   isProjectLibrarySettings,
   mergeProjectLibrarySettings,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
+import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts/projectLibraries'
+import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   Setting,
@@ -400,6 +403,27 @@ function mergeSettingsPayloads(
   )
 }
 
+function withLegacyProjectDirectoryMirroredFromLibraries(
+  payload: DeepPartial<SaveSettingsPayload>
+): DeepPartial<SaveSettingsPayload> {
+  const libraries = payload.app?.libraries
+  if (!isProjectLibrarySettings(libraries)) {
+    return payload
+  }
+
+  const defaultDirectoryLibraryPath =
+    getDefaultDirectoryProjectLibraryPath(libraries)
+  if (!defaultDirectoryLibraryPath) {
+    return payload
+  }
+
+  return mergeSettingsPayloads(payload, {
+    app: {
+      projectDirectory: defaultDirectoryLibraryPath,
+    },
+  })
+}
+
 function mergeTomlSections(
   ...sections: (Record<string, unknown> | undefined)[]
 ): Record<string, unknown> | undefined {
@@ -446,18 +470,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'app', field: 'showAllFiles' },
       'show_all_files'
-    ),
-    defineMappedAppOnlyField(
-      { category: 'app', field: 'libraries' },
-      'libraries',
-      {
-        fromToml: (value) =>
-          isProjectLibrarySettings(value) ? value : undefined,
-        toToml: (value) =>
-          isProjectLibrarySettings(value)
-            ? (value as unknown as JsonValue)
-            : undefined,
-      }
     ),
   ]),
   defineAppOnlySection('debug', [
@@ -614,7 +626,7 @@ export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
-  return mergeSettingsPayloads(
+  const payload = mergeSettingsPayloads(
     {
       app: {
         theme: configuration?.settings?.app?.appearance?.theme
@@ -661,40 +673,66 @@ export function configurationToSettingsPayload(
       'user'
     )
   )
+
+  return withLegacyProjectDirectoryMirroredFromLibraries(payload)
 }
 
 export function settingsPayloadToConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<Configuration> {
+  const configurationWithLegacyProjectDirectory =
+    withLegacyProjectDirectoryMirroredFromLibraries(configuration)
   const appearance = compactRecord({
-    theme: toUndefinedIfNull(configuration?.app?.theme),
+    theme: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.app?.theme
+    ),
   })
 
   const typedAppSection = compactRecord({
     appearance,
-    stream_idle_mode: toUndefinedIfNull(configuration?.app?.streamIdleMode),
+    stream_idle_mode: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.app?.streamIdleMode
+    ),
   })
 
   const typedModelingSection = compactRecord({
-    base_unit: toUndefinedIfNull(configuration?.modeling?.defaultUnit),
-    camera_projection: toUndefinedIfNull(
-      configuration?.modeling?.cameraProjection
+    base_unit: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.defaultUnit
     ),
-    camera_orbit: toUndefinedIfNull(configuration?.modeling?.cameraOrbit),
-    highlight_edges: toUndefinedIfNull(configuration?.modeling?.highlightEdges),
-    enable_ssao: toUndefinedIfNull(configuration?.modeling?.enableSSAO),
-    backface_color: toUndefinedIfNull(configuration?.modeling?.backfaceColor),
-    show_scale_grid: toUndefinedIfNull(configuration?.modeling?.showScaleGrid),
-    fixed_size_grid: toUndefinedIfNull(configuration?.modeling?.fixedSizeGrid),
+    camera_projection: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.cameraProjection
+    ),
+    camera_orbit: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.cameraOrbit
+    ),
+    highlight_edges: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.highlightEdges
+    ),
+    enable_ssao: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.enableSSAO
+    ),
+    backface_color: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.backfaceColor
+    ),
+    show_scale_grid: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.showScaleGrid
+    ),
+    fixed_size_grid: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.fixedSizeGrid
+    ),
   })
 
   const appOnlySections = mergeSettingsSectionMaps(
     writeAppOnlySettingsSections(
-      configuration,
+      configurationWithLegacyProjectDirectory,
       USER_APP_ONLY_SETTINGS_SECTIONS
     ),
-    writeExtensionSettingsSections(configuration, extensionSettings, 'user')
+    writeExtensionSettingsSections(
+      configurationWithLegacyProjectDirectory,
+      extensionSettings,
+      'user'
+    )
   )
 
   const settings = compactRecord({
@@ -921,6 +959,7 @@ export async function loadAndValidateSettings(
     | string
     | {
         defaultProjectLibraries?: readonly ProjectLibrarySetting[]
+        projectLibrarySettingDefaultPolicies?: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
       }
@@ -932,6 +971,7 @@ export async function loadAndValidateSettings(
       : projectPathOrOptions
   const {
     defaultProjectLibraries = [],
+    projectLibrarySettingDefaultPolicies = [],
     extensionSettings = {},
     projectPath,
   } = options
@@ -954,15 +994,24 @@ export async function loadAndValidateSettings(
     typeof appSettings.app?.projectDirectory === 'string'
       ? appSettings.app.projectDirectory
       : undefined
-  const defaultDirectoryLibraryPath =
-    legacyProjectDirectory ?? initialDefaultDir
+
+  const policyDefaultProjectLibraries = resolveProjectLibrarySettingDefaults(
+    projectLibrarySettingDefaultPolicies,
+    {
+      initialDefaultDir,
+      legacyProjectDirectory,
+      isDesktop: isDesktop(),
+    }
+  )
 
   let settingsNext = createSettings(extensionSettings)
   settingsNext.app.projectDirectory.default = initialDefaultDir
-  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
-    getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
-    defaultProjectLibraries
-  )
+  if (settingsNext.app.libraries) {
+    settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+      policyDefaultProjectLibraries,
+      defaultProjectLibraries
+    )
+  }
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
@@ -1078,7 +1127,17 @@ export async function saveSettings(
   const wasmInstance = await initPromise
 
   // Get the user settings.
-  const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
+  const userSettingsChanges = getChangedSettingsAtLevel(allSettings, 'user')
+  const defaultDirectoryLibraryPath = allSettings.app.libraries
+    ? getDefaultDirectoryProjectLibraryPath(allSettings.app.libraries.current)
+    : undefined
+  const jsAppSettings = defaultDirectoryLibraryPath
+    ? mergeSettingsPayloads(userSettingsChanges, {
+        app: {
+          projectDirectory: defaultDirectoryLibraryPath,
+        },
+      })
+    : userSettingsChanges
   const appTomlString = serializeConfiguration(
     settingsPayloadToConfiguration(jsAppSettings, extensionSettings),
     wasmInstance
@@ -1219,12 +1278,17 @@ export function setSettingsAtLevel(
  */
 export function shouldHideSetting(
   setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
+  settingsLevel: SettingsLevel,
+  hasFeature?: (feature: Feature) => boolean
 ): boolean {
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
   const hideOnPlatform = setting.hideOnPlatform
   if (typeof hideOnPlatform === 'function') {
+    return true
+  }
+
+  if (hiddenWithoutFeature(setting, isDesktop(), hasFeature)) {
     return true
   }
 
@@ -1244,9 +1308,10 @@ export function shouldHideSetting(
  */
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
+  settingsLevel: SettingsLevel,
+  hasFeature?: (feature: Feature) => boolean
 ): boolean {
-  const isHidden = shouldHideSetting(setting, settingsLevel)
+  const isHidden = shouldHideSetting(setting, settingsLevel, hasFeature)
   if (isHidden) {
     return false
   }
@@ -1305,8 +1370,16 @@ export function jsAppSettings(s: SettingsType | SettingsActorType) {
  * we can't resolve them synchronously. The actual visibility will be resolved
  * asynchronously and commands will be updated reactively.
  */
-export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
+export function hiddenOnPlatform(
+  setting: Setting,
+  desktop: boolean,
+  hasFeature?: (feature: Feature) => boolean
+): boolean {
   const hideOnPlatform = setting.hideOnPlatform
+
+  if (hiddenWithoutFeature(setting, desktop, hasFeature)) {
+    return true
+  }
 
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
@@ -1323,4 +1396,18 @@ export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
     hideOnPlatform === 'both' ||
     hideOnPlatform === (desktop ? 'desktop' : 'web')
   )
+}
+
+function hiddenWithoutFeature(
+  setting: Setting<unknown>,
+  desktop: boolean,
+  hasFeature?: (feature: Feature) => boolean
+): boolean {
+  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
+    return true
+  }
+
+  const platformFeature =
+    setting.hideWithoutFeatureOnPlatform?.[desktop ? 'desktop' : 'web']
+  return !!platformFeature && !hasFeature?.(platformFeature)
 }

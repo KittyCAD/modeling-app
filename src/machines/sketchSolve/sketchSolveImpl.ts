@@ -24,6 +24,7 @@ import {
 } from '@src/machines/sketchSolve/segments'
 import {
   ORIGIN_TARGET,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   getObjectSelectionIds,
   isObjectSelectionId,
@@ -61,6 +62,7 @@ import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
+  getSketchSolveBlockingIssues,
   getSketchSolveExecOutcomeIssues,
   toastSketchSolveError,
   toastSketchSolveExecOutcomeErrors,
@@ -91,6 +93,7 @@ export {
   getObjectSelectionIds,
   isObjectSelectionId,
   ORIGIN_TARGET,
+  type SelectionCoordinates,
   type SketchSolveSelectionId,
   type SketchSpecialTarget,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
@@ -118,11 +121,7 @@ export type SketchSolveMachineEvent =
       keepSelection?: boolean
     }
   | {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
       keepSelection?: boolean
     }
   | { type: 'toggle non-visual constraints' }
@@ -132,6 +131,7 @@ export type SketchSolveMachineEvent =
         selectedIds?: Array<SketchSolveSelectionId>
         duringAreaSelectIds?: Array<number>
         replaceExistingSelection?: boolean
+        selectionCoordinates?: SelectionCoordinates
       }
     }
   | {
@@ -199,6 +199,11 @@ export type UpdateSketchOutcomeEvent = {
      * attach a history entry to.
      */
     addToHistory?: boolean
+    /**
+     * Defaults to true. Drag previews set this false and let the final drag
+     * outcome refresh lint diagnostics using the committed source and metadata.
+     */
+    refreshLintDiagnostics?: boolean
     checkpointId?: number | null
   }
 }
@@ -226,7 +231,10 @@ export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   childTool?: ToolActorRef
   pendingToolName?: EquipTool
+  pendingToolKeepSelection?: boolean
+  keepSelectionAfterToolCompletion: boolean
   selectedIds: Array<SketchSolveSelectionId>
+  selectionCoordinates: SelectionCoordinates
   duringAreaSelectIds: Array<number>
   hoveredId: SketchSolveSelectionId | null
   constraintHoverPopups: ConstraintHoverPopup[]
@@ -352,6 +360,7 @@ export function buildSegmentCtorFromObject(
       center: centerPoint,
       start: startPoint,
       end: endPoint,
+      direction: obj.kind.segment.direction,
     }
   } else if (isCircleSegment(obj)) {
     const centerPoint = getLinkedPoint({
@@ -561,7 +570,7 @@ export function updateSceneGraphFromDelta({
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
+    getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -585,7 +594,7 @@ export function updateSceneGraphFromDelta({
   } else {
     // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
-    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // hackSetProgram in `src/lang/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
     const invalidateScene = sketchSolveGroup?.children.some((child) => {
       const childId = Number(child.name)
@@ -776,6 +785,25 @@ export function cleanupSketchSolveGroup(sceneInfra: SceneInfra) {
   disposeGroupChildren(sketchSegments)
 }
 
+function getSelectionCoordinatesForIds(
+  selectedIds: readonly SketchSolveSelectionId[],
+  selectionCoordinates: SelectionCoordinates
+): SelectionCoordinates {
+  const nextSelectionCoordinates: SelectionCoordinates = {}
+  for (const selectedId of selectedIds) {
+    if (typeof selectedId !== 'number') {
+      continue
+    }
+
+    const clickPoint = selectionCoordinates[selectedId]
+    if (clickPoint) {
+      nextSelectionCoordinates[selectedId] = clickPoint
+    }
+  }
+
+  return nextSelectionCoordinates
+}
+
 export function updateSelectedIds({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update selected ids')
 
@@ -788,11 +816,17 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
 
   // Handle regular selectedIds update (for click selection, etc.)
   if (event.data.selectedIds !== undefined) {
+    const selectionCoordinates = {
+      ...context.selectionCoordinates,
+      ...(event.data.selectionCoordinates ?? {}),
+    }
+    let nextSelectedIds: SketchSolveSelectionId[]
+
     // If empty array is provided, clear the selection
     if (event.data.selectedIds.length === 0) {
-      updates.selectedIds = []
+      nextSelectedIds = []
     } else if (event.data.replaceExistingSelection) {
-      updates.selectedIds = event.data.selectedIds
+      nextSelectedIds = event.data.selectedIds
     } else {
       const first = event.data.selectedIds[0]
       if (
@@ -801,15 +835,20 @@ export function updateSelectedIds({ event, context }: SolveAssignArgs) {
         context.selectedIds.includes(first)
       ) {
         // If only one ID is selected and it's already in the selection, remove only it from the selection
-        updates.selectedIds = context.selectedIds.filter((id) => id !== first)
+        nextSelectedIds = context.selectedIds.filter((id) => id !== first)
       } else {
         // Merge new IDs with existing selection
-        const result = Array.from(
+        nextSelectedIds = Array.from(
           new Set([...context.selectedIds, ...event.data.selectedIds])
         )
-        updates.selectedIds = result
       }
     }
+
+    updates.selectedIds = nextSelectedIds
+    updates.selectionCoordinates = getSelectionCoordinatesForIds(
+      nextSelectedIds,
+      selectionCoordinates
+    )
   }
 
   return updates
@@ -825,6 +864,7 @@ export function updateSelectedIdsFromCodeSelection({
   if (!objects) {
     return {
       selectedIds: [],
+      selectionCoordinates: {},
       duringAreaSelectIds: [],
     }
   }
@@ -834,6 +874,7 @@ export function updateSelectedIdsFromCodeSelection({
       getCurrentSketchObjectsById(objects, context.sketchId),
       event.data.ranges
     ),
+    selectionCoordinates: {},
     duringAreaSelectIds: [],
   }
 }
@@ -886,7 +927,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
+    getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -1116,7 +1157,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(context.sketchExecOutcome.sceneGraphDelta)
+    getSketchSolveBlockingIssues(context.sketchExecOutcome.sceneGraphDelta)
       .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
@@ -1282,6 +1323,7 @@ const debouncedEditorUpdate = deferredCallback(
     sceneGraphDelta,
     shouldWriteToDisk,
     shouldAddToHistory,
+    refreshLintDiagnostics,
     spec,
   }: {
     text: string
@@ -1289,6 +1331,7 @@ const debouncedEditorUpdate = deferredCallback(
     sceneGraphDelta: SceneGraphDelta
     shouldWriteToDisk: boolean
     shouldAddToHistory: boolean
+    refreshLintDiagnostics: boolean
     spec: { effects: StateEffect<unknown>[] }
   }) => {
     kclManager.updateCodeEditor(
@@ -1300,7 +1343,9 @@ const debouncedEditorUpdate = deferredCallback(
       },
       spec
     )
-    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta)
+    kclManager.syncSketchSolveOutcome(text, sceneGraphDelta, {
+      refreshLintDiagnostics,
+    })
   },
   200
 )
@@ -1356,6 +1401,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     shouldUpdateEditor && event.data.writeToDisk !== false
   const shouldAddToHistory =
     shouldUpdateEditor && (event.data.addToHistory ?? shouldWriteToDisk)
+  const refreshLintDiagnostics = event.data.refreshLintDiagnostics !== false
   const isCheckpointOnlyCommit =
     shouldAddToHistory &&
     event.data.checkpointId != null &&
@@ -1393,7 +1439,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
      */
     context.kclManager.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics }
     )
 
     return {
@@ -1419,6 +1466,7 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       sceneGraphDelta,
       shouldWriteToDisk,
       shouldAddToHistory,
+      refreshLintDiagnostics,
       spec: editorAdditionalSpec,
     })
   } else {
@@ -1434,7 +1482,8 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     )
     context.kclManager.syncSketchSolveOutcome(
       event.data.sourceDelta.text,
-      sceneGraphDelta
+      sceneGraphDelta,
+      { refreshLintDiagnostics }
     )
   }
 
@@ -1557,11 +1606,14 @@ export function spawnTool(
 ): Partial<SketchSolveContext> {
   // Determine which tool to spawn based on event type
   let nameOfToolToSpawn: EquipTool
+  let keepSelection = false
 
   if (event.type === 'equip tool') {
     nameOfToolToSpawn = event.data.tool
+    keepSelection = event.keepSelection ?? false
   } else if (event.type === CHILD_TOOL_DONE_EVENT && context.pendingToolName) {
     nameOfToolToSpawn = context.pendingToolName
+    keepSelection = context.pendingToolKeepSelection ?? false
   } else {
     console.error('Cannot determine tool to spawn')
     return {}
@@ -1577,9 +1629,11 @@ export function spawnTool(
       kclManager: context.kclManager,
       sketchId: context.sketchId,
       initialSelectionIds: context.selectedIds,
+      initialSelectionCoordinates: context.selectionCoordinates,
       initialObjects:
         context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
       toolVariant: toolVariants[nameOfToolToSpawn],
+      keepSelection,
     },
   })
 
@@ -1587,6 +1641,8 @@ export function spawnTool(
     sketchSolveToolName: nameOfToolToSpawn,
     childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
+    pendingToolKeepSelection: undefined,
+    keepSelectionAfterToolCompletion: keepSelection,
   }
 }
 
@@ -1613,8 +1669,10 @@ export type ToolInput = {
   kclManager: KclManager
   sketchId: number
   initialSelectionIds?: SketchSolveSelectionId[]
+  initialSelectionCoordinates?: SelectionCoordinates
   initialObjects?: ApiObject[]
   toolVariant?: string // eg. 'corner' | 'center' | 'angled' for rectTool
+  keepSelection?: boolean
 }
 
 const toolVariants: Record<string, string> = {

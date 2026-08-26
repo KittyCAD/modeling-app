@@ -1,11 +1,43 @@
 import type { Coords2d } from '@src/lang/util'
 import { getAngle } from '@src/lib/utils'
 
+export type LineCoords = readonly [Coords2d, Coords2d]
+
 export function deg2Rad(deg: number): number {
   return (deg * Math.PI) / 180
 }
 
 export const TAU = Math.PI * 2
+
+// Normalize a radian angle into [0, 2PI).
+export function normalizeAngle(angle: number) {
+  return ((angle % TAU) + TAU) % TAU
+}
+
+// Returns the counter-clockwise angular distance from start to end in radians,
+// normalized into [0, 2PI).
+export function getCcwSweep(start: Coords2d, end: Coords2d) {
+  return normalizeAngle(
+    Math.atan2(end[1], end[0]) - Math.atan2(start[1], start[0])
+  )
+}
+
+/**
+ * Computes the directed angular distance from startAngle to endAngle
+ * in radians, going either CCW or CW.
+ *
+ * Notes:
+ * - If startAngle === endAngle, the result is 0 for both directions (not 2PI).
+ * - Inputs are typically within [-PI, PI], but any value works.
+ */
+export function getAngleDiff(
+  startAngle: number,
+  endAngle: number,
+  ccw: boolean
+) {
+  const diff = normalizeAngle(endAngle - startAngle)
+  return ccw ? diff : (TAU - diff) % TAU
+}
 
 export function getTangentPointFromPreviousArc(
   lastArcCenter: Coords2d,
@@ -71,6 +103,13 @@ export function isParallel(
   return Math.abs(cross2d(a, b) / denominator) < Math.sin(epsilonRadians)
 }
 
+export function linesAreParallel(line1: LineCoords, line2: LineCoords) {
+  const line1Dir = subVec(line1[1], line1[0])
+  const line2Dir = subVec(line2[1], line2[0])
+
+  return isParallel(line1Dir, line2Dir)
+}
+
 export function addVec(a: Coords2d, b: Coords2d): Coords2d {
   return [a[0] + b[0], a[1] + b[1]]
 }
@@ -101,6 +140,26 @@ export function cross2d(a: Coords2d, b: Coords2d): number {
   return a[0] * b[1] - a[1] * b[0]
 }
 
+// Returns the intersection of two infinite lines defined by two points each.
+// Returns null when the lines are parallel or nearly parallel.
+export function getLineIntersection(
+  line0: readonly [Coords2d, Coords2d],
+  line1: readonly [Coords2d, Coords2d]
+): Coords2d | null {
+  const p = line0[0]
+  const q = line1[0]
+  const r = subVec(line0[1], line0[0])
+  const s = subVec(line1[1], line1[0])
+  const denominator = cross2d(r, s)
+  if (Math.abs(denominator) <= 1e-9) {
+    return null
+  }
+
+  const qp = subVec(q, p)
+  const t = cross2d(qp, s) / denominator
+  return [p[0] + r[0] * t, p[1] + r[1] * t]
+}
+
 // Takes a vector given by 2 coords and rotates it 90deg CCW.
 export function perpendicular(v: Coords2d): Coords2d {
   return [-v[1], v[0]]
@@ -114,6 +173,19 @@ export function distance2d(a: Coords2d, b: Coords2d): number {
   const dx = a[0] - b[0]
   const dy = a[1] - b[1]
   return Math.sqrt(dx * dx + dy * dy)
+}
+
+export function distancePointToLine2d(
+  point: Coords2d,
+  line: LineCoords
+): number | null {
+  const direction = subVec(line[1], line[0])
+  const lineLength = length2d(direction)
+  if (lineLength === 0) {
+    return null
+  }
+
+  return Math.abs(cross2d(subVec(point, line[0]), direction) / lineLength)
 }
 
 export function length2d(a: Coords2d): number {

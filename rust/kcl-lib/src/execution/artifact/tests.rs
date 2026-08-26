@@ -22,6 +22,339 @@ fn gdt_annotation_artifacts_get_node_paths() {
     assert!(!annotation.code_ref.node_path.is_empty());
 }
 
+/// A named view value carrying `camera`. The name takes no part in what any of
+/// the cases below assert, so it is fixed.
+fn named_view_value_with(
+    camera: CameraView,
+    baseline: Visibility,
+    except_ids: Option<Vec<ArtifactId>>,
+) -> NamedViewValue {
+    NamedViewValue::new(
+        ArtifactId::new(Uuid::new_v4()),
+        "Front".to_owned(),
+        camera,
+        baseline,
+        except_ids,
+        ModuleId::default(),
+        [],
+        vec![],
+    )
+    .expect("the view is valid")
+}
+
+/// A named view value whose camera is fixed as well, for the cases that assert
+/// something other than the camera.
+fn named_view_value(baseline: Visibility, except_ids: Option<Vec<ArtifactId>>) -> NamedViewValue {
+    let camera = CameraView::oriented(Orientation::Front, None, None, None, vec![]).unwrap();
+    named_view_value_with(camera, baseline, except_ids)
+}
+
+/// A placeholder code reference, for the cases where the code reference is not
+/// what is being asserted.
+fn placeholder_code_ref() -> CodeRef {
+    CodeRef::placeholder(SourceRange::default())
+}
+
+/// Each kcl-lib enum variant becomes the kcl-api variant of the same name.
+///
+/// Every mapping is a hand-written `match`, so swapping two arms compiles and
+/// runs. The pairs below state the intended mapping a second time, which is what
+/// makes a swap fail, and the length assertions catch a variant added to an enum
+/// but not to this test.
+#[test]
+fn named_view_artifact_maps_every_enum_variant() {
+    let orientations = [
+        (Orientation::Front, ArtifactOrientation::Front),
+        (Orientation::Back, ArtifactOrientation::Back),
+        (Orientation::Left, ArtifactOrientation::Left),
+        (Orientation::Right, ArtifactOrientation::Right),
+        (Orientation::Top, ArtifactOrientation::Top),
+        (Orientation::Bottom, ArtifactOrientation::Bottom),
+        (Orientation::Isometric, ArtifactOrientation::Isometric),
+    ];
+    assert_eq!(
+        orientations.len(),
+        Orientation::ALL.len(),
+        "every orientation needs a row"
+    );
+    for (from, to) in orientations {
+        assert_eq!(artifact_orientation(from), to);
+    }
+
+    let projections = [
+        (Projection::Orthographic, ArtifactProjection::Orthographic),
+        (Projection::Perspective, ArtifactProjection::Perspective),
+    ];
+    assert_eq!(projections.len(), Projection::ALL.len(), "every projection needs a row");
+    for (from, to) in projections {
+        assert_eq!(artifact_projection(from), to);
+    }
+
+    let visibilities = [
+        (Visibility::Show, ArtifactVisibility::Show),
+        (Visibility::Hide, ArtifactVisibility::Hide),
+    ];
+    assert_eq!(
+        visibilities.len(),
+        Visibility::ALL.len(),
+        "every visibility needs a row"
+    );
+    for (from, to) in visibilities {
+        assert_eq!(artifact_visibility(from), to);
+    }
+}
+
+/// Every field of a camera reaches the artifact, for both camera forms.
+///
+/// Nothing else in the suite reads an artifact's camera: the Mermaid label the
+/// simulation tests snapshot prints only the view's name, baseline and range,
+/// and `program_memory.snap` pins the kcl-lib value rather than this conversion.
+/// Without this case, a camera could reach a consumer with the wrong
+/// orientation, the wrong projection, or a distance in the wrong unit.
+#[test]
+fn named_view_artifact_carries_the_whole_camera() {
+    use crate::execution::Point3d;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
+    use crate::std::args::TyF64;
+
+    let millimeters = |x, y, z| Point3d {
+        x,
+        y,
+        z,
+        units: Some(kcl_api::UnitLength::Millimeters),
+    };
+
+    // An oriented camera with every optional field supplied.
+    let oriented = CameraView::oriented(
+        Orientation::Left,
+        Some(millimeters(1.0, -2.0, 3.0)),
+        Some(TyF64::new(250.0, NumericType::mm())),
+        Some(Projection::Perspective),
+        vec![],
+    )
+    .unwrap();
+    let artifact = named_view_artifact(
+        &named_view_value_with(oriented, Visibility::Show, None),
+        placeholder_code_ref(),
+    );
+    assert_eq!(
+        artifact.camera.look,
+        ArtifactCameraLook::Oriented {
+            orientation: ArtifactOrientation::Left
+        }
+    );
+    assert_eq!(
+        artifact.camera.target,
+        Some(ArtifactPoint3d {
+            x: 1.0,
+            y: -2.0,
+            z: 3.0,
+            units: Some(kcl_api::UnitLength::Millimeters),
+        })
+    );
+    assert_eq!(artifact.camera.distance, Some(250.0));
+    assert_eq!(artifact.camera.projection, ArtifactProjection::Perspective);
+
+    // A directed camera carries both normalized vectors, and the fields the
+    // author omitted stay absent rather than acquiring a value in the
+    // conversion, because absence is what tells a consumer to resolve them
+    // against the model.
+    let directed = CameraView::directed(
+        Point3d {
+            x: 0.0,
+            y: -2.0,
+            z: 0.0,
+            units: None,
+        },
+        None,
+        None,
+        None,
+        None,
+        vec![],
+    )
+    .unwrap();
+    let artifact = named_view_artifact(
+        &named_view_value_with(directed, Visibility::Hide, None),
+        placeholder_code_ref(),
+    );
+    assert_eq!(
+        artifact.camera.look,
+        ArtifactCameraLook::Directed {
+            direction: ArtifactPoint3d {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+                units: None,
+            },
+            up: ArtifactPoint3d {
+                x: 0.0,
+                y: 0.0,
+                z: 1.0,
+                units: None,
+            },
+        }
+    );
+    assert_eq!(artifact.camera.target, None);
+    assert_eq!(artifact.camera.distance, None);
+    assert_eq!(artifact.camera.projection, ArtifactProjection::Orthographic);
+}
+
+/// The value holds one exception list plus a baseline; the artifact holds two
+/// lists. The baseline decides which list the exception lands in, and the other
+/// must come out empty, because a consumer reads the two lists rather than
+/// re-deriving them from the baseline.
+///
+/// The Mermaid flowchart that the simulation tests snapshot merges the two lists
+/// into one set of edges, so it cannot tell the two cases apart. This is where
+/// the split is pinned.
+#[test]
+fn named_view_artifact_splits_the_exception_list_by_baseline() {
+    let excepted = vec![ArtifactId::new(Uuid::new_v4()), ArtifactId::new(Uuid::new_v4())];
+
+    let showing = named_view_artifact(
+        &named_view_value(Visibility::Show, Some(excepted.clone())),
+        placeholder_code_ref(),
+    );
+    assert_eq!(showing.baseline, ArtifactVisibility::Show);
+    assert!(showing.show_ids.is_empty());
+    assert_eq!(showing.hide_ids, excepted);
+
+    let hiding = named_view_artifact(
+        &named_view_value(Visibility::Hide, Some(excepted.clone())),
+        placeholder_code_ref(),
+    );
+    assert_eq!(hiding.baseline, ArtifactVisibility::Hide);
+    assert_eq!(hiding.show_ids, excepted);
+    assert!(hiding.hide_ids.is_empty());
+}
+
+/// A named view's artifact must end up with a node path, so a consumer can map
+/// it back to the declaring call. Mirrors `gdt_annotation_artifacts_get_node_paths`:
+/// both artifacts are registered during execution rather than built from an
+/// engine command, so both start with a placeholder `CodeRef` that this pass is
+/// what fills in.
+#[test]
+fn named_view_artifacts_get_node_paths() {
+    let code = r#"v = view::named("Front", camera = view::oriented(view::Orientation::Front))"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let mut artifact = Artifact::NamedView(named_view_artifact(
+        &named_view_value(Visibility::Show, None),
+        CodeRef::placeholder(source_range),
+    ));
+
+    fill_in_node_paths(&mut artifact, &programs, 0, &AHashMap::default());
+
+    let Artifact::NamedView(view) = artifact else {
+        panic!("Expected named view artifact");
+    };
+    assert_eq!(view.code_ref.range, source_range);
+    assert!(!view.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn import_files_creates_imported_geometry_artifact() {
+    let code = r#"import "cube.obj" as cube"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::ImportFiles::builder()
+                .files(vec![
+                    kcmc::ImportFile::builder()
+                        .path("cube.obj".to_owned())
+                        .data(Vec::new())
+                        .build(),
+                ])
+                .format(kcmc::format::InputFormat3d::Obj(
+                    kcmc::format::obj::import::Options::default(),
+                ))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected ImportFiles to create imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
+#[test]
+fn entity_clone_remaps_imported_geometry_artifact() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let source_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: source_id,
+            code_ref: source_code_ref,
+        }),
+    );
+
+    let code = "clone(cube)";
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let cmd_id = Uuid::new_v4();
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: source_range,
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityClone::builder()
+                .entity_id(Uuid::from(source_id))
+                .build(),
+        ),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::ImportedGeometry(imported_geometry) = &updated[0] else {
+        panic!("Expected EntityClone to preserve imported geometry, got: {updated:?}");
+    };
+    assert_eq!(imported_geometry.id, ArtifactId::new(cmd_id));
+    assert_eq!(imported_geometry.code_ref.range, source_range);
+    assert!(!imported_geometry.code_ref.node_path.is_empty());
+}
+
 #[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
@@ -44,8 +377,9 @@ fn entity_clone_remaps_sweep_ids() {
             surface_ids: vec![source_surface_id],
             edge_ids: vec![source_edge_id],
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            source_sweep_id: None,
             trajectory_id: Some(source_trajectory_id),
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            method: ArtifactSweepMethod::New,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -67,6 +401,7 @@ fn entity_clone_remaps_sweep_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -92,7 +427,7 @@ fn entity_clone_remaps_sweep_ids() {
     assert_eq!(clone_sweep.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_sweep.sub_type, SweepSubType::Revolve);
     assert_eq!(clone_sweep.path_id, cloned_path_id);
-    assert_eq!(clone_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(clone_sweep.method, ArtifactSweepMethod::New);
     assert_eq!(clone_sweep.surface_ids, vec![cloned_surface_id]);
     assert_eq!(clone_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(clone_sweep.trajectory_id, Some(cloned_trajectory_id));
@@ -163,6 +498,7 @@ fn entity_clone_remaps_path_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -241,6 +577,11 @@ fn entity_clone_remaps_composite_solid_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: Some(EntityCloneInfo {
+            source_artifact_id: source_id,
+            result_artifact_id: ArtifactId::new(cmd_id),
+            source_topology_id: source_id,
+        }),
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -265,10 +606,10 @@ fn entity_clone_remaps_composite_solid_ids() {
     };
     assert_eq!(clone_solid.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_solid.sub_type, CompositeSolidSubType::Subtract);
-    assert_eq!(clone_solid.output_index, Some(1));
+    assert_eq!(clone_solid.output_index, None);
     assert_eq!(clone_solid.solid_ids, vec![cloned_solid_id]);
     assert_eq!(clone_solid.tool_ids, vec![cloned_tool_id]);
-    assert_eq!(clone_solid.composite_solid_id, Some(cloned_parent_composite_id));
+    assert_eq!(clone_solid.composite_solid_id, None);
     assert!(!clone_solid.consumed);
 }
 
@@ -308,6 +649,7 @@ fn entity_clone_does_not_preserve_unmapped_pattern_links() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -372,6 +714,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         Artifact::Segment(Segment {
             id: source_seg_id,
             path_id: source_path_id,
+            source_segment_id: None,
             original_seg_id: None,
             surface_id: Some(source_wall_id),
             edge_ids: Vec::new(),
@@ -389,8 +732,9 @@ fn entity_clone_clones_mapped_child_artifacts() {
             surface_ids: vec![source_wall_id],
             edge_ids: Vec::new(),
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: true,
             pattern_ids: Vec::new(),
         }),
@@ -425,6 +769,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -481,13 +826,185 @@ fn entity_clone_clones_mapped_child_artifacts() {
 }
 
 #[test]
+fn entity_clone_separates_solid_artifact_from_root_path() {
+    let source_path_id = ArtifactId::new(Uuid::new_v4());
+    let source_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let source_seg_id = ArtifactId::new(Uuid::new_v4());
+    let source_sketch_seg_id = ArtifactId::new(Uuid::new_v4());
+    let source_wall_id = ArtifactId::new(Uuid::new_v4());
+    let source_plane_id = ArtifactId::new(Uuid::new_v4());
+    let clone_entity_id = Uuid::new_v4();
+    let cloned_path_id = ArtifactId::new(clone_entity_id);
+    let cloned_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let cloned_seg_id = ArtifactId::new(Uuid::new_v4());
+    let cloned_wall_id = ArtifactId::new(Uuid::new_v4());
+
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_path_id,
+        Artifact::Path(Path {
+            id: source_path_id,
+            sub_type: PathSubType::Region,
+            plane_id: source_plane_id,
+            seg_ids: vec![source_seg_id],
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: source_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: source_path_id,
+            surface_ids: vec![source_wall_id],
+            edge_ids: Vec::new(),
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: ArtifactSweepMethod::Merge,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_seg_id,
+        Artifact::Segment(Segment {
+            id: source_seg_id,
+            path_id: source_path_id,
+            source_segment_id: None,
+            original_seg_id: Some(source_sketch_seg_id),
+            surface_id: Some(source_wall_id),
+            edge_ids: Vec::new(),
+            edge_cut_id: None,
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            common_surface_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_wall_id,
+        Artifact::Wall(Wall {
+            id: source_wall_id,
+            seg_id: source_seg_id,
+            edge_cut_edge_ids: Vec::new(),
+            sweep_id: source_sweep_id,
+            path_ids: vec![source_path_id],
+            face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+
+    // The engine child mapping contains topology entity IDs, but not the
+    // extrusion command ID used by the source Sweep artifact.
+    let mut clone_id_map = AHashMap::default();
+    clone_id_map.insert(source_seg_id, cloned_seg_id);
+    clone_id_map.insert(source_wall_id, cloned_wall_id);
+    let mut entity_clone_id_maps = AHashMap::default();
+    entity_clone_id_maps.insert(clone_entity_id, clone_id_map);
+
+    let artifact_command = ArtifactCommand {
+        cmd_id: clone_entity_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(
+            kcmc::each_cmd::EntityClone::builder()
+                .entity_id(Uuid::from(source_path_id))
+                .build(),
+        ),
+        entity_clone_info: Some(EntityCloneInfo {
+            source_artifact_id: source_sweep_id,
+            result_artifact_id: cloned_sweep_id,
+            source_topology_id: source_path_id,
+        }),
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &entity_clone_id_maps,
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    let updated_map: IndexMap<ArtifactId, Artifact> =
+        IndexMap::from_iter(updated.into_iter().map(|artifact| (artifact.id(), artifact)));
+
+    let Artifact::Path(cloned_path) = updated_map.get(&cloned_path_id).expect("Expected cloned path artifact") else {
+        panic!("Expected cloned path artifact");
+    };
+    assert!(cloned_path.consumed);
+    assert_eq!(cloned_path.sweep_id, Some(cloned_sweep_id));
+
+    let Artifact::Sweep(cloned_sweep) = updated_map
+        .get(&cloned_sweep_id)
+        .expect("Expected cloned sweep artifact")
+    else {
+        panic!("Expected cloned sweep artifact");
+    };
+    assert!(!cloned_sweep.consumed);
+    assert_eq!(cloned_sweep.source_sweep_id, Some(source_sweep_id));
+    assert_eq!(cloned_sweep.path_id, cloned_path_id);
+    assert_eq!(cloned_sweep.surface_ids, vec![cloned_wall_id]);
+
+    let second_clone_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let mut second_clone_id_map = AHashMap::default();
+    second_clone_id_map.insert(cloned_sweep_id, second_clone_sweep_id);
+    let Artifact::Sweep(second_clone_sweep) = remap_artifact_for_clone(
+        updated_map.get(&cloned_sweep_id).unwrap(),
+        &second_clone_id_map,
+        &CodeRef::placeholder(SourceRange::synthetic()),
+        Uuid::new_v4(),
+        cloned_sweep_id,
+    ) else {
+        panic!("Expected second cloned sweep artifact");
+    };
+    assert_eq!(second_clone_sweep.source_sweep_id, Some(source_sweep_id));
+
+    let Artifact::Segment(cloned_seg) = updated_map
+        .get(&cloned_seg_id)
+        .expect("Expected cloned segment artifact")
+    else {
+        panic!("Expected cloned segment artifact");
+    };
+    assert_eq!(cloned_seg.path_id, cloned_path_id);
+    assert_eq!(cloned_seg.source_segment_id, Some(source_seg_id));
+    assert_eq!(cloned_seg.original_seg_id, Some(source_sketch_seg_id));
+    assert_eq!(cloned_seg.surface_id, Some(cloned_wall_id));
+
+    let Artifact::Wall(cloned_wall) = updated_map.get(&cloned_wall_id).expect("Expected cloned wall artifact") else {
+        panic!("Expected cloned wall artifact");
+    };
+    assert_eq!(cloned_wall.sweep_id, cloned_sweep_id);
+    assert_eq!(cloned_wall.path_ids, vec![cloned_path_id]);
+}
+
+#[test]
 fn build_entity_clone_id_maps_from_child_queries() {
     let source_id = Uuid::new_v4();
     let clone_cmd_id = Uuid::new_v4();
     let old_children_cmd_id = Uuid::new_v4();
+    let source_topology_id = Uuid::new_v4();
+    let source_children_cmd_id = Uuid::new_v4();
     let new_children_cmd_id = Uuid::new_v4();
     let old_child_a = Uuid::new_v4();
     let old_child_b = Uuid::new_v4();
+    let source_child_a = Uuid::new_v4();
+    let source_child_b = Uuid::new_v4();
     let new_child_a = Uuid::new_v4();
     let new_child_b = Uuid::new_v4();
 
@@ -496,6 +1013,11 @@ fn build_entity_clone_id_maps_from_child_queries() {
             cmd_id: clone_cmd_id,
             range: SourceRange::synthetic(),
             command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(source_id).build()),
+            entity_clone_info: Some(EntityCloneInfo {
+                source_artifact_id: ArtifactId::new(source_id),
+                result_artifact_id: ArtifactId::new(clone_cmd_id),
+                source_topology_id: ArtifactId::new(source_topology_id),
+            }),
             omit_from_graph: false,
         },
         ArtifactCommand {
@@ -506,6 +1028,18 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .entity_id(source_id)
                     .build(),
             ),
+            entity_clone_info: None,
+            omit_from_graph: false,
+        },
+        ArtifactCommand {
+            cmd_id: source_children_cmd_id,
+            range: SourceRange::synthetic(),
+            command: ModelingCmd::from(
+                kcmc::each_cmd::EntityGetAllChildUuids::builder()
+                    .entity_id(source_topology_id)
+                    .build(),
+            ),
+            entity_clone_info: None,
             omit_from_graph: false,
         },
         ArtifactCommand {
@@ -516,6 +1050,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .entity_id(clone_cmd_id)
                     .build(),
             ),
+            entity_clone_info: None,
             omit_from_graph: false,
         },
     ];
@@ -525,9 +1060,15 @@ fn build_entity_clone_id_maps_from_child_queries() {
         serde_json::from_value(serde_json::json!({ "entity_ids": [old_child_a, old_child_b] })).unwrap();
     let new_children_response: kcmc::output::EntityGetAllChildUuids =
         serde_json::from_value(serde_json::json!({ "entity_ids": [new_child_a, new_child_b] })).unwrap();
+    let source_children_response: kcmc::output::EntityGetAllChildUuids =
+        serde_json::from_value(serde_json::json!({ "entity_ids": [source_child_a, source_child_b] })).unwrap();
     responses.insert(
         old_children_cmd_id,
         OkModelingCmdResponse::EntityGetAllChildUuids(old_children_response),
+    );
+    responses.insert(
+        source_children_cmd_id,
+        OkModelingCmdResponse::EntityGetAllChildUuids(source_children_response),
     );
     responses.insert(
         new_children_cmd_id,
@@ -551,6 +1092,15 @@ fn build_entity_clone_id_maps_from_child_queries() {
         id_map.get(&ArtifactId::new(old_child_b)),
         Some(&ArtifactId::new(new_child_b))
     );
+    assert_eq!(
+        id_map.get(&ArtifactId::new(source_child_a)),
+        Some(&ArtifactId::new(new_child_a))
+    );
+    assert_eq!(
+        id_map.get(&ArtifactId::new(source_child_b)),
+        Some(&ArtifactId::new(new_child_b))
+    );
+    assert!(!id_map.contains_key(&ArtifactId::new(source_topology_id)));
 }
 
 #[test]
@@ -571,8 +1121,9 @@ fn surface_blend_creates_blend_sweep_artifact() {
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: source_code_ref.clone(),
+            source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -586,8 +1137,9 @@ fn surface_blend_creates_blend_sweep_artifact() {
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref: source_code_ref,
+            source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -624,6 +1176,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -651,7 +1204,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
     assert_eq!(blend_sweep.sub_type, SweepSubType::Blend);
     assert_eq!(blend_sweep.path_id, path_one_id);
     assert_eq!(blend_sweep.trajectory_id, Some(path_two_id));
-    assert_eq!(blend_sweep.method, kittycad_modeling_cmds::shared::ExtrudeMethod::New);
+    assert_eq!(blend_sweep.method, ArtifactSweepMethod::New);
     assert!(!blend_sweep.consumed);
 }
 
@@ -697,6 +1250,7 @@ fn create_region_creates_region_path_sub_type() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
@@ -735,13 +1289,17 @@ fn pattern_artifact_links_to_source_geometry() {
     let pattern_id = ArtifactId::new(Uuid::new_v4());
     let plane_id = ArtifactId::new(Uuid::new_v4());
     let copy_id = Uuid::new_v4();
-    let copy_face_id = Uuid::new_v4();
+    let wall_id = ArtifactId::new(Uuid::new_v4());
+    let cap_id = ArtifactId::new(Uuid::new_v4());
+    let edge_id = ArtifactId::new(Uuid::new_v4());
+    let copy_wall_id = Uuid::new_v4();
+    let copy_cap_id = Uuid::new_v4();
     let copy_edge_id = Uuid::new_v4();
     let code_ref = CodeRef::placeholder(SourceRange::synthetic());
     let face_edge_infos: Vec<kcmc::output::FaceEdgeInfo> = serde_json::from_value(serde_json::json!([
         {
             "object_id": copy_id,
-            "faces": [copy_face_id],
+            "faces": [copy_wall_id, copy_cap_id],
             "edges": [copy_edge_id],
         }
     ]))
@@ -774,13 +1332,50 @@ fn pattern_artifact_links_to_source_geometry() {
             id: sweep_id,
             sub_type: SweepSubType::Extrusion,
             path_id,
-            surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
+            surface_ids: vec![wall_id, cap_id],
+            edge_ids: vec![edge_id],
             code_ref: code_ref.clone(),
+            source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        wall_id,
+        Artifact::Wall(Wall {
+            id: wall_id,
+            seg_id: ArtifactId::new(Uuid::new_v4()),
+            edge_cut_edge_ids: vec![edge_id],
+            sweep_id,
+            path_ids: Vec::new(),
+            face_code_ref: code_ref.clone(),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+    artifacts.insert(
+        cap_id,
+        Artifact::Cap(Cap {
+            id: cap_id,
+            sub_type: CapSubType::End,
+            edge_cut_edge_ids: Vec::new(),
+            sweep_id,
+            path_ids: Vec::new(),
+            face_code_ref: code_ref.clone(),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+    artifacts.insert(
+        edge_id,
+        Artifact::SweepEdge(SweepEdge {
+            id: edge_id,
+            sub_type: SweepEdgeSubType::Opposite,
+            seg_id: ArtifactId::new(Uuid::new_v4()),
+            cmd_id: Uuid::new_v4(),
+            index: 0,
+            sweep_id,
+            common_surface_ids: vec![wall_id, cap_id],
         }),
     );
 
@@ -806,7 +1401,7 @@ fn pattern_artifact_links_to_source_geometry() {
         })) if *id == pattern_id
             && *source_id == path_id
             && copy_ids == &vec![ArtifactId::new(copy_id)]
-            && copy_face_ids == &vec![ArtifactId::new(copy_face_id)]
+            && copy_face_ids == &vec![ArtifactId::new(copy_wall_id), ArtifactId::new(copy_cap_id)]
             && copy_edge_ids == &vec![ArtifactId::new(copy_edge_id)]
     ));
     assert!(updated.iter().any(|artifact| {
@@ -815,6 +1410,334 @@ fn pattern_artifact_links_to_source_geometry() {
     assert!(updated.iter().any(|artifact| {
         matches!(artifact, Artifact::Sweep(sweep) if sweep.id == sweep_id && sweep.pattern_ids == vec![pattern_id])
     }));
+    assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
+    assert!(
+        !updated
+            .iter()
+            .any(|artifact| matches!(artifact, Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)))
+    );
+}
+
+#[test]
+fn pattern_artifact_does_not_materialize_composite_solid_copies() {
+    let source_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let face_edge_infos: Vec<kcmc::output::FaceEdgeInfo> = serde_json::from_value(serde_json::json!([
+        {
+            "object_id": copy_id,
+            "faces": [Uuid::new_v4()],
+            "edges": [Uuid::new_v4()],
+        }
+    ]))
+    .expect("valid face-edge info");
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_id,
+        Artifact::CompositeSolid(CompositeSolid {
+            id: source_id,
+            consumed: false,
+            sub_type: CompositeSolidSubType::Union,
+            output_index: Some(2),
+            solid_ids: vec![ArtifactId::new(Uuid::new_v4())],
+            tool_ids: Vec::new(),
+            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            composite_solid_id: Some(ArtifactId::new(Uuid::new_v4())),
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let updated = pattern_artifact_updates(
+        &artifacts,
+        pattern_id,
+        PatternSubType::Linear,
+        source_id,
+        &face_edge_infos,
+        CodeRef::placeholder(SourceRange::synthetic()),
+    );
+
+    assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::CompositeSolid(source)
+                if source.id == source_id && source.pattern_ids == vec![pattern_id]
+        )
+    }));
+}
+
+#[test]
+fn entity_clone_resolves_pattern_copy_lazily() {
+    let source_path_id = ArtifactId::new(Uuid::new_v4());
+    let source_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let source_wall_id = ArtifactId::new(Uuid::new_v4());
+    let source_cap_id = ArtifactId::new(Uuid::new_v4());
+    let source_edge_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let copy_face_id = Uuid::new_v4();
+    let copy_cap_id = Uuid::new_v4();
+    let copy_edge_id = Uuid::new_v4();
+    let clone_id = Uuid::new_v4();
+    let cloned_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let cloned_face_id = ArtifactId::new(Uuid::new_v4());
+    let cloned_cap_id = ArtifactId::new(Uuid::new_v4());
+    let cloned_edge_id = ArtifactId::new(Uuid::new_v4());
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_path_id,
+        Artifact::Path(Path {
+            id: source_path_id,
+            sub_type: PathSubType::Region,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: source_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: source_path_id,
+            surface_ids: vec![source_wall_id, source_cap_id],
+            edge_ids: vec![source_edge_id],
+            code_ref: code_ref.clone(),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: ArtifactSweepMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    artifacts.insert(
+        source_wall_id,
+        Artifact::Wall(Wall {
+            id: source_wall_id,
+            seg_id: ArtifactId::new(Uuid::new_v4()),
+            edge_cut_edge_ids: Vec::new(),
+            sweep_id: source_sweep_id,
+            path_ids: Vec::new(),
+            face_code_ref: code_ref.clone(),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+    artifacts.insert(
+        source_edge_id,
+        Artifact::SweepEdge(SweepEdge {
+            id: source_edge_id,
+            sub_type: SweepEdgeSubType::Opposite,
+            seg_id: ArtifactId::new(Uuid::new_v4()),
+            cmd_id: Uuid::new_v4(),
+            index: 0,
+            sweep_id: source_sweep_id,
+            common_surface_ids: vec![source_wall_id, source_cap_id],
+        }),
+    );
+    artifacts.insert(
+        source_cap_id,
+        Artifact::Cap(Cap {
+            id: source_cap_id,
+            sub_type: CapSubType::End,
+            edge_cut_edge_ids: Vec::new(),
+            sweep_id: source_sweep_id,
+            path_ids: Vec::new(),
+            face_code_ref: code_ref.clone(),
+            cmd_id: Uuid::new_v4(),
+        }),
+    );
+    let face_edge_infos: Vec<kcmc::output::FaceEdgeInfo> = serde_json::from_value(serde_json::json!([
+        {
+            "object_id": copy_id,
+            "faces": [copy_face_id, copy_cap_id],
+            "edges": [copy_edge_id],
+        }
+    ]))
+    .expect("valid face-edge info");
+    for update in pattern_artifact_updates(
+        &artifacts,
+        pattern_id,
+        PatternSubType::Circular,
+        source_sweep_id,
+        &face_edge_infos,
+        code_ref,
+    ) {
+        merge_artifact_into_map(&mut artifacts, update);
+    }
+    assert!(!artifacts.contains_key(&ArtifactId::new(copy_id)));
+
+    let artifact_command = ArtifactCommand {
+        cmd_id: clone_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(copy_id).build()),
+        entity_clone_info: Some(EntityCloneInfo {
+            source_artifact_id: ArtifactId::new(copy_id),
+            result_artifact_id: cloned_sweep_id,
+            source_topology_id: source_path_id,
+        }),
+        omit_from_graph: false,
+    };
+    let mut clone_id_map = AHashMap::default();
+    clone_id_map.insert(ArtifactId::new(copy_face_id), cloned_face_id);
+    clone_id_map.insert(ArtifactId::new(copy_cap_id), cloned_cap_id);
+    clone_id_map.insert(ArtifactId::new(copy_edge_id), cloned_edge_id);
+    clone_id_map.insert(source_wall_id, cloned_face_id);
+    clone_id_map.insert(source_cap_id, cloned_cap_id);
+    clone_id_map.insert(source_edge_id, cloned_edge_id);
+    let entity_clone_id_maps = AHashMap::from_iter([(clone_id, clone_id_map)]);
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &entity_clone_id_maps,
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+    let Some(Artifact::Sweep(cloned_sweep)) = updated.iter().find(|artifact| artifact.id() == cloned_sweep_id) else {
+        panic!("Expected clone() to create a Sweep from the pattern copy");
+    };
+    assert_eq!(cloned_sweep.surface_ids, vec![cloned_face_id, cloned_cap_id]);
+    assert_eq!(cloned_sweep.edge_ids, vec![cloned_edge_id]);
+    assert_eq!(cloned_sweep.source_sweep_id, Some(source_sweep_id));
+    assert_eq!(cloned_sweep.path_id, ArtifactId::new(clone_id));
+    assert!(!cloned_sweep.consumed);
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::Path(path)
+                if path.id == ArtifactId::new(clone_id)
+                    && path.sweep_id == Some(cloned_sweep_id)
+        )
+    }));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::Wall(wall)
+                if wall.id == cloned_face_id
+                    && wall.sweep_id == cloned_sweep_id
+        )
+    }));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::Cap(cap)
+                if cap.id == cloned_cap_id
+                    && cap.sweep_id == cloned_sweep_id
+        )
+    }));
+    assert!(updated.iter().any(|artifact| {
+        matches!(
+            artifact,
+            Artifact::SweepEdge(edge)
+                if edge.id == cloned_edge_id
+                    && edge.sweep_id == cloned_sweep_id
+        )
+    }));
+}
+
+#[test]
+fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
+    let source_path_id = ArtifactId::new(Uuid::new_v4());
+    let source_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = Uuid::new_v4();
+    let clone_id = Uuid::new_v4();
+    let code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut artifacts = IndexMap::new();
+    artifacts.insert(
+        source_path_id,
+        Artifact::Path(Path {
+            id: source_path_id,
+            sub_type: PathSubType::Sketch,
+            plane_id: ArtifactId::new(Uuid::new_v4()),
+            seg_ids: Vec::new(),
+            consumed: true,
+            sweep_id: Some(source_sweep_id),
+            trajectory_sweep_id: None,
+            solid2d_id: None,
+            code_ref: code_ref.clone(),
+            composite_solid_id: None,
+            sketch_block_id: None,
+            origin_path_id: None,
+            inner_path_id: None,
+            outer_path_id: None,
+            pattern_ids: vec![pattern_id],
+        }),
+    );
+    artifacts.insert(
+        source_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: source_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: source_path_id,
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: code_ref.clone(),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: ArtifactSweepMethod::New,
+            consumed: false,
+            pattern_ids: vec![pattern_id],
+        }),
+    );
+    artifacts.insert(
+        pattern_id,
+        Artifact::Pattern(Pattern {
+            id: pattern_id,
+            sub_type: PatternSubType::Linear,
+            source_id: source_path_id,
+            copy_ids: vec![ArtifactId::new(copy_id)],
+            copy_face_ids: Vec::new(),
+            copy_edge_ids: Vec::new(),
+            code_ref,
+        }),
+    );
+
+    let artifact_command = ArtifactCommand {
+        cmd_id: clone_id,
+        range: SourceRange::synthetic(),
+        command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(copy_id).build()),
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &artifacts,
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert!(
+        updated.is_empty(),
+        "Expected a cloned 2D pattern copy not to create body artifacts, got: {updated:?}"
+    );
 }
 
 #[test]
@@ -829,6 +1752,7 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
         Artifact::Segment(Segment {
             id: shared_id,
             path_id,
+            source_segment_id: None,
             original_seg_id: None,
             surface_id: None,
             edge_ids: Vec::new(),
@@ -922,8 +1846,9 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             surface_ids: Vec::new(),
             edge_ids: Vec::new(),
             code_ref,
+            source_sweep_id: None,
             trajectory_id: None,
-            method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            method: ArtifactSweepMethod::Merge,
             consumed: false,
             pattern_ids: Vec::new(),
         }),
@@ -940,6 +1865,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        entity_clone_info: None,
         omit_from_graph: false,
     };
     let mirror_response: kcmc::output::EntityMirrorAcross = serde_json::from_value(serde_json::json!({
@@ -984,4 +1910,39 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
                 && edge_ids == &vec![ArtifactId::new(edge_id)]
         )
     }));
+}
+
+#[test]
+fn failed_mirror_3d_command_does_not_update_artifact_graph() {
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityMirrorAcross::builder()
+            .ids(vec![Uuid::new_v4()])
+            .across(kittycad_modeling_cmds::shared::MirrorAcross::Plane { id: Uuid::new_v4() })
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+        entity_clone_info: None,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert!(updated.is_empty());
 }

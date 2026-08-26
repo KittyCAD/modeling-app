@@ -41,6 +41,7 @@ pub(super) const IMPORT_COORDS: &str = "coords";
 pub(super) const IMPORT_COORDS_VALUES: [(&str, &System); 3] =
     [("zoo", KITTYCAD), ("opengl", OPENGL), ("vulkan", VULKAN)];
 pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
+pub(crate) const IMPORT_TARGET_REPRESENTATION: &str = "targetRepresentation";
 
 pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
@@ -77,7 +78,8 @@ pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
 pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(crate) const WARN_NOT_YET_SUPPORTED: &str = "notYetSupported";
 pub(crate) const WARN_OVER_CONSTRAINED_SKETCH: &str = "overConstrainedSketch";
-pub(super) const WARN_VALUES: [&str; 13] = [
+pub(crate) const WARN_REGION_LIVENESS: &str = "regionLiveness";
+pub(super) const WARN_VALUES: [&str; 14] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
@@ -91,6 +93,7 @@ pub(super) const WARN_VALUES: [&str; 13] = [
     WARN_NOT_YET_SUPPORTED,
     WARN_CSG_NO_INTERSECTION,
     WARN_OVER_CONSTRAINED_SKETCH,
+    WARN_REGION_LIVENESS,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
@@ -161,7 +164,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 1.0)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 2.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
@@ -255,16 +258,24 @@ pub(super) fn many_of(
         .collect::<Result<Vec<&str>, KclError>>()
 }
 
-// Returns the unparsed number literal.
-pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
-    if let Expr::Literal(lit) = expr
-        && let LiteralValue::Number { .. } = &lit.value
-    {
-        return Ok(lit.raw.clone());
+/// Returns a KCL version.
+/// Usually a number, but may have a trailing string suffix like 'preview' with a '-' divider,
+/// e.g. 3.0-preview.
+pub(super) fn expect_kcl_version(expr: &Expr) -> Result<String, KclError> {
+    if let Expr::Literal(lit) = expr {
+        return match &lit.value {
+            LiteralValue::Number { .. } => Ok(lit.raw.clone()),
+            LiteralValue::String(value) => Ok(value.clone()),
+            LiteralValue::Bool(_) => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Unexpected KCL version value, expected a number or string, e.g., `2.0` or `\"3.0-preview\"`"
+                    .to_owned(),
+                vec![expr.into()],
+            ))),
+        };
     }
 
     Err(KclError::new_semantic(KclErrorDetails::new(
-        "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
+        "Unexpected KCL version value, expected a number or string, e.g., `2.0` or `\"3.0-preview\"`".to_owned(),
         vec![expr.into()],
     )))
 }

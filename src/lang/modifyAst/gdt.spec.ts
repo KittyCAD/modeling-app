@@ -19,18 +19,25 @@ import {
   getNextAvailableDatumName,
   getUsedDatumNames,
 } from '@src/lang/modifyAst/gdt'
-import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
+import {
+  type Artifact,
+  type ArtifactGraph,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
+  clonedRegionBody,
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
+  getClonedSweepEdges,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -1092,6 +1099,107 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addProfileGdt', () => {
+    it('should reference faces on a cloned body for a selected edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        clonedRegionBody,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = getClonedSweepEdges(artifactGraph).find((artifact) =>
+        artifact.commonSurfaceIds.some(
+          (id) => artifactGraph.get(id)?.type === 'cap'
+        )
+      )
+      if (!edge) throw new Error('Expected a cloned sweep edge')
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addProfileGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`gdt::profileLine(
+  edges = [
+    getCommonEdge(faces = [
+      cube2.sketch.tags.line2,
+      cube2.faces.capEnd001
+    ])
+  ],
+  tolerance = 0.1mm,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it.each([
+      {
+        label: 'cap',
+        findFace: (artifact: Artifact) =>
+          artifact.type === 'cap' && artifact.subType === 'end',
+        expectedFace: /faces = \[\s*cube2\.faces\.capEnd001\s*\]/,
+      },
+      {
+        label: 'wall',
+        findFace: (artifact: Artifact) => artifact.type === 'wall',
+        expectedFace: /faces = \[\s*cube2\.sketch\.tags\.line2\s*\]/,
+      },
+    ])(
+      'should qualify a directly selected cloned $label face',
+      async ({ findFace, expectedFace }) => {
+        const { artifactGraph, ast } = await executeCode(
+          clonedRegionBody,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const clonedSweep = [...artifactGraph.values()].find(
+          (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+            artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
+        )
+        const face = [...artifactGraph.values()].find(
+          (artifact) =>
+            (artifact.type === 'cap' || artifact.type === 'wall') &&
+            artifact.sweepId === clonedSweep?.id &&
+            findFace(artifact)
+        )
+        if (!face) {
+          throw new Error('Expected a cloned face')
+        }
+
+        const tolerance = await getKclCommandValue(
+          '0.1mm',
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+        const result = addProfileGdt({
+          ast,
+          artifactGraph,
+          objects: createSelectionFromArtifacts([face], artifactGraph),
+          tolerance,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) {
+          throw result
+        }
+
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) {
+          throw newCode
+        }
+        expect(newCode).toContain('gdt::profileSurface(')
+        expect(newCode).toMatch(expectedFace)
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
+
     it('should add a profile line annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,

@@ -1,38 +1,37 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
+import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
-  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
+  OPFS_CLOUD_FEATURE_FLAG,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { LayoutRootNode, defaultLayout } from '@src/lib/layout'
+import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -40,7 +39,6 @@ import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
-import { BillingTransition } from '@src/machines/billingMachine'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
@@ -50,8 +48,8 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import {
-  TutorialRequestToast,
   needsToOnboard,
+  TutorialRequestToast,
   useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
@@ -68,14 +66,15 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
+  const app = useApp()
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    useApp()
+    app
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -83,9 +82,13 @@ export function OpenedProject() {
   const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
-  const { onProjectOpen } = useLspContext()
+  const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+  const hasCloudSyncFeature = app.userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -94,14 +97,6 @@ export function OpenedProject() {
   const projectPath = project?.path || null
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-
-  useEffect(() => {
-    setCloudSyncProjectScope(projectPath ?? undefined)
-
-    return () => {
-      setCloudSyncProjectScope(undefined)
-    }
-  }, [projectPath])
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
@@ -134,11 +129,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
-    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(
@@ -164,11 +161,11 @@ export function OpenedProject() {
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen(
+    lsp.onProjectOpen(
       { name: projectName, path: projectPath },
       project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, project])
+  }, [lsp, projectName, projectPath, project])
 
   useHotKeyListener(kclManager)
 
@@ -183,34 +180,6 @@ export function OpenedProject() {
     ['file']
   )
   const authToken = auth.useToken()
-  const currentProject = project?.projectIORefSignal.value
-  const projectStatus = useProjectStatus(
-    currentProject?.cloudProjectId,
-    authToken
-  )
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
-
-  useEffect(() => {
-    if (!hasChangesRequested) {
-      return
-    }
-
-    const message = projectStatus?.feedback
-      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
-      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
-
-    toast(message, {
-      id: CHANGES_REQUESTED_TOAST_ID,
-      duration: Number.POSITIVE_INFINITY,
-      icon: '⚠️',
-    })
-
-    return () => {
-      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
-    }
-  }, [hasChangesRequested, projectStatus?.feedback])
-
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default
@@ -249,12 +218,10 @@ export function OpenedProject() {
       toast.success(
         () =>
           TutorialRequestToast({
+            app,
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
-            kclManager,
             accountUrl: withSiteBaseURL('/account'),
-            systemIOActor,
-            settingsActor,
           }),
         {
           id: ONBOARDING_TOAST_ID,
@@ -272,9 +239,6 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
-    kclManager,
-    systemIOActor,
-    settingsActor,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -368,6 +332,7 @@ export function OpenedProject() {
             ...defaultGlobalStatusBarItems({
               autoUpdateDownloadProgress,
               autoUpdateReady,
+              hasCloudSyncFeature,
               onRestartToUpdate: () => {
                 window.electron?.appRestart()
               },

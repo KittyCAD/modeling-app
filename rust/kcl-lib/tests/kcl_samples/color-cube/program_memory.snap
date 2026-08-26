@@ -47,10 +47,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -61,10 +61,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -75,10 +75,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -89,10 +89,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -114,10 +114,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -138,10 +138,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -162,10 +162,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -186,10 +186,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -289,10 +289,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -303,10 +303,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -317,10 +317,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -331,10 +331,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -356,10 +356,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -380,10 +380,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -404,10 +404,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -428,10 +428,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -545,10 +545,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -559,10 +559,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -573,10 +573,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -587,10 +587,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -612,10 +612,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -636,10 +636,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -660,10 +660,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -684,10 +684,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -791,10 +791,10 @@ description: Variables in memory after executing color-cube.kcl
             -50.0
           ],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -815,10 +815,10 @@ description: Variables in memory after executing color-cube.kcl
             -50.0
           ],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -839,10 +839,10 @@ description: Variables in memory after executing color-cube.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -863,10 +863,10 @@ description: Variables in memory after executing color-cube.kcl
             50.0
           ],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1332,10 +1332,10 @@ description: Variables in memory after executing color-cube.kcl
                     -50.0
                   ],
                   "tag": {
-                    "commentStart": 622,
-                    "end": 632,
+                    "commentStart": 640,
+                    "end": 650,
                     "moduleId": 0,
-                    "start": 622,
+                    "start": 640,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -1356,10 +1356,10 @@ description: Variables in memory after executing color-cube.kcl
                     -50.0
                   ],
                   "tag": {
-                    "commentStart": 703,
-                    "end": 712,
+                    "commentStart": 721,
+                    "end": 730,
                     "moduleId": 0,
-                    "start": 703,
+                    "start": 721,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -1380,10 +1380,10 @@ description: Variables in memory after executing color-cube.kcl
                     50.0
                   ],
                   "tag": {
-                    "commentStart": 781,
-                    "end": 788,
+                    "commentStart": 799,
+                    "end": 806,
                     "moduleId": 0,
-                    "start": 781,
+                    "start": 799,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -1404,10 +1404,10 @@ description: Variables in memory after executing color-cube.kcl
                     50.0
                   ],
                   "tag": {
-                    "commentStart": 857,
-                    "end": 865,
+                    "commentStart": 875,
+                    "end": 883,
                     "moduleId": 0,
-                    "start": 857,
+                    "start": 875,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -1869,10 +1869,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1883,10 +1883,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1897,10 +1897,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1911,10 +1911,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1936,10 +1936,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1960,10 +1960,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -1984,10 +1984,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2008,10 +2008,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -2111,10 +2111,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -2125,10 +2125,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -2139,10 +2139,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -2153,10 +2153,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -2178,10 +2178,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -2202,10 +2202,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -2226,10 +2226,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2250,10 +2250,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -2376,10 +2376,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -2390,10 +2390,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -2404,10 +2404,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -2418,10 +2418,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -2443,10 +2443,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -2467,10 +2467,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -2491,10 +2491,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2515,10 +2515,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -2618,10 +2618,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -2632,10 +2632,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -2646,10 +2646,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -2660,10 +2660,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -2685,10 +2685,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -2709,10 +2709,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -2733,10 +2733,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2757,10 +2757,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -2860,10 +2860,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -2874,10 +2874,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -2888,10 +2888,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -2902,10 +2902,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -2927,10 +2927,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -2951,10 +2951,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -2975,10 +2975,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2999,10 +2999,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3102,10 +3102,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3116,10 +3116,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3130,10 +3130,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3144,10 +3144,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3169,10 +3169,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3193,10 +3193,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3217,10 +3217,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3241,10 +3241,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3367,10 +3367,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3381,10 +3381,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3395,10 +3395,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3409,10 +3409,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3434,10 +3434,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3458,10 +3458,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3482,10 +3482,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3506,10 +3506,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3609,10 +3609,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3623,10 +3623,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3637,10 +3637,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3651,10 +3651,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3676,10 +3676,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3700,10 +3700,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3724,10 +3724,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3748,10 +3748,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3856,10 +3856,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3870,10 +3870,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3884,10 +3884,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3898,10 +3898,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3923,10 +3923,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3947,10 +3947,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3971,10 +3971,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3995,10 +3995,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -4098,10 +4098,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 622,
-            "end": 632,
+            "commentStart": 640,
+            "end": 650,
             "moduleId": 0,
-            "start": 622,
+            "start": 640,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -4112,10 +4112,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 703,
-            "end": 712,
+            "commentStart": 721,
+            "end": 730,
             "moduleId": 0,
-            "start": 703,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -4126,10 +4126,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 781,
-            "end": 788,
+            "commentStart": 799,
+            "end": 806,
             "moduleId": 0,
-            "start": 781,
+            "start": 799,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -4140,10 +4140,10 @@ description: Variables in memory after executing color-cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 865,
+            "commentStart": 875,
+            "end": 883,
             "moduleId": 0,
-            "start": 857,
+            "start": 875,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -4165,10 +4165,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 622,
-              "end": 632,
+              "commentStart": 640,
+              "end": 650,
               "moduleId": 0,
-              "start": 622,
+              "start": 640,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -4189,10 +4189,10 @@ description: Variables in memory after executing color-cube.kcl
               -50.0
             ],
             "tag": {
-              "commentStart": 703,
-              "end": 712,
+              "commentStart": 721,
+              "end": 730,
               "moduleId": 0,
-              "start": 703,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -4213,10 +4213,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 781,
-              "end": 788,
+              "commentStart": 799,
+              "end": 806,
               "moduleId": 0,
-              "start": 781,
+              "start": 799,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -4237,10 +4237,10 @@ description: Variables in memory after executing color-cube.kcl
               50.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 865,
+              "commentStart": 875,
+              "end": 883,
               "moduleId": 0,
-              "start": 857,
+              "start": 875,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },

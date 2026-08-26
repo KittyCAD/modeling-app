@@ -3791,116 +3791,26 @@ description: Operations executed gas-impeller.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 5.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 30.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "baseFloor": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeOuterWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipCenterlineGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubShoulderBlendArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubShoulderRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubTopLand": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerEnvelopeArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeCenterDropGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeChordGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopePerpendicularGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLipDrop": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shaftRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shaftWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -4010,116 +3920,26 @@ description: Operations executed gas-impeller.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "direction": {
+          "value": {
+            "type": "String",
+            "value": "cw"
+          },
+          "sourceRange": []
+        },
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 30.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 55.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "baseFloor": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeOuterWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipCenterlineGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTipRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "bladeEnvelopeTopEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubShoulderBlendArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubShoulderRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "hubTopLand": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerEnvelopeArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeCenterDropGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeChordGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopePerpendicularGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerEnvelopeRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerLipDrop": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shaftRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "shaftWall": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -5694,7 +5514,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5718,7 +5538,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5742,7 +5562,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5766,7 +5586,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5790,7 +5610,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5814,7 +5634,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5838,7 +5658,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -5862,7 +5682,7 @@ description: Operations executed gas-impeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

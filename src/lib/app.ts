@@ -8,22 +8,24 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  buildZookeeperHistoryExtension,
-  type PreparedZookeeperPatchFileReplay,
-} from '@src/lib/zookeeper/editorPlugin'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
-import RustContext from '@src/lib/rustContext'
+import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
+import type RustContext from '@src/lib/rustContext'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -33,12 +35,11 @@ import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import {
-  BILLING_CONTEXT_DEFAULTS,
-  billingMachine,
-} from '@src/machines/billingMachine'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
+import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -49,7 +50,6 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
 import {
   type AuthRegistryService,
   authService,
@@ -60,10 +60,19 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -74,19 +83,16 @@ import {
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
+import {
+  type ZdsPluginActivationSetting,
+  zdsPluginActivationSettingsValueSpec,
+} from '@src/registry/createZdsPlugin'
 import {
   appRegistryOverridesSlot,
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import { useSelector } from '@xstate/react'
-import type {
-  ActorRefFrom,
-  ContextFrom,
-  SnapshotFrom,
-  Subscription,
-} from 'xstate'
+import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
@@ -139,11 +145,7 @@ export type AppCommandSystem = CommandSystemService
 
 export type AppSettingsSystem = SettingsRegistryService
 
-export type AppBillingSystem = {
-  actor: ActorRefFrom<typeof billingMachine>
-  send: ActorRefFrom<typeof billingMachine>['send']
-  useContext: () => ContextFrom<typeof billingMachine>
-}
+export type AppBillingSystem = BillingRegistryService
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
@@ -152,7 +154,7 @@ export type AppLayoutSystem = LayoutService
 export type AppRegistrySystem = Registry
 
 export type AppDebug = {
-  mlEphantManagerActor?: MlEphantManagerActor
+  zookeeperManagerActor?: ZookeeperManagerActor
 }
 
 /** All of the subsystems needed to run the ZDS app */
@@ -172,6 +174,8 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public currentProjectLibraryIdSignal: Signal<string | undefined> =
+    signal(undefined)
   public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
@@ -244,10 +248,9 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
-    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.userFeatures.actor.subscribe(this.syncPluginSettingsFromCurrent)
     this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
       this.setActiveWasmInstance
     )
@@ -255,14 +258,13 @@ export class App implements AppSubsystems {
       .then(this.setActiveWasmInstance)
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
     this.settings.actor.subscribe(this.syncPluginSettings)
-    this.syncPluginSettings(this.settings.actor.getSnapshot())
+    this.syncPluginSettingsFromCurrent()
   }
 
   /**
@@ -288,29 +290,13 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
-    const settingsActor = settings.actor
+    const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
-    const engineCommandManager = new ConnectionManager({
-      settingsActor,
-    })
-    const rustContext = new RustContext(
-      wasmPromise,
-      engineCommandManager,
-      settingsActor
-    )
-
-    const billingActor = createActor(billingMachine, {
-      input: {
-        ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: () => withAPIBaseURL(''),
-      },
-    }).start()
-    const billing: AppBillingSystem = {
-      actor: billingActor,
-      send: billingActor.send.bind(App),
-      useContext: () => useSelector(billingActor, ({ context }) => context),
-    }
+    const engineCommandManager = appRegistry.get(
+      engineConnectionService
+    ).manager
+    const rustContext = appRegistry.get(rustContextService).context
 
     return {
       wasmPromise,
@@ -347,10 +333,31 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
+  private setCloudSyncOpenedProject(project?: Project) {
+    this.registry.get(cloudSyncService).setOpenedProject(
+      project
+        ? {
+            projectPath: project.path,
+            ...(project.libraryPath
+              ? { libraryPath: project.libraryPath }
+              : {}),
+            ...(project.libraryType
+              ? { libraryType: project.libraryType }
+              : {}),
+          }
+        : undefined
+    )
+  }
+
   async openProject(projectIORef: Project) {
     this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(projectIORef)
+    const ownedProject = await projectWithLibraryOwnership(
+      projectIORef,
+      this.settings.get().app.libraries.current
+    )
+    const projectIORefSignal = signal(ownedProject)
     this.project = await ZDSProject.open(projectIORefSignal, this)
+    this.setCloudSyncOpenedProject(ownedProject)
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -413,7 +420,15 @@ export class App implements AppSubsystems {
           p.path === projectIORefSignal.value.path
       )
       if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
+        projectIORefSignal.value = {
+          ...foundProject,
+          ...(projectIORefSignal.value.libraryPath
+            ? { libraryPath: projectIORefSignal.value.libraryPath }
+            : {}),
+          ...(projectIORefSignal.value.libraryType
+            ? { libraryType: projectIORefSignal.value.libraryType }
+            : {}),
+        }
       }
     })
 
@@ -443,6 +458,7 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
   }
@@ -463,30 +479,6 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncCloudSyncRuntimePolicy = () => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const authSnapshot = this.auth.actor.getSnapshot()
-    const token = authSnapshot.matches('loggedIn')
-      ? authSnapshot.context.token
-      : undefined
-    const enabled =
-      Boolean(token) &&
-      userFeaturesContextHas(
-        this.userFeatures.actor.getSnapshot().context,
-        OPFS_CLOUD_FEATURE_FLAG,
-        false
-      )
-
-    this.registry.get(cloudSyncService).configure({
-      enabled,
-      token,
-      syncExistingLocalProjects: !window.electron,
-    })
-  }
-
   setActiveWasmInstance = (wasmInstance: ModuleType) => {
     this.activeWasmInstance = wasmInstance
     this.syncKclRuntimeFlags()
@@ -498,6 +490,35 @@ export class App implements AppSubsystems {
     }
 
     setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
+  }
+
+  getCreateProjectLibraryTargets = () => {
+    const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
+    const settings = getOnlySettingsFromContext(
+      this.settings.actor.getSnapshot().context
+    )
+    const libraries = projectLibrariesFromSettings(
+      settings.app.libraries.current
+    )
+    const targets = libraries.flatMap((library) => {
+      const createProject = getProjectLibraryCreateProjectOperation(
+        libraryTypes.get(library.type),
+        library
+      )
+
+      return createProject ? [{ library, createProject }] : []
+    })
+
+    // Configured libraries exist but none can create a project — the user would
+    // see an actionless Home. This should not happen (the cloud and directory
+    // types are always-on); surface it rather than silently returning nothing.
+    if (targets.length === 0 && libraries.length > 0) {
+      console.warn(
+        'No project library can create projects; the configured libraries have no available createProject handler.'
+      )
+    }
+
+    return targets
   }
 
   syncAppCommands = () => {
@@ -522,19 +543,123 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectLibraryId: () =>
+              this.currentProjectLibraryIdSignal.value,
+            getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getHomeProjectActions: () =>
+              this.registry.get(homeProjectActionsService),
+            getHomeProjectEntries: () =>
+              this.registry.get(homeProjectEntriesValueSpec),
           }).map(provideCommand),
         ],
       }),
     ])
   }
 
+  syncPluginSettingsFromCurrent = () => {
+    this.syncPluginSettings(this.settings.actor.getSnapshot())
+  }
+
+  private getPluginActivationSettingValue = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    activationSetting: {
+      category: string
+      settingName: string
+    }
+  ) => {
+    return (
+      snapshot.context as unknown as Record<
+        string,
+        | Record<string, { current?: unknown; user?: unknown } | undefined>
+        | undefined
+      >
+    )[activationSetting.category]?.[activationSetting.settingName]
+  }
+
+  private getPluginActivationPlatform = () => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    return window.electron ? 'desktop' : 'web'
+  }
+
+  private hasPluginActivationFeature = (
+    activationSetting: ZdsPluginActivationSetting | undefined
+  ) => {
+    const feature = activationSetting?.featurePolicy?.feature
+    if (!feature) {
+      return true
+    }
+
+    return userFeaturesContextHas(
+      this.userFeatures.actor.getSnapshot().context,
+      feature,
+      false
+    )
+  }
+
+  /**
+   * Apply declarative plugin activation policy after settings have settled.
+   *
+   * Static plugin defaults stay deterministic during registry startup. Runtime
+   * policy can then opt feature-flagged users into plugins at the user setting
+   * level, while preserving explicit opt-outs unless a plugin declares that it is
+   * required infrastructure on the current platform.
+   */
+  private maybeApplyPluginActivationPolicy = (
+    snapshot: SnapshotFrom<typeof this.settings.actor>,
+    pluginActivationSettings: Map<string, ZdsPluginActivationSetting>
+  ) => {
+    if (!snapshot.matches('idle')) {
+      return false
+    }
+
+    const platform = this.getPluginActivationPlatform()
+    for (const activationSetting of pluginActivationSettings.values()) {
+      const featurePolicy = activationSetting.featurePolicy
+      if (!featurePolicy?.defaultEnabled) {
+        continue
+      }
+
+      const settingValue = this.getPluginActivationSettingValue(
+        snapshot,
+        activationSetting
+      )
+      if (!settingValue || settingValue.current === true) {
+        continue
+      }
+
+      if (!this.hasPluginActivationFeature(activationSetting)) {
+        continue
+      }
+
+      const forceEnabled =
+        platform !== undefined &&
+        featurePolicy.forceEnabledOnPlatform === platform
+      if (!forceEnabled && settingValue.user !== undefined) {
+        continue
+      }
+
+      this.settings.actor.send({
+        type: `set.${activationSetting.category}.${activationSetting.settingName}`,
+        data: {
+          level: 'user',
+          value: true,
+        },
+      } as never)
+      return true
+    }
+
+    return false
+  }
+
   /**
    * Keep plugin runtime state aligned with the persisted settings model.
    *
-   * For now the settings actor is the source of truth and plugin toggle
-   * services are an imperative projection of that state. A narrower follow-up
-   * can invert this by deriving both the UI and persistence model directly from
-   * extension-owned settings state.
+   * Settings stay the source of truth. Plugin toggle services are an imperative
+   * projection of settled settings, and activation policy is applied here so
+   * plugins do not mutate settings while the registry graph is being built.
    */
   syncPluginSettings = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
     const pluginActivationSettings = new Map(
@@ -542,6 +667,17 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+
+    if (!snapshot.matches('idle')) {
+      return
+    }
+
+    if (
+      this.maybeApplyPluginActivationPolicy(snapshot, pluginActivationSettings)
+    ) {
+      return
+    }
+
     const activePluginIds: string[] = []
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
@@ -550,15 +686,18 @@ export class App implements AppSubsystems {
         continue
       }
 
-      const desiredActive = (
-        snapshot.context as unknown as Record<
-          string,
-          Record<string, { current: unknown } | undefined> | undefined
-        >
-      )[activationSetting.category]?.[activationSetting.settingName]?.current
-      if (typeof desiredActive !== 'boolean') {
+      const settingValue = this.getPluginActivationSettingValue(
+        snapshot,
+        activationSetting
+      )
+      const settingDesiredActive = settingValue?.current
+      if (typeof settingDesiredActive !== 'boolean') {
         continue
       }
+      const desiredActive =
+        settingDesiredActive &&
+        (!activationSetting.featurePolicy?.disableWithoutFeature ||
+          this.hasPluginActivationFeature(activationSetting))
       if (desiredActive) {
         activePluginIds.push(plugin.id)
       }
@@ -598,6 +737,7 @@ export class App implements AppSubsystems {
       projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
+      userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
 
@@ -615,6 +755,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    this.registry.get(lspService).attachKclManager(kclManager)
 
     if (typeof window !== 'undefined') {
       window.engineCommandManager = kclManager.engineCommandManager
@@ -765,7 +906,8 @@ export class App implements AppSubsystems {
     const newCurrentProjection = context.modeling.cameraProjection.current
     if (
       this.singletons.kclManager.sceneInfra.camControls &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch')
+      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
+      !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
     ) {
       this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
         newCurrentProjection

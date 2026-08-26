@@ -1,23 +1,23 @@
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
+  featureTreePaneConfig,
+  namedViewsPaneConfig,
 } from '@src/lib/layout/configs/default'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type {
   Layout,
   LayoutMigrationMap,
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
-  setBodiesPaneLayoutEnabled,
+  parseLayoutWithMigrations,
   setOpenPanes,
 } from '@src/lib/layout/utils'
-import { expect } from 'vitest'
-import { it } from 'vitest'
-import { describe } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 const basicSplitLayout: Layout = {
   id: 'root',
@@ -29,8 +29,8 @@ const basicSplitLayout: Layout = {
     {
       id: 'ttc',
       type: LayoutType.Simple,
-      areaType: AreaType.TTC,
-      label: 'TTC',
+      areaType: AreaType.Zookeeper,
+      label: 'Zookeeper',
     },
     {
       id: 'another',
@@ -94,10 +94,10 @@ describe('Layout utils', () => {
             splitOrientation: 'block',
             children: [
               {
-                id: DefaultLayoutPaneID.TTC,
+                id: DefaultLayoutPaneID.Zookeeper,
                 label: 'Zookeeper',
                 type: LayoutType.Simple,
-                areaType: AreaType.TTC,
+                areaType: AreaType.Zookeeper,
                 icon: 'sparkles',
               },
             ],
@@ -170,10 +170,10 @@ describe('Layout utils', () => {
             splitOrientation: 'block',
             children: [
               {
-                id: DefaultLayoutPaneID.TTC,
+                id: DefaultLayoutPaneID.Zookeeper,
                 label: 'Zookeeper',
                 type: LayoutType.Simple,
-                areaType: AreaType.TTC,
+                areaType: AreaType.Zookeeper,
                 icon: 'sparkles',
               },
             ],
@@ -307,31 +307,82 @@ describe('Layout utils', () => {
     })
   })
 
-  describe('feature-gated layouts', () => {
-    it('adds and removes the bodies list split around the feature tree pane', () => {
-      const layout: Layout = {
-        id: DefaultLayoutPaneID.FeatureTree,
-        label: 'Feature Tree',
-        type: LayoutType.Simple,
-        areaType: AreaType.FeatureTree,
-      }
+  describe('persisted layout migrations', () => {
+    it('adds the bodies list split around a v2 feature tree pane', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v2',
+        layout: {
+          id: DefaultLayoutPaneID.FeatureTree,
+          label: 'Feature Tree',
+          type: LayoutType.Simple,
+          areaType: AreaType.FeatureTree,
+        },
+      })
 
-      const enabled = setBodiesPaneLayoutEnabled(layout, true)
-      expect(enabled).toHaveProperty('type', LayoutType.Splits)
-      expect(enabled).toHaveProperty(
-        'children[0].areaType',
+      expect(migrated).not.toBeInstanceOf(Error)
+      // Migrations chain, so a v2 layout lands on the latest version.
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('layout.type', LayoutType.Splits)
+      expect(migrated).toHaveProperty(
+        'layout.children[0].areaType',
         AreaType.FeatureTree
       )
-      expect(enabled).toHaveProperty('children[1].areaType', AreaType.Bodies)
+      expect(migrated).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.Bodies
+      )
+    })
 
-      const disabled = setBodiesPaneLayoutEnabled(enabled, false)
-      expect(disabled).toStrictEqual({
-        id: DefaultLayoutPaneID.FeatureTree,
-        label: 'Feature Tree',
-        type: LayoutType.Simple,
-        icon: 'model',
-        areaType: AreaType.FeatureTree,
+    it('appends the view switcher to a v3 pane bar, closed', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v3',
+        layout: {
+          id: DefaultLayoutToolbarID.Left,
+          label: 'left-toolbar',
+          type: LayoutType.Panes,
+          side: 'inline-start',
+          sizes: [100],
+          activeIndices: [0],
+          splitOrientation: 'block',
+          children: [structuredClone(featureTreePaneConfig)],
+        },
       })
+
+      expect(migrated).not.toBeInstanceOf(Error)
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.NamedViews
+      )
+      // Appended without joining activeIndices, so the pane starts closed.
+      expect(migrated).toHaveProperty('layout.activeIndices', [0])
+    })
+
+    it('leaves a pane bar that already has the switcher alone', () => {
+      const migrated = parseLayoutWithMigrations({
+        version: 'v4',
+        layout: {
+          id: DefaultLayoutToolbarID.Left,
+          label: 'left-toolbar',
+          type: LayoutType.Panes,
+          side: 'inline-start',
+          sizes: [100],
+          activeIndices: [0],
+          splitOrientation: 'block',
+          children: [
+            structuredClone(featureTreePaneConfig),
+            structuredClone(namedViewsPaneConfig),
+          ],
+        },
+      })
+
+      expect(migrated).not.toBeInstanceOf(Error)
+      expect(migrated).toHaveProperty('version', 'v4')
+      expect(migrated).toHaveProperty('layout.children.length', 2)
+    })
+
+    it('gives the switcher an icon of its own, not the feature tree pane one', () => {
+      expect(namedViewsPaneConfig.icon).not.toBe(featureTreePaneConfig.icon)
     })
   })
 
@@ -421,8 +472,8 @@ describe('Layout utils', () => {
             {
               id: 'ttc',
               type: LayoutType.Simple,
-              areaType: AreaType.TTC,
-              label: 'TTC',
+              areaType: AreaType.Zookeeper,
+              label: 'Zookeeper',
             },
             {
               id: 'another',
@@ -491,7 +542,7 @@ describe('Layout utils', () => {
         transformationSets: [
           {
             matcher: (l) =>
-              l.type === LayoutType.Simple && l.areaType === AreaType.TTC,
+              l.type === LayoutType.Simple && l.areaType === AreaType.Zookeeper,
             transformations: [
               (l) => ({ ...l, areaType: AreaType.FeatureTree }),
             ],
@@ -546,10 +597,10 @@ describe('Layout utils', () => {
         newVersion: 'v2',
         transformationSets: [
           {
-            // Match on TTC, but only once so we don't loop
+            // Match on Zookeeper, but only once so we don't loop
             matcher: (l) =>
               l.type === LayoutType.Simple &&
-              l.areaType === AreaType.TTC &&
+              l.areaType === AreaType.Zookeeper &&
               !transformedOnce,
             transformations: [
               (l) => {
@@ -590,7 +641,7 @@ describe('Layout utils', () => {
       )
       expect(result).toHaveProperty(
         'layout.children[0].children[0].areaType',
-        AreaType.TTC
+        AreaType.Zookeeper
       )
       expect(result).toHaveProperty(
         'layout.children[0].children[1].areaType',
@@ -604,12 +655,13 @@ describe('Layout utils', () => {
         newVersion: 'v2',
         transformationSets: [
           {
-            // Matching on Split layouts that contain TTC areas
+            // Matching on Split layouts that contain Zookeeper areas
             matcher: (l) =>
               l.type === LayoutType.Splits &&
               l.children.find(
                 (c) =>
-                  c.type === LayoutType.Simple && c.areaType === AreaType.TTC
+                  c.type === LayoutType.Simple &&
+                  c.areaType === AreaType.Zookeeper
               ) !== undefined,
             transformations: [
               // First transformation: add a Debug split and add a dummy item to the sizes
@@ -631,14 +683,15 @@ describe('Layout utils', () => {
                   ],
                 }
               },
-              // Second transform: set the size of TTC, then split remainder among the others
+              // Second transform: set the size of Zookeeper, then split remainder among the others
               (l) => {
                 if (l.type !== LayoutType.Splits) {
                   return l
                 }
                 const ttcSplitIndex = l.children.findIndex(
                   (c) =>
-                    c.type === LayoutType.Simple && c.areaType === AreaType.TTC
+                    c.type === LayoutType.Simple &&
+                    c.areaType === AreaType.Zookeeper
                 )
                 const ttcSize = 70
                 const remainderSize = (100 - ttcSize) / (l.sizes.length - 1)
@@ -666,7 +719,10 @@ describe('Layout utils', () => {
         'layout.children[0].areaType',
         AreaType.Debug
       )
-      expect(result).toHaveProperty('layout.children[1].areaType', AreaType.TTC)
+      expect(result).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.Zookeeper
+      )
     })
   })
 })

@@ -36,6 +36,10 @@ import {
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
+  getDefaultDirectoryProjectLibraryPath,
+  isProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
+import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   preserveProjectTomlMetadataInProjectSettingsContents,
@@ -61,8 +65,20 @@ function getProjectSettingsSection(
 function getProjectDirectorySetting(
   config: DeepPartial<Configuration> | Configuration
 ): string | undefined {
+  const libraries = getProjectLibrarySettingsFromConfiguration(config)
+  if (libraries) {
+    return getDefaultDirectoryProjectLibraryPath(libraries)
+  }
+
   const directory = getProjectSettingsSection(config)?.directory
   return typeof directory === 'string' ? directory : undefined
+}
+
+function getProjectLibrarySettingsFromConfiguration(
+  config: DeepPartial<Configuration> | Configuration
+) {
+  const libraries = config.settings?.app?.libraries
+  return isProjectLibrarySettings(libraries) ? libraries : undefined
 }
 
 const convertIStatToFileMetadata = (
@@ -123,20 +139,24 @@ async function ensureProjectTomlTitle({
   projectPath,
   title,
   defaultFile,
+  readExistingProjectToml = true,
 }: {
   projectPath: string
   title: string
   defaultFile: string
+  readExistingProjectToml?: boolean
 }) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
-  try {
-    projectToml = await fsZds.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
-  } catch (error) {
-    if (!isPathNotFoundError(error)) {
-      return Promise.reject(error)
+  if (readExistingProjectToml) {
+    try {
+      projectToml = await fsZds.readFile(projectTomlPath, {
+        encoding: 'utf-8',
+      })
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
     }
   }
 
@@ -256,11 +276,13 @@ export async function createNewProjectDirectory(
   }
   const projectDir = fsZds.join(mainDir, projectName)
 
+  let projectDirectoryCreated = false
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
     if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
+      projectDirectoryCreated = true
     }
   }
 
@@ -287,6 +309,7 @@ export async function createNewProjectDirectory(
     projectPath: projectDir,
     title: projectTitle,
     defaultFile: kclFileName,
+    readExistingProjectToml: !projectDirectoryCreated,
   })
   let metadata: FileMetadata | null = null
   try {
@@ -1094,15 +1117,15 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
-export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
+export const writeEnvironmentConfigurationZookeeperWebSocketUrl = async (
   environmentName: string,
-  mlephantWebSocketUrl: string
+  zookeeperWebSocketUrl: string
 ) => {
-  mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
+  zookeeperWebSocketUrl = zookeeperWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration =
     await getEnvironmentConfigurationObject(environmentName)
-  environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
+  environmentConfiguration.zookeeperWebSocketUrl = zookeeperWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await fsZds.writeFile(
     path,
@@ -1112,15 +1135,18 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
   return result
 }
 
-export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
+export const readEnvironmentConfigurationZookeeperWebSocketUrl = async (
   environmentName: string
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  if (!environmentConfiguration?.mlephantWebSocketUrl) {
+  const zookeeperWebSocketUrl =
+    environmentConfiguration?.zookeeperWebSocketUrl ??
+    environmentConfiguration?.mlephantWebSocketUrl
+  if (!zookeeperWebSocketUrl) {
     return ''
   }
-  return environmentConfiguration.mlephantWebSocketUrl.trim()
+  return zookeeperWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async () => {

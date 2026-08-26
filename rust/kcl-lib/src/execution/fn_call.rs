@@ -28,11 +28,19 @@ use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::NamedParam;
 use crate::execution::memory;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
+use crate::std::RegionBehavior;
+use crate::std::StaleRegionPolicy;
+use crate::std::region_consumption::PendingRegionConsumption;
+use crate::std::region_consumption::prepare_region_consumption;
+use crate::std::region_consumption::record_consumed_regions;
+use crate::std::region_consumption::validate_region_args_not_consumed;
+use crate::std::region_consumption::warn_if_region_args_consumed;
 use crate::std::solid_consumption::validate_value_not_consumed;
 use crate::std::solid_consumption::warn_if_value_consumed_for_deprecated_call;
 
@@ -231,7 +239,7 @@ impl Node<CallExpressionKw> {
                 //
                 // TODO: Use the name that the function was defined
                 // with, not the identifier it was used with.
-                e.add_unwind_location(Some(fn_name.name.name.clone()), callsite)
+                e.add_unwind_location(Some(fn_name.to_string()), callsite)
             })?;
 
         let result = return_value.ok_or_else(move || {
@@ -251,6 +259,25 @@ impl Node<CallExpressionKw> {
 
         Ok(result)
     }
+}
+
+/// Guidance included in deprecation warnings for sketch v1 stdlib functions.
+/// The warning must stand on its own: a human or AI agent reading it should
+/// learn what replaces the function and where to find conversion examples
+/// without any other context.
+const SKETCH_V1_MIGRATION_HELP: &str = "It is part of the legacy sketch API (sketch v1), which is replaced by the sketch-solve API.
+
+See https://zoo.dev/docs/kcl-book/sketch2d_constraints.html for an introduction to sketch-solve with examples.
+
+Draw profiles inside a `sketch(on = XY) { ... }` block using segment functions with absolute points, e.g. `line(start = [0, 0], end = [4, 3])`, optionally marking values as adjustable with `var` and constraining them with constraint functions like `coincident()` or `horizontal()`. ";
+
+/// Migration guidance for a deprecated stdlib function, when it has a
+/// dedicated replacement story beyond its docs page.
+fn migration_help(fn_src: &FunctionSource) -> Option<&'static str> {
+    let name = &fn_src.std_props.as_ref()?.name;
+    // Every deprecated function in std::sketch is part of sketch v1, which
+    // sketch-solve replaces in KCL 2.0.
+    name.starts_with("std::sketch::").then_some(SKETCH_V1_MIGRATION_HELP)
 }
 
 impl FunctionSource {
@@ -278,39 +305,70 @@ impl FunctionSource {
         args: Args<Sugary>,
         callsite: SourceRange,
     ) -> Result<Option<KclValueControlFlow>, KclError> {
+        let (state, args) = self.call_setup(&fn_name, exec_state, args, callsite)?;
+        // Do not early return via ? or something until we've called
+        // call_finish (or call_abort_on_arg_binding_failure), so that the
+        // ambient flags are restored and the callee env is popped.
+        let result = match &self.body {
+            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
+            FunctionBody::Kcl(_) => {
+                if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
+                    return Err(Self::call_abort_on_arg_binding_failure(state, e, exec_state));
+                }
+
+                let block_result = ctx.exec_block(&self.ast.body, exec_state, BodyType::Block).await;
+                self.kcl_body_result(block_result, exec_state)
+            }
+        };
+        self.call_finish(state, result, exec_state)
+    }
+
+    /// The first half of a function call: warnings, argument type checking,
+    /// operation setup, pushing the callee environment, and stdlib
+    /// ambient-flag tracking. After this succeeds, the callee environment is
+    /// pushed and the ambient flags are set, so every path must reach
+    /// [`Self::call_finish`] (or [`Self::call_abort_on_arg_binding_failure`])
+    /// to balance them. The recursive executor keeps the returned [`CallState`]
+    /// across the body await; the machine executor parks it in a call-boundary
+    /// continuation.
+    pub(super) fn call_setup(
+        &self,
+        fn_name: &Option<String>,
+        exec_state: &mut ExecState,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<(CallState, Args), KclError> {
         // The KCL stdlib is allowed to use deprecated sketch1 functions inside.
         let warn_on_deprecated_usage = !exec_state.mod_local.inside_stdlib;
-        if warn_on_deprecated_usage && self.deprecated {
-            exec_state.warn(
-                CompilationIssue::err(
-                    callsite,
-                    format!(
-                        "{} is deprecated, see the docs for a recommended replacement",
-                        match &fn_name {
-                            Some(n) => format!("`{n}`"),
-                            None => "This function".to_owned(),
-                        }
-                    ),
-                ),
-                annotations::WARN_DEPRECATED,
-            );
-        } else if warn_on_deprecated_usage
-            && let Some(since) = &self.deprecated_since
-            && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
-        {
-            exec_state.warn(
-                CompilationIssue::err(
-                    callsite,
-                    format!(
-                        "{} is deprecated as of KCL {since}. See the docs for a recommended replacement.",
-                        match &fn_name {
-                            Some(n) => format!("`{n}`"),
-                            None => "This function".to_owned(),
-                        }
-                    ),
-                ),
-                annotations::WARN_DEPRECATED,
-            );
+        if warn_on_deprecated_usage {
+            let subject = match &fn_name {
+                Some(n) => format!("`{n}`"),
+                None => "This function".to_owned(),
+            };
+            let message = if self.deprecated {
+                Some(match migration_help(self) {
+                    Some(help) => format!("{subject} is deprecated. {help}"),
+                    None => format!("{subject} is deprecated, see the docs for a recommended replacement"),
+                })
+            } else if let Some(since) = &self.deprecated_since
+                && annotations::version_ge(exec_state.deprecation_version(), since)
+            {
+                Some(match migration_help(self) {
+                    Some(help) => format!("{subject} is deprecated as of KCL {since}. {help}"),
+                    None => {
+                        format!(
+                            "{subject} is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                        )
+                    }
+                })
+            } else {
+                None
+            };
+            if let Some(message) = message {
+                let mut issue = CompilationIssue::err(callsite, message);
+                issue.tag = crate::errors::Tag::Deprecated;
+                exec_state.warn(issue, annotations::WARN_DEPRECATED);
+            }
         }
         if self.experimental {
             exec_state.warn_experimental(
@@ -324,6 +382,13 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
         let face_tag_names = face_tag_names_for_call(self, &args);
+        let pending_region_consumption = prepare_region_consumption(
+            self.std_props
+                .as_ref()
+                .map_or(RegionBehavior::WarnOnConsumed, |props| props.region_behavior),
+            &args,
+            exec_state,
+        )?;
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -346,7 +411,7 @@ impl FunctionSource {
             } else if param.deprecated {
                 Some("is deprecated, see the docs for a recommended replacement".to_owned())
             } else if let Some(since) = &param.deprecated_since
-                && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
+                && annotations::version_ge(exec_state.deprecation_version(), since)
             {
                 Some(format!(
                     "is deprecated as of KCL {since}. See the docs for a recommended replacement."
@@ -359,10 +424,9 @@ impl FunctionSource {
                     Some(f) => format!("`{f}({label})`"),
                     None => format!("`{label}`"),
                 };
-                exec_state.warn(
-                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
-                    annotations::WARN_DEPRECATED,
-                );
+                let mut issue = CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}"));
+                issue.tag = crate::errors::Tag::Deprecated;
+                exec_state.warn(issue, annotations::WARN_DEPRECATED);
             }
         }
 
@@ -451,39 +515,100 @@ impl FunctionSource {
             &mut exec_state.mod_local.stdlib_entry_source_range,
             stdlib_entry_source_range,
         );
-        // Do not early return via ? or something until we've
-        // - put this `prev_inside_stdlib` value back.
-        // - called the pop_env.
-        let result = match &self.body {
-            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
-            FunctionBody::Kcl(_) => {
-                if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
-                    exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
-                    exec_state.mut_stack().pop_env()?;
-                    return Err(e);
-                }
 
-                ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
-                    .await
-                    .map(|cf| {
-                        if let Some(cf) = cf
-                            && cf.is_some_return()
-                        {
-                            return Some(cf);
-                        }
-                        // Ignore the block's value and extract the return value
-                        // from memory.
-                        exec_state
-                            .stack()
-                            .get(memory::RETURN_NAME, self.ast.as_source_range())
-                            .ok()
-                            .map(KclValue::continue_)
-                    })
+        Ok((
+            CallState {
+                prev_inside_stdlib,
+                prev_stdlib_entry_source_range,
+                op,
+                should_track_operation,
+                is_calling_into_stdlib,
+                face_tag_names,
+                pending_region_consumption,
+            },
+            args,
+        ))
+    }
+
+    /// Compute a KCL function body's result while the callee environment is
+    /// still pushed: an `Exit` passes through untouched; otherwise the
+    /// function's result is the `__return` value recorded in the callee
+    /// environment, if any.
+    ///
+    /// NOTE: a `return` statement does NOT stop the body -- it records
+    /// `__return` and execution continues to the following statements (see
+    /// exec_block's ReturnStatement arm). The block's own trailing value is
+    /// deliberately ignored here; only `__return` counts.
+    pub(super) fn kcl_body_result(
+        &self,
+        block_result: Result<Option<KclValueControlFlow>, KclError>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        block_result.map(|cf| {
+            if let Some(cf) = cf
+                && cf.is_some_return()
+            {
+                return Some(cf);
             }
-        };
+            // Ignore the block's value and extract the return value
+            // from memory.
+            exec_state
+                .stack()
+                .get(memory::RETURN_NAME, self.ast.as_source_range())
+                .ok()
+                .map(KclValue::continue_)
+        })
+    }
+
+    /// The failure path when binding a KCL function's arguments fails, before
+    /// the body ran: restore `inside_stdlib` and pop the callee environment.
+    /// Deliberately asymmetric with [`Self::call_finish`] -- it does not
+    /// restore `stdlib_entry_source_range` and does not finalize the
+    /// operation -- preserving the recursive executor's historical behavior
+    /// exactly.
+    pub(super) fn call_abort_on_arg_binding_failure(
+        state: CallState,
+        e: KclError,
+        exec_state: &mut ExecState,
+    ) -> KclError {
+        exec_state.mod_local.inside_stdlib = state.prev_inside_stdlib;
+        match exec_state.mut_stack().pop_env() {
+            Ok(_) => e,
+            Err(pop_err) => pop_err,
+        }
+    }
+
+    /// The second half of a function call: restore the ambient stdlib flags,
+    /// pop the callee environment, finalize the operation, and then -- for
+    /// normal completions only -- apply tag updates and return-type coercion.
+    /// `Exit` control flow bypasses tags and coercion (it terminates the whole
+    /// evaluation rather than completing this function normally), and errors
+    /// skip them too; both still restore ambient state and finalize the
+    /// operation.
+    pub(super) fn call_finish(
+        &self,
+        state: CallState,
+        result: Result<Option<KclValueControlFlow>, KclError>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
+        let CallState {
+            prev_inside_stdlib,
+            prev_stdlib_entry_source_range,
+            op,
+            should_track_operation,
+            is_calling_into_stdlib,
+            face_tag_names,
+            pending_region_consumption,
+        } = state;
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
         exec_state.mut_stack().pop_env()?;
+
+        if result.is_ok()
+            && let Some(pending_region_consumption) = pending_region_consumption
+        {
+            record_consumed_regions(exec_state, pending_region_consumption);
+        }
 
         if should_track_operation {
             if let Some(mut op) = op {
@@ -502,6 +627,9 @@ impl FunctionSource {
         let mut result = match result {
             Ok(Some(value)) => {
                 if value.is_some_return() {
+                    // `Exit` terminates the whole evaluation rather than completing this
+                    // function normally, so it bypasses return-type validation, including
+                    // the `never` contract.
                     return Ok(Some(value));
                 } else {
                     Ok(Some(value.into_value()))
@@ -524,6 +652,21 @@ impl FunctionSource {
     }
 }
 
+/// State captured by [`FunctionSource::call_setup`] that
+/// [`FunctionSource::call_finish`] needs to complete the call: the ambient
+/// flags to restore, the deferred operation, and details of what was called.
+#[derive(Debug)]
+pub(super) struct CallState {
+    prev_inside_stdlib: bool,
+    prev_stdlib_entry_source_range: Option<SourceRange>,
+    /// Deferred stdlib-call operation, pushed by call_finish.
+    op: Option<Operation>,
+    should_track_operation: bool,
+    is_calling_into_stdlib: bool,
+    face_tag_names: Vec<String>,
+    pending_region_consumption: Option<PendingRegionConsumption>,
+}
+
 impl FunctionBody {
     fn prep_mem(&self, exec_state: &mut ExecState) -> Result<(), KclError> {
         match self {
@@ -533,30 +676,44 @@ impl FunctionBody {
     }
 }
 
-fn originates_from_sketch_block(value: &KclValue) -> bool {
+/// Whether `value` may have come from a legacy (v1) sketch rather than a
+/// sketch block, which is what gates the legacy tag-memory updates in
+/// `update_memory_for_tags_of_geometry`.
+///
+/// Anything that is not a sketch or a solid answers `false`: a number or an
+/// enum variant is not a sketch of either generation, so it must not pull in
+/// legacy behavior. The match stays exhaustive so that adding a `KclValue`
+/// variant forces an explicit answer here instead of inheriting one.
+fn might_be_legacy_sketch(value: &KclValue) -> bool {
     match value {
         KclValue::Uuid { .. } => false,
         KclValue::Bool { .. } => false,
         KclValue::Number { .. } => false,
         KclValue::String { .. } => false,
-        KclValue::SketchVar { .. } => true,
-        KclValue::SketchConstraint { .. } => true,
-        KclValue::Tuple { value, .. } => value.iter().all(originates_from_sketch_block),
-        KclValue::HomArray { value, .. } => value.iter().all(originates_from_sketch_block),
-        // TODO: sketch block result should return true.
-        KclValue::Object { value, .. } => value.values().all(originates_from_sketch_block),
+        KclValue::Enum { .. } => false,
+        KclValue::SketchVar { .. } => false,
+        KclValue::SketchConstraint { .. } => false,
+        KclValue::Tuple { value, .. } => value.iter().any(might_be_legacy_sketch),
+        KclValue::HomArray { value, .. } => value.iter().any(might_be_legacy_sketch),
+        // TODO: sketch block result should return false.
+        KclValue::Object { value, .. } => value.values().any(might_be_legacy_sketch),
         KclValue::TagIdentifier(_) => false,
         KclValue::TagDeclarator(_) => false,
         KclValue::GdtAnnotation { .. } => false,
+        KclValue::CameraView { .. } => false,
+        KclValue::NamedView { .. } => false,
         KclValue::Plane { .. } => false,
         KclValue::Face { .. } => false,
         KclValue::BoundedEdge { .. } => false,
-        KclValue::Segment { .. } => true,
-        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_some(),
+        KclValue::Segment { .. } => false,
+        KclValue::Sketch { value: sketch } => sketch.origin_sketch_id.is_none(),
+        // A solid with no sketch has no tag container, so the caller returns
+        // early without consulting this answer; `true` keeps it the exact
+        // negation of the previous `originates_from_sketch_block`.
         KclValue::Solid { value: solid } => solid
             .sketch()
-            .map(|sketch| sketch.origin_sketch_id.is_some())
-            .unwrap_or(false),
+            .map(|sketch| sketch.origin_sketch_id.is_none())
+            .unwrap_or(true),
         KclValue::Helix { .. } => false,
         KclValue::ImportedGeometry(_) => false,
         KclValue::Function { .. } => false,
@@ -660,13 +817,13 @@ fn clear_tags_from_solid_copy(solid: &mut Solid) {
 }
 
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
-    let is_sketch_block = originates_from_sketch_block(&*result);
+    let might_be_legacy = might_be_legacy_sketch(&*result);
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value } if !is_sketch_block => {
+        KclValue::Sketch { value } if might_be_legacy => {
             for (name, tag) in value.tags.iter() {
                 if exec_state.stack().cur_frame_contains(name)? {
                     exec_state.mut_stack().update(name, |v, _| {
@@ -748,7 +905,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                 existing_tag.merge_info(&tag_id);
                             }
                         })?;
-                    } else if !is_sketch_block || !is_part_of_sketch {
+                    } else if might_be_legacy || !is_part_of_sketch {
                         // The above condition is saying that we add a tag to
                         // the stack in either of these cases:
                         //
@@ -847,6 +1004,27 @@ pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) 
     )
 }
 
+/// Fetch the definition-time resolution of a type written in a function
+/// signature.
+///
+/// [`FunctionSource::resolve_signature_types`] runs whenever a function
+/// declaration executes, so a written type without a stored resolution is a
+/// bug in KCL, not in the user's program.
+fn resolved_signature_type<'a>(
+    resolved: Option<&'a RuntimeType>,
+    written: &Type,
+    source_range: SourceRange,
+) -> Result<&'a RuntimeType, KclError> {
+    resolved.ok_or_else(|| {
+        KclError::new_internal(KclErrorDetails::new(
+            format!(
+                "The type `{written}` in this function's signature was not resolved when the function was declared. This is a bug in KCL and not in your code, please report this to Zoo."
+            ),
+            vec![source_range],
+        ))
+    })
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionSource,
@@ -930,22 +1108,22 @@ fn type_check_params_kw(
         {
             let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
-                // Suppress warnings about types because they should only be
-                // warned about once for the function definition.
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
-                    .map_err(|e| KclError::new_semantic(e.into()))?;
-                arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
-                    KclError::new_argument(KclErrorDetails::new(
-                        format!(
-                            "The input argument of {} requires {}",
-                            fn_name
-                                .map(|n| format!("`{n}`"))
-                                .unwrap_or_else(|| "this function".to_owned()),
-                            type_err_str(ty, &arg.value, &arg.source_range, exec_state),
-                        ),
-                        vec![arg.source_range],
-                    ))
-                })?;
+                let rty = resolved_signature_type(fn_def.resolved_input_ty.as_ref(), ty, arg.source_range)?;
+                arg.value = arg
+                    .value
+                    .coerce(rty, CoercionMode::implicit(), exec_state)
+                    .map_err(|_| {
+                        KclError::new_argument(KclErrorDetails::new(
+                            format!(
+                                "The input argument of {} requires {}",
+                                fn_name
+                                    .map(|n| format!("`{n}`"))
+                                    .unwrap_or_else(|| "this function".to_owned()),
+                                type_err_str(ty, &arg.value, &arg.source_range, exec_state),
+                            ),
+                            vec![arg.source_range],
+                        ))
+                    })?;
             }
             result.unlabeled = vec![(None, arg)]
         } else {
@@ -1025,20 +1203,17 @@ fn type_check_params_kw(
                 deprecated_since: _,
                 default_value: def,
                 ty,
+                resolved_ty,
             }) => {
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        // Suppress warnings about types because they should
-                        // only be warned about once for the function
-                        // definition.
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false, true)
-                            .map_err(|e| KclError::new_semantic(e.into()))?;
+                        let rty = resolved_signature_type(resolved_ty.as_ref(), ty, arg.source_range)?;
                         arg.value = arg
                                 .value
                                 .coerce(
-                                    &rty,
-                                    true,
+                                    rty,
+                                    CoercionMode::implicit(),
                                     exec_state,
                                 )
                                 .map_err(|e| {
@@ -1072,6 +1247,17 @@ fn type_check_params_kw(
         .std_props
         .as_ref()
         .map_or(ConsumedSolidArgCheck::Error, |props| props.consumed_solid_arg_check);
+    if matches!(fn_def.body, FunctionBody::Rust(_))
+        && let Some(props) = fn_def.std_props.as_ref()
+    {
+        match props.region_behavior.stale_region_policy() {
+            Some(StaleRegionPolicy::Error) => validate_region_args_not_consumed(&result, exec_state)?,
+            Some(StaleRegionPolicy::Warning) => {
+                warn_if_region_args_consumed(&result, exec_state, &props.name)?;
+            }
+            None => {}
+        }
+    }
     match consumed_solid_arg_check {
         ConsumedSolidArgCheck::Error => {
             result
@@ -1101,7 +1287,7 @@ fn type_check_params_kw(
     Ok(result)
 }
 
-fn assign_args_to_params_kw(
+pub(super) fn assign_args_to_params_kw(
     fn_def: &FunctionSource,
     args: Args<Desugared>,
     exec_state: &mut ExecState,
@@ -1160,28 +1346,46 @@ fn coerce_result_type(
     fn_def: &FunctionSource,
     exec_state: &mut ExecState,
 ) -> Result<Option<KclValue>, KclError> {
-    if let Ok(Some(val)) = result {
-        if let Some(ret_ty) = &fn_def.return_type {
-            // Suppress warnings about types because they should only be warned
-            // about once for the function definition.
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false, true)
-                .map_err(|e| KclError::new_semantic(e.into()))?;
-            let val = val.coerce(&ty, true, exec_state).map_err(|_| {
-                KclError::new_type(KclErrorDetails::new(
-                    format!(
-                        "This function requires its result to be {}",
-                        type_err_str(ret_ty, &val, &(&val).into(), exec_state)
-                    ),
-                    ret_ty.as_source_ranges(),
-                ))
-            })?;
-            Ok(Some(val))
+    let result = result?;
+
+    let Some(ret_ty) = &fn_def.return_type else {
+        return Ok(result);
+    };
+
+    let ty = resolved_signature_type(
+        fn_def.resolved_return_ty.as_ref(),
+        &ret_ty.inner,
+        ret_ty.as_source_range(),
+    )?;
+
+    // `never` describes the absence of normal completion, so either successful
+    // result shape violates the function's declared contract.
+    if ty.subtype(&RuntimeType::never()) {
+        let message = if result.is_some() {
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
         } else {
-            Ok(Some(val))
-        }
-    } else {
-        result
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        };
+        return Err(KclError::new_type(KclErrorDetails::new(
+            message.to_owned(),
+            ret_ty.as_source_ranges(),
+        )));
     }
+
+    let Some(val) = result else {
+        return Ok(None);
+    };
+
+    let val = val.coerce(ty, CoercionMode::implicit(), exec_state).map_err(|_| {
+        KclError::new_type(KclErrorDetails::new(
+            format!(
+                "This function requires its result to be {}",
+                type_err_str(ret_ty, &val, &(&val).into(), exec_state)
+            ),
+            ret_ty.as_source_ranges(),
+        ))
+    })?;
+    Ok(Some(val))
 }
 
 #[cfg(test)]
@@ -1203,6 +1407,14 @@ mod test {
     use crate::parsing::ast::types::Identifier;
     use crate::parsing::ast::types::Parameter;
     use crate::parsing::ast::types::Program;
+
+    fn source_texts<'a>(program: &'a str, error: &KclError) -> Vec<&'a str> {
+        error
+            .source_ranges()
+            .into_iter()
+            .map(|range| &program[range.start()..range.end()])
+            .collect()
+    }
 
     fn get_var(result: &ExecTestResults, name: &str) -> KclValue {
         result
@@ -1374,7 +1586,7 @@ mod test {
                 digest: None,
             });
             let func_src = FunctionSource::kcl(
-                Box::new(func_expr),
+                crate::parsing::ast::types::BoxNode::new(func_expr),
                 EnvironmentRef::dummy(),
                 crate::execution::kcl_value::KclFunctionSourceParams {
                     std_props: None,
@@ -1396,6 +1608,8 @@ mod test {
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
+                executor_kind: crate::execution::machine::ExecutorKind::resolve(),
+                machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -1432,6 +1646,288 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
             err.message(),
             "prefix requires a value with type `string`, but found a value with type `number`.\nThe found value is a number but has incomplete units information. You can probably fix this error by specifying the units using type ascription, e.g., `len: mm` or `(a * b): deg`."
         )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_cannot_return_a_value() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn bad(): never {
+  return 42
+}
+
+bad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_cannot_fall_through() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn alsoBad(): never {
+  x = 42
+}
+
+alsoBad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_union_function_cannot_return_a_value() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn bad(): never | never {
+  return 42
+}
+
+bad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_union_function_cannot_fall_through() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn alsoBad(): never | never {
+  x = 42
+}
+
+alsoBad()
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_contract_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn failOrReturn(@shouldFail: bool): never {
+  return if shouldFail {
+    fail("requested failure")
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_type_alias_contract_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+type impossible = never
+fn failOrReturn(@shouldFail: bool): impossible {
+  return if shouldFail {
+    fail("requested failure")
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+
+        let err = parse_execute(&format!("{function}\nfailOrReturn(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function returned a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_with_never_can_return_a_value_or_fail() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn stringOrFail(@shouldFail: bool): string | never {
+  return if shouldFail {
+    fail("requested failure")
+  } else {
+    "ok"
+  }
+}
+"#;
+
+        let result = parse_execute(&format!("{function}\nresult = stringOrFail(false)\n"))
+            .await
+            .unwrap();
+        let KclValue::String { value, .. } = get_var(&result, "result") else {
+            panic!("expected `result` to be a string")
+        };
+        assert_eq!(value, "ok");
+
+        let err = parse_execute(&format!("{function}\nstringOrFail(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_reports_user_defined_message_and_callsite_once() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fail("custom failure")
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "custom failure");
+        assert_eq!(err.get_message(), "user-defined: custom failure");
+        assert_eq!(serde_json::to_value(&err).unwrap()["kind"], "user_defined");
+        assert_eq!(source_texts(program, &err), [r#"fail("custom failure")"#]);
+        assert_eq!(err.backtrace().len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_unwinds_through_nested_never_functions_once() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn inner(): never {
+  fail("nested failure")
+}
+
+fn outer(): never {
+  inner()
+}
+
+outer()
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "nested failure");
+        assert_eq!(
+            source_texts(program, &err),
+            [r#"fail("nested failure")"#, "inner()", "outer()"]
+        );
+        assert_eq!(
+            err.backtrace()
+                .iter()
+                .map(|item| item.fn_name.as_deref())
+                .collect::<Vec<_>>(),
+            [Some("inner"), Some("outer"), None]
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_is_valid_in_a_function_with_a_value_return_type() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn valueOrFail(@shouldFail: bool): number {
+  return if shouldFail {
+    fail("no value")
+  } else {
+    42
+  }
+}
+"#;
+
+        parse_execute(&format!("{function}\nresult = valueOrFail(false)\n"))
+            .await
+            .unwrap();
+
+        let err = parse_execute(&format!("{function}\nvalueOrFail(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "no value");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_function_with_fail_or_fallthrough_is_path_dependent() {
+        let function = r#"@settings(experimentalFeatures = allow)
+fn failOrFallThrough(@shouldFail: bool): never {
+  result = if shouldFail {
+    fail("requested failure")
+  } else {
+    42
+  }
+}
+"#;
+
+        let err = parse_execute(&format!("{function}\nfailOrFallThrough(true)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::UserDefined { .. }));
+        assert_eq!(err.message(), "requested failure");
+
+        let err = parse_execute(&format!("{function}\nfailOrFallThrough(false)\n"))
+            .await
+            .unwrap_err();
+        assert!(matches!(&err, KclError::Type { .. }));
+        assert_eq!(
+            err.message(),
+            "This function completed without returning a value, but its return type is `never`. A function with return type `never` must stop evaluation abnormally. You may want to use `fail(...)` to stop evaluation and provide a message."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_argument_evaluation_errors_take_precedence() {
+        let program = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {
+  fail(missingMessage)
+}
+
+stop()
+"#;
+
+        let err = parse_execute(program).await.unwrap_err();
+
+        assert!(matches!(&err, KclError::UndefinedValue { .. }));
+        assert_eq!(err.message(), "`missingMessage` is not defined");
+        assert_eq!(source_texts(program, &err), ["missingMessage", "stop()"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fail_rejects_invalid_message_arguments_before_invocation() {
+        for program in [
+            "@settings(experimentalFeatures = allow)\nfail()\n",
+            "@settings(experimentalFeatures = allow)\nfail(42)\n",
+        ] {
+            let err = parse_execute(program).await.unwrap_err();
+            assert!(matches!(&err, KclError::Argument { .. }), "{err:?}");
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1851,6 +2347,7 @@ x = f(1, oldArg = 2)
         let warnings = deprecation_warnings(&result);
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
         assert!(
             warnings[0].message.contains("`f(oldArg)` is deprecated"),
             "found {}",
@@ -1904,5 +2401,72 @@ plane = startSketchOn(XY)
             "found {}",
             warnings[0].message
         );
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecation_version_override_does_not_change_program_version() {
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = 1.0)
+plane = startSketchOn(XY)
+"#,
+        )
+        .unwrap();
+        let exec_ctxt = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: crate::engine::EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+            executor_kind: crate::execution::machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        };
+        let mut exec_state = ExecState::new(&exec_ctxt);
+        exec_state.set_deprecation_version_override(Some("2.0"));
+
+        exec_ctxt.run(&program, &mut exec_state).await.unwrap();
+
+        assert_eq!(exec_state.mod_local.settings.kcl_version, crate::KclVersion::V1);
+        let warnings = exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.tag == crate::errors::Tag::Deprecated)
+            .collect::<Vec<_>>();
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_sketch_v1_warning_explains_sketch_solve() {
+        // Sketch v1 deprecation warnings must be self-contained: they should
+        // say what replaces the function and link the conversion docs so both
+        // humans and AI agents can act on the warning alone.
+        let program = r#"@settings(kclVersion = 2.0)
+exampleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(
+            warnings.len(),
+            3,
+            "expected one warning per sketch v1 call, got {warnings:#?}"
+        );
+        for warning in warnings {
+            assert!(
+                warning.message.contains("sketch-solve"),
+                "expected sketch-solve context in {}",
+                warning.message
+            );
+            assert!(
+                warning
+                    .message
+                    .contains("https://zoo.dev/docs/kcl-book/sketch2d_constraints.html"),
+                "expected docs URL in {}",
+                warning.message
+            );
+        }
     }
 }

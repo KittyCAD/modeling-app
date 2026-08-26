@@ -28,12 +28,14 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)
 * [`solver`](/docs/kcl-std/modules/std-solver)
+* [`string::string`](/docs/kcl-std/modules/std-string)
 * [`sweep::sweep`](/docs/kcl-std/modules/std-sweep)
 * [`transform`](/docs/kcl-std/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)
 * [`types`](/docs/kcl-std/modules/std-types)
 * [`units::units`](/docs/kcl-std/modules/std-units)
 * [`vector::vector`](/docs/kcl-std/modules/std-vector)
+* [`view::view`](/docs/kcl-std/modules/std-view)
 
 ## Functions and constants
 
@@ -56,6 +58,7 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`clone`](/docs/kcl-std/functions/std-clone)
 * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
 * [`faceId`](/docs/kcl-std/functions/std-faceId)
+* [`fail`](/docs/kcl-std/functions/std-fail)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 

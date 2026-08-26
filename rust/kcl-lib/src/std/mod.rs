@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod faces;
+pub mod fail;
 pub mod fillet;
 pub mod gdt;
 pub mod helix;
@@ -21,6 +22,7 @@ pub mod math;
 pub mod mirror;
 pub mod patterns;
 pub mod planes;
+pub(crate) mod region_consumption;
 pub mod revolve;
 pub mod runtime;
 pub mod segment;
@@ -29,16 +31,19 @@ pub mod shell;
 pub mod sketch;
 pub(crate) mod solid_consumption;
 pub(crate) mod solver;
+pub mod string;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
 pub mod utils;
+pub mod view;
 
 use anyhow::Result;
 pub use args::Args;
 use futures::future::FutureExt;
 
 use crate::errors::KclError;
+use crate::execution::ConsumedRegionOperation;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
@@ -57,10 +62,106 @@ pub(crate) enum ConsumedSolidArgCheck {
     WarnDeprecated,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ConsumedRegionDuplicatePolicy {
+    Reject,
+    Deduplicate,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ConsumedRegionAliasPolicy {
+    None,
+    Reject(&'static str),
+    Preserve(&'static str),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct ConsumedRegionArg {
+    pub(crate) operation: ConsumedRegionOperation,
+    pub(crate) duplicate_policy: ConsumedRegionDuplicatePolicy,
+    pub(crate) alias_policy: ConsumedRegionAliasPolicy,
+    pub(crate) stale_region_policy: StaleRegionPolicy,
+}
+
+impl ConsumedRegionArg {
+    pub(crate) const fn new(operation: ConsumedRegionOperation) -> Self {
+        Self {
+            operation,
+            duplicate_policy: ConsumedRegionDuplicatePolicy::Reject,
+            alias_policy: ConsumedRegionAliasPolicy::None,
+            stale_region_policy: StaleRegionPolicy::Error,
+        }
+    }
+
+    pub(crate) const fn reject_alias_with(mut self, arg_name: &'static str) -> Self {
+        self.alias_policy = ConsumedRegionAliasPolicy::Reject(arg_name);
+        self
+    }
+
+    pub(crate) const fn preserve_alias_with(mut self, arg_name: &'static str) -> Self {
+        self.alias_policy = ConsumedRegionAliasPolicy::Preserve(arg_name);
+        self
+    }
+
+    pub(crate) const fn deduplicate(mut self) -> Self {
+        self.duplicate_policy = ConsumedRegionDuplicatePolicy::Deduplicate;
+        self
+    }
+
+    pub(crate) const fn warn_if_already_consumed(mut self) -> Self {
+        self.stale_region_policy = StaleRegionPolicy::Warning;
+        self
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum StaleRegionPolicy {
+    Error,
+    Warning,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum RegionBehavior {
+    /// Warn when a consumed region reaches a Rust-backed stdlib function.
+    #[default]
+    WarnOnConsumed,
+    /// Apply the configured stale-region policy and record the specified inputs
+    /// as consumed after success.
+    Consume(ConsumedRegionArg),
+    /// The function reads stored region data without sending its object ID to the engine.
+    ReadLocal,
+}
+
+impl RegionBehavior {
+    pub(crate) const fn stale_region_policy(self) -> Option<StaleRegionPolicy> {
+        match self {
+            Self::WarnOnConsumed => Some(StaleRegionPolicy::Warning),
+            Self::Consume(policy) => Some(policy.stale_region_policy),
+            Self::ReadLocal => None,
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
     pub(crate) consumed_solid_arg_check: ConsumedSolidArgCheck,
+    pub(crate) region_behavior: RegionBehavior,
+    /// Set for the few builtins that call back into KCL (map, reduce,
+    /// patternTransform): the machine executor routes them to a resumable
+    /// entry so their callbacks run on the machine's continuation stack
+    /// instead of re-entering natively. The recursive executor ignores this.
+    pub(crate) resumable: Option<ResumableKind>,
+}
+
+/// Which resumable builtin this is. See
+/// `crate::execution::machine`'s resume continuations.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ResumableKind {
+    Map,
+    Reduce,
+    PatternTransform,
+    PatternTransform2d,
 }
 
 impl StdFnProps {
@@ -68,15 +169,60 @@ impl StdFnProps {
         Self {
             name: name.to_owned(),
             consumed_solid_arg_check: Default::default(),
+            region_behavior: Default::default(),
+            resumable: None,
         }
+    }
+
+    pub(crate) fn resumable(mut self, kind: ResumableKind) -> Self {
+        self.resumable = Some(kind);
+        self
     }
 
     pub(crate) fn warn_deprecated_on_consumed_solid_args(mut self) -> Self {
         self.consumed_solid_arg_check = ConsumedSolidArgCheck::WarnDeprecated;
         self
     }
+
+    pub(crate) fn consumes_regions(mut self, consumed_region_arg: ConsumedRegionArg) -> Self {
+        self.region_behavior = RegionBehavior::Consume(consumed_region_arg);
+        self
+    }
+
+    pub(crate) fn reads_regions_locally(mut self) -> Self {
+        self.region_behavior = RegionBehavior::ReadLocal;
+        self
+    }
 }
 
+/// Resolves a Rust-backed standard-library function and its execution policies.
+///
+/// When registering a new function, start with `StdFnProps::default(...)`. Its
+/// fully qualified name is used in diagnostics. Then add modifiers according to
+/// how the function handles values consumed by earlier engine operations:
+///
+/// - Keep the default region behavior if the function does not accept Regions,
+///   or may use a Region's engine UUID without consuming it. A stale Region
+///   produces a warning and the call continues.
+/// - Use [`StdFnProps::reads_regions_locally`] only when the function itself
+///   uses stored KCL data and never sends an input Region's UUID to the engine.
+///   Calls made by callbacks or KCL wrappers apply their own policies.
+/// - Use [`StdFnProps::consumes_regions`] when a successful call consumes Regions
+///   in its unlabeled input. By default, the function rejects stale Regions,
+///   rejects duplicate Regions in that input, and records the Regions as consumed
+///   after success. The modifiers define engine-specific exceptions:
+///   - [`ConsumedRegionArg::warn_if_already_consumed`] warns instead of rejecting
+///     stale Regions.
+///   - [`ConsumedRegionArg::deduplicate`] allows duplicate Regions in the input.
+///   - [`ConsumedRegionArg::reject_alias_with`] rejects a Region that is also
+///     passed in the named argument.
+///   - [`ConsumedRegionArg::preserve_alias_with`] does not record a Region as
+///     consumed when it is also passed in the named argument.
+/// - Keep the default consumed-solid behavior for new functions. Use
+///   [`StdFnProps::warn_deprecated_on_consumed_solid_args`] only as a temporary
+///   compatibility exception that warns instead of rejecting the call.
+///
+/// Region and solid policies are independent, so their modifiers may be chained.
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
         ("gdt", "datum") => (
@@ -246,11 +392,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::circle"),
+            StdFnProps::default("std::sketch::circle").reads_regions_locally(),
         ),
         ("sketch", "ellipse") => (
             |e, a| Box::pin(crate::std::shapes::ellipse(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::ellipse"),
+            StdFnProps::default("std::sketch::ellipse").reads_regions_locally(),
         ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a).map(|r| r.map(KclValue::continue_))),
@@ -282,7 +428,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "delete") => (
             |e, a| Box::pin(crate::std::transform::delete(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::transform::delete"),
+            StdFnProps::default("std::transform::delete").consumes_regions(
+                ConsumedRegionArg::new(ConsumedRegionOperation::Delete)
+                    .deduplicate()
+                    .warn_if_already_consumed(),
+            ),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
@@ -296,9 +446,41 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::assert::assert_is(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assertIs"),
         ),
+        ("prelude", "fail") => (
+            |e, a| Box::pin(crate::std::fail::fail(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::fail"),
+        ),
         ("runtime", "exit") => (
             |e, a| Box::pin(crate::std::runtime::exit(e, a)),
             StdFnProps::default("std::runtime::exit"),
+        ),
+        ("string", "uppercase") => (
+            |e, a| Box::pin(crate::std::string::uppercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::uppercase"),
+        ),
+        ("string", "lowercase") => (
+            |e, a| Box::pin(crate::std::string::lowercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::lowercase"),
+        ),
+        ("string", "isEqual") => (
+            |e, a| Box::pin(crate::std::string::is_equal(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::isEqual"),
+        ),
+        ("string", "trim") => (
+            |e, a| Box::pin(crate::std::string::trim(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trim"),
+        ),
+        ("string", "trimStart") => (
+            |e, a| Box::pin(crate::std::string::trim_start(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimStart"),
+        ),
+        ("string", "trimEnd") => (
+            |e, a| Box::pin(crate::std::string::trim_end(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trimEnd"),
+        ),
+        ("string", "toString") => (
+            |e, a| Box::pin(crate::std::string::number_to_string(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::toString"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),
@@ -329,8 +511,8 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::solid::subtract"),
         ),
         ("solid", "patternTransform") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::solid::patternTransform"),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
+            StdFnProps::default("std::solid::patternTransform").resumable(ResumableKind::PatternTransform),
         ),
         ("solid", "patternLinear3d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a).map(|r| r.map(KclValue::continue_))),
@@ -353,32 +535,38 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             StdFnProps::default("std::solid::split"),
         ),
         ("array", "map") => (
-            |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::map"),
+            |e, a| Box::pin(crate::std::array::map(e, a)),
+            StdFnProps::default("std::array::map")
+                .reads_regions_locally()
+                .resumable(ResumableKind::Map),
         ),
         ("array", "reduce") => (
-            |e, a| Box::pin(crate::std::array::reduce(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::reduce"),
+            |e, a| Box::pin(crate::std::array::reduce(e, a)),
+            StdFnProps::default("std::array::reduce")
+                .reads_regions_locally()
+                .resumable(ResumableKind::Reduce),
         ),
         ("array", "push") => (
             |e, a| Box::pin(crate::std::array::push(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::push"),
+            StdFnProps::default("std::array::push").reads_regions_locally(),
         ),
         ("array", "pop") => (
             |e, a| Box::pin(crate::std::array::pop(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::pop"),
+            StdFnProps::default("std::array::pop").reads_regions_locally(),
         ),
         ("array", "concat") => (
             |e, a| Box::pin(crate::std::array::concat(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::concat"),
+            StdFnProps::default("std::array::concat").reads_regions_locally(),
         ),
         ("array", "slice") => (
             |e, a| Box::pin(crate::std::array::slice(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::slice"),
+            StdFnProps::default("std::array::slice").reads_regions_locally(),
         ),
         ("array", "flatten") => (
             |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::flatten").warn_deprecated_on_consumed_solid_args(),
+            StdFnProps::default("std::array::flatten")
+                .warn_deprecated_on_consumed_solid_args()
+                .reads_regions_locally(),
         ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
@@ -422,7 +610,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "rectangle") => (
             |e, a| Box::pin(crate::std::shapes::rectangle(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::rectangle"),
+            StdFnProps::default("std::sketch::rectangle").reads_regions_locally(),
         ),
         ("sketch", "planeOf") => (
             |e, a| Box::pin(crate::std::planes::plane_of(e, a).map(|r| r.map(KclValue::continue_))),
@@ -434,19 +622,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::extrude"),
+            StdFnProps::default("std::sketch::extrude")
+                .consumes_regions(ConsumedRegionArg::new(ConsumedRegionOperation::Extrude).reject_alias_with("to")),
         ),
         ("sketch", "patternTransform2d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::patternTransform2d"),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
+            StdFnProps::default("std::sketch::patternTransform2d").resumable(ResumableKind::PatternTransform2d),
         ),
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::revolve"),
+            StdFnProps::default("std::sketch::revolve")
+                .consumes_regions(ConsumedRegionArg::new(ConsumedRegionOperation::Revolve)),
         ),
         ("sketch", "sweep") => (
             |e, a| Box::pin(crate::std::sweep::sweep(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::sweep"),
+            StdFnProps::default("std::sketch::sweep")
+                .consumes_regions(ConsumedRegionArg::new(ConsumedRegionOperation::Sweep).preserve_alias_with("path")),
         ),
         ("sketch", "loft") => (
             |e, a| Box::pin(crate::std::loft::loft(e, a).map(|r| r.map(KclValue::continue_))),
@@ -454,11 +645,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "polygon") => (
             |e, a| Box::pin(crate::std::shapes::polygon(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::polygon"),
+            StdFnProps::default("std::sketch::polygon").reads_regions_locally(),
         ),
         ("sketch", "circleThreePoint") => (
             |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::circleThreePoint"),
+            StdFnProps::default("std::sketch::circleThreePoint").reads_regions_locally(),
         ),
         ("sketch", "getCommonEdge") => (
             |e, a| Box::pin(crate::std::edge::get_common_edge(e, a).map(|r| r.map(KclValue::continue_))),
@@ -514,11 +705,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "lastSegX") => (
             |e, a| Box::pin(crate::std::segment::last_segment_x(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::lastSegX"),
+            StdFnProps::default("std::sketch::lastSegX").reads_regions_locally(),
         ),
         ("sketch", "lastSegY") => (
             |e, a| Box::pin(crate::std::segment::last_segment_y(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::lastSegY"),
+            StdFnProps::default("std::sketch::lastSegY").reads_regions_locally(),
         ),
         ("sketch", "segLen") => (
             |e, a| Box::pin(crate::std::segment::segment_length(e, a).map(|r| r.map(KclValue::continue_))),
@@ -534,15 +725,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "profileStart") => (
             |e, a| Box::pin(crate::std::sketch::profile_start(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::profileStart"),
+            StdFnProps::default("std::sketch::profileStart").reads_regions_locally(),
         ),
         ("sketch", "profileStartX") => (
             |e, a| Box::pin(crate::std::sketch::profile_start_x(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::profileStartX"),
+            StdFnProps::default("std::sketch::profileStartX").reads_regions_locally(),
         ),
         ("sketch", "profileStartY") => (
             |e, a| Box::pin(crate::std::sketch::profile_start_y(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::profileStartY"),
+            StdFnProps::default("std::sketch::profileStartY").reads_regions_locally(),
         ),
         ("sketch", "startSketchOn") => (
             |e, a| Box::pin(crate::std::sketch::start_sketch_on(e, a).map(|r| r.map(KclValue::continue_))),
@@ -660,6 +851,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::angle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::angle"),
         ),
+        ("solver", "angleDimension") => (
+            |e, a| Box::pin(crate::std::constraints::angle_dimension(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::angleDimension"),
+        ),
         ("solver", "tangent") => (
             |e, a| Box::pin(crate::std::constraints::tangent(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::tangent"),
@@ -708,6 +903,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::surfaces::join(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::joinSurfaces"),
         ),
+        ("view", "oriented") => (
+            |e, a| Box::pin(crate::std::view::oriented(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::oriented"),
+        ),
+        ("view", "directed") => (
+            |e, a| Box::pin(crate::std::view::directed(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::directed"),
+        ),
+        ("view", "named") => (
+            |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::named"),
+        ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
         }
@@ -735,6 +942,8 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
             PrimitiveType::BoundedEdge,
             StdFnProps::default("std::types::BoundedEdge"),
         ),
+        ("view", "CameraView") => (PrimitiveType::CameraView, StdFnProps::default("std::view::CameraView")),
+        ("view", "NamedView") => (PrimitiveType::NamedView, StdFnProps::default("std::view::NamedView")),
         _ => unreachable!(),
     }
 }

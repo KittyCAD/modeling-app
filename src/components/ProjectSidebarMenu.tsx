@@ -2,7 +2,6 @@ import { Popover, Transition } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
-import { useCloudSyncProjectConflict } from '@src/components/CloudConflictDialog'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
@@ -16,6 +15,7 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -23,8 +23,11 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import {
+  type ProjectExplorerProjectBreadcrumbBadge,
+  type ProjectExplorerProjectBreadcrumbBadgeContext,
   type ProjectExplorerProjectMenuItem,
   type ProjectExplorerProjectMenuItemContext,
+  projectExplorerProjectBreadcrumbBadgesValueSpec,
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import { useSelector } from '@xstate/react'
@@ -67,6 +70,10 @@ type ProjectMenuItem =
       id: string
     }
   | null
+type ProjectBreadcrumbBadgeItem = {
+  item: ProjectExplorerProjectBreadcrumbBadge
+  context: ProjectExplorerProjectBreadcrumbBadgeContext
+}
 
 function isContributedProjectMenuItem(
   item: Exclude<ProjectMenuItem, null>
@@ -84,6 +91,8 @@ function isProjectMenuBreak(
 
 const noopProjectClose: ProjectCloseHandler = () => undefined
 const noopHomeNavigate = () => undefined
+const projectMenuItemLabelClassName = 'min-w-0 flex-1 truncate'
+const projectMenuItemHotkeyClassName = 'hotkey shrink-0'
 
 export function canNavigateHome({
   isDesktopApp,
@@ -168,7 +177,7 @@ function AppLogoLink({
   onHomeNavigate: () => void
 }) {
   const wrapperClassName =
-    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   if (!enabled) {
@@ -191,7 +200,7 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className={`${wrapperClassName} hover:before:brightness-110`}
+      className={`${wrapperClassName} hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm`}
     >
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
@@ -233,13 +242,15 @@ function ProjectMenuPopover({
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
     platform
   )
-  const cloudConflictMetadata = useCloudSyncProjectConflict(project?.path)
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
   const projectPath = project?.path
   const contributedProjectMenuItems = app.registry.signal(
     projectExplorerProjectMenuItemsValueSpec
+  ).value
+  const contributedProjectBreadcrumbBadges = app.registry.signal(
+    projectExplorerProjectBreadcrumbBadgesValueSpec
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -268,11 +279,16 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1" data-testid="project-settings">
+              <span
+                className={projectMenuItemLabelClassName}
+                data-testid="project-settings"
+              >
                 Project settings
               </span>
               {projectSettingsKeybinding && (
-                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+                <kbd className={projectMenuItemHotkeyClassName}>
+                  {projectSettingsKeybinding}
+                </kbd>
               )}
             </>
           ),
@@ -285,18 +301,42 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
+        project
+          ? {
+              id: 'duplicate-project',
+              Element: 'button' as const,
+              children: (
+                <span
+                  className={projectMenuItemLabelClassName}
+                  data-testid="project-sidebar-duplicate-project"
+                >
+                  Duplicate project
+                </span>
+              ),
+              onClick: () => {
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.duplicateProject,
+                  data: {
+                    projectName: project.name,
+                    projectPath: project.path,
+                    requestedProjectName: getProjectDisplayName(project),
+                  },
+                })
+              },
+            }
+          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []
           }
 
           const context = { projectPath, project }
-          if (item.Component) {
-            return [{ kind: 'contributed' as const, item, context }]
-          }
-
           if (item.isVisible && !item.isVisible(context)) {
             return []
+          }
+
+          if (item.Component) {
+            return [{ kind: 'contributed' as const, item, context }]
           }
 
           const disabled =
@@ -320,7 +360,10 @@ function ProjectMenuPopover({
               Element: 'button' as const,
               className,
               children: (
-                <span className="flex-1" data-testid={dataTestId}>
+                <span
+                  className={projectMenuItemLabelClassName}
+                  data-testid={dataTestId}
+                >
                   {label}
                 </span>
               ),
@@ -334,8 +377,10 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1">Add file to project</span>
-              <kbd className="hotkey">
+              <span className={projectMenuItemLabelClassName}>
+                Add file to project
+              </span>
+              <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('mod+alt+l', platform)}
               </kbd>
             </>
@@ -351,8 +396,10 @@ function ProjectMenuPopover({
           Element: 'button' as const,
           children: (
             <>
-              <span className="flex-1">Export current part</span>
-              <kbd className="hotkey">
+              <span className={projectMenuItemLabelClassName}>
+                Export current part
+              </span>
+              <kbd className={projectMenuItemHotkeyClassName}>
                 {hotkeyDisplay('ctrl+shift+e', platform)}
               </kbd>
               {!findCommand(exportCommandInfo) && (
@@ -378,7 +425,9 @@ function ProjectMenuPopover({
           className: isDesktop() ? 'hidden' : '',
           children: (
             <>
-              <span className="flex-1">Download project files</span>
+              <span className={projectMenuItemLabelClassName}>
+                Download project files
+              </span>
               {!findCommand(exportProjectZipCommandInfo) && (
                 <Tooltip
                   position="right"
@@ -402,7 +451,9 @@ function ProjectMenuPopover({
           className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
-              <span>Make current part</span>
+              <span className={projectMenuItemLabelClassName}>
+                Make current part
+              </span>
               {!findCommand(makeCommandInfo) && (
                 <Tooltip
                   position="right"
@@ -425,7 +476,9 @@ function ProjectMenuPopover({
         {
           id: 'go-home',
           Element: 'button' as const,
-          children: 'Go to Home',
+          children: (
+            <span className={projectMenuItemLabelClassName}>Go to Home</span>
+          ),
           className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
@@ -433,18 +486,34 @@ function ProjectMenuPopover({
           },
         },
       ]
-      return items.filter((props): props is Exclude<ProjectMenuItem, null> => {
-        if (!props) {
-          return false
+      const visibleItems = items.filter(
+        (props): props is Exclude<ProjectMenuItem, null> => {
+          if (!props) {
+            return false
+          }
+          if (isProjectMenuBreak(props)) {
+            return true
+          }
+          if (isContributedProjectMenuItem(props)) {
+            return true
+          }
+          return !props.className?.includes('hidden')
         }
-        if (isProjectMenuBreak(props)) {
-          return true
-        }
-        if (isContributedProjectMenuItem(props)) {
-          return true
-        }
-        return !props.className?.includes('hidden')
-      })
+      )
+      const footerItems = visibleItems.filter(
+        (props) =>
+          isContributedProjectMenuItem(props) &&
+          props.item.placement === 'footer'
+      )
+
+      return visibleItems
+        .filter((props) => !footerItems.includes(props))
+        .flatMap((props) => {
+          if (isProjectMenuBreak(props) && props.id === 'before-go-home') {
+            return [props, ...footerItems]
+          }
+          return [props]
+        })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
@@ -460,6 +529,7 @@ function ProjectMenuPopover({
       project,
       contributedProjectMenuItems,
       commands.actor,
+      app.systemIOActor,
       file,
       filePath,
       machineCount,
@@ -469,15 +539,30 @@ function ProjectMenuPopover({
     ]
   )
 
+  const projectBreadcrumbBadges = useMemo<ProjectBreadcrumbBadgeItem[]>(() => {
+    if (!projectPath || !project) {
+      return []
+    }
+
+    const context = { projectPath, project }
+    return contributedProjectBreadcrumbBadges.flatMap((item) => {
+      if (item.isVisible && !item.isVisible(context)) {
+        return []
+      }
+
+      return [{ item, context }]
+    })
+  }, [contributedProjectBreadcrumbBadges, project, projectPath])
+
   const menuItemClassName =
-    'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left '
+    'relative !font-sans flex min-h-8 w-full items-center justify-start gap-2 rounded-sm px-2 py-1 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left text-sm leading-5 text-chalkboard-100 dark:text-chalkboard-10 '
 
   return (
     <Popover className="relative min-w-0">
       <ProjectBreadcrumbButton
         project={project}
         file={file}
-        hasCloudConflict={Boolean(cloudConflictMetadata)}
+        contributedBadges={projectBreadcrumbBadges}
       />
 
       <Transition
@@ -497,7 +582,7 @@ function ProjectMenuPopover({
                 if (isProjectMenuBreak(props)) {
                   return index !== projectMenuItems.length - 1 ? (
                     <li key={props.id} className="contents">
-                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+                      <hr className="my-0 border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
                   ) : null
                 }
@@ -540,11 +625,11 @@ function ProjectMenuPopover({
 export function ProjectBreadcrumbButton({
   project,
   file,
-  hasCloudConflict = false,
+  contributedBadges = [],
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
-  hasCloudConflict?: boolean
+  contributedBadges?: ProjectBreadcrumbBadgeItem[]
 }) {
   // Breadcrumb for project and project-relative file path
   const relativeFilePath = getProjectRelativeFilePath(project, file)
@@ -561,6 +646,8 @@ export function ProjectBreadcrumbButton({
   const projectNameRef = useRef<HTMLSpanElement>(null)
   const filePathRef = useRef<HTMLSpanElement>(null)
   const [isBreadCrumbTruncated, setIsBreadCrumbTruncated] = useState(false)
+  const badgeClassName =
+    'hidden shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium leading-none sm:inline-flex'
 
   useEffect(() => {
     const isTruncated = (element: HTMLElement | null) =>
@@ -622,14 +709,39 @@ export function ProjectBreadcrumbButton({
           {breadCrumb.filePath}
         </span>
       </div>
-      {hasCloudConflict && (
-        <span
-          className="hidden shrink-0 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium leading-none text-warn-90 dark:bg-warn-80 dark:text-warn-10 sm:inline-flex"
-          data-testid="project-sidebar-cloud-conflict-badge"
-        >
-          Cloud conflict
-        </span>
-      )}
+      {contributedBadges.map(({ item, context }) => {
+        if (item.Component) {
+          const Component = item.Component
+          return (
+            <Component
+              key={item.id}
+              context={context}
+              className={badgeClassName}
+            />
+          )
+        }
+
+        const label =
+          typeof item.label === 'function' ? item.label(context) : item.label
+        const dataTestId =
+          typeof item.dataTestId === 'function'
+            ? item.dataTestId(context)
+            : item.dataTestId
+        const className =
+          typeof item.className === 'function'
+            ? item.className(context)
+            : item.className
+
+        return (
+          <span
+            key={item.id}
+            className={`${badgeClassName} ${className ?? ''}`}
+            data-testid={dataTestId}
+          >
+            {label}
+          </span>
+        )
+      })}
       <CustomIcon
         name="caretDown"
         className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"

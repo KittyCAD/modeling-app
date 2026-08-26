@@ -30,6 +30,17 @@ export interface ProjectExplorerProjectMenuItemContext {
   project: Project
 }
 
+export interface ProjectExplorerProjectBreadcrumbBadgeContext {
+  projectPath: string
+  project: Project
+}
+
+export interface ProjectExplorerProjectBreadcrumbBadgeComponentProps {
+  context: ProjectExplorerProjectBreadcrumbBadgeContext
+  /** The base badge classes from ProjectSidebarMenu. */
+  className: string
+}
+
 /**
  * Render props for project menu contributions that need hooks, local state, or
  * dialogs instead of a simple label and onSelect callback.
@@ -45,6 +56,7 @@ export interface ProjectExplorerProjectMenuItemComponentProps {
 type ProjectExplorerProjectMenuItemBase = {
   id: string
   order?: number
+  placement?: 'project-actions' | 'footer'
   disabled?:
     | boolean
     | ((context: ProjectExplorerProjectMenuItemContext) => boolean)
@@ -75,9 +87,46 @@ export type ProjectExplorerProjectMenuItem =
       Component: ComponentType<ProjectExplorerProjectMenuItemComponentProps>
     })
 
+type ProjectExplorerProjectBreadcrumbBadgeBase = {
+  id: string
+  order?: number
+  isVisible?: (context: ProjectExplorerProjectBreadcrumbBadgeContext) => boolean
+}
+
+type ProjectExplorerProjectBreadcrumbBadgeSlotProps = {
+  label:
+    | ReactNode
+    | ((context: ProjectExplorerProjectBreadcrumbBadgeContext) => ReactNode)
+  dataTestId?:
+    | string
+    | ((
+        context: ProjectExplorerProjectBreadcrumbBadgeContext
+      ) => string | undefined)
+  className?:
+    | string
+    | ((
+        context: ProjectExplorerProjectBreadcrumbBadgeContext
+      ) => string | undefined)
+}
+
+export type ProjectExplorerProjectBreadcrumbBadge =
+  | (ProjectExplorerProjectBreadcrumbBadgeBase &
+      ProjectExplorerProjectBreadcrumbBadgeSlotProps & {
+        Component?: undefined
+      })
+  | (ProjectExplorerProjectBreadcrumbBadgeBase & {
+      Component: ComponentType<ProjectExplorerProjectBreadcrumbBadgeComponentProps>
+    })
+
 const byOrder = (
-  a: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem,
-  b: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem
+  a:
+    | ProjectExplorerRowContextMenuItem
+    | ProjectExplorerProjectMenuItem
+    | ProjectExplorerProjectBreadcrumbBadge,
+  b:
+    | ProjectExplorerRowContextMenuItem
+    | ProjectExplorerProjectMenuItem
+    | ProjectExplorerProjectBreadcrumbBadge
 ) => (a.order || 0) - (b.order || 0)
 
 export const projectExplorerContract = defineContract({
@@ -86,6 +135,14 @@ export const projectExplorerContract = defineContract({
     ProjectExplorerProjectMenuItem[]
   >({
     name: 'project-explorer-project-menu-items',
+    defaultValue: [],
+    combine: (items) => items.toSorted(byOrder),
+  }),
+  projectExplorerProjectBreadcrumbBadgesValueSpec: defineValueSpec<
+    ProjectExplorerProjectBreadcrumbBadge,
+    ProjectExplorerProjectBreadcrumbBadge[]
+  >({
+    name: 'project-explorer-project-breadcrumb-badges',
     defaultValue: [],
     combine: (items) => items.toSorted(byOrder),
   }),
@@ -100,6 +157,7 @@ export const projectExplorerContract = defineContract({
 })
 
 export const {
+  projectExplorerProjectBreadcrumbBadgesValueSpec,
   projectExplorerProjectMenuItemsValueSpec,
   projectExplorerRowContextMenuItemsValueSpec,
 } = projectExplorerContract

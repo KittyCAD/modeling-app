@@ -18,12 +18,17 @@ import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
   enterEditFlow,
   filterOperations,
+  getHideOpByArtifactId,
   getHideOpForArtifact,
+  getOperationCalculatedDisplay,
+  getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
   groupNestedOperations,
   groupOperationTypeStreaks,
+  hiddenArtifactIdsFromOperations,
 } from '@src/lib/operations'
+import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -39,22 +44,26 @@ function stdlib(name: string): Operation {
   }
 }
 
-function hideOperation(searchId: string): Operation {
+function hideOperationOf(value: OpKclValue): Operation {
   return {
     type: 'StdLibCall',
     name: 'hide',
     unlabeledArg: {
       sourceRange: defaultSourceRange(),
-      value: {
-        type: 'Solid',
-        value: { artifactId: searchId },
-      },
+      value,
     },
     labeledArgs: {},
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
     isError: false,
   }
+}
+
+function hideOperation(searchId: string): Operation {
+  return hideOperationOf({
+    type: 'Solid',
+    value: { artifactId: searchId },
+  })
 }
 
 function compositeSolidArtifact(
@@ -275,6 +284,140 @@ describe('operations.test.ts', () => {
     })
   })
 
+  // The fixtures have the following sources and purposes:
+  //
+  // - The six scalar cases transcribe the recorded output of the simulation test
+  //   named beside each case.
+  // - The homogeneous array cases are constructed to verify traversal of both
+  //   serialized artifact-id shapes.
+  // - The tag-identifier case is constructed to verify that an `artifact_id`
+  //   field is not collected when the variant is not hideable.
+  // - `ImportedGeometry` has no array form in `hide()`'s signature, so only its
+  //   scalar shape is tested.
+  describe('hide operation argument shapes', () => {
+    it('reads a plane, whose id sits on the variant', () => {
+      // tests/named_views_hide_plane/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'Plane',
+        artifact_id: 'plane-artifact',
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'plane-artifact')).toBe(hideOp)
+    })
+
+    it('reads a GD&T annotation, whose id sits on the variant', () => {
+      // tests/named_views_hide_gdt/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'GdtAnnotation',
+        artifact_id: 'annotation-artifact',
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'annotation-artifact')).toBe(
+        hideOp
+      )
+    })
+
+    it('reads imported geometry, whose id sits on the variant', () => {
+      // tests/named_views_hide_imported/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'ImportedGeometry',
+        artifact_id: 'imported-artifact',
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'imported-artifact')).toBe(hideOp)
+    })
+
+    it('reads a solid, whose id sits in a struct payload', () => {
+      // tests/named_views_hide_extrude/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'Solid',
+        value: { artifactId: 'solid-artifact' },
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'solid-artifact')).toBe(hideOp)
+    })
+
+    it('reads a sketch, whose id sits in a struct payload', () => {
+      // tests/named_views_hide_sketch/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'Sketch',
+        value: { artifactId: 'sketch-artifact' },
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'sketch-artifact')).toBe(hideOp)
+    })
+
+    it('reads a helix, whose id sits in a struct payload', () => {
+      // tests/named_views_hide_helix/ops.snap
+      const hideOp = hideOperationOf({
+        type: 'Helix',
+        value: { artifactId: 'helix-artifact' },
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'helix-artifact')).toBe(hideOp)
+    })
+
+    it('reads every element of homogeneous array arguments in either shape', () => {
+      const planeHideOp = hideOperationOf({
+        type: 'Array',
+        value: [
+          { type: 'Plane', artifact_id: 'plane-artifact-1' },
+          { type: 'Plane', artifact_id: 'plane-artifact-2' },
+        ],
+      })
+      const solidHideOp = hideOperationOf({
+        type: 'Array',
+        value: [
+          { type: 'Solid', value: { artifactId: 'solid-artifact-1' } },
+          { type: 'Solid', value: { artifactId: 'solid-artifact-2' } },
+        ],
+      })
+
+      expect(getHideOpByArtifactId([planeHideOp], 'plane-artifact-1')).toBe(
+        planeHideOp
+      )
+      expect(getHideOpByArtifactId([planeHideOp], 'plane-artifact-2')).toBe(
+        planeHideOp
+      )
+      expect(getHideOpByArtifactId([solidHideOp], 'solid-artifact-1')).toBe(
+        solidHideOp
+      )
+      expect(getHideOpByArtifactId([solidHideOp], 'solid-artifact-2')).toBe(
+        solidHideOp
+      )
+    })
+
+    it("does not treat a tag identifier's artifact id as a hidden artifact", () => {
+      const hideOp = hideOperationOf({
+        type: 'TagIdentifier',
+        value: 'seg01',
+        artifact_id: 'tagged-artifact',
+      })
+
+      expect(getHideOpByArtifactId([hideOp], 'tagged-artifact')).toBeUndefined()
+    })
+  })
+
+  describe('hiddenArtifactIdsFromOperations', () => {
+    it('collects the ids of every hide call and nothing else', () => {
+      const operations = [
+        stdlib('extrude'),
+        hideOperation('solid-artifact'),
+        hideOperationOf({ type: 'Plane', artifact_id: 'plane-artifact' }),
+      ]
+
+      expect(hiddenArtifactIdsFromOperations(operations)).toEqual(
+        new Set(['solid-artifact', 'plane-artifact'])
+      )
+    })
+
+    it('reports nothing when the program hid nothing', () => {
+      expect(hiddenArtifactIdsFromOperations([stdlib('extrude')])).toEqual(
+        new Set()
+      )
+    })
+  })
+
   describe('operations filtering', () => {
     it('drops stdlib operations inside a user-defined function call', async () => {
       const operations = [
@@ -417,6 +560,49 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
+    it('continues when the unlabeled selection cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: { type: 'Number', value: 0, ty: { type: 'Any' } },
+        sourceRange: rangeOfText(code, 'region(point = [1, 1], sketch = s)'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        length?: { valueText: string }
+      }
+      expect(argDefaultValues.sketches).toEqual({
+        graphSelections: [],
+        otherSelections: [],
+      })
+      expect(argDefaultValues.length?.valueText).toBe('10')
+    })
+
     it('preserves draftAngle in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
@@ -998,6 +1184,57 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
       expect(argDefaultValues.note).toBe('Note on XY')
       expect(argDefaultValues.framePlane).toBe('XZ')
+    })
+  })
+
+  describe('getOperationCalculatedDisplay', () => {
+    const red: OpKclValue = { type: 'Enum', enum_name: 'Color', variant: 'Red' }
+    const green: OpKclValue = {
+      type: 'Enum',
+      enum_name: 'Color',
+      variant: 'Green',
+    }
+
+    // An enum reaches this function whenever an enum-valued variable appears in
+    // the feature tree: `getFeatureTreeValueDetail` passes a VariableDeclaration's
+    // value through unchanged, and the Rust side already maps `KclValue::Enum` to
+    // `OpKclValue::Enum`. Before this arm existed the switch fell through to
+    // `default`, which returned the value's type, so the tree read "Enum".
+    it.each([
+      ['a variant as its qualified name', red, 'Color::Red'],
+      [
+        'every variant of an array',
+        { type: 'Array', value: [red, green] },
+        'Color::Red, Color::Green',
+      ],
+      [
+        'a variant nested in an array of arrays',
+        { type: 'Array', value: [{ type: 'Array', value: [green] }] },
+        'Color::Green',
+      ],
+    ] as const)('renders %s', (_case, value, expected) => {
+      expect(getOperationCalculatedDisplay(value as OpKclValue)).toBe(expected)
+    })
+
+    it('still falls back to the type name for a value it cannot render', () => {
+      // Guards the arm above from being written as a catch-all: a type with no
+      // case of its own must keep the old behaviour rather than crash.
+      expect(
+        getOperationCalculatedDisplay({ type: 'Uuid', value: 'abc' })
+      ).toBe('Uuid')
+    })
+  })
+
+  describe('view::named in the feature tree', () => {
+    const namedView = stdlib('view::named')
+
+    it('labels the operation and gives it its own icon', () => {
+      expect(getOperationLabel(namedView)).toBe('Named View')
+      expect(getOperationIcon(namedView)).toBe('namedView')
+    })
+
+    it('keeps the operation in the feature tree', () => {
+      expect(filterOperations([namedView])).toEqual([namedView])
     })
   })
 

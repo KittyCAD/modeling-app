@@ -68,8 +68,8 @@ description: Artifact commands crash-box.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -199.99999999930236,
-          "y": -200.0000000025684,
+          "x": -199.99999999992593,
+          "y": -200.00000000025676,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands crash-box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 200.00000000063167,
-            "y": -200.00000000236298,
+            "x": 200.00000000006747,
+            "y": -200.0000000002362,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands crash-box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 200.00000000051617,
-            "y": 199.99999999589045,
+            "x": 200.00000000005593,
+            "y": 199.9999999995891,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands crash-box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -199.99999999920337,
-            "y": 199.99999999619865,
+            "x": -199.999999999916,
+            "y": 199.99999999961994,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands crash-box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -199.99999999925285,
-            "y": -200.00000000308214,
+            "x": -199.999999999921,
+            "y": -200.00000000030815,
             "z": 0.0
           },
           "relative": false
@@ -158,7 +158,8 @@ description: Artifact commands crash-box.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -466,7 +467,7 @@ description: Artifact commands crash-box.kcl
         "path": "[uuid]",
         "to": {
           "x": -870.13,
-          "y": 0.000000000000000020000024490921557,
+          "y": 0.0000000000000000019999978168807254,
           "z": 0.0
         }
       }
@@ -488,7 +489,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": 873.9799999999998,
-            "y": 0.00000000000000002800004677771743,
+            "y": 0.0000000000000000027999956201440355,
             "z": 0.0
           },
           "relative": false
@@ -539,7 +540,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": -870.13,
-            "y": 0.00000000000000002800002568461181,
+            "y": 0.000000000000000002799998101685873,
             "z": 0.0
           },
           "relative": false
@@ -555,7 +556,8 @@ description: Artifact commands crash-box.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -836,94 +838,15 @@ description: Artifact commands crash-box.kcl
           },
           "radius": 16.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": -210.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 100.0,
-        "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
       }
     },
     {
@@ -943,13 +866,6 @@ description: Artifact commands crash-box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
@@ -960,12 +876,12 @@ description: Artifact commands crash-box.kcl
           },
           "radius": 16.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -975,8 +891,26 @@ description: Artifact commands crash-box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1146,6 +1080,15 @@ description: Artifact commands crash-box.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {

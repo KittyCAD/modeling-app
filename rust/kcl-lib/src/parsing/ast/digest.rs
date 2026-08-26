@@ -12,6 +12,8 @@ use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::ElseIf;
+use crate::parsing::ast::types::EnumDeclaration;
+use crate::parsing::ast::types::EnumVariant;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ExpressionStatement;
 use crate::parsing::ast::types::FunctionExpression;
@@ -43,6 +45,7 @@ use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
@@ -289,6 +292,7 @@ impl PrimitiveType {
         let mut hasher = Sha256::new();
         match self {
             PrimitiveType::Any => hasher.update(b"any"),
+            PrimitiveType::Never => hasher.update(b"never"),
             PrimitiveType::None => hasher.update(b"none"),
             PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
@@ -397,9 +401,31 @@ impl Node<TypeDeclaration> {
                 hasher.update(a.compute_digest());
             }
         }
-        if let Some(alias) = &mut slf.alias {
-            hasher.update(alias.compute_digest());
+        match &mut slf.definition {
+            TypeDeclarationDefinition::Bare => {}
+            TypeDeclarationDefinition::Alias { ty } => {
+                hasher.update(ty.compute_digest());
+            }
+            TypeDeclarationDefinition::Enum(e) => {
+                hasher.update(b"TypeDeclarationDefinition::Enum");
+                hasher.update(e.compute_digest());
+            }
         }
+    });
+}
+
+impl EnumDeclaration {
+    compute_digest_no_attrs!(|slf, hasher| {
+        hasher.update(slf.variants.len().to_ne_bytes());
+        for variant in &mut slf.variants {
+            hasher.update(variant.compute_digest());
+        }
+    });
+}
+
+impl Node<EnumVariant> {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.name.compute_digest());
     });
 }
 
@@ -669,6 +695,35 @@ mod test {
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 
         assert_eq!(prog1_digest, prog3_digest);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_digest() {
+        // The IDE relies on digests to detect AST changes, so enum digests
+        // must be stable across reparses and sensitive to variant changes.
+        let digest = |body: &str| {
+            let code = format!("@settings(experimentalFeatures = allow)\n{body}\n");
+            crate::parsing::top_level_parse(&code).unwrap().compute_digest()
+        };
+
+        let red_green = digest("type Color { | Red | Green }");
+
+        // Stable: identical source hashes identically.
+        assert_eq!(red_green, digest("type Color { | Red | Green }"));
+
+        // Comments do not change the digest.
+        assert_eq!(
+            red_green,
+            digest("type Color {\n  // warm\n  | Red\n  | Green // cool\n}")
+        );
+
+        // Renaming a variant, reordering variants, or adding one changes it.
+        assert_ne!(red_green, digest("type Color { | Red | Blue }"));
+        assert_ne!(red_green, digest("type Color { | Green | Red }"));
+        assert_ne!(red_green, digest("type Color { | Red | Green | Blue }"));
+
+        // An enum is not an alias, even against the same name.
+        assert_ne!(digest("type Color { | }"), digest("type Color = string"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

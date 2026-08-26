@@ -34,6 +34,7 @@ export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
   setProjectDirectoryPath = 'set project directory path',
   createProject = 'create project',
+  duplicateProject = 'duplicate project',
   renameProject = 'rename project',
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
@@ -64,6 +65,7 @@ export enum SystemIOMachineStates {
   readingFolders = 'readingFolders',
   settingProjectDirectoryPath = 'settingProjectDirectoryPath',
   creatingProject = 'creatingProject',
+  duplicatingProject = 'duplicatingProject',
   renamingProject = 'renamingProject',
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
@@ -98,8 +100,9 @@ export enum SystemIOMachineActions {
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
   toastErrorZookeeperFileWrite = 'toastErrorZookeeperFileWrite',
+  reportError = 'reportError',
   setReadWriteProjectDirectory = 'set read write project directory',
-  setRequestedTextToCadGeneration = 'set requested text to cad generation',
+  setRequestedZookeeperGeneration = 'set requested zookeeper generation',
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
   deferSystemIOEvent = 'defer system IO event',
@@ -132,7 +135,7 @@ export type SystemIOContext = SystemIOInput & {
    * We watch objects because we want to be able to navigate to itself
    * if we used a string the useEffect would not change
    */
-  requestedProjectName: { name: string; subRoute?: string }
+  requestedProjectName: { name: string; path?: string; subRoute?: string }
   requestedFileName: {
     project: string
     file: string
@@ -141,7 +144,7 @@ export type SystemIOContext = SystemIOInput & {
   }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
-  requestedTextToCadGeneration: {
+  requestedZookeeperGeneration: {
     requestedPrompt: string
     requestedProjectName: string
     isProjectNew: boolean
@@ -254,16 +257,29 @@ export const collectProjectFiles = async (args: {
       execStateFileNamesIndex: 0,
     },
   ]
-  const execStateNameToIndexMap: { [fileName: string]: number } = {}
-  Object.entries(args.fileNames).forEach(([index, val]) => {
-    if (val?.type === 'Local') {
-      execStateNameToIndexMap[val.value] = Number(index)
-    }
-  })
   let basePath = ''
   if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
+    const execStateNameToIndexMap: { [fileName: string]: number } = {}
+    const setExecStateFileIndex = (fileName: string, index: number) => {
+      const normalizedFileName = normalizeRelativePath(fileName)
+      execStateNameToIndexMap[fileName] = index
+      execStateNameToIndexMap[normalizedFileName] = index
+      execStateNameToIndexMap[normalizePathForComparison(fileName)] = index
+
+      const projectRelativePath = normalizeRelativePath(
+        fsZds.relative(basePath, fileName) ?? ''
+      )
+      if (projectRelativePath && !projectRelativePath.startsWith('..')) {
+        execStateNameToIndexMap[projectRelativePath] = index
+      }
+    }
+    Object.entries(args.fileNames).forEach(([index, val]) => {
+      if (val?.type === 'Local') {
+        setExecStateFileIndex(val.value, Number(index))
+      }
+    })
     const selectedAbsolutePath = args.selectedFilePath
       ? normalizePathForComparison(args.selectedFilePath)
       : undefined
@@ -281,6 +297,16 @@ export const collectProjectFiles = async (args: {
           selectedRelativePath
       )
     }
+    const execStateFileIndexForKclFile = (
+      absolutePathToFileNameWithExtension: string,
+      fileNameWithExtension: string
+    ) =>
+      execStateNameToIndexMap[absolutePathToFileNameWithExtension] ??
+      execStateNameToIndexMap[
+        normalizePathForComparison(absolutePathToFileNameWithExtension)
+      ] ??
+      execStateNameToIndexMap[fileNameWithExtension] ??
+      (isSelectedFilePath(absolutePathToFileNameWithExtension) ? 0 : undefined)
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
@@ -309,8 +335,10 @@ export const collectProjectFiles = async (args: {
                 absPath: absolutePathToFileNameWithExtension,
                 relPath: fileNameWithExtension,
                 fileContents: decoder.decode(file),
-                execStateFileNamesIndex:
-                  execStateNameToIndexMap[absolutePathToFileNameWithExtension],
+                execStateFileNamesIndex: execStateFileIndexForKclFile(
+                  absolutePathToFileNameWithExtension,
+                  fileNameWithExtension
+                ),
               }
             }
             const blob = new Blob([new Uint8Array(file)], {
@@ -382,20 +410,20 @@ export const collectProjectFiles = async (args: {
   return projectFiles
 }
 
-type MlEphantNewFileRequestProps = {
+type ZookeeperNewFileRequestProps = {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
   filesToDelete?: RequestedKCLFileDelete[]
 }
 
-export const prepareMlEphantNewFileRequest = ({
+export const prepareZookeeperNewFileRequest = ({
   fallbackFilePath,
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
   filesToDelete = [],
-}: MlEphantNewFileRequestProps & { fallbackFilePath?: string }) => {
+}: ZookeeperNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
     toolOutput.type !== 'edit_kcl_code'

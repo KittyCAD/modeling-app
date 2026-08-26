@@ -4,17 +4,10 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-pub use artifact::Artifact;
 pub use artifact::ArtifactCommand;
-pub use artifact::ArtifactGraph;
-pub use artifact::CapSubType;
-pub use artifact::CodeRef;
-pub use artifact::GdtAnnotationArtifact;
-pub use artifact::SketchBlock;
-pub use artifact::SketchBlockConstraint;
-pub use artifact::SketchBlockConstraintType;
-pub use artifact::StartSketchOnFace;
-pub use artifact::StartSketchOnPlane;
+pub(crate) use artifact::EntityCloneInfo;
+pub(crate) use artifact::named_view_artifact;
+pub(crate) use artifact::sketch_block_constraint_type;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
@@ -23,6 +16,17 @@ pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::Operation;
+pub use kcl_api::artifact::Artifact;
+pub use kcl_api::artifact::ArtifactGraph;
+pub use kcl_api::artifact::CapSubType;
+pub use kcl_api::artifact::CodeRef;
+pub use kcl_api::artifact::GdtAnnotationArtifact;
+pub use kcl_api::artifact::SketchBlock;
+pub use kcl_api::artifact::SketchBlockConstraint;
+#[allow(unused_imports)]
+pub use kcl_api::artifact::SketchBlockConstraintType;
+pub use kcl_api::artifact::StartSketchOnFace;
+pub use kcl_api::artifact::StartSketchOnPlane;
 use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
@@ -41,6 +45,7 @@ pub use memory::EnvironmentRef;
 #[cfg(test)]
 pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
+pub use named_views::*;
 use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
@@ -50,8 +55,11 @@ pub use sketch_transpiler::transpile_all_old_sketches_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new;
 pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
 pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedRegionInfo;
+pub(crate) use state::ConsumedRegionOperation;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
@@ -60,10 +68,12 @@ pub use state::DirectTagFilletTagEntry;
 pub use state::EdgeRefactorMeta;
 pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
-pub(crate) use state::KclVersion;
+pub use state::KclVersion;
+pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::PendingEdgeRefactorMeta;
+pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
@@ -140,22 +150,29 @@ impl OperationsByModule {
 
 pub(crate) mod annotations;
 mod artifact;
+#[cfg(test)]
+pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
-mod exec_ast;
+pub(crate) mod exec_ast;
 pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
 mod geometry;
+#[cfg(test)]
+mod hide_id_contract_kcl_test_pins;
 mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
 pub(crate) mod kcl_value_view;
+pub(crate) mod machine;
 mod memory;
 mod modeling;
+mod named_views;
 mod sketch_solve;
 mod sketch_transpiler;
+mod solver_arc;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -371,7 +388,19 @@ pub enum ConstraintKind {
 /// distinguish this from a genuinely constrained sketch.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SketchConstraintStatus {
-    /// The variable name of the sketch (e.g., "sketch001").
+    /// Name of the variable the sketch was assigned to, for example
+    /// "sketch001". This is the nearest enclosing declaration at the point the
+    /// sketch was created, which is not always the sketch's own name:
+    /// - Empty for a sketch written as an expression statement, because there
+    ///   is no enclosing declaration.
+    /// - The outer variable's name for a sketch passed straight into another
+    ///   call, as in `part = extrude(sketch(on = XY) { ... }, length = 10)`.
+    /// - The same name for two sketches, when a function body declares the
+    ///   sketch and is called more than once.
+    ///
+    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
+    /// the report carries no other sketch identifier, rendering returns an
+    /// ambiguity error when multiple sketches share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -482,7 +511,6 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
-
     for obj in scene_objects {
         let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
@@ -527,6 +555,41 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
         sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
+    /// Render one sketch from this execution result as a PNG, colored by
+    /// solver freedom.
+    pub fn render_sketch_png(
+        &self,
+        sketch_name: &str,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use crate::front::ObjectKind;
+        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+        let sketches = self
+            .scene_objects
+            .iter()
+            .filter_map(|object| match &object.kind {
+                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let sketch = match sketches.as_slice() {
+            [] => {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            }
+            [sketch] => *sketch,
+            _ => {
+                return Err(SketchVisualizationError::AmbiguousSketchName {
+                    name: sketch_name.to_owned(),
+                    count: sketches.len(),
+                });
+            }
+        };
+
+        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
     }
 }
 
@@ -813,6 +876,13 @@ pub struct ExecutorContext {
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
+    /// Which executor evaluates KCL. Crate-internal: set before the first
+    /// run and immutable during execution (run methods take &self). Cloned
+    /// contexts (fresh roots, Args) inherit the same executor.
+    pub(crate) executor_kind: machine::ExecutorKind,
+    /// Call-depth limit for the machine executor's runaway-recursion guard.
+    /// Crate-internal policy, not user configuration.
+    pub(crate) machine_call_depth_limit: usize,
 }
 
 impl std::fmt::Debug for ExecutorContext {
@@ -823,6 +893,8 @@ impl std::fmt::Debug for ExecutorContext {
             .field("settings", &self.settings)
             .field("context_type", &self.context_type)
             .field("execution_callbacks", &self.execution_callbacks)
+            .field("executor_kind", &self.executor_kind)
+            .field("machine_call_depth_limit", &self.machine_call_depth_limit)
             .finish()
     }
 }
@@ -982,6 +1054,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -993,6 +1067,10 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
             execution_callbacks: self.execution_callbacks.clone(),
+            // Imported modules execute on this cloned context; keep them on
+            // the executor selected for the run instead of the default.
+            executor_kind: self.executor_kind,
+            machine_call_depth_limit: self.machine_call_depth_limit,
         }
     }
 
@@ -1048,6 +1126,8 @@ impl ExecutorContext {
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1060,6 +1140,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1079,6 +1161,8 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         })
     }
 
@@ -1091,6 +1175,8 @@ impl ExecutorContext {
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         }
     }
 
@@ -1685,15 +1771,21 @@ impl ExecutorContext {
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
                         }
                         ModuleRepr::Foreign(geom, _) => {
+                            // The concurrent executor starts from a clone of the root module state.
+                            // Use a fresh artifact state so the import command belongs only to the
+                            // foreign module that issued it.
+                            exec_state.mod_local.artifacts = Default::default();
                             let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
                                 .await
-                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                                .map(|geom| Some(KclValue::ImportedGeometry(geom)))
+                                // Label the failure with the import so the
+                                // backtrace names the foreign file (and so
+                                // add_import_backtrace's assumption that the
+                                // immediate frame is present holds).
+                                .map_err(|err| err.add_import_location(&module_path.import_name(), source_range));
+                            let module_artifacts = std::mem::take(&mut exec_state.mod_local.artifacts);
 
-                            // Foreign modules don't produce their own operations;
-                            // use a fresh artifact state instead of capturing the
-                            // cloned root module's artifacts (which may contain
-                            // early-pushed ModuleInstance operations).
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, module_artifacts))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1774,6 +1866,7 @@ impl ExecutorContext {
                         exec_state.global.module_infos[&module_id].restore_repr(repr);
                     }
                     Err(e) => {
+                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
                         return Err(exec_state.error_with_outputs(e, None, default_planes));
                     }
                 }
@@ -1793,7 +1886,24 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem).await
+        self.inner_run(program, exec_state, preserve_mem)
+            .await
+            .map_err(|mut error| {
+                // Engine rejections of async commands (e.g. foreign imports)
+                // surface after module execution, so they miss the import
+                // frames the eager loop attaches. Without a top-level range
+                // the frontend cannot anchor the error in the root file;
+                // rebuild the ancestry from the outermost range's module.
+                let source_ranges = error.error.source_ranges();
+                if !source_ranges.is_empty()
+                    && !source_ranges.iter().any(|range| range.module_id().is_top_level())
+                    && let Some(outermost) = source_ranges.last()
+                {
+                    error.error =
+                        import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+                }
+                error
+            })
     }
 
     /// Get the universe & universe map of the program.
@@ -2144,9 +2254,18 @@ pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
     project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
-    let program = crate::Program::parse_no_errs(code)?;
+    // Differential testing: unit tests run under both executors.
+    parse_execute_with_executor_kind(code, project_directory, machine::ExecutorKind::resolve()).await
+}
 
-    let exec_ctxt = ExecutorContext {
+/// A mock-engine executor context for tests that need to inspect the context
+/// (e.g. the engine's batch queue) even when execution fails.
+#[cfg(test)]
+pub(crate) fn new_mock_executor_context(
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> ExecutorContext {
+    ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
         fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
@@ -2156,7 +2275,20 @@ pub(crate) async fn parse_execute_with_project_dir(
         },
         context_type: ContextType::Mock,
         execution_callbacks: Default::default(),
-    };
+        executor_kind,
+        machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+    }
+}
+
+#[cfg(test)]
+pub(crate) async fn parse_execute_with_executor_kind(
+    code: &str,
+    project_directory: Option<TypedPath>,
+    executor_kind: machine::ExecutorKind,
+) -> Result<ExecTestResults, KclError> {
+    let program = crate::Program::parse_no_errs(code)?;
+
+    let exec_ctxt = new_mock_executor_context(project_directory, executor_kind);
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
@@ -2181,6 +2313,25 @@ pub(crate) struct ExecTestResults {
 impl ExecTestResults {
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
+    }
+
+    /// The diagnostics the run reported. Non-fatal issues, such as use of an
+    /// experimental feature without the opt-in, are recorded here rather than
+    /// returned as an error, so this is the only place a test can see them.
+    pub(crate) fn issues(&self) -> &[CompilationIssue] {
+        self.exec_state.issues()
+    }
+
+    /// The value bound to `name` after the run. Panics when the variable is
+    /// absent, because a test that names a variable the program does not
+    /// declare is broken rather than failing.
+    #[track_caller]
+    pub(crate) fn variable(&self, name: &str) -> KclValue {
+        self.exec_state
+            .stack()
+            .memory
+            .get_from_unchecked(name, self.mem_env)
+            .unwrap()
     }
 }
 
@@ -2232,6 +2383,251 @@ mod tests {
         ($file:literal) => {
             include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
         };
+    }
+
+    #[test]
+    fn clone_with_fresh_execution_batch_keeps_executor_selection() {
+        // Imported modules execute on a context created by
+        // clone_with_fresh_execution_batch. They must stay on the executor
+        // selected for the run instead of silently reverting to the default.
+        let mut ctx = new_mock_executor_context(None, machine::ExecutorKind::Machine);
+        ctx.machine_call_depth_limit = 123;
+        let cloned = ctx.clone_with_fresh_execution_batch();
+        assert_eq!(cloned.executor_kind, machine::ExecutorKind::Machine);
+        assert_eq!(cloned.machine_call_depth_limit, 123);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn concurrent_foreign_import_preserves_artifact_command() {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_foreign_import_artifact").unwrap();
+        tokio::fs::write(tmpdir.path().join("cube.obj"), "o cube\n")
+            .await
+            .unwrap();
+
+        let program = crate::Program::parse_no_errs("import \"cube.obj\" as cube\n\nmodel = cube\n").unwrap();
+        let ctx = new_mock_executor_context(
+            Some(crate::TypedPath(tmpdir.path().into())),
+            machine::ExecutorKind::resolve(),
+        );
+        let mut exec_state = ExecState::new(&ctx);
+        let (main_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(main_ref, &ctx)
+            .await
+            .expect("foreign import execution should produce an outcome");
+        ctx.close().await;
+
+        let KclValueView::ImportedGeometry(imported) = &outcome.variables["model"] else {
+            panic!("model should be imported geometry");
+        };
+        let artifact_id = ArtifactId::new(imported.id);
+        let Some(Artifact::ImportedGeometry(artifact)) = outcome.artifact_graph.get(&artifact_id) else {
+            panic!("foreign import should produce an imported geometry artifact");
+        };
+        assert_eq!(artifact.id, artifact_id);
+        assert!(!artifact.code_ref.node_path.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn nested_import_preserves_inner_error_and_backtrace() {
+        // The imported modules live in an in-memory file system under a
+        // synthetic project directory, so parallel tests share no on-disk
+        // state and there is nothing to clean up even if the process is
+        // killed.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-error");
+        let main_path = project_dir.join("main.kcl");
+        let assembly_path = project_dir.join("assembly.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        // Key each module by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [
+            (
+                project_dir.join("broken.kcl").to_string(),
+                b"export brokenValue = missingName + 1\n".to_vec(),
+            ),
+            (
+                assembly_path.to_string(),
+                b"import brokenValue from \"broken.kcl\"\n\nexport assemblyValue = brokenValue\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir),
+            current_file: Some(main_path.clone()),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            let KclError::UndefinedValue { details, name } = &error.error else {
+                panic!("expected UndefinedValue, got {:#?}", error.error);
+            };
+            assert_eq!(name.as_deref(), Some("missingName"));
+            assert_eq!(details.message, "`missingName` is not defined");
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("import broken.kcl"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("broken.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [assembly_path.to_string(), main_path.to_string()]
+            );
+
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("broken.kcl"));
+            assert!(rendered.contains("assembly.kcl"));
+            assert!(rendered.contains("main.kcl"));
+            assert!(rendered.contains("export brokenValue = missingName + 1"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn function_error_across_import_keeps_backtrace_innermost_first() {
+        // A function defined in an imported module fails when the importing
+        // module calls it: function frames and the import frame must stay in
+        // one innermost-first chain.
+        let project_dir = crate::TypedPath::new("/zma-kcl-import-fn-error");
+        let main_path = project_dir.join("main.kcl");
+        let main_code = "import assemblyValue from \"assembly.kcl\"\n\nassemblyValue\n";
+        let files = [
+            (
+                project_dir.join("helper.kcl").to_string(),
+                b"export fn inner() { return missingName }\nexport fn outer() { return inner() }\n".to_vec(),
+            ),
+            (
+                project_dir.join("assembly.kcl").to_string(),
+                b"import outer from \"helper.kcl\"\n\nexport assemblyValue = outer()\n".to_vec(),
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let fs = crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files));
+        let settings = ExecutorSettings {
+            project_directory: Some(project_dir.clone()),
+            current_file: Some(main_path),
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+
+        let assert_error = |error: &KclErrorWithOutputs| {
+            assert!(
+                matches!(&error.error, KclError::UndefinedValue { .. }),
+                "expected UndefinedValue, got {:#?}",
+                error.error
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.fn_name.as_deref())
+                    .collect::<Vec<_>>(),
+                [Some("inner"), Some("outer"), Some("import assembly.kcl"), None]
+            );
+            assert_eq!(
+                error
+                    .error
+                    .backtrace()
+                    .iter()
+                    .map(|frame| frame.kind)
+                    .collect::<Vec<_>>(),
+                [
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Call,
+                    kcl_error::BacktraceItemKind::Import,
+                    kcl_error::BacktraceItemKind::Call
+                ]
+            );
+
+            let report = error.clone().into_miette_report_with_outputs(main_code).unwrap();
+            assert!(report.filename.ends_with("helper.kcl"));
+            assert_eq!(
+                report
+                    .related
+                    .iter()
+                    .map(|related| related.filename.as_str())
+                    .collect::<Vec<_>>(),
+                [
+                    project_dir.join("assembly.kcl").to_string(),
+                    project_dir.join("main.kcl").to_string()
+                ]
+            );
+            let rendered = format!("{:?}", miette::Report::new(report));
+            assert!(rendered.contains("return missingName"));
+            assert!(!rendered.contains("Failed to read contents"));
+        };
+
+        let mut mock_ctx = ExecutorContext::new_mock(Some(settings.clone())).await;
+        mock_ctx.fs = fs.clone();
+        let mock_error = mock_ctx
+            .run_mock(
+                &program,
+                &MockConfig {
+                    use_prev_memory: false,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap_err();
+        mock_ctx.close().await;
+        assert_error(&mock_error);
+
+        let mut concurrent_ctx = ExecutorContext::new_mock(Some(settings)).await;
+        concurrent_ctx.fs = fs;
+        let mut exec_state = ExecState::new(&concurrent_ctx);
+        let concurrent_error = concurrent_ctx.run(&program, &mut exec_state).await.unwrap_err();
+        concurrent_ctx.close().await;
+        assert_error(&concurrent_error);
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -2293,6 +2689,8 @@ mod tests {
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
         let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
@@ -3075,6 +3473,506 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_uppercase() {
+        let composed = "\u{e9}";
+        let uppercase_composed = "\u{c9}";
+        let decomposed = "e\u{301}";
+        let uppercase_decomposed = "E\u{301}";
+        let code = format!(
+            r#"
+ascii = string::uppercase("Kcl")
+unicode_expansion = string::uppercase("Straße")
+uncased = string::uppercase("東京")
+empty = string::uppercase("")
+composed = string::uppercase("{composed}")
+decomposed = string::uppercase("{decomposed}")
+piped = "ready" |> string::uppercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("unicode_expansion", "STRASSE"),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", uppercase_composed),
+            ("decomposed", uppercase_decomposed),
+            ("piped", "READY"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_lowercase() {
+        let composed = "\u{c9}";
+        let lowercase_composed = "\u{e9}";
+        let decomposed = "E\u{301}";
+        let lowercase_decomposed = "e\u{301}";
+        let expanded = "i\u{307}";
+        let code = format!(
+            r#"
+ascii = string::lowercase("KCL")
+final_sigma = string::lowercase("ΟΣ")
+medial_sigma = string::lowercase("ΟΣΑ")
+unicode_expansion = string::lowercase("İ")
+uncased = string::lowercase("東京")
+empty = string::lowercase("")
+composed = string::lowercase("{composed}")
+decomposed = string::lowercase("{decomposed}")
+piped = "READY" |> string::lowercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "kcl"),
+            ("final_sigma", "ος"),
+            ("medial_sigma", "οσα"),
+            ("unicode_expansion", expanded),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", lowercase_composed),
+            ("decomposed", lowercase_decomposed),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+exact_same = string::isEqual("KCL", to = "KCL")
+exact_different_case = string::isEqual("KCL", to = "kcl")
+explicit_case_sensitive = string::isEqual("KCL", to = "kcl", caseInsensitive = false)
+case_insensitive_ascii = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+case_fold_expansion = string::isEqual("Straße", to = "STRASSE", caseInsensitive = true)
+case_fold_expansion_reversed = string::isEqual("STRASSE", to = "Straße", caseInsensitive = true)
+case_fold_sigma = string::isEqual("ος", to = "οσ", caseInsensitive = true)
+case_fold_non_turkic = string::isEqual("I", to = "i", caseInsensitive = true)
+case_fold_not_turkic = string::isEqual("I", to = "ı", caseInsensitive = true)
+empty_same = string::isEqual("", to = "")
+empty_different = string::isEqual("", to = "KCL")
+exact_without_normalization = string::isEqual("{composed}", to = "{decomposed}")
+case_fold_without_normalization = string::isEqual("{composed}", to = "{decomposed}", caseInsensitive = true)
+piped = "ready" |> string::isEqual(to = "READY", caseInsensitive = true)
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("exact_same", true),
+            ("exact_different_case", false),
+            ("explicit_case_sensitive", false),
+            ("case_insensitive_ascii", true),
+            ("case_fold_expansion", true),
+            ("case_fold_expansion_reversed", true),
+            ("case_fold_sigma", true),
+            ("case_fold_non_turkic", true),
+            ("case_fold_not_turkic", false),
+            ("empty_same", true),
+            ("empty_different", false),
+            ("exact_without_normalization", false),
+            ("case_fold_without_normalization", false),
+            ("piped", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal_inside_sketch_block_is_predicate() {
+        let code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+}
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trim("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trim("  KCL{tab}strings  ")
+unicode = string::trim("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trim("{ascii_whitespace}{non_breaking_space}")
+empty = string::trim("")
+unchanged = string::trim("KCL")
+without_normalization = string::trim(" {decomposed} ")
+non_whitespace = string::trim("{zero_width_space}KCL{zero_width_space}")
+piped = "  ready  " |> string::trim()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let non_whitespace = format!("{zero_width_space}KCL{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("internal", "KCL\tstrings"),
+            ("unicode", "KCL"),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace", non_whitespace.as_str()),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_start() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimStart("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimStart("  KCL{tab}strings")
+unicode = string::trimStart("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trimStart("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimStart("")
+unchanged = string::trimStart("KCL")
+without_normalization = string::trimStart(" {decomposed}")
+non_whitespace_prefix = string::trimStart("{zero_width_space}{ascii_whitespace}KCL")
+piped = "  ready  " |> string::trimStart()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("KCL{ascii_whitespace}");
+        let unicode = format!("KCL{ideographic_space}");
+        let non_whitespace_prefix = format!("{zero_width_space}{ascii_whitespace}KCL");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_prefix", non_whitespace_prefix.as_str()),
+            ("piped", "ready  "),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_end() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimEnd("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimEnd("KCL{tab}strings  ")
+unicode = string::trimEnd("{non_breaking_space}KCL{em_space}{ideographic_space}")
+all_whitespace = string::trimEnd("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimEnd("")
+unchanged = string::trimEnd("KCL")
+without_normalization = string::trimEnd("{decomposed} ")
+non_whitespace_suffix = string::trimEnd("KCL{ascii_whitespace}{zero_width_space}")
+piped = "  ready  " |> string::trimEnd()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("{ascii_whitespace}KCL");
+        let unicode = format!("{non_breaking_space}KCL");
+        let non_whitespace_suffix = format!("KCL{ascii_whitespace}{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_suffix", non_whitespace_suffix.as_str()),
+            ("piped", "  ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string() {
+        // Each case runs on its own so a failure names the expression that
+        // produced it rather than collapsing the whole table.
+        for (name, expr, expected) in [
+            // Every row of the table in the `toString` doc comment appears
+            // here, so the documentation cannot drift from the behaviour.
+            ("unitless integer", "12", "12"),
+            ("unitless fractional", "1.5", "1.5"),
+            ("no digits dropped", "0.1 + 0.2", "0.30000000000000004"),
+            ("unitless negative", "-7", "-7"),
+            ("unitless zero", "0", "0"),
+            ("negative zero", "-0", "0"),
+            ("count", "3_", "3_"),
+            ("millimeters", "12mm", "12mm"),
+            ("centimeters", "12cm", "12cm"),
+            ("meters", "12m", "12m"),
+            ("inches", "1.5in", "1.5in"),
+            ("feet", "2ft", "2ft"),
+            ("yards", "3yd", "3yd"),
+            ("degrees", "90deg", "90deg"),
+            ("radians", "1.5rad", "1.5rad"),
+            // Arithmetic keeps the unit it started with.
+            ("length arithmetic", "2mm + 10mm", "12mm"),
+            // Multiplying two lengths exceeds what the type system tracks, so
+            // only the numeric component survives.
+            ("units the type system loses", "2mm * 10mm", "20"),
+            ("unitless arithmetic", "1 + 2", "3"),
+        ] {
+            let code = format!("actual = string::toString({expr})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "case: {name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_ignores_the_files_default_unit() {
+        // A value with no suffix has the file's default unit attached, but that
+        // unit was never written down, so neither is it in the output. Reading
+        // the result back in a file with a different default gives a different
+        // quantity; the guarantee is about the number, not the measurement.
+        let code = "@settings(defaultLengthUnit = inch)\nactual = string::toString(12)";
+        let result = parse_execute(code).await.unwrap();
+
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                .as_str()
+                .unwrap(),
+            "12"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_rejects_a_non_number() {
+        let error = parse_execute(r#"actual = string::toString("already text")"#)
+            .await
+            .unwrap_err();
+
+        // The declared signature rejects this before the implementation runs,
+        // so the diagnostic names the function and both types.
+        assert_eq!(
+            error.message(),
+            "The input argument of `string::toString` requires a value with type `number`, but found a value with type `string`."
+        );
+        assert!(
+            matches!(error, KclError::Argument { .. }),
+            "expected an Argument error, found {error:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_accepts_a_piped_argument() {
+        let result = parse_execute("actual = 12mm |> string::toString()").await.unwrap();
+
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                .as_str()
+                .unwrap(),
+            "12mm"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_echoes_how_the_literal_was_written() {
+        // Reading the output back is not a supported operation, but for a
+        // literal that carries its own units the text still comes out looking
+        // like what the author typed, which is what makes it readable.
+        for literal in [
+            "12",
+            "1.5",
+            "0.30000000000000004",
+            "3_",
+            // A fractional count and a negative both have to survive the trip,
+            // since the formatter emits them.
+            "2.5_",
+            "-4_",
+            "12mm",
+            "-5mm",
+            "1.5in",
+            "90deg",
+            "1.5rad",
+        ] {
+            let code = format!("actual = string::toString({literal})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                literal,
+                "literal: {literal}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_to_string_spells_out_non_finite_numbers() {
+        // Division is unguarded, so these are reachable from ordinary KCL. They
+        // convert like any other number: the point of the function is to build
+        // a message, and a message about a NaN is exactly when you need one.
+        for (name, expr, expected) in [
+            ("positive infinity", "1 / 0", "Infinity"),
+            ("negative infinity", "-1 / 0", "-Infinity"),
+            ("nan", "0 / 0", "NaN"),
+            // The unit is dropped: no length is described by "Infinitymm".
+            ("infinity from a length", "1mm / 0", "Infinity"),
+            ("nan from a length", "0mm / 0", "NaN"),
+            ("infinity from an angle", "1deg / 0", "Infinity"),
+        ] {
+            let code = format!("actual = string::toString({expr})");
+            let result = parse_execute(&code).await.unwrap();
+
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, "actual")
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "case: {name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_operators() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+equal_same_ascii = "KCL" == "KCL"
+equal_different_case = "KCL" == "kcl"
+not_equal_same_ascii = "KCL" != "KCL"
+not_equal_different_case = "KCL" != "kcl"
+equal_same_unicode = "{composed}" == "{composed}"
+not_equal_same_unicode = "{composed}" != "{composed}"
+equal_without_normalization = "{composed}" == "{decomposed}"
+not_equal_without_normalization = "{composed}" != "{decomposed}"
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("equal_same_ascii", true),
+            ("equal_different_case", false),
+            ("not_equal_same_ascii", false),
+            ("not_equal_different_case", true),
+            ("equal_same_unicode", true),
+            ("not_equal_same_unicode", false),
+            ("equal_without_normalization", false),
+            ("not_equal_without_normalization", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_inside_sketch_block_fails_like_number_equality() {
+        let string_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = "KCL" == "KCL"
+}
+"#;
+        let number_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  numbersAreEqual = 1 == 1
+}
+"#;
+
+        assert_eq!(
+            parse_execute(string_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a string and a string"
+        );
+        assert_eq!(
+            parse_execute(number_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a number and a number"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"myVar = -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
@@ -3434,7 +4332,13 @@ forever(1)
 "#;
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+        // The recursive executor's native-stack cap and the machine
+        // executor's call-depth guard report differently.
+        let msg = err.to_string();
+        assert!(
+            msg.contains("stack size exceeded") || msg.contains("Call depth limit"),
+            "actual: {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3627,6 +4531,90 @@ w = f() + f()
             Ok(res) => res,
             Err(e) => panic!("{}", e.error),
         };
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13319
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_rejects_oob_on_frontend_array() {
+        let code = r#"
+values = [10, 20]
+third = values[2]
+"#;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(
+            err.error.message().contains("array doesn't have any item at index 2"),
+            "{err:?}"
+        );
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_pattern_circular_number() {
+        let code = kcl_input!("repro_mock_pattern_circular");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        let copies = result
+            .variables
+            .get("copies")
+            .expect("no variable called 'copies' found");
+        let value = match copies {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+        let actual_instances = value.len();
+        let expected_instances = 10; // from the KCL `instances = `
+        assert_eq!(actual_instances, expected_instances);
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
+    /// i.e.
+    /// If you do a pattern circular 3d in mock execution mode,
+    /// and you ask for 10 instances, you should get 10 instances.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_subtract() {
+        // Run this KCL file, in mock execution.
+        let code = kcl_input!("repro_mock_subtract");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+        let result = match result {
+            Ok(x) => x,
+            Err(e) => {
+                let error = e.error;
+                panic!("{error}");
+            }
+        };
+
+        // Get the variable we're interested in, from KCL program memory.
+        let subtracted_parts = result
+            .variables
+            .get("subtractedParts")
+            .expect("no variable called 'subtracted_parts' found");
+        let subtracted_parts = match subtracted_parts {
+            KclValueView::Solid { .. } => {
+                panic!("One solid?");
+            }
+            KclValueView::HomArray { value } => value,
+            other => panic!("{other:#?}"),
+        };
+
+        // Validate the variable.
+        // from the KCL, there's 2 parts being subtracted from.
+        let expected_number_of_parts = 2;
+        let actual_number_of_parts = subtracted_parts.len();
+        assert_eq!(actual_number_of_parts, expected_number_of_parts);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4064,6 +5052,29 @@ sketch001 = sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn over_constrained_warning_identifies_signed_vertical_distance_direction() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  fixed([line1.start, [0mm, 10mm]])
+  fixed([line1.end, ORIGIN])
+  verticalDistance([line1.start, line1.end]) == 10mm
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert!(
+            warning.message.contains(
+                "Unsatisfied signed verticalDistance constraint: a positive right-hand side requires the second point to be above the first"
+            ),
+            "expected signed-direction diagnostic; found {warning:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn no_warning_when_sketch_is_not_over_constrained() {
         // Under-constrained sketch should not emit the over-constrained warning.
         let code = r#"
@@ -4169,5 +5180,1231 @@ s2 = sketch(on = XZ) {
         );
         assert_eq!(report.fully_constrained.len(), 1);
         assert_eq!(report.under_constrained.len(), 1);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_reports_sketch_names() {
+        // One file holding a fully constrained, an under-constrained, and an
+        // over-constrained sketch. Every entry carries the name of the
+        // variable its sketch was assigned to, so a caller can say which
+        // sketch needs correcting.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+fixedSketch = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+looseSketch = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+
+conflictSketch = sketch(on = XY) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.fully_constrained[0].name, "fixedSketch");
+        assert_eq!(report.under_constrained[0].name, "looseSketch");
+        assert_eq!(report.over_constrained[0].name, "conflictSketch");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_name_empty_without_declaration() {
+        // A sketch written as an expression statement has no enclosing
+        // variable declaration, so there is no name to report. This pins the
+        // documented limitation of SketchConstraintStatus::name.
+        let kcl = r#"
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.under_constrained[0].name, "");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_names_repeat_across_calls() {
+        // Both sketches come from the same declaration inside the function
+        // body, so both entries carry that declaration's name and the report
+        // cannot tell them apart. This pins the documented limitation of
+        // SketchConstraintStatus::name.
+        let kcl = r#"
+fn makeSketch() {
+  inner = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return inner
+}
+
+first = makeSketch()
+second = makeSketch()
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.under_constrained.len(), 2);
+        assert_eq!(report.under_constrained[0].name, "inner");
+        assert_eq!(report.under_constrained[1].name, "inner");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_enum_declaration_is_experimental() {
+        // Without opting in, executing a program with an enum declaration
+        // fails at the parsing stage with the experimental diagnostic.
+        let code = "type Color { | Red }";
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Use of enum declarations is experimental and may change or be removed."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_registers_type() {
+        // Plain and exported declarations both execute. Nothing references the
+        // enum yet, so this only asserts that declaring one is no longer an
+        // error; constructor use is exercised separately.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+"#;
+        parse_execute(code).await.unwrap();
+
+        let code = r#"@settings(experimentalFeatures = allow)
+export type Color { | Red | Green }
+"#;
+        parse_execute(code).await.unwrap();
+
+        // A zero-variant enum is a valid declaration.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Empty { | }
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_nested_scope() {
+        // Identity is (module, declared name), so two same-named declarations in
+        // one file would collide. The parser and formatter accept this shape, so
+        // execution is the only thing that can reject it.
+        //
+        // The rule is about nesting, not about one kind of block, so both routes
+        // to `BodyType::Block` are covered here.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        for (case, code) in [
+            (
+                "function body",
+                format!("{allow}fn palette() {{\n  type Color {{ | Red }}\n  return 0\n}}\npalette()\n"),
+            ),
+            (
+                "sketch block",
+                format!(
+                    "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
+                ),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&code).await.unwrap_err().message(),
+                "Enum declarations are only supported at the top-level of a file. Move `type Color` to the top-level.",
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_alone_is_restricted_to_top_level() {
+        // Pins the asymmetry the rule above creates: a type alias may be declared
+        // in any block, an enum may not. The difference is required by enum
+        // identity rather than chosen -- two nested aliases shadow each other
+        // harmlessly, while two nested `type Color` declarations would be one type
+        // with two variant sets. Tightening aliases to match, or relaxing enums,
+        // has to break this test first.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        for (case, code) in [
+            (
+                "function body",
+                format!("{allow}fn f() {{\n  type Temperature = number(_)\n  return 0\n}}\nx = f()\n"),
+            ),
+            (
+                "sketch block",
+                format!(
+                    "{allow}sketch(on = XY) {{\n  type Temperature = number(_)\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
+                ),
+            ),
+        ] {
+            parse_execute(&code)
+                .await
+                .unwrap_or_else(|err| panic!("a type alias should be allowed in a {case}: {}", err.message()));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_duplicate() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green | Red }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Duplicate variant `Red` in enum `Color`."
+        );
+    }
+
+    /// Runs `main` with `modules` written beside it, so import paths resolve.
+    async fn execute_with_modules(main: &str, modules: &[(&str, &str)]) -> Result<ExecTestResults, KclError> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_enum_clash").unwrap();
+        for (name, source) in modules {
+            tokio::fs::write(tmpdir.path().join(name), source).await.unwrap();
+        }
+
+        parse_execute_with_project_dir(main, Some(crate::TypedPath(tmpdir.path().into()))).await
+    }
+
+    /// Runs `main` with an empty imported module named `m.kcl` in mock
+    /// execution and returns the recorded compilation issues; the run may
+    /// end in an error (e.g. from operating on the module's missing return
+    /// value).
+    ///
+    /// The `m.kcl` module lives in an in-memory file system under a
+    /// synthetic project directory, so parallel tests share no on-disk
+    /// state and there is nothing to clean up even if the process is
+    /// killed.
+    async fn issues_with_empty_module(main: &str) -> Vec<crate::errors::CompilationIssue> {
+        use futures::FutureExt;
+
+        let project_dir = crate::TypedPath::new("/zma-kcl-member-ranges");
+        // Key the file by the same join that import resolution performs, so
+        // the lookup matches on every platform.
+        let files = [(project_dir.join("m.kcl").to_string(), Vec::new())]
+            .into_iter()
+            .collect();
+
+        let program = crate::Program::parse_no_errs(main).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: crate::fs::new_file_system_handle(crate::InMemoryFiles::new(files)),
+            settings: ExecutorSettings {
+                project_directory: Some(project_dir),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+            executor_kind: machine::ExecutorKind::resolve(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+        };
+        let mut exec_state = ExecState::new(&ctx);
+        // Close the context even if execution panics, then let the panic
+        // continue. An Err from the run itself is expected here (operating
+        // on the module's missing return value) and is deliberately ignored.
+        let run_result = std::panic::AssertUnwindSafe(ctx.run(&program, &mut exec_state))
+            .catch_unwind()
+            .await;
+        ctx.close().await;
+        if let Err(panic) = run_result {
+            std::panic::resume_unwind(panic);
+        }
+        exec_state.issues().to_vec()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_object_diagnostics_use_object_range() {
+        // A diagnostic raised while evaluating a member expression's object
+        // (here, the imported module's missing-return warning) points at the
+        // object's own span, not the whole member expression.
+        let main = "import \"m.kcl\" as m
+x = m.field
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let object_start = main.rfind("m.field").unwrap();
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (object_start, object_start + 1),
+            "warning should point at the object's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn member_property_diagnostics_use_property_range() {
+        // Same for the computed property: the warning points at the index
+        // expression's span inside the brackets.
+        let main = "import \"m.kcl\" as m
+arr = [1]
+x = arr[m]
+";
+        let issues = issues_with_empty_module(main).await;
+        let warning = issues
+            .iter()
+            .find(|issue| issue.message.contains("no return value"))
+            .expect("missing-return warning should be recorded");
+        let prop_start = main.rfind("[m]").unwrap() + 1;
+        assert_eq!(
+            (warning.source_range.start(), warning.source_range.end()),
+            (prop_start, prop_start + 1),
+            "warning should point at the property's span"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn backtrace_reports_fully_qualified_fn_names() {
+        // An error inside a function called by a qualified name records the
+        // full path (m::f), not just the final segment (f), in the
+        // structured backtrace's unwind locations.
+        let main = "import \"m.kcl\" as m\nx = m::f()\n";
+        let modules = [("m.kcl", "export fn f() {\n  return undefinedVariable\n}\n")];
+        let err = execute_with_modules(main, &modules).await.unwrap_err();
+        let fn_names: Vec<_> = err.backtrace().into_iter().filter_map(|item| item.fn_name).collect();
+        assert_eq!(fn_names, vec!["m::f".to_owned()]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_name_executes_as_operand() {
+        // A whole-module import used as a binary or unary operand executes
+        // the module and operates on its final-expression value, exactly like
+        // using the name in expression position (x = m).
+        let main = r#"import "m.kcl" as m
+sum = m + m
+neg = -m
+"#;
+        let result = execute_with_modules(main, &[("m.kcl", "42\n")]).await.unwrap();
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "sum").as_f64(),
+            Some(84.0)
+        );
+        assert_eq!(
+            mem_get_json(result.exec_state.stack(), result.mem_env, "neg").as_f64(),
+            Some(-42.0)
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn whole_module_without_return_as_operand_errors() {
+        // Matches expression-position behavior: the module still executes,
+        // the missing-return fallback produces a KclNone, and the binary
+        // operation then rejects it. (A trailing declaration would count as
+        // the module's return value, so the module body must be empty.)
+        let main = "import \"m.kcl\" as m
+x = m + 1
+";
+        let err = execute_with_modules(main, &[("m.kcl", "")]).await.unwrap_err();
+        assert!(
+            err.message().contains("Expected a number, but found none"),
+            "expected the operand to be the module's missing-return KclNone, got: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_name_clash_with_module() {
+        // One rule reached four ways: by declaring the enum second, by importing
+        // the module second, and by importing the enum itself either by name or
+        // through a glob, which arrive by different code paths because a glob
+        // copies exported keys with their namespace prefix intact.
+        let plain_module = ("Color.kcl", "export x = 1\n");
+        let enum_module = (
+            "enums.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+        );
+
+        for (case, main, modules) in [
+            (
+                "module then enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\ntype Color { | Red }\n",
+                vec![plain_module],
+            ),
+            (
+                "enum then module",
+                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nimport \"Color.kcl\"\n",
+                vec![plain_module],
+            ),
+            (
+                "named import of an enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport Color from 'enums.kcl'\n",
+                vec![plain_module, enum_module],
+            ),
+            (
+                "glob import of an enum",
+                "@settings(experimentalFeatures = allow)\nimport \"Color.kcl\"\nimport * from 'enums.kcl'\n",
+                vec![plain_module, enum_module],
+            ),
+        ] {
+            let err = execute_with_modules(main, &modules).await.unwrap_err();
+            assert_eq!(
+                err.message(),
+                "An enum and a module cannot share the name `Color` in the same scope, because `Color::x` would be ambiguous. Rename one of them.",
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_constructs_variant() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+        );
+
+        for (case, main, modules) in [
+            (
+                "declared locally",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color::Red\n"),
+                vec![],
+            ),
+            (
+                // Also the regression test for the export check: a module's exports
+                // record the prefixed key `__ty_Color`, not the bare name.
+                "reached through a module path",
+                format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
+                vec![colors],
+            ),
+            (
+                "imported by name",
+                format!("{allow}import Color from 'colors.kcl'\nx = Color::Red\n"),
+                vec![colors],
+            ),
+            (
+                // An import alias renames the binding, not the type, so identity
+                // and therefore the reported name stay those of the declaration.
+                "imported under an alias",
+                format!("{allow}import Color as Shade from 'colors.kcl'\nx = Shade::Red\n"),
+                vec![colors],
+            ),
+        ] {
+            let result = execute_with_modules(&main, &modules)
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold an enum value");
+            };
+            assert_eq!(value.qualified_name(), "Color::Red", "case: {case}");
+        }
+    }
+
+    // The next five tests pin lexical resolution of signature types: a type
+    // name written in a function signature resolves in the scope where the
+    // declaration executes, never in the caller's scope. Before
+    // definition-time resolution, signature types were looked up at each call
+    // in the caller's environment, so a std or user module whose exported
+    // types a caller had not imported under their bare names was uncallable.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_declaring_module() {
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        // The caller can reach `colors::Color` but never binds the bare name
+        // `Color`, so resolving the signature in the caller's scope would fail.
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\"\nr = colors::paint(colors::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_under_import_alias() {
+        // An import alias renames the caller's binding for the module. The
+        // declaring module's scope is unaffected, so the signature must
+        // resolve identically under any alias.
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n\nexport fn paint(@c: Color) {\n  return c\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\nimport \"colors.kcl\" as painter\nr = painter::paint(painter::Color::Red)\n";
+
+        let result = execute_with_modules(main, &[colors]).await.unwrap();
+        let KclValue::Enum { value } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold an enum value");
+        };
+        assert_eq!(value.qualified_name(), "Color::Red");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_ignore_caller_scope() {
+        // `broken.kcl` names a type it does not define. The caller defines
+        // that name, which caller-scope resolution would have used. The
+        // declaration must fail when the module loads, without consulting the
+        // caller's binding.
+        let broken = (
+            "broken.kcl",
+            "@settings(experimentalFeatures = allow)\nexport fn f(@x: Missing) {\n  return x\n}\n",
+        );
+        let main = "@settings(experimentalFeatures = allow)\ntype Missing = string\nimport \"broken.kcl\"\nr = broken::f(\"hi\")\n";
+
+        let err = execute_with_modules(main, &[broken]).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Missing"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_reject_forward_reference() {
+        // Resolution happens when the declaration executes, so a type declared
+        // later in the file is not visible. The function is never called; the
+        // error must surface at the declaration itself.
+        let main = "@settings(experimentalFeatures = allow)\nfn f(@x: Later) {\n  return x\n}\ntype Later = string\n";
+
+        let err = parse_execute(main).await.unwrap_err();
+        assert!(
+            err.message().contains("Unknown type: Later"),
+            "message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_resolve_in_enclosing_scope() {
+        // The declaring scope is the closure's scope, not merely the declaring
+        // module: the anonymous function's signature must see the alias in the
+        // enclosing function body. Caller-scope resolution would use the
+        // module-level `Width = string` and fail to coerce `42`.
+        let main = "@settings(experimentalFeatures = allow)\ntype Width = string\nfn makeMeasure() {\n  type Width = number(mm)\n  return fn(@w: Width) { return w }\n}\nmeasure = makeMeasure()\nr = measure(42)\n";
+
+        let result = parse_execute(main).await.unwrap();
+        let KclValue::Number { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "r") else {
+            panic!("`r` should hold a number");
+        };
+        assert_eq!(value, 42.0);
+    }
+
+    // Pins that numeric types in signatures are settings-independent, so
+    // definition-time resolution changed nothing for them: in type
+    // annotations, bare `number` maps to `Any` before the settings-reading
+    // path, and every explicit suffix maps to a settings-free type. A literal
+    // argument therefore takes its unit from the CALLER's module defaults;
+    // the declaring module's defaults (`in` here) must never leak in. If a
+    // future change makes a signature's number type depend on module default
+    // units, the declaring-module scope of definition-time resolution starts
+    // to matter and this pin fails.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_number_types_ignore_module_default_units() {
+        let units_in = (
+            "units_in.kcl",
+            "@settings(defaultLengthUnit = in)\nexport fn passThrough(@x: number(Length)) {\n  return x\n}\n",
+        );
+        // The caller's default length unit is mm (the test default), so the
+        // unitless literal is 42 mm by the time it reaches the parameter.
+        let main = "import \"units_in.kcl\"\na = units_in::passThrough(42)\nb = units_in::passThrough(42mm)\nc = units_in::passThrough(42in)\n";
+
+        let result = execute_with_modules(main, &[units_in]).await.unwrap();
+        for (name, expected_ty) in [
+            // The unitless literal keeps its `Default` type, and that type
+            // records the CALLER's module settings. Declaring-module leakage
+            // would show here as `len: Inches`.
+            //
+            // That the coercion to `number(Length)` leaves the type as
+            // `Default` rather than concretizing it to `Known(Millimeters)`
+            // is pre-existing coercion behavior which this test observes but
+            // does not endorse. If coercion later concretizes, update the
+            // expected type; the pin here is the settings provenance.
+            (
+                "a",
+                kcl_api::NumericType::Default {
+                    len: kcl_api::UnitLength::Millimeters,
+                    angle: kcl_api::UnitAngle::Degrees,
+                },
+            ),
+            (
+                "b",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Millimeters)),
+            ),
+            (
+                "c",
+                kcl_api::NumericType::Known(kcl_api::UnitType::Length(kcl_api::UnitLength::Inches)),
+            ),
+        ] {
+            let KclValue::Number { value, ty, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            else {
+                panic!("`{name}` should hold a number");
+            };
+            assert_eq!(value, 42.0, "`{name}` should keep its magnitude");
+            assert_eq!(ty, expected_ty, "`{name}` should keep the caller-side unit context");
+        }
+    }
+
+    // Pins the sharpest shadowing case, from a hand-written example during
+    // review: BOTH scopes define the same type name with different meanings,
+    // so the test observes which one the signature uses, not merely whether a
+    // name is present. `m1.kcl`'s `A` is `string` and is NOT exported; the
+    // caller's own `A` is `number(mm)`. The signature must use m1's `A`, so
+    // passing `2mm` is a type error. Caller-scope resolution would have used
+    // the caller's `A` and accepted the call.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn signature_types_use_declaring_scope_when_both_scopes_define_the_name() {
+        let m1 = (
+            "m1.kcl",
+            "@settings(experimentalFeatures = allow)\ntype A = string\n\nexport fn test(@a: A) {\n  return a\n}\n",
+        );
+        let main =
+            "@settings(experimentalFeatures = allow)\nimport * from \"m1.kcl\"\ntype A = number(mm)\nx = test(2mm)\n";
+
+        let err = execute_with_modules(main, &[m1]).await.unwrap_err();
+        assert_eq!(
+            err.message(),
+            "The input argument of `test` requires a value with type `A`, but found a number (mm) (with type `number(mm)`)."
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_bad_variant_paths() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+
+        for (case, main, modules, message) in [
+            (
+                "unknown variant",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color::Blue\n"),
+                vec![],
+                "`Blue` is not a variant of enum `Color`. Its variants are: Red, Green.",
+            ),
+            (
+                "enum with no variants",
+                format!("{allow}type Empty {{ | }}\nx = Empty::Red\n"),
+                vec![],
+                "`Red` is not a variant of enum `Empty`. Enum `Empty` has no variants.",
+            ),
+            (
+                "path continues past the enum",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red::more\n"),
+                vec![],
+                "`Color` is an enum, so only a variant name can follow it. There is nothing to reach through `Color::Red`.",
+            ),
+            (
+                "variant name is case sensitive",
+                format!("{allow}type Color {{ | Red }}\nx = Color::red\n"),
+                vec![],
+                "`red` is not a variant of enum `Color`. Its variants are: Red.",
+            ),
+            (
+                "enum not exported from its module",
+                format!("{allow}import \"colors.kcl\"\nx = colors::Color::Red\n"),
+                vec![(
+                    "colors.kcl",
+                    "@settings(experimentalFeatures = allow)\ntype Color { | Red }\n",
+                )],
+                "Item Color not found in module's exported items",
+            ),
+            (
+                // The alias exemption seen from the use site: a type alias is not
+                // an enum, so the segment is resolved as a module and fails.
+                "a type alias cannot head a path",
+                format!("{allow}type T = number(_)\nx = T::foo\n"),
+                vec![],
+                "`T` is not defined",
+            ),
+            (
+                // The other half of allowing a value and an enum to share a name:
+                // a value on its own can never head a path.
+                "a value cannot head a path",
+                "Color = 5\nx = Color::Red\n".to_owned(),
+                vec![],
+                "`Color` is not defined",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_compares_by_variant() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+sameEq = Color::Red == Color::Red
+sameNeq = Color::Red != Color::Red
+otherEq = Color::Red == Color::Green
+otherNeq = Color::Red != Color::Green
+"#;
+        let result = parse_execute(code).await.unwrap();
+
+        for (name, expected) in [
+            ("sameEq", true),
+            ("sameNeq", false),
+            ("otherEq", false),
+            ("otherNeq", true),
+        ] {
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name) else {
+                panic!("`{name}` should hold a bool");
+            };
+            assert_eq!(value, expected, "variable: {name}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_usable_inside_sketch_block() {
+        // Only enum declarations are restricted to the top level; uses are not
+        // restricted at all. A sketch block executes its body with sketch-mode
+        // skipping turned off, and memory lookups walk outward, so the enum
+        // declared above resolves inside the block.
+        //
+        // `assertIs` runs inside the block because block-local bindings live in a
+        // child scope that the root environment cannot read afterwards. A wrong
+        // comparison therefore fails this test instead of passing unnoticed.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red | Green }
+sketch(on = XY) {
+  c = Color::Red
+  assertIs(Color::Red != Color::Green)
+  assertIs(!(Color::Red != Color::Red))
+  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+}
+"#;
+        parse_execute(code)
+            .await
+            .unwrap_or_else(|err| panic!("enum use inside a sketch block should work: {}", err.message()));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_eq_reserved_inside_sketch_block() {
+        // Inside a sketch block, `==` declares an equivalence constraint, so it is
+        // not available for ordinary comparison. Enums are not singled out: the
+        // interception happens before any value-comparison arm is reached, and
+        // strings and numbers are refused in the same words. The string and number
+        // rows are here to keep that visible -- if a later change makes enums
+        // report something different from the other types, this test says so.
+        //
+        // `!=` is deliberately absent: the interception tests `Eq` only, so `!=`
+        // still compares, which `enum_usable_inside_sketch_block` covers.
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let tail = "  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}\n";
+        for (case, declaration, comparison, types) in [
+            (
+                "enums",
+                "type Color { | Red | Green }\n",
+                "Color::Red == Color::Green",
+                "a value of enum `Color` and a value of enum `Color`",
+            ),
+            ("strings", "", "\"a\" == \"b\"", "a string and a string"),
+            ("numbers", "", "1 == 2", "a number and a number"),
+        ] {
+            let code = format!("{allow}{declaration}sketch(on = XY) {{\n  x = {comparison}\n{tail}");
+            assert_eq!(
+                parse_execute(&code).await.unwrap_err().message(),
+                format!("Cannot create an equivalence constraint between values of these types: {types}"),
+                "case: {case}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_same_file_imported_twice_is_one_type() {
+        // Two names for one declaration, so they are the same type and compare
+        // equal. Identity is the declaration, not the binding, which is what makes
+        // this different from two files that each declare a `Color`.
+        let main = r#"@settings(experimentalFeatures = allow)
+import Color as A from 'colors.kcl'
+import Color as B from 'colors.kcl'
+x = A::Red == B::Red
+y = A::Red == B::Green
+"#;
+        let result = execute_with_modules(
+            main,
+            &[(
+                "colors.kcl",
+                "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+            )],
+        )
+        .await
+        .unwrap();
+
+        for (name, expected) in [("x", true), ("y", false)] {
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, name) else {
+                panic!("`{name}` should hold a bool");
+            };
+            assert_eq!(value, expected, "variable: {name}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_comparison_across_types() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let color = (
+            "a.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+        );
+        let other_color = (
+            "b.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+        );
+
+        for (case, main, modules, message) in [
+            (
+                "two enums declared separately",
+                format!("{allow}type Color {{ | Red }}\ntype Shade {{ | Red }}\nx = Color::Red == Shade::Red\n"),
+                vec![],
+                "Cannot compare enum `Color` with enum `Shade`. They are different types.",
+            ),
+            (
+                // Identity is the declaration, not the name, so two enums that
+                // share a name are still different types. Pins that the message
+                // says so rather than naming `Color` twice.
+                "two enums sharing a name",
+                format!(
+                    "{allow}import Color as A from 'a.kcl'\nimport Color as B from 'b.kcl'\nx = A::Red == B::Red\n"
+                ),
+                vec![color, other_color],
+                "Cannot compare two different enums that are both named `Color`. They come from separate declarations.",
+            ),
+            (
+                "an enum and a number",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red == 5\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a number.",
+            ),
+            (
+                "a number and an enum, in that order",
+                format!("{allow}type Color {{ | Red }}\nx = 5 == Color::Red\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a number.",
+            ),
+            (
+                "an enum and a string",
+                format!("{allow}type Color {{ | Red }}\nx = Color::Red == \"Red\"\n"),
+                vec![],
+                "Cannot compare enum `Color::Red` with a string.",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_rejects_bare_type_name_as_value() {
+        let allow = "@settings(experimentalFeatures = allow)\n";
+        let colors = (
+            "colors.kcl",
+            "@settings(experimentalFeatures = allow)\nexport type Color { | Red | Green }\n",
+        );
+
+        for (case, main, modules, message) in [
+            (
+                "enum suggests a variant",
+                format!("{allow}type Color {{ | Red | Green }}\nx = Color\n"),
+                vec![],
+                "`Color` is a type, not a value. Use one of its variants, such as `Color::Red`.",
+            ),
+            (
+                // The suggestion has to be pasteable into the file that produced
+                // the error, so it uses the local name rather than the declared one.
+                "suggestion uses the import alias",
+                format!("{allow}import Color as Shade from 'colors.kcl'\nx = Shade\n"),
+                vec![colors],
+                "`Shade` is a type, not a value. Use one of its variants, such as `Shade::Red`.",
+            ),
+            (
+                "enum with no variants suggests nothing",
+                format!("{allow}type Empty {{ | }}\nx = Empty\n"),
+                vec![],
+                "`Empty` is a type, not a value.",
+            ),
+            (
+                "a type alias reports the same way",
+                format!("{allow}type T = number(_)\nx = T\n"),
+                vec![],
+                "`T` is a type, not a value.",
+            ),
+            (
+                // Unchanged behavior: with no type of that name, the old message
+                // is still the right one.
+                "an unknown name is still undefined",
+                "x = Nope\n".to_owned(),
+                vec![],
+                "`Nope` is not defined",
+            ),
+        ] {
+            let err = execute_with_modules(&main, &modules).await.unwrap_err();
+            assert_eq!(err.message(), message, "case: {case}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_gated_by_consuming_module() {
+        // The declaring module allows experimental features; the consuming one
+        // does not, so using the imported enum is what trips the gate. Pins that
+        // the gate follows the consumer's settings rather than the declaration's.
+        //
+        // Experimental use is reported as a compilation issue rather than by
+        // aborting the run, which is how `RuntimeType::from_alias` reports it too,
+        // so execution succeeds and the diagnostic is what carries the complaint.
+        let main = r#"import "colors.kcl"
+x = colors::Color::Red
+"#;
+        let result = execute_with_modules(
+            main,
+            &[(
+                "colors.kcl",
+                "@settings(experimentalFeatures = allow)\nexport type Color { | Red }\n",
+            )],
+        )
+        .await
+        .unwrap();
+
+        let issues = &result.exec_state.global.issues;
+        assert_eq!(issues.len(), 1, "issues: {issues:?}");
+        assert_eq!(
+            issues[0].message,
+            "Use of the enum `Color` is experimental and may change or be removed."
+        );
+        assert_eq!(issues[0].severity, Severity::Error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_use_not_gated_when_consumer_allows_it() {
+        // The other half of the gate: with the setting present, using an enum
+        // raises nothing at all.
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+x = Color::Red
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert!(
+            result.exec_state.global.issues.is_empty(),
+            "issues: {:?}",
+            result.exec_state.global.issues
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_allows_name_sharing_outside_modules() {
+        // Pins two deliberate exemptions from the clash rule above, so that
+        // tightening it later has to be a decision rather than an accident.
+        //
+        // Only an enum or a module can head a `Color::Red` path, so only those two
+        // can be ambiguous. A type alias cannot head a `::` path, and an ordinary
+        // value is never looked up for a path head at all.
+        for (case, main, modules) in [
+            (
+                // The module arrives second, which is the path carrying the
+                // "only `TypeDef::Enum` conflicts" guard.
+                "an alias may share a name with a module",
+                "@settings(experimentalFeatures = allow)\ntype Temperature = number(_)\nimport \"Temperature.kcl\"\n",
+                vec![("Temperature.kcl", "export x = 1\n")],
+            ),
+            (
+                "a value may share a name with an enum",
+                "@settings(experimentalFeatures = allow)\ntype Color { | Red }\nColor = 5\n",
+                vec![],
+            ),
+        ] {
+            if let Err(err) = execute_with_modules(main, &modules).await {
+                panic!("case: {case}: {}", err.message());
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_declaration_rejects_redefinition() {
+        let code = r#"@settings(experimentalFeatures = allow)
+type Color { | Red }
+type Color { | Green }
+"#;
+        assert_eq!(
+            parse_execute(code).await.unwrap_err().message(),
+            "Redefinition of type Color."
+        );
+    }
+
+    /// Projection yields the variant's declared representation, which in V1 is
+    /// always the variant name. Every row binds `x` so the rows differ only in the
+    /// shape being projected, and the alias row is here because the target is
+    /// resolved before projection decides anything, so an alias must behave
+    /// exactly like the type it names.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projects_to_string() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Label = string
+        "#;
+
+        for (case, body, expected) in [
+            ("a variant", "x = Color::Red: string", "Red"),
+            ("another variant of the same enum", "x = Color::Green: string", "Green"),
+            ("an alias of the target type", "x = Color::Red: Label", "Red"),
+            (
+                "an element of a projected array",
+                r#"
+                    pair = [Color::Red, Color::Green]: [string]
+                    x = pair[1]
+                "#,
+                "Green",
+            ),
+            (
+                "an element of a nested projected array",
+                r#"
+                    grid = [[Color::Green]]: [[string]]
+                    x = grid[0][0]
+                "#,
+                "Green",
+            ),
+            (
+                "a one-element array against a bare string",
+                "x = [Color::Red]: string",
+                "Red",
+            ),
+        ] {
+            let result = parse_execute(&format!("{header}{body}\n"))
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::String { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold a string");
+            };
+            assert_eq!(value, expected, "case: {case}");
+        }
+    }
+
+    /// Ascribing the enum's own type, directly or through an alias, is a check
+    /// rather than a conversion: the value stays an enum and still compares equal
+    /// to the variant it came from.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_ascription_keeps_the_enum() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Paint = Color
+        "#;
+
+        for (case, expression, expected) in [
+            ("its own type", "(Color::Red: Color) == Color::Red", true),
+            ("an alias of its own type", "(Color::Red: Paint) == Color::Red", true),
+            (
+                "the ascription does not change which variant it is",
+                "(Color::Red: Color) == Color::Green",
+                false,
+            ),
+        ] {
+            let result = parse_execute(&format!("{header}x = {expression}\n"))
+                .await
+                .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+            let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x") else {
+                panic!("case: {case}: `x` should hold a bool");
+            };
+            assert_eq!(value, expected, "case: {case}");
+        }
+    }
+
+    /// A boundary the user did not write must not project, or a nominal parameter
+    /// type would mean nothing. The rows are the separate coercion sites: the
+    /// unlabeled argument, a labeled argument, and the return.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projection_is_not_implicit() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+        "#;
+        let found = "but found a value of enum `Color` (with type `Color`).";
+
+        for (case, body, expected) in [
+            (
+                "unlabeled argument",
+                r#"
+                    fn label(@text: string) { return text }
+                    x = label(Color::Red)
+                "#,
+                format!("The input argument of `label` requires a value with type `string`, {found}"),
+            ),
+            (
+                "labeled argument",
+                r#"
+                    fn label(text: string) { return text }
+                    x = label(text = Color::Red)
+                "#,
+                format!("text requires a value with type `string`, {found}"),
+            ),
+            (
+                "return",
+                r#"
+                    fn label(): string { return Color::Red }
+                    x = label()
+                "#,
+                format!("This function requires its result to be a value with type `string`, {found}"),
+            ),
+            (
+                // The reported type is `[any; 1]` rather than `[Color; 1]` because
+                // an array literal does not infer a homogeneous element type. That
+                // is pre-existing and unrelated to enums; it is pinned here so the
+                // row is not read as an enum-specific quirk.
+                "inside an array at an argument boundary",
+                r#"
+                    fn labels(@text: [string]) { return text }
+                    x = labels([Color::Red])
+                "#,
+                "The input argument of `labels` requires an array of strings (`[string]`), but found an array of `Color` with 1 value (with type `[any; 1]`).".to_owned(),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&format!("{header}{body}\n")).await.unwrap_err().message(),
+                expected,
+                "case: {case}"
+            );
+        }
+    }
+
+    /// What an explicit ascription refuses, and what it says about it. The numeric
+    /// rows deliberately do not name the mechanism a later version would use.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_ascription_rejections() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red }
+            type Shade { | Red }
+        "#;
+        let no_number = "Cannot project enum `Color` to a number. An enum projects to `string`; projecting to a number is not supported yet.";
+
+        for (case, expression, expected) in [
+            ("a number target", "Color::Red: number(_)", no_number.to_owned()),
+            (
+                "a number target reached through an array, so the reason survives the walk",
+                "[Color::Red]: [number(_)]",
+                no_number.to_owned(),
+            ),
+            (
+                "a boolean target, which is not a projection at all",
+                "Color::Red: bool",
+                "could not coerce a value of enum `Color` (with type `Color`) to type `bool`".to_owned(),
+            ),
+            (
+                "another enum whose variants happen to match",
+                "Color::Red: Shade",
+                "could not coerce a value of enum `Color` (with type `Color`) to type `Shade`".to_owned(),
+            ),
+        ] {
+            assert_eq!(
+                parse_execute(&format!("{header}x = {expression}\n"))
+                    .await
+                    .unwrap_err()
+                    .message(),
+                expected,
+                "case: {case}"
+            );
+        }
+    }
+
+    /// The mirror of `enum_projection_is_not_implicit`: where the declared type is
+    /// the enum itself, a value flows through every boundary unchanged. Each row
+    /// binds `x` to a comparison that must hold, so a value that arrived altered
+    /// would fail rather than pass unnoticed. `Some(message)` marks a row that must
+    /// be refused instead, which is what keeps the check nominal rather than
+    /// merely permissive.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_flows_through_declared_types() {
+        let header = r#"
+            @settings(experimentalFeatures = allow)
+            type Color { | Red | Green }
+            type Shade { | Red }
+        "#;
+
+        for (case, body, expected) in [
+            (
+                "an unlabeled parameter",
+                r#"
+                    fn paint(@c: Color) { return c }
+                    x = paint(Color::Red) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "a labeled parameter",
+                r#"
+                    fn paint(c: Color) { return c }
+                    x = paint(c = Color::Green) == Color::Green
+                "#,
+                None,
+            ),
+            (
+                "a declared return type",
+                r#"
+                    fn pick(): Color { return Color::Red }
+                    x = pick() == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "an array parameter",
+                r#"
+                    fn firstOf(@cs: [Color]) { return cs[0] }
+                    x = firstOf([Color::Red, Color::Green]) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                // The field check is `has_type`, which an enum satisfies, so an
+                // object passes here while the projection row of
+                // `enum_projects_by_target_shape` fails. Both behaviors come from
+                // the same unfinished object coercion.
+                "an object field",
+                r#"
+                    fn take(@o: { c: Color }) { return o.c }
+                    x = take({ c = Color::Green }) == Color::Green
+                "#,
+                None,
+            ),
+            (
+                "a union that names the enum",
+                r#"
+                    fn either(@v: Color | string) { return v }
+                    x = either(Color::Red) == Color::Red
+                "#,
+                None,
+            ),
+            (
+                "the same union given the other member",
+                r#"
+                    fn either(@v: Color | string) { return v }
+                    x = either("plain") == "plain"
+                "#,
+                None,
+            ),
+            (
+                "another declaration at the same boundary",
+                r#"
+                    fn paint(@c: Color) { return c }
+                    x = paint(Shade::Red) == Shade::Red
+                "#,
+                Some(
+                    "The input argument of `paint` requires a value with type `Color`, but found a value of enum `Shade` (with type `Shade`).",
+                ),
+            ),
+        ] {
+            let code = format!("{header}{body}\n");
+            match expected {
+                None => {
+                    let result = parse_execute(&code)
+                        .await
+                        .unwrap_or_else(|err| panic!("case: {case}: {}", err.message()));
+                    let KclValue::Bool { value, .. } = mem_get_json(result.exec_state.stack(), result.mem_env, "x")
+                    else {
+                        panic!("case: {case}: `x` should hold a bool");
+                    };
+                    assert!(value, "case: {case}: the value did not survive the boundary");
+                }
+                Some(message) => assert_eq!(
+                    parse_execute(&code).await.unwrap_err().message(),
+                    message,
+                    "case: {case}"
+                ),
+            }
+        }
     }
 }

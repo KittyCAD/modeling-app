@@ -3,9 +3,12 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import { uniqueStrings } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
+import type { CloudProjectDuplicateRisk } from '@src/registry/contracts/cloudSync'
 
-export type HomeProjectSource = 'local' | 'remote' | 'both'
+export type HomeProjectSource = 'local' | 'remote'
 
 export type HomeProjectStatus =
   | 'local'
@@ -24,6 +27,30 @@ export type HomeProjectThumbnail =
       url: string
     }
 
+export type HomeProjectSyncFailure = {
+  message: string
+  at?: string
+  kind?: string
+}
+
+export interface HomeProjectDuplicateRealization {
+  remoteProjectId: string
+  canonicalProjectPath?: string
+  localProjectPath: string
+  localProjectName?: string
+  title?: string
+  libraryIds: readonly string[]
+  libraryTitles: readonly string[]
+  duplicateRisk: CloudProjectDuplicateRisk
+  autoCleanupEligible: boolean
+}
+
+/**
+ * Home project view model: UI-ready card data derived from project-library
+ * realizations and cloudSync relationships. Home entries are presentation
+ * models only; Home must not infer cloud identity, merge providers by cloud ID,
+ * or manufacture a combined local/remote source.
+ */
 export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
@@ -34,6 +61,12 @@ export interface HomeProjectEntry {
   localProjectPath?: string
   localProjectName?: string
   remoteProjectId?: string
+  /**
+   * Delete confirmation wording is derived from explicit action semantics rather
+   * than from library identity. A local cloud relationship may either delete only
+   * its local realization or delete the backing remote project as well.
+   */
+  deleteRemoteOnDelete?: boolean
   modified?: number
   defaultFile?: string
   kclFileCount?: number
@@ -41,16 +74,18 @@ export interface HomeProjectEntry {
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
+  syncFailure?: HomeProjectSyncFailure
+  cloudRelationshipId?: string
+  duplicateRealizations?: readonly HomeProjectDuplicateRealization[]
 }
 
 export type HomeProjectEntryContribution = Omit<
   HomeProjectEntry,
-  'id' | 'libraryIds' | 'source'
+  'id' | 'libraryIds'
 > & {
   id?: string
   libraryId?: string
   libraryIds?: readonly string[]
-  source: Exclude<HomeProjectSource, 'both'>
 }
 
 export type HomeProjectEntryContributionGroup =
@@ -61,28 +96,41 @@ export type HomeProjectOpenResult = {
   defaultFile: string
 }
 
+export interface HomeProjectMoveToLibraryTarget {
+  library: ProjectLibrary
+  sourceLibrary: ProjectLibrary
+}
+
 export interface HomeProjectActionsService {
   canOpen: (project: HomeProjectEntry) => boolean
+  canDuplicate: (project: HomeProjectEntry) => boolean
   canRename: (project: HomeProjectEntry) => boolean
   canDelete: (project: HomeProjectEntry) => boolean
+  canMoveToLibrary: (project: HomeProjectEntry) => boolean
+  canReviewDuplicateRealizations: (project: HomeProjectEntry) => boolean
   open: (
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
+  duplicate: (project: HomeProjectEntry) => Promise<void>
   rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
-}
-
-function contributionBucketKey(entry: HomeProjectEntryContribution) {
-  if (entry.remoteProjectId) {
-    return `remote:${entry.remoteProjectId}`
-  }
-  if (entry.localProjectPath) {
-    return `local:${entry.localProjectPath}`
-  }
-  return `${entry.source}:${entry.id ?? entry.name}`
+  getMoveToLibraryTargets: (
+    project: HomeProjectEntry
+  ) => readonly HomeProjectMoveToLibraryTarget[]
+  moveToLibrary: (
+    project: HomeProjectEntry,
+    targetLibraryId: string
+  ) => Promise<HomeProjectOpenResult | undefined>
+  deleteDuplicateRealizations: (
+    project: HomeProjectEntry,
+    duplicateProjectPaths: readonly string[]
+  ) => Promise<void>
 }
 
 function contributionStableId(entry: HomeProjectEntryContribution) {
+  if (entry.source === 'remote' && entry.remoteProjectId) {
+    return `remote:${entry.remoteProjectId}`
+  }
   if (entry.localProjectPath) {
     return `local:${entry.localProjectPath}`
   }
@@ -90,12 +138,6 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
     return `remote:${entry.remoteProjectId}`
   }
   return `${entry.source}:${entry.id ?? entry.name}`
-}
-
-function uniqueStrings(values: readonly (string | undefined)[]) {
-  return Array.from(
-    new Set(values.filter((value): value is string => Boolean(value)))
-  )
 }
 
 function contributionLibraryIds(entry: HomeProjectEntryContribution) {
@@ -118,99 +160,19 @@ function entryFromContribution(
   }
 }
 
-function mergeHomeProjectEntries(
-  local: HomeProjectEntry | undefined,
-  remote: HomeProjectEntry | undefined
-): HomeProjectEntry | undefined {
-  if (!local && !remote) {
-    return undefined
-  }
-  if (!local) {
-    return remote
-  }
-  if (!remote) {
-    return local
-  }
-
-  const conflict = local.conflict ?? remote.conflict
-
-  return {
-    ...remote,
-    ...local,
-    id: local.id || remote.id,
-    source: 'both',
-    status: conflict
-      ? 'conflicted'
-      : remote.status === 'syncing'
-        ? 'syncing'
-        : 'synced',
-    conflict,
-    modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
-    thumbnail: local.thumbnail ?? remote.thumbnail,
-    readWriteAccess: local.readWriteAccess,
-    libraryIds: uniqueStrings([
-      ...(local.libraryIds ?? []),
-      ...(remote.libraryIds ?? []),
-    ]),
-  }
-}
-
-function mergeSameSourceHomeProjectEntries(
-  existing: HomeProjectEntry | undefined,
-  next: HomeProjectEntry
-): HomeProjectEntry {
-  if (!existing) {
-    return next
-  }
-
-  return {
-    ...existing,
-    ...next,
-    modified: Math.max(existing.modified ?? 0, next.modified ?? 0) || undefined,
-    thumbnail: existing.thumbnail ?? next.thumbnail,
-    libraryIds: uniqueStrings([
-      ...(existing.libraryIds ?? []),
-      ...(next.libraryIds ?? []),
-    ]),
-  }
-}
-
 /**
- * Coalesce independently contributed local and remote entries so Home renders a
- * single card for projects that are present in both places.
+ * Home entry contributions are flattened only. Identity resolution lives in
+ * cloudSync relationships, and local realization path membership lives in
+ * projectLibraries.
  */
-export function coalesceHomeProjectEntries(
+export function combineHomeProjectEntryContributions(
   contributionGroups: readonly HomeProjectEntryContributionGroup[]
 ) {
-  const contributions = contributionGroups.flatMap((contribution) =>
-    isArray(contribution) ? contribution : [contribution]
-  )
-  const buckets = new Map<
-    string,
-    {
-      local?: HomeProjectEntry
-      remote?: HomeProjectEntry
-    }
-  >()
-
-  for (const contribution of contributions) {
-    const key = contributionBucketKey(contribution)
-    const entry = entryFromContribution(contribution)
-    const bucket = buckets.get(key) ?? {}
-
-    if (contribution.source === 'local') {
-      bucket.local = mergeSameSourceHomeProjectEntries(bucket.local, entry)
-    } else {
-      bucket.remote = mergeSameSourceHomeProjectEntries(bucket.remote, entry)
-    }
-
-    buckets.set(key, bucket)
-  }
-
-  return Array.from(buckets.values()).flatMap(({ local, remote }) => {
-    const entry = mergeHomeProjectEntries(local, remote)
-    return entry ? [entry] : []
-  })
+  return contributionGroups
+    .flatMap((contribution) =>
+      isArray(contribution) ? contribution : [contribution]
+    )
+    .map(entryFromContribution)
 }
 
 export const homeProjectsContract = defineContract({
@@ -223,7 +185,7 @@ export const homeProjectsContract = defineContract({
   >({
     name: 'home-project-entries',
     defaultValue: [],
-    combine: coalesceHomeProjectEntries,
+    combine: combineHomeProjectEntryContributions,
   }),
 })
 

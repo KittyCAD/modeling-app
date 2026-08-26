@@ -2,13 +2,14 @@
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
 import assert from "std"
+import Point3d from "std::types"
 import * from "std::array"
 import pow, sqrt from "std::math"
 
 /// Adds every element of u to its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise addition.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [1, 2, 3]
 /// v = [10, 10, 10]
 /// v2 = vector::add(u, v)
@@ -20,7 +21,7 @@ import pow, sqrt from "std::math"
 export fn add(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] + v[i])
@@ -28,9 +29,9 @@ export fn add(@u: [number], v: [number]): [number] {
 }
 
 /// Subtracts from every element of u its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise subtraction.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
 /// v = [1, 2, 3]
 /// v2 = vector::sub(u, v)
@@ -51,9 +52,9 @@ export fn sub(@u: [number], v: [number]): [number] {
 
 
 /// Multiplies every element of u by its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise multiplication.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
 /// v = [1, 2, 3]
 /// v2 = vector::mul(u, v)
@@ -65,7 +66,7 @@ export fn sub(@u: [number], v: [number]): [number] {
 export fn mul(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] * v[i])
@@ -74,9 +75,9 @@ export fn mul(@u: [number], v: [number]): [number] {
 
 
 /// Divides every element of u by its corresponding element in v.
-/// Both vectors must have the same length. Returns a new vector of the same length.
+/// Both vectors must have the same number of elements. Returns a new vector with the same number of elements.
 /// In other words, component-wise division.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [10, 10, 10]
 /// v = [1, 2, 3]
 /// v2 = vector::div(u, v)
@@ -88,7 +89,7 @@ export fn mul(@u: [number], v: [number]): [number] {
 export fn div(@u: [number], v: [number]): [number] {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   arrayRange = [0..<l0]
   return reduce(arrayRange, initial = [], f = fn(@i, accum) {
     return push(accum, item = u[i] / v[i])
@@ -96,7 +97,7 @@ export fn div(@u: [number], v: [number]): [number] {
 }
 
 /// Find the cross product of two 3D points or vectors.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// vx = [1, 0, 0]
 /// vy = [0, 1, 0]
 /// vz = vector::cross(vx, v = vy)
@@ -114,7 +115,7 @@ export fn cross(@u: Point3d, v: Point3d) {
 }
 
 /// Find the dot product of two points or vectors of any dimension.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// u = [1, 2, 3]
 /// v = [4, -5, 6]
 /// dotprod = vector::dot(u, v)
@@ -124,7 +125,7 @@ export fn cross(@u: Point3d, v: Point3d) {
 export fn dot(@u: [number], v: [number]): number {
   l0 = count(u)
   l1 = count(v)
-  assert(l0, isEqualTo = l1, error = "The two input vectors must be the same length")
+  assert(l0, isEqualTo = l1, error = "The two input vectors must have the same number of elements")
   return reduce(
     [0..<l0],
     initial = 0,
@@ -136,7 +137,7 @@ export fn dot(@u: [number], v: [number]): number {
 }
 
 /// Find the Euclidean distance of a vector.
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// v = [3, 4]
 /// m = vector::magnitude(v)
 /// assert(m, isEqualTo = 5)
@@ -155,7 +156,7 @@ export fn magnitude(@v: [number]): number {
 }
 
 /// Normalize a vector (with any number of dimensions)
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun,sketchSyntaxAgnostic
 /// v = [3, 4]
 /// normed = vector::normalize(v)
 /// assert(normed[0], isEqualTo = 0.6)

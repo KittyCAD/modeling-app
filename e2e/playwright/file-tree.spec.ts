@@ -1,14 +1,13 @@
-import { FILE_EXT } from '@src/lib/constants'
-import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import * as nodeFsP from 'fs/promises'
-
 import {
   createProject,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as nodeFsP from 'fs/promises'
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -84,6 +83,129 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
     })
   })
 })
+
+test.describe(
+  'when file tree creation navigates within the same project',
+  { tag: ['@web'] },
+  () => {
+    test('creates a KCL file inside a folder without leaving the explorer disabled', async ({
+      page,
+      folderSetupFn,
+      fs,
+      scene,
+    }) => {
+      const { dir } = await folderSetupFn(async (dir) => {
+        const testDir = await fs.join(dir, 'browser-file-tree-project')
+        await fs.mkdir(await fs.join(testDir, 'parts'), { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+        await fs.writeFile(
+          await fs.join(testDir, 'parts', 'existing.kcl'),
+          testData
+        )
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+
+      const startingFilePath = await fs.join(
+        dir,
+        'browser-file-tree-project',
+        'parts',
+        'existing.kcl'
+      )
+      await page.goto(`/file/${encodeURIComponent(startingFilePath)}`)
+      await scene.settled()
+      await u.openFilePanel()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(() => {
+              const snapshot = window.app.systemIOActor.getSnapshot()
+              return {
+                hasFolders: snapshot.context.folders !== undefined,
+                state: snapshot.value,
+              }
+            }),
+          {
+            timeout: 30_000,
+            message: 'SystemIO should finish initial browser folder load',
+          }
+        )
+        .toMatchObject({ hasFolders: true, state: 'idle' })
+
+      const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+      const partsFolder = filePaneScroll.getByRole('treeitem', {
+        name: 'parts',
+        exact: true,
+      })
+      await expect(partsFolder).toBeVisible()
+      await partsFolder.click()
+      await page.evaluate(() => {
+        const appWindow = window as any
+        const systemIOActor = window.app.systemIOActor as any
+        const originalSend = systemIOActor.send.bind(systemIOActor)
+        appWindow.__setProjectDirectoryPathEvents = []
+        systemIOActor.send = (event: any) => {
+          if (event?.type === 'set project directory path') {
+            appWindow.__setProjectDirectoryPathEvents.push(event)
+          }
+          return originalSend(event)
+        }
+      })
+      await page.evaluate(() => {
+        window.app.systemIOActor.send({
+          type: 'read folders from project directory' as any,
+        })
+      })
+
+      await page.getByTestId('create-file-button').click()
+      await page.getByTestId('file-rename-field').fill('nested-file')
+      await page.keyboard.press('Enter')
+      await expect(page.getByText('Successfully created file.')).toBeVisible({
+        timeout: 30_000,
+      })
+
+      await expect(
+        filePaneScroll.getByRole('treeitem', {
+          name: 'nested-file.kcl',
+          exact: true,
+        })
+      ).toBeVisible({ timeout: 30_000 })
+      await expect
+        .poll(
+          async () =>
+            await filePaneScroll
+              .getByRole('treeitem')
+              .evaluateAll((items) =>
+                items.every(
+                  (item) => item.getAttribute('aria-disabled') !== 'true'
+                )
+              ),
+          {
+            timeout: 30_000,
+            message:
+              'File tree should become interactive after creating the file',
+          }
+        )
+        .toBeTruthy()
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(
+              () => (window as any).__setProjectDirectoryPathEvents.length
+            ),
+          {
+            timeout: 5_000,
+            message:
+              'Same-project file navigation should not restart project directory reads',
+          }
+        )
+        .toBe(0)
+    })
+  }
+)
 test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
   const fromFile = 'main.kcl'
   const toFile = 'hello.kcl'
@@ -239,6 +361,76 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       await expect(toolbar.fileName).toHaveText('main.kcl')
     }
   )
+
+  test('opening a nested file keeps the project directory rooted at the project list', async ({
+    fs,
+    folderSetupFn,
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = 'nested-file-navigation'
+    const folderName = 'parts'
+    const nestedFileName = 'bolt.kcl'
+    let nestedDir = ''
+
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectDir = await fs.join(dir, projectName)
+      nestedDir = await fs.join(projectDir, folderName)
+      await fs.mkdir(nestedDir, { recursive: true })
+
+      const mainFileData = await nodeFsP.readFile(executorInputPath('cube.kcl'))
+      const nestedFileData = await nodeFsP.readFile(
+        executorInputPath('cylinder.kcl')
+      )
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new Uint8Array(mainFileData)
+      )
+      await fs.writeFile(
+        await fs.join(nestedDir, nestedFileName),
+        new Uint8Array(nestedFileData)
+      )
+    })
+
+    const filePaneScroll = page.getByTestId('file-pane-scroll-container')
+    const treeItem = (name: string) =>
+      filePaneScroll.getByRole('treeitem', { name, exact: true })
+    const projectDirectoryPath = () =>
+      page.evaluate(
+        () =>
+          window.app.systemIOActor.getSnapshot().context.projectDirectoryPath
+      )
+    const nestedProjectSettingsFile = async () =>
+      fs.join(nestedDir, PROJECT_SETTINGS_FILE_NAME)
+
+    await test.step('Open project and reveal nested file', async () => {
+      await homePage.openProject(projectName)
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+
+      await toolbar.ensureFolderOpen(treeItem(folderName), true)
+      await expect(treeItem(nestedFileName)).toBeVisible()
+      await expect.poll(projectDirectoryPath).toBe(dir)
+      expect(await exists(fs, await nestedProjectSettingsFile())).toBeFalsy()
+    })
+
+    await test.step('Open nested file without changing project directory', async () => {
+      await treeItem(nestedFileName).click()
+      await scene.settled()
+
+      await expect(toolbar.fileName).toContainText(nestedFileName)
+      await expect.poll(projectDirectoryPath).toBe(dir)
+      await toolbar.expectFileTreeState([
+        folderName,
+        nestedFileName,
+        'main.kcl',
+      ])
+      expect(await exists(fs, await nestedProjectSettingsFile())).toBeFalsy()
+    })
+  })
 
   test('deleting all files recreates a default main.kcl with no code', async ({
     page,
@@ -1049,7 +1241,9 @@ test(
     })
 
     await test.step('Check the app is back on the home view', async () => {
-      const projectsDirLink = page.getByText('Loaded from')
+      const projectsDirLink = page.getByTestId(
+        'project-directory-settings-link'
+      )
       await expect(projectsDirLink).toBeVisible()
     })
   }

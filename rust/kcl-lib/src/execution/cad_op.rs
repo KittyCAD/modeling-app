@@ -56,6 +56,10 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Bool { value, .. } => OpKclValue::Bool { value: *value },
         KclValue::Number { value, ty, .. } => OpKclValue::Number { value: *value, ty: *ty },
         KclValue::String { value, .. } => OpKclValue::String { value: value.clone() },
+        KclValue::Enum { value } => OpKclValue::Enum {
+            enum_name: value.enum_id().declared_name().to_owned(),
+            variant: value.variant().to_owned(),
+        },
         KclValue::SketchVar { value, .. } => OpKclValue::SketchVar {
             value: value.initial_value,
             ty: value.ty,
@@ -106,6 +110,15 @@ pub fn op_from_kcl_value(value: &KclValue) -> OpKclValue {
         KclValue::Helix { value } => OpKclValue::Helix {
             value: Box::new(OpHelix::new(value.artifact_id)),
         },
+        // The marker carries no camera data: the view's artifact holds that,
+        // authoritatively. What it does carry is the distinction between a
+        // camera that was passed and an optional argument that was omitted,
+        // which `KclNone` would erase.
+        KclValue::CameraView { .. } => OpKclValue::CameraView {},
+        // No standard library function takes a NamedView argument, so a view
+        // reaches here only as an argument to a user-defined function. Adding
+        // a dedicated representation later is additive.
+        KclValue::NamedView { .. } => OpKclValue::KclNone {},
         KclValue::ImportedGeometry(imported_geometry) => OpKclValue::ImportedGeometry {
             artifact_id: ArtifactId::new(imported_geometry.id),
         },

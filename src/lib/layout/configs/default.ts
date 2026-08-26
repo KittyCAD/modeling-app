@@ -20,8 +20,9 @@ export enum DefaultLayoutPaneID {
   Debug = 'debug',
   Code = 'code',
   FeatureTree = 'feature-tree',
+  NamedViews = 'named-views',
   Files = 'files',
-  TTC = 'ttc',
+  Zookeeper = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
 }
@@ -41,6 +42,37 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   areaType: AreaType.Debug,
 }
 
+export const featureTreePaneConfig: PaneChild = {
+  id: DefaultLayoutPaneID.FeatureTree,
+  label: 'Feature Tree',
+  type: LayoutType.Splits,
+  orientation: 'block',
+  sizes: [70, 30],
+  icon: 'model',
+  children: [
+    {
+      id: 'operations-list',
+      label: 'Feature Tree',
+      type: LayoutType.Simple,
+      areaType: AreaType.FeatureTree,
+    },
+    {
+      id: 'bodies-list',
+      label: 'Bodies',
+      type: LayoutType.Simple,
+      areaType: AreaType.Bodies,
+    },
+  ],
+}
+
+export const namedViewsPaneConfig: PaneChild = {
+  id: DefaultLayoutPaneID.NamedViews,
+  label: 'Views',
+  type: LayoutType.Simple,
+  areaType: AreaType.NamedViews,
+  icon: 'namedView',
+}
+
 const primaryPane: Layout = {
   id: DefaultLayoutToolbarID.Left,
   label: 'left-toolbar',
@@ -53,21 +85,15 @@ const primaryPane: Layout = {
     ...(isMobile()
       ? [
           {
-            id: DefaultLayoutPaneID.TTC,
+            id: DefaultLayoutPaneID.Zookeeper,
             label: 'Zookeeper',
             type: LayoutType.Simple,
-            areaType: AreaType.TTC,
+            areaType: AreaType.Zookeeper,
             icon: 'sparkles',
           } satisfies PaneChild,
         ]
       : []),
-    {
-      id: DefaultLayoutPaneID.FeatureTree,
-      label: 'Feature Tree',
-      type: LayoutType.Simple,
-      icon: 'model',
-      areaType: AreaType.FeatureTree,
-    },
+    featureTreePaneConfig,
     {
       id: DefaultLayoutPaneID.Code,
       label: 'Code Editor',
@@ -103,6 +129,8 @@ const primaryPane: Layout = {
       type: LayoutType.Simple,
       areaType: AreaType.Debug,
     },
+    // Appended, so the indices `activeIndices` refers to do not shift.
+    namedViewsPaneConfig,
   ],
   actions: [
     ...(isMobile()
@@ -157,10 +185,10 @@ const secondaryPane: Layout = {
   splitOrientation: 'block',
   children: [
     {
-      id: DefaultLayoutPaneID.TTC,
+      id: DefaultLayoutPaneID.Zookeeper,
       label: 'Zookeeper',
       type: LayoutType.Simple,
-      areaType: AreaType.TTC,
+      areaType: AreaType.Zookeeper,
       icon: 'sparkles',
     },
   ],

@@ -21,11 +21,14 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   nullableStatusBarItem,
+  statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
+import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
@@ -37,8 +40,21 @@ const ENGINE_SCENE_COMMAND_GROUP_ID = 'engineScene'
 const ENGINE_SCENE_KEYMAP_SOURCE = 'Engine scene'
 
 export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
+  captureScreenshot: 'zds.engineScene.captureScreenshot',
   openMeasureTool: 'zds.engineScene.openMeasureTool',
+  openPhysicalAnalysisTool: 'zds.engineScene.openPhysicalAnalysisTool',
 } as const)
+
+const captureScreenshotCommand: Command = {
+  id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
+  displayName: 'Capture screenshot',
+  description: 'Save the current modeling viewport as a PNG image.',
+  icon: 'camera',
+  needsReview: false,
+  onSubmit: saveViewportScreenshot,
+}
 
 const openMeasureToolCommand: Command = {
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
@@ -54,6 +70,20 @@ const openMeasureToolCommand: Command = {
   },
 }
 
+const openPhysicalAnalysisToolCommand: Command = {
+  id: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
+  name: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
+  groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
+  displayName: 'Open physical analysis tool',
+  description: 'Open the physical analysis panel for the whole modeling scene.',
+  icon: 'scales',
+  needsReview: false,
+  onSubmit: () => {
+    physicalAnalysisService.open()
+    return true
+  },
+}
+
 const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
@@ -61,6 +91,15 @@ const openMeasureToolKeymapItem: KeymapItem = {
   scopes: [MODE_MODELING_KEYMAP_SCOPE],
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
+}
+
+const openPhysicalAnalysisToolKeymapItem: KeymapItem = {
+  id: 'engine-scene.physical-analysis.open',
+  title: 'Open physical analysis tool',
+  source: ENGINE_SCENE_KEYMAP_SOURCE,
+  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  keystrokes: ['shift+p'],
+  command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
 }
 
 // Registry extension entrypoints are imported eagerly while App is still
@@ -100,6 +139,18 @@ const SelectionReferencesPopover = lazy(async () => {
 const MeasurementStatusBarItem = lazy(async () => {
   const { MeasurementStatusBarItem } = await import('./MeasurementTool')
   return { default: MeasurementStatusBarItem }
+})
+
+const PhysicalAnalysisStatusBarItem = lazy(async () => {
+  const { PhysicalAnalysisStatusBarItem } = await import(
+    './physicalAnalysis/PhysicalAnalysisTool'
+  )
+  return { default: PhysicalAnalysisStatusBarItem }
+})
+
+const ScreenshotStatusBarItem = lazy(async () => {
+  const { ScreenshotStatusBarItem } = await import('./ScreenshotStatusBarItem')
+  return { default: ScreenshotStatusBarItem }
 })
 
 const EngineSceneUnitsMenu = () =>
@@ -181,6 +232,20 @@ const EngineSceneMeasurementStatusBarItem = () =>
     createElement(MeasurementStatusBarItem)
   )
 
+const EngineScenePhysicalAnalysisStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(PhysicalAnalysisStatusBarItem)
+  )
+
+const EngineSceneScreenshotStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(ScreenshotStatusBarItem)
+  )
+
 /**
  * Engine scene extension.
  *
@@ -213,6 +278,30 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'measure',
             component: EngineSceneMeasurementStatusBarItem,
             order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
+  const physicalAnalysisStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'physical-analysis',
+            component: EngineScenePhysicalAnalysisStatusBarItem,
+            order: 9.5,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
+  const screenshotStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'capture-screenshot',
+            component: EngineSceneScreenshotStatusBarItem,
+            order: 8,
             scopes: ['file'],
           }
         : null
@@ -259,9 +348,14 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provideCommand(captureScreenshotCommand),
         provideCommand(openMeasureToolCommand),
+        provideCommand(openPhysicalAnalysisToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),
+        provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
+        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
         provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
+        provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),

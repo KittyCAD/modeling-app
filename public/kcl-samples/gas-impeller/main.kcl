@@ -3,7 +3,7 @@
 // Categories: Aerospace, Manufacturing
 
 // Project settings
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Key parameters
 impellerHeight = 60
@@ -177,10 +177,22 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
 }
 
 // Revolved bodies from the shared sketch
-hubRegion = region(point = [5mm, 30mm], sketch = hubAndBladeEnvelopeSketch)
+hubRegion = region(
+  segments = [
+    hubAndBladeEnvelopeSketch.shaftWall,
+    hubAndBladeEnvelopeSketch.hubTopLand
+  ],
+  direction = CW,
+)
 impellerHub = revolve(hubRegion, axis = Y)
 
-bladeEnvelopeRegion = region(point = [30mm, 55mm], sketch = hubAndBladeEnvelopeSketch)
+bladeEnvelopeRegion = region(
+  segments = [
+    hubAndBladeEnvelopeSketch.bladeEnvelopeTopEdge,
+    hubAndBladeEnvelopeSketch.bladeEnvelopeTipArc
+  ],
+  direction = CW,
+)
 bladeEnvelope = revolve(bladeEnvelopeRegion, axis = Y)
 
 // Sketch: blade cutter profile

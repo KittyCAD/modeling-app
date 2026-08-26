@@ -22,11 +22,16 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
+import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -96,7 +101,7 @@ describe('engineScene extension', () => {
     ).toBeUndefined()
   })
 
-  it('contributes ordered engine scene local status bar items', () => {
+  it('contributes ordered engine scene status bar items', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -115,6 +120,7 @@ describe('engineScene extension', () => {
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
       'measure',
+      'physical-analysis',
       'selection',
       'selection-filter',
       'units',
@@ -122,7 +128,13 @@ describe('engineScene extension', () => {
     ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file'], ['file']])
+    expect(registry.get(statusBarGlobalItemsValueSpec)).toMatchObject([
+      {
+        id: 'capture-screenshot',
+        scopes: ['file'],
+      },
+    ])
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -158,6 +170,61 @@ describe('engineScene extension', () => {
     measurementToolService.close()
   })
 
+  it('contributes a command and modeling keybinding to open the physical analysis tool', () => {
+    physicalAnalysisService.close()
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool
+      )
+    const keymapItem = registry
+      .get(keymapValueSpec)
+      .items.find((item) => item.id === 'engine-scene.physical-analysis.open')
+
+    expect(command).toMatchObject({
+      displayName: 'Open physical analysis tool',
+      icon: 'scales',
+      needsReview: false,
+    })
+    expect(keymapItem).toMatchObject({
+      title: 'Open physical analysis tool',
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      keystrokes: ['shift+p'],
+      command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
+    })
+
+    expect(physicalAnalysisService.isOpen.value).toBe(false)
+    command?.onSubmit()
+    expect(physicalAnalysisService.isOpen.value).toBe(true)
+
+    physicalAnalysisService.close()
+  })
+
+  it('contributes the capture screenshot command', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.captureScreenshot
+      )
+
+    expect(command).toMatchObject({
+      displayName: 'Capture screenshot',
+      description: 'Save the current modeling viewport as a PNG image.',
+      icon: 'camera',
+      needsReview: false,
+      onSubmit: saveViewportScreenshot,
+    })
+    expect(command?.hideFromSearch).not.toBe(true)
+  })
+
   it('hides the experimental features item when file settings deny it', () => {
     const showExperimentalFeaturesStatusBarItem = signal(false)
     const registry = new Registry()
@@ -179,7 +246,13 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['measure', 'selection', 'selection-filter', 'units'])
+    ).toEqual([
+      'measure',
+      'physical-analysis',
+      'selection',
+      'selection-filter',
+      'units',
+    ])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
@@ -187,6 +260,7 @@ describe('engineScene extension', () => {
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
       'measure',
+      'physical-analysis',
       'selection',
       'selection-filter',
       'units',

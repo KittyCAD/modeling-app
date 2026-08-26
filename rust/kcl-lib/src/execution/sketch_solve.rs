@@ -24,6 +24,7 @@ use crate::execution::SketchSurface;
 use crate::execution::UnsolvedExpr;
 use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
+use crate::execution::types::CoercionMode;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::Freedom;
@@ -68,17 +69,19 @@ pub(crate) fn normalize_to_solver_distance_unit(
     description: &str,
 ) -> Result<KclValue, KclError> {
     let length_ty = RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state)));
-    value.coerce(&length_ty, true, exec_state).map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "{} must be a length coercible to the module length unit {}, but found {}",
-                description,
-                length_ty.human_friendly_type(),
-                value.human_friendly_type(),
-            ),
-            vec![source_range],
-        ))
-    })
+    value
+        .coerce(&length_ty, CoercionMode::implicit(), exec_state)
+        .map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{} must be a length coercible to the module length unit {}, but found {}",
+                    description,
+                    length_ty.human_friendly_type(),
+                    value.human_friendly_type(),
+                ),
+                vec![source_range],
+            ))
+        })
 }
 
 /// When giving input to the solver, all numbers must be given in the same
@@ -90,17 +93,19 @@ pub(crate) fn normalize_to_solver_angle_unit(
     description: &str,
 ) -> Result<KclValue, KclError> {
     let angle_ty = RuntimeType::angle();
-    value.coerce(&angle_ty, true, exec_state).map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "{} must be coercible to an angle unit {}, but found {}",
-                description,
-                angle_ty.human_friendly_type(),
-                value.human_friendly_type(),
-            ),
-            vec![source_range],
-        ))
-    })
+    value
+        .coerce(&angle_ty, CoercionMode::implicit(), exec_state)
+        .map_err(|_| {
+            KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "{} must be coercible to an angle unit {}, but found {}",
+                    description,
+                    angle_ty.human_friendly_type(),
+                    value.human_friendly_type(),
+                ),
+                vec![source_range],
+            ))
+        })
 }
 
 pub(super) fn substitute_sketch_vars(
@@ -199,6 +204,8 @@ fn substitute_sketch_var(
         KclValue::TagIdentifier(_) => Ok(value),
         KclValue::TagDeclarator(_) => Ok(value),
         KclValue::GdtAnnotation { .. } => Ok(value),
+        KclValue::CameraView { .. } => Ok(value),
+        KclValue::NamedView { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),
         KclValue::Segment {
@@ -236,6 +243,7 @@ fn substitute_sketch_var(
         KclValue::Type { .. } => Ok(value),
         KclValue::KclNone { .. } => Ok(value),
         KclValue::BoundedEdge { .. } => Ok(value),
+        KclValue::Enum { .. } => Ok(value),
     }
 }
 
@@ -319,6 +327,7 @@ pub(super) fn substitute_sketch_var_in_segment(
             start_object_id,
             end_object_id,
             center_object_id,
+            direction,
             construction,
         } => {
             let (start_x, start_x_freedom) =
@@ -350,6 +359,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_freedom: point_freedom(start_x_freedom, start_y_freedom),
                     end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                     center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    direction: *direction,
                     construction: *construction,
                 },
                 surface: surface.clone(),
@@ -497,8 +507,17 @@ pub(crate) struct Solved {
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
     pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
+    /// Signed distance constraints the solver could not satisfy. Retain their
+    /// right-hand-side values so diagnostics can explain the required direction.
+    pub(crate) unsatisfied_directional_constraints: Vec<UnsatisfiedDirectionalConstraint>,
     /// Did the solver converge on a solution?
     pub(crate) converged: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) enum UnsatisfiedDirectionalConstraint {
+    Horizontal(f64),
+    Vertical(f64),
 }
 
 impl Solved {
@@ -513,12 +532,23 @@ impl Solved {
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
+        let mut unsatisfied_directional_constraints = Vec::new();
         for &constraint_idx in value.unsatisfied() {
             // Only mark as conflicted if it's a required constraint, not an optional one
             if constraint_idx < num_required_constraints
                 && let Some(constraint) = constraints.get(constraint_idx)
             {
                 constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
+                match constraint {
+                    ezpz::Constraint::HorizontalDistance(_, _, expected) => {
+                        unsatisfied_directional_constraints
+                            .push(UnsatisfiedDirectionalConstraint::Horizontal(*expected));
+                    }
+                    ezpz::Constraint::VerticalDistance(_, _, expected) => {
+                        unsatisfied_directional_constraints.push(UnsatisfiedDirectionalConstraint::Vertical(*expected));
+                    }
+                    _ => {}
+                }
             }
         }
 
@@ -528,6 +558,7 @@ impl Solved {
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
             variables_in_conflicts,
+            unsatisfied_directional_constraints,
             converged: value.converged(),
         }
     }
@@ -687,6 +718,7 @@ pub(super) fn create_segment_scene_objects(
                 start_freedom,
                 end_freedom,
                 center_freedom,
+                direction,
                 construction,
             } => {
                 let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
@@ -781,6 +813,7 @@ pub(super) fn create_segment_scene_objects(
                             ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
+                            direction: *direction,
                         }),
                     },
                     label: Default::default(),
@@ -1105,6 +1138,7 @@ mod tests {
             warnings: vec![],
             priority_solved: 0,
             variables_in_conflicts: AHashSet::new(),
+            unsatisfied_directional_constraints: vec![],
             converged: true,
         };
 

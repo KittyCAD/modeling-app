@@ -96,6 +96,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
+pub use errors::BacktraceItemKind;
 pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
@@ -108,12 +109,15 @@ pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
+pub use execution::EnvironmentRef;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
 pub use execution::ExecutorContext;
 pub use execution::ExecutorSettings;
 pub use execution::KclValueView;
+pub use execution::KclVersion;
+pub use execution::LegacyAngleRefactorMeta;
 pub use execution::MetaSettings;
 pub use execution::MockConfig;
 pub use execution::OperationCallbackArgs;
@@ -217,6 +221,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
@@ -228,19 +233,19 @@ pub mod front {
             SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version, Wall,
         },
         sketch::{
-            Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, ControlPointSpline,
-            ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint, Freedom, Horizontal,
-            Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
-            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
+            Angle, Arc, ArcCtor, ArcDirection, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
+            ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
+            Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
+            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,
+            Tangent, Vertical,
         },
         // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
-            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, arc_arc_intersection,
-            execute_trim_loop_with_context, get_next_trim_spawn, get_position_coords_for_line,
-            get_position_coords_from_arc, get_trim_spawn_terminations, is_point_on_arc, is_point_on_line_segment,
-            line_arc_intersection, line_segment_intersection, perpendicular_distance_to_segment,
-            project_point_onto_arc, project_point_onto_segment,
+            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, execute_trim_loop_with_context,
+            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc, is_point_on_line_segment,
+            line_segment_intersection, perpendicular_distance_to_segment, project_point_onto_arc,
+            project_point_onto_segment,
         },
     };
 }
@@ -360,6 +365,10 @@ impl Program {
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
+    }
+
+    pub fn lint_all_with_options(&self, options: lint::LintOptions) -> Result<Vec<lint::Discovered>, anyhow::Error> {
+        self.ast.lint_all_with_options(options)
     }
 
     pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {

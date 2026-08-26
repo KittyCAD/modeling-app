@@ -27,6 +27,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::csg::CsgAlgorithm;
 use crate::std::fillet::EdgeReference;
+use crate::std::fillet::default_edge_cut_version;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
@@ -49,7 +50,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             })
         })
         .transpose()?
-        .unwrap_or_default();
+        .unwrap_or_else(|| default_edge_cut_version(exec_state.kcl_version()));
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -87,21 +88,43 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             Ok(KclValue::Solid { value })
         }
         super::fillet::TaggedEdgeInputs::Tags(tags) => {
-            let value = inner_chamfer(
-                solid,
-                length,
-                tags,
-                second_length,
-                angle,
-                None,
-                tag,
-                csg_algorithm,
-                edge_cut_version,
-                exec_state,
-                args,
-            )
-            .await?;
-            Ok(KclValue::Solid { value })
+            match edge_cut_version {
+                EdgeCutVersion::V2 => {
+                    let value = inner_chamfer_v2(
+                        solid,
+                        length,
+                        tags,
+                        second_length,
+                        angle,
+                        None,
+                        tag,
+                        csg_algorithm,
+                        edge_cut_version,
+                        exec_state,
+                        args,
+                    )
+                    .await?;
+                    Ok(KclValue::Solid { value })
+                }
+                // TODO: When we change the default algorithm to V2, we need to make it so that V0 (default) takes the route above
+                _ => {
+                    let value = inner_chamfer(
+                        solid,
+                        length,
+                        tags,
+                        second_length,
+                        angle,
+                        None,
+                        tag,
+                        csg_algorithm,
+                        edge_cut_version,
+                        exec_state,
+                        args,
+                    )
+                    .await?;
+                    Ok(KclValue::Solid { value })
+                }
+            }
         }
     }
 }
@@ -250,6 +273,165 @@ async fn inner_chamfer(
                 }));
             }
         }
+    }
+
+    Ok(solid)
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn inner_chamfer_v2(
+    solid: Box<Solid>,
+    length: TyF64,
+    tags: Vec<(EdgeReference, crate::SourceRange)>,
+    second_length: Option<TyF64>,
+    angle: Option<TyF64>,
+    custom_profile: Option<Sketch>,
+    tag: Option<TagNode>,
+    csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    // If you try and tag multiple edges with a tagged chamfer, we want to return an
+    // error to the user that they can only tag one edge at a time.
+    if tag.is_some() && tags.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+    if tags.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: "You must chamfer at least one tag".to_owned(),
+            backtrace: Default::default(),
+        }));
+    }
+
+    if angle.is_some() && second_length.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let strategy = if second_length.is_some() || angle.is_some() || custom_profile.is_some() {
+        CutStrategy::Csg
+    } else {
+        Default::default()
+    };
+
+    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    if let Some(angle) = angle
+        && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The angle of a chamfer must be greater than zero and less than 90 degrees.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let cut_type = if let Some(custom_profile) = custom_profile {
+        // Hide the custom profile since it's no longer its own profile
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::ObjectVisible::builder()
+                        .object_id(custom_profile.id)
+                        .hidden(true)
+                        .build(),
+                ),
+            )
+            .await?;
+        CutTypeV2::Custom {
+            path: custom_profile.id,
+        }
+    } else {
+        CutTypeV2::Chamfer {
+            distance: LengthUnit(length.to_mm()),
+            second_distance,
+            angle,
+            swap: false,
+        }
+    };
+
+    let mut solid = solid.clone();
+    let mut edge_ids = Vec::new();
+    let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+    for (edge_ref, source_range) in &tags {
+        let ids = edge_ref.get_all_engine_ids(exec_state, &args)?;
+        edge_ids.extend(ids.iter().copied());
+        let tag_identifier = match edge_ref {
+            EdgeReference::Tag(t) => t.value.clone(),
+            EdgeReference::Uuid(_) => String::new(),
+        };
+        for edge_id in ids {
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                && let [a, b] = face_ids.as_slice()
+            {
+                if !tag_identifier.is_empty() {
+                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                        tag_identifier: tag_identifier.clone(),
+                        edge_id,
+                        face_ids: [*a, *b],
+                    });
+                } else {
+                    exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
+                }
+            }
+        }
+    }
+    if !tag_entries.is_empty() {
+        exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
+            call_source_range: args.source_range,
+            tags: tag_entries,
+        });
+    }
+
+    let id = exec_state.next_uuid();
+    let num_extra_ids = edge_ids.len().saturating_sub(1);
+    let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdges::builder()
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .edge_ids(edge_ids.clone())
+                    .extra_face_ids(extra_face_ids)
+                    .strategy(strategy)
+                    .object_id(solid.id)
+                    // We can let the user set this in the future.
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .cut_type(cut_type)
+                    .version(edge_cut_version)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    let new_edge_cuts = edge_ids.into_iter().map(|edge_id| EdgeCut::Chamfer {
+        id,
+        edge_id,
+        length: length.clone(),
+        tag: Box::new(tag.clone()),
+    });
+    solid.edge_cuts.extend(new_edge_cuts);
+
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(solid)

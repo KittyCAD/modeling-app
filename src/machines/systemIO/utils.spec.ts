@@ -5,7 +5,7 @@ import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
 import {
   collectProjectFiles,
   normalizeKCLFileDeletePath,
-  prepareMlEphantNewFileRequest,
+  prepareZookeeperNewFileRequest,
 } from '@src/machines/systemIO/utils'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -34,7 +34,7 @@ beforeAll(async () => {
 
 describe('System IO Utils', () => {
   it('Properly reconstructs paths from Zookeeper new file requests', () => {
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'main.kcl',
@@ -134,7 +134,7 @@ describe('System IO Utils', () => {
   })
 
   it('preserves files by default when preparing Zookeeper edit requests', () => {
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'main.kcl',
@@ -330,8 +330,51 @@ describe('System IO Utils', () => {
     }
   })
 
+  it('uses exec state index 0 for the selected project file when exec filenames are unavailable', async () => {
+    const projectPath = `/tmp/opencode/zookeeper-project-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      mainPath,
+      new TextEncoder().encode('boxHeight = 50mm')
+    )
+
+    try {
+      const projectFiles = await collectProjectFiles({
+        selectedFileContents: 'boxHeight = 500mm',
+        selectedFilePath: mainPath,
+        fileNames: {},
+        projectContext: {
+          name: 'zookeeper-project',
+          path: projectPath,
+          children: [
+            {
+              name: 'main.kcl',
+              path: mainPath,
+              children: null,
+            },
+          ],
+          metadata: null,
+          kcl_file_count: 1,
+          directory_count: 0,
+          default_file: mainPath,
+          readWriteAccess: true,
+        },
+      })
+
+      const mainFile = projectFiles.find((file) => file.relPath === 'main.kcl')
+      expect(mainFile).toMatchObject({
+        type: 'kcl',
+        fileContents: 'boxHeight = 500mm',
+        execStateFileNamesIndex: 0,
+      })
+    } finally {
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('keeps the currently focused file as the navigation target after project-wide edits', () => {
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'newFile.kcl',
@@ -353,7 +396,7 @@ describe('System IO Utils', () => {
   })
 
   it('falls back to the active editor file as the navigation target', () => {
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fallbackFilePath: '/projects/some-project/main.kcl',
       toolOutput: {
@@ -370,7 +413,7 @@ describe('System IO Utils', () => {
   })
 
   it('carries only explicit Zookeeper delete signals into edit requests', () => {
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'main.kcl',
@@ -419,7 +462,7 @@ describe('System IO Utils', () => {
       zookeeper_edit_patch: zookeeperEditPatch,
     }
 
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'main.kcl',
@@ -457,7 +500,7 @@ describe('System IO Utils', () => {
         ],
       },
     }
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'main.kcl',
@@ -495,7 +538,7 @@ describe('System IO Utils', () => {
         ],
       },
     }
-    const preparedPayload = prepareMlEphantNewFileRequest({
+    const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
         name: 'part.kcl',

@@ -1,7 +1,12 @@
+import fs from 'fs'
 import path from 'path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+
+const bracket = fs.readFileSync(
+  path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
@@ -345,13 +350,12 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     page,
     homePage,
     scene,
-    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    const [clickCenter] = scene.makeMouseHelpers(0.45, 0.45, {
+    const [clickBracket] = scene.makeMouseHelpers(0.45, 0.45, {
       format: 'ratio',
     })
-    const [clickTowardsBottom] = scene.makeMouseHelpers(0.5, 0.9, {
+    const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
       format: 'ratio',
     })
     await page.addInitScript((initialCode) => {
@@ -361,35 +365,32 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     await homePage.goToModelingScene()
     await scene.settled()
 
-    const line = page.getByText(
-      'xLine(length = -shelfMountLength, tag = $seg03)'
-    )
+    const laterCode = page.getByText('finalBracket = hole::holes(')
     const menuItems = page.locator('[data-testid="view-controls-menu"] button')
     const viewKclSourceCodeOption = menuItems.filter({
       hasText: 'View KCL source code',
     })
 
-    await test.step('Empty scene should have disabled "View KCL source code"', async () => {
-      await clickTowardsBottom({ shouldRightClick: true })
-
-      // Verify context menu appears
+    await test.step('Empty scene has disabled "View KCL source code"', async () => {
+      await clickEmptyScene({ shouldRightClick: true })
       await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-
-      // "View KCL source code" should be disabled in empty scene
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeDisabled()
       await page.keyboard.press('Escape')
     })
 
-    await test.step('Right click on bracket sample leads to the right place in code', async () => {
-      await expect(line).not.toBeInViewport()
-      await clickCenter()
+    await test.step('Right click on bracket navigates to its source', async () => {
+      await expect(laterCode).not.toBeInViewport()
+      await clickBracket()
       await expect(page.getByText('1 face')).toBeVisible()
-      await clickCenter({ shouldRightClick: true })
+      await clickBracket({ shouldRightClick: true })
       await expect(viewKclSourceCodeOption).toBeVisible()
       await expect(viewKclSourceCodeOption).toBeEnabled()
       await viewKclSourceCodeOption.click()
-      await expect(line).toBeVisible()
+      await expect(page.locator('.cm-activeLine')).toBeVisible()
+      await expect(page.locator('.cm-activeLine')).not.toContainText(
+        'Shelf Bracket'
+      )
     })
   })
 
@@ -435,6 +436,80 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
       await clearSelection()
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
     })
+  })
+
+  test(`Can start a sketch on a shell inner face`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    toolbar,
+    editor,
+  }) => {
+    const code = `@settings(kclVersion = 2.0)
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
+  line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
+  line3 = line(start = [var 3.1mm, var 4.36mm], end = [var 0.42mm, var 4.36mm])
+  line4 = line(start = [var 0.42mm, var 4.36mm], end = [var 0.42mm, var 0.91mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = .1)`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, code)
+
+    await page.setBodyDimensions({ width: 1200, height: 800 })
+    await homePage.goToModelingScene()
+    await scene.settled()
+
+    const [clickOnInnerFace] = scene.makeMouseHelpers(0.6, 0.4, {
+      format: 'ratio',
+    })
+
+    await clickOnInnerFace()
+    await expect(toolbar.selectionStatus).toHaveText(
+      '1 faceCurrently selected geometry'
+    )
+    await toolbar.startSketchPlaneSelection()
+
+    await expect(toolbar.lineBtn).toBeEnabled()
+    await expect
+      .poll(() => editor.getCurrentCode())
+      .toBe(`@settings(kclVersion = 2.0)
+
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0.42mm, var 0.91mm], end = [var 3.1mm, var 0.91mm])
+  line2 = line(start = [var 3.1mm, var 0.91mm], end = [var 3.1mm, var 4.36mm])
+  line3 = line(start = [var 3.1mm, var 4.36mm], end = [var 0.42mm, var 4.36mm])
+  line4 = line(start = [var 0.42mm, var 4.36mm], end = [var 0.42mm, var 0.91mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+extrude001 = extrude(region(point = [1mm, 1mm], sketch = rectangleSketch), length = 1, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = .1)
+face001 = faceOf(shell001, face = faceId(shell001, index = 7))
+sketch001 = sketch(on = face001) {
+}
+
+`)
   })
 
   test(`Engine primitive selection works on shell inner edge`, async ({

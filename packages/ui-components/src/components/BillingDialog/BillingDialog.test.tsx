@@ -39,6 +39,24 @@ test('Shows account billing action when total due is positive', () => {
   expect(billingClick).toHaveBeenCalledOnce()
 })
 
+test('Shows total due with two decimal places', () => {
+  const { queryByText } = render(
+    <BillingDialog
+      upgradeHref="https://zoo.dev/design-studio-pricing"
+      accountHref="https://dev.zoo.dev/account/billing"
+      balance={8}
+      allowance={20}
+      userPaymentBalance={{
+        ...userPaymentBalance,
+        total_due: 22.6,
+      }}
+    />
+  )
+
+  expect(queryByText('$22.60')).toBeVisible()
+  expect(queryByText('$22.6')).toBeNull()
+})
+
 test('Shows upgrade action when total due is zero', () => {
   const { queryByTestId } = render(
     <BillingDialog

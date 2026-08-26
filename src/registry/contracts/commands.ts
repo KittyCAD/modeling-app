@@ -5,17 +5,17 @@ import {
   provide,
 } from '@kittycad/registry'
 import type { Command } from '@src/lib/commandTypes'
+import { commandKey } from '@src/lib/commandUtils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SnapshotFrom } from 'xstate'
+
+export { commandKey } from '@src/lib/commandUtils'
 
 export type CommandSystemService = {
   actor: CommandBarActorType
   send: CommandBarActorType['send']
   useState: () => SnapshotFrom<CommandBarActorType>
 }
-
-export const commandKey = (command: Command) =>
-  command.id ?? `${command.groupId}:${String(command.name)}`
 
 export const commandsContract = defineContract({
   commandSystemService: defineService<CommandSystemService>('command-system'),

@@ -6,10 +6,12 @@ use crate::ModuleId;
 use crate::exec::KclValue;
 use crate::execution::AbstractSegment;
 use crate::execution::BoundedEdge;
+use crate::execution::CameraView;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::Helix;
 use crate::execution::ImportedGeometry;
+use crate::execution::NamedViewValue;
 use crate::execution::Plane;
 use crate::execution::Sketch;
 use crate::execution::SketchConstraint;
@@ -40,6 +42,11 @@ pub enum KclValueView {
     String {
         value: String,
     },
+    /// Exposed by nominal identity, not by the variant's representation.
+    Enum {
+        enum_name: String,
+        variant: String,
+    },
     SketchVar {
         value: Box<SketchVar>,
     },
@@ -64,6 +71,12 @@ pub enum KclValueView {
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
     GdtAnnotation {
         value: Box<GdtAnnotation>,
+    },
+    CameraView {
+        value: Box<CameraView>,
+    },
+    NamedView {
+        value: Box<NamedViewValue>,
     },
     Plane {
         value: Box<Plane>,
@@ -107,6 +120,10 @@ impl From<KclValue> for KclValueView {
             KclValue::Bool { value, .. } => KclValueView::Bool { value },
             KclValue::Number { value, ty, .. } => KclValueView::Number { value, ty },
             KclValue::String { value, .. } => KclValueView::String { value },
+            KclValue::Enum { value } => KclValueView::Enum {
+                enum_name: value.enum_id().declared_name().to_owned(),
+                variant: value.variant().to_owned(),
+            },
             KclValue::SketchVar { value } => KclValueView::SketchVar { value },
             KclValue::SketchConstraint { value } => KclValueView::SketchConstraint { value },
             KclValue::Tuple { value, .. } => KclValueView::Tuple {
@@ -128,6 +145,8 @@ impl From<KclValue> for KclValueView {
             KclValue::TagIdentifier(tag_identifier) => KclValueView::TagIdentifier(tag_identifier),
             KclValue::TagDeclarator(node) => KclValueView::TagDeclarator(node),
             KclValue::GdtAnnotation { value } => KclValueView::GdtAnnotation { value },
+            KclValue::CameraView { value } => KclValueView::CameraView { value },
+            KclValue::NamedView { value } => KclValueView::NamedView { value },
             KclValue::Plane { value } => KclValueView::Plane { value },
             KclValue::Face { value } => KclValueView::Face { value },
             KclValue::BoundedEdge { value, .. } => KclValueView::BoundedEdge { value },

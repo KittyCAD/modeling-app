@@ -2,6 +2,10 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  isProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
 
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -11,6 +15,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SETTINGS = '/settings'
 const HOME = '/home'
+const LIBRARY = '/library'
 
 export type ProjectRoute = {
   projectName: string | null
@@ -22,6 +27,11 @@ export type ProjectRoute = {
 function getProjectDirectorySetting(
   configuration: DeepPartial<Configuration>
 ): string | undefined {
+  const libraries = configuration.settings?.app?.libraries
+  if (isProjectLibrarySettings(libraries)) {
+    return getDefaultDirectoryProjectLibraryPath(libraries)
+  }
+
   const projectSettings = configuration.settings?.project
   if (
     !projectSettings ||
@@ -55,9 +65,27 @@ function getRelativePathIfContained(
   return relativePath
 }
 
+export function normalizeFilesystemPathForComparison(path: string): string {
+  const hasWindowsSeparator = path.includes('\\')
+  const normalizedPath = path.replace(/\\/g, '/').replace(/\/+$/g, '')
+  const hasWindowsDrive = /^[a-zA-Z]:\//.test(normalizedPath)
+
+  return hasWindowsSeparator || hasWindowsDrive
+    ? normalizedPath.toLowerCase()
+    : normalizedPath
+}
+
+function areFilesystemPathsEqual(left: string, right: string): boolean {
+  return (
+    normalizeFilesystemPathForComparison(left) ===
+    normalizeFilesystemPathForComparison(right)
+  )
+}
+
 export const PATHS = {
   INDEX: '/',
   HOME,
+  LIBRARY,
   FILE: '/file',
   SETTINGS,
   SETTINGS_USER: `${SETTINGS}?tab=user` as const,
@@ -124,31 +152,56 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string
+  id: string,
+  {
+    activeProjectPath,
+    candidateProjectDirectories = [],
+  }: {
+    activeProjectPath?: string
+    candidateProjectDirectories?: readonly string[]
+  } = {}
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
-  const projectDirectory = getProjectDirectorySetting(configuration)
-  const relativeToRoot = projectDirectory
-    ? getRelativePathIfContained(projectDirectory, id)
+  const relativeToActiveProject = activeProjectPath
+    ? getRelativePathIfContained(activeProjectPath, id)
     : undefined
-  if (projectDirectory && relativeToRoot !== undefined) {
-    projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = projectName
-      ? fsZds.join(projectDirectory, projectName)
-      : projectDirectory
-    projectName = projectName === '' ? null : projectName
+  if (activeProjectPath && relativeToActiveProject !== undefined) {
+    projectName = fsZds.basename(activeProjectPath)
+    projectPath = activeProjectPath
   } else {
-    projectPath = id
-    if (fsZds.extname(id) === '.kcl') {
-      projectPath = fsZds.dirname(id)
+    const configuredProjectDirectory = getProjectDirectorySetting(configuration)
+    const projectDirectory = [
+      ...candidateProjectDirectories,
+      configuredProjectDirectory,
+    ]
+      .filter((directory): directory is string => Boolean(directory))
+      .filter(
+        (directory) => getRelativePathIfContained(directory, id) !== undefined
+      )
+      .toSorted((left, right) => right.length - left.length)
+      .at(0)
+    const relativeToRoot = projectDirectory
+      ? getRelativePathIfContained(projectDirectory, id)
+      : undefined
+    if (projectDirectory && relativeToRoot !== undefined) {
+      projectName = relativeToRoot.split(fsZds.sep)[0]
+      projectPath = projectName
+        ? fsZds.join(projectDirectory, projectName)
+        : projectDirectory
+      projectName = projectName === '' ? null : projectName
+    } else {
+      projectPath = id
+      if (fsZds.extname(id) === '.kcl') {
+        projectPath = fsZds.dirname(id)
+      }
+      projectName = fsZds.basename(projectPath)
     }
-    projectName = fsZds.basename(projectPath)
   }
 
-  if (projectPath !== id) {
+  if (!areFilesystemPathsEqual(projectPath, id)) {
     currentFileName = fsZds.basename(id)
     currentFilePath = id
   }
@@ -297,19 +350,6 @@ export function desktopSafePathSplit(targetPath: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
-}
-
-/**
- * Don't pass a folder path, only files with extensions for best results.
- */
-export const enforceFileEXT = (
-  filePath: string,
-  ext: string | null
-): string | null => {
-  if (ext === null) {
-    return null
-  }
-  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
 }
 
 export const getEXTNoPeriod = (filePath: string) => {

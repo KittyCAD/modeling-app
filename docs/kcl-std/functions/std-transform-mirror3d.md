@@ -10,7 +10,7 @@ Create a mirror image of a 3D solid/surface/body, across some specified mirror a
 ```kcl
 mirror3d(
   @bodies: [Solid; 1+],
-  across: Edge | Plane | Axis3d | Segment,
+  across: Edge | Plane | Axis3d | Segment | any,
 ): [Solid; 1+]
 ```
 
@@ -21,7 +21,7 @@ mirror3d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `bodies` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The body or bodies to be reflected. | Yes |
-| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | The axis (or other geometry) to reflect across. | Yes |
+| `across` | [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | The axis (or other geometry) to reflect across. An edge specifier object such as `{ sideFaces = [faceTag1, faceTag2] }` can identify a solid edge without using its UUID. | Yes |
 
 ### Returns
 
@@ -41,7 +41,7 @@ sketch001 = sketch(on = XY) {
 }
 
 hidden001 = hide(sketch001)
-region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line3, sketch001.arc1])
 mySolid = extrude(region001, length = 1)
   |> translate(z = 1)
 
@@ -75,7 +75,7 @@ sketch001 = sketch(on = XY) {
 }
 
 hidden001 = hide(sketch001)
-region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line3, sketch001.arc1])
 shape1 = extrude(region001, length = 1)
   |> translate(z = 1)
 
@@ -114,7 +114,7 @@ sketch001 = sketch(on = XY) {
 }
 
 hidden001 = hide(sketch001)
-region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line3, sketch001.arc1])
 shape1 = extrude(region001, length = 1)
   |> translate(z = 1)
 
@@ -148,7 +148,7 @@ sketch001 = sketch(on = XY) {
   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
 }
 
-region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line3, sketch001.arc1])
 shape1 = extrude(region001, length = 1)
   |> translate(z = 1)
 
@@ -168,7 +168,7 @@ sketch002 = sketch(on = XY) {
   horizontal(line3)
 }
 hidden002 = hide(sketch002)
-region002 = region(point = [0.21mm, 1.0075mm], sketch = sketch002)
+region002 = region(segments = [sketch002.line1, sketch002.line2])
 extrude001 = extrude(region002, length = 1)
 
 // Do the mirroring, across an edge of some solid.

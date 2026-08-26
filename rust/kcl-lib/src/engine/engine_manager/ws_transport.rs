@@ -315,11 +315,13 @@ impl WebSocketTransport {
                         Some(ToEngineReq { req, request_sent }) => {
                             // Decide whether to send as binary or text,
                             // then send to the engine.
-                            let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
-                                cmd: ModelingCmd::ImportFiles { .. },
-                                cmd_id: _,
-                            }) = &req
-                            {
+                            let res = if matches!(
+                                &req,
+                                WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                                    cmd: ModelingCmd::ImportFiles { .. },
+                                    cmd_id: _,
+                                })
+                            ) {
                                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
                             } else {
                                 Self::inner_send_to_engine(req, &mut tcp_write).await
@@ -378,6 +380,17 @@ impl EngineTransport for WebSocketTransport {
     ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
+        let api_call_id_msg = {
+            // Get the API call ID from session data if available. Drop it as
+            // soon as we're done.
+            let session_data = self.session_data.read().await;
+            if let Some(session) = session_data.as_ref() {
+                format!(" (API call ID: {})", session.api_call_id)
+            } else {
+                String::new()
+            }
+        };
+
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
@@ -387,7 +400,7 @@ impl EngineTransport for WebSocketTransport {
             .await
             .map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
-                    format!("Failed to send modeling command: {e}"),
+                    format!("Failed to send modeling command: {e}{api_call_id_msg}"),
                     vec![source_range],
                 ))
             })?;
@@ -397,7 +410,7 @@ impl EngineTransport for WebSocketTransport {
             .map_err(|e| {
                 KclError::new_engine_hangup(
                     KclErrorDetails::new(
-                        format!("could not send request to the engine actor: {e}"),
+                        format!("could not send request to the engine actor: {e}{api_call_id_msg}"),
                         vec![source_range],
                     ),
                     None,
@@ -405,7 +418,10 @@ impl EngineTransport for WebSocketTransport {
             })?
             .map_err(|e| {
                 KclError::new_engine_hangup(
-                    KclErrorDetails::new(format!("could not send request to the engine: {e}"), vec![source_range]),
+                    KclErrorDetails::new(
+                        format!("could not send request to the engine: {e}{api_call_id_msg}"),
+                        vec![source_range],
+                    ),
                     None,
                 )
             })?;

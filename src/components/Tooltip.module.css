@@ -6,15 +6,11 @@
 
   /* internal CSS vars */
   --_delay: 200ms;
-  --_p-block: 4px;
-  --_bg: var(--chalkboard-10);
-  --_border: var(--chalkboard-20);
-  --_shadow-alpha: 8%;
-  --_theme-alpha: 0.15;
 
   pointer-events: none;
   user-select: none;
   position: absolute;
+  position-anchor: auto;
   inset: unset;
   background-color: transparent;
   border: none;
@@ -28,6 +24,12 @@
 }
 
 .tooltip {
+  --_p-block: 4px;
+  --_bg: var(--chalkboard-10);
+  --_border: var(--chalkboard-20);
+  --_shadow-alpha: 8%;
+  --_theme-alpha: 0.15;
+
   @apply relative;
   inline-size: max-content;
   padding: var(--_p-block) calc(2 * var(--_p-block));

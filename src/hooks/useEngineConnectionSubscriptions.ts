@@ -26,29 +26,9 @@ export function useEngineConnectionSubscriptions() {
   useEffect(() => {
     if (!engineCommandManager) return
 
-    const shouldAllowSelectWithPointInCurrentState = (
-      entityId: string | undefined
-    ) => {
-      if (!entityId) {
-        return !(
-          stateRef.current.matches('Sketch no face') ||
-          stateRef.current.matches('sketchSolveMode')
-        )
-      }
-
-      const artifact = kclManager.artifactGraph.get(entityId)
-      const isSegmentSelection = artifact?.type === 'segment'
-
-      if (stateRef.current.matches('Sketch no face')) {
-        return isSegmentSelection
-      }
-
-      if (stateRef.current.matches('sketchSolveMode')) {
-        return isSegmentSelection
-      }
-
-      return true
-    }
+    const isSegmentSelection = (entityId: string | undefined) =>
+      entityId !== undefined &&
+      kclManager.artifactGraph.get(entityId)?.type === 'segment'
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -76,10 +56,17 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
+          const selectingSketchPlane =
+            stateRef.current.matches('Sketch no face')
+          const selectingSegment = isSegmentSelection(
+            engineEvent.data.entity_id
+          )
+          // Ignore select_with_point in sketch solve: without this selection is overridden
+          // and breaks multiple line highlights. Segment selections are handled
+          // locally and still need to pass through.
           if (
-            !shouldAllowSelectWithPointInCurrentState(
-              engineEvent.data.entity_id
-            )
+            stateRef.current.matches('sketchSolveMode') &&
+            !selectingSegment
           ) {
             return
           }
@@ -90,17 +77,22 @@ export function useEngineConnectionSubscriptions() {
             wasmInstance,
             useSegmentsBasedRegions,
           })
-          // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
-          // This is probably rare, but we do go into sketch mode on double click.
+          // Check state again, in case it changed before
+          // getEventForSelectWithPoint returned.
           if (
-            !shouldAllowSelectWithPointInCurrentState(
-              engineEvent.data.entity_id
-            )
+            (stateRef.current.matches('sketchSolveMode') &&
+              !selectingSegment) ||
+            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
           ) {
             return
           }
-          if (event) {
-            send(event)
+          if (event) send(event)
+          if (selectingSketchPlane && !selectingSegment) {
+            await selectSketchPlane(
+              engineEvent.data.entity_id,
+              context.store.useSketchSolveMode?.current,
+              kclManager
+            )
           }
         })().catch(reportRejection)
       },
@@ -117,30 +109,7 @@ export function useEngineConnectionSubscriptions() {
     rustContext,
     wasmInstance,
     useSegmentsBasedRegions,
-  ])
-
-  useEffect(() => {
-    if (!engineCommandManager) return
-
-    const unSub = engineCommandManager.subscribeTo({
-      event: 'select_with_point',
-      callback: state.matches('Sketch no face')
-        ? ({ data }) => {
-            void selectSketchPlane(
-              data.entity_id,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
-          }
-        : () => {},
-    })
-    return unSub
-  }, [
     context.store.useSketchSolveMode,
-    state,
-    kclManager,
-    rustContext,
-    engineCommandManager,
   ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side

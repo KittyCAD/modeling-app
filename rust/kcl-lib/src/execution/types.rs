@@ -21,6 +21,7 @@ use crate::execution::Point3d;
 use crate::execution::SKETCH_OBJECT_META;
 use crate::execution::SKETCH_OBJECT_META_SKETCH;
 use crate::execution::annotations;
+use crate::execution::kcl_value::EnumTypeId;
 use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
@@ -38,11 +39,19 @@ pub enum RuntimeType {
     Union(Vec<RuntimeType>),
     Tuple(Vec<RuntimeType>),
     Object(Vec<(String, RuntimeType)>, bool),
+    /// A user-declared nominal enum, identified by its declaration rather than
+    /// its structure. Kept out of `PrimitiveType`, which is the closed set of
+    /// built-in types that `std_ty` can name.
+    Enum(EnumTypeId),
 }
 
 impl RuntimeType {
     pub fn any() -> Self {
         RuntimeType::Primitive(PrimitiveType::Any)
+    }
+
+    pub fn never() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Never)
     }
 
     pub fn any_array() -> Self {
@@ -259,6 +268,7 @@ impl RuntimeType {
     ) -> Result<Self, CompilationIssue> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
+            AstPrimitiveType::Never => RuntimeType::never(),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
@@ -294,6 +304,7 @@ impl RuntimeType {
                 let result = match value {
                     TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
                     TypeDef::Alias(ty) => ty,
+                    TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
                 };
                 if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
@@ -325,6 +336,7 @@ impl RuntimeType {
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Object(..) => format!("an object with fields {self}"),
+            RuntimeType::Enum(id) => id.declared_name().to_owned(),
         }
     }
 
@@ -333,17 +345,23 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (Primitive(PrimitiveType::Never), _) => true,
             (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
 
-            (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
+            (Union(ts1), t2) => ts1.iter().all(|t| t.subtype(t2)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
 
             (Object(t1, _), Object(t2, _)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
+
+            // Enums are nominal, so an enum is a subtype of itself and nothing
+            // else. This arm is load-bearing: the catch-all below would answer
+            // `false` for two identical enums and quietly break reflexivity.
+            (Enum(id1), Enum(id2)) => id1 == id2,
 
             // Equivalence between singleton types and single-item arrays/tuples of the same type (plus transitivity with the array subtyping).
             (t1, RuntimeType::Array(t2, l)) if t1.subtype(t2) && ArrayLen::Known(1).subtype(*l) => true,
@@ -395,6 +413,7 @@ impl RuntimeType {
                 .join(" or "),
             RuntimeType::Tuple(_) => "tuples".to_owned(),
             RuntimeType::Object(..) => format!("objects with fields {self}"),
+            RuntimeType::Enum(id) => format!("`{}` values", id.declared_name()),
         }
     }
 }
@@ -427,6 +446,7 @@ impl std::fmt::Display for RuntimeType {
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
+            RuntimeType::Enum(id) => write!(f, "{}", id.declared_name()),
         }
     }
 }
@@ -474,6 +494,7 @@ impl ArrayLen {
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Any,
+    Never,
     None,
     Number(NumericType),
     String,
@@ -495,12 +516,15 @@ pub enum PrimitiveType {
     Axis3d,
     ImportedGeometry,
     Function,
+    CameraView,
+    NamedView,
 }
 
 impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "any values".to_owned(),
+            PrimitiveType::Never => "values of type `never`".to_owned(),
             PrimitiveType::None => "none values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
@@ -523,11 +547,14 @@ impl PrimitiveType {
             PrimitiveType::TagDecl => "tag declarators".to_owned(),
             PrimitiveType::TaggedEdge => "tagged edges".to_owned(),
             PrimitiveType::TaggedFace => "tagged faces".to_owned(),
+            PrimitiveType::CameraView => "camera views".to_owned(),
+            PrimitiveType::NamedView => "named views".to_owned(),
         }
     }
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (PrimitiveType::Never, _) => true,
             (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
             (PrimitiveType::TaggedEdge, PrimitiveType::TaggedFace)
@@ -541,6 +568,7 @@ impl std::fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::Never => write!(f, "never"),
             PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
@@ -565,6 +593,8 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function => write!(f, "fn"),
+            PrimitiveType::CameraView => write!(f, "CameraView"),
+            PrimitiveType::NamedView => write!(f, "NamedView"),
         }
     }
 }
@@ -1256,15 +1286,74 @@ pub(super) fn angle_from_str(s: &str, source_range: SourceRange) -> Result<UnitA
     })
 }
 
+/// Which value-changing conversions a coercion is allowed to perform. Separate
+/// from the question of which types it accepts, which never varies.
+///
+/// The two constructors are the only two modes the language has: a value
+/// crossing a boundary the user did not write, and a type the user wrote down.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CoercionMode {
+    convert_units: bool,
+    project_enums: bool,
+}
+
+impl CoercionMode {
+    /// A boundary the user did not write: an argument, a return, or a
+    /// Rust-implemented function reading its arguments. Numbers convert to the
+    /// target's units. Enums do not project, because an implicit projection
+    /// would defeat nominal checking exactly where it matters.
+    pub fn implicit() -> Self {
+        CoercionMode {
+            convert_units: true,
+            project_enums: false,
+        }
+    }
+
+    /// A type the user wrote down, as in `expr: Type`. Numbers are reinterpreted
+    /// as having the target's units rather than converted, and an enum projects
+    /// to its declared representation.
+    pub fn explicit() -> Self {
+        CoercionMode {
+            convert_units: false,
+            project_enums: true,
+        }
+    }
+
+    pub(crate) fn convert_units(self) -> bool {
+        self.convert_units
+    }
+
+    pub(crate) fn project_enums(self) -> bool {
+        self.project_enums
+    }
+
+    /// The same mode with projection off, so that a union can look for an exact
+    /// match before it considers projecting.
+    pub(crate) fn without_projection(self) -> Self {
+        CoercionMode {
+            project_enums: false,
+            ..self
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct CoercionError {
     pub found: Option<RuntimeType>,
     pub explicit_coercion: Option<String>,
+    /// Set when the generic "could not coerce" wording would describe the wrong
+    /// problem, and the caller should report this instead.
+    pub message: Option<String>,
 }
 
 impl CoercionError {
     fn with_explicit(mut self, c: String) -> Self {
         self.explicit_coercion = Some(c);
+        self
+    }
+
+    fn with_message(mut self, message: String) -> Self {
+        self.message = Some(message);
         self
     }
 }
@@ -1274,6 +1363,7 @@ impl From<&'_ KclValue> for CoercionError {
         CoercionError {
             found: value.principal_type(),
             explicit_coercion: None,
+            message: None,
         }
     }
 }
@@ -1297,7 +1387,7 @@ impl KclValue {
     pub fn coerce(
         &self,
         ty: &RuntimeType,
-        convert_units: bool,
+        mode: CoercionMode,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
@@ -1305,7 +1395,7 @@ impl KclValue {
                 if value.len() == 1
                     && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Tuple(..)) =>
             {
-                if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
+                if let Ok(coerced) = value[0].coerce(ty, mode, exec_state) {
                     return Ok(coerced);
                 }
             }
@@ -1313,7 +1403,7 @@ impl KclValue {
                 if value.len() == 1
                     && !matches!(ty, RuntimeType::Primitive(PrimitiveType::Any) | RuntimeType::Array(..)) =>
             {
-                if let Ok(coerced) = value[0].coerce(ty, convert_units, exec_state) {
+                if let Ok(coerced) = value[0].coerce(ty, mode, exec_state) {
                     return Ok(coerced);
                 }
             }
@@ -1321,30 +1411,56 @@ impl KclValue {
         }
 
         match ty {
-            RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, convert_units, exec_state),
-            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, convert_units, *len, exec_state, false),
-            RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, convert_units, exec_state),
-            RuntimeType::Union(tys) => self.coerce_to_union_type(tys, convert_units, exec_state),
+            RuntimeType::Primitive(ty) => self.coerce_to_primitive_type(ty, mode, exec_state),
+            RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, mode, *len, exec_state, false),
+            RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, mode, exec_state),
+            RuntimeType::Union(tys) => self.coerce_to_union_type(tys, mode, exec_state),
             RuntimeType::Object(tys, constrainable) => {
-                self.coerce_to_object_type(tys, *constrainable, convert_units, exec_state)
+                self.coerce_to_object_type(tys, *constrainable, mode, exec_state)
             }
+            RuntimeType::Enum(id) => self.coerce_to_enum_type(id),
+        }
+    }
+
+    /// Enums are nominal, so the only value that coerces to an enum type is a
+    /// value of that same enum, and it is returned unchanged. Projection out of
+    /// an enum (`Color::Red: string`) is explicit ascription, not coercion, and
+    /// is handled on its own path.
+    fn coerce_to_enum_type(&self, id: &EnumTypeId) -> Result<KclValue, CoercionError> {
+        match self {
+            KclValue::Enum { value } if value.enum_id() == id => Ok(self.clone()),
+            _ => Err(self.into()),
         }
     }
 
     fn coerce_to_primitive_type(
         &self,
         ty: &PrimitiveType,
-        convert_units: bool,
+        mode: CoercionMode,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match ty {
             PrimitiveType::Any => Ok(self.clone()),
+            PrimitiveType::Never => Err(self.into()),
             PrimitiveType::None => match self {
                 KclValue::KclNone { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Number(ty) => {
-                if convert_units {
+                // `Color::Red: number(_)` is a projection the user asked for and
+                // V1 cannot perform. Reporting the numeric "expected a number"
+                // here would describe the wrong problem: the value is a working
+                // enum, not a broken number.
+                if let KclValue::Enum { value } = self
+                    && mode.project_enums()
+                {
+                    return Err(CoercionError::from(self).with_message(format!(
+                        "Cannot project enum `{}` to a number. An enum projects to `string`; projecting to a number is not supported yet.",
+                        value.enum_id().declared_name()
+                    )));
+                }
+
+                if mode.convert_units() {
                     return ty.coerce(self);
                 }
 
@@ -1368,6 +1484,12 @@ impl KclValue {
             }
             PrimitiveType::String => match self {
                 KclValue::String { .. } => Ok(self.clone()),
+                // The one projection V1 performs, and only where the user wrote
+                // the type: see `CoercionMode`.
+                KclValue::Enum { value } if mode.project_enums() => Ok(KclValue::String {
+                    value: value.declared_string_repr(),
+                    meta: value.meta().to_vec(),
+                }),
                 _ => Err(self.into()),
             },
             PrimitiveType::Boolean => match self {
@@ -1376,6 +1498,14 @@ impl KclValue {
             },
             PrimitiveType::GdtAnnotation => match self {
                 KclValue::GdtAnnotation { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::CameraView => match self {
+                KclValue::CameraView { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::NamedView => match self {
+                KclValue::NamedView { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Segment => match self {
@@ -1508,22 +1638,10 @@ impl KclValue {
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(
-                            &RuntimeType::length(),
-                            convert_units,
-                            ArrayLen::Known(2),
-                            exec_state,
-                            true,
-                        )
+                        p.coerce_to_array_type(&RuntimeType::length(), mode, ArrayLen::Known(2), exec_state, true)
                     })?;
                     let direction = values.get("direction").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(
-                            &RuntimeType::length(),
-                            convert_units,
-                            ArrayLen::Known(2),
-                            exec_state,
-                            true,
-                        )
+                        p.coerce_to_array_type(&RuntimeType::length(), mode, ArrayLen::Known(2), exec_state, true)
                     })?;
 
                     Ok(KclValue::Object {
@@ -1552,22 +1670,10 @@ impl KclValue {
                     }
 
                     let origin = values.get("origin").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(
-                            &RuntimeType::length(),
-                            convert_units,
-                            ArrayLen::Known(3),
-                            exec_state,
-                            true,
-                        )
+                        p.coerce_to_array_type(&RuntimeType::length(), mode, ArrayLen::Known(3), exec_state, true)
                     })?;
                     let direction = values.get("direction").ok_or(self.into()).and_then(|p| {
-                        p.coerce_to_array_type(
-                            &RuntimeType::length(),
-                            convert_units,
-                            ArrayLen::Known(3),
-                            exec_state,
-                            true,
-                        )
+                        p.coerce_to_array_type(&RuntimeType::length(), mode, ArrayLen::Known(3), exec_state, true)
                     })?;
 
                     Ok(KclValue::Object {
@@ -1597,7 +1703,7 @@ impl KclValue {
     fn coerce_to_array_type(
         &self,
         ty: &RuntimeType,
-        convert_units: bool,
+        mode: CoercionMode,
         len: ArrayLen,
         exec_state: &mut ExecState,
         allow_shrink: bool,
@@ -1626,7 +1732,7 @@ impl KclValue {
                     let value_result = value
                         .iter()
                         .take(satisfied_len)
-                        .map(|v| v.coerce(ty, convert_units, exec_state))
+                        .map(|v| v.coerce(ty, mode, exec_state))
                         .collect::<Result<Vec<_>, _>>();
 
                     if let Ok(value) = value_result {
@@ -1641,10 +1747,10 @@ impl KclValue {
                     if let KclValue::HomArray { value: inner_value, .. } = item {
                         // Flatten elements.
                         for item in inner_value {
-                            values.push(item.coerce(ty, convert_units, exec_state)?);
+                            values.push(item.coerce(ty, mode, exec_state)?);
                         }
                     } else {
-                        values.push(item.coerce(ty, convert_units, exec_state)?);
+                        values.push(item.coerce(ty, mode, exec_state)?);
                     }
                 }
 
@@ -1674,7 +1780,7 @@ impl KclValue {
                     .ok_or(CoercionError::from(self))?;
                 let value = value
                     .iter()
-                    .map(|item| item.coerce(ty, convert_units, exec_state))
+                    .map(|item| item.coerce(ty, mode, exec_state))
                     .take(len)
                     .collect::<Result<Vec<_>, _>>()?;
 
@@ -1684,7 +1790,7 @@ impl KclValue {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
-            _ if len.satisfied(1, false).is_some() => self.coerce(ty, convert_units, exec_state),
+            _ if len.satisfied(1, false).is_some() => self.coerce(ty, mode, exec_state),
             _ => Err(self.into()),
         }
     }
@@ -1692,14 +1798,14 @@ impl KclValue {
     fn coerce_to_tuple_type(
         &self,
         tys: &[RuntimeType],
-        convert_units: bool,
+        mode: CoercionMode,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
-                    result.push(value[i].coerce(t, convert_units, exec_state)?);
+                    result.push(value[i].coerce(t, mode, exec_state)?);
                 }
 
                 Ok(KclValue::Tuple {
@@ -1711,7 +1817,7 @@ impl KclValue {
                 value: Vec::new(),
                 meta: meta.clone(),
             }),
-            _ if tys.len() == 1 => self.coerce(&tys[0], convert_units, exec_state),
+            _ if tys.len() == 1 => self.coerce(&tys[0], mode, exec_state),
             _ => Err(self.into()),
         }
     }
@@ -1719,11 +1825,25 @@ impl KclValue {
     fn coerce_to_union_type(
         &self,
         tys: &[RuntimeType],
-        convert_units: bool,
+        mode: CoercionMode,
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
+        // A member that accepts the value as it is must win over one that would
+        // change it, whichever order the union was written in. Without this pass
+        // `Color::Red: Color | string` would keep the enum while
+        // `Color::Red: string | Color` would project it, making the meaning of a
+        // union depend on how the author happened to spell it.
+        if mode.project_enums() {
+            let exact = mode.without_projection();
+            for t in tys {
+                if let Ok(v) = self.coerce(t, exact, exec_state) {
+                    return Ok(v);
+                }
+            }
+        }
+
         for t in tys {
-            if let Ok(v) = self.coerce(t, convert_units, exec_state) {
+            if let Ok(v) = self.coerce(t, mode, exec_state) {
                 return Ok(v);
             }
         }
@@ -1735,7 +1855,7 @@ impl KclValue {
         &self,
         tys: &[(String, RuntimeType)],
         constrainable: bool,
-        _convert_units: bool,
+        _mode: CoercionMode,
         _exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
@@ -1771,6 +1891,7 @@ impl KclValue {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
+            KclValue::Enum { value } => Some(RuntimeType::Enum(value.enum_id().clone())),
             KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
             KclValue::SketchConstraint { .. } => Some(RuntimeType::Primitive(PrimitiveType::Constraint)),
             KclValue::Object {
@@ -1783,6 +1904,8 @@ impl KclValue {
                 Some(RuntimeType::Object(properties, *constrainable))
             }
             KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
+            KclValue::CameraView { .. } => Some(RuntimeType::Primitive(PrimitiveType::CameraView)),
+            KclValue::NamedView { .. } => Some(RuntimeType::Primitive(PrimitiveType::NamedView)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
@@ -1826,8 +1949,13 @@ impl KclValue {
 
 #[cfg(test)]
 mod test {
+    use std::sync::Arc;
+
     use super::*;
+    use crate::ModuleId;
     use crate::execution::ExecTestResults;
+    use crate::execution::kcl_value::EnumTypeDef;
+    use crate::execution::kcl_value::EnumValue;
     use crate::execution::parse_execute;
 
     async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
@@ -1866,7 +1994,9 @@ mod test {
                 object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
-            KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
+            KclValue::TagDeclarator(crate::parsing::ast::types::BoxNode::new(
+                crate::parsing::ast::types::TagDeclarator::new("foo"),
+            )),
             KclValue::Plane {
                 value: Box::new(
                     Plane::from_plane_data_skipping_engine(crate::std::sketch::PlaneData::XY, exec_state).unwrap(),
@@ -1890,7 +2020,7 @@ mod test {
         exec_state: &mut ExecState,
     ) {
         let is_subtype = value == expected_value;
-        let actual = value.coerce(super_type, true, exec_state).unwrap();
+        let actual = value.coerce(super_type, CoercionMode::implicit(), exec_state).unwrap();
         assert_eq!(&actual, expected_value);
         assert_eq!(
             is_subtype,
@@ -1939,10 +2069,10 @@ mod test {
                     );
                     // Coercing an empty array to an array of length 1
                     // should fail.
-                    v.coerce(&aty1, true, &mut exec_state).unwrap_err();
+                    v.coerce(&aty1, CoercionMode::implicit(), &mut exec_state).unwrap_err();
                     // Coercing an empty array to an array that's
                     // non-empty should fail.
-                    v.coerce(&aty0, true, &mut exec_state).unwrap_err();
+                    v.coerce(&aty0, CoercionMode::implicit(), &mut exec_state).unwrap_err();
                 }
                 KclValue::Tuple { .. } => {}
                 _ => {
@@ -1959,8 +2089,12 @@ mod test {
 
         for v in &values[1..] {
             // Not a subtype
-            v.coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), true, &mut exec_state)
-                .unwrap_err();
+            v.coerce(
+                &RuntimeType::Primitive(PrimitiveType::Boolean),
+                CoercionMode::implicit(),
+                &mut exec_state,
+            )
+            .unwrap_err();
         }
         ctx.close().await;
     }
@@ -1995,8 +2129,10 @@ mod test {
             },
             &mut exec_state,
         );
-        none.coerce(&aty1, true, &mut exec_state).unwrap_err();
-        none.coerce(&aty1p, true, &mut exec_state).unwrap_err();
+        none.coerce(&aty1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        none.coerce(&aty1p, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         let tty = RuntimeType::Tuple(vec![]);
         let tty1 = RuntimeType::Tuple(vec![RuntimeType::solid()]);
@@ -2009,7 +2145,8 @@ mod test {
             },
             &mut exec_state,
         );
-        none.coerce(&tty1, true, &mut exec_state).unwrap_err();
+        none.coerce(&tty1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         let oty = RuntimeType::Object(vec![], false);
         assert_coerce_results(
@@ -2090,7 +2227,8 @@ mod test {
             vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
             false,
         );
-        obj0.coerce(&ty1, true, &mut exec_state).unwrap_err();
+        obj0.coerce(&ty1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         assert_coerce_results(&obj1, &ty1, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty1, &obj2, &mut exec_state);
 
@@ -2105,8 +2243,10 @@ mod test {
             ],
             false,
         );
-        obj0.coerce(&ty2, true, &mut exec_state).unwrap_err();
-        obj1.coerce(&ty2, true, &mut exec_state).unwrap_err();
+        obj0.coerce(&ty2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        obj1.coerce(&ty2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         assert_coerce_results(&obj2, &ty2, &obj2, &mut exec_state);
 
         // field not present
@@ -2114,16 +2254,20 @@ mod test {
             vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
             false,
         );
-        obj0.coerce(&tyq, true, &mut exec_state).unwrap_err();
-        obj1.coerce(&tyq, true, &mut exec_state).unwrap_err();
-        obj2.coerce(&tyq, true, &mut exec_state).unwrap_err();
+        obj0.coerce(&tyq, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        obj1.coerce(&tyq, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        obj2.coerce(&tyq, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         // field with different type
         let ty1 = RuntimeType::Object(
             vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
             false,
         );
-        obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
+        obj2.coerce(&ty1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         ctx.close().await;
     }
 
@@ -2202,8 +2346,12 @@ mod test {
         assert_coerce_results(&hom_arr, &tyh, &hom_arr, &mut exec_state);
         assert_coerce_results(&mixed1, &tym1, &mixed1, &mut exec_state);
         assert_coerce_results(&mixed2, &tym2, &mixed2, &mut exec_state);
-        mixed1.coerce(&tym2, true, &mut exec_state).unwrap_err();
-        mixed2.coerce(&tym1, true, &mut exec_state).unwrap_err();
+        mixed1
+            .coerce(&tym2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        mixed2
+            .coerce(&tym1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         // Length subtyping
         let tyhn = RuntimeType::Array(
@@ -2228,17 +2376,25 @@ mod test {
         );
         assert_coerce_results(&hom_arr, &tyhn, &hom_arr, &mut exec_state);
         assert_coerce_results(&hom_arr, &tyh1, &hom_arr, &mut exec_state);
-        hom_arr.coerce(&tyh3, true, &mut exec_state).unwrap_err();
+        hom_arr
+            .coerce(&tyh3, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         assert_coerce_results(&hom_arr, &tyhm3, &hom_arr, &mut exec_state);
-        hom_arr.coerce(&tyhm5, true, &mut exec_state).unwrap_err();
+        hom_arr
+            .coerce(&tyhm5, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         let hom_arr0 = KclValue::HomArray {
             value: vec![],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
         assert_coerce_results(&hom_arr0, &tyhn, &hom_arr0, &mut exec_state);
-        hom_arr0.coerce(&tyh1, true, &mut exec_state).unwrap_err();
-        hom_arr0.coerce(&tyh3, true, &mut exec_state).unwrap_err();
+        hom_arr0
+            .coerce(&tyh1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        hom_arr0
+            .coerce(&tyh3, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         // Covariance
         // let tyh = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))), ArrayLen::Known(4));
@@ -2278,16 +2434,28 @@ mod test {
         assert_coerce_results(&mixed1, &tyhn, &hom_arr_2, &mut exec_state);
         assert_coerce_results(&mixed1, &tyh1, &hom_arr_2, &mut exec_state);
         assert_coerce_results(&mixed0, &tyhn, &hom_arr0, &mut exec_state);
-        mixed0.coerce(&tyh, true, &mut exec_state).unwrap_err();
-        mixed0.coerce(&tyh1, true, &mut exec_state).unwrap_err();
+        mixed0
+            .coerce(&tyh, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        mixed0
+            .coerce(&tyh1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
         // Homogehous to mixed
         assert_coerce_results(&hom_arr_2, &tym1, &mixed1, &mut exec_state);
-        hom_arr.coerce(&tym1, true, &mut exec_state).unwrap_err();
-        hom_arr_2.coerce(&tym2, true, &mut exec_state).unwrap_err();
+        hom_arr
+            .coerce(&tym1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        hom_arr_2
+            .coerce(&tym2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
 
-        mixed0.coerce(&tym1, true, &mut exec_state).unwrap_err();
-        mixed0.coerce(&tym2, true, &mut exec_state).unwrap_err();
+        mixed0
+            .coerce(&tym1, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        mixed0
+            .coerce(&tym2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         ctx.close().await;
     }
 
@@ -2340,8 +2508,435 @@ mod test {
             RuntimeType::Primitive(PrimitiveType::Boolean),
             RuntimeType::Primitive(PrimitiveType::String),
         ]);
-        count.coerce(&tyb, true, &mut exec_state).unwrap_err();
-        count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
+        count
+            .coerce(&tyb, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        count
+            .coerce(&tyb2, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        ctx.close().await;
+    }
+
+    #[test]
+    fn union_subtyping_uses_member_subtyping() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let tagged_edge_or_string = RuntimeType::Union(vec![tagged_edge.clone(), string.clone()]);
+        let edge_or_string = RuntimeType::Union(vec![edge.clone(), string.clone()]);
+
+        // TaggedEdge | string <: Edge | string
+        assert!(tagged_edge_or_string.subtype(&edge_or_string));
+        // Edge | string is not a subtype of TaggedEdge | string.
+        assert!(!edge_or_string.subtype(&tagged_edge_or_string));
+
+        // TaggedEdge | Edge <: Edge
+        assert!(RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]).subtype(&edge));
+        // TaggedEdge | bool is not a subtype of Edge.
+        assert!(!RuntimeType::Union(vec![tagged_edge, boolean]).subtype(&edge));
+
+        // The empty union is a subtype of string.
+        assert!(RuntimeType::Union(vec![]).subtype(&string));
+    }
+
+    #[test]
+    fn nested_union_subtyping_is_associative_and_recursive() {
+        let tagged_edge = RuntimeType::Primitive(PrimitiveType::TaggedEdge);
+        let edge = RuntimeType::Primitive(PrimitiveType::Edge);
+        let string = RuntimeType::string();
+        let boolean = RuntimeType::bool();
+
+        let left_associative = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![string.clone(), boolean.clone()]),
+            edge.clone(),
+        ]);
+        let right_associative =
+            RuntimeType::Union(vec![string, RuntimeType::Union(vec![boolean.clone(), edge.clone()])]);
+
+        // (string | bool) | Edge <: string | (bool | Edge)
+        assert!(left_associative.subtype(&right_associative));
+        // string | (bool | Edge) <: (string | bool) | Edge
+        assert!(right_associative.subtype(&left_associative));
+
+        let nested_edges = RuntimeType::Union(vec![
+            RuntimeType::Union(vec![tagged_edge.clone(), edge.clone()]),
+            tagged_edge.clone(),
+        ]);
+        // (TaggedEdge | Edge) | TaggedEdge <: Edge
+        assert!(nested_edges.subtype(&edge));
+
+        let nested_with_bool = RuntimeType::Union(vec![RuntimeType::Union(vec![tagged_edge, boolean]), edge.clone()]);
+        // (TaggedEdge | bool) | Edge is not a subtype of Edge.
+        assert!(!nested_with_bool.subtype(&edge));
+    }
+
+    fn enum_ty(module_id: u32, name: &str) -> RuntimeType {
+        RuntimeType::Enum(EnumTypeId::new(ModuleId::from_usize(module_id as usize), name))
+    }
+
+    /// A value holds its declaration, so building one by hand needs a
+    /// declaration rather than just an id.
+    fn enum_def(module_id: u32, name: &str, variants: &[&str]) -> Arc<EnumTypeDef> {
+        Arc::new(
+            EnumTypeDef::new(
+                EnumTypeId::new(ModuleId::from_usize(module_id as usize), name),
+                variants.iter().map(|v| (*v).to_owned()).collect(),
+            )
+            .unwrap(),
+        )
+    }
+
+    #[test]
+    fn enum_subtyping_is_nominal() {
+        let color = enum_ty(0, "Color");
+        let shape = enum_ty(0, "Shape");
+
+        // An enum is a subtype of itself. Without a dedicated arm the catch-all
+        // in `subtype` would answer false here and break reflexivity.
+        assert!(color.subtype(&color));
+        // Distinct declarations are unrelated, in both directions.
+        assert!(!color.subtype(&shape));
+        assert!(!shape.subtype(&color));
+    }
+
+    #[test]
+    fn enum_identity_is_module_plus_declared_name() {
+        // Same declared name in two modules is two different types.
+        assert!(!enum_ty(0, "Color").subtype(&enum_ty(1, "Color")));
+        // Same declaration reached from anywhere is one type; an import alias
+        // renames the binding, never the identity recorded here.
+        assert!(enum_ty(1, "Color").subtype(&enum_ty(1, "Color")));
+    }
+
+    #[test]
+    fn enum_participates_in_the_general_type_rules() {
+        let color = enum_ty(0, "Color");
+
+        // `any` and `never` keep their universal behaviour.
+        assert!(color.subtype(&RuntimeType::any()));
+        assert!(RuntimeType::never().subtype(&color));
+        assert!(!color.subtype(&RuntimeType::never()));
+
+        // Unions and the singleton/array equivalences reach the enum arm by
+        // recursion, so they work without enum-specific code.
+        assert!(color.subtype(&RuntimeType::Union(vec![color.clone(), RuntimeType::string()])));
+        assert!(!color.subtype(&RuntimeType::Union(vec![RuntimeType::string(), enum_ty(0, "Shape")])));
+        assert!(color.subtype(&RuntimeType::Array(Box::new(color.clone()), ArrayLen::Known(1))));
+        assert!(RuntimeType::Array(Box::new(color.clone()), ArrayLen::Known(1)).subtype(&color));
+
+        // An enum is unrelated to the primitives it could later project to.
+        assert!(!color.subtype(&RuntimeType::string()));
+        assert!(!RuntimeType::string().subtype(&color));
+    }
+
+    #[test]
+    fn enum_values_report_their_own_type() {
+        let red = KclValue::Enum {
+            value: Box::new(EnumValue::new(enum_def(0, "Color", &["Red"]), "Red", Vec::new())),
+        };
+
+        assert_eq!(red.principal_type(), Some(enum_ty(0, "Color")));
+        assert!(red.has_type(&enum_ty(0, "Color")));
+        // Nominal identity, not the variant name, decides the type.
+        assert!(!red.has_type(&enum_ty(0, "Shape")));
+        assert!(!red.has_type(&RuntimeType::string()));
+    }
+
+    #[test]
+    fn enum_types_display_by_declared_name() {
+        let color = enum_ty(0, "Color");
+
+        assert_eq!(color.to_string(), "Color");
+        assert_eq!(color.human_friendly_type(), "Color");
+        assert_eq!(
+            RuntimeType::Array(Box::new(color), ArrayLen::Minimum(1)).human_friendly_type(),
+            "one or more `Color` values"
+        );
+    }
+
+    /// The seam Gate 4 will build on: a registered enum declaration resolves to
+    /// its nominal runtime type when named in a type position.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn from_alias_resolves_a_declared_enum_to_its_nominal_type() {
+        // Gate 4 registers enums during execution; until then, bind one by hand
+        // into a real environment to exercise the resolution path.
+        let mut exec_state = parse_execute("x = 1").await.unwrap().exec_state;
+        let id = EnumTypeId::new(ModuleId::default(), "Color");
+        let source_range = SourceRange::default();
+
+        // Execution has finished, so there is no current environment to bind into.
+        exec_state.mut_stack().push_new_root_env(true).unwrap();
+        exec_state
+            .mut_stack()
+            .add(
+                format!("{}Color", memory::TYPE_PREFIX),
+                KclValue::Type {
+                    value: TypeDef::Enum(Arc::new(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()]).unwrap())),
+                    experimental: false,
+                    meta: vec![],
+                },
+                source_range,
+            )
+            .unwrap();
+
+        assert_eq!(
+            RuntimeType::from_alias("Color", &mut exec_state, source_range, false).unwrap(),
+            RuntimeType::Enum(id)
+        );
+        // An unregistered name is still an unknown type, not a silent enum.
+        RuntimeType::from_alias("Shape", &mut exec_state, source_range, false).unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_coercion_requires_the_same_declaration() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let red = KclValue::Enum {
+            value: Box::new(EnumValue::new(enum_def(0, "Color", &["Red"]), "Red", Vec::new())),
+        };
+
+        // Coercing to its own type is identity-preserving.
+        assert_eq!(
+            red.coerce(&enum_ty(0, "Color"), CoercionMode::implicit(), &mut exec_state)
+                .unwrap(),
+            red
+        );
+        // Everything else is rejected, including projection to string, which is
+        // explicit ascription rather than coercion.
+        red.coerce(&enum_ty(0, "Shape"), CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        red.coerce(&enum_ty(1, "Color"), CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        red.coerce(&RuntimeType::string(), CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        // A non-enum value never satisfies an enum type.
+        let string = KclValue::String {
+            value: "Red".to_owned(),
+            meta: Vec::new(),
+        };
+        string
+            .coerce(&enum_ty(0, "Color"), CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+
+        ctx.close().await;
+    }
+
+    fn enum_value(module_id: u32, name: &str, variants: &[&str], variant: &str) -> KclValue {
+        KclValue::Enum {
+            value: Box::new(EnumValue::new(enum_def(module_id, name, variants), variant, Vec::new())),
+        }
+    }
+
+    fn string_value(value: &str) -> KclValue {
+        KclValue::String {
+            value: value.to_owned(),
+            meta: Vec::new(),
+        }
+    }
+
+    /// Every row states the outcome under BOTH modes, so the table pins the whole
+    /// matrix of target shape against mode rather than one half of it. `None`
+    /// means the coercion must fail.
+    ///
+    /// The pattern to read off it: projection happens wherever the type walk
+    /// reaches, and only when the user wrote the type.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projects_by_target_shape() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let variants = &["Red", "Green"];
+        let red = enum_value(0, "Color", variants, "Red");
+        let green = enum_value(0, "Color", variants, "Green");
+        let color = enum_ty(0, "Color");
+        let string = RuntimeType::string();
+        let strings = RuntimeType::Array(Box::new(string.clone()), ArrayLen::None);
+        let array = |value: Vec<KclValue>, ty: RuntimeType| KclValue::HomArray { value, ty };
+        let tuple = |value: Vec<KclValue>| KclValue::Tuple {
+            value,
+            meta: Vec::new(),
+        };
+
+        #[allow(clippy::type_complexity)]
+        let rows: Vec<(&str, KclValue, RuntimeType, Option<KclValue>, Option<KclValue>)> = vec![
+            (
+                "a bare enum",
+                red.clone(),
+                string.clone(),
+                Some(string_value("Red")),
+                None,
+            ),
+            (
+                "an array, element by element",
+                array(vec![red.clone(), green.clone()], color.clone()),
+                strings.clone(),
+                Some(array(vec![string_value("Red"), string_value("Green")], string.clone())),
+                None,
+            ),
+            (
+                "an array of arrays, so more than one level down",
+                array(vec![array(vec![green.clone()], RuntimeType::any())], RuntimeType::any()),
+                RuntimeType::Array(Box::new(strings.clone()), ArrayLen::None),
+                Some(array(
+                    vec![array(vec![string_value("Green")], string.clone())],
+                    strings.clone(),
+                )),
+                None,
+            ),
+            (
+                // KCL has no tuple type syntax, so this shape is only reachable here.
+                "a tuple, positionally, beside a value that needs nothing done",
+                tuple(vec![red.clone(), string_value("plain")]),
+                RuntimeType::Tuple(vec![string.clone(), string.clone()]),
+                Some(tuple(vec![string_value("Red"), string_value("plain")])),
+                None,
+            ),
+            (
+                // The existing singleton/array equivalence carries projection with
+                // it, the same way it carries numeric coercion.
+                "a one-element array against a bare string",
+                array(vec![red.clone()], RuntimeType::any()),
+                string.clone(),
+                Some(string_value("Red")),
+                None,
+            ),
+            (
+                // Object coercion checks fields with `has_type` and converts
+                // nothing: see the `TODO coerce fields` in `coerce_to_object_type`.
+                // Inherited behavior rather than an enum rule, so when field
+                // coercion is implemented this row should start expecting a
+                // projection instead of being deleted.
+                "an object field, which projects nothing",
+                KclValue::Object {
+                    value: HashMap::from([("c".to_owned(), red.clone())]),
+                    constrainable: false,
+                    object_kind: Default::default(),
+                    meta: Vec::new(),
+                },
+                RuntimeType::Object(vec![("c".to_owned(), string.clone())], false),
+                None,
+                None,
+            ),
+            (
+                "its own type, which is a check rather than a conversion",
+                red.clone(),
+                color.clone(),
+                Some(red.clone()),
+                Some(red.clone()),
+            ),
+            (
+                "another declaration, which projection is not a way around",
+                red.clone(),
+                enum_ty(0, "Shade"),
+                None,
+                None,
+            ),
+        ];
+
+        for (case, value, target, explicit, implicit) in rows {
+            assert_eq!(
+                value.coerce(&target, CoercionMode::explicit(), &mut exec_state).ok(),
+                explicit,
+                "explicit mode, case: {case}"
+            );
+            assert_eq!(
+                value.coerce(&target, CoercionMode::implicit(), &mut exec_state).ok(),
+                implicit,
+                "implicit mode, case: {case}"
+            );
+        }
+
+        ctx.close().await;
+    }
+
+    /// A member that accepts the value unchanged wins over one that would change
+    /// it, whichever order the union was written in. Each pair of rows below is
+    /// the same union spelled both ways, so a rule that depended on order would
+    /// fail one row of the pair.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projection_ignores_the_order_a_union_was_written_in() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let red = enum_value(0, "Color", &["Red"], "Red");
+        let string = RuntimeType::string();
+        let color = enum_ty(0, "Color");
+        let shade = enum_ty(0, "Shade");
+
+        let rows: Vec<(&str, Vec<RuntimeType>, Option<KclValue>)> = vec![
+            ("the enum first", vec![color.clone(), string.clone()], Some(red.clone())),
+            ("the enum last", vec![string.clone(), color.clone()], Some(red.clone())),
+            (
+                "no member accepts an enum, so projection is what satisfies it",
+                vec![RuntimeType::bool(), string.clone()],
+                Some(string_value("Red")),
+            ),
+            (
+                "a different enum is not a match, so this projects too",
+                vec![shade.clone(), string.clone()],
+                Some(string_value("Red")),
+            ),
+            (
+                "a different enum with no string member is unsatisfiable",
+                vec![shade, RuntimeType::bool()],
+                None,
+            ),
+        ];
+
+        for (case, tys, expected) in rows {
+            let union = RuntimeType::Union(tys);
+            assert_eq!(
+                red.coerce(&union, CoercionMode::explicit(), &mut exec_state).ok(),
+                expected,
+                "case: {case} ({union})"
+            );
+        }
+
+        ctx.close().await;
+    }
+
+    /// The numeric target reports what the user asked for and cannot have; the
+    /// implicit boundary keeps the numeric wording, because nobody asked for a
+    /// projection there.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn enum_projection_to_a_number_explains_itself() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let red = enum_value(0, "Color", &["Red"], "Red");
+        let message = "Cannot project enum `Color` to a number. An enum projects to `string`; projecting to a number is not supported yet.";
+
+        for (case, mode, expected) in [
+            ("explicit", CoercionMode::explicit(), Some(message)),
+            ("implicit", CoercionMode::implicit(), None),
+        ] {
+            let err = red.coerce(&RuntimeType::count(), mode, &mut exec_state).unwrap_err();
+            assert_eq!(err.message.as_deref(), expected, "case: {case}");
+        }
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn never_is_bottom_and_uninhabited() {
+        let (ctx, mut exec_state) = new_exec_state().await;
+        let never = RuntimeType::never();
+        let string = RuntimeType::string();
+
+        for ty in [
+            RuntimeType::any(),
+            string.clone(),
+            RuntimeType::Array(Box::new(string.clone()), ArrayLen::None),
+            RuntimeType::Tuple(vec![string.clone()]),
+            RuntimeType::Object(vec![("value".to_owned(), string.clone())], false),
+            RuntimeType::Union(vec![string.clone(), RuntimeType::bool()]),
+        ] {
+            assert!(never.subtype(&ty), "`never` should be a subtype of {ty}");
+        }
+
+        assert!(!string.subtype(&never));
+        assert!(RuntimeType::Union(vec![never.clone(), string.clone()]).subtype(&string));
+
+        for value in values(&mut exec_state) {
+            value
+                .coerce(&never, CoercionMode::implicit(), &mut exec_state)
+                .unwrap_err();
+        }
         ctx.close().await;
     }
 
@@ -2461,7 +3056,8 @@ mod test {
         assert_coerce_results(&a2d, &ty2d, &a2d, &mut exec_state);
         assert_coerce_results(&a3d, &ty3d, &a3d, &mut exec_state);
         assert_coerce_results(&a3d, &ty2d, &a2d, &mut exec_state);
-        a2d.coerce(&ty3d, true, &mut exec_state).unwrap_err();
+        a2d.coerce(&ty3d, CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
         ctx.close().await;
     }
 
@@ -2525,7 +3121,7 @@ mod test {
                         angle: UnitAngle::Degrees,
                     }
                     .into(),
-                    true,
+                    CoercionMode::implicit(),
                     &mut exec_state
                 )
                 .unwrap(),
@@ -2534,29 +3130,33 @@ mod test {
 
         // No coercion
         count
-            .coerce(&NumericType::mm().into(), true, &mut exec_state)
+            .coerce(&NumericType::mm().into(), CoercionMode::implicit(), &mut exec_state)
             .unwrap_err();
-        mm.coerce(&NumericType::count().into(), true, &mut exec_state)
-            .unwrap_err();
-        unknown
-            .coerce(&NumericType::mm().into(), true, &mut exec_state)
+        mm.coerce(&NumericType::count().into(), CoercionMode::implicit(), &mut exec_state)
             .unwrap_err();
         unknown
-            .coerce(&NumericType::default().into(), true, &mut exec_state)
+            .coerce(&NumericType::mm().into(), CoercionMode::implicit(), &mut exec_state)
+            .unwrap_err();
+        unknown
+            .coerce(
+                &NumericType::default().into(),
+                CoercionMode::implicit(),
+                &mut exec_state,
+            )
             .unwrap_err();
 
         count
-            .coerce(&NumericType::Unknown.into(), true, &mut exec_state)
+            .coerce(&NumericType::Unknown.into(), CoercionMode::implicit(), &mut exec_state)
             .unwrap_err();
-        mm.coerce(&NumericType::Unknown.into(), true, &mut exec_state)
+        mm.coerce(&NumericType::Unknown.into(), CoercionMode::implicit(), &mut exec_state)
             .unwrap_err();
         default
-            .coerce(&NumericType::Unknown.into(), true, &mut exec_state)
+            .coerce(&NumericType::Unknown.into(), CoercionMode::implicit(), &mut exec_state)
             .unwrap_err();
 
         assert_eq!(
             inches
-                .coerce(&NumericType::mm().into(), true, &mut exec_state)
+                .coerce(&NumericType::mm().into(), CoercionMode::implicit(), &mut exec_state)
                 .unwrap()
                 .as_f64()
                 .unwrap()
@@ -2566,7 +3166,7 @@ mod test {
         assert_eq!(
             rads.coerce(
                 &NumericType::Known(UnitType::Angle(UnitAngle::Degrees)).into(),
-                true,
+                CoercionMode::implicit(),
                 &mut exec_state
             )
             .unwrap()
@@ -2577,7 +3177,11 @@ mod test {
         );
         assert_eq!(
             inches
-                .coerce(&NumericType::default().into(), true, &mut exec_state)
+                .coerce(
+                    &NumericType::default().into(),
+                    CoercionMode::implicit(),
+                    &mut exec_state
+                )
                 .unwrap()
                 .as_f64()
                 .unwrap()
@@ -2585,11 +3189,15 @@ mod test {
             1.0
         );
         assert_eq!(
-            rads.coerce(&NumericType::default().into(), true, &mut exec_state)
-                .unwrap()
-                .as_f64()
-                .unwrap()
-                .round(),
+            rads.coerce(
+                &NumericType::default().into(),
+                CoercionMode::implicit(),
+                &mut exec_state
+            )
+            .unwrap()
+            .as_f64()
+            .unwrap()
+            .round(),
             1.0
         );
         ctx.close().await;

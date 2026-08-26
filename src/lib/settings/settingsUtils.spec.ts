@@ -9,12 +9,23 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
-import { createLayoutWithMetadata } from '@src/lib/layout/utils'
-import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
-import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { type Setting, createSettings } from '@src/lib/settings/initialSettings'
 import {
+  LATEST_LAYOUT_VERSION,
+  createLayoutWithMetadata,
+} from '@src/lib/layout/utils'
+import {
+  DEFAULT_PROJECT_LIBRARY_TITLE,
+  getDefaultCloudProjectLibrarySetting,
+  getDefaultProjectLibrarySettings,
+  LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+} from '@src/lib/projectLibraries'
+import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
+import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
+import {
+  clearSettingsAtLevel,
   configurationToSettingsPayload,
   formatSettingsLabel,
   getAllCurrentSettings,
@@ -43,6 +54,11 @@ const pluginExtensionSettings = {
     }),
   },
 }
+
+const projectLibrariesExtensionSettings = projectLibrariesSettingsContribution
+
+const createSettingsWithProjectLibraries = () =>
+  createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
   it(`sets settings at the 'user' level`, () => {
@@ -105,13 +121,13 @@ describe('testing settings initialization', () => {
   })
 
   it('treats an empty project libraries setting as an explicit non-default value', () => {
-    const settings = createSettings()
+    const settings = createSettingsWithProjectLibraries()
     settings.app.libraries.default =
       getDefaultProjectLibrarySettings('/tmp/projects')
 
     expect(settings.app.libraries.current).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -126,6 +142,31 @@ describe('testing settings initialization', () => {
     expect(settings.app.libraries.current).toEqual([])
     expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toEqual(
       []
+    )
+  })
+
+  it('falls back to default project libraries after clearing user-level libraries', () => {
+    const settings = createSettingsWithProjectLibraries()
+    settings.app.libraries.default =
+      getDefaultProjectLibrarySettings('/tmp/projects')
+
+    setSettingsAtLevel(settings, 'user', {
+      app: {
+        libraries: [getDefaultCloudProjectLibrarySetting()],
+      },
+    })
+
+    clearSettingsAtLevel(settings, 'user')
+
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
+        path: '/tmp/projects',
+        type: 'directory',
+      },
+    ])
+    expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toBe(
+      undefined
     )
   })
 })
@@ -194,6 +235,55 @@ describe('testing hiddenOnPlatform', () => {
     expect(hiddenOnPlatform(setting3, false)).toBe(true)
     expect(hiddenOnPlatform(setting4, false)).toBe(false)
   })
+
+  it('hides feature-gated settings unless the feature is enabled', () => {
+    const setting = {
+      hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+    } as Setting<unknown>
+
+    expect(hiddenOnPlatform(setting, true)).toBe(true)
+    expect(hiddenOnPlatform(setting, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        setting,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
+  })
+
+  it('can scope feature-gated settings to web', () => {
+    const setting = {
+      hideWithoutFeatureOnPlatform: {
+        web: OPFS_CLOUD_FEATURE_FLAG,
+      },
+    } as Setting<unknown>
+
+    expect(hiddenOnPlatform(setting, true)).toBe(false)
+    expect(hiddenOnPlatform(setting, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        setting,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
+  })
+
+  it('keeps libraries visible on desktop and feature-gated on web', () => {
+    const settings = createSettingsWithProjectLibraries()
+    const libraries = settings.app.libraries as Setting
+
+    expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        libraries,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
+  })
 })
 
 // This tests if default project level settings can override non-default user level settings.
@@ -210,51 +300,54 @@ describe('project settings serialization regression', () => {
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
     const serializedToml = serializeConfiguration(
-      settingsPayloadToConfiguration({
-        app: {
-          onboardingStatus: 'dismissed',
-          allowOrbitInSketchMode: true,
-          machineApi: true,
-          showAllFiles: true,
-          projectDirectory: '/tmp/projects',
-          libraries: [
-            {
-              title: 'Default Projects Directory',
-              path: '/tmp/projects',
-              type: 'directory',
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            onboardingStatus: 'dismissed',
+            allowOrbitInSketchMode: true,
+            machineApi: true,
+            showAllFiles: true,
+            projectDirectory: '/tmp/projects',
+            libraries: [
+              {
+                title: DEFAULT_PROJECT_LIBRARY_TITLE,
+                path: '/tmp/projects',
+                type: 'directory',
+              },
+            ],
+          },
+          debug: {
+            showPanel: true,
+            showModelingMachineState: true,
+          },
+          projects: {
+            defaultProjectName: 'plugin-template',
+          },
+          modeling: {
+            mouseControls: 'OnShape',
+            gizmoType: 'axis',
+            enableTouchControls: false,
+            useSketchSolveMode: false,
+            snapToGrid: true,
+            majorGridSpacing: 2.5,
+            minorGridsPerMajor: 5,
+            snapsPerMinor: 3,
+          },
+          commandBar: {
+            includeSettings: false,
+          },
+          textEditor: {
+            textWrapping: false,
+            blinkingCursor: false,
+          },
+          layout: {
+            configs: {
+              default: createLayoutWithMetadata(defaultLayoutConfig),
             },
-          ],
-        },
-        debug: {
-          showPanel: true,
-          showModelingMachineState: true,
-        },
-        projects: {
-          defaultProjectName: 'plugin-template',
-        },
-        modeling: {
-          mouseControls: 'OnShape',
-          gizmoType: 'axis',
-          enableTouchControls: false,
-          useSketchSolveMode: false,
-          snapToGrid: true,
-          majorGridSpacing: 2.5,
-          minorGridsPerMajor: 5,
-          snapsPerMinor: 3,
-        },
-        commandBar: {
-          includeSettings: false,
-        },
-        textEditor: {
-          textWrapping: false,
-          blinkingCursor: false,
-        },
-        layout: {
-          configs: {
-            default: createLayoutWithMetadata(defaultLayoutConfig),
           },
         },
-      }),
+        projectLibrariesExtensionSettings
+      ),
       wasmInstance
     )
     if (serializedToml instanceof Error) {
@@ -294,7 +387,10 @@ describe('project settings serialization regression', () => {
       throw parsedConfiguration
     }
 
-    const parsedPayload = configurationToSettingsPayload(parsedConfiguration)
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      projectLibrariesExtensionSettings
+    )
     expect(parsedPayload.app?.onboardingStatus).toBe('dismissed')
     expect(parsedPayload.app?.allowOrbitInSketchMode).toBe(true)
     expect(parsedPayload.app?.machineApi).toBe(true)
@@ -302,7 +398,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
     expect(parsedPayload.app?.libraries).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: DEFAULT_PROJECT_LIBRARY_TITLE,
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -321,10 +417,110 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v2')
+    expect(parsedPayload.layout?.configs?.default.version).toBe(
+      LATEST_LAYOUT_VERSION
+    )
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
+  })
+
+  it('uses the default directory library as the legacy project directory when parsing settings', () => {
+    const parsedPayload = configurationToSettingsPayload(
+      {
+        settings: {
+          app: {
+            libraries: [
+              {
+                title: 'Projects',
+                path: '/library-projects',
+                type: 'directory',
+              },
+            ],
+          },
+          project: {
+            directory: '/legacy-projects',
+          },
+        },
+      },
+      projectLibrariesExtensionSettings
+    )
+
+    expect(parsedPayload.app?.projectDirectory).toBe('/library-projects')
+  })
+
+  it('mirrors the default directory library into the legacy project directory when serializing settings', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            projectDirectory: '/legacy-projects',
+            libraries: [
+              {
+                title: 'Projects',
+                path: '/library-projects',
+                type: 'directory',
+              },
+            ],
+          },
+        },
+        projectLibrariesExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('[settings.project]')
+    expect(serializedToml).toContain('directory = "/library-projects"')
+  })
+
+  it('omits the default personal cloud library path when serializing settings', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration(
+        {
+          app: {
+            libraries: [
+              {
+                title: 'Personal Cloud',
+                path: LEGACY_PERSONAL_CLOUD_PROJECT_LIBRARY_PATH,
+                type: 'cloud',
+              },
+            ],
+          },
+        },
+        projectLibrariesExtensionSettings
+      ),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('[[settings.app.libraries]]')
+    expect(serializedToml).toContain('title = "Personal Cloud"')
+    expect(serializedToml).toContain('type = "cloud"')
+    expect(serializedToml).not.toContain('path =')
+
+    const parsedConfiguration = parseAppSettings(serializedToml, wasmInstance)
+    if (parsedConfiguration instanceof Error) {
+      throw parsedConfiguration
+    }
+
+    const parsedPayload = configurationToSettingsPayload(
+      parsedConfiguration,
+      projectLibrariesExtensionSettings
+    )
+    expect(parsedPayload.app?.libraries).toEqual([
+      getDefaultCloudProjectLibrarySetting(),
+    ])
   })
 
   it('preserves extension-contributed plugin settings through wasm round-trip', async () => {

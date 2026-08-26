@@ -273,34 +273,7 @@ description: Operations executed v-block.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 8
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
+            "type": "SketchBlockArgs"
           }
         ]
       },
@@ -316,7 +289,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -390,7 +363,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -477,7 +450,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -524,7 +497,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -608,7 +581,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -655,7 +628,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -739,7 +712,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -786,7 +759,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -870,7 +843,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -917,7 +890,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1001,7 +974,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1048,7 +1021,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1132,7 +1105,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1179,7 +1152,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1263,7 +1236,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1310,7 +1283,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1394,7 +1367,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1441,7 +1414,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1525,7 +1498,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1572,7 +1545,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1656,7 +1629,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1703,7 +1676,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1787,7 +1760,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1834,7 +1807,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1918,7 +1891,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1965,7 +1938,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2049,7 +2022,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2096,7 +2069,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2180,7 +2153,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2227,7 +2200,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2263,7 +2236,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2299,7 +2272,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2335,7 +2308,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2371,7 +2344,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2407,7 +2380,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2443,7 +2416,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2479,7 +2452,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2515,7 +2488,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2551,7 +2524,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2587,7 +2560,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2623,7 +2596,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2659,7 +2632,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 9
+            "index": 8
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2710,7 +2683,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 10
+            "index": 9
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2752,7 +2725,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 11
+            "index": 10
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2781,7 +2754,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 12
+            "index": 11
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2810,7 +2783,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 13
+            "index": 12
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -2839,6 +2812,28 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 74
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
             "index": 14
           },
           {
@@ -2853,21 +2848,281 @@ description: Operations executed v-block.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "startSketchOn",
+      "name": "circle",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "center": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -0.5,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 1.19,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "SketchVar",
+                "value": -0.25,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "SketchVar",
+                "value": 1.19,
+                "ty": {
+                  "in": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "horizontalDistance",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 1
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "verticalDistance",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "mm": null,
+                    "type": "Known",
+                    "type": "Length"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "radius",
+      "unlabeledArg": {
+        "value": {
+          "type": "KclNone"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlockBody"
+          },
+          {
+            "type": "SketchBlockBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "BinaryLeft"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "StdLibCall",
+      "name": "region",
+      "unlabeledArg": null,
       "labeledArgs": {
-        "face": {
+        "segments": {
           "value": {
-            "type": "String",
-            "value": "end"
+            "type": "Array",
+            "value": [
+              {
+                "type": "Segment",
+                "artifact_id": "[uuid]"
+              }
+            ]
           },
           "sourceRange": []
         }
@@ -2883,6 +3138,10 @@ description: Operations executed v-block.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
           }
         ]
       },
@@ -2929,7 +3188,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 17
+            "index": 16
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3040,7 +3299,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3064,7 +3323,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3088,7 +3347,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3112,7 +3371,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3136,7 +3395,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3160,7 +3419,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3184,7 +3443,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3208,7 +3467,7 @@ description: Operations executed v-block.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"

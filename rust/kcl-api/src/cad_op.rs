@@ -91,7 +91,7 @@ impl Operation {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
-#[expect(clippy::large_enum_variant)]
+#[cfg_attr(not(target_arch = "wasm32"), expect(clippy::large_enum_variant))]
 pub enum Group {
     /// A function call.
     #[serde(rename_all = "camelCase")]
@@ -158,6 +158,12 @@ pub enum OpKclValue {
     String {
         value: String,
     },
+    /// Shown in the feature tree by nominal identity, e.g. `Color::Red`, not by
+    /// the variant's representation.
+    Enum {
+        enum_name: String,
+        variant: String,
+    },
     SketchVar {
         value: f64,
         ty: NumericType,
@@ -180,6 +186,9 @@ pub enum OpKclValue {
     GdtAnnotation {
         artifact_id: ArtifactId,
     },
+    /// A camera view argument. Fieldless because a camera registers no
+    /// artifact: the marker only separates a passed camera from an omitted one.
+    CameraView {},
     Plane {
         artifact_id: ArtifactId,
     },

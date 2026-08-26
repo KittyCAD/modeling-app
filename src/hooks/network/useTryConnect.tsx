@@ -4,6 +4,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -12,10 +13,9 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { getDimensions } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
-import toast from 'react-hot-toast'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -150,15 +150,23 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
 
-  // This means you idled, otherwise you use the reset camera position
-  if (sceneInfra.camControls.oldCameraState) {
-    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-  } else {
-    await resetCameraPosition({
-      sceneInfra,
-      engineCommandManager,
-      settingsActor,
-    })
+  // A named view outlives the connection that showed it, and the new connection
+  // has neither its visibility nor its camera.
+  const restoredNamedViewCamera =
+    await reapplyActiveViewAfterReconnect(kclManager)
+
+  // Skipped when the view placed the camera, which both branches would undo.
+  if (!restoredNamedViewCamera) {
+    // This means you idled, otherwise you use the reset camera position
+    if (sceneInfra.camControls.oldCameraState) {
+      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+    } else {
+      await resetCameraPosition({
+        sceneInfra,
+        engineCommandManager,
+        settingsActor,
+      })
+    }
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -215,8 +223,6 @@ async function tryConnecting({
         return resolve('connecting')
       }
 
-      let toastId: string | null = null
-
       isConnecting.current = true
 
       async function attempt() {
@@ -269,9 +275,6 @@ async function tryConnecting({
             label: 'tryConnecting',
             message: 'setAppState({ isStreamAcceptingInput: true })',
           })
-          if (toastId) {
-            toast.dismiss(toastId)
-          }
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
@@ -283,28 +286,9 @@ async function tryConnecting({
           engineCommandManager.tearDown()
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
-            if (toastId) {
-              toast.dismiss(toastId)
-            }
             return reject(e)
           }
           attempt().catch(reportRejection)
-          if (toastId) {
-            toast.error(
-              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}.`,
-              {
-                duration: Number.POSITIVE_INFINITY,
-                id: toastId,
-              }
-            )
-          } else {
-            toastId = toast.error(
-              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}.`,
-              {
-                duration: Number.POSITIVE_INFINITY,
-              }
-            )
-          }
         }
       }
       await attempt()
