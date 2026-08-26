@@ -13,7 +13,7 @@ import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
 import { isErr } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 import { createActorContext } from '@xstate/react'
@@ -50,15 +50,16 @@ type MlCopilotAccessDeniedMessage = Extract<
   { access_denied: unknown }
 >
 
-const ML_COPILOT_ACCESS_DENIED_CODES: Record<MlCopilotAccessDeniedCode, true> =
-  {
-    missing_payment_method: true,
-    payment_method_failed: true,
-    billing_threshold_reached: true,
-    pay_as_you_go_disabled: true,
-    upgrade_downgrade_abuse: true,
-    admin: true,
-  }
+// Keep the runtime guard exhaustive with the generated union. A new access
+// denial code in @kittycad/lib must be handled here before TypeScript passes.
+const ML_COPILOT_ACCESS_DENIED_CODES = {
+  missing_payment_method: true,
+  payment_method_failed: true,
+  billing_threshold_reached: true,
+  pay_as_you_go_disabled: true,
+  upgrade_downgrade_abuse: true,
+  admin: true,
+} as const satisfies Record<MlCopilotAccessDeniedCode, true>
 
 function isMlCopilotAccessDeniedCode(
   value: unknown
@@ -72,23 +73,12 @@ function isMlCopilotAccessDeniedCode(
 function isMlCopilotAccessDeniedMessage(
   response: unknown
 ): response is MlCopilotAccessDeniedMessage {
-  if (
-    typeof response !== 'object' ||
-    response === null ||
-    !('access_denied' in response) ||
-    typeof response.access_denied !== 'object' ||
-    response.access_denied === null
-  ) {
-    return false
-  }
+  if (!isRecord(response) || !isRecord(response.access_denied)) return false
 
   const { access_denied: accessDenied } = response
   return (
-    'code' in accessDenied &&
     isMlCopilotAccessDeniedCode(accessDenied.code) &&
-    'detail' in accessDenied &&
     typeof accessDenied.detail === 'string' &&
-    'retryable' in accessDenied &&
     typeof accessDenied.retryable === 'boolean'
   )
 }
