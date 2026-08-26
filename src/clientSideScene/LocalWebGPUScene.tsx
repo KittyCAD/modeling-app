@@ -6,8 +6,8 @@ import type {
 } from '@src/clientSideScene/webgpuTrim'
 import type { KclExecutionDoneDetail } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
-import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
 import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
+import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
 import {
   SKETCH_HIGHLIGHT_COLOR,
@@ -29,6 +29,7 @@ import {
   BufferAttribute,
   BufferGeometry,
   Color,
+  DirectionalLight,
   DoubleSide,
   FrontSide,
   Group,
@@ -37,10 +38,12 @@ import {
   type Material,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   Raycaster,
+  ReinhardToneMapping,
   Scene,
   ShapeUtils,
   Vector2,
@@ -50,10 +53,12 @@ import {
 const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
+const WEBGPU_TRIMMING_ENABLED = true
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
-const ENGINE_DEFAULT_SURFACE_COLOR = new Color('#9a9ca1')
-const ENGINE_SURFACE_OPACITY = 0.56
+const ENGINE_DEFAULT_SURFACE_COLOR = new Color(0.9, 0.9, 0.9)
+const ENGINE_DEFAULT_METALNESS = 0.6
+const ENGINE_DEFAULT_ROUGHNESS = 0.4
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 const EDGE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
@@ -296,7 +301,9 @@ function prepareLoadedModelForPreview(
     }
 
     meshCount += 1
-    object.geometry = object.geometry.clone()
+    if (!object.geometry.getAttribute('normal')) {
+      object.geometry.computeVertexNormals()
+    }
     const materials = (
       isArray(object.material) ? object.material : [object.material]
     ) as Material[]
@@ -304,16 +311,15 @@ function prepareLoadedModelForPreview(
       null) as WebGpuTrimPrimitiveState | null
     const previewMaterials = materials.map((material) => {
       const materialParameters = {
-        color: 0xffffff,
-        vertexColors: true,
+        color: ENGINE_DEFAULT_SURFACE_COLOR,
+        metalness: ENGINE_DEFAULT_METALNESS,
+        roughness: ENGINE_DEFAULT_ROUGHNESS,
         side: FrontSide,
-        transparent: true,
-        opacity: ENGINE_SURFACE_OPACITY,
       }
       const previewMaterial =
         trimState && trimResources
           ? trimResources.createMaterial(trimState, materialParameters)
-          : new MeshBasicMaterial(materialParameters)
+          : new MeshStandardMaterial(materialParameters)
       materialCount += 1
       materialTypes.add(material.type)
       disposeMaterial(material)
@@ -331,199 +337,14 @@ function prepareLoadedModelForPreview(
   }
 }
 
-function getPreviewMaterials(mesh: Mesh): MeshBasicMaterial[] {
-  return (
-    isArray(mesh.material) ? mesh.material : [mesh.material]
-  ) as MeshBasicMaterial[]
-}
+type PreviewSurfaceMaterial = Material & { color: Color }
 
-function getMeshWorldNormal(mesh: Mesh) {
-  mesh.updateWorldMatrix(true, false)
-
-  const positionAttribute = mesh.geometry.getAttribute('position')
-  if (!positionAttribute || positionAttribute.count < 3) {
-    return null
-  }
-
-  const indexAttribute = mesh.geometry.index
-  const a = new Vector3()
-  const b = new Vector3()
-  const c = new Vector3()
-  const edgeA = new Vector3()
-  const edgeB = new Vector3()
-  const normal = new Vector3()
-  const referencedVertexIndices = indexAttribute
-    ? Array.from({ length: indexAttribute.count }, (_, arrayIndex) =>
-        indexAttribute.getX(arrayIndex)
-      )
-    : Array.from(
-        { length: positionAttribute.count },
-        (_, arrayIndex) => arrayIndex
-      )
-
-  for (
-    let referencedIndex = 0;
-    referencedIndex <= referencedVertexIndices.length - 3;
-    referencedIndex += 3
-  ) {
-    a.fromBufferAttribute(
-      positionAttribute,
-      referencedVertexIndices[referencedIndex]
-    ).applyMatrix4(mesh.matrixWorld)
-    b.fromBufferAttribute(
-      positionAttribute,
-      referencedVertexIndices[referencedIndex + 1]
-    ).applyMatrix4(mesh.matrixWorld)
-    c.fromBufferAttribute(
-      positionAttribute,
-      referencedVertexIndices[referencedIndex + 2]
-    ).applyMatrix4(mesh.matrixWorld)
-
-    edgeA.subVectors(b, a)
-    edgeB.subVectors(c, a)
-    normal.crossVectors(edgeA, edgeB)
-    if (normal.lengthSq() > 1e-10) {
-      return normal.normalize()
-    }
-  }
-
-  return null
-}
-
-function updatePreviewBaseColors(
-  root: Object3D,
-  camera: PerspectiveCamera | OrthographicCamera | null
-) {
-  const keyDirection = new Vector3()
-  const fillDirection = new Vector3()
-  const rimDirection = new Vector3()
-  const white = new Color('#f2f3f5')
-  const viewDirection = new Vector3()
-  const meshPosition = new Vector3()
-  const lightAnchor = new Vector3()
-  const cameraRight = new Vector3()
-  const cameraUp = new Vector3()
-  const pointLightPosition = new Vector3()
-  const vertex = new Vector3()
-  const lightVector = new Vector3()
-  const reflectionVector = new Vector3()
-  const halfVector = new Vector3()
-
-  if (camera) {
-    const worldDirection = new Vector3()
-    camera.getWorldDirection(worldDirection)
-    viewDirection.copy(worldDirection).negate().normalize()
-    cameraRight.crossVectors(viewDirection, camera.up).normalize()
-    cameraUp.copy(camera.up).normalize()
-    keyDirection.copy(new Vector3(1.6, 1.5, 1.15)).normalize()
-    fillDirection.copy(new Vector3(-1.2, 0.2, 0.35)).normalize()
-    rimDirection.copy(new Vector3(0.4, -0.9, 1.4)).normalize()
-    lightAnchor.copy(root.position)
-    if (
-      'getWorldPosition' in root &&
-      typeof root.getWorldPosition === 'function'
-    ) {
-      root.getWorldPosition(lightAnchor)
-    }
-    const cameraDistance = Math.max(
-      camera.position.distanceTo(lightAnchor),
-      0.001
-    )
-    const forwardOffset = Math.min(Math.max(cameraDistance * 0.16, 0.025), 0.12)
-    const rightOffset = Math.min(Math.max(cameraDistance * 0.07, 0.012), 0.045)
-    const upOffset = Math.min(Math.max(cameraDistance * 0.05, 0.01), 0.035)
-    pointLightPosition
-      .copy(lightAnchor)
-      .addScaledVector(viewDirection, forwardOffset)
-      .addScaledVector(cameraRight, -rightOffset)
-      .addScaledVector(cameraUp, -upOffset)
-  } else {
-    keyDirection.set(1.6, 1.5, 1.15).normalize()
-    fillDirection.set(-1.2, 0.2, 0.35).normalize()
-    rimDirection.set(0.4, -0.9, 1.4).normalize()
-    pointLightPosition.set(-0.03, -0.02, 0.055)
-  }
-
-  root.traverse((object) => {
-    if (!(object instanceof Mesh)) {
-      return
-    }
-
-    const normal = getMeshWorldNormal(object)
-    if (!normal) {
-      return
-    }
-
-    if (camera) {
-      meshPosition.setFromMatrixPosition(object.matrixWorld)
-      viewDirection.subVectors(camera.position, meshPosition).normalize()
-      if (normal.dot(viewDirection) < 0) {
-        normal.negate()
-      }
-    }
-
-    const key = Math.max(normal.dot(keyDirection), 0) * 0.18
-    const fill = Math.max(normal.dot(fillDirection), 0) * 0.1
-    const rim = Math.max(normal.dot(rimDirection), 0) * 0.06
-    const faceFacing = camera
-      ? Math.max(normal.dot(viewDirection), 0) * 0.08
-      : 0
-    const baseIntensity = 0.27 + key + fill + rim + faceFacing
-
-    const positionAttribute = object.geometry.getAttribute('position')
-    if (!(positionAttribute instanceof BufferAttribute)) {
-      return
-    }
-
-    const colors = new Float32Array(positionAttribute.count * 3)
-
-    for (let index = 0; index < positionAttribute.count; index += 1) {
-      vertex
-        .fromBufferAttribute(positionAttribute, index)
-        .applyMatrix4(object.matrixWorld)
-
-      lightVector.subVectors(pointLightPosition, vertex)
-      const lightDistanceSquared = Math.max(lightVector.lengthSq(), 1e-6)
-      lightVector.normalize()
-
-      const diffuse = Math.max(normal.dot(lightVector), 0)
-      const attenuation = 1 / (1 + lightDistanceSquared * 55)
-
-      halfVector.addVectors(lightVector, viewDirection).normalize()
-      const specular =
-        Math.pow(Math.max(normal.dot(halfVector), 0), 28) * attenuation * 1.9
-      reflectionVector
-        .copy(normal)
-        .multiplyScalar(2 * normal.dot(lightVector))
-        .sub(lightVector)
-        .normalize()
-      const sheen =
-        Math.pow(Math.max(reflectionVector.dot(viewDirection), 0), 9) *
-        attenuation *
-        0.55
-
-      const intensity = Math.min(
-        1.22,
-        baseIntensity + diffuse * attenuation * 6.5 + specular + sheen
-      )
-
-      const shadedColor = ENGINE_DEFAULT_SURFACE_COLOR.clone()
-        .multiplyScalar(0.42 + intensity * 0.72)
-        .lerp(
-          white,
-          Math.min(
-            0.62,
-            specular * 1.05 + diffuse * attenuation * 0.55 + sheen * 0.35
-          )
-        )
-
-      colors[index * 3] = shadedColor.r
-      colors[index * 3 + 1] = shadedColor.g
-      colors[index * 3 + 2] = shadedColor.b
-    }
-
-    object.geometry.setAttribute('color', new BufferAttribute(colors, 3))
-  })
+function getPreviewMaterials(mesh: Mesh): PreviewSurfaceMaterial[] {
+  const materials = isArray(mesh.material) ? mesh.material : [mesh.material]
+  return materials.filter(
+    (material): material is PreviewSurfaceMaterial =>
+      'color' in material && material.color instanceof Color
+  )
 }
 
 type PreviewAssociation = {
@@ -745,6 +566,28 @@ function convertEngineWorldVectorToGltfWorld(
   scale = 1
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
+}
+
+type PreviewLighting = {
+  cameraDirectionalLight: DirectionalLight
+}
+
+function createPreviewLighting(scene: Scene): PreviewLighting {
+  const cameraDirectionalLight = new DirectionalLight(0xffffff, 0.25)
+  scene.add(cameraDirectionalLight, cameraDirectionalLight.target)
+
+  return {
+    cameraDirectionalLight,
+  }
+}
+
+function updatePreviewLighting(
+  lighting: PreviewLighting,
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3
+) {
+  lighting.cameraDirectionalLight.position.copy(camera.position)
+  lighting.cameraDirectionalLight.target.position.copy(target)
 }
 
 function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
@@ -1316,15 +1159,13 @@ function setMeshHighlight(
   }
 
   for (const material of getPreviewMaterials(mesh)) {
-    const nextColor = new Color(0xffffff)
+    const nextColor = ENGINE_DEFAULT_SURFACE_COLOR.clone()
     if (mode === 'selected') {
       nextColor.lerp(SELECTED_COLOR, 0.72)
     } else if (mode === 'hover') {
       nextColor.lerp(HOVER_COLOR, 0.5)
     }
     material.color.copy(nextColor)
-    material.opacity = mode === 'base' ? ENGINE_SURFACE_OPACITY : 0.82
-    material.needsUpdate = true
   }
 }
 
@@ -1345,7 +1186,6 @@ function setLineHighlight(
 
   line.material.color.copy(nextColor)
   line.material.opacity = mode === 'base' ? 0.95 : 1
-  line.material.needsUpdate = true
 }
 
 function summarizePickedObject(
@@ -1398,11 +1238,13 @@ function summarizePickedObject(
 export const LocalWebGPUScene = ({
   backgroundColor,
   onVisibilityChange,
+  onExportReady,
   forceHide = false,
   commandProxyEnabled = true,
 }: {
   backgroundColor: string
   onVisibilityChange: (isVisible: boolean) => void
+  onExportReady?: (exportScene: (() => Promise<void>) | null) => void
   forceHide?: boolean
   commandProxyEnabled?: boolean
 }) => {
@@ -1448,12 +1290,13 @@ export const LocalWebGPUScene = ({
     let resizeObserver: ResizeObserver | null = null
     let currentModel: Object3D | null = null
     let currentTrimResources: WebGpuTrimResources | null = null
+    let previewLighting: PreviewLighting | null = null
     let currentRefreshId = 0
     let isVisible = false
     let pendingRefreshRequest = false
     let refreshModel: (() => Promise<void>) | null = null
     let previewCamera: PerspectiveCamera | OrthographicCamera | null = null
-    let previewTarget = new Vector3()
+    const previewTarget = new Vector3()
     let hoveredObject: Object3D | null = null
     let selectedObjects = new Set<Object3D>()
     let selectionEntityIdToObject = new Map<string, Object3D>()
@@ -1600,13 +1443,8 @@ export const LocalWebGPUScene = ({
       previewCamera.lookAt(previewTarget)
       previewCamera.updateProjectionMatrix()
       previewCamera.updateMatrixWorld(true)
-      if (currentModel) {
-        updatePreviewBaseColors(currentModel, previewCamera)
-        currentModel.traverse((object) => {
-          if (object instanceof Mesh || object instanceof Line) {
-            applyObjectState(object)
-          }
-        })
+      if (previewLighting) {
+        updatePreviewLighting(previewLighting, previewCamera, previewTarget)
       }
       requestRender?.()
     }
@@ -1701,6 +1539,10 @@ export const LocalWebGPUScene = ({
             return false
           }
 
+          if (!WEBGPU_TRIMMING_ENABLED) {
+            return true
+          }
+
           const primitive =
             parserState && 'primitiveByObject' in parserState
               ? (parserState.primitiveByObject.get(intersection.object) ?? null)
@@ -1784,11 +1626,17 @@ export const LocalWebGPUScene = ({
 
     const initialize = async () => {
       logLocalWebGpuPreview('initializing preview renderer')
-      const [{ default: WebGPURenderer }, { createWebGpuTrimResources }] =
-        await Promise.all([
-          import('three/src/renderers/webgpu/WebGPURenderer.js'),
-          import('@src/clientSideScene/webgpuTrim'),
-        ])
+      const [
+        { default: WebGPURenderer },
+        { default: PMREMGenerator },
+        { RoomEnvironment },
+        { createWebGpuTrimResources },
+      ] = await Promise.all([
+        import('three/src/renderers/webgpu/WebGPURenderer.js'),
+        import('three/src/renderers/common/extras/PMREMGenerator.js'),
+        import('three/examples/jsm/environments/RoomEnvironment.js'),
+        import('@src/clientSideScene/webgpuTrim'),
+      ])
 
       if (disposed) {
         logLocalWebGpuPreview(
@@ -1872,6 +1720,8 @@ export const LocalWebGPUScene = ({
         return
       }
       logLocalWebGpuPreview('renderer backend initialized')
+      renderer.toneMapping = ReinhardToneMapping
+      renderer.toneMappingExposure = 1
       renderer.setPixelRatio(window.devicePixelRatio)
       renderer.domElement.className =
         'absolute inset-0 z-20 h-full w-full pointer-events-none'
@@ -1883,6 +1733,79 @@ export const LocalWebGPUScene = ({
 
       const scene = new Scene()
       scene.background = new Color(backgroundColor)
+      const roomEnvironment = new RoomEnvironment()
+      const pmremGenerator = new PMREMGenerator(renderer)
+      const environmentRenderTarget = pmremGenerator.fromScene(
+        roomEnvironment,
+        0.04,
+        0.1,
+        100,
+        { size: 128 }
+      )
+      await device.queue.onSubmittedWorkDone()
+      roomEnvironment.dispose()
+      pmremGenerator.dispose()
+      if (disposed) {
+        environmentRenderTarget.dispose()
+        renderer.dispose()
+        return
+      }
+      scene.environment = environmentRenderTarget.texture
+      scene.environmentIntensity = 0.85
+      previewLighting = createPreviewLighting(scene)
+
+      const exportCurrentScene = async () => {
+        if (!currentModel) {
+          logLocalWebGpuPreview('GLB export skipped; no current model')
+          return
+        }
+
+        const modelToExport = currentModel
+        const trimStates = new Map<Object3D, unknown>()
+        modelToExport.traverse((object) => {
+          if ('kittycadTrimState' in object.userData) {
+            trimStates.set(object, object.userData.kittycadTrimState)
+            delete object.userData.kittycadTrimState
+          }
+        })
+
+        try {
+          modelToExport.updateMatrixWorld(true)
+          const { GLTFExporter } = await import(
+            'three/examples/jsm/exporters/GLTFExporter.js'
+          )
+          const exporter = new GLTFExporter()
+          const result = await exporter.parseAsync(modelToExport, {
+            binary: true,
+            onlyVisible: true,
+          })
+          if (!(result instanceof ArrayBuffer)) {
+            throw new Error('GLTFExporter did not produce a binary GLB')
+          }
+
+          const blob = new Blob([result], { type: 'model/gltf-binary' })
+          const downloadUrl = URL.createObjectURL(blob)
+          const downloadLink = document.createElement('a')
+          const timestamp = new Date().toISOString().replaceAll(':', '-')
+          downloadLink.href = downloadUrl
+          downloadLink.download = `render-packet-scene-${timestamp}.glb`
+          downloadLink.style.display = 'none'
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          downloadLink.remove()
+          window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
+
+          logLocalWebGpuPreview('current Three.js scene exported as GLB', {
+            bytes: result.byteLength,
+            filename: downloadLink.download,
+          })
+        } finally {
+          trimStates.forEach((trimState, object) => {
+            object.userData.kittycadTrimState = trimState
+          })
+        }
+      }
+      onExportReady?.(exportCurrentScene)
 
       const sharedCamera = kclManager.sceneInfra.camControls.camera
       const sharedTarget = kclManager.sceneInfra.camControls.target
@@ -2500,9 +2423,9 @@ export const LocalWebGPUScene = ({
           (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
         ) {
           clearModel()
-          currentTrimResources = createWebGpuTrimResources(
-            renderPacket.primitives
-          )
+          currentTrimResources = WEBGPU_TRIMMING_ENABLED
+            ? createWebGpuTrimResources(renderPacket.primitives)
+            : null
           const packetModel = buildRenderPacketModel(
             renderPacket,
             currentTrimResources
@@ -2515,7 +2438,6 @@ export const LocalWebGPUScene = ({
             currentModel,
             currentTrimResources
           )
-          updatePreviewBaseColors(currentModel, previewCamera)
           if (loadedModelStats.meshCount === 0) {
             clearModel()
             setVisible(false)
@@ -2526,6 +2448,7 @@ export const LocalWebGPUScene = ({
             primitiveCount: renderPacket.primitives.length,
             edgeCount: renderPacket.edges.length,
             meshCount: loadedModelStats.meshCount,
+            trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
             trimTriangleCount: currentTrimResources?.triangleCount ?? 0,
           })
           syncPreviewCameraFromShared()
@@ -2554,6 +2477,7 @@ export const LocalWebGPUScene = ({
 
       return () => {
         logLocalWebGpuPreview('cleaning up preview renderer')
+        onExportReady?.(null)
         kclManager.removeEventListener(
           KclManagerEvents.ExecutionDone,
           onExecutionDone
@@ -2570,6 +2494,8 @@ export const LocalWebGPUScene = ({
           cancelAnimationFrame(animationFrameId)
         }
         requestRender = null
+        previewLighting = null
+        environmentRenderTarget.dispose()
         renderer.dispose()
       }
     }
@@ -2591,9 +2517,10 @@ export const LocalWebGPUScene = ({
       logLocalWebGpuPreview('effect cleanup')
       setVisible(false)
       refreshModel = null
+      onExportReady?.(null)
       cleanup?.()
     }
-  }, [backgroundColor, kclManager, onVisibilityChange])
+  }, [backgroundColor, kclManager, onExportReady, onVisibilityChange])
 
   return (
     <div

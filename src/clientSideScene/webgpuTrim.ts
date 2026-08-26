@@ -2,14 +2,10 @@ import type {
   RenderPacketPrimitive,
   RenderPacketTrimLoop,
 } from '@src/lib/rustContext'
-import {
-  DataTexture,
-  type MeshBasicMaterialParameters,
-  NearestFilter,
-  RedFormat,
-  UnsignedByteType,
-} from 'three'
-import MeshBasicNodeMaterial from 'three/src/materials/nodes/MeshBasicNodeMaterial.js'
+import { DataTexture, NearestFilter, RedFormat, UnsignedByteType } from 'three'
+import MeshStandardNodeMaterial, {
+  type MeshStandardNodeMaterialParameters,
+} from 'three/src/materials/nodes/MeshStandardNodeMaterial.js'
 import type Node from 'three/src/nodes/core/Node.js'
 import {
   bool,
@@ -47,8 +43,8 @@ export type WebGpuTrimResources = {
   primitiveStates: Array<WebGpuTrimPrimitiveState | null>
   createMaterial: (
     state: WebGpuTrimPrimitiveState,
-    parameters: MeshBasicMaterialParameters
-  ) => MeshBasicNodeMaterial
+    parameters: MeshStandardNodeMaterialParameters
+  ) => MeshStandardNodeMaterial
   dispose: (renderer: unknown) => void
   triangleCount: number
 }
@@ -236,7 +232,7 @@ export function createWebGpuTrimResources(
     primitiveStates,
     triangleCount: values.length / 8,
     createMaterial: (state, parameters) => {
-      const material = new MeshBasicNodeMaterial(parameters)
+      const material = new MeshStandardNodeMaterial(parameters)
       const triangleOffset = int(uniform(state.triangleOffset))
       const triangleCount = int(uniform(state.triangleCount))
 

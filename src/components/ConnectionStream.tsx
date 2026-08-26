@@ -91,6 +91,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
+  const [isExportingLocalScene, setIsExportingLocalScene] = useState(false)
+  const exportLocalSceneRef = useRef<(() => Promise<void>) | null>(null)
   const [localWebGpuViewMode, setLocalWebGpuViewMode] =
     useState<LocalWebGpuViewMode>('auto')
   const settingsValues = settings.useSettings()
@@ -684,6 +686,33 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     setIsLocalRenderVisible(isVisible)
   }, [])
 
+  const handleLocalExportReady = useCallback(
+    (exportScene: (() => Promise<void>) | null) => {
+      exportLocalSceneRef.current = exportScene
+    },
+    []
+  )
+
+  const exportLocalScene = useCallback(async () => {
+    if (isExportingLocalScene || !exportLocalSceneRef.current) {
+      return
+    }
+
+    setIsExportingLocalScene(true)
+    try {
+      await exportLocalSceneRef.current()
+    } catch (error) {
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'local Three.js scene GLB export failed',
+        metadata: { error },
+      })
+      reportRejection(error)
+    } finally {
+      setIsExportingLocalScene(false)
+    }
+  }, [isExportingLocalScene])
+
   const shouldShowLocalWebGpuDebugToggle = shouldEnableLocalWebGpuPreview()
   const shouldShowLocalWebGpuScene =
     localWebGpuViewMode === 'stream'
@@ -737,6 +766,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       <LocalWebGPUScene
         backgroundColor={style.backgroundColor}
         onVisibilityChange={handleLocalVisibilityChange}
+        onExportReady={handleLocalExportReady}
         forceHide={!shouldShowLocalWebGpuScene}
         commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
       />
@@ -799,6 +829,19 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
                 </button>
               )
             })}
+            <div className="mx-1 h-4 w-px bg-chalkboard-30 dark:bg-chalkboard-70" />
+            <button
+              type="button"
+              disabled={!isLocalRenderVisible || isExportingLocalScene}
+              onClick={() => void exportLocalScene()}
+              className={`rounded-full px-3 py-1 transition-colors ${
+                !isLocalRenderVisible || isExportingLocalScene
+                  ? 'cursor-not-allowed opacity-40'
+                  : 'text-chalkboard-80 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+              }`}
+            >
+              {isExportingLocalScene ? 'Exporting…' : 'Export GLB'}
+            </button>
           </div>
         </div>
       )}
