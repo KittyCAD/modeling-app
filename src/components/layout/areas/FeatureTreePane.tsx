@@ -577,10 +577,13 @@ function OperationBranchGroup({
   liveActiveModuleId,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
-  parentItem: ModuleInstanceOperation
+  parentItem: ModuleInstanceOperation | StdLibCallOperation
   childItems: OperationTreeNode[]
   isModuleOwned?: boolean
 }) {
+  const isModuleBranch = parentItem.type === 'ModuleInstance'
+  const branchIsModuleOwned = isModuleOwned || isModuleBranch
+
   if (childItems.length === 0) {
     return (
       <OperationItem
@@ -593,7 +596,7 @@ function OperationBranchGroup({
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
         visibilityOperations={visibilityOperations}
-        isModuleOwned={true}
+        isModuleOwned={branchIsModuleOwned}
         liveLatestOperationKey={liveLatestOperationKey}
       />
     )
@@ -603,17 +606,21 @@ function OperationBranchGroup({
   // latest operation.  Outside live execution every branch defaults open.
   // Changing the key forces a Disclosure remount with the new defaultOpen
   // (headlessui v1 does not support a controlled `open` prop).
-  const isLive = liveActiveModuleId != null
-  const shouldBeOpen = !isLive || liveActiveModuleId === parentItem.moduleId
+  const isLive = isModuleBranch && liveActiveModuleId != null
+  const shouldBeOpen = isModuleBranch
+    ? !isLive || liveActiveModuleId === parentItem.moduleId
+    : false
 
   return (
     <Disclosure
-      key={`${parentItem.moduleId}-${shouldBeOpen}`}
+      key={`${getOperationKey(parentItem)}-${shouldBeOpen}`}
       defaultOpen={shouldBeOpen}
     >
       <div
         className="flex items-start gap-1"
-        data-module-branch={parentItem.moduleId}
+        data-module-branch={
+          parentItem.type === 'ModuleInstance' ? parentItem.moduleId : undefined
+        }
       >
         <Disclosure.Button
           data-testid="operation-group-caret"
@@ -636,7 +643,7 @@ function OperationBranchGroup({
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
             visibilityOperations={visibilityOperations}
-            isModuleOwned={true}
+            isModuleOwned={branchIsModuleOwned}
             liveLatestOperationKey={liveLatestOperationKey}
           />
         </div>
@@ -656,7 +663,7 @@ function OperationBranchGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 visibilityOperations={visibilityOperations}
-                isModuleOwned={true}
+                isModuleOwned={branchIsModuleOwned}
                 liveLatestOperationKey={liveLatestOperationKey}
               />
             )

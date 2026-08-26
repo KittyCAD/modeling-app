@@ -90,6 +90,94 @@ describe('FeatureTreePane', () => {
       }
     }
 
+    function createRegionOperation(
+      artifactId: string,
+      sourceRange: [number, number, number]
+    ): Operation {
+      return {
+        type: 'StdLibCall',
+        name: 'region',
+        unlabeledArg: null,
+        labeledArgs: {},
+        nodePath: defaultNodePath(),
+        sourceRange,
+        resultArtifactId: artifactId,
+      }
+    }
+
+    function createSweepOperation(
+      name: 'extrude' | 'revolve' | 'sweep',
+      artifactIds: string[],
+      sourceRange: [number, number, number],
+      isError = false
+    ): Operation {
+      const sketches: OpKclValue[] = artifactIds.map((artifactId) => ({
+        type: 'Sketch',
+        value: { artifactId },
+      }))
+      return {
+        type: 'StdLibCall',
+        name,
+        unlabeledArg: {
+          value:
+            sketches.length === 1
+              ? sketches[0]
+              : { type: 'Array', value: sketches },
+          sourceRange,
+        },
+        labeledArgs: {},
+        nodePath: defaultNodePath(),
+        sourceRange,
+        isError,
+      }
+    }
+
+    it('nests a consumed region under its sweep', () => {
+      const region = createRegionOperation('region-1', [0, 10, 0])
+      const extrude = createSweepOperation('extrude', ['region-1'], [20, 40, 0])
+      const operationsByModule: OperationsByModule = {
+        map: { 0: [region, extrude] },
+      }
+
+      expect(buildOperationTree(operationsByModule, 0)).toEqual([
+        { parent: extrude, children: [region] },
+      ])
+    })
+
+    it('nests multiple consumed regions and leaves an unconsumed region at the root', () => {
+      const first = createRegionOperation('region-1', [0, 10, 0])
+      const unconsumed = createRegionOperation('region-2', [11, 20, 0])
+      const second = createRegionOperation('region-3', [21, 30, 0])
+      const revolve = createSweepOperation(
+        'revolve',
+        ['region-1', 'region-3'],
+        [40, 60, 0]
+      )
+      const operationsByModule: OperationsByModule = {
+        map: { 0: [first, unconsumed, second, revolve] },
+      }
+
+      expect(buildOperationTree(operationsByModule, 0)).toEqual([
+        unconsumed,
+        { parent: revolve, children: [first, second] },
+      ])
+    })
+
+    it('does not nest a region under a failed sweep', () => {
+      const region = createRegionOperation('region-1', [0, 10, 0])
+      const sweep = createSweepOperation(
+        'sweep',
+        ['region-1'],
+        [20, 40, 0],
+        true
+      )
+      const operationsByModule: OperationsByModule = {
+        map: { 0: [region, sweep] },
+      }
+
+      expect(buildOperationTree(operationsByModule, 0)).toEqual([region, sweep])
+    })
+
     it('nests imported module operations under the root module instance', () => {
       const operationsByModule: OperationsByModule = {
         map: {

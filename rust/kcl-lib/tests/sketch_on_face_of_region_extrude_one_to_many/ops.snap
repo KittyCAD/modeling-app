@@ -581,7 +581,8 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
@@ -1423,7 +1424,8 @@ description: Operations executed sketch_on_face_of_region_extrude_one_to_many.kc
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

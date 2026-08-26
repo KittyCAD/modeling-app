@@ -651,7 +651,8 @@ description: Operations executed named_views_hide_imported.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

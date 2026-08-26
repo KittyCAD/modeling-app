@@ -831,7 +831,8 @@ description: Operations executed zds_extrude_fillet_top_edge.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",

@@ -895,7 +895,8 @@ description: Operations executed error_large_fillet_radius.kcl
           }
         ]
       },
-      "sourceRange": []
+      "sourceRange": [],
+      "resultArtifactId": "[uuid]"
     },
     {
       "type": "StdLibCall",
