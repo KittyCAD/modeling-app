@@ -1,7 +1,11 @@
 import type { UnitArea, UnitVolume } from '@kittycad/lib'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { describe, expect, it } from 'vitest'
+import { render, waitFor } from '@testing-library/react'
+import { createElement } from 'react'
+import { describe, expect, it, vi } from 'vitest'
+import { MeasurementStatusBarItem } from './MeasurementTool'
 import {
   getDefaultDistanceModeForTarget,
   getDistanceMeasurementLabel,
@@ -22,6 +26,20 @@ import {
   unitAreaLabels,
   unitVolumeLabels,
 } from './measurementUtils'
+
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: vi.fn(),
+}))
+
+vi.mock('@src/components/CustomIcon', () => ({ CustomIcon: () => null }))
+
+vi.mock('@src/components/StatusBar/StatusBar', () => ({
+  defaultStatusBarItemClassNames: '',
+}))
+
+vi.mock('@src/components/Tooltip', () => ({
+  default: () => null,
+}))
 
 describe('MeasurementTool helpers', () => {
   function measurementEntity(
@@ -325,6 +343,89 @@ describe('MeasurementTool helpers', () => {
   it('formats 3d points', () => {
     expect(formatPoint3d({ x: 1.23456, y: 0.00000012, z: Number.NaN })).toBe(
       '1.2346, 1.200e-7, -'
+    )
+  })
+})
+
+describe('MeasurementStatusBarItem', () => {
+  const edgeLengthResponse = {
+    success: true,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: { type: 'edge_get_length', data: { length: 10 } },
+      },
+    },
+  }
+
+  function mockStatusBar({
+    generation,
+    idleState = { value: true },
+    sendSceneCommand = vi.fn(async ({ cmd }: { cmd: { type: string } }) =>
+      cmd.type === 'edge_get_length' ? edgeLengthResponse : { success: false }
+    ),
+  }: {
+    generation: { value: number }
+    idleState?: { value: boolean }
+    sendSceneCommand?: ReturnType<typeof vi.fn>
+  }) {
+    vi.mocked(useModelingContext).mockReturnValue({
+      state: {
+        matches: (value: string) => value === 'idle' && idleState.value,
+        context: {
+          engineCommandManager: { sendSceneCommand },
+          kclManager: {
+            fileSettings: {},
+            isExecutingSignal: { value: false },
+            engineSceneGenerationSignal: generation,
+          },
+          selectionRanges: {
+            graphSelections: [],
+            otherSelections: [
+              {
+                type: 'enginePrimitive',
+                entityId: 'stale-edge',
+                primitiveIndex: 0,
+                primitiveType: 'edge',
+              },
+            ],
+          },
+          store: {},
+        },
+      },
+    } as never)
+    return sendSceneCommand
+  }
+
+  it('skips edge_get_length after regeneration returns to idle with stale selection', async () => {
+    const generation = { value: 1 }
+    const idleState = { value: true }
+    const sendSceneCommand = mockStatusBar({ generation, idleState })
+    const { rerender } = render(createElement(MeasurementStatusBarItem))
+
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalled())
+    sendSceneCommand.mockClear()
+
+    idleState.value = false
+    generation.value = 2
+    rerender(createElement(MeasurementStatusBarItem))
+    idleState.value = true
+    rerender(createElement(MeasurementStatusBarItem))
+
+    await waitFor(() => expect(sendSceneCommand).not.toHaveBeenCalled())
+  })
+
+  it('measures a selected edge when selection matches the current scene generation', async () => {
+    const sendSceneCommand = mockStatusBar({ generation: { value: 1 } })
+    render(createElement(MeasurementStatusBarItem))
+
+    await waitFor(() =>
+      expect(sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'modeling_cmd_req',
+          cmd: { type: 'edge_get_length', edge_id: 'stale-edge' },
+        })
+      )
     )
   })
 })

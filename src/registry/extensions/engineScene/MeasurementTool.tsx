@@ -700,8 +700,12 @@ export function MeasurementStatusBarItem() {
   const [streamElement, setStreamElement] = useState<HTMLElement | null>(null)
   const [result, setResult] = useState<MeasurementResult | null>(null)
   const latestRequestKey = useRef<string | null>(null)
+  const selectionSceneGeneration = useRef(
+    kclManager.engineSceneGenerationSignal.value
+  )
 
   const isIdle = state.matches('idle')
+  const sceneGeneration = kclManager.engineSceneGenerationSignal.value
   const selectedEntities = useMemo(
     () => getMeasurementEntities(state.context.selectionRanges),
     [state.context.selectionRanges]
@@ -741,10 +745,19 @@ export function MeasurementStatusBarItem() {
   )
 
   useEffect(() => {
+    selectionSceneGeneration.current =
+      kclManager.engineSceneGenerationSignal.value
+  }, [kclManager, measurementInputKey])
+
+  useEffect(() => {
     latestRequestKey.current = measurementInputKey
     setResult(null)
 
     if (!isIdle || !measurementTarget) {
+      return
+    }
+
+    if (sceneGeneration !== selectionSceneGeneration.current) {
       return
     }
 
@@ -780,6 +793,7 @@ export function MeasurementStatusBarItem() {
     isIdle,
     measurementInputKey,
     measurementTarget,
+    sceneGeneration,
     selectedEntityIdsKey,
     sendModelingCommand,
     unit,
