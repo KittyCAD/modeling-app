@@ -5,7 +5,7 @@ description: Operations executed import_obj_with_mtl_units.kcl
 {
   "rust/kcl-lib/tests/import_obj_with_mtl_units/input.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "cube",
       "moduleId": 0,
       "nodePath": {

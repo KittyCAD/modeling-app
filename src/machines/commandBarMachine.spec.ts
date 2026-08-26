@@ -52,7 +52,7 @@ describe('commandBarMachine', () => {
     actor.stop()
   })
 
-  it('clears codemod review details when review is closed or submitted', async () => {
+  it('preserves codemod review details on errors and success until review closes', async () => {
     const reviewDetails = {
       type: 'codemod' as const,
       currentCode: 'x = 1',
@@ -66,7 +66,10 @@ describe('commandBarMachine', () => {
       name: 'Test codemod',
       groupId: 'test',
       needsReview: true,
-      reviewValidation: vi.fn().mockResolvedValue(reviewError),
+      reviewValidation: vi
+        .fn()
+        .mockResolvedValueOnce(reviewError)
+        .mockResolvedValueOnce({ reviewDetails }),
       onSubmit: vi.fn(),
       args: {
         optional: {
@@ -113,6 +116,7 @@ describe('commandBarMachine', () => {
     await vi.waitFor(() => {
       expect(actor.getSnapshot().matches('Review')).toBe(true)
     })
+    expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
     expect(actor.getSnapshot().context.reviewValidationDetails).toEqual(
       reviewDetails
     )

@@ -148,4 +148,20 @@ nodePath: NodePath,
 /**
  * The source range of the operation in the source code.
  */
+sourceRange: SourceRange, } | { "type": "ImportedGeometry", 
+/**
+ * The name bound to the imported geometry.
+ */
+name: string, 
+/**
+ * The ID of the foreign module backing the imported geometry.
+ */
+moduleId: ModuleId, 
+/**
+ * The node path of the import statement in the source code.
+ */
+nodePath: NodePath, 
+/**
+ * The source range of the import statement in the source code.
+ */
 sourceRange: SourceRange, } | { "type": "GroupEnd" };
