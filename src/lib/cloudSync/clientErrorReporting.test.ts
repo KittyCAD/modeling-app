@@ -14,6 +14,7 @@ vi.mock('@src/lib/clientErrors', () => ({
     CloudSyncConflict: 'cloud_sync_conflict',
     CloudSyncConflictCopyDetected: 'cloud_sync_conflict_copy_detected',
     CloudSyncFailure: 'cloud_sync_failure',
+    CloudSyncUntrackedLocalChanges: 'cloud_sync_untracked_local_changes',
   },
   reportClientError: mocks.reportClientError,
 }))
@@ -26,6 +27,7 @@ import {
   reportCloudSyncConflict,
   reportCloudSyncConflictCopyDetected,
   reportCloudSyncFailure,
+  reportCloudSyncUntrackedLocalChanges,
 } from '@src/lib/cloudSync/clientErrorReporting'
 
 describe('cloud sync client error reporting', () => {
@@ -117,6 +119,32 @@ describe('cloud sync client error reporting', () => {
       extra: {
         source: 'CloudSyncEngine',
         operation: 'reconcile-project',
+      },
+    })
+  })
+
+  it('reports recovery of local changes that were missing queued work', () => {
+    reportCloudSyncUntrackedLocalChanges({
+      remoteProjectId: 'remote-123',
+      remoteRevision: 'rev-1',
+      baseFileCount: 4,
+      localFileCount: 5,
+    })
+
+    expect(mocks.reportClientError).toHaveBeenCalledWith({
+      code: 'cloud_sync_untracked_local_changes',
+      errorName: 'CloudSyncUntrackedLocalChanges',
+      message: 'Cloud sync detected local changes without queued work.',
+      route: '/cloud-sync',
+      dedupeKey: 'CloudSync:untracked-local-changes:remote-123:rev-1',
+      extra: {
+        source: 'CloudSyncEngine',
+        operation: 'reconcile-project',
+        remoteProjectId: 'remote-123',
+        remoteRevision: 'rev-1',
+        baseFileCount: 4,
+        localFileCount: 5,
+        recoveryAction: 'sync-project',
       },
     })
   })

@@ -4498,6 +4498,24 @@ w = f() + f()
         };
     }
 
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13319
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_rejects_oob_on_frontend_array() {
+        let code = r#"
+values = [10, 20]
+third = values[2]
+"#;
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(
+            err.error.message().contains("array doesn't have any item at index 2"),
+            "{err:?}"
+        );
+    }
+
     /// Regression test for https://github.com/KittyCAD/modeling-app/issues/13103
     /// i.e.
     /// If you do a pattern circular 3d in mock execution mode,

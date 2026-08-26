@@ -386,7 +386,7 @@ extrude([profile1, profile2], length = 1)
 sketch1 = startSketchOn(XY)
 profile1 = circle(sketch1, center = [0, 0], radius = 5)
   |> circle(center = [0, 0], radius = 5)
-revolve(profile1, axis = Z)
+revolve(profile1, axis = X)
 ",
         "Profiles should not be chained together in a pipeline.",
         Some(
@@ -394,7 +394,7 @@ revolve(profile1, axis = Z)
 sketch1 = startSketchOn(XY)
 profile1 = circle(sketch1, center = [0, 0], radius = 5)
 profile2 = circle(sketch1, center = [0, 0], radius = 5)
-revolve([profile1, profile2], axis = Z)
+revolve([profile1, profile2], axis = X)
 "
             .to_owned()
         )
