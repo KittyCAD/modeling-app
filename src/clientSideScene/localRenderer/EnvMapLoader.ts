@@ -5,7 +5,7 @@ import {
 } from 'three'
 import type Renderer from 'three/src/renderers/common/Renderer.js'
 
-const DEFAULT_ENVIRONMENT_INTENSITY = 0.85
+const DEFAULT_ENVIRONMENT_INTENSITY = 1
 const DEFAULT_PMREM_SIZE = 128
 
 export class EnvMapLoader {

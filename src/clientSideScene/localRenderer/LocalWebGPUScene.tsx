@@ -41,11 +41,11 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
+  NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   Raycaster,
-  ReinhardToneMapping,
   Scene,
   ShapeUtils,
   Vector2,
@@ -1716,7 +1716,7 @@ export const LocalWebGPUScene = ({
         return
       }
       logLocalWebGpuPreview('renderer backend initialized')
-      renderer.toneMapping = ReinhardToneMapping
+      renderer.toneMapping = NeutralToneMapping
       renderer.toneMappingExposure = 1
       renderer.setPixelRatio(window.devicePixelRatio)
       renderer.domElement.className =
