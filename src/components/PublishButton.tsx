@@ -174,6 +174,10 @@ function PublishPopoverContent({
   >(
     async (submission) => {
       const wasmInstance = await kclManager.wasmInstancePromise
+      const saved = await kclManager.writeToFile(kclManager.code)
+      if (err(saved)) {
+        return false
+      }
       const published = await publishCurrentProject({
         token,
         project,
@@ -204,6 +208,13 @@ function PublishPopoverContent({
       }
 
       if (willMoveProjectToCloud && project) {
+        // A project-library move is normally initiated from Home, where no
+        // editor or project-settings watcher still owns the source path. Put
+        // this open-project move into the same lifecycle before touching disk.
+        app.closeProject()
+        app.settings.actor.send({ type: 'clear.project' })
+        await navigate(PATHS.HOME)
+
         const movedDefaultFile = await moveProjectToCloudLibrary(app, project)
         if (err(movedDefaultFile)) {
           console.error(

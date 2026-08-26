@@ -110,6 +110,13 @@ function createApp({
         wasmInstancePromise: Promise.resolve({}),
         path: '/projects/example/main.kcl',
         code: '',
+        writeToFile: vi.fn().mockResolvedValue(undefined),
+      },
+    },
+    closeProject: vi.fn(),
+    settings: {
+      actor: {
+        send: vi.fn(),
       },
     },
     registry: {
@@ -219,13 +226,12 @@ describe('PublishButton', () => {
         getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
         moveToLibrary,
       } as unknown as HomeProjectActionsService
-      const dialogProps = await openPublishDialog(
-        createApp({
-          project: localProject,
-          hasCloudSyncFeature,
-          homeProjectActions,
-        })
-      )
+      const app = createApp({
+        project: localProject,
+        hasCloudSyncFeature,
+        homeProjectActions,
+      })
+      const dialogProps = await openPublishDialog(app)
       expect(dialogProps.willMoveProjectToCloud).toBe(shouldMove)
 
       await act(async () => {
@@ -233,6 +239,10 @@ describe('PublishButton', () => {
       })
 
       expect(mockState.publishCurrentProject).toHaveBeenCalledOnce()
+      expect(app.singletons.kclManager.writeToFile).toHaveBeenCalledWith('')
+      expect(app.singletons.kclManager.writeToFile).toHaveBeenCalledBefore(
+        mockState.publishCurrentProject
+      )
       expect(moveToLibrary).toHaveBeenCalledTimes(shouldMove ? 1 : 0)
       if (shouldMove) {
         expect(moveToLibrary).toHaveBeenCalledWith(
@@ -242,6 +252,11 @@ describe('PublishButton', () => {
         expect(
           mockState.publishCurrentProject.mock.invocationCallOrder[0]
         ).toBeLessThan(moveToLibrary.mock.invocationCallOrder[0])
+        expect(app.closeProject).toHaveBeenCalledOnce()
+        expect(app.settings.actor.send).toHaveBeenCalledWith({
+          type: 'clear.project',
+        })
+        expect(app.closeProject).toHaveBeenCalledBefore(moveToLibrary)
       }
     }
   )
