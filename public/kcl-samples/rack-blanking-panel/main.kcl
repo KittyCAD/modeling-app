@@ -113,4 +113,4 @@ extrudeHoles = extrude([region001, region002], length = 5, symmetric = true)
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
 // Cut the holes from the blanking plate
-holesCut = subtract(baseExtrusion, tools = extrudeHoles, legacyMethod = true)
+holesCut = subtract(baseExtrusion, tools = extrudeHoles)

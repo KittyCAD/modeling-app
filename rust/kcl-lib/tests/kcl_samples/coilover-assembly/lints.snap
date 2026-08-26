@@ -13,8 +13,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      1038,
-      1187,
+      1056,
+      1205,
       1
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      2508,
-      2652,
+      2526,
+      2670,
       1
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3357,
-      3498,
+      3375,
+      3516,
       1
     ],
     "overridden": false,
@@ -64,8 +64,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3504,
-      3648,
+      3522,
+      3666,
       1
     ],
     "overridden": false,
@@ -81,8 +81,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      1025,
-      1195,
+      1043,
+      1213,
       4
     ],
     "overridden": false,
@@ -98,8 +98,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      2623,
-      2759,
+      2641,
+      2777,
       4
     ],
     "overridden": false,
@@ -115,8 +115,8 @@ description: Lints coilover-assembly.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3468,
-      3614,
+      3486,
+      3632,
       4
     ],
     "overridden": false,

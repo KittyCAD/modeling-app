@@ -332,7 +332,7 @@ shape = loft([squareRegion, circleRegion], bodyType = SURFACE)
 
 ```kcl
 // Demonstrates surface lofting of segments from multiple sketch blocks.
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 sketch002 = sketch(on = XY) {
   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])

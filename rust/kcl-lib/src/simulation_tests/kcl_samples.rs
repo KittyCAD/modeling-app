@@ -73,9 +73,20 @@ async fn unparse_test(test: &Test) {
     }
 }
 
-#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
+#[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples", exclude = ["walkie-talkie"])]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
     let t = test(dir_name, dir_path.join("main.kcl"));
+    super::execute_test(&t, true, true).await;
+}
+
+/// The current engine times out on the walkie-talkie's exact 143-tool speaker
+/// grille. Keep the real-engine regression available to run explicitly while
+/// engine#4948 is in progress, without making unrelated sample CI intermittent.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "blocked by https://github.com/KittyCAD/engine/issues/4948"]
+async fn kcl_test_execute_walkie_talkie() {
+    let dir_path = INPUTS_DIR.join("walkie-talkie");
+    let t = test("walkie-talkie", dir_path.join("main.kcl"));
     super::execute_test(&t, true, true).await;
 }
 
@@ -152,14 +163,6 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     if !relative_output_dir.exists() {
         std::fs::create_dir_all(&relative_output_dir).unwrap();
     }
-    // The current boolean implementation cannot subtract the lower-left rack
-    // mounting hole. Keep the legacy method until the engine supports it, but
-    // require exactly one warning so additional deprecations still fail and
-    // removing the workaround makes this exception fail too.
-    let expected_deprecation_warnings = match test_name {
-        "rack-blanking-panel" => 1,
-        _ => 0,
-    };
     Test {
         name: test_name.to_owned(),
         entry_point,
@@ -167,7 +170,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.
         skip_assert_artifact_graph: true,
-        expected_deprecation_warnings: Some(expected_deprecation_warnings),
+        expected_deprecation_warnings: Some(0),
     }
 }
 

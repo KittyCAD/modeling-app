@@ -6698,7 +6698,7 @@ export default {
       {
         "name": "roll",
         "ty": "number(Angle)",
-        "docs": "The roll angle. Must be between -360deg and 360deg.",
+        "docs": "The roll angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6708,7 +6708,7 @@ export default {
       {
         "name": "pitch",
         "ty": "number(Angle)",
-        "docs": "The pitch angle. Must be between -360deg and 360deg.",
+        "docs": "The pitch angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6718,7 +6718,7 @@ export default {
       {
         "name": "yaw",
         "ty": "number(Angle)",
-        "docs": "The yaw angle. Must be between -360deg and 360deg.",
+        "docs": "The yaw angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6738,7 +6738,7 @@ export default {
       {
         "name": "angle",
         "ty": "number(Angle)",
-        "docs": "The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.",
+        "docs": "The angle to rotate. Must be used with `axis`.",
         "required": false,
         "special": false,
         "experimental": false,

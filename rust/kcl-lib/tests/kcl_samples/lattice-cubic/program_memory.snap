@@ -399,10 +399,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                     -5.0
                   ],
                   "tag": {
-                    "commentStart": 725,
-                    "end": 730,
+                    "commentStart": 743,
+                    "end": 748,
                     "moduleId": 0,
-                    "start": 725,
+                    "start": 743,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -429,10 +429,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 795,
-                    "end": 799,
+                    "commentStart": 813,
+                    "end": 817,
                     "moduleId": 0,
-                    "start": 795,
+                    "start": 813,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -529,10 +529,10 @@ description: Variables in memory after executing lattice-cubic.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 725,
-            "end": 730,
+            "commentStart": 743,
+            "end": 748,
             "moduleId": 0,
-            "start": 725,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -559,10 +559,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 795,
-            "end": 799,
+            "commentStart": 813,
+            "end": 817,
             "moduleId": 0,
-            "start": 795,
+            "start": 813,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -658,10 +658,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 795,
-            "end": 799,
+            "commentStart": 813,
+            "end": 817,
             "moduleId": 0,
-            "start": 795,
+            "start": 813,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -683,10 +683,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 725,
-              "end": 730,
+              "commentStart": 743,
+              "end": 748,
               "moduleId": 0,
-              "start": 725,
+              "start": 743,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -713,10 +713,10 @@ description: Variables in memory after executing lattice-cubic.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 795,
-              "end": 799,
+              "commentStart": 813,
+              "end": 817,
               "moduleId": 0,
-              "start": 795,
+              "start": 813,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -811,10 +811,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -836,10 +836,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -866,10 +866,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -961,10 +961,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -986,10 +986,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1016,10 +1016,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1111,10 +1111,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1136,10 +1136,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1166,10 +1166,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1266,10 +1266,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1291,10 +1291,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1321,10 +1321,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1416,10 +1416,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1441,10 +1441,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1471,10 +1471,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1566,10 +1566,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1591,10 +1591,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1621,10 +1621,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1716,10 +1716,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1741,10 +1741,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1771,10 +1771,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -1866,10 +1866,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -1891,10 +1891,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -1921,10 +1921,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2016,10 +2016,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2041,10 +2041,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2071,10 +2071,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2166,10 +2166,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2191,10 +2191,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2221,10 +2221,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2316,10 +2316,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2341,10 +2341,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2371,10 +2371,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2466,10 +2466,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2491,10 +2491,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2521,10 +2521,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2621,10 +2621,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2646,10 +2646,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2676,10 +2676,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2771,10 +2771,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2796,10 +2796,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2826,10 +2826,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -2921,10 +2921,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -2946,10 +2946,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -2976,10 +2976,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3071,10 +3071,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3096,10 +3096,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3126,10 +3126,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3221,10 +3221,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3246,10 +3246,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3276,10 +3276,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3371,10 +3371,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3396,10 +3396,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3426,10 +3426,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3521,10 +3521,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3546,10 +3546,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3576,10 +3576,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3671,10 +3671,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3696,10 +3696,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3726,10 +3726,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3821,10 +3821,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3846,10 +3846,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -3876,10 +3876,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -3971,10 +3971,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -3996,10 +3996,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4026,10 +4026,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4121,10 +4121,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4146,10 +4146,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4176,10 +4176,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4271,10 +4271,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4296,10 +4296,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4326,10 +4326,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4421,10 +4421,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4446,10 +4446,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4476,10 +4476,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4571,10 +4571,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4596,10 +4596,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4626,10 +4626,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4721,10 +4721,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4746,10 +4746,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4776,10 +4776,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -4871,10 +4871,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -4896,10 +4896,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4926,10 +4926,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5021,10 +5021,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5046,10 +5046,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5076,10 +5076,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5171,10 +5171,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5196,10 +5196,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5226,10 +5226,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5321,10 +5321,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5346,10 +5346,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5376,10 +5376,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5471,10 +5471,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5496,10 +5496,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5526,10 +5526,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5621,10 +5621,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5646,10 +5646,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5676,10 +5676,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5771,10 +5771,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5796,10 +5796,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5826,10 +5826,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -5921,10 +5921,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -5946,10 +5946,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -5976,10 +5976,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6071,10 +6071,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -6096,10 +6096,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6126,10 +6126,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6221,10 +6221,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -6246,10 +6246,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6276,10 +6276,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6371,10 +6371,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -6396,10 +6396,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6426,10 +6426,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6521,10 +6521,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 799,
+                "commentStart": 813,
+                "end": 817,
                 "moduleId": 0,
-                "start": 795,
+                "start": 813,
                 "type": "TagDeclarator",
                 "value": "arc2"
               },
@@ -6546,10 +6546,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   -5.0
                 ],
                 "tag": {
-                  "commentStart": 725,
-                  "end": 730,
+                  "commentStart": 743,
+                  "end": 748,
                   "moduleId": 0,
-                  "start": 725,
+                  "start": 743,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6576,10 +6576,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "commentStart": 795,
-                  "end": 799,
+                  "commentStart": 813,
+                  "end": 817,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 813,
                   "type": "TagDeclarator",
                   "value": "arc2"
                 },
@@ -6745,10 +6745,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1958,
-            "end": 1965,
+            "commentStart": 1976,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1958,
+            "start": 1976,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6776,10 +6776,10 @@ description: Variables in memory after executing lattice-cubic.kcl
             ],
             "radius": 0.5,
             "tag": {
-              "commentStart": 1958,
-              "end": 1965,
+              "commentStart": 1976,
+              "end": 1983,
               "moduleId": 0,
-              "start": 1958,
+              "start": 1976,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -6867,10 +6867,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1958,
-            "end": 1965,
+            "commentStart": 1976,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1958,
+            "start": 1976,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -6898,10 +6898,10 @@ description: Variables in memory after executing lattice-cubic.kcl
             ],
             "radius": 0.5,
             "tag": {
-              "commentStart": 1958,
-              "end": 1965,
+              "commentStart": 1976,
+              "end": 1983,
               "moduleId": 0,
-              "start": 1958,
+              "start": 1976,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7125,10 +7125,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                   ],
                   "radius": 0.5,
                   "tag": {
-                    "commentStart": 1958,
-                    "end": 1965,
+                    "commentStart": 1976,
+                    "end": 1983,
                     "moduleId": 0,
-                    "start": 1958,
+                    "start": 1976,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7227,10 +7227,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           ],
           "radius": 0.5,
           "tag": {
-            "commentStart": 1958,
-            "end": 1965,
+            "commentStart": 1976,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1958,
+            "start": 1976,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7313,10 +7313,10 @@ description: Variables in memory after executing lattice-cubic.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1958,
-            "end": 1965,
+            "commentStart": 1976,
+            "end": 1983,
             "moduleId": 0,
-            "start": 1958,
+            "start": 1976,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7344,10 +7344,10 @@ description: Variables in memory after executing lattice-cubic.kcl
             ],
             "radius": 0.5,
             "tag": {
-              "commentStart": 1958,
-              "end": 1965,
+              "commentStart": 1976,
+              "end": 1983,
               "moduleId": 0,
-              "start": 1958,
+              "start": 1976,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7438,10 +7438,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7469,10 +7469,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7560,10 +7560,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7591,10 +7591,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7682,10 +7682,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7713,10 +7713,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7804,10 +7804,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7835,10 +7835,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -7926,10 +7926,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -7957,10 +7957,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8048,10 +8048,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8079,10 +8079,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8170,10 +8170,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8201,10 +8201,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8292,10 +8292,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8323,10 +8323,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8414,10 +8414,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8445,10 +8445,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8541,10 +8541,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8572,10 +8572,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8663,10 +8663,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8694,10 +8694,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8785,10 +8785,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8816,10 +8816,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8912,10 +8912,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8943,10 +8943,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9034,10 +9034,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9065,10 +9065,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9156,10 +9156,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9187,10 +9187,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9283,10 +9283,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9314,10 +9314,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9405,10 +9405,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9436,10 +9436,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9527,10 +9527,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9558,10 +9558,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9649,10 +9649,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9680,10 +9680,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9771,10 +9771,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9802,10 +9802,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -9893,10 +9893,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -9924,10 +9924,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10015,10 +10015,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10046,10 +10046,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10137,10 +10137,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10168,10 +10168,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10259,10 +10259,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10290,10 +10290,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10386,10 +10386,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10417,10 +10417,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10508,10 +10508,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10539,10 +10539,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10630,10 +10630,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10661,10 +10661,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10752,10 +10752,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10783,10 +10783,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10874,10 +10874,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10905,10 +10905,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10996,10 +10996,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11027,10 +11027,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11118,10 +11118,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11149,10 +11149,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11240,10 +11240,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11271,10 +11271,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11362,10 +11362,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11393,10 +11393,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11489,10 +11489,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11520,10 +11520,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11611,10 +11611,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11642,10 +11642,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -11733,10 +11733,10 @@ description: Variables in memory after executing lattice-cubic.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1958,
-                "end": 1965,
+                "commentStart": 1976,
+                "end": 1983,
                 "moduleId": 0,
-                "start": 1958,
+                "start": 1976,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -11764,10 +11764,10 @@ description: Variables in memory after executing lattice-cubic.kcl
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "commentStart": 1958,
-                  "end": 1965,
+                  "commentStart": 1976,
+                  "end": 1983,
                   "moduleId": 0,
-                  "start": 1958,
+                  "start": 1976,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },

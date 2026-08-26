@@ -106,10 +106,10 @@ description: Variables in memory after executing double-hook.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3855,
-            "end": 3868,
+            "commentStart": 3873,
+            "end": 3886,
             "moduleId": 0,
-            "start": 3855,
+            "start": 3873,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -137,10 +137,10 @@ description: Variables in memory after executing double-hook.kcl
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 3855,
-              "end": 3868,
+              "commentStart": 3873,
+              "end": 3886,
               "moduleId": 0,
-              "start": 3855,
+              "start": 3873,
               "type": "TagDeclarator",
               "value": "sectionCircle"
             },
@@ -750,10 +750,10 @@ description: Variables in memory after executing double-hook.kcl
                     0.0000000029999996824717065
                   ],
                   "tag": {
-                    "commentStart": 1023,
-                    "end": 1031,
+                    "commentStart": 1041,
+                    "end": 1049,
                     "moduleId": 0,
-                    "start": 1023,
+                    "start": 1041,
                     "type": "TagDeclarator",
                     "value": "lowerTip"
                   },
@@ -780,10 +780,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 3.000000000388889,
                   "tag": {
-                    "commentStart": 1224,
-                    "end": 1233,
+                    "commentStart": 1242,
+                    "end": 1251,
                     "moduleId": 0,
-                    "start": 1224,
+                    "start": 1242,
                     "type": "TagDeclarator",
                     "value": "lowerBend"
                   },
@@ -804,10 +804,10 @@ description: Variables in memory after executing double-hook.kcl
                     -7.999999991777775
                   ],
                   "tag": {
-                    "commentStart": 1528,
-                    "end": 1539,
+                    "commentStart": 1546,
+                    "end": 1557,
                     "moduleId": 0,
-                    "start": 1528,
+                    "start": 1546,
                     "type": "TagDeclarator",
                     "value": "lowerBridge"
                   },
@@ -834,10 +834,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 3.000000000777777,
                   "tag": {
-                    "commentStart": 1811,
-                    "end": 1821,
+                    "commentStart": 1829,
+                    "end": 1839,
                     "moduleId": 0,
-                    "start": 1811,
+                    "start": 1829,
                     "type": "TagDeclarator",
                     "value": "upperEntry"
                   },
@@ -858,10 +858,10 @@ description: Variables in memory after executing double-hook.kcl
                     -4.9999999927888865
                   ],
                   "tag": {
-                    "commentStart": 2128,
-                    "end": 2137,
+                    "commentStart": 2146,
+                    "end": 2155,
                     "moduleId": 0,
-                    "start": 2128,
+                    "start": 2146,
                     "type": "TagDeclarator",
                     "value": "connector"
                   },
@@ -882,10 +882,10 @@ description: Variables in memory after executing double-hook.kcl
                     29.000000022500004
                   ],
                   "tag": {
-                    "commentStart": 2383,
-                    "end": 2394,
+                    "commentStart": 2401,
+                    "end": 2412,
                     "moduleId": 0,
-                    "start": 2383,
+                    "start": 2401,
                     "type": "TagDeclarator",
                     "value": "upperBottom"
                   },
@@ -912,10 +912,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.999999999611111,
                   "tag": {
-                    "commentStart": 2612,
-                    "end": 2626,
+                    "commentStart": 2630,
+                    "end": 2644,
                     "moduleId": 0,
-                    "start": 2612,
+                    "start": 2630,
                     "type": "TagDeclarator",
                     "value": "upperLowerBend"
                   },
@@ -936,10 +936,10 @@ description: Variables in memory after executing double-hook.kcl
                     42.00000000822223
                   ],
                   "tag": {
-                    "commentStart": 2957,
-                    "end": 2966,
+                    "commentStart": 2975,
+                    "end": 2984,
                     "moduleId": 0,
-                    "start": 2957,
+                    "start": 2975,
                     "type": "TagDeclarator",
                     "value": "upperSide"
                   },
@@ -966,10 +966,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.9999999992222186,
                   "tag": {
-                    "commentStart": 3220,
-                    "end": 3232,
+                    "commentStart": 3238,
+                    "end": 3250,
                     "moduleId": 0,
-                    "start": 3220,
+                    "start": 3238,
                     "type": "TagDeclarator",
                     "value": "upperTopBend"
                   },
@@ -990,10 +990,10 @@ description: Variables in memory after executing double-hook.kcl
                     39.00000000271111
                   ],
                   "tag": {
-                    "commentStart": 3543,
-                    "end": 3551,
+                    "commentStart": 3561,
+                    "end": 3569,
                     "moduleId": 0,
-                    "start": 3543,
+                    "start": 3561,
                     "type": "TagDeclarator",
                     "value": "upperTop"
                   },
@@ -2016,10 +2016,10 @@ description: Variables in memory after executing double-hook.kcl
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 3855,
-            "end": 3868,
+            "commentStart": 3873,
+            "end": 3886,
             "moduleId": 0,
-            "start": 3855,
+            "start": 3873,
             "type": "TagDeclarator",
             "value": "sectionCircle"
           },
@@ -2118,10 +2118,10 @@ description: Variables in memory after executing double-hook.kcl
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 3855,
-                    "end": 3868,
+                    "commentStart": 3873,
+                    "end": 3886,
                     "moduleId": 0,
-                    "start": 3855,
+                    "start": 3873,
                     "type": "TagDeclarator",
                     "value": "sectionCircle"
                   },

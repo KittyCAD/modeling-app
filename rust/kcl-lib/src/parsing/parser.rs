@@ -2454,7 +2454,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
                 )
                 .into(),
             ));
@@ -2470,7 +2470,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             return Err(ErrMode::Cut(
                 CompilationIssue::fatal(
                     path_range,
-                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+                    "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
                 )
                 .into(),
             ));
@@ -6202,17 +6202,17 @@ e
     fn bad_imports() {
         assert_err(
             r#"import cube from "../cube.kcl""#,
-            "import path may not start with '..'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '..'. Cannot reference a parent module or anything outside the bounds of your project.",
             [17, 30],
         );
         assert_err(
             r#"import cube from "/cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 28],
         );
         assert_err(
             r#"import cube from "C:\cube.kcl""#,
-            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project please find a better way to reference it.",
+            "import path may not start with '/' or '\\'. Cannot traverse to something outside the bounds of your project. If this path is inside your project, use a relative path.",
             [17, 30],
         );
         assert_err(

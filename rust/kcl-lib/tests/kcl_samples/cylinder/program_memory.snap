@@ -52,10 +52,10 @@ description: Variables in memory after executing cylinder.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 269,
-            "end": 276,
+            "commentStart": 287,
+            "end": 294,
             "moduleId": 0,
-            "start": 269,
+            "start": 287,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -83,10 +83,10 @@ description: Variables in memory after executing cylinder.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 269,
-              "end": 276,
+              "commentStart": 287,
+              "end": 294,
               "moduleId": 0,
-              "start": 269,
+              "start": 287,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -202,10 +202,10 @@ description: Variables in memory after executing cylinder.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 269,
-            "end": 276,
+            "commentStart": 287,
+            "end": 294,
             "moduleId": 0,
-            "start": 269,
+            "start": 287,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -424,10 +424,10 @@ description: Variables in memory after executing cylinder.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 269,
-                    "end": 276,
+                    "commentStart": 287,
+                    "end": 294,
                     "moduleId": 0,
-                    "start": 269,
+                    "start": 287,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },

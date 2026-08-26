@@ -1,13 +1,17 @@
 import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
 import { ProjectSearchBar } from '@src/components/ProjectSearchBar'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import {
   formatProjectLibraryPathForDisplay,
+  getProjectLibraryDetailsDescription,
+  getProjectLibraryLocationLabel,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
 import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
+import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -43,6 +47,9 @@ export function HomeHeader({
   ...rest
 }: HomeHeaderProps) {
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
+  const libraryDetailsDescription = library
+    ? getProjectLibraryDetailsDescription(library)
+    : undefined
 
   return (
     <section {...rest}>
@@ -52,12 +59,31 @@ export function HomeHeader({
             {library && showLibraryBackLink && (
               <Link
                 to={PATHS.HOME}
-                className="text-sm text-chalkboard-70 underline underline-offset-2 dark:text-chalkboard-30"
+                className="inline-flex items-center gap-1 text-sm text-chalkboard-70 underline underline-offset-2 dark:text-chalkboard-30"
               >
+                <CustomIcon
+                  name="caretLeft"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                />
                 All libraries
               </Link>
             )}
-            <h1 className="text-3xl font-bold">{title}</h1>
+            <div className="flex items-center gap-3">
+              {library && (
+                <span
+                  className="grid h-12 w-12 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20"
+                  data-testid="project-library-details-icon"
+                >
+                  <CustomIcon
+                    name={getProjectLibraryIconName(library)}
+                    className="h-7 w-7"
+                    aria-hidden="true"
+                  />
+                </span>
+              )}
+              <h1 className="text-3xl font-bold">{title}</h1>
+            </div>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -118,14 +144,19 @@ export function HomeHeader({
             </div>
           )}
           <p className="m-0 min-w-0 flex-1 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30 sm:order-1">
-            Loaded from{' '}
-            <Link
-              data-testid="project-directory-settings-link"
-              to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
-              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-            >
-              {formatProjectLibraryPathForDisplay(library)}
-            </Link>
+            {libraryDetailsDescription ? `${libraryDetailsDescription} ` : null}
+            <span className="whitespace-nowrap">
+              {libraryDetailsDescription
+                ? `${getProjectLibraryLocationLabel(library)}: `
+                : 'Loaded from '}
+              <Link
+                data-testid="project-directory-settings-link"
+                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+                className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+              >
+                {formatProjectLibraryPathForDisplay(library)}
+              </Link>
+            </span>
             {showFreeCloudProjectTrainingDisclosure && (
               <>
                 . Zoo trains on Free user cloud projects.{' '}

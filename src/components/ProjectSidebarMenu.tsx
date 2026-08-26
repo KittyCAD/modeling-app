@@ -177,7 +177,7 @@ function AppLogoLink({
   onHomeNavigate: () => void
 }) {
   const wrapperClassName =
-    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm before:transition-[filter] before:duration-100 before:ease-out"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   if (!enabled) {
@@ -200,7 +200,7 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className={`${wrapperClassName} hover:before:brightness-110`}
+      className={`${wrapperClassName} hover:hue-rotate-0 dark:hover:brightness-100 hover:before:drop-shadow-tab-sm`}
     >
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
