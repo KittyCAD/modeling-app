@@ -93,6 +93,11 @@ describe('ConnectionManager', () => {
         connectionError,
       },
     })
+    expect(manager.lastConnectionError).toEqual(connectionError)
+
+    manager.tearDown()
+
+    expect(manager.lastConnectionError).toEqual(connectionError)
   })
 
   it('preserves a classified connection error for peer failures', () => {

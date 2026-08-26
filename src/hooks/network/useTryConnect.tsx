@@ -4,6 +4,8 @@ import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -13,8 +15,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 
 /**
@@ -186,7 +186,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
  * a single safe location to connect to the engine.
  */
-async function tryConnecting({
+export async function tryConnecting({
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -279,11 +279,26 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          const terminalConnectionError =
+            engineCommandManager.lastConnectionError?.terminal === true
+              ? engineCommandManager.lastConnectionError
+              : undefined
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
+            metadata: { terminalConnectionError },
           })
-          engineCommandManager.tearDown()
+          if (
+            engineCommandManager.started ||
+            engineCommandManager.connection !== undefined
+          ) {
+            engineCommandManager.tearDown()
+          }
+          if (terminalConnectionError) {
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(terminalConnectionError)
+          }
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
             return reject(e)
