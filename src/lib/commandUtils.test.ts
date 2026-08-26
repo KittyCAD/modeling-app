@@ -1,5 +1,5 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
-import { sortCommands } from '@src/lib/commandUtils'
+import { commandKey, sortCommands } from '@src/lib/commandUtils'
 import { describe, expect, it } from 'vitest'
 
 function commandWithDisabled(
@@ -47,5 +47,20 @@ describe('Command sorting', () => {
     ]
     const sorted = initial.sort(sortCommands)
     expect(sorted[1].command.groupId).toBe('settings')
+  })
+})
+
+describe('commandKey', () => {
+  it('preserves command IDs and the existing machine-event fallback', () => {
+    const command = commandWithDisabled(
+      'Zoom to fit',
+      false,
+      'standardViews'
+    ).command
+
+    expect(commandKey(command)).toBe('standardViews:Zoom to fit')
+    expect(commandKey({ ...command, id: 'zds.view.zoomToFit' })).toBe(
+      'zds.view.zoomToFit'
+    )
   })
 })
