@@ -1,5 +1,5 @@
-//! Pins the mock/real execution parity contract for `getCommonEdge`. See
-//! `tests/get_common_edge_engine_contract/` for the fixtures.
+//! Pins the mock/real execution parity contract for `getCommonEdge`. The
+//! `.kcl` fixtures live in this directory, next to this module.
 
 use std::path::Path;
 use std::path::PathBuf;
@@ -12,7 +12,7 @@ use crate::errors::KclError;
 use crate::util::RetryConfig;
 use crate::util::execute_with_retries;
 
-const TEST_DIR: &str = "tests/get_common_edge_engine_contract";
+const TEST_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/src/engine_contracts/get_common_edge");
 
 #[derive(Debug, Clone, Copy)]
 enum Expectation {
