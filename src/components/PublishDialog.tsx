@@ -261,6 +261,9 @@ export function PublishDialog({
                     : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
                 }`}
               />
+              <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
+                The current Projects API also uses this as the project title.
+              </p>
               {hasTriedSubmit && !titleIsValid && (
                 <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
                   A title is required.

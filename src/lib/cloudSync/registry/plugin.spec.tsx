@@ -1100,6 +1100,80 @@ describe('cloud sync project library', () => {
     }
   })
 
+  test('uses the project title for a moved cloud directory', async () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+    vi.spyOn(fsZds, 'readFile').mockResolvedValue(
+      'title = "Aquarium Test Project"\n' as never
+    )
+    vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+    vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
+    vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
+      parts.join('/').replace(/\/{2,}/g, '/')
+    )
+    vi.spyOn(fsZds, 'dirname').mockImplementation((path) =>
+      path.split('/').slice(0, -1).join('/')
+    )
+    vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+    vi.spyOn(fsZds, 'resolve').mockImplementation((path) => `/${path}`)
+    const rename = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+    try {
+      const cloudLibrary = {
+        id: 'personal-cloud-test',
+        title: 'Personal Cloud',
+        path: '/cloud',
+        type: CLOUD_PROJECT_LIBRARY_TYPE,
+        order: 0,
+      }
+      const moveProjectTo = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)?.operations?.moveProjectTo
+      expect(moveProjectTo).toBeDefined()
+      if (!moveProjectTo) {
+        return
+      }
+
+      await expect(
+        moveProjectTo.run({
+          library: cloudLibrary,
+          sourceLibrary: {
+            id: 'directory-test',
+            title: 'Directory',
+            path: '/projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+            order: 0,
+          },
+          project: {
+            id: 'local:/projects/untitled-3',
+            source: 'local',
+            status: 'local',
+            libraryIds: ['directory-test'],
+            name: 'untitled-3',
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+            readWriteAccess: true,
+          },
+          source: {
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+          },
+        })
+      ).resolves.toEqual({
+        localProjectPath: '/cloud/aquarium-test-project',
+        defaultFile: '/cloud/aquarium-test-project/main.kcl',
+      })
+      expect(rename).toHaveBeenCalledWith(
+        '/projects/untitled-3',
+        '/cloud/aquarium-test-project'
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   test('disconnects cloud sync before moving a cloud project to a directory library', async () => {
     const cloudSync = createCloudSyncService()
     const registry = new Registry()

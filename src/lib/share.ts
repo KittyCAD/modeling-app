@@ -1,21 +1,22 @@
 import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
-import { serializeProjectConfiguration } from '@src/lang/wasm'
-import toast from 'react-hot-toast'
-
 import env, { getEnvironmentNameFromEnv } from '@src/env'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
 import {
-  readProjectSettingsFile,
-  overwriteProjectTomlWithNewSettings,
-} from '@src/lib/desktop'
+  getMimeType,
+  withRemoteProjectMetadataInArchiveFiles,
+} from '@src/lib/cloudSync/projectArchive'
+import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import toast from 'react-hot-toast'
 
 export type PublishCurrentProjectArgs = {
   token: string
@@ -45,11 +46,6 @@ export type CurrentProjectPublicationDetails = {
 
 type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
-}
-
-type UploadFile = {
-  name: string
-  data: Blob
 }
 
 type ProjectUpsertBody = {
@@ -212,6 +208,16 @@ async function ensureCurrentProjectUploaded(
       return projectResp
     }
 
+    const persisted = await persistUploadedProjectMetadata({
+      projectPath: project.path,
+      environmentName,
+      remoteProject: projectResp,
+      uploadFiles,
+    })
+    if (err(persisted)) {
+      return persisted
+    }
+
     return {
       client,
       projectId: existingProjectId,
@@ -230,12 +236,12 @@ async function ensureCurrentProjectUploaded(
   }
 
   const projectId = projectResp.id
-  const persisted = await persistCloudProjectIdForEnvironment(
-    project.path,
-    args.wasmInstance,
+  const persisted = await persistUploadedProjectMetadata({
+    projectPath: project.path,
     environmentName,
-    projectId
-  )
+    remoteProject: projectResp,
+    uploadFiles,
+  })
   if (err(persisted)) {
     return persisted
   }
@@ -285,32 +291,34 @@ async function buildProjectUploadFiles({
   wasmInstance,
 }: Omit<PublishCurrentProjectArgs, 'token' | 'project' | 'submission'> & {
   project: Project
-}): Promise<UploadFile[] | Error> {
-  if (!project.children) {
-    return new Error('This project does not have any files to share.')
+}): Promise<ProjectArchiveFile[] | Error> {
+  let files: ProjectArchiveFile[]
+  try {
+    files = await collectLocalProjectFilesForCloudSync({
+      localFs: fsZds,
+      projectRoot: project.path,
+    })
+  } catch (error) {
+    return error instanceof Error
+      ? error
+      : new Error('Could not read the project files for publication.')
   }
 
-  const files: UploadFile[] = await Promise.all(
-    flattenProjectFiles(project.children).map(async (fileEntry) => {
-      const relativePath = toProjectRelativePath(project.path, fileEntry.path)
-      const data =
-        fileEntry.path === currentFilePath
-          ? new Blob([currentFileContents], {
-              type: getMimeType(fileEntry.name),
-            })
-          : new Blob([cloneFileBytes(await fsZds.readFile(fileEntry.path))], {
-              type: getMimeType(fileEntry.name),
-            })
-
-      return {
-        name: relativePath,
-        data,
-      }
-    })
+  const currentRelativePath = toProjectRelativePath(
+    project.path,
+    currentFilePath
+  )
+  files = files.map((file) =>
+    file.relativePath === currentRelativePath
+      ? {
+          ...file,
+          data: new TextEncoder().encode(currentFileContents),
+        }
+      : file
   )
 
   const hasProjectSettings = files.some(
-    (file) => file.name === PROJECT_SETTINGS_FILE_NAME
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
   )
   if (hasProjectSettings) {
     return files
@@ -327,8 +335,8 @@ async function buildProjectUploadFiles({
   return [
     ...files,
     {
-      name: PROJECT_SETTINGS_FILE_NAME,
-      data: new Blob([projectToml], { type: 'text/plain' }),
+      relativePath: PROJECT_SETTINGS_FILE_NAME,
+      data: new TextEncoder().encode(projectToml),
     },
   ]
 }
@@ -352,64 +360,50 @@ async function getCloudProjectIdForEnvironment(
   }
 }
 
-async function persistCloudProjectIdForEnvironment(
-  projectPath: string,
-  wasmInstance: ModuleType,
-  environmentName: string,
-  projectId: string
-) {
+async function persistUploadedProjectMetadata({
+  projectPath,
+  environmentName,
+  remoteProject,
+  uploadFiles,
+}: {
+  projectPath: string
+  environmentName: string
+  remoteProject: { id: string; title: string }
+  uploadFiles: ProjectArchiveFile[]
+}) {
   try {
-    const projectSettings = await readProjectSettingsFile(
-      projectPath,
-      wasmInstance
+    // The API currently shares one title between the stored project and its
+    // Aquarium listing. Mirror the server-normalized metadata byte-for-byte so
+    // cloud sync can adopt this upload without an artificial first conflict.
+    // Once Publication owns a separate title, this should retain the local
+    // project title while persisting only the cloud project ID.
+    const filesWithRemoteMetadata = withRemoteProjectMetadataInArchiveFiles(
+      uploadFiles,
+      remoteProject.title,
+      remoteProject.id,
+      environmentName
     )
-    const cloud = { ...(projectSettings.cloud ?? {}) }
-    cloud[environmentName] = {
-      ...(cloud[environmentName] ?? {}),
-      project_id: projectId,
+    const projectToml = filesWithRemoteMetadata.find(
+      (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+    )
+    if (!projectToml) {
+      return new Error('Published project metadata was not generated.')
     }
 
-    const serialized = serializeProjectConfiguration(
-      {
-        ...projectSettings,
-        cloud,
-      },
-      wasmInstance
+    await fsZds.writeFile(
+      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
+      Uint8Array.from(projectToml.data)
     )
-    if (err(serialized)) {
-      return serialized
-    }
-
-    await overwriteProjectTomlWithNewSettings(projectPath, serialized)
     return true
   } catch (error) {
     return new Error(
-      `Failed to save local cloud project binding: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to save published project metadata: ${error instanceof Error ? error.message : String(error)}`
     )
   }
 }
 
-function flattenProjectFiles(fileEntries: FileEntry[]): FileEntry[] {
-  const files: FileEntry[] = []
-
-  for (const entry of fileEntries) {
-    if (entry.children) {
-      files.push(...flattenProjectFiles(entry.children))
-      continue
-    }
-
-    files.push(entry)
-  }
-
-  return files
-}
-
-function cloneFileBytes(fileBytes: Uint8Array) {
-  return Uint8Array.from(fileBytes)
-}
-
 function toKittyCadFiles(
-  files: UploadFile[],
+  files: ProjectArchiveFile[],
   body: ProjectUpsertBody
 ): Parameters<typeof projects.create_project>[0]['files'] {
   return [
@@ -418,8 +412,10 @@ function toKittyCadFiles(
       data: new Blob([JSON.stringify(body)], { type: 'application/json' }),
     },
     ...files.map((file) => ({
-      name: file.name,
-      data: file.data,
+      name: file.relativePath,
+      data: new Blob([Uint8Array.from(file.data)], {
+        type: getMimeType(file.relativePath),
+      }),
     })),
   ]
 }
@@ -431,23 +427,6 @@ function getCurrentEnvironmentName(): string | Error {
   }
 
   return new Error('Could not determine the active API environment.')
-}
-
-function getMimeType(fileName: string) {
-  const extension = fsZds.extname(fileName).toLowerCase()
-  if (extension === '.kcl' || extension === '.toml') {
-    return 'text/plain'
-  }
-  if (extension === '.png') {
-    return 'image/png'
-  }
-  if (extension === '.jpg' || extension === '.jpeg') {
-    return 'image/jpeg'
-  }
-  if (extension === '.webp') {
-    return 'image/webp'
-  }
-  return 'application/octet-stream'
 }
 
 function getPathLeaf(path: string) {

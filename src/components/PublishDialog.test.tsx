@@ -66,6 +66,11 @@ describe('PublishDialog', () => {
         /Publishing will also move this project from its current folder to your Personal Cloud library/
       )
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /The current Projects API also uses this as the project title/
+      )
+    ).toBeInTheDocument()
   })
 
   it('registers the description editor with the Markdown keymap while focused', async () => {
