@@ -48,31 +48,16 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Validate Wasm cache
-        id: validate-wasm
-        if: ${{ steps.download-wasm.outcome == 'success' }}
-        shell: bash
-        run: |
-          expected_rust_tree=$(git rev-parse HEAD:rust)
-          cached_rust_tree=$(cat rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree 2>/dev/null || true)
-
-          if [[ "${cached_rust_tree}" == "${expected_rust_tree}" ]]; then
-            echo "valid=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "valid=false" >> "$GITHUB_OUTPUT"
-            echo "Cached Wasm was built from a different Rust tree; rebuilding."
-          fi
-
       - name: Build Wasm condition
         id: wasm
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
-          CACHE_VALID: ${{ steps.validate-wasm.outputs.valid || 'false' }}
+          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
           RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
         run: |
-          # Build Wasm with Rust changes, stale/missing caches, or for stacked PRs
+          # Build Wasm with Rust changes, cache misses, or for stacked PRs
           if [[ "${RUST_CHANGES}" == 'true' || \
-                "${CACHE_VALID}" != 'true' || \
+                "${DOWNLOAD_OUTCOME}" == 'failure' || \
                 ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
@@ -116,10 +101,6 @@ jobs:
         shell: bash
         run: |
           cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings
-
-      - name: Record Wasm Rust tree
-        shell: bash
-        run: git rev-parse HEAD:rust > rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree
 
       - name: Copy Wasm to public
         run: |
