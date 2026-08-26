@@ -25,6 +25,7 @@ jobs:
           filters: |
             rust:
               - 'rust/**'
+              - '.github/workflows/build-wasm.yml'
 
       - uses: actions/setup-node@v7.0.0
         with:
@@ -48,7 +49,7 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
-      - name: Build Wasm condition
+      - name: Determine Wasm rebuild
         id: wasm
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
@@ -77,12 +78,13 @@ jobs:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+      - name: Install Wasm pack
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
 
-      - name: Rust cache on the Namespace volume
+      - name: Cache Rust artifacts
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: namespacelabs/nscloud-cache-action@v1
         with:
