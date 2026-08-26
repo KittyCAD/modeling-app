@@ -61,8 +61,24 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
         await expect(copilot.placeHolderResponse).toBeVisible()
       })
 
-      await test.step('Clear the chat history', async () => {
+      await test.step('Keep the current chat when clearing is dismissed', async () => {
         await copilot.clearChatButton.click()
+        const confirmationDialog = page.getByRole('dialog', {
+          name: 'Start a new chat?',
+        })
+        await expect(confirmationDialog).toContainText(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+        await page.getByRole('button', { name: 'Keep current chat' }).click()
+
+        await expect(confirmationDialog).not.toBeVisible()
+        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
+        await expect(copilot.clearChatButton).toBeVisible()
+      })
+
+      await test.step('Confirm clearing the chat history', async () => {
+        await copilot.clearChatButton.click()
+        await page.getByRole('button', { name: 'Start new chat' }).click()
         await expect(copilot.welcomeSection).not.toBeVisible()
         await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
 

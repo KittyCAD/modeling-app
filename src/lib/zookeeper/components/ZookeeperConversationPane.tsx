@@ -1,3 +1,4 @@
+import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import {
   ZookeeperConversation,
   type QueuedMessage,
@@ -63,6 +64,7 @@ export const ZookeeperConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const [isClearingChatPending, setIsClearingChatPending] = useState(false)
+  const [isConfirmingClearChat, setIsConfirmingClearChat] = useState(false)
   const [showManualConnect, setShowManualConnect] = useState(
     typeof navigator !== 'undefined' && navigator.onLine === false
   )
@@ -358,7 +360,7 @@ export const ZookeeperConversationPane = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClearingChatPending, isPromptRunning, isReady, queue])
 
-  const onClickClearChat = async () => {
+  const clearChat = async () => {
     if (isClearingChat.current) {
       return
     }
@@ -468,6 +470,7 @@ export const ZookeeperConversationPane = (props: {
     clearChatOperationGeneration.current += 1
     isClearingChat.current = false
     setIsClearingChatPending(false)
+    setIsConfirmingClearChat(false)
 
     const subscriptionZookeeperManagerActor =
       props.zookeeperManagerActor.subscribe((zookeeperManagerActorSnapshot) => {
@@ -640,59 +643,83 @@ export const ZookeeperConversationPane = (props: {
   ])
 
   return (
-    <ZookeeperConversation
-      isLoading={conversation === undefined}
-      isLoadingAttachments={isLoadingAttachments}
-      contexts={[
-        { type: 'selections', data: props.contextModeling.selectionRanges },
-      ]}
-      conversation={conversation}
-      welcomeMessage={
-        // Replace this local component with a remote-authored content source
-        // later. `ZookeeperConversation` already handles placement and ordering.
-        <ZookeeperConversationWelcome />
-      }
-      onProcess={(
-        request: string,
-        mode: MlCopilotModeId | undefined,
-        attachments: File[]
-      ) => {
-        onProcessOrQueue(request, mode, attachments)
-      }}
-      onClickClearChat={() => {
-        void onClickClearChat()
-      }}
-      onReconnect={onReconnect}
-      connectionError={
-        showManualConnect ? 'No internet connection.' : closeReason
-      }
-      connectionFailed={setupFailed}
-      showManualConnect={showManualConnect}
-      canClearChat={setupFailed && conversationId !== undefined}
-      isClearingChat={isClearingChatPending}
-      loadingMessage={
-        isSettingUp
-          ? 'Connecting to Zookeeper...'
-          : needsReconnect
-            ? 'Reconnecting...'
-            : undefined
-      }
-      onCancel={onCancel}
-      disabled={needsReconnect || isClearingChatPending}
-      needsReconnect={needsReconnect}
-      hasPromptCompleted={!isPromptRunning}
-      isProcessing={isPromptRunning}
-      queue={queue}
-      onRemoveFromQueue={onRemoveFromQueue}
-      onSteer={onSteer}
-      userAvatarSrc={props.user?.image}
-      showMakeathonAnnouncement={props.showMakeathonAnnouncement}
-      blockedReason={userBlockedOnPaymentReason}
-      defaultPrompt={defaultPrompt}
-      initialMlCopilotMode={initialMlCopilotMode}
-      onMlCopilotModeChange={props.onMlCopilotModeChange}
-      modeOptions={modeOptions}
-      modeScopeKey={props.theProject?.path}
-    />
+    <>
+      {isConfirmingClearChat && (
+        <DeleteConfirmationDialog
+          title="Start a new chat?"
+          confirmButtonText="Start new chat"
+          dismissButtonText="Keep current chat"
+          onConfirm={() => {
+            setIsConfirmingClearChat(false)
+            void clearChat()
+          }}
+          onDismiss={() => setIsConfirmingClearChat(false)}
+        >
+          <p className="my-4">
+            {isPromptRunning
+              ? 'This will stop the current Zookeeper response and start a new conversation.'
+              : 'This will start a new conversation.'}
+          </p>
+          <p className="my-4">
+            Your current chat will no longer be accessible from this project.
+            Changes already made to project files will not be undone.
+          </p>
+        </DeleteConfirmationDialog>
+      )}
+      <ZookeeperConversation
+        isLoading={conversation === undefined}
+        isLoadingAttachments={isLoadingAttachments}
+        contexts={[
+          { type: 'selections', data: props.contextModeling.selectionRanges },
+        ]}
+        conversation={conversation}
+        welcomeMessage={
+          // Replace this local component with a remote-authored content source
+          // later. `ZookeeperConversation` already handles placement and ordering.
+          <ZookeeperConversationWelcome />
+        }
+        onProcess={(
+          request: string,
+          mode: MlCopilotModeId | undefined,
+          attachments: File[]
+        ) => {
+          onProcessOrQueue(request, mode, attachments)
+        }}
+        onClickClearChat={() => {
+          setIsConfirmingClearChat(true)
+        }}
+        onReconnect={onReconnect}
+        connectionError={
+          showManualConnect ? 'No internet connection.' : closeReason
+        }
+        connectionFailed={setupFailed}
+        showManualConnect={showManualConnect}
+        canClearChat={setupFailed && conversationId !== undefined}
+        isClearingChat={isClearingChatPending}
+        loadingMessage={
+          isSettingUp
+            ? 'Connecting to Zookeeper...'
+            : needsReconnect
+              ? 'Reconnecting...'
+              : undefined
+        }
+        onCancel={onCancel}
+        disabled={needsReconnect || isClearingChatPending}
+        needsReconnect={needsReconnect}
+        hasPromptCompleted={!isPromptRunning}
+        isProcessing={isPromptRunning}
+        queue={queue}
+        onRemoveFromQueue={onRemoveFromQueue}
+        onSteer={onSteer}
+        userAvatarSrc={props.user?.image}
+        showMakeathonAnnouncement={props.showMakeathonAnnouncement}
+        blockedReason={userBlockedOnPaymentReason}
+        defaultPrompt={defaultPrompt}
+        initialMlCopilotMode={initialMlCopilotMode}
+        onMlCopilotModeChange={props.onMlCopilotModeChange}
+        modeOptions={modeOptions}
+        modeScopeKey={props.theProject?.path}
+      />
+    </>
   )
 }
