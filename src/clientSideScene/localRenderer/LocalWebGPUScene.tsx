@@ -1,4 +1,5 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
+import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type {
   WebGpuTrimPrimitiveState,
@@ -1626,17 +1627,11 @@ export const LocalWebGPUScene = ({
 
     const initialize = async () => {
       logLocalWebGpuPreview('initializing preview renderer')
-      const [
-        { default: WebGPURenderer },
-        { default: PMREMGenerator },
-        { RoomEnvironment },
-        { createWebGpuTrimResources },
-      ] = await Promise.all([
-        import('three/src/renderers/webgpu/WebGPURenderer.js'),
-        import('three/src/renderers/common/extras/PMREMGenerator.js'),
-        import('three/examples/jsm/environments/RoomEnvironment.js'),
-        import('@src/clientSideScene/webgpuTrim'),
-      ])
+      const [{ default: WebGPURenderer }, { createWebGpuTrimResources }] =
+        await Promise.all([
+          import('three/src/renderers/webgpu/WebGPURenderer.js'),
+          import('@src/clientSideScene/webgpuTrim'),
+        ])
 
       if (disposed) {
         logLocalWebGpuPreview(
@@ -1733,25 +1728,13 @@ export const LocalWebGPUScene = ({
 
       const scene = new Scene()
       scene.background = new Color(backgroundColor)
-      const roomEnvironment = new RoomEnvironment()
-      const pmremGenerator = new PMREMGenerator(renderer)
-      const environmentRenderTarget = pmremGenerator.fromScene(
-        roomEnvironment,
-        0.04,
-        0.1,
-        100,
-        { size: 128 }
-      )
-      await device.queue.onSubmittedWorkDone()
-      roomEnvironment.dispose()
-      pmremGenerator.dispose()
+      const envMapLoader = new EnvMapLoader(renderer, device)
+      await envMapLoader.loadDefault(scene)
       if (disposed) {
-        environmentRenderTarget.dispose()
+        envMapLoader.dispose()
         renderer.dispose()
         return
       }
-      scene.environment = environmentRenderTarget.texture
-      scene.environmentIntensity = 0.85
       previewLighting = createPreviewLighting(scene)
 
       const exportCurrentScene = async () => {
@@ -2495,7 +2478,7 @@ export const LocalWebGPUScene = ({
         }
         requestRender = null
         previewLighting = null
-        environmentRenderTarget.dispose()
+        envMapLoader.dispose()
         renderer.dispose()
       }
     }
