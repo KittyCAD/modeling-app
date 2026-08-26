@@ -69,7 +69,7 @@ description: Artifact commands gas-impeller.kcl
         "path": "[uuid]",
         "to": {
           "x": 4.400000000000485,
-          "y": -0.00000000000013270667206219358,
+          "y": -0.000000000000132715758226204,
           "z": 0.0
         }
       }
@@ -124,17 +124,17 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 7.333455044674968,
-            "y": 58.99999999999968
+            "x": 7.333455044540389,
+            "y": 58.99999999999969
           },
-          "radius": 1.0000000074071236,
+          "radius": 1.0000000074071,
           "start": {
             "unit": "degrees",
-            "value": 90.00697354610855
+            "value": 90.00697353839779
           },
           "end": {
             "unit": "degrees",
-            "value": 12.808611870387718
+            "value": 12.80861187049121
           },
           "relative": false
         }
@@ -163,7 +163,7 @@ description: Artifact commands gas-impeller.kcl
           "type": "line",
           "end": {
             "x": 79.99999999999993,
-            "y": -0.0000000000002966135632483508,
+            "y": -0.0000000000002966213346535487,
             "z": 0.0
           },
           "relative": false
@@ -180,7 +180,7 @@ description: Artifact commands gas-impeller.kcl
           "type": "line",
           "end": {
             "x": 4.400000000000348,
-            "y": -0.00000000000015328006938473124,
+            "y": -0.00000000000015328714494833693,
             "z": 0.0
           },
           "relative": false
@@ -194,8 +194,8 @@ description: Artifact commands gas-impeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 8.308571089429421,
-          "y": 59.221695065141525,
+          "x": 8.308571089294414,
+          "y": 59.22169506514329,
           "z": 0.0
         }
       }
@@ -209,13 +209,13 @@ description: Artifact commands gas-impeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 79.9999999999995,
-            "y": 75.52092030630811
+            "x": 79.99999999999949,
+            "y": 75.52092030647675
           },
-          "radius": 73.52092030641079,
+          "radius": 73.52092030657941,
           "start": {
             "unit": "degrees",
-            "value": -167.19138812638397
+            "value": -167.1913881262805
           },
           "end": {
             "unit": "degrees",
@@ -317,8 +317,8 @@ description: Artifact commands gas-impeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.333455044675117,
-          "y": 58.999999999397986,
+          "x": 7.333455044540538,
+          "y": 58.999999999398,
           "z": 0.0
         }
       }
@@ -333,7 +333,7 @@ description: Artifact commands gas-impeller.kcl
           "type": "line",
           "end": {
             "x": 7.333333333334371,
-            "y": 59.999999999398085,
+            "y": 59.9999999993981,
             "z": 0.0
           },
           "relative": false
