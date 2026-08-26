@@ -1,7 +1,5 @@
-//! Pins the mock/real execution parity contract for `getCommonEdge`: mock
-//! execution must accept and reject the same programs as real execution,
-//! with the same error. See `tests/get_common_edge_engine_contract/` for
-//! the fixtures.
+//! Pins the mock/real execution parity contract for `getCommonEdge`. See
+//! `tests/get_common_edge_engine_contract/` for the fixtures.
 
 use std::path::Path;
 use std::path::PathBuf;
