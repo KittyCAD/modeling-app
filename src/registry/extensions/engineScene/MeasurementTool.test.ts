@@ -413,12 +413,12 @@ describe('MeasurementStatusBarItem', () => {
     rerender(createElement(MeasurementStatusBarItem))
 
     await waitFor(() => {
-      expect(sendSceneCommand).not.toHaveBeenCalled()
       expect(screen.getByTestId('measurement-status')).toHaveAttribute(
         'aria-label',
         'Measure'
       )
     })
+    expect(sendSceneCommand).not.toHaveBeenCalled()
   })
 
   it('measures a selected edge when selection matches the current scene generation', async () => {
@@ -434,9 +434,12 @@ describe('MeasurementStatusBarItem', () => {
       )
     )
     await waitFor(() => {
-      expect(screen.getByTestId('measurement-status')).toBeInTheDocument()
       expect(screen.getByTestId('measurement-status')).toHaveTextContent('10')
     })
+    expect(screen.getByTestId('measurement-status')).toHaveAttribute(
+      'aria-label',
+      'Measure: 10 mm'
+    )
   })
 })
 
