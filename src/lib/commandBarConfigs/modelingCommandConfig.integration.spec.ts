@@ -463,6 +463,53 @@ describe('Transform arguments', () => {
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
 
+type AddCodemodFunction = (...args: never[]) => unknown
+
+function consumedObjectParameterKeys(add: AddCodemodFunction) {
+  const source = add.toString()
+  const functionStart = source.match(
+    /^function\s+\w+\s*\(\s*\{([\s\S]*?)\}\s*\)\s*\{/
+  )
+  if (!functionStart) {
+    throw new Error(`${add.name} must destructure its command arguments`)
+  }
+
+  const bodyWithoutStringsOrComments = source
+    .slice(functionStart[0].length)
+    .replace(
+      /'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|\/\/[^\n]*|\/\*[\s\S]*?\*\//g,
+      ' '
+    )
+  const consumedKeys = new Set<string>()
+  for (const parameter of functionStart[1].split(',')) {
+    const binding = parameter.trim().split('=')[0].trim()
+    const [externalName, localName = externalName] = binding
+      .split(':')
+      .map((name) => name.trim())
+    if (!/^[$A-Z_a-z][$\w]*$/.test(externalName)) {
+      continue
+    }
+
+    const referencePattern = new RegExp(`\\b${localName}\\b`, 'g')
+    const isConsumed = [
+      ...bodyWithoutStringsOrComments.matchAll(referencePattern),
+    ].some((match) => {
+      const before = bodyWithoutStringsOrComments
+        .slice(0, match.index)
+        .trimEnd()
+      const after = bodyWithoutStringsOrComments
+        .slice((match.index ?? 0) + localName.length)
+        .trimStart()
+      return !before.endsWith('.') && !after.startsWith(':')
+    })
+    if (isConsumed) {
+      consumedKeys.add(externalName)
+    }
+  }
+
+  return consumedKeys
+}
+
 describe('stdlib command arg derivation', () => {
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
@@ -550,6 +597,20 @@ describe('stdlib command arg derivation', () => {
 })
 
 describe('modeling command stdlib drift', () => {
+  it('distinguishes consumed args from type-only acknowledgements', () => {
+    function typeOnly({}: { probe?: number }) {}
+    function propertyNameOnly({ probe: _probe }: { probe?: number }) {
+      return { probe: 1 }
+    }
+    function consumed({ probe }: { probe?: number }) {
+      return probe
+    }
+
+    expect(consumedObjectParameterKeys(typeOnly)).not.toContain('probe')
+    expect(consumedObjectParameterKeys(propertyNameOnly)).not.toContain('probe')
+    expect(consumedObjectParameterKeys(consumed)).toContain('probe')
+  })
+
   it('covers every shared modeling codemod', () => {
     expect(Object.keys(modelingCommandStdLibDriftConfig).sort()).toEqual(
       Object.keys(modelingCommandCodemods).sort()
@@ -632,6 +693,34 @@ describe('modeling command stdlib drift', () => {
         "Translate (translate): x, y, z, global, xyz",
       ]
     `)
+  })
+
+  it('requires accepted labeled KCL args to be consumed by their codemod', () => {
+    for (const [commandName, driftConfig] of Object.entries(
+      modelingCommandStdLibDriftConfig
+    ) as [keyof typeof modelingCommandCodemods, StdLibCommandDriftConfig][]) {
+      const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+      const deprecatedStdLibArgs = new Set(
+        driftConfig.deprecatedStdLibArgs ?? []
+      )
+      const expectedConsumedArgs = STD_LIB_COMMANDS[driftConfig.stdLibName].args
+        .filter((arg) => !arg.special)
+        .filter(
+          (arg) =>
+            (!arg.deprecated && arg.deprecatedSince === null) ||
+            deprecatedStdLibArgs.has(arg.name)
+        )
+        .filter((arg) => !omittedStdLibArgs.has(arg.name))
+        .map((arg) => driftConfig.argAliases?.[arg.name] ?? arg.name)
+      const consumedArgs = consumedObjectParameterKeys(
+        modelingCommandCodemods[commandName].add
+      )
+
+      expect(
+        expectedConsumedArgs.filter((arg) => !consumedArgs.has(arg)),
+        `${commandName} accepts labeled KCL args that its codemod does not consume. Handle them in the add* function, or list their KCL names in omittedStdLibArgs.`
+      ).toEqual([])
+    }
   })
 
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
