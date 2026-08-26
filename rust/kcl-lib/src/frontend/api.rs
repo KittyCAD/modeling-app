@@ -5,6 +5,7 @@
 pub use kcl_api::ObjectId;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketBodyMaterial;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
@@ -68,6 +69,7 @@ pub struct SceneGraphDelta {
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct FrontendRenderPacket {
+    pub body_materials: Vec<RenderPacketBodyMaterial>,
     pub primitives: Vec<RenderPacketPrimitive>,
     pub edges: Vec<RenderPacketEdge>,
     pub sketches: Vec<FrontendRenderPacketSketchSegment>,

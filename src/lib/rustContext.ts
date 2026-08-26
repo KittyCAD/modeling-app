@@ -24,13 +24,14 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type {
+  OutputFormat3d,
+  RenderPacketBodyMaterial,
   RenderPacketEdge,
   RenderPacketPrimitive,
   RenderPacketRegion,
   RenderPacketRegionLoop,
   RenderPacketTrimLoop,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -57,6 +58,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 
 export type {
   FrontendRenderPacket as RenderPacket,
+  RenderPacketBodyMaterial,
   RenderPacketEdge,
   RenderPacketPrimitive,
   RenderPacketRegion,

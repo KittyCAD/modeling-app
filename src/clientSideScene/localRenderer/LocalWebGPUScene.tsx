@@ -18,6 +18,7 @@ import {
 import { EngineDebugger } from '@src/lib/debugger'
 import type {
   RenderPacket,
+  RenderPacketBodyMaterial,
   RenderPacketEdge,
   RenderPacketPrimitive,
   RenderPacketRegion,
@@ -63,6 +64,7 @@ const ENGINE_DEFAULT_METALNESS = 0.6
 const ENGINE_DEFAULT_ROUGHNESS = 0.4
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
+const previewMaterialBaseColors = new WeakMap<Material, Color>()
 const EDGE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
 
 function shouldEnableLocalWebGpuPreview() {
@@ -288,7 +290,8 @@ function disposeObject3D(root: Object3D) {
 
 function prepareLoadedModelForPreview(
   root: Object3D,
-  trimResources: WebGpuTrimResources | null
+  trimResources: WebGpuTrimResources | null,
+  bodyMaterialById: ReadonlyMap<string, RenderPacketBodyMaterial>
 ) {
   let meshCount = 0
   let materialCount = 0
@@ -311,17 +314,41 @@ function prepareLoadedModelForPreview(
     ) as Material[]
     const trimState = (object.userData?.kittycadTrimState ??
       null) as WebGpuTrimPrimitiveState | null
+    const primitiveExtras = isKittycadPrimitiveExtras(
+      object.userData?.kittycadPrimitiveExtras
+    )
+      ? object.userData.kittycadPrimitiveExtras
+      : null
+    const bodyMaterial = primitiveExtras
+      ? bodyMaterialById.get(primitiveExtras.body_id)
+      : undefined
+    const opacity = bodyMaterial
+      ? Math.min(1, Math.max(0, bodyMaterial.baseColor.a))
+      : 1
     const previewMaterials = materials.map((material) => {
       const materialParameters = {
-        color: ENGINE_DEFAULT_SURFACE_COLOR,
-        metalness: ENGINE_DEFAULT_METALNESS,
-        roughness: ENGINE_DEFAULT_ROUGHNESS,
+        color: bodyMaterial
+          ? new Color(
+              bodyMaterial.baseColor.r,
+              bodyMaterial.baseColor.g,
+              bodyMaterial.baseColor.b
+            )
+          : ENGINE_DEFAULT_SURFACE_COLOR,
+        metalness: bodyMaterial?.metalness ?? ENGINE_DEFAULT_METALNESS,
+        roughness: bodyMaterial?.roughness ?? ENGINE_DEFAULT_ROUGHNESS,
+        opacity,
+        transparent: opacity < 1,
+        depthWrite: opacity >= 1,
         side: FrontSide,
       }
       const previewMaterial =
         trimState && trimResources
           ? trimResources.createMaterial(trimState, materialParameters)
           : new MeshStandardMaterial(materialParameters)
+      previewMaterialBaseColors.set(
+        previewMaterial,
+        previewMaterial.color.clone()
+      )
       materialCount += 1
       materialTypes.add(material.type)
       disposeMaterial(material)
@@ -1161,7 +1188,9 @@ function setMeshHighlight(
   }
 
   for (const material of getPreviewMaterials(mesh)) {
-    const nextColor = ENGINE_DEFAULT_SURFACE_COLOR.clone()
+    const nextColor =
+      previewMaterialBaseColors.get(material)?.clone() ??
+      ENGINE_DEFAULT_SURFACE_COLOR.clone()
     if (mode === 'selected') {
       nextColor.lerp(SELECTED_COLOR, 0.72)
     } else if (mode === 'hover') {
@@ -2430,13 +2459,20 @@ export const LocalWebGPUScene = ({
             renderPacket,
             currentTrimResources
           )
+          const bodyMaterialById = new Map(
+            (renderPacket.bodyMaterials ?? []).map((material) => [
+              material.bodyId,
+              material,
+            ])
+          )
           currentModel = packetModel.model
           parserState = packetModel.parserState
           hydrateCurrentModelMetadata()
           scene.add(currentModel)
           const loadedModelStats = prepareLoadedModelForPreview(
             currentModel,
-            currentTrimResources
+            currentTrimResources,
+            bodyMaterialById
           )
           if (loadedModelStats.meshCount === 0) {
             clearModel()
@@ -2447,6 +2483,7 @@ export const LocalWebGPUScene = ({
             refreshId,
             primitiveCount: renderPacket.primitives.length,
             edgeCount: renderPacket.edges.length,
+            bodyMaterialCount: bodyMaterialById.size,
             meshCount: loadedModelStats.meshCount,
             trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
             trimTriangleCount: currentTrimResources?.triangleCount ?? 0,

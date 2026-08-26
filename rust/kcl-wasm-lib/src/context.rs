@@ -430,6 +430,7 @@ fn enrich_render_packet(
         .collect();
 
     FrontendRenderPacket {
+        body_materials: packet.body_materials,
         primitives: packet.primitives,
         edges: packet.edges,
         sketches,

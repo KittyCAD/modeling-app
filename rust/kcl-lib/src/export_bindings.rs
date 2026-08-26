@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use kittycad_modeling_cmds::format::render_packet::RenderPacket;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketBodyMaterial;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
@@ -17,6 +18,7 @@ mod tests {
     fn export_bindings_renderpacket() {
         let cfg = Config::from_env();
         RenderPacket::export_all(&cfg).unwrap();
+        RenderPacketBodyMaterial::export_all(&cfg).unwrap();
         RenderPacketEdge::export_all(&cfg).unwrap();
         RenderPacketPrimitive::export_all(&cfg).unwrap();
         RenderPacketRegion::export_all(&cfg).unwrap();
