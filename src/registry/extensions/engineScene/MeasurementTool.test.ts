@@ -2,7 +2,7 @@ import type { UnitArea, UnitVolume } from '@kittycad/lib'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { MeasurementStatusBarItem } from './MeasurementTool'
@@ -412,7 +412,13 @@ describe('MeasurementStatusBarItem', () => {
     idleState.value = true
     rerender(createElement(MeasurementStatusBarItem))
 
-    await waitFor(() => expect(sendSceneCommand).not.toHaveBeenCalled())
+    await waitFor(() => {
+      expect(sendSceneCommand).not.toHaveBeenCalled()
+      expect(screen.getByTestId('measurement-status')).toHaveAttribute(
+        'aria-label',
+        'Measure'
+      )
+    })
   })
 
   it('measures a selected edge when selection matches the current scene generation', async () => {
@@ -427,6 +433,10 @@ describe('MeasurementStatusBarItem', () => {
         })
       )
     )
+    await waitFor(() => {
+      expect(screen.getByTestId('measurement-status')).toBeInTheDocument()
+      expect(screen.getByTestId('measurement-status')).toHaveTextContent('10')
+    })
   })
 })
 
