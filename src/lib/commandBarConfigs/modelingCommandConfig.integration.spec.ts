@@ -556,6 +556,84 @@ describe('modeling command stdlib drift', () => {
     )
   })
 
+  it('requires new labeled KCL args to be explicitly accepted or omitted', () => {
+    // Keep this as a checked-in contract instead of deriving the expected names
+    // from the command-bar config. A new labeled KCL argument must fail this test
+    // until point-and-click supports it or lists it in omittedStdLibArgs.
+    const labeledArgSignatures = Object.entries(
+      modelingCommandStdLibDriftConfig
+    )
+      .map(([commandName, driftConfig]) => {
+        const config = driftConfig as StdLibCommandDriftConfig
+        const omittedStdLibArgs = new Set(config.omittedStdLibArgs ?? [])
+        const deprecatedStdLibArgs = new Set(config.deprecatedStdLibArgs ?? [])
+        const labeledArgs = STD_LIB_COMMANDS[config.stdLibName].args
+          .filter((arg) => !arg.special)
+          .filter(
+            (arg) =>
+              (!arg.deprecated && arg.deprecatedSince === null) ||
+              deprecatedStdLibArgs.has(arg.name)
+          )
+          .filter((arg) => !omittedStdLibArgs.has(arg.name))
+          .map((arg) => arg.name)
+
+        return `${commandName} (${config.stdLibName}): ${labeledArgs.join(', ')}`
+      })
+      .sort()
+
+    expect(labeledArgSignatures).toMatchInlineSnapshot(`
+      [
+        "Appearance (appearance): color, metalness, roughness, opacity",
+        "Blend (blend): ",
+        "Boolean Intersect (intersect): tolerance",
+        "Boolean Split (split): merge, keepTools, tools",
+        "Boolean Subtract (subtract): tools, tolerance",
+        "Boolean Union (union): tolerance",
+        "Chamfer (chamfer): length, tags, secondLength, angle, tag, version",
+        "Clone (clone): ",
+        "Delete (delete): ",
+        "Delete Face (deleteFace): faces",
+        "Extrude (extrude): length, to, symmetric, direction, bidirectionalLength, tagStart, tagEnd, draftAngle, twistAngle, twistAngleStep, twistCenter, method, hideSeams, bodyType",
+        "Fillet (fillet): radius, tags, tolerance, tag, version",
+        "Flip Surface (flipSurface): ",
+        "GDT Angularity (gdt::angularity): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Annotation (gdt::annotation): annotation, faces, edges, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Circularity (gdt::circularity): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Concentricity (gdt::concentricity): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Cylindricity (gdt::cylindricity): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Datum (gdt::datum): face, name, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Distance (gdt::distance): tolerance, from, to, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Flatness (gdt::flatness): faces, tolerance, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Note (gdt::note): note, framePlane, framePosition, fontSize",
+        "GDT Parallelism (gdt::parallelism): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Perpendicularity (gdt::perpendicularity): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Position (gdt::position): tolerance, faces, edges, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Profile (gdt::profileLine): edges, tolerance, datums, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Runout (gdt::runout): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Straightness (gdt::straightness): tolerance, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "GDT Symmetry (gdt::symmetry): tolerance, datums, faces, edges, precision, framePosition, framePlane, leaderScale, fontSize",
+        "Helical Gear (gear::helical): nTeeth, module, pressureAngle, helixAngle, gearHeight",
+        "Helix (helix): revolutions, angleStart, ccw, radius, axis, length, cylinder",
+        "Herringbone Gear (gear::herringbone): nTeeth, module, pressureAngle, gearHeight, helixAngle",
+        "Hole (hole::hole): face, holeBottom, holeBody, holeType, cutAt",
+        "Join Surfaces (joinSurfaces): tolerance",
+        "Loft (loft): vDegree, bezApproximateRational, baseCurveIndex, tolerance, tagStart, tagEnd, bodyType",
+        "Mirror 3D (mirror3d): across",
+        "Offset plane (offsetPlane): offset",
+        "Pattern Circular 3D (patternCircular3d): instances, axis, center, arcDegrees, rotateDuplicates, useOriginal",
+        "Pattern Linear 3D (patternLinear3d): instances, distance, axis, useOriginal",
+        "Revolve (revolve): axis, angle, tolerance, symmetric, bidirectionalAngle, tagStart, tagEnd, bodyType",
+        "Ring Gear (gear::ring): nTeeth, module, pressureAngle, helixAngle, gearHeight",
+        "Rotate (rotate): roll, pitch, yaw, axis, angle, global",
+        "Scale (scale): x, y, z, global, factor",
+        "Shell (shell): thickness, faces",
+        "Spur Gear (gear::spur): nTeeth, module, pressureAngle, gearHeight",
+        "Sweep (sweep): path, sectional, tolerance, relativeTo, translateProfileToPath, orientProfilePerpendicular, tagStart, tagEnd, bodyType, version",
+        "Translate (translate): x, y, z, global, xyz",
+      ]
+    `)
+  })
+
   it('keeps command-bar args aligned with KCL stdlib signatures', () => {
     for (const [commandName, driftConfig] of Object.entries(
       modelingCommandStdLibDriftConfig
