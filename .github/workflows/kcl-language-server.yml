@@ -119,10 +119,11 @@ jobs:
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
-      - name: Cargo dependency cache on the Namespace volume
+      - name: Rust cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
+            rust/target
             ~/.cargo/registry
             ~/.cargo/git
       - name: Install Node.js
@@ -248,10 +249,11 @@ jobs:
           cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
-      - name: Cargo dependency cache on the Namespace volume
+      - name: Rust cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
+            rust/target
             /github/home/.cargo/registry
             /github/home/.cargo/git
       - name: build
