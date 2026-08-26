@@ -88,9 +88,9 @@ async fn assert_common_edge_contract(case_name: &str, file_name: &str, expectati
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn faces_from_different_sketches_are_rejected() {
+async fn kcl_test_faces_from_different_sketches_are_rejected() {
     assert_common_edge_contract(
-        "faces_from_different_sketches_are_rejected",
+        "kcl_test_faces_from_different_sketches_are_rejected",
         "different_sketches.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -98,9 +98,9 @@ async fn faces_from_different_sketches_are_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn unextruded_region_tags_are_rejected() {
+async fn kcl_test_unextruded_region_tags_are_rejected() {
     assert_common_edge_contract(
-        "unextruded_region_tags_are_rejected",
+        "kcl_test_unextruded_region_tags_are_rejected",
         "unextruded_region_tags.kcl",
         Expectation::RejectsWith(FACE_TAG_ERROR),
     )
@@ -108,11 +108,11 @@ async fn unextruded_region_tags_are_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn csg_region_tag_vs_face_tag_is_rejected() {
+async fn kcl_test_csg_region_tag_vs_face_tag_is_rejected() {
     // The face tags carried onto a CSG result still name the consumed source
     // body, so real execution rejects them; mock execution must match.
     assert_common_edge_contract(
-        "csg_region_tag_vs_face_tag_is_rejected",
+        "kcl_test_csg_region_tag_vs_face_tag_is_rejected",
         "csg_region_tag_vs_face_tag.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -120,9 +120,9 @@ async fn csg_region_tag_vs_face_tag_is_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn csg_sketch_tag_vs_face_tag_is_rejected() {
+async fn kcl_test_csg_sketch_tag_vs_face_tag_is_rejected() {
     assert_common_edge_contract(
-        "csg_sketch_tag_vs_face_tag_is_rejected",
+        "kcl_test_csg_sketch_tag_vs_face_tag_is_rejected",
         "csg_sketch_tag_vs_face_tag.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -130,9 +130,9 @@ async fn csg_sketch_tag_vs_face_tag_is_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn union_same_output_stale_face_tag_is_rejected() {
+async fn kcl_test_union_same_output_stale_face_tag_is_rejected() {
     assert_common_edge_contract(
-        "union_same_output_stale_face_tag_is_rejected",
+        "kcl_test_union_same_output_stale_face_tag_is_rejected",
         "union_same_output.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -140,9 +140,9 @@ async fn union_same_output_stale_face_tag_is_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn union_cross_bodies_are_rejected() {
+async fn kcl_test_union_cross_bodies_are_rejected() {
     assert_common_edge_contract(
-        "union_cross_bodies_are_rejected",
+        "kcl_test_union_cross_bodies_are_rejected",
         "union_cross_bodies.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -150,9 +150,9 @@ async fn union_cross_bodies_are_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn cloned_body_face_tags_are_accepted() {
+async fn kcl_test_cloned_body_face_tags_are_accepted() {
     assert_common_edge_contract(
-        "cloned_body_face_tags_are_accepted",
+        "kcl_test_cloned_body_face_tags_are_accepted",
         "cloned_body_same_body.kcl",
         Expectation::Accepts,
     )
@@ -160,9 +160,9 @@ async fn cloned_body_face_tags_are_accepted() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn cloned_body_cross_bodies_are_rejected() {
+async fn kcl_test_cloned_body_cross_bodies_are_rejected() {
     assert_common_edge_contract(
-        "cloned_body_cross_bodies_are_rejected",
+        "kcl_test_cloned_body_cross_bodies_are_rejected",
         "cloned_body_cross_bodies.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
@@ -170,9 +170,9 @@ async fn cloned_body_cross_bodies_are_rejected() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn mirrored_body_face_tags_are_accepted() {
+async fn kcl_test_mirrored_body_face_tags_are_accepted() {
     assert_common_edge_contract(
-        "mirrored_body_face_tags_are_accepted",
+        "kcl_test_mirrored_body_face_tags_are_accepted",
         "mirrored_body_same_body.kcl",
         Expectation::Accepts,
     )
@@ -180,9 +180,9 @@ async fn mirrored_body_face_tags_are_accepted() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn mirrored_body_cross_bodies_are_rejected() {
+async fn kcl_test_mirrored_body_cross_bodies_are_rejected() {
     assert_common_edge_contract(
-        "mirrored_body_cross_bodies_are_rejected",
+        "kcl_test_mirrored_body_cross_bodies_are_rejected",
         "mirrored_body_cross_bodies.kcl",
         Expectation::RejectsWith(SAME_BODY_ERROR),
     )
