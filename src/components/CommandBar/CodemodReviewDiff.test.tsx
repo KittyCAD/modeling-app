@@ -54,7 +54,7 @@ vi.mock('@codemirror/merge', () => ({
 }))
 
 describe('CodemodReviewDiff', () => {
-  it('shows the failed codemod diff on demand', () => {
+  it('shows the codemod diff on demand', () => {
     render(
       <CodemodReviewDiff
         details={{

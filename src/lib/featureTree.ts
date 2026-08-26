@@ -39,6 +39,19 @@ export function resolveFeatureTreeVisibility(input: {
 }): FeatureTreeVisibilityState {
   const { item, operations, artifactGraph } = input
 
+  if (item.type === 'ImportedGeometry') {
+    const artifact = getArtifactFromRange(item.sourceRange, artifactGraph)
+    if (artifact?.type !== 'importedGeometry') {
+      return { canToggleVisibility: false }
+    }
+
+    return {
+      canToggleVisibility: true,
+      hideOperation: getHideOpByArtifactId(operations, artifact.id),
+      targetArtifact: artifact,
+    }
+  }
+
   if (item.type === 'StdLibCall' && item.name === 'helix') {
     const operationArtifact = findOperationArtifact(item, artifactGraph)
     const hideOperation = operationArtifact
@@ -196,7 +209,7 @@ export function sendSelectionEvent(input: {
     }
   }
 
-  const selection = { entityRef, codeRef }
+  const selection = { entityRef, codeRef, artifact }
 
   input.modelingSend({
     type: 'Set selection',
