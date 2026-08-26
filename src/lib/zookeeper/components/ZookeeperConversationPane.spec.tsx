@@ -41,6 +41,7 @@ import {
   zookeeperManagerMachine,
   ZookeeperManagerTransitions,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { S } from '@src/machines/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -494,7 +495,7 @@ describe('ZookeeperConversationPane', () => {
       })
 
       expect(setupRequestCount).toBe(1)
-      expect(zookeeperManagerActor.getSnapshot().matches('await')).toBe(true)
+      expect(zookeeperManagerActor.getSnapshot().matches(S.Await)).toBe(true)
       expect(zookeeperManagerActor.getSnapshot().context.apiToken).toBe('')
     } finally {
       zookeeperManagerActor.stop()
