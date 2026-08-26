@@ -598,9 +598,11 @@ export const commandBarMachine = setup({
             input,
             input.selectedCommand?.machineActor
           )
+          if (result) {
+            reviewValidationDetails = result.reviewDetails
+          }
           if (isErr(result)) {
             reviewValidationError = result.message
-            reviewValidationDetails = result.reviewDetails
           }
         }
 

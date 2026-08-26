@@ -5,7 +5,7 @@ description: Operations executed named_views_hide_imported.kcl
 {
   "rust/kcl-lib/tests/named_views_hide_imported/input.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "cube",
       "moduleId": 0,
       "nodePath": {

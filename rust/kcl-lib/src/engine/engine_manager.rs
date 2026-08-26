@@ -194,6 +194,11 @@ impl EngineManager {
         std::mem::take(&mut *self.ids_of_async_commands().write().await)
     }
 
+    /// Whether an async command is still part of the current execution.
+    pub(crate) async fn has_pending_async_command(&self, id: Uuid) -> bool {
+        self.ids_of_async_commands().read().await.contains_key(&id)
+    }
+
     /// Take the responses that have accumulated so far and clear them.
     pub async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)
