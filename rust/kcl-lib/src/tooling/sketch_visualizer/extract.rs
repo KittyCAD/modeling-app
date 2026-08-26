@@ -6,7 +6,6 @@ use std::collections::BTreeSet;
 use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::render::render_png;
-use super::sampling::ARC_SAMPLE_COUNT;
 use super::sampling::BoundsBuilder;
 use super::sampling::distance;
 use super::sampling::sample_arc;
@@ -17,9 +16,7 @@ use super::scene::position_to_point;
 use super::types::CONTACT_TOLERANCE;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
-use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
-use super::types::SketchVisualizationSegmentKind;
 use crate::front::ArcDirection;
 use crate::front::Freedom;
 use crate::front::Object;
@@ -30,18 +27,16 @@ use crate::front::Segment;
 #[derive(Debug)]
 pub(super) struct Extraction<'a> {
     scene_objects: &'a [Object],
-    options: SketchVisualizationOptions,
     points: BTreeMap<usize, InternalPoint>,
-    primary_segments: BTreeMap<usize, InternalSegment>,
+    segments: BTreeMap<usize, InternalSegment>,
 }
 
 impl<'a> Extraction<'a> {
-    pub(super) fn new(scene_objects: &'a [Object], options: SketchVisualizationOptions) -> Self {
+    pub(super) fn new(scene_objects: &'a [Object]) -> Self {
         Self {
             scene_objects,
-            options,
             points: BTreeMap::new(),
-            primary_segments: BTreeMap::new(),
+            segments: BTreeMap::new(),
         }
     }
 
@@ -58,17 +53,6 @@ impl<'a> Extraction<'a> {
             match segment {
                 Segment::Point(point) => {
                     self.insert_point(object.id, point);
-                    if point.owner.is_none() {
-                        self.primary_segments.insert(
-                            object.id.0,
-                            InternalSegment {
-                                kind: SketchVisualizationSegmentKind::Point,
-                                construction: false,
-                                freedom: Some(point.freedom()),
-                                polylines: vec![vec![position_to_point(&point.position)]],
-                            },
-                        );
-                    }
                 }
                 Segment::Line(line) => {
                     if line.owner.is_some() {
@@ -78,13 +62,12 @@ impl<'a> Extraction<'a> {
                     let Some(polyline) = self.line_polyline(line) else {
                         continue;
                     };
-                    self.primary_segments.insert(
+                    self.segments.insert(
                         object.id.0,
                         InternalSegment {
-                            kind: SketchVisualizationSegmentKind::Line,
                             construction: line.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
-                            polylines: vec![polyline],
+                            polyline,
                         },
                     );
                 }
@@ -92,13 +75,12 @@ impl<'a> Extraction<'a> {
                     let Some(polyline) = self.arc_polyline(arc.start, arc.end, arc.center, arc.direction) else {
                         continue;
                     };
-                    self.primary_segments.insert(
+                    self.segments.insert(
                         object.id.0,
                         InternalSegment {
-                            kind: SketchVisualizationSegmentKind::Arc,
                             construction: arc.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
-                            polylines: vec![polyline],
+                            polyline,
                         },
                     );
                 }
@@ -106,13 +88,12 @@ impl<'a> Extraction<'a> {
                     let Some(polyline) = self.circle_polyline(circle.start, circle.center) else {
                         continue;
                     };
-                    self.primary_segments.insert(
+                    self.segments.insert(
                         object.id.0,
                         InternalSegment {
-                            kind: SketchVisualizationSegmentKind::Circle,
                             construction: circle.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
-                            polylines: vec![polyline],
+                            polyline,
                         },
                     );
                 }
@@ -125,13 +106,12 @@ impl<'a> Extraction<'a> {
                     if control_points.len() != spline.controls.len() {
                         continue;
                     }
-                    self.primary_segments.insert(
+                    self.segments.insert(
                         object.id.0,
                         InternalSegment {
-                            kind: SketchVisualizationSegmentKind::ControlPointSpline,
                             construction: spline.construction,
                             freedom: segment.freedom(|id| self.point_freedom(id)),
-                            polylines: vec![sample_control_point_spline(&control_points, spline.degree as usize)],
+                            polyline: sample_control_point_spline(&control_points, spline.degree as usize),
                         },
                     );
                 }
@@ -144,13 +124,7 @@ impl<'a> Extraction<'a> {
     pub(super) fn finish(self) -> Result<Vec<u8>, SketchVisualizationError> {
         let bounds = self.bounds();
         let contact_point_ids = self.contact_point_ids();
-        render_png(
-            &self.primary_segments,
-            &self.points,
-            &contact_point_ids,
-            bounds,
-            &self.options,
-        )
+        render_png(&self.segments, &self.points, &contact_point_ids, bounds)
     }
 
     fn insert_point(&mut self, id: ObjectId, point: &crate::front::Point) {
@@ -185,22 +159,20 @@ impl<'a> Extraction<'a> {
         let start = self.points.get(&start_id.0)?.position;
         let end = self.points.get(&end_id.0)?.position;
         let center = self.points.get(&center_id.0)?.position;
-        Some(sample_arc(center, start, end, direction.is_ccw(), ARC_SAMPLE_COUNT))
+        Some(sample_arc(center, start, end, direction.is_ccw()))
     }
 
     fn circle_polyline(&self, start_id: ObjectId, center_id: ObjectId) -> Option<Vec<SketchVisualizationPoint>> {
         let start = self.points.get(&start_id.0)?.position;
         let center = self.points.get(&center_id.0)?.position;
-        Some(sample_circle(center, distance(start, center), ARC_SAMPLE_COUNT))
+        Some(sample_circle(center, distance(start, center)))
     }
 
     fn bounds(&self) -> SketchVisualizationBounds {
         let mut bounds = BoundsBuilder::default();
-        for segment in self.primary_segments.values() {
-            for polyline in &segment.polylines {
-                for point in polyline {
-                    bounds.include(*point);
-                }
+        for segment in self.segments.values() {
+            for point in &segment.polyline {
+                bounds.include(*point);
             }
         }
         for point in self.points.values() {

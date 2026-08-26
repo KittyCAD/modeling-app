@@ -1,7 +1,7 @@
 //! Deterministic raster rendering for sampled sketch geometry.
 //!
 //! By the time data reaches this module, curves have already been sampled into
-//! polylines. Rendering fits those polylines to the canvas and colors them by
+//! polylines. Rendering fits each polyline to the canvas and colors it by
 //! solver freedom.
 
 use std::collections::BTreeMap;
@@ -17,11 +17,12 @@ use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
-use super::types::SketchVisualizationOptions;
 use super::types::SketchVisualizationPoint;
-use super::types::SketchVisualizationSegmentKind;
 use crate::front::Freedom;
 
+const CANVAS_WIDTH: u32 = 1024;
+const CANVAS_HEIGHT: u32 = 1024;
+const CANVAS_PADDING: u32 = 48;
 const PRIMARY_LINE_WIDTH: f64 = 3.0;
 const POINT_RADIUS: f64 = 4.0;
 const CONTACT_POINT_RADIUS: f64 = 5.0;
@@ -63,28 +64,15 @@ pub(super) fn render_png(
     points: &BTreeMap<usize, InternalPoint>,
     contact_point_ids: &BTreeSet<usize>,
     bounds: SketchVisualizationBounds,
-    options: &SketchVisualizationOptions,
 ) -> Result<Vec<u8>, SketchVisualizationError> {
-    let mut image = RgbaImage::from_pixel(options.width, options.height, DARK_BACKGROUND.to_rgba());
-    let transform = Transform::new(bounds, options);
+    let mut image = RgbaImage::from_pixel(CANVAS_WIDTH, CANVAS_HEIGHT, DARK_BACKGROUND.to_rgba());
+    let transform = Transform::new(bounds);
 
     // Segment polylines were sampled in world coordinates by extraction. The
     // transform below is the only world-to-screen conversion in the raster path.
     for segment in segments.values() {
         let color = dof_color(segment.freedom);
-        for polyline in &segment.polylines {
-            if segment.kind == SketchVisualizationSegmentKind::Point {
-                continue;
-            }
-            draw_polyline(
-                &mut image,
-                polyline,
-                color,
-                PRIMARY_LINE_WIDTH,
-                segment.construction,
-                &transform,
-            );
-        }
+        draw_polyline(&mut image, &segment.polyline, color, segment.construction, &transform);
     }
 
     for (point_id, point) in points {
@@ -117,16 +105,16 @@ struct Transform {
 }
 
 impl Transform {
-    fn new(bounds: SketchVisualizationBounds, options: &SketchVisualizationOptions) -> Self {
-        let content_width = (options.width - options.padding * 2) as f64;
-        let content_height = (options.height - options.padding * 2) as f64;
+    fn new(bounds: SketchVisualizationBounds) -> Self {
+        let content_width = (CANVAS_WIDTH - CANVAS_PADDING * 2) as f64;
+        let content_height = (CANVAS_HEIGHT - CANVAS_PADDING * 2) as f64;
         let world_width = libm::fmax((bounds.max.x - bounds.min.x).abs(), 1.0);
         let world_height = libm::fmax((bounds.max.y - bounds.min.y).abs(), 1.0);
         let scale = libm::fmin(content_width / world_width, content_height / world_height);
         let world_center_x = (bounds.min.x + bounds.max.x) * 0.5;
         let world_center_y = (bounds.min.y + bounds.max.y) * 0.5;
-        let screen_center_x = options.width as f64 * 0.5;
-        let screen_center_y = options.height as f64 * 0.5;
+        let screen_center_x = CANVAS_WIDTH as f64 * 0.5;
+        let screen_center_y = CANVAS_HEIGHT as f64 * 0.5;
         // KCL sketch space is y-up, while image pixels are y-down.
         Self {
             scale,
@@ -153,7 +141,6 @@ fn draw_polyline(
     image: &mut RgbaImage,
     points: &[SketchVisualizationPoint],
     color: Color,
-    width: f64,
     dashed: bool,
     transform: &Transform,
 ) {
@@ -161,14 +148,14 @@ fn draw_polyline(
         let start = transform.point(segment[0]);
         let end = transform.point(segment[1]);
         if dashed {
-            draw_dashed_line(image, start, end, color, width);
+            draw_dashed_line(image, start, end, color);
         } else {
-            draw_line(image, start, end, color, width);
+            draw_line(image, start, end, color);
         }
     }
 }
 
-fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, width: f64) {
+fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
         return;
@@ -182,15 +169,15 @@ fn draw_dashed_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint,
         let dash_end = libm::fmin(cursor + dash, length);
         let from = interpolate_screen(start, end, cursor / length);
         let to = interpolate_screen(start, end, dash_end / length);
-        draw_line(image, from, to, color, width);
+        draw_line(image, from, to, color);
         cursor += step;
     }
 }
 
-fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color, width: f64) {
+fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color: Color) {
     let length = screen_distance(start, end);
     if length <= f64::EPSILON {
-        draw_filled_circle(image, start, width * 0.5, color);
+        draw_filled_circle(image, start, PRIMARY_LINE_WIDTH * 0.5, color);
         return;
     }
 
@@ -200,7 +187,12 @@ fn draw_line(image: &mut RgbaImage, start: ScreenPoint, end: ScreenPoint, color:
     let samples = length.ceil() as usize;
     for index in 0..=samples {
         let t = index as f64 / samples as f64;
-        draw_filled_circle(image, interpolate_screen(start, end, t), width * 0.5, color);
+        draw_filled_circle(
+            image,
+            interpolate_screen(start, end, t),
+            PRIMARY_LINE_WIDTH * 0.5,
+            color,
+        );
     }
 }
 

@@ -316,7 +316,8 @@ impl ExecOutcome {
 
 struct ExecutedKcl {
     ctx: ExecutorContext,
-    outcome: kcl_lib::ExecOutcome,
+    state: kcl_lib::ExecState,
+    env_ref: kcl_lib::EnvironmentRef,
     program: kcl_lib::Program,
     code: String,
     filename: String,
@@ -340,17 +341,10 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
             return Err(into_miette(err, &code));
         }
     };
-    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
-        Ok(outcome) => outcome,
-        Err(err) => {
-            ctx.close().await;
-            return Err(to_py_exception(err));
-        }
-    };
-
     Ok(ExecutedKcl {
         ctx,
-        outcome,
+        state,
+        env_ref,
         program,
         code,
         filename,
@@ -360,11 +354,19 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
-        outcome,
+        state,
+        env_ref,
         code,
         filename,
         ..
     } = run_kcl(input, mock, None).await?;
+    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+        Ok(outcome) => outcome,
+        Err(err) => {
+            ctx.close().await;
+            return Err(to_py_exception(err));
+        }
+    };
     ctx.close().await;
     Ok(ExecOutcome {
         inner: outcome,

@@ -569,7 +569,10 @@ impl ExecOutcome {
         let sketches = self
             .scene_objects
             .iter()
-            .filter(|object| matches!(object.kind, ObjectKind::Sketch(_)) && object.label == sketch_name)
+            .filter_map(|object| match &object.kind {
+                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+                _ => None,
+            })
             .collect::<Vec<_>>();
         let sketch = match sketches.as_slice() {
             [] => {

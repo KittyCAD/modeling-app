@@ -3,81 +3,32 @@ name = "connected_profile"
 input = "connected_profile/input.kcl"
 sketch = "profile"
 
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "tangential_fillet_direction"
 input = "tangential_fillet_direction/input.kcl"
 sketch = "profile"
-
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 360
-height = 300
-padding = 24
 
 [[cases]]
 name = "sample_tangent_line_circle"
 input = "../tangent_line_circle/input.kcl"
 sketch = "s"
 
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "sample_equal_radius_arc_circle"
 input = "../equal_radius_arc_circle_native/input.kcl"
 sketch = "s"
-
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 320
-height = 240
-padding = 24
 
 [[cases]]
 name = "sample_crab_half"
 input = "../crab_mirror_region/input.kcl"
 sketch = "crabHalf"
 
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 420
-height = 320
-padding = 24
-
 [[cases]]
 name = "arc_circle_spline"
 input = "arc_circle_spline/input.kcl"
 sketch = "profile"
 
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 320
-height = 240
-padding = 24
-
 [[cases]]
 name = "coincident_lines"
 input = "coincident_lines/input.kcl"
 sketch = "profile"
-
-[[cases.visualizations]]
-name = "dof"
-mode = "dof"
-width = 320
-height = 240
-padding = 24

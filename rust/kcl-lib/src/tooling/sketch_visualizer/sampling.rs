@@ -8,8 +8,7 @@ use std::f64::consts::TAU;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationPoint;
 
-pub(super) const ARC_SAMPLE_COUNT: usize = 100;
-const SPLINE_SAMPLES_PER_SPAN: usize = 24;
+const ARC_SAMPLE_COUNT: usize = 100;
 
 /// Incrementally computes finite world-space bounds for sampled geometry.
 #[derive(Default)]
@@ -56,7 +55,6 @@ pub(super) fn sample_arc(
     start: SketchVisualizationPoint,
     end: SketchVisualizationPoint,
     ccw: bool,
-    samples: usize,
 ) -> Vec<SketchVisualizationPoint> {
     let radius = (distance(center, start) + distance(center, end)) * 0.5;
     let start_angle = libm::atan2(start.y - center.y, start.x - center.x);
@@ -71,9 +69,9 @@ pub(super) fn sample_arc(
         // full arc sweep rather than an empty curve.
         sweep = if ccw { TAU } else { -TAU };
     }
-    (0..=samples)
+    (0..=ARC_SAMPLE_COUNT)
         .map(|index| {
-            let t = index as f64 / samples.max(1) as f64;
+            let t = index as f64 / ARC_SAMPLE_COUNT as f64;
             let angle = start_angle + sweep * t;
             SketchVisualizationPoint {
                 x: center.x + radius * libm::cos(angle),
@@ -83,14 +81,10 @@ pub(super) fn sample_arc(
         .collect()
 }
 
-pub(super) fn sample_circle(
-    center: SketchVisualizationPoint,
-    radius: f64,
-    samples: usize,
-) -> Vec<SketchVisualizationPoint> {
-    (0..=samples)
+pub(super) fn sample_circle(center: SketchVisualizationPoint, radius: f64) -> Vec<SketchVisualizationPoint> {
+    (0..=ARC_SAMPLE_COUNT)
         .map(|index| {
-            let angle = TAU * index as f64 / samples.max(1) as f64;
+            let angle = TAU * index as f64 / ARC_SAMPLE_COUNT as f64;
             SketchVisualizationPoint {
                 x: center.x + radius * libm::cos(angle),
                 y: center.y + radius * libm::sin(angle),
@@ -111,105 +105,11 @@ pub(super) fn sample_control_point_spline(
     points: &[SketchVisualizationPoint],
     degree: usize,
 ) -> Vec<SketchVisualizationPoint> {
-    if points.len() < 2 {
-        return points.to_vec();
-    }
-
-    let effective_degree = degree.max(1).min(points.len() - 1);
-    if effective_degree == 1 {
-        return points.to_vec();
-    }
-
-    // The frontend uses an open-uniform B-spline for control point splines. We
-    // evaluate the same knot layout with de Boor so the static PNG resembles the
-    // interactive sketch.
-    let knots = build_open_uniform_knot_vector(points.len(), effective_degree);
-    let span_count = (points.len() - effective_degree).max(1);
-    let sample_count = (span_count * SPLINE_SAMPLES_PER_SPAN).max(2);
-
-    (0..=sample_count)
-        .map(|index| {
-            let u = if index == sample_count {
-                1.0
-            } else {
-                index as f64 / sample_count as f64
-            };
-            de_boor_point(points, effective_degree, &knots, u)
-        })
+    let controls = points.iter().map(|point| [point.x, point.y]).collect::<Vec<_>>();
+    crate::std::solver::sample_control_point_spline_points(&controls, degree)
+        .into_iter()
+        .map(|[x, y]| SketchVisualizationPoint { x, y })
         .collect()
-}
-
-fn build_open_uniform_knot_vector(point_count: usize, degree: usize) -> Vec<f64> {
-    let order = degree + 1;
-    let knot_count = point_count + order;
-    let interior_count = knot_count.saturating_sub(2 * order);
-    (0..knot_count)
-        .map(|index| {
-            if index < order {
-                0.0
-            } else if index >= knot_count - order {
-                1.0
-            } else {
-                (index - degree) as f64 / (interior_count + 1) as f64
-            }
-        })
-        .collect()
-}
-
-fn find_knot_span(u: f64, degree: usize, knots: &[f64]) -> usize {
-    let point_count = knots.len() - degree - 1;
-    let last_span = point_count - 1;
-    if u >= knots[last_span + 1] {
-        return last_span;
-    }
-    if u <= knots[degree] {
-        return degree;
-    }
-
-    let mut low = degree;
-    let mut high = last_span + 1;
-    let mut mid = (low + high) / 2;
-    while u < knots[mid] || u >= knots[mid + 1] {
-        if u < knots[mid] {
-            high = mid;
-        } else {
-            low = mid;
-        }
-        mid = (low + high) / 2;
-    }
-    mid
-}
-
-fn de_boor_point(
-    points: &[SketchVisualizationPoint],
-    degree: usize,
-    knots: &[f64],
-    u: f64,
-) -> SketchVisualizationPoint {
-    let span = find_knot_span(u, degree, knots);
-    let mut d = (0..=degree)
-        .map(|offset| points[span - degree + offset])
-        .collect::<Vec<_>>();
-
-    // de Boor repeatedly interpolates the local control points for this knot
-    // span until one point on the curve remains.
-    for r in 1..=degree {
-        for j in (r..=degree).rev() {
-            let knot_index = span - degree + j;
-            let denom = knots[knot_index + degree - r + 1] - knots[knot_index];
-            let alpha = if denom == 0.0 {
-                0.0
-            } else {
-                (u - knots[knot_index]) / denom
-            };
-            d[j] = SketchVisualizationPoint {
-                x: (1.0 - alpha) * d[j - 1].x + alpha * d[j].x,
-                y: (1.0 - alpha) * d[j - 1].y + alpha * d[j].y,
-            };
-        }
-    }
-
-    d[degree]
 }
 
 pub(super) fn distance(a: SketchVisualizationPoint, b: SketchVisualizationPoint) -> f64 {

@@ -3,16 +3,12 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
-use super::api::render_sketch_png_with_options;
-use super::types::SketchVisualizationOptions;
 use crate::ExecOutcome;
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
 use crate::Program;
 use crate::TypedPath;
 use crate::execution::MockConfig;
-use crate::front::Object;
-use crate::front::ObjectKind;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn exec_outcome_renders_sketch_png_separately_from_constraint_report() {
@@ -40,39 +36,17 @@ async fn snapshots_kcl_visualizer_pngs() {
     for case in manifest.cases {
         let input_path = sketch_visualizer_test_root().join(&case.input);
         let outcome = execute_visualizer_kcl(&input_path).await;
-        let sketch = find_sketch(&outcome, case.sketch.as_deref());
-
-        for snapshot in &case.visualizations {
-            let png = render_sketch_png_with_options(&outcome.scene_objects, sketch, snapshot.options())
-                .unwrap_or_else(|err| {
-                    panic!(
-                        "failed to visualize sketch for case `{}` snapshot `{}`: {err:?}",
-                        case.name, snapshot.name
-                    )
-                });
-            assert_png_snapshot(&case.name, &snapshot.name, &png);
-        }
+        let png = outcome
+            .render_sketch_png(&case.sketch)
+            .unwrap_or_else(|err| panic!("failed to visualize sketch for case `{}`: {err:?}", case.name));
+        assert_png_snapshot(&case.name, &png);
     }
 }
 
-fn find_sketch<'a>(outcome: &'a ExecOutcome, name: Option<&str>) -> &'a Object {
-    let sketches = outcome
-        .scene_objects
-        .iter()
-        .filter(|object| matches!(object.kind, ObjectKind::Sketch(_)))
-        .collect::<Vec<_>>();
-    sketches
-        .iter()
-        .copied()
-        .find(|object| name.is_none_or(|name| object.label == name))
-        .or_else(|| (sketches.len() == 1).then_some(sketches[0]))
-        .unwrap_or_else(|| panic!("could not find sketch {name:?}"))
-}
-
-fn assert_png_snapshot(case_name: &str, snapshot_name: &str, png: &[u8]) {
+fn assert_png_snapshot(case_name: &str, png: &[u8]) {
     let output_dir = sketch_visualizer_test_root().join(case_name);
     let image = image::load_from_memory(png).unwrap();
-    twenty_twenty::assert_image(output_dir.join(format!("{snapshot_name}.png")), &image, 1.0);
+    twenty_twenty::assert_image(output_dir.join("dof.png"), &image, 1.0);
 }
 
 async fn execute_visualizer_kcl(input_path: &Path) -> ExecOutcome {
@@ -118,27 +92,5 @@ struct SketchVisualizerSnapshotManifest {
 struct SketchVisualizerSnapshotCase {
     name: String,
     input: PathBuf,
-    sketch: Option<String>,
-    visualizations: Vec<SketchVisualizerSnapshot>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "kebab-case")]
-struct SketchVisualizerSnapshot {
-    name: String,
-    width: Option<u32>,
-    height: Option<u32>,
-    padding: Option<u32>,
-}
-
-impl SketchVisualizerSnapshot {
-    fn options(&self) -> SketchVisualizationOptions {
-        let default_options = SketchVisualizationOptions::default();
-
-        SketchVisualizationOptions {
-            width: self.width.unwrap_or(default_options.width),
-            height: self.height.unwrap_or(default_options.height),
-            padding: self.padding.unwrap_or(default_options.padding),
-        }
-    }
+    sketch: String,
 }
