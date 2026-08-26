@@ -14,6 +14,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { isStepFile } from '@src/lib/paths'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -22,7 +23,7 @@ async function insertPartIntoAssembly(
   cmdBar: CmdBarFixture,
   page: Page
 ) {
-  const isStepFile = /\.st(e)?p$/i.test(path)
+  const insertingStepFile = isStepFile(path)
 
   await toolbar.insertButton.click()
   await cmdBar.selectOption({ name: path }).click()
@@ -33,7 +34,7 @@ async function insertPartIntoAssembly(
     headerArguments: {
       Path: path,
       LocalName: '',
-      ...(isStepFile ? { Representation: '' } : {}),
+      ...(insertingStepFile ? { Representation: '' } : {}),
     },
     highlightedHeaderArg: 'localName',
     commandName: 'Insert',
@@ -41,7 +42,7 @@ async function insertPartIntoAssembly(
   await page.keyboard.insertText(alias)
   await cmdBar.progressCmdBar()
 
-  if (isStepFile) {
+  if (insertingStepFile) {
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'Representation',
@@ -77,7 +78,7 @@ async function insertPartIntoAssembly(
     headerArguments: {
       Path: path,
       LocalName: alias,
-      ...(isStepFile ? { Representation: 'mesh' } : {}),
+      ...(insertingStepFile ? { Representation: 'mesh' } : {}),
     },
     commandName: 'Insert',
   })
@@ -229,10 +230,12 @@ test.describe(
         fn: (dir: string) => Promise<void>
       ) => Promise<{ dir: string }>
     ) {
-      const selectedObjects = selectionType === 'scene' ? '1 path' : '1 plane'
+      const selectedObjects =
+        selectionType === 'scene' ? '1 compositeSolid' : '1 plane'
       async function selectBracket() {
         if (selectionType === 'scene') {
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.5, 0.5, {
+          // The bracket is only visible in the lower-right of the default view
+          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
             format: 'ratio',
           })
           await clickBracketInScene()
@@ -252,7 +255,7 @@ test.describe(
           await fsp.mkdir(bracketDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
+              path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
               path.join(bracketDir, 'bracket.kcl')
             ),
             fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
@@ -601,7 +604,7 @@ test.describe(
         await fsp.mkdir(bracketDir, { recursive: true })
         await Promise.all([
           fsp.copyFile(
-            path.join('public', 'kcl-samples-legacy', 'bracket', 'main.kcl'),
+            path.join('public', 'kcl-samples', 'bracket', 'main.kcl'),
             path.join(bracketDir, 'bracket.kcl')
           ),
           fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
@@ -866,7 +869,7 @@ foreign
           await fsp.mkdir(projectDir, { recursive: true })
           await Promise.all([
             fsp.copyFile(
-              path.join('public', 'kcl-samples-legacy', 'washer', 'main.kcl'),
+              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
               path.join(projectDir, 'washer.kcl')
             ),
             fsp.writeFile(

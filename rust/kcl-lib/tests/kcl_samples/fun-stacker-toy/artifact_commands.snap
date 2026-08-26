@@ -450,7 +450,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 0.0,
           "y": 38.099999999999994
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -531,7 +532,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 100.33,
           "y": 38.099999999999994
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -612,7 +614,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 88.89999999999999,
           "y": 63.5
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -693,7 +696,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 88.89999999999999,
           "y": 114.3
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -774,7 +778,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 88.89999999999999,
           "y": 165.1
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -855,7 +860,8 @@ description: Artifact commands fun-stacker-toy.kcl
         "query_point": {
           "x": 93.4958,
           "y": 212.6842
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1076,12 +1082,13 @@ description: Artifact commands fun-stacker-toy.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "create_region_from_query_point",
+        "type": "create_region",
         "object_id": "[uuid]",
-        "query_point": {
-          "x": 0.0,
-          "y": -0.0
-        }
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {

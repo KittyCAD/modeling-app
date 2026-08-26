@@ -21,6 +21,12 @@ use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::CameraLook;
+use crate::execution::CameraView;
+use crate::execution::NamedViewValue;
+use crate::execution::Orientation;
+use crate::execution::Projection;
+use crate::execution::Visibility;
 use crate::execution::cmd_id_ref_to_artifact_id;
 use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
@@ -61,7 +67,8 @@ pub struct ArtifactCommand {
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
     /// without an engine command, in which case, we would make this field
-    /// optional.
+    /// optional. Imported file commands retain paths and format but omit raw
+    /// file bytes after the command has been sent to the engine.
     pub command: ModelingCmd,
     /// Extra artifact identity needed when an engine clone represents a KCL
     /// solid whose body artifact ID differs from its engine entity ID.
@@ -87,20 +94,101 @@ pub(crate) struct EntityCloneInfo {
 }
 
 pub(super) fn artifact_plane_info(info: &PlaneInfo) -> ArtifactPlaneInfo {
-    fn point(point: crate::execution::Point3d) -> ArtifactPoint3d {
-        ArtifactPoint3d {
-            x: point.x,
-            y: point.y,
-            z: point.z,
-            units: point.units,
-        }
-    }
-
     ArtifactPlaneInfo {
-        origin: point(info.origin),
-        x_axis: point(info.x_axis),
-        y_axis: point(info.y_axis),
-        z_axis: point(info.z_axis),
+        origin: artifact_point3d(info.origin),
+        x_axis: artifact_point3d(info.x_axis),
+        y_axis: artifact_point3d(info.y_axis),
+        z_axis: artifact_point3d(info.z_axis),
+    }
+}
+
+fn artifact_point3d(point: crate::execution::Point3d) -> ArtifactPoint3d {
+    ArtifactPoint3d {
+        x: point.x,
+        y: point.y,
+        z: point.z,
+        units: point.units,
+    }
+}
+
+/// Builds the artifact for a named view.
+///
+/// The runtime value uses kcl-lib's camera and visibility types. The artifact
+/// uses the kcl-api types that correspond to them, so this function converts
+/// every field.
+///
+/// The value holds a baseline and one exception list, while the artifact holds
+/// separate `show_ids` and `hide_ids`. The baseline decides which of those two
+/// lists the exception becomes, and the other list is left empty: under a `Show`
+/// baseline the excepted objects are the hidden ones, and under a `Hide`
+/// baseline they are the only visible ones.
+///
+/// Each match below is exhaustive. A variant added to one of kcl-lib's enums
+/// therefore fails to compile here instead of reaching a consumer as a
+/// different variant.
+pub(crate) fn named_view_artifact(view: &NamedViewValue, code_ref: CodeRef) -> NamedViewArtifact {
+    let (show_ids, hide_ids) = match view.baseline() {
+        Visibility::Show => (Vec::new(), view.except_ids().to_vec()),
+        Visibility::Hide => (view.except_ids().to_vec(), Vec::new()),
+    };
+
+    NamedViewArtifact {
+        id: view.artifact_id(),
+        name: view.name().to_owned(),
+        camera: artifact_camera_view(view.camera()),
+        baseline: artifact_visibility(view.baseline()),
+        show_ids,
+        hide_ids,
+        code_ref,
+    }
+}
+
+fn artifact_camera_view(camera: &CameraView) -> ArtifactCameraView {
+    ArtifactCameraView {
+        look: artifact_camera_look(camera.look()),
+        target: camera.target().copied().map(artifact_point3d),
+        // The value already stores millimeters; this reads the number in the
+        // unit the wire model documents rather than trusting the tag.
+        distance: camera.distance().map(|distance| distance.to_mm()),
+        projection: artifact_projection(camera.projection()),
+    }
+}
+
+fn artifact_camera_look(look: &CameraLook) -> ArtifactCameraLook {
+    match look {
+        CameraLook::Oriented { orientation } => ArtifactCameraLook::Oriented {
+            orientation: artifact_orientation(*orientation),
+        },
+        CameraLook::Directed { direction, up } => ArtifactCameraLook::Directed {
+            direction: artifact_point3d(*direction),
+            up: artifact_point3d(*up),
+        },
+    }
+}
+
+fn artifact_orientation(orientation: Orientation) -> ArtifactOrientation {
+    match orientation {
+        Orientation::Front => ArtifactOrientation::Front,
+        Orientation::Back => ArtifactOrientation::Back,
+        Orientation::Left => ArtifactOrientation::Left,
+        Orientation::Right => ArtifactOrientation::Right,
+        Orientation::Top => ArtifactOrientation::Top,
+        Orientation::Bottom => ArtifactOrientation::Bottom,
+        Orientation::Isometric => ArtifactOrientation::Isometric,
+    }
+}
+
+fn artifact_projection(projection: Projection) -> ArtifactProjection {
+    match projection {
+        Projection::Orthographic => ArtifactProjection::Orthographic,
+        Projection::Perspective => ArtifactProjection::Perspective,
+    }
+}
+
+fn artifact_visibility(visibility: Visibility) -> ArtifactVisibility {
+    match visibility {
+        Visibility::Show => ArtifactVisibility::Show,
+        Visibility::Hide => ArtifactVisibility::Hide,
     }
 }
 
@@ -173,7 +261,13 @@ fn merge_artifacts(old: &mut Artifact, new: Artifact) -> Option<Artifact> {
         Artifact::EdgeCut(a) => merge_edge_cut(a, new),
         Artifact::EdgeCutEdge(_) => Some(new),
         Artifact::Helix(a) => merge_helix(a, new),
+        Artifact::ImportedGeometry(_) => Some(new),
         Artifact::GdtAnnotation(a) => merge_gdt_annotation(a, new),
+        // One `view::named` call supplies every field, so nothing accumulates.
+        // Replacing wholesale keeps `show_ids`/`hide_ids` exactly as that call
+        // wrote them; unioning would mix in ids from an earlier execution of the
+        // same call site, which reuses the same artifact id.
+        Artifact::NamedView(_) => Some(new),
         Artifact::Pattern(a) => merge_pattern(a, new),
     }
 }
@@ -458,6 +552,12 @@ fn fill_in_node_paths(
                 code_ref_for_range(programs, cached_body_items, annotation.code_ref.range, import_code_refs);
             annotation.code_ref.range = range;
             annotation.code_ref.node_path = node_path;
+        }
+        Artifact::NamedView(view) if view.code_ref.node_path.is_empty() => {
+            let (range, node_path) =
+                code_ref_for_range(programs, cached_body_items, view.code_ref.range, import_code_refs);
+            view.code_ref.range = range;
+            view.code_ref.node_path = node_path;
         }
         _ => {}
     }
@@ -876,10 +976,24 @@ fn remap_artifact_for_clone(
                 source.consumed
             },
         }),
+        Artifact::ImportedGeometry(source) => Artifact::ImportedGeometry(ImportedGeometryArtifact {
+            id: remap_id_for_clone(source.id, entity_id_map),
+            code_ref: clone_code_ref.clone(),
+        }),
         Artifact::GdtAnnotation(source) => Artifact::GdtAnnotation(GdtAnnotationArtifact {
             id: remap_id_for_clone(source.id, entity_id_map),
             code_ref: clone_code_ref.clone(),
         }),
+        // A named view has no engine entity, so it can never appear in a
+        // clone's id map, and `clone()` takes only a sketch, solid or imported
+        // geometry as its source. This arm exists because the match is
+        // exhaustive: returning the artifact unchanged makes it a no-op re-insert
+        // rather than inventing a second view, which would carry a duplicate
+        // name. The assertion is a tripwire if the assumption ever breaks.
+        Artifact::NamedView(_) => {
+            debug_assert!(false, "a named view is not reachable from a cloned body");
+            artifact.clone()
+        }
         Artifact::Pattern(source) => Artifact::Pattern(Pattern {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
@@ -1232,6 +1346,12 @@ fn artifacts_to_update(
     let cmd = &artifact_command.command;
 
     match cmd {
+        ModelingCmd::ImportFiles(_) => {
+            return Ok(vec![Artifact::ImportedGeometry(ImportedGeometryArtifact {
+                id,
+                code_ref,
+            })]);
+        }
         ModelingCmd::MakePlane(_) => {
             if range.is_synthetic() {
                 return Ok(Vec::new());

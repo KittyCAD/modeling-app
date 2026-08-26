@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 boltSpacingX = 5
@@ -69,7 +69,10 @@ plateSketch = sketch(on = XY) {
   radius(innerHole) == tubeInnerDiameter / 2
 }
 
-plateRegion = region(point = [blockLength / 2 - 0.1in, 0in], sketch = plateSketch)
+plateRegion = region(segments = [
+  plateSketch.bottomEdge,
+  plateSketch.rightEdge
+])
 plateTopExtrude = extrude(plateRegion, length = stockThickness, tagEnd = $plateTop)
 hide(plateSketch)
 
@@ -261,13 +264,7 @@ centralTubeSketch = sketch(on = offsetPlane(XY, offset = stockThickness)) {
   radius(innerCircle) == tubeInnerDiameter / 2
 }
 
-centralTubeRegion = region(
-  point = [
-    tubeInnerDiameter / 2 + tubeThickness / 2,
-    0in
-  ],
-  sketch = centralTubeSketch,
-)
+centralTubeRegion = region(segments = [centralTubeSketch.outerCircle])
 centralTubeSolid = extrude(centralTubeRegion, length = tubeHeight)
 hide(centralTubeSketch)
 centralTube = subtract([centralTubeSolid], tools = [pinhole])

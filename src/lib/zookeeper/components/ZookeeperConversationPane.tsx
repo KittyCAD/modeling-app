@@ -508,6 +508,8 @@ export const ZookeeperConversationPane = (props: {
               type: ZookeeperManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
+              engineApiCallId:
+                props.contextModeling.engineCommandManager.apiCallId,
               activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
                     currentFileEntry: currentLoaderFile,
@@ -526,6 +528,15 @@ export const ZookeeperConversationPane = (props: {
         }
 
         if (context.conversation !== undefined) {
+          return
+        }
+
+        // This avoids getting into an infinite loop when setup is requested
+        // without an API token. The machine caches setup and stays in Await,
+        // which wakes this subscriber while there is still no conversation.
+        // Without this return, we would send the same setup event over and over.
+        // Setup is already queued and will resume when a token arrives.
+        if (context.cachedSetup !== undefined) {
           return
         }
 

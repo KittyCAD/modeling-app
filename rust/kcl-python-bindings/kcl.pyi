@@ -53,6 +53,7 @@ __all__ = [
     "SnapshotOptions",
     "StepExportOptions",
     "StepImportOptions",
+    "StepImportTargetRepresentation",
     "StepPresentation",
     "StlExportOptions",
     "StlImportOptions",
@@ -142,6 +143,7 @@ class CompilationIssue:
     def is_warning(self) -> builtins.bool: ...
     def is_err(self) -> builtins.bool: ...
     def is_fatal(self) -> builtins.bool: ...
+    def message(self) -> builtins.str: ...
 
 @typing.final
 class CreoImportOptions:
@@ -192,6 +194,7 @@ class ExecOutcome:
         Render the given compilation issue as a miette report string, using
         the source code and filename captured at execution time.
         """
+    def report_all(self) -> builtins.list[builtins.str]: ...
 
 @typing.final
 class ExportFile:
@@ -600,6 +603,24 @@ class SketchConstraintReport:
     @property
     def errors(self) -> builtins.list[SketchConstraintStatus]: ...
     @property
+    def warnings(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution warnings collected while computing
+        the constraint report.
+        """
+    @property
+    def execution_errors(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered non-fatal KCL execution errors collected while computing the
+        constraint report.
+        """
+    @property
+    def execution_fatals(self) -> builtins.list[builtins.str]:
+        r"""
+        Rendered fatal KCL execution issues collected while computing the
+        constraint report.
+        """
+    @property
     def is_complete(self) -> builtins.bool: ...
     @property
     def kcl_error(self) -> typing.Optional[KclErrorInfo]: ...
@@ -610,7 +631,13 @@ class SketchConstraintStatus:
     Per-sketch summary of constraint freedom analysis.
     """
     @property
-    def name(self) -> builtins.str: ...
+    def name(self) -> builtins.str:
+        r"""
+        Name of the variable the sketch was assigned to. Empty when the sketch
+        has no enclosing variable declaration, and shared between entries when
+        two sketches resolve to the same declaration. The report carries no
+        other sketch identifier.
+        """
     @property
     def status(self) -> zooConstraintKind: ...
     @property
@@ -893,6 +920,20 @@ class PlyStorage(enum.Enum):
     BinaryBigEndian = ...
     r"""
     Encode payload as binary using big endian.
+    """
+
+@typing.final
+class StepImportTargetRepresentation(enum.Enum):
+    r"""
+    After importing, how should this model's data be represented?
+    """
+    Mesh = ...
+    r"""
+    Mesh of 2D geometry
+    """
+    Brep = ...
+    r"""
+    Boundary representation
     """
 
 @typing.final
@@ -1353,12 +1394,12 @@ def lint_and_fix_families(code: builtins.str, families_to_fix: typing.Sequence[F
     Returns any unfixed lints.
     """
 
-async def mock_execute(path: builtins.str) -> builtins.bool:
+async def mock_execute(path: builtins.str) -> zooExecOutcome:
     r"""
     Mock execute the kcl code from a file path.
     """
 
-async def mock_execute_code(code: builtins.str) -> builtins.bool:
+async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     r"""
     Mock execute the kcl code.
     """

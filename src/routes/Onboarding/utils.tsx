@@ -130,13 +130,12 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    void navigate(targetRoute)
+    void navigate(targetRoute, { replace: true })
   }, [filePath, newStatus, navigate, settings])
 }
 
 export function useDismiss() {
   const { settings } = useApp()
-  const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
 
   const settingsCallback = useCallback(
@@ -145,21 +144,16 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
-      if (!filePath) {
-        return new Error('filePath is undefined')
-      }
-
-      settings.send({
-        type: 'set.app.onboardingStatus',
-        data: { level: 'user', value: dismissalType },
-      })
       waitFor(settings.actor, (state) => state.matches('idle'))
         .then(() => {
-          if (!filePath) {
-            return Promise.reject(new Error('bug: filePath is undefined'))
-          }
-
-          void navigate(filePath)
+          settings.send({
+            type: 'set.app.onboardingStatus',
+            data: { level: 'user', value: dismissalType },
+          })
+          return waitFor(settings.actor, (state) => state.matches('idle'))
+        })
+        .then(() => {
+          void navigate(PATHS.HOME, { replace: true })
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -169,7 +163,7 @@ export function useDismiss() {
         })
         .catch(reportRejection)
     },
-    [settings, filePath, navigate]
+    [settings, navigate]
   )
 
   return settingsCallback

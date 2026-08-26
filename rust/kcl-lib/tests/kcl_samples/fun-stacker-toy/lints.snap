@@ -13,8 +13,8 @@ description: Lints fun-stacker-toy.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4557,
-      4975,
+      4581,
+      4999,
       0
     ],
     "overridden": false,

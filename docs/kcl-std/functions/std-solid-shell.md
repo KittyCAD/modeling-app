@@ -280,7 +280,7 @@ boxProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-box = extrude(region(point = [3mm, 2mm], sketch = boxProfile), length = 4mm)
+box = extrude(region(segments = [boxProfile.edge1, boxProfile.edge2]), length = 4mm)
 openBox = shell(box, faces = [END], thickness = 0.5mm)
 
 ```

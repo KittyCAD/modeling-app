@@ -147,6 +147,21 @@ pub struct StdFnProps {
     pub name: String,
     pub(crate) consumed_solid_arg_check: ConsumedSolidArgCheck,
     pub(crate) region_behavior: RegionBehavior,
+    /// Set for the few builtins that call back into KCL (map, reduce,
+    /// patternTransform): the machine executor routes them to a resumable
+    /// entry so their callbacks run on the machine's continuation stack
+    /// instead of re-entering natively. The recursive executor ignores this.
+    pub(crate) resumable: Option<ResumableKind>,
+}
+
+/// Which resumable builtin this is. See
+/// `crate::execution::machine`'s resume continuations.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum ResumableKind {
+    Map,
+    Reduce,
+    PatternTransform,
+    PatternTransform2d,
 }
 
 impl StdFnProps {
@@ -155,7 +170,13 @@ impl StdFnProps {
             name: name.to_owned(),
             consumed_solid_arg_check: Default::default(),
             region_behavior: Default::default(),
+            resumable: None,
         }
+    }
+
+    pub(crate) fn resumable(mut self, kind: ResumableKind) -> Self {
+        self.resumable = Some(kind);
+        self
     }
 
     pub(crate) fn warn_deprecated_on_consumed_solid_args(mut self) -> Self {
@@ -491,7 +512,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("solid", "patternTransform") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
-            StdFnProps::default("std::solid::patternTransform"),
+            StdFnProps::default("std::solid::patternTransform").resumable(ResumableKind::PatternTransform),
         ),
         ("solid", "patternLinear3d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a).map(|r| r.map(KclValue::continue_))),
@@ -515,11 +536,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),
-            StdFnProps::default("std::array::map").reads_regions_locally(),
+            StdFnProps::default("std::array::map")
+                .reads_regions_locally()
+                .resumable(ResumableKind::Map),
         ),
         ("array", "reduce") => (
             |e, a| Box::pin(crate::std::array::reduce(e, a)),
-            StdFnProps::default("std::array::reduce").reads_regions_locally(),
+            StdFnProps::default("std::array::reduce")
+                .reads_regions_locally()
+                .resumable(ResumableKind::Reduce),
         ),
         ("array", "push") => (
             |e, a| Box::pin(crate::std::array::push(e, a).map(|r| r.map(KclValue::continue_))),
@@ -602,7 +627,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
-            StdFnProps::default("std::sketch::patternTransform2d"),
+            StdFnProps::default("std::sketch::patternTransform2d").resumable(ResumableKind::PatternTransform2d),
         ),
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a).map(|r| r.map(KclValue::continue_))),
@@ -885,6 +910,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("view", "directed") => (
             |e, a| Box::pin(crate::std::view::directed(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::view::directed"),
+        ),
+        ("view", "named") => (
+            |e, a| Box::pin(crate::std::view::named(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::view::named"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")

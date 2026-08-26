@@ -13,8 +13,8 @@ description: Lints hex-nut-with-chamfer.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      3134,
-      3365,
+      3149,
+      3380,
       0
     ],
     "overridden": false,

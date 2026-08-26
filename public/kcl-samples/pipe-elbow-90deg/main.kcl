@@ -1,7 +1,8 @@
 // 90 Degree Pipe Elbow
 // Quarter-turn elbow with two bolted flanges on a 94 x 71 mm pipe section.
+// Categories: Manufacturing, Construction
 
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 elbowBendAngleDegrees = 90
 elbowCenterlineBendRadius = 80
@@ -40,13 +41,7 @@ elbowSectionSketch = sketch(on = XY) {
   radius(elbowOuterCircle) == pipeOutsideDiameter / 2
   radius(elbowInnerCircle) == pipeInsideDiameter / 2
 }
-elbowSectionRegion = region(
-  point = [
-    elbowCenterlineBendRadius + (pipeInsideDiameter + pipeWallThickness) / 2,
-    0mm
-  ],
-  sketch = elbowSectionSketch,
-)
+elbowSectionRegion = region(segments = [elbowSectionSketch.elbowOuterCircle])
 elbowBody = revolve(elbowSectionRegion, axis = Y, angle = -elbowBendAngleDegrees)
 
 flangeSketch = sketch(on = YZ) {
@@ -71,13 +66,7 @@ flangeSketch = sketch(on = YZ) {
   radius(flangeInnerCircle) == flangeInsideDiameter / 2
 }
 
-flangeRegion = region(
-  point = [
-    0mm,
-    elbowCenterlineBendRadius + (flangeInsideDiameter + pipeWallThickness) / 2
-  ],
-  sketch = flangeSketch,
-)
+flangeRegion = region(segments = [flangeSketch.flangeOuterCircle])
 flangeBlank = extrude(flangeRegion, length = -flangeThickness)
 
 boltHoleSketch = sketch(on = YZ) {
@@ -106,13 +95,7 @@ boltHoleSketch = sketch(on = YZ) {
   radius(boltHoleCircle) == boltHoleDiameter / 2
 }
 
-boltHoleRegion = region(
-  point = [
-    boltCircleDiameter / 2,
-    elbowCenterlineBendRadius
-  ],
-  sketch = boltHoleSketch,
-)
+boltHoleRegion = region(segments = [boltHoleSketch.boltHoleCircle])
 boltHoleBody = extrude(boltHoleRegion, length = -flangeThickness)
 boltHoleBodies = patternCircular3d(
   boltHoleBody,

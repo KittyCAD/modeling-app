@@ -2569,84 +2569,19 @@ description: Operations executed surgical-drill-guide.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 10.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               },
               {
-                "type": "Number",
-                "value": 3.0,
-                "ty": {
-                  "mm": null,
-                  "type": "Known",
-                  "type": "Length"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "arcCenterGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "backFace": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "base": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontBend": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "frontFace": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "heelArc": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "returnEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "supportEdge": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "topFace": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -7039,68 +6974,15 @@ description: Operations executed surgical-drill-guide.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 9.108108108108107,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 53.15127018922193,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "centerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }
@@ -10307,68 +10189,15 @@ description: Operations executed surgical-drill-guide.kcl
       "name": "region",
       "unlabeledArg": null,
       "labeledArgs": {
-        "point": {
+        "segments": {
           "value": {
             "type": "Array",
             "value": [
               {
-                "type": "Number",
-                "value": 9.708108108108107,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 150.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
+                "type": "Segment",
+                "artifact_id": "[uuid]"
               }
             ]
-          },
-          "sourceRange": []
-        },
-        "sketch": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "centerGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "innerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "meta": {
-                "type": "Object",
-                "value": {
-                  "sketch": {
-                    "type": "Sketch",
-                    "value": {
-                      "artifactId": "[uuid]"
-                    }
-                  }
-                }
-              },
-              "outerCircle": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              },
-              "outerRadiusGuide": {
-                "type": "Segment",
-                "artifact_id": "[uuid]"
-              }
-            }
           },
           "sourceRange": []
         }

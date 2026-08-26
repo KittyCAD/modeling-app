@@ -15,6 +15,8 @@ export type ProjectFiles = Record<string, string>
 export type CloudProject = {
   id: string
   title: string
+  description?: string
+  categoryIds?: string[]
   revision: string
   updatedAt?: string
   files: ProjectFiles
@@ -91,6 +93,8 @@ export function cloudProjectResponse(project: CloudProject) {
   return {
     id: project.id,
     title: project.title,
+    description: project.description ?? '',
+    category_ids: project.categoryIds ?? [],
     revision: project.revision,
     ...(project.updatedAt ? { updated_at: project.updatedAt } : {}),
   }

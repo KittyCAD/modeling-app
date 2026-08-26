@@ -3,8 +3,9 @@
 # committed rust/kcl-lib/expected-bindings/ directory so that changes to the
 # TypeScript API surface show up as diffs of tracked files.
 #
-# Prerequisite: the bindings must already be generated (npm run build:wasm).
-# Use `npm run bindings:update` to regenerate and copy in one step.
+# Prerequisite: the bindings must already be generated
+# (`npm run bindings:generate`). Use `npm run bindings:update` to regenerate
+# and copy in one step.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -13,7 +14,7 @@ ts_rs_src=rust/kcl-lib/bindings
 dest=rust/kcl-lib/expected-bindings
 
 if [ ! -d "$ts_rs_src" ]; then
-  echo "error: $ts_rs_src does not exist; run 'npm run build:wasm' first" >&2
+  echo "error: $ts_rs_src does not exist; run 'npm run bindings:generate' first" >&2
   exit 1
 fi
 

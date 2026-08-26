@@ -327,7 +327,9 @@ export const zookeeperArtifactSelectionPromptHandlers = {
   edgeCut: selectedArtifactSourceRangePrompt,
   edgeCutEdge: selectedArtifactSourceRangePrompt,
   helix: selectedArtifactSourceRangePrompt,
+  importedGeometry: selectedArtifactSourceRangePrompt,
   gdtAnnotation: selectedArtifactSourceRangePrompt,
+  namedView: selectedArtifactSourceRangePrompt,
   pattern: selectedArtifactSourceRangePrompt,
 } satisfies Record<Artifact['type'], ArtifactSelectionPromptHandler>
 
@@ -467,6 +469,7 @@ async function buildSelectionReferencePrompt({
 
   const references = await getSelectionReferences({
     graphSelections: selections.graphSelections,
+    defaultPlaneSelections: [],
     enginePrimitives,
     artifactGraph,
     engineCommandManager,

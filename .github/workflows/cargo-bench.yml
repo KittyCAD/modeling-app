@@ -40,14 +40,26 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache: rust
+          cache: false # Configured below, after the manifest is edited.
           rustflags: '' # Use .cargo/config.toml
-      - name: Install dependencies
+      - name: Swap criterion for the CodSpeed compatibility layer
+        # The version is pinned so the resolved lockfile is identical on every
+        # run. The cache key below hashes Cargo.lock. An unpinned resolve would
+        # change that key whenever CodSpeed publishes a release.
         run: |
-          cargo install cargo-criterion
-          cargo install cargo-codspeed
           cd rust/kcl-lib
-          cargo add --dev codspeed-criterion-compat --rename criterion
+          cargo add --dev codspeed-criterion-compat@5.0.1 --rename criterion
+      - name: Rust Cache
+        # This step must follow the manifest edit above. The key is computed
+        # from Cargo.toml and Cargo.lock as they exist on disk at this point,
+        # and the build below runs against the edited dependency graph.
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+      - name: Install cargo-codspeed
+        # Runs after the cache restore so a cached ~/.cargo/bin makes this a
+        # no-op. cargo-codspeed is not available through taiki-e/install-action.
+        run: cargo install cargo-codspeed
       - name: Build the benchmark target(s)
         run: |
           cd rust
@@ -57,7 +69,7 @@ jobs:
             --bench digest_benchmark \
             --bench memory_benchmark_criterion
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v5.0.1
+        uses: CodSpeedHQ/action@v5.0.3
         with:
           mode: simulation
           working-directory: rust

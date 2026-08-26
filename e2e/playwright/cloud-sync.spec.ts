@@ -10,7 +10,7 @@ import {
   seedCloudSyncState,
   zipProject,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
-import { setup } from '@e2e/playwright/test-utils'
+import { mockClientErrorReports, setup } from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
@@ -414,6 +414,7 @@ test(
         (update) => update.projectId === staleDirtyProject.id
       )
 
+    await mockClientErrorReports(context)
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
     await page.goto('/')
     await expectCloudSyncHomeReady(page)

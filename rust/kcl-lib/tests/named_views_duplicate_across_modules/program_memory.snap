@@ -1,0 +1,60 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_duplicate_across_modules.kcl
+---
+{
+  "importedFront": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Front",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Front"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": []
+    }
+  },
+  "localFront": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Front",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Back"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": []
+    }
+  },
+  "panelFront": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Front",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Front"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": []
+    }
+  }
+}

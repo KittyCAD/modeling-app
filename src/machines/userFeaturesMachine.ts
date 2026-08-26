@@ -55,6 +55,106 @@ export type UserFeaturesService = {
   has: (featureFlagId: Feature, defaultValue: boolean) => boolean
 }
 
+/**
+ * How long callers gated on user features wait before proceeding anyway.
+ * A failed fetch settles immediately; this only bounds a hung request or a
+ * machine that never received a Load (e.g. logged out).
+ */
+export const USER_FEATURES_SETTLE_TIMEOUT_MS = 10_000
+
+/**
+ * The narrow snapshot/actor surface needed to await feature settlement, so
+ * consumers and test doubles don't need a full xstate actor.
+ */
+export interface UserFeaturesSettleSnapshot {
+  matches: (state: UserFeaturesState) => boolean
+  context: { fetchedAt?: Date }
+}
+
+export interface UserFeaturesSettleSource {
+  getSnapshot: () => UserFeaturesSettleSnapshot
+  subscribe: (listener: (snapshot: UserFeaturesSettleSnapshot) => void) => {
+    unsubscribe: () => void
+  }
+}
+
+export type UserFeaturesSettleService = {
+  actor: UserFeaturesSettleSource
+}
+
+/**
+ * Whether the user-features fetch has settled: reached Ready or Failed, or
+ * loaded at least once for this token. A poll refresh re-enters Loading but
+ * keeps `fetchedAt` from the previous load, so it still counts as settled.
+ */
+export function userFeaturesSnapshotSettled(
+  snapshot: UserFeaturesSettleSnapshot
+): boolean {
+  return (
+    snapshot.matches(UserFeaturesState.Ready) ||
+    snapshot.matches(UserFeaturesState.Failed) ||
+    snapshot.context.fetchedAt !== undefined
+  )
+}
+
+/**
+ * Resolves without rejecting when one condition is met:
+ *
+ * - The user-features fetch settles (see [userFeaturesSnapshotSettled]).
+ * - `timeoutMs` elapses.
+ * - The optional abort signal is aborted.
+ */
+export function waitForUserFeaturesSettled(
+  source: UserFeaturesSettleSource,
+  timeoutMs: number = USER_FEATURES_SETTLE_TIMEOUT_MS,
+  signal?: AbortSignal
+): Promise<void> {
+  if (signal?.aborted || userFeaturesSnapshotSettled(source.getSnapshot())) {
+    return Promise.resolve()
+  }
+
+  return new Promise((resolve) => {
+    let done = false
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+    let subscription: { unsubscribe: () => void } | undefined
+    const finish = () => {
+      if (done) {
+        return
+      }
+      done = true
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId)
+      }
+      signal?.removeEventListener('abort', finish)
+      subscription?.unsubscribe()
+      resolve()
+    }
+
+    signal?.addEventListener('abort', finish, { once: true })
+    if (signal?.aborted) {
+      finish()
+      return
+    }
+
+    subscription = source.subscribe((snapshot) => {
+      if (userFeaturesSnapshotSettled(snapshot)) {
+        finish()
+      }
+    })
+    if (done) {
+      // The listener fired synchronously before `subscription` was assigned.
+      subscription.unsubscribe()
+      return
+    }
+    if (userFeaturesSnapshotSettled(source.getSnapshot())) {
+      // Settled between the initial check and subscribing.
+      finish()
+      return
+    }
+    timeoutId = setTimeout(finish, timeoutMs)
+  })
+}
+
 function createDefaultContext(): UserFeaturesContext {
   return {
     featureIds: new Set<Feature>(),

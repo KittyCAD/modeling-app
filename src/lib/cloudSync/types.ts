@@ -66,6 +66,7 @@ export type OutboxEntry = {
   kind: 'upsert' | 'delete'
   targetPath: string
   sourcePath?: string
+  deletedPaths?: string[]
   createdAt: string
 }
 
@@ -89,6 +90,13 @@ export type ProjectUploadBody = {
   entrypoint_path: string
   project_toml_path: string
   expected_revision?: Revision
+  deleted_paths?: string[]
+}
+
+/** Publication metadata that whole-project replacements must preserve. */
+export type ProjectUploadPublicationMetadata = {
+  description: string
+  category_ids: string[]
 }
 
 /** Runtime configuration for enabling and targeting cloud sync replication. */
@@ -142,6 +150,7 @@ export type CloudSyncLocalProject = {
 /** Project metadata index entry enriched with pending local-change state. */
 export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
   hasPendingChanges: boolean
+  pendingSince?: string
 }
 
 /** Remote revision/update metadata extracted from cloud API responses. */

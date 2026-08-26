@@ -75,6 +75,13 @@ pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
+    /// The deepest machine-executor call depth reached by executions sharing
+    /// this state: the root module, its callbacks, and module bodies executed
+    /// inline on it. Imported modules pre-executed in parallel run on cloned
+    /// state whose counter is dropped, so their depths are not aggregated
+    /// here. Used to survey real-world depth against the runaway guard's
+    /// limit; see `machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT`.
+    pub(crate) machine_depth_high_water: usize,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -280,6 +287,9 @@ pub(super) struct ModuleState {
     /// recursive function calls. In general, this doesn't match `stack`'s size
     /// since it's conservative in reclaiming frames between executions.
     pub(super) call_stack_size: usize,
+    /// Live call depth of the machine executor within this module, for its
+    /// runaway-recursion guard. The machine's analog of `call_stack_size`.
+    pub(crate) machine_call_depth: usize,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -668,10 +678,14 @@ impl ExecState {
     pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
         // If you change this, make sure to test in WebAssembly in the app since
         // that's the limiting factor.
-        if self.mod_local.call_stack_size >= 50 {
-            return Err(KclError::MaxCallStack {
-                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
-            });
+        const LIMIT: usize = 50;
+        if self.mod_local.call_stack_size >= LIMIT {
+            return Err(KclError::new_max_call_stack(KclErrorDetails::new(
+                format!(
+                    "Call depth limit ({LIMIT}) exceeded. This usually means a function is recursing without a base case."
+                ),
+                vec![range],
+            )));
         }
         self.mod_local.call_stack_size += 1;
         Ok(())
@@ -688,6 +702,16 @@ impl ExecState {
         }
         self.mod_local.call_stack_size -= 1;
         Ok(())
+    }
+
+    /// The deepest machine-executor call depth reached in this execution.
+    /// The machine maintains the counter in all builds; today only the test
+    /// harnesses' depth survey reads it.
+    // Unused outside test builds, but kept available so release diagnostics
+    // can read the counter the machine already maintains.
+    #[allow(dead_code)]
+    pub(crate) fn machine_depth_high_water(&self) -> usize {
+        self.global.machine_depth_high_water
     }
 
     /// Returns true if we're executing in sketch mode for the current module.
@@ -919,6 +943,38 @@ impl ExecState {
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.mod_local.artifacts.artifacts.insert(id, artifact);
+    }
+
+    /// The declaring module and display name of every named view registered so
+    /// far. `view::named` needs these to reject a name that a view declared by
+    /// the same module already uses.
+    ///
+    /// Both artifact maps are scanned, because incremental re-execution divides
+    /// the views between them:
+    /// - a run that clears the scene empties `global.artifacts` beforehand, so
+    ///   every view it can see is one the current run registered into
+    ///   `mod_local.artifacts`;
+    /// - a run that only appends statements to an unchanged prefix does not
+    ///   re-execute that prefix, so the views the prefix declared stay in
+    ///   `global.artifacts` from the previous run while the appended
+    ///   declarations register into `mod_local.artifacts`.
+    ///
+    /// Reading one map alone would accept a duplicate name on one of those
+    /// paths and reject it on the other, which an author would see as the same
+    /// file being accepted while typed and rejected after an unrelated edit.
+    /// Neither path can report a view against its own earlier registration: a
+    /// re-executed declaration is only reached after `global.artifacts` was
+    /// cleared, and an appended declaration has no earlier registration.
+    pub(crate) fn registered_named_views(&self) -> impl Iterator<Item = (ModuleId, &str)> {
+        self.mod_local
+            .artifacts
+            .artifacts
+            .values()
+            .chain(self.global.artifacts.artifacts.values())
+            .filter_map(|artifact| match artifact {
+                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                _ => None,
+            })
     }
 
     pub(crate) fn artifact_mut(&mut self, id: ArtifactId) -> Option<&mut Artifact> {
@@ -1316,6 +1372,7 @@ impl FromStr for KclVersion {
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
+            machine_depth_high_water: 0,
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
@@ -1494,6 +1551,7 @@ impl ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             call_stack_size: 0,
+            machine_call_depth: 0,
             pipe_value: Default::default(),
             being_declared: Default::default(),
             sketch_block: Default::default(),

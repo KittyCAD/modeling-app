@@ -4,6 +4,7 @@ import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
+  KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
   OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
@@ -195,8 +196,12 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
+function expectedRuntimeFlags(
+  useNewLexerParser: 'On' | 'Off',
+  useCekExecutor: 'On' | 'Off'
+) {
   return JSON.stringify({
+    use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })
 }
@@ -276,6 +281,30 @@ describe('project system', () => {
     }
   })
 
+  it('does not reapply the camera projection while sketch solve mode is active', () => {
+    const app = createAppForTest()
+    const cameraProjectionSetter = vi.spyOn(
+      app.singletons.kclManager.sceneInfra.camControls,
+      'engineCameraProjection',
+      'set'
+    )
+
+    try {
+      app.project = {} as NonNullable<typeof app.project>
+      app.singletons.kclManager.modelingState = {
+        matches: (state: string) => state === 'sketchSolveMode',
+      } as unknown as NonNullable<KclManager['modelingState']>
+
+      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+
+      expect(cameraProjectionSetter).not.toHaveBeenCalled()
+    } finally {
+      cameraProjectionSetter.mockRestore()
+      app.project = undefined
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 
@@ -325,7 +354,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off')
+        expectedRuntimeFlags('Off', 'Off')
       )
     } finally {
       app.dispose()
@@ -349,7 +378,31 @@ describe('project system', () => {
       userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags('On', 'Off')
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const wasmInstance = createRuntimeFlagsWasmInstance()
+    const wasmPromise = Promise.resolve(wasmInstance)
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise,
+      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
+    })
+
+    try {
+      await wasmPromise
+      wasmInstance.set_kcl_runtime_flags.mockClear()
+
+      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
+
+      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags('Off', 'On')
       )
     } finally {
       app.dispose()
@@ -375,7 +428,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags('On', 'Off')
       )
     } finally {
       app.dispose()

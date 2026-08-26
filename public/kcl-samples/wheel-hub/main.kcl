@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define Parameters
 hubSpacing = 3in
@@ -217,7 +217,7 @@ mountingFlangeProfile = sketch(on = flangePlane) {
   radius(centerBoreCircle) == flangeBoreRadius
 }
 
-mountingFlangeRegion = region(point = [2.1in, 0in], sketch = mountingFlangeProfile)
+mountingFlangeRegion = region(segments = [mountingFlangeProfile.outerCircle])
 mountingFlangeBlank = extrude(
   mountingFlangeRegion,
   length = hubSpacing / 4,
@@ -336,7 +336,10 @@ boltHeadProfile = sketch(on = faceOf(mountingFlange, face = START)) {
 ]) == lugThreadDiameter / 1.25
 }
 
-boltHeadRegion = region(point = [-lugSpacing / 2, 0], sketch = boltHeadProfile)
+boltHeadRegion = region(segments = [
+  boltHeadProfile.line1,
+  boltHeadProfile.line2
+])
 boltHead = extrude(boltHeadRegion, length = hubSpacing / 8, method = NEW)
   |> appearance(color = "#121212")
 hide(boltHeadProfile)

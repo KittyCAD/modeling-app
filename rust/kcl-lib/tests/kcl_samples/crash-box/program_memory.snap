@@ -121,10 +121,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3409,
-            "end": 3416,
+            "commentStart": 3427,
+            "end": 3434,
             "moduleId": 0,
-            "start": 3409,
+            "start": 3427,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -135,10 +135,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3486,
-            "end": 3495,
+            "commentStart": 3504,
+            "end": 3513,
             "moduleId": 0,
-            "start": 3486,
+            "start": 3504,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -149,10 +149,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3567,
-            "end": 3577,
+            "commentStart": 3585,
+            "end": 3595,
             "moduleId": 0,
-            "start": 3567,
+            "start": 3585,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -163,10 +163,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3652,
-            "end": 3660,
+            "commentStart": 3670,
+            "end": 3678,
             "moduleId": 0,
-            "start": 3652,
+            "start": 3670,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -177,10 +177,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4504,
-            "end": 4516,
+            "commentStart": 4522,
+            "end": 4534,
             "moduleId": 0,
-            "start": 4504,
+            "start": 4522,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -191,10 +191,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4529,
-            "end": 4539,
+            "commentStart": 4547,
+            "end": 4557,
             "moduleId": 0,
-            "start": 4529,
+            "start": 4547,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -226,10 +226,10 @@ description: Variables in memory after executing crash-box.kcl
               0.0000000000000000019999978168807254
             ],
             "tag": {
-              "commentStart": 3409,
-              "end": 3416,
+              "commentStart": 3427,
+              "end": 3434,
               "moduleId": 0,
-              "start": 3409,
+              "start": 3427,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -250,10 +250,10 @@ description: Variables in memory after executing crash-box.kcl
               0.0000000000000000027999956201440355
             ],
             "tag": {
-              "commentStart": 3486,
-              "end": 3495,
+              "commentStart": 3504,
+              "end": 3513,
               "moduleId": 0,
-              "start": 3486,
+              "start": 3504,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -274,10 +274,10 @@ description: Variables in memory after executing crash-box.kcl
               -300.0
             ],
             "tag": {
-              "commentStart": 3567,
-              "end": 3577,
+              "commentStart": 3585,
+              "end": 3595,
               "moduleId": 0,
-              "start": 3567,
+              "start": 3585,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -298,10 +298,10 @@ description: Variables in memory after executing crash-box.kcl
               -300.0
             ],
             "tag": {
-              "commentStart": 3652,
-              "end": 3660,
+              "commentStart": 3670,
+              "end": 3678,
               "moduleId": 0,
-              "start": 3652,
+              "start": 3670,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -689,10 +689,10 @@ description: Variables in memory after executing crash-box.kcl
                     0.0000000000000000019999978168807254
                   ],
                   "tag": {
-                    "commentStart": 3409,
-                    "end": 3416,
+                    "commentStart": 3427,
+                    "end": 3434,
                     "moduleId": 0,
-                    "start": 3409,
+                    "start": 3427,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -713,10 +713,10 @@ description: Variables in memory after executing crash-box.kcl
                     0.0000000000000000027999956201440355
                   ],
                   "tag": {
-                    "commentStart": 3486,
-                    "end": 3495,
+                    "commentStart": 3504,
+                    "end": 3513,
                     "moduleId": 0,
-                    "start": 3486,
+                    "start": 3504,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -737,10 +737,10 @@ description: Variables in memory after executing crash-box.kcl
                     -300.0
                   ],
                   "tag": {
-                    "commentStart": 3567,
-                    "end": 3577,
+                    "commentStart": 3585,
+                    "end": 3595,
                     "moduleId": 0,
-                    "start": 3567,
+                    "start": 3585,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -761,10 +761,10 @@ description: Variables in memory after executing crash-box.kcl
                     -300.0
                   ],
                   "tag": {
-                    "commentStart": 3652,
-                    "end": 3660,
+                    "commentStart": 3670,
+                    "end": 3678,
                     "moduleId": 0,
-                    "start": 3652,
+                    "start": 3670,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -1109,10 +1109,10 @@ description: Variables in memory after executing crash-box.kcl
             0.0000000000000000019999978168807254
           ],
           "tag": {
-            "commentStart": 3409,
-            "end": 3416,
+            "commentStart": 3427,
+            "end": 3434,
             "moduleId": 0,
-            "start": 3409,
+            "start": 3427,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1133,10 +1133,10 @@ description: Variables in memory after executing crash-box.kcl
             0.0000000000000000027999956201440355
           ],
           "tag": {
-            "commentStart": 3486,
-            "end": 3495,
+            "commentStart": 3504,
+            "end": 3513,
             "moduleId": 0,
-            "start": 3486,
+            "start": 3504,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1157,10 +1157,10 @@ description: Variables in memory after executing crash-box.kcl
             -300.0
           ],
           "tag": {
-            "commentStart": 3567,
-            "end": 3577,
+            "commentStart": 3585,
+            "end": 3595,
             "moduleId": 0,
-            "start": 3567,
+            "start": 3585,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1181,10 +1181,10 @@ description: Variables in memory after executing crash-box.kcl
             -300.0
           ],
           "tag": {
-            "commentStart": 3652,
-            "end": 3660,
+            "commentStart": 3670,
+            "end": 3678,
             "moduleId": 0,
-            "start": 3652,
+            "start": 3670,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1287,10 +1287,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3409,
-            "end": 3416,
+            "commentStart": 3427,
+            "end": 3434,
             "moduleId": 0,
-            "start": 3409,
+            "start": 3427,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1301,10 +1301,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3486,
-            "end": 3495,
+            "commentStart": 3504,
+            "end": 3513,
             "moduleId": 0,
-            "start": 3486,
+            "start": 3504,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1315,10 +1315,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3567,
-            "end": 3577,
+            "commentStart": 3585,
+            "end": 3595,
             "moduleId": 0,
-            "start": 3567,
+            "start": 3585,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1329,10 +1329,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3652,
-            "end": 3660,
+            "commentStart": 3670,
+            "end": 3678,
             "moduleId": 0,
-            "start": 3652,
+            "start": 3670,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1343,10 +1343,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4504,
-            "end": 4516,
+            "commentStart": 4522,
+            "end": 4534,
             "moduleId": 0,
-            "start": 4504,
+            "start": 4522,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1357,10 +1357,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4529,
-            "end": 4539,
+            "commentStart": 4547,
+            "end": 4557,
             "moduleId": 0,
-            "start": 4529,
+            "start": 4547,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -1392,10 +1392,10 @@ description: Variables in memory after executing crash-box.kcl
               0.0000000000000000019999978168807254
             ],
             "tag": {
-              "commentStart": 3409,
-              "end": 3416,
+              "commentStart": 3427,
+              "end": 3434,
               "moduleId": 0,
-              "start": 3409,
+              "start": 3427,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -1416,10 +1416,10 @@ description: Variables in memory after executing crash-box.kcl
               0.0000000000000000027999956201440355
             ],
             "tag": {
-              "commentStart": 3486,
-              "end": 3495,
+              "commentStart": 3504,
+              "end": 3513,
               "moduleId": 0,
-              "start": 3486,
+              "start": 3504,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -1440,10 +1440,10 @@ description: Variables in memory after executing crash-box.kcl
               -300.0
             ],
             "tag": {
-              "commentStart": 3567,
-              "end": 3577,
+              "commentStart": 3585,
+              "end": 3595,
               "moduleId": 0,
-              "start": 3567,
+              "start": 3585,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1464,10 +1464,10 @@ description: Variables in memory after executing crash-box.kcl
               -300.0
             ],
             "tag": {
-              "commentStart": 3652,
-              "end": 3660,
+              "commentStart": 3670,
+              "end": 3678,
               "moduleId": 0,
-              "start": 3652,
+              "start": 3670,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -1599,10 +1599,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1613,10 +1613,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1627,10 +1627,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1641,10 +1641,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1666,10 +1666,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.00000000025676
             ],
             "tag": {
-              "commentStart": 948,
-              "end": 958,
+              "commentStart": 966,
+              "end": 976,
               "moduleId": 0,
-              "start": 948,
+              "start": 966,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1690,10 +1690,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.0000000002362
             ],
             "tag": {
-              "commentStart": 1033,
-              "end": 1042,
+              "commentStart": 1051,
+              "end": 1060,
               "moduleId": 0,
-              "start": 1033,
+              "start": 1051,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -1714,10 +1714,10 @@ description: Variables in memory after executing crash-box.kcl
               199.9999999995891
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1122,
+              "commentStart": 1133,
+              "end": 1140,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1133,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -1738,10 +1738,10 @@ description: Variables in memory after executing crash-box.kcl
               199.99999999961994
             ],
             "tag": {
-              "commentStart": 1195,
-              "end": 1203,
+              "commentStart": 1213,
+              "end": 1221,
               "moduleId": 0,
-              "start": 1195,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -1899,10 +1899,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1913,10 +1913,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1927,10 +1927,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1941,10 +1941,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1966,10 +1966,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.00000000025676
             ],
             "tag": {
-              "commentStart": 948,
-              "end": 958,
+              "commentStart": 966,
+              "end": 976,
               "moduleId": 0,
-              "start": 948,
+              "start": 966,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1990,10 +1990,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.0000000002362
             ],
             "tag": {
-              "commentStart": 1033,
-              "end": 1042,
+              "commentStart": 1051,
+              "end": 1060,
               "moduleId": 0,
-              "start": 1033,
+              "start": 1051,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -2014,10 +2014,10 @@ description: Variables in memory after executing crash-box.kcl
               199.9999999995891
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1122,
+              "commentStart": 1133,
+              "end": 1140,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1133,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -2038,10 +2038,10 @@ description: Variables in memory after executing crash-box.kcl
               199.99999999961994
             ],
             "tag": {
-              "commentStart": 1195,
-              "end": 1203,
+              "commentStart": 1213,
+              "end": 1221,
               "moduleId": 0,
-              "start": 1195,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -2579,10 +2579,10 @@ description: Variables in memory after executing crash-box.kcl
                     -200.00000000025676
                   ],
                   "tag": {
-                    "commentStart": 948,
-                    "end": 958,
+                    "commentStart": 966,
+                    "end": 976,
                     "moduleId": 0,
-                    "start": 948,
+                    "start": 966,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -2603,10 +2603,10 @@ description: Variables in memory after executing crash-box.kcl
                     -200.0000000002362
                   ],
                   "tag": {
-                    "commentStart": 1033,
-                    "end": 1042,
+                    "commentStart": 1051,
+                    "end": 1060,
                     "moduleId": 0,
-                    "start": 1033,
+                    "start": 1051,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -2627,10 +2627,10 @@ description: Variables in memory after executing crash-box.kcl
                     199.9999999995891
                   ],
                   "tag": {
-                    "commentStart": 1115,
-                    "end": 1122,
+                    "commentStart": 1133,
+                    "end": 1140,
                     "moduleId": 0,
-                    "start": 1115,
+                    "start": 1133,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -2651,10 +2651,10 @@ description: Variables in memory after executing crash-box.kcl
                     199.99999999961994
                   ],
                   "tag": {
-                    "commentStart": 1195,
-                    "end": 1203,
+                    "commentStart": 1213,
+                    "end": 1221,
                     "moduleId": 0,
-                    "start": 1195,
+                    "start": 1213,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -3120,10 +3120,10 @@ description: Variables in memory after executing crash-box.kcl
             -200.00000000025676
           ],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3144,10 +3144,10 @@ description: Variables in memory after executing crash-box.kcl
             -200.0000000002362
           ],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3168,10 +3168,10 @@ description: Variables in memory after executing crash-box.kcl
             199.9999999995891
           ],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3192,10 +3192,10 @@ description: Variables in memory after executing crash-box.kcl
             199.99999999961994
           ],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3290,10 +3290,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3304,10 +3304,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3318,10 +3318,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3332,10 +3332,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3357,10 +3357,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.00000000025676
             ],
             "tag": {
-              "commentStart": 948,
-              "end": 958,
+              "commentStart": 966,
+              "end": 976,
               "moduleId": 0,
-              "start": 948,
+              "start": 966,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3381,10 +3381,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.0000000002362
             ],
             "tag": {
-              "commentStart": 1033,
-              "end": 1042,
+              "commentStart": 1051,
+              "end": 1060,
               "moduleId": 0,
-              "start": 1033,
+              "start": 1051,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3405,10 +3405,10 @@ description: Variables in memory after executing crash-box.kcl
               199.9999999995891
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1122,
+              "commentStart": 1133,
+              "end": 1140,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1133,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3429,10 +3429,10 @@ description: Variables in memory after executing crash-box.kcl
               199.99999999961994
             ],
             "tag": {
-              "commentStart": 1195,
-              "end": 1203,
+              "commentStart": 1213,
+              "end": 1221,
               "moduleId": 0,
-              "start": 1195,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3590,10 +3590,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3604,10 +3604,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3618,10 +3618,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3632,10 +3632,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3657,10 +3657,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.00000000025676
             ],
             "tag": {
-              "commentStart": 948,
-              "end": 958,
+              "commentStart": 966,
+              "end": 976,
               "moduleId": 0,
-              "start": 948,
+              "start": 966,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3681,10 +3681,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.0000000002362
             ],
             "tag": {
-              "commentStart": 1033,
-              "end": 1042,
+              "commentStart": 1051,
+              "end": 1060,
               "moduleId": 0,
-              "start": 1033,
+              "start": 1051,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3705,10 +3705,10 @@ description: Variables in memory after executing crash-box.kcl
               199.9999999995891
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1122,
+              "commentStart": 1133,
+              "end": 1140,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1133,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3729,10 +3729,10 @@ description: Variables in memory after executing crash-box.kcl
               199.99999999961994
             ],
             "tag": {
-              "commentStart": 1195,
-              "end": 1203,
+              "commentStart": 1213,
+              "end": 1221,
               "moduleId": 0,
-              "start": 1195,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -3832,10 +3832,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 948,
-            "end": 958,
+            "commentStart": 966,
+            "end": 976,
             "moduleId": 0,
-            "start": 948,
+            "start": 966,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -3846,10 +3846,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1033,
-            "end": 1042,
+            "commentStart": 1051,
+            "end": 1060,
             "moduleId": 0,
-            "start": 1033,
+            "start": 1051,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -3860,10 +3860,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1122,
+            "commentStart": 1133,
+            "end": 1140,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1133,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -3874,10 +3874,10 @@ description: Variables in memory after executing crash-box.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1195,
-            "end": 1203,
+            "commentStart": 1213,
+            "end": 1221,
             "moduleId": 0,
-            "start": 1195,
+            "start": 1213,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -3899,10 +3899,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.00000000025676
             ],
             "tag": {
-              "commentStart": 948,
-              "end": 958,
+              "commentStart": 966,
+              "end": 976,
               "moduleId": 0,
-              "start": 948,
+              "start": 966,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -3923,10 +3923,10 @@ description: Variables in memory after executing crash-box.kcl
               -200.0000000002362
             ],
             "tag": {
-              "commentStart": 1033,
-              "end": 1042,
+              "commentStart": 1051,
+              "end": 1060,
               "moduleId": 0,
-              "start": 1033,
+              "start": 1051,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -3947,10 +3947,10 @@ description: Variables in memory after executing crash-box.kcl
               199.9999999995891
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1122,
+              "commentStart": 1133,
+              "end": 1140,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1133,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -3971,10 +3971,10 @@ description: Variables in memory after executing crash-box.kcl
               199.99999999961994
             ],
             "tag": {
-              "commentStart": 1195,
-              "end": 1203,
+              "commentStart": 1213,
+              "end": 1221,
               "moduleId": 0,
-              "start": 1195,
+              "start": 1213,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -4135,10 +4135,10 @@ description: Variables in memory after executing crash-box.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5250,
-                "end": 5258,
+                "commentStart": 5268,
+                "end": 5276,
                 "moduleId": 0,
-                "start": 5250,
+                "start": 5268,
                 "type": "TagDeclarator",
                 "value": "leftHole"
               },
@@ -4166,10 +4166,10 @@ description: Variables in memory after executing crash-box.kcl
                 ],
                 "radius": 16.0,
                 "tag": {
-                  "commentStart": 5250,
-                  "end": 5258,
+                  "commentStart": 5268,
+                  "end": 5276,
                   "moduleId": 0,
-                  "start": 5250,
+                  "start": 5268,
                   "type": "TagDeclarator",
                   "value": "leftHole"
                 },
@@ -4261,10 +4261,10 @@ description: Variables in memory after executing crash-box.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5454,
-                "end": 5463,
+                "commentStart": 5472,
+                "end": 5481,
                 "moduleId": 0,
-                "start": 5454,
+                "start": 5472,
                 "type": "TagDeclarator",
                 "value": "rightHole"
               },
@@ -4292,10 +4292,10 @@ description: Variables in memory after executing crash-box.kcl
                 ],
                 "radius": 16.0,
                 "tag": {
-                  "commentStart": 5454,
-                  "end": 5463,
+                  "commentStart": 5472,
+                  "end": 5481,
                   "moduleId": 0,
-                  "start": 5454,
+                  "start": 5472,
                   "type": "TagDeclarator",
                   "value": "rightHole"
                 },
@@ -4558,10 +4558,10 @@ description: Variables in memory after executing crash-box.kcl
                   ],
                   "radius": 16.0,
                   "tag": {
-                    "commentStart": 5250,
-                    "end": 5258,
+                    "commentStart": 5268,
+                    "end": 5276,
                     "moduleId": 0,
-                    "start": 5250,
+                    "start": 5268,
                     "type": "TagDeclarator",
                     "value": "leftHole"
                   },
@@ -4605,10 +4605,10 @@ description: Variables in memory after executing crash-box.kcl
                   ],
                   "radius": 16.0,
                   "tag": {
-                    "commentStart": 5454,
-                    "end": 5463,
+                    "commentStart": 5472,
+                    "end": 5481,
                     "moduleId": 0,
-                    "start": 5454,
+                    "start": 5472,
                     "type": "TagDeclarator",
                     "value": "rightHole"
                   },
@@ -4841,10 +4841,10 @@ description: Variables in memory after executing crash-box.kcl
           ],
           "radius": 16.0,
           "tag": {
-            "commentStart": 5250,
-            "end": 5258,
+            "commentStart": 5268,
+            "end": 5276,
             "moduleId": 0,
-            "start": 5250,
+            "start": 5268,
             "type": "TagDeclarator",
             "value": "leftHole"
           },
@@ -4978,10 +4978,10 @@ description: Variables in memory after executing crash-box.kcl
           ],
           "radius": 16.0,
           "tag": {
-            "commentStart": 5454,
-            "end": 5463,
+            "commentStart": 5472,
+            "end": 5481,
             "moduleId": 0,
-            "start": 5454,
+            "start": 5472,
             "type": "TagDeclarator",
             "value": "rightHole"
           },

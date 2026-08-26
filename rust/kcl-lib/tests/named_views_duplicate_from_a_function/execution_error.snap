@@ -1,0 +1,39 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing named_views_duplicate_from_a_function.kcl
+---
+KCL Semantic error
+
+  × semantic: A view named `Front` already exists. Every view needs its own
+  │ name, and names are compared exactly, so `Front` and `front` are different
+  │ names.
+    ╭─[12:10]
+ 11 │     fn frontView() {
+ 12 │ ╭─▶   return view::named(
+ 13 │ │       "Front",
+ 14 │ │       camera = view::oriented(view::Orientation::Front),
+ 15 │ │       baseline = view::Visibility::Show,
+ 16 │ ├─▶   )
+    · ╰──── tests/named_views_duplicate_from_a_function/input.kcl
+ 17 │     }
+ 18 │     
+ 19 │     first = frontView()
+ 20 │     second = frontView()
+    ·              ─────┬─────
+    ·                   ╰── tests/named_views_duplicate_from_a_function/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: A view named `Front` already exists. Every view needs its
+        │ own name, and names are compared exactly, so `Front` and `front` are
+        │ different names.
+          ╭─[12:10]
+       11 │     fn frontView() {
+       12 │ ╭─▶   return view::named(
+       13 │ │       "Front",
+       14 │ │       camera = view::oriented(view::Orientation::Front),
+       15 │ │       baseline = view::Visibility::Show,
+       16 │ ├─▶   )
+          · ╰──── in frontView()
+       17 │     }
+          ╰────

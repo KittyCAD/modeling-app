@@ -3,8 +3,10 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
+import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -14,11 +16,18 @@ const clientErrorMocks = vi.hoisted(() => ({
 vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
+vi.mock('react-hot-toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}))
 
 import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
+import { defaultNodePath } from '@src/lang/wasm'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -63,6 +72,29 @@ function createEmptySceneGraphDelta(): SceneGraphDelta {
   }
 }
 
+function createLiveOperation(name: string, index: number): Operation {
+  return {
+    type: 'VariableDeclaration',
+    name,
+    value: {
+      type: 'Number',
+      value: index,
+      ty: { type: 'Unknown' },
+    },
+    visibility: 'default',
+    nodePath: defaultNodePath(),
+    sourceRange: [index, index + 1, 0],
+  }
+}
+
+type LiveOperationTestApi = {
+  dispatchUpdateOperations(operations: Operation[]): void
+}
+
+function liveOperationTestApi(kclManager: KclManager): LiveOperationTestApi {
+  return kclManager as unknown as LiveOperationTestApi
+}
+
 function enableSketchSolveEditorExecution(kclManager: KclManager) {
   kclManager.modelingState = {
     matches: (value: unknown) => value === 'sketchSolveMode',
@@ -77,6 +109,65 @@ afterEach(() => {
   vi.clearAllTimers()
   vi.useRealTimers()
   localStorage?.clear()
+})
+
+describe('KclManager live operation updates', () => {
+  it('finishes execution when a live UI publication throws', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const liveOperations = liveOperationTestApi(kclManager)
+    const dispatchUpdateOperations =
+      liveOperations.dispatchUpdateOperations.bind(liveOperations)
+    const failedLiveOperation = createLiveOperation('failedLive', 0)
+    const ignoredLiveOperation = createLiveOperation('ignoredLive', 1)
+    const authoritativeOperation = createLiveOperation('authoritative', 2)
+    const finalExecState = {
+      ...kclManager.execState,
+      operations: { map: { 0: [authoritativeOperation] } },
+    }
+    let executionContinued = false
+
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    const dispatchSpy = vi
+      .spyOn(liveOperations, 'dispatchUpdateOperations')
+      .mockImplementation((operations) => {
+        if (operations.includes(failedLiveOperation)) {
+          throw new Error('live UI publication failed')
+        }
+        dispatchUpdateOperations(operations)
+      })
+
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(kclManager.rustContext, 'execute').mockImplementation(
+      async (_ast, _settings, _path, callbacks) => {
+        callbacks?.onOperation({
+          moduleId: 0,
+          operation: failedLiveOperation,
+          index: 0,
+        })
+        callbacks?.onOperation({
+          moduleId: 0,
+          operation: ignoredLiveOperation,
+          index: 1,
+        })
+        executionContinued = true
+        return finalExecState
+      }
+    )
+
+    await kclManager.executeAst({ ast: createEmptyAst(), executionId: 101 })
+
+    expect(executionContinued).toBe(true)
+    expect(kclManager.isExecuting).toBe(false)
+    expect(kclManager.operationsByModule).toBe(finalExecState.operations)
+    expect(dispatchSpy).not.toHaveBeenCalledWith([ignoredLiveOperation])
+    expect(dispatchSpy).toHaveBeenLastCalledWith([authoritativeOperation])
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Live operation updates failed')
+    )
+    consoleErrorSpy.mockRestore()
+  })
 })
 
 describe('KclManager diagnostics', () => {
@@ -583,6 +674,44 @@ describe('KclManager diagnostics', () => {
 
     readSpy.mockRestore()
     watchSpy.mockRestore()
+  })
+
+  it('seeds the default KCL version when the user clears main.kcl', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    await kclManager.wasmInstancePromise
+    vi.useFakeTimers()
+
+    const writeSpy = vi.spyOn(kclManager, 'write').mockResolvedValue(undefined)
+    vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
+
+    kclManager.path = '/tmp/project/main.kcl'
+    ;(kclManager as any).markFileCodeAsSynced('x = 1')
+    kclManager.engineCommandManager.started = true
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+
+    kclManager.editorView.dispatch({
+      changes: {
+        from: 0,
+        to: kclManager.editorView.state.doc.length,
+        insert: '',
+      },
+    })
+
+    expect(kclManager.code).toBe('')
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(kclManager.code).toBe(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
+    expect(writeSpy).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(writeSpy).toHaveBeenCalledTimes(1)
+    expect(writeSpy).toHaveBeenCalledWith(
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {

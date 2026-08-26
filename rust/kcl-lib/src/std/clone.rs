@@ -168,7 +168,7 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
             sketch.clone = Some(source_topology_id);
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
@@ -188,7 +188,7 @@ pub(super) async fn fix_tags_and_references(
             sketch.artifact_id = new_geometry_id.into();
             sketch.clone = Some(source_topology_id);
 
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, Some(solid_value)).await?;
             let sketch_for_post = sketch.clone();
 
             // Fix the edge cuts.
@@ -210,7 +210,7 @@ pub(super) async fn fix_tags_and_references(
 
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
-            let new_solid = do_post_extrude(
+            let mut new_solid = do_post_extrude(
                 &sketch_for_post,
                 solid_artifact_id,
                 solid.sectional,
@@ -228,6 +228,7 @@ pub(super) async fn fix_tags_and_references(
             )
             .await?;
 
+            restore_sketch_tag_surfaces(&mut new_solid);
             *solid = new_solid;
 
             restore_face_tags(solid, &old_face_tag_names, exec_state);
@@ -235,6 +236,31 @@ pub(super) async fn fix_tags_and_references(
     }
 
     Ok(())
+}
+
+/// Restore any sketch tag surfaces that could not be mapped from stale source
+/// metadata before [`do_post_extrude`] rebuilt the cloned solid's surfaces.
+fn restore_sketch_tag_surfaces(solid: &mut Solid) {
+    let surfaces_by_tag = solid
+        .value
+        .iter()
+        .filter_map(|surface| surface.get_tag().map(|tag| (tag.name.clone(), surface.clone())))
+        .collect::<HashMap<_, _>>();
+    let Some(sketch) = solid.sketch_mut() else {
+        return;
+    };
+
+    for (name, tag) in &mut sketch.tags {
+        let Some(surface) = surfaces_by_tag.get(name) else {
+            continue;
+        };
+        let Some((_, info)) = tag.info.last_mut() else {
+            continue;
+        };
+        if info.surface.is_none() {
+            info.surface = Some(surface.clone());
+        }
+    }
 }
 
 /// Rebuild the face tag map of a cloned solid from its new surfaces.
@@ -348,7 +374,6 @@ async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,
-    args: &Args,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
@@ -380,17 +405,18 @@ async fn fix_sketch_tags_and_references(
             let mut surface = None;
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = (*found_surface).clone();
-                let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!(
-                            "Failed to find new face id for old face id: {:?}",
-                            new_surface.face_id()
-                        ),
-                        vec![args.source_range],
-                    )));
-                };
-                new_surface.set_face_id(new_face_id);
-                surface = Some(new_surface);
+                if let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() {
+                    new_surface.set_face_id(new_face_id);
+                    surface = Some(new_surface);
+                } else {
+                    // A boolean can retain a tagged path while replacing or
+                    // removing its old face. `do_post_extrude` queries the
+                    // live topology and rebuilds this optional surface data.
+                    crate::log::logln!(
+                        "Failed to find new face id for stale old face id: {:?}",
+                        new_surface.face_id()
+                    );
+                }
             }
 
             new_sketch.add_tag(&tag, &path, exec_state, surface.as_ref());
@@ -441,6 +467,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::artifact::SweepSubType;
     use pretty_assertions::assert_eq;
     use pretty_assertions::assert_ne;
 
@@ -582,6 +609,75 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_loft() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+firstSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 10, var 0], center = [var 0, var 0])
+}
+secondSketch = sketch(on = offsetPlane(XY, offset = 10)) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+
+lofted = loft([
+  region(segments = [firstSketch.circle1]),
+  region(segments = [secondSketch.circle1]),
+])
+clonedLoft = clone(lofted)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::Solid { value: lofted } = result.variables.get("lofted").unwrap() else {
+            panic!("Expected a solid loft");
+        };
+        let KclValueView::Solid { value: cloned_loft } = result.variables.get("clonedLoft").unwrap() else {
+            panic!("Expected a cloned solid loft");
+        };
+
+        assert_eq!(lofted.topology_id(), lofted.id);
+        assert_eq!(lofted.original_id(), lofted.id);
+        assert_eq!(lofted.artifact_id, lofted.id.into());
+
+        assert_ne!(lofted.id, cloned_loft.id);
+        assert_ne!(lofted.artifact_id, cloned_loft.artifact_id);
+        assert_eq!(cloned_loft.topology_id(), cloned_loft.id);
+        assert_eq!(cloned_loft.original_id(), cloned_loft.id);
+        assert_eq!(cloned_loft.artifact_id, cloned_loft.id.into());
+
+        let loft_sketch = lofted.sketch().expect("Expected loft to retain its base sketch");
+        let cloned_sketch = cloned_loft
+            .sketch()
+            .expect("Expected cloned loft to retain its base sketch");
+        for (path, cloned_path) in loft_sketch.paths.iter().zip(cloned_sketch.paths.iter()) {
+            assert_ne!(path.get_id(), cloned_path.get_id());
+            assert_eq!(path.get_tag(), cloned_path.get_tag());
+        }
+
+        assert!(!cloned_loft.value.is_empty());
+        for (surface, cloned_surface) in lofted.value.iter().zip(cloned_loft.value.iter()) {
+            assert_ne!(surface.get_id(), cloned_surface.get_id());
+            assert_eq!(surface.get_tag(), cloned_surface.get_tag());
+        }
+
+        let Some(Artifact::Sweep(source_sweep)) = result.artifact_graph.get(&lofted.artifact_id) else {
+            panic!("Expected the source loft to be represented by a sweep artifact");
+        };
+        assert_eq!(source_sweep.sub_type, SweepSubType::Loft);
+
+        let Some(Artifact::Sweep(cloned_sweep)) = result.artifact_graph.get(&cloned_loft.artifact_id) else {
+            panic!("Expected the cloned loft to be represented by a sweep artifact");
+        };
+        assert_eq!(cloned_sweep.sub_type, SweepSubType::Loft);
+        assert_eq!(cloned_sweep.source_sweep_id, Some(lofted.artifact_id));
+        assert_eq!(cloned_sweep.path_id, source_sweep.path_id);
+        assert!(!cloned_sweep.consumed);
 
         ctx.close().await;
     }

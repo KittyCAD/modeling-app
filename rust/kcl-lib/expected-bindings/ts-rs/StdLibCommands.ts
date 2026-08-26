@@ -1880,7 +1880,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. On KCL 3.0 and later, the default is 2.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -4796,7 +4796,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to intersect.",
+        "docs": "The solids to intersect. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5772,7 +5772,7 @@ export default {
     "preferredName": "patternCircular3d",
     "qualName": "std::solid::patternCircular3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5780,8 +5780,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to pattern.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to pattern.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5918,7 +5918,7 @@ export default {
     "preferredName": "patternLinear3d",
     "qualName": "std::solid::patternLinear3d",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5926,8 +5926,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -5981,7 +5981,7 @@ export default {
     "preferredName": "patternTransform",
     "qualName": "std::solid::patternTransform",
     "moduleName": "solid",
-    "returnType": "[Solid; 1+]",
+    "returnType": "[Solid | ImportedGeometry; 1+]",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -5989,8 +5989,8 @@ export default {
     "args": [
       {
         "name": "solids",
-        "ty": "[Solid; 1+]",
-        "docs": "The solid(s) to duplicate.",
+        "ty": "[Solid; 1+] | ImportedGeometry",
+        "docs": "The solid(s) or imported geometry to duplicate.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -6698,7 +6698,7 @@ export default {
       {
         "name": "roll",
         "ty": "number(Angle)",
-        "docs": "The roll angle. Must be between -360deg and 360deg.",
+        "docs": "The roll angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6708,7 +6708,7 @@ export default {
       {
         "name": "pitch",
         "ty": "number(Angle)",
-        "docs": "The pitch angle. Must be between -360deg and 360deg.",
+        "docs": "The pitch angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6718,7 +6718,7 @@ export default {
       {
         "name": "yaw",
         "ty": "number(Angle)",
-        "docs": "The yaw angle. Must be between -360deg and 360deg.",
+        "docs": "The yaw angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6738,7 +6738,7 @@ export default {
       {
         "name": "angle",
         "ty": "number(Angle)",
-        "docs": "The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.",
+        "docs": "The angle to rotate. Must be used with `axis`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6804,7 +6804,7 @@ export default {
       {
         "name": "x",
         "ty": "number(_)",
-        "docs": "The scale factor for the x axis.",
+        "docs": "The dimensionless scale factor for the x axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6814,7 +6814,7 @@ export default {
       {
         "name": "y",
         "ty": "number(_)",
-        "docs": "The scale factor for the y axis.",
+        "docs": "The dimensionless scale factor for the y axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6824,7 +6824,7 @@ export default {
       {
         "name": "z",
         "ty": "number(_)",
-        "docs": "The scale factor for the z axis.",
+        "docs": "The dimensionless scale factor for the z axis.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6844,7 +6844,7 @@ export default {
       {
         "name": "factor",
         "ty": "number(_)",
-        "docs": "If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
+        "docs": "If given, scale the solid by this dimensionless factor. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -8239,7 +8239,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 1+]",
-        "docs": "The solids to use as the base to subtract from.",
+        "docs": "The solids to use as the base to subtract from. These solids are consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -8249,7 +8249,7 @@ export default {
       {
         "name": "tools",
         "ty": "[Solid]",
-        "docs": "The solids to subtract.",
+        "docs": "The solids to subtract. These tool solids are also consumed by this operation.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -8650,7 +8650,7 @@ export default {
       {
         "name": "solids",
         "ty": "[Solid; 2+]",
-        "docs": "The solids to union.",
+        "docs": "The solids to union. Every input solid is consumed by this operation.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -9162,6 +9162,59 @@ export default {
         "name": "projection",
         "ty": "Projection",
         "docs": "The camera projection. When omitted, the view is orthographic, so the same file renders identically in every consumer.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "view::named": {
+    "name": "named",
+    "preferredName": "view::named",
+    "qualName": "std::view::named",
+    "moduleName": "view",
+    "returnType": "NamedView",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "name",
+        "ty": "string",
+        "docs": "The name of the view, as a reader should see it. Required, unique within the file, and compared exactly.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "camera",
+        "ty": "CameraView",
+        "docs": "The camera the view activates. Call `view::oriented()` or `view::directed()` to build one.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "baseline",
+        "ty": "Visibility",
+        "docs": "The default visibility of every object the program creates: visible under `Visibility::Show`, hidden under `Visibility::Hide`. Use `except` below to override that default for individual objects.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "except",
+        "ty": "[Solid | Sketch | GdtAnnotation; 1+]",
+        "docs": "The objects the baseline does not apply to: the hidden ones under a `Show` baseline, and the only visible ones under `Hide`.",
         "required": false,
         "special": false,
         "experimental": false,

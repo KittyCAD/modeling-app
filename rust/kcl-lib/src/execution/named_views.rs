@@ -1,17 +1,22 @@
 //! Runtime values for named views: the camera intent that `std::view`
-//! constructor functions produce.
+//! constructor functions produce, and the view value `view::named` returns.
 //!
 //! `CameraView` stores what the camera looks at and from which direction, not
 //! a snapshot of engine camera state; absent fields are resolved by whichever
-//! consumer activates the view. `Orientation` and `Projection` are Rust
-//! mirrors of the KCL enums declared in `std/view.kcl`; the test
-//! `kcl_enum_declarations_match_rust_mirrors` pins each pair of declarations
-//! to the same variant list.
+//! consumer activates the view. `NamedViewValue` pairs one of those cameras
+//! with the visibility the author declared. `Orientation`, `Visibility` and
+//! `Projection` are Rust mirrors of the KCL enums declared in `std/view.kcl`;
+//! the test `kcl_enum_declarations_match_rust_mirrors` pins each pair of
+//! declarations to the same variant list.
+
+use std::collections::HashSet;
 
 use serde::Serialize;
 
+use crate::execution::ArtifactId;
 use crate::execution::Metadata;
 use crate::execution::Point3d;
+use crate::modules::ModuleId;
 use crate::std::args::TyF64;
 
 /// A standard camera orientation.
@@ -75,6 +80,44 @@ impl Orientation {
             Orientation::Top => "Top",
             Orientation::Bottom => "Bottom",
             Orientation::Isometric => "Isometric",
+        }
+    }
+}
+
+/// Whether the objects of a named view start visible or hidden.
+///
+/// Rust mirror of the KCL enum `std::view::Visibility`. Serialized variant
+/// names match the KCL spellings exactly.
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
+pub enum Visibility {
+    Show,
+    Hide,
+}
+
+impl Visibility {
+    /// Returns the variant whose KCL declaration uses this name, or `None`
+    /// for a name the mirror does not declare. See
+    /// [`Orientation::from_kcl_variant`].
+    pub(crate) fn from_kcl_variant(name: &str) -> Option<Self> {
+        match name {
+            "Show" => Some(Visibility::Show),
+            "Hide" => Some(Visibility::Hide),
+            _ => None,
+        }
+    }
+}
+
+#[cfg(test)]
+impl Visibility {
+    /// Every variant, in the KCL declaration order. See `Orientation::ALL`.
+    pub(crate) const ALL: [Visibility; 2] = [Visibility::Show, Visibility::Hide];
+
+    /// The variant's name as written in the KCL declaration.
+    pub(crate) fn kcl_name(self) -> &'static str {
+        match self {
+            Visibility::Show => "Show",
+            Visibility::Hide => "Hide",
         }
     }
 }
@@ -372,11 +415,224 @@ impl CameraView {
     }
 }
 
+/// The name of the default view: the scene generated on successful execution of
+/// the program, which is the artifact graph minus the artifacts named in the
+/// program's `hide` calls. No KCL declares that view. A consumer computes it
+/// from the artifact graph and the recorded operations, and it carries no
+/// camera, so activating it resets the camera rather than setting one.
+///
+/// A file may not declare a view under this name. A view is activated by name,
+/// so two views answering to one name would leave activation ambiguous.
+/// Reserving the name before anything computes the default view means no file
+/// written today stops being valid once it exists.
+pub(crate) const RESERVED_DEFAULT_VIEW_NAME: &str = "Default View";
+
+/// An input rejected by [`NamedViewValue::new`].
+///
+/// Each variant's `Display` text is the message the KCL author sees, as in
+/// [`CameraViewError`]. `DuplicateName` is the one variant that repeats the
+/// rejected value: the source range locates the second declaration but not the
+/// first, and the name is what connects the two for the author.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub(crate) enum NamedViewError {
+    /// `name` is the empty string. A view is identified by its name, so a view
+    /// without one cannot be referred to.
+    #[error("A view's name must not be empty.")]
+    EmptyName,
+    /// `name` contains nothing but whitespace. It is not the empty string, but
+    /// it displays as nothing, so it identifies a view no better than the empty
+    /// string does. It is reported separately because the fix differs: this name
+    /// needs text, whereas a name with surrounding whitespace needs trimming.
+    #[error("A view's name must not be only whitespace.")]
+    WhitespaceOnly,
+    /// `name` starts or ends with whitespace. Names are compared exactly, so
+    /// `Front ` and `Front` would be two views that a reader sees as one.
+    #[error("A view's name must not start or end with whitespace. Use `string::trim()` to remove it.")]
+    SurroundingWhitespace,
+    /// `name` is [`RESERVED_DEFAULT_VIEW_NAME`].
+    #[error(
+        "`{RESERVED_DEFAULT_VIEW_NAME}` is reserved for the view of the scene generated on successful execution of the program. Please give this view a different name."
+    )]
+    ReservedName,
+    /// Another view declared by the same module already uses `name`.
+    #[error(
+        "A view named `{0}` already exists. Every view needs its own name, and names are compared exactly, so `Front` and `front` are different names."
+    )]
+    DuplicateName(String),
+}
+
+/// A named view: a display name, a camera and the visibility the author
+/// declared.
+///
+/// The value keeps the form the author wrote -- one `baseline` and one
+/// exception list -- rather than the artifact's pair of lists, so a value
+/// cannot carry an exception for `Show` and an exception for `Hide` at the
+/// same time. `view::named` splits `except_ids` into the artifact's `show_ids`
+/// and `hide_ids` when it registers the view.
+///
+/// Fields stay private for the reason [`CameraView`]'s do: a value is only
+/// produced by `view::named`, which checks the name before building one.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct NamedViewValue {
+    /// The artifact this view was registered as. A consumer holding the value
+    /// finds the view in the artifact graph under this id.
+    artifact_id: ArtifactId,
+    /// The display name the author gave the view.
+    name: String,
+    camera: CameraView,
+    /// Whether the view's objects start visible or hidden.
+    baseline: Visibility,
+    /// The exception to the baseline, as artifact ids: the hidden objects
+    /// under a `Show` baseline, and the only visible objects under `Hide`. An
+    /// empty list excepts nothing, so everything is visible under `Show` and
+    /// nothing is visible under `Hide`.
+    except_ids: Vec<ArtifactId>,
+    #[serde(skip)]
+    meta: Vec<Metadata>,
+}
+
+impl NamedViewValue {
+    /// Creates a named view, applying every rule the declared KCL signature
+    /// cannot express.
+    ///
+    /// `declared_in` is the module the constructing call appears in, and
+    /// `existing_views` pairs each view registered so far with the module that
+    /// declared it. Names are unique per declaring module rather than per
+    /// program, so two files may each declare `Front`; taking the pairs as an
+    /// argument applies that rule here, where the whole contract is testable
+    /// without an executor.
+    ///
+    /// Every rejected input is a name, each a distinct [`NamedViewError`]
+    /// variant, tested in this order:
+    /// - an empty `name`;
+    /// - a `name` of nothing but whitespace;
+    /// - a `name` with leading or trailing whitespace;
+    /// - a `name` equal to [`RESERVED_DEFAULT_VIEW_NAME`];
+    /// - a `name` that another view declared in `declared_in` already uses.
+    ///
+    /// The visibility arguments need no rule of their own. `baseline` is
+    /// required by the KCL signature and `except_ids` is the exception to it, so
+    /// every combination of the two means something and none has to be
+    /// rejected here.
+    ///
+    /// Repeated ids in `except_ids` are dropped, keeping the first occurrence.
+    /// Visibility is a set: naming an object twice cannot mean more than
+    /// naming it once, and a list built by concatenating two groups repeats an
+    /// object that belongs to both.
+    // The argument list is long because the whole name contract is checked here.
+    // No two arguments share a type, so the compiler checks the call order.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new<'a>(
+        artifact_id: ArtifactId,
+        name: String,
+        camera: CameraView,
+        baseline: Visibility,
+        except_ids: Option<Vec<ArtifactId>>,
+        declared_in: ModuleId,
+        existing_views: impl IntoIterator<Item = (ModuleId, &'a str)>,
+        meta: Vec<Metadata>,
+    ) -> Result<Self, NamedViewError> {
+        if name.is_empty() {
+            return Err(NamedViewError::EmptyName);
+        }
+        // Tested before the surrounding-whitespace rule, which a name of pure
+        // whitespace also breaks, so that such a name is reported as the case it
+        // is rather than as one needing trimming.
+        if name.trim().is_empty() {
+            return Err(NamedViewError::WhitespaceOnly);
+        }
+        if name.trim() != name.as_str() {
+            return Err(NamedViewError::SurroundingWhitespace);
+        }
+        if name == RESERVED_DEFAULT_VIEW_NAME {
+            return Err(NamedViewError::ReservedName);
+        }
+        if existing_views
+            .into_iter()
+            .any(|(module, existing)| module == declared_in && existing == name.as_str())
+        {
+            return Err(NamedViewError::DuplicateName(name));
+        }
+
+        // `except_ids` is `None` when the author omitted `except`, which the
+        // baseline alone then describes: everything is visible under `Show`, and
+        // nothing is under `Hide`.
+        let except_ids = match except_ids {
+            Some(mut ids) => {
+                let mut seen = HashSet::with_capacity(ids.len());
+                ids.retain(|id| seen.insert(*id));
+                ids
+            }
+            None => Vec::new(),
+        };
+
+        Ok(NamedViewValue {
+            artifact_id,
+            name,
+            camera,
+            baseline,
+            except_ids,
+            meta,
+        })
+    }
+
+    /// The id of the artifact registered for this view.
+    pub fn artifact_id(&self) -> ArtifactId {
+        self.artifact_id
+    }
+
+    /// The display name the author gave the view.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// The camera the view activates.
+    pub fn camera(&self) -> &CameraView {
+        &self.camera
+    }
+
+    /// Whether the view's objects start visible or hidden.
+    pub fn baseline(&self) -> Visibility {
+        self.baseline
+    }
+
+    /// The objects that are the exception to the baseline.
+    pub fn except_ids(&self) -> &[ArtifactId] {
+        &self.except_ids
+    }
+
+    /// The source metadata of the constructing call.
+    pub fn meta(&self) -> &[Metadata] {
+        &self.meta
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::docs::kcl_doc::DocData;
     use crate::docs::kcl_doc::walk_prelude;
+
+    /// The client repeats this reserved name as a TypeScript literal.
+    /// This test fails when the Rust constant changes without the TypeScript
+    /// literal. `kclNamedViews.test.ts` covers the opposite direction.
+    #[test]
+    fn reserved_default_view_name_matches_typescript() {
+        let ts_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../src/lang/std/kclNamedViews.ts");
+        let source =
+            std::fs::read_to_string(&ts_path).unwrap_or_else(|err| panic!("cannot read {}: {err}", ts_path.display()));
+        let expected = format!("export const KCL_DEFAULT_VIEW_NAME = '{RESERVED_DEFAULT_VIEW_NAME}'");
+
+        assert!(
+            source.contains(&expected),
+            "{} should declare `{expected}`. The reserved default view name is repeated on both \
+             sides of the wasm boundary and they have drifted apart; update the TypeScript literal \
+             to match this crate's RESERVED_DEFAULT_VIEW_NAME.",
+            ts_path.display()
+        );
+    }
 
     /// Returns the variant names of the named KCL enum in `std::view`,
     /// in declaration order.
@@ -396,6 +652,9 @@ mod tests {
         let rust_orientation: Vec<&str> = Orientation::ALL.iter().map(|v| v.kcl_name()).collect();
         assert_eq!(kcl_variant_names("Orientation"), rust_orientation);
 
+        let rust_visibility: Vec<&str> = Visibility::ALL.iter().map(|v| v.kcl_name()).collect();
+        assert_eq!(kcl_variant_names("Visibility"), rust_visibility);
+
         let rust_projection: Vec<&str> = Projection::ALL.iter().map(|v| v.kcl_name()).collect();
         assert_eq!(kcl_variant_names("Projection"), rust_projection);
     }
@@ -406,6 +665,9 @@ mod tests {
     fn variant_name_mappings_are_inverses() {
         for v in Orientation::ALL {
             assert_eq!(Orientation::from_kcl_variant(v.kcl_name()), Some(v));
+        }
+        for v in Visibility::ALL {
+            assert_eq!(Visibility::from_kcl_variant(v.kcl_name()), Some(v));
         }
         for v in Projection::ALL {
             assert_eq!(Projection::from_kcl_variant(v.kcl_name()), Some(v));
@@ -582,6 +844,171 @@ mod tests {
             CameraViewError::DirectionParallelToUp,
         );
         directed_accepts(dir(MIN_DIRECTION_UP_ANGLE_SIN * 2.0, 0.0, 1.0), None);
+    }
+
+    /// A valid camera, for the named-view cases below. Which camera a view
+    /// holds does not take part in any rule `NamedViewValue::new` applies.
+    fn a_camera() -> CameraView {
+        CameraView::oriented(Orientation::Front, None, None, None, vec![]).unwrap()
+    }
+
+    /// An artifact id that differs for each `n`, so a test can tell the ids in
+    /// an exception list apart.
+    fn artifact_id(n: u128) -> ArtifactId {
+        ArtifactId::new(uuid::Uuid::from_u128(n))
+    }
+
+    /// Builds a named view, taking every argument that a rule reads. The cases
+    /// below go through this so that each one varies only what it is about.
+    fn named_view(
+        declared_in: ModuleId,
+        name: &str,
+        baseline: Visibility,
+        except_ids: Option<Vec<ArtifactId>>,
+        existing_views: &[(ModuleId, &str)],
+    ) -> Result<NamedViewValue, NamedViewError> {
+        NamedViewValue::new(
+            artifact_id(1),
+            name.to_owned(),
+            a_camera(),
+            baseline,
+            except_ids,
+            declared_in,
+            existing_views.iter().copied(),
+            vec![],
+        )
+    }
+
+    /// A view named `name`, declared by the root module with no view registered
+    /// before it and no exception list. Only the name decides the outcome.
+    fn view_named(name: &str) -> Result<NamedViewValue, NamedViewError> {
+        named_view(ModuleId::default(), name, Visibility::Show, None, &[])
+    }
+
+    /// Each rule a name has to satisfy, with the name that breaks it.
+    #[test]
+    fn named_view_rejects_names_it_cannot_identify_a_view_by() {
+        assert_eq!(view_named("").unwrap_err(), NamedViewError::EmptyName);
+
+        // Surrounding whitespace is invisible to a reader but significant to
+        // the exact comparison the uniqueness rule makes.
+        assert_eq!(view_named(" Front").unwrap_err(), NamedViewError::SurroundingWhitespace);
+        assert_eq!(view_named("Front ").unwrap_err(), NamedViewError::SurroundingWhitespace);
+        assert_eq!(
+            view_named("\tFront\n").unwrap_err(),
+            NamedViewError::SurroundingWhitespace
+        );
+        // A name of nothing but whitespace breaks the rule above as well, and is
+        // reported as its own case because the fix is to supply text rather than
+        // to trim.
+        assert_eq!(view_named("   ").unwrap_err(), NamedViewError::WhitespaceOnly);
+        assert_eq!(view_named("\t\n").unwrap_err(), NamedViewError::WhitespaceOnly);
+
+        assert_eq!(
+            view_named(RESERVED_DEFAULT_VIEW_NAME).unwrap_err(),
+            NamedViewError::ReservedName
+        );
+        // Only the reserved name itself is reserved.
+        view_named("Default View 2").unwrap();
+        view_named("default view").unwrap();
+
+        // A name is display text, so interior spaces and punctuation are
+        // ordinary.
+        assert_eq!(view_named("Plate only (rev B)").unwrap().name(), "Plate only (rev B)");
+    }
+
+    /// A name has to be unique among the views the same module declares, and
+    /// only among those. Two files may each declare `Front`, so the rule reads
+    /// the declaring module of every registered view rather than the name
+    /// alone.
+    #[test]
+    fn named_view_name_is_unique_per_declaring_module() {
+        let root = ModuleId::default();
+        let imported = ModuleId::from_usize(1);
+        let declare =
+            |name: &str, existing: &[(ModuleId, &str)]| named_view(root, name, Visibility::Show, None, existing);
+
+        assert_eq!(
+            declare("Front", &[(root, "Front")]).unwrap_err(),
+            NamedViewError::DuplicateName("Front".to_owned())
+        );
+        // A view of the same name declared by another module is not a repeat.
+        declare("Front", &[(imported, "Front")]).unwrap();
+        // Names are compared exactly, so case and spacing distinguish them.
+        declare("front", &[(root, "Front")]).unwrap();
+        declare("Front view", &[(root, "Front")]).unwrap();
+        // The rule reads every registered view, not only the most recent.
+        assert_eq!(
+            declare("Front", &[(root, "Back"), (imported, "Front"), (root, "Front")]).unwrap_err(),
+            NamedViewError::DuplicateName("Front".to_owned())
+        );
+    }
+
+    /// Every combination of the two visibility arguments is accepted and stored
+    /// as written. There is nothing to reject: the baseline is required, so a
+    /// list always has one to be the exception to, and a baseline without a list
+    /// describes the whole scene on its own.
+    #[test]
+    fn named_view_stores_every_visibility_combination() {
+        let root = ModuleId::default();
+        let visibility = |baseline, except_ids| named_view(root, "Front", baseline, except_ids, &[]);
+
+        for baseline in Visibility::ALL {
+            let with_list = visibility(baseline, Some(vec![artifact_id(2)])).unwrap();
+            assert_eq!(with_list.baseline(), baseline);
+            assert_eq!(with_list.except_ids(), [artifact_id(2)]);
+
+            let without_list = visibility(baseline, None).unwrap();
+            assert_eq!(without_list.baseline(), baseline);
+            assert!(without_list.except_ids().is_empty());
+        }
+    }
+
+    /// Visibility is a set, so a repeated id is applied once. Order is kept, so
+    /// the stored list still reads as the author wrote it.
+    #[test]
+    fn named_view_drops_repeated_except_ids() {
+        let (a, b, c) = (artifact_id(2), artifact_id(3), artifact_id(4));
+        let view = named_view(
+            ModuleId::default(),
+            "Front",
+            Visibility::Hide,
+            Some(vec![b, a, b, c, a, b]),
+            &[],
+        )
+        .unwrap();
+        assert_eq!(view.except_ids(), [b, a, c]);
+    }
+
+    /// Each variant has its own message, so an error tells the author what to
+    /// change, and the reserved-name message states the name it reserves.
+    #[test]
+    fn named_view_error_messages_are_distinct() {
+        let all = [
+            NamedViewError::EmptyName,
+            NamedViewError::WhitespaceOnly,
+            NamedViewError::SurroundingWhitespace,
+            NamedViewError::ReservedName,
+            NamedViewError::DuplicateName("Front".to_owned()),
+        ];
+        let mut messages: Vec<String> = all.iter().map(|e| e.to_string()).collect();
+        messages.sort_unstable();
+        let count = messages.len();
+        messages.dedup();
+        assert_eq!(messages.len(), count, "every variant needs its own message");
+
+        assert!(
+            NamedViewError::ReservedName
+                .to_string()
+                .contains(RESERVED_DEFAULT_VIEW_NAME),
+            "the reserved-name message must name the reserved name"
+        );
+        assert!(
+            NamedViewError::DuplicateName("Front".to_owned())
+                .to_string()
+                .contains("`Front`"),
+            "the duplicate-name message must name the view that collided"
+        );
     }
 
     /// Both stored vectors are normalized, and an omitted `up` becomes the

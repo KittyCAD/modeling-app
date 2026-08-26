@@ -29,6 +29,7 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import { isStepFile } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
@@ -58,14 +59,6 @@ const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const EXECUTING_MESSAGE =
   'Cannot run command while code is executing. Please try again later.'
 const DEFAULT_IMPORT_REPRESENTATION = 'mesh' as const
-
-function isStepImport(path: unknown): path is string {
-  if (typeof path !== 'string') {
-    return false
-  }
-
-  return /\.st(e)?p$/i.test(path)
-}
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
@@ -273,8 +266,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             'Choose how this STEP file should be represented in your model.',
           status: 'experimental',
           inputType: 'options',
-          required: (context) => isStepImport(context.argumentsToSubmit.path),
-          hidden: (context) => !isStepImport(context.argumentsToSubmit.path),
+          required: (context) => isStepFile(context.argumentsToSubmit.path),
+          hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
           defaultValue: DEFAULT_IMPORT_REPRESENTATION,
           options: [
             {
@@ -300,7 +293,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         let ast = commandProps.kclManager.ast
         const { path, localName } = data
-        const representation = isStepImport(path)
+        const representation = isStepFile(path)
           ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
           : undefined
 

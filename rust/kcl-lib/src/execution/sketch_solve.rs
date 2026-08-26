@@ -205,6 +205,7 @@ fn substitute_sketch_var(
         KclValue::TagDeclarator(_) => Ok(value),
         KclValue::GdtAnnotation { .. } => Ok(value),
         KclValue::CameraView { .. } => Ok(value),
+        KclValue::NamedView { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),
         KclValue::Segment {
@@ -506,8 +507,17 @@ pub(crate) struct Solved {
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
     pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
+    /// Signed distance constraints the solver could not satisfy. Retain their
+    /// right-hand-side values so diagnostics can explain the required direction.
+    pub(crate) unsatisfied_directional_constraints: Vec<UnsatisfiedDirectionalConstraint>,
     /// Did the solver converge on a solution?
     pub(crate) converged: bool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) enum UnsatisfiedDirectionalConstraint {
+    Horizontal(f64),
+    Vertical(f64),
 }
 
 impl Solved {
@@ -522,12 +532,23 @@ impl Solved {
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
+        let mut unsatisfied_directional_constraints = Vec::new();
         for &constraint_idx in value.unsatisfied() {
             // Only mark as conflicted if it's a required constraint, not an optional one
             if constraint_idx < num_required_constraints
                 && let Some(constraint) = constraints.get(constraint_idx)
             {
                 constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
+                match constraint {
+                    ezpz::Constraint::HorizontalDistance(_, _, expected) => {
+                        unsatisfied_directional_constraints
+                            .push(UnsatisfiedDirectionalConstraint::Horizontal(*expected));
+                    }
+                    ezpz::Constraint::VerticalDistance(_, _, expected) => {
+                        unsatisfied_directional_constraints.push(UnsatisfiedDirectionalConstraint::Vertical(*expected));
+                    }
+                    _ => {}
+                }
             }
         }
 
@@ -537,6 +558,7 @@ impl Solved {
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
             variables_in_conflicts,
+            unsatisfied_directional_constraints,
             converged: value.converged(),
         }
     }
@@ -1116,6 +1138,7 @@ mod tests {
             warnings: vec![],
             priority_solved: 0,
             variables_in_conflicts: AHashSet::new(),
+            unsatisfied_directional_constraints: vec![],
             converged: true,
         };
 

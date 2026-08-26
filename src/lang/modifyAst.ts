@@ -4,9 +4,9 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
+  createAnnotation,
   createCallExpressionStdLibKw,
   createExpressionStatement,
-  createIdentifier,
   createImportAsSelector,
   createImportStatement,
   createLabeledArg,
@@ -422,29 +422,9 @@ export function addModuleImport({
   )
   if (representation) {
     importStatement.outerAttrs = [
-      {
-        type: 'Annotation',
-        name: null,
-        properties: [
-          {
-            type: 'ObjectProperty',
-            key: createIdentifier('targetRepresentation'),
-            value: createLocalName(representation),
-            start: 0,
-            end: 0,
-            moduleId: 0,
-            outerAttrs: [],
-            preComments: [],
-            commentStart: 0,
-          },
-        ],
-        start: 0,
-        end: 0,
-        moduleId: 0,
-        outerAttrs: [],
-        preComments: [],
-        commentStart: 0,
-      },
+      createAnnotation({
+        targetRepresentation: createLocalName(representation),
+      }),
     ]
   }
   const lastImportIndex = modifiedAst.body.findLastIndex(

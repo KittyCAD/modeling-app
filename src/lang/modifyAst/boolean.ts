@@ -1,3 +1,4 @@
+import type { Expr } from '@rust/kcl-lib/bindings/Expr'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
@@ -12,6 +13,7 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getVariableExprsFromSelection,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
@@ -21,6 +23,57 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+const BOOLEAN_SELECTION_ERROR_MESSAGE =
+  'The same body cannot be used more than once in a Boolean operation. Please check your selections.'
+
+type BooleanSelectionGroup = {
+  selections: Selections
+  exprs: Expr[]
+  pathIfPipe?: PathToNode
+}
+
+function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
+  switch (expr.type) {
+    case 'Name':
+      return `Name:${expr.abs_path ? 'absolute' : 'relative'}:${[
+        ...expr.path.map(({ name }) => name),
+        expr.name.name,
+      ].join('::')}`
+    case 'MemberExpression':
+      return `MemberExpression:${expr.computed}:${booleanInputKey(
+        expr.object
+      )}:${booleanInputKey(expr.property)}`
+    case 'Literal':
+      return `Literal:${JSON.stringify(expr.value)}`
+    case 'PipeSubstitution':
+      return `PipeSubstitution:${
+        pathIfPipe ? stringifyPathToNode(pathIfPipe) : ''
+      }`
+    default:
+      return JSON.stringify(expr)
+  }
+}
+
+function validateBooleanSelections(
+  selectionGroups: BooleanSelectionGroup[]
+): Error | undefined {
+  const inputKeys = new Set<string>()
+
+  for (const { selections, exprs, pathIfPipe } of selectionGroups) {
+    if (exprs.length !== selections.graphSelections.length) {
+      return new Error(BOOLEAN_SELECTION_ERROR_MESSAGE)
+    }
+
+    for (const expr of exprs) {
+      const key = booleanInputKey(expr, pathIfPipe)
+      if (inputKeys.has(key)) {
+        return new Error(BOOLEAN_SELECTION_ERROR_MESSAGE)
+      }
+      inputKeys.add(key)
+    }
+  }
+}
 
 export function addUnion({
   ast,
@@ -55,6 +108,13 @@ export function addUnion({
   )
   if (err(vars)) {
     return vars
+  }
+
+  const selectionError = validateBooleanSelections([
+    { selections: solids, ...vars },
+  ])
+  if (selectionError) {
+    return selectionError
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -120,6 +180,13 @@ export function addIntersect({
   )
   if (err(vars)) {
     return vars
+  }
+
+  const selectionError = validateBooleanSelections([
+    { selections: solids, ...vars },
+  ])
+  if (selectionError) {
+    return selectionError
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -202,6 +269,14 @@ export function addSubtract({
   )
   if (err(toolVars)) {
     return toolVars
+  }
+
+  const selectionError = validateBooleanSelections([
+    { selections: solids, ...vars },
+    { selections: tools, ...toolVars },
+  ])
+  if (selectionError) {
+    return selectionError
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -294,6 +369,14 @@ export function addSplit({
     tools &&
       (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
   )
+  const selectionGroups: BooleanSelectionGroup[] = [
+    { selections: targets, ...vars },
+  ]
+  const targetSelectionError = validateBooleanSelections(selectionGroups)
+  if (targetSelectionError) {
+    return targetSelectionError
+  }
+
   const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
   let pathIfNewPipe = vars.pathIfPipe
 
@@ -311,6 +394,11 @@ export function addSplit({
     )
     if (err(toolVars)) {
       return toolVars
+    }
+    selectionGroups.push({ selections: tools, ...toolVars })
+    const selectionError = validateBooleanSelections(selectionGroups)
+    if (selectionError) {
+      return selectionError
     }
 
     const toolsExpr = createVariableExpressionsArray(toolVars.exprs)

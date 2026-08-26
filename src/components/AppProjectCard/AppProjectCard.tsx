@@ -2,6 +2,10 @@ import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,
 } from '@kittycad/ui-components'
+import {
+  AquariumStatusBadge,
+  getAquariumStatusBadge,
+} from '@src/components/AquariumStatusBadge'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
@@ -153,8 +157,7 @@ function AppProjectCard({
   const [selectedDuplicatePaths, setSelectedDuplicatePaths] = useState<
     Set<string>
   >(new Set())
-  const hasChangesRequested =
-    projectStatus?.publicationStatus === 'changes_requested'
+  const aquariumStatusBadge = getAquariumStatusBadge(projectStatus)
   const hasCloudConflict = Boolean(
     showCloudSyncUi && project.conflict && project.localProjectPath
   )
@@ -275,7 +278,7 @@ function AppProjectCard({
   const badges = (statusBadgeLabel ||
     hasCloudConflict ||
     hasCloudSyncFailure ||
-    hasChangesRequested ||
+    aquariumStatusBadge ||
     hasDuplicateRealizations) && (
     <>
       {statusBadgeLabel && (
@@ -303,13 +306,11 @@ function AppProjectCard({
           <Tooltip>{getCloudSyncFailureTooltip(project)}</Tooltip>
         </span>
       )}
-      {hasChangesRequested && (
-        <span
-          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
-          data-testid="changes-requested-badge"
-        >
-          Changes requested
-        </span>
+      {aquariumStatusBadge && projectStatus && (
+        <AquariumStatusBadge
+          projectStatus={projectStatus}
+          className="whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium leading-none shadow-sm ring-1 ring-inset"
+        />
       )}
       {hasDuplicateRealizations && (
         <span
@@ -474,7 +475,7 @@ function AppProjectCard({
               data-testid="project-card-context-move-to-library"
               onClick={() => onMoveToLibrary?.(project)}
             >
-              Move to library
+              Move to another library
             </ContextMenuItem>,
             ...(hasDuplicateRealizations
               ? [

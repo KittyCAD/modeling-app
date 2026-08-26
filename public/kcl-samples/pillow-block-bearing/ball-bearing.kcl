@@ -1,0 +1,111 @@
+// Pillow Block Bearing
+// The ball bearing for the pillow block bearing assembly
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Create the sketch of one of the balls. The ball diameter is sized as a fraction of the difference between inner and outer radius of the bearing
+ballsSketch = sketch(on = offsetPlane(XY, offset = stockThickness / 2)) {
+  arc1 = arc(start = [var 1.19375in, var 0.001in], end = [var 0.975in, var 0.001in], center = [var 1.084375in, var 0.001in])
+  line2 = line(start = [var 1.19375in, var 0.001in], end = [var 0.975in, var 0.001in])
+  coincident([arc1.start, line2.start])
+}
+
+region001 = region(segments = [ballsSketch.arc1, ballsSketch.line2])
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve(region001, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = sketch(on = offsetPlane(XY, offset = stockThickness / 2)) {
+  arc1 = arc(start = [var 1.1390625in, var 0.108253175in], end = [var 1.0296875in, var 0.108253175in], center = [var 1.084375in, var 0.013531647in])
+  line2 = line(start = [var 1.1390625in, var 0.108253175in], end = [var 1.1390625in, var 0.135596925in])
+  coincident([arc1.start, line2.start])
+  line3 = line(start = [var 1.1390625in, var 0.135596925in], end = [var 1.0296875in, var 0.135596925in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 1.0296875in, var 0.135596925in], end = [var 1.0296875in, var 0.108253175in])
+  coincident([line3.end, line4.start])
+}
+
+region002 = region(segments = [chainSketch.arc1, chainSketch.line2])
+// Revolve the chain sketch
+chainHead = revolve(region002, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 1.11171875in, var 0.25in], center = [var 1.084375in, var 0.25in])
+}
+
+// Create the walls of the bearing
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 1.2425in, var 0.5in], end = [var 1.24162738in, var 0.450007615in])
+  line2 = line(start = [var 1.24162738in, var 0.450007615in], end = [var 0.94912738in, var 0.450007615in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.94912738in, var 0.450007615in], end = [var 0.94912738in, var 0.105in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.94912738in, var 0.105in], end = [var 0.92412738in, var 0.105in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.92412738in, var 0.105in], end = [var 0.917232629in, var 0.5in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.917232629in, var 0.5in], end = [var 1.2425in, var 0.5in])
+  coincident([line5.end, line6.start])
+}
+region003 = region(segments = [sketch001.line1, sketch001.line2])
+bearingUpper = revolve(region003, angle = 360, axis = Y)
+  |> appearance(color = "#121212")
+
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0.875in, var 0.025in], end = [var 0.925in, var 0.025in])
+  line2 = line(start = [var 0.925in, var 0.025in], end = [var 0.935352762in, var 0.063637033in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.935352762in, var 0.063637033in], end = [var 0.985352762in, var 0.063637033in])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0.985352762in, var 0.063637033in], end = [var 0.995705524in, var 0.025in])
+  coincident([line3.end, line4.start])
+  line5 = line(start = [var 0.995705524in, var 0.025in], end = [var 1.3125in, var 0.025in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 1.3125in, var 0.025in], end = [var 1.3125in, var 0.525in])
+  coincident([line5.end, line6.start])
+  line7 = line(start = [var 1.3125in, var 0.525in], end = [var 1.2425in, var 0.525in])
+  coincident([line6.end, line7.start])
+  line8 = line(start = [var 1.2425in, var 0.525in], end = [var 1.235081597in, var 0.1in])
+  coincident([line7.end, line8.start])
+  line9 = line(start = [var 1.235081597in, var 0.1in], end = [var 0.925in, var 0.1in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.925in, var 0.1in], end = [var 0.915836091in, var 0.625in])
+  coincident([line9.end, line10.start])
+  line11 = line(start = [var 0.915836091in, var 0.625in], end = [var 0.875in, var 0.625in])
+  coincident([line10.end, line11.start])
+  line12 = line(start = [var 0.875in, var 0.625in], end = [var 0.875in, var 0.025in])
+  coincident([line11.end, line12.start])
+}
+region004 = region(segments = [sketch002.line1, sketch002.line2])
+bearingLower = revolve(region004, angle = 360, axis = Y)
+  |> appearance(color = "#f0f0f0")
+
+region005 = region(segments = [linkSketch.circle1])
+// Revolve the link sketch
+revolve(region005, axis = Y, angle = 360 / 16)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )

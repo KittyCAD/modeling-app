@@ -64,6 +64,7 @@ const cloudConflictDialogMocks = vi.hoisted(
     conflictDialogProjectPath?: string
     dialogProjectPaths: string[]
     errorDialogMessage?: string
+    projectMetadata?: unknown
     listeners: Set<() => void>
     notify: () => void
   } => ({
@@ -71,6 +72,7 @@ const cloudConflictDialogMocks = vi.hoisted(
     conflictDialogProjectPath: undefined,
     dialogProjectPaths: [],
     errorDialogMessage: undefined,
+    projectMetadata: undefined,
     listeners: new Set(),
     notify: () => {
       for (const listener of cloudConflictDialogMocks.listeners) {
@@ -147,6 +149,7 @@ vi.mock('@src/components/CloudConflictDialog', async () => {
     },
     useCloudSyncProjectConflict: () => cloudConflictDialogMocks.conflict,
     useCloudSyncProjectConflicts: () => [],
+    useCloudSyncProjectMetadata: () => cloudConflictDialogMocks.projectMetadata,
   }
 })
 
@@ -433,6 +436,7 @@ afterEach(() => {
   cloudConflictDialogMocks.conflictDialogProjectPath = undefined
   cloudConflictDialogMocks.dialogProjectPaths = []
   cloudConflictDialogMocks.errorDialogMessage = undefined
+  cloudConflictDialogMocks.projectMetadata = undefined
   cloudSyncStatus.value = {
     enabled: false,
     state: 'disabled',
@@ -590,6 +594,66 @@ describe('cloud sync status bar conflict dialog', () => {
 })
 
 describe('cloud sync project menu item', () => {
+  test('keeps a durable project failure visible after runtime status resets', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectCloudProjectId: 'remote-123',
+    }
+    cloudConflictDialogMocks.projectMetadata = {
+      localProjectPath: projectWellFormed.path,
+      remoteProjectId: 'remote-123',
+      lastFailure: {
+        message: 'Cloud sync stopped before local changes were uploaded.',
+        at: new Date(now - 60_000).toISOString(),
+      },
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
+      )
+
+      expect(
+        screen.getByTestId('project-sidebar-cloud-error-badge')
+      ).toHaveTextContent('Cloud error')
+    } finally {
+      dispose()
+    }
+  })
+
+  test('shows a persistent badge when durable project work is stalled', () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectCloudProjectId: 'remote-123',
+    }
+    cloudConflictDialogMocks.projectMetadata = {
+      localProjectPath: projectWellFormed.path,
+      remoteProjectId: 'remote-123',
+      hasPendingChanges: true,
+      pendingSince: new Date(now - 5 * 60_000).toISOString(),
+    }
+    const cloudSync = createCloudSyncService()
+    const { app, dispose } = createProjectMenuApp(cloudSync)
+
+    try {
+      renderWithRouter(
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
+      )
+
+      expect(
+        screen.getByTestId('project-sidebar-cloud-stalled-badge')
+      ).toHaveTextContent('Cloud sync stalled')
+    } finally {
+      dispose()
+    }
+  })
+
   test('shows synced state from the project sidebar menu', async () => {
     cloudSyncStatus.value = {
       enabled: true,

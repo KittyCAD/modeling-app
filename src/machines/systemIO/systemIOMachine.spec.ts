@@ -6,12 +6,14 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -328,6 +330,22 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it.each([undefined, []])(
+        'skips project lookup when filesToDelete is %j',
+        async (filesToDelete) => {
+          const totalDeleted = await sharedBulkDeleteWorkflow({
+            input: {
+              requestedProjectName: 'project-not-in-folder-snapshot',
+              context: { folders: undefined } as SystemIOContext,
+              files: [],
+              filesToDelete,
+              wasmInstance: instanceInThisFile,
+            },
+          })
+
+          expect(totalDeleted).toBe(0)
+        }
+      )
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {

@@ -12007,7 +12007,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "point",
+                    "name": "segments",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -12016,8 +12016,10 @@ description: Result of parsing utility-sink.kcl
                     "elements": [
                       {
                         "commentStart": 0,
+                        "computed": false,
                         "end": 0,
-                        "left": {
+                        "moduleId": 0,
+                        "object": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
@@ -12026,7 +12028,7 @@ description: Result of parsing utility-sink.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "blockSubdivisionWidth",
+                            "name": "pillarProfile",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -12035,56 +12037,34 @@ description: Result of parsing utility-sink.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "moduleId": 0,
-                        "operator": "+",
-                        "right": {
+                        "property": {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "left": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "profileThickness",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
                           "moduleId": 0,
-                          "operator": "/",
-                          "right": {
+                          "name": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "raw": "2",
+                            "name": "leftEdge",
                             "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 2.0,
-                              "suffix": "None"
-                            }
+                            "type": "Identifier"
                           },
+                          "path": [],
                           "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "MemberExpression",
+                        "type": "MemberExpression"
                       },
                       {
                         "commentStart": 0,
+                        "computed": false,
                         "end": 0,
-                        "left": {
+                        "moduleId": 0,
+                        "object": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
@@ -12093,7 +12073,7 @@ description: Result of parsing utility-sink.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "profileThickness",
+                            "name": "pillarProfile",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -12102,24 +12082,27 @@ description: Result of parsing utility-sink.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "property": {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "topEdge",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "MemberExpression",
+                        "type": "MemberExpression"
                       }
                     ],
                     "end": 0,
@@ -12135,7 +12118,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "sketch",
+                    "name": "direction",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -12148,7 +12131,7 @@ description: Result of parsing utility-sink.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "pillarProfile",
+                      "name": "CW",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -19745,7 +19728,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -19754,8 +19737,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -19764,7 +19749,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableWidth",
+                          "name": "tableTopProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -19773,29 +19758,34 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "leftEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -19804,7 +19794,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableDepth",
+                          "name": "tableTopProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -19813,24 +19803,27 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "topEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -19846,7 +19839,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -19859,7 +19852,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "tableTopProfile",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -23676,7 +23669,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -23685,84 +23678,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
-                        "argument": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sinkOffsetLeft",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "operator": "-",
-                        "start": 0,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      },
                       "moduleId": 0,
-                      "operator": "-",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sinkWidth",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "moduleId": 0,
-                        "operator": "/",
-                        "right": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "2",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -23771,7 +23690,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sinkOffsetFront",
+                          "name": "sinkOutsideProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -23780,51 +23699,72 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sinkLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "leftEdge",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sinkOutsideProfile",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "topEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -23832,35 +23772,6 @@ description: Result of parsing utility-sink.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sinkOutsideProfile",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -27342,7 +27253,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -27351,8 +27262,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -27361,7 +27274,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sinkOffsetLeft",
+                          "name": "sinkInsideProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -27370,56 +27283,34 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sinkWidth",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "leftEdge",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -27428,7 +27319,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "sinkOffsetFront",
+                          "name": "sinkInsideProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -27437,51 +27328,27 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "sinkLength",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "topEdge",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -27497,7 +27364,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -27510,7 +27377,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "sinkInsideProfile",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -29960,7 +29827,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -29969,8 +29836,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -29979,7 +29848,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "blockWidth",
+                          "name": "tapPlateSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -29988,29 +29857,7 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "property": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -30019,7 +29866,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableDepth",
+                          "name": "tapPlateCircle",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -30028,24 +29875,9 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "-",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "55",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 55.0,
-                          "suffix": "None"
-                        }
-                      },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -30053,35 +29885,6 @@ description: Result of parsing utility-sink.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tapPlateSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -32694,7 +32497,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -32703,8 +32506,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -32713,7 +32518,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "blockWidth",
+                          "name": "tapPillarSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -32722,29 +32527,7 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "property": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -32753,7 +32536,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableDepth",
+                          "name": "tapPillarCircle",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -32762,24 +32545,9 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "-",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "55",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 55.0,
-                          "suffix": "None"
-                        }
-                      },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -32787,35 +32555,6 @@ description: Result of parsing utility-sink.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tapPillarSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -35450,7 +35189,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -35459,8 +35198,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -35469,7 +35210,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "blockWidth",
+                          "name": "tapNoseSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -35478,29 +35219,7 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "property": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -35509,7 +35228,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableHeight",
+                          "name": "tapNoseCircle",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -35518,24 +35237,9 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "100",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 100.0,
-                          "suffix": "None"
-                        }
-                      },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -35543,35 +35247,6 @@ description: Result of parsing utility-sink.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tapNoseSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -38233,7 +37908,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -38242,8 +37917,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -38252,7 +37929,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "blockWidth",
+                          "name": "tapHandleSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -38261,29 +37938,7 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "2",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "property": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -38292,7 +37947,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "tableHeight",
+                          "name": "tapHandleCircle",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -38301,24 +37956,9 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "150",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 150.0,
-                          "suffix": "None"
-                        }
-                      },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -38326,35 +37966,6 @@ description: Result of parsing utility-sink.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "tapHandleSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -41822,7 +41433,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -41831,8 +41442,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -41841,7 +41454,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "doorStart",
+                          "name": "doorProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -41850,56 +41463,34 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "doorWidth",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "leftEdge",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -41908,7 +41499,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "profileThickness",
+                          "name": "doorProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -41917,24 +41508,27 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "topEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -41950,7 +41544,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -41963,7 +41557,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "doorProfile",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -45295,7 +44889,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -45304,8 +44898,10 @@ description: Result of parsing utility-sink.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -45314,7 +44910,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "profileThickness",
+                          "name": "panelProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -45323,29 +44919,34 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "leftEdge",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -45354,7 +44955,7 @@ description: Result of parsing utility-sink.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "doorStart",
+                          "name": "panelProfile",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -45363,51 +44964,27 @@ description: Result of parsing utility-sink.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "panelWidth",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "topEdge",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -45423,7 +45000,7 @@ description: Result of parsing utility-sink.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "sketch",
+                  "name": "direction",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -45436,7 +45013,7 @@ description: Result of parsing utility-sink.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "panelProfile",
+                    "name": "CW",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -54321,6 +53898,34 @@ description: Result of parsing utility-sink.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],
