@@ -761,12 +761,36 @@ test.describe(
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      await test.step('Module feature tree items do not offer delete', async () => {
+      await test.step('Delete first part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const cubeOp = await toolbar.getFeatureTreeOperation('cube', 0)
-        await cubeOp.click({ button: 'right' })
-        await expect(page.getByText('View KCL source code')).toBeVisible()
-        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+        await editor.expectEditor.toContain(
+          `import "${complexPlmFileName}" as cubeSw`,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      await test.step('Delete second part using the feature tree', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain(
+          `import "${complexPlmFileName}" as cubeSw`
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
     })
 
