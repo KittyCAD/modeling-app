@@ -123,7 +123,6 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            rust/target
             ~/.cargo/registry
             ~/.cargo/git
       - name: Install Node.js
@@ -253,7 +252,6 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            rust/target
             /github/home/.cargo/registry
             /github/home/.cargo/git
       - name: build

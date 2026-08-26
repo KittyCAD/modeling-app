@@ -41,13 +41,13 @@ jobs:
         # container were confounded. This job runs directly on the runner, so
         # the result answers the profile question on its own.
         #
-        # Paths are explicit rather than `cache: rust`, because the
-        # mode-to-path mapping is resolved on the runner and cannot be checked
-        # beforehand, and this workspace is at `rust/` not the repository root.
+        # Cache downloaded dependencies, but leave `rust/target` local to this
+        # job. The target directory contains Cargo's build lock and other
+        # mutable state; restoring it from the shared volume can preserve file
+        # permissions that prevent the runner from opening `.cargo-build-lock`.
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            rust/target
             ~/.cargo/registry
             ~/.cargo/git
 

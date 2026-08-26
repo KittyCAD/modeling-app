@@ -45,7 +45,6 @@ jobs:
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
-            rust/target
             ~/.cargo/registry
             ~/.cargo/git
 
