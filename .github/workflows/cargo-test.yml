@@ -58,7 +58,7 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Install just
         uses: taiki-e/install-action@just
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |

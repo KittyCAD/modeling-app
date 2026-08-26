@@ -41,7 +41,7 @@ jobs:
           rustflags: '' # Use .cargo/config.toml
           # We need this to run clippy for the wasm32 target.
           target: wasm32-unknown-unknown
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |

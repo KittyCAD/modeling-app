@@ -33,7 +33,7 @@ jobs:
           # cache API and once on the volume.
           cache: false
           rustflags: '' # Use .cargo/config.toml
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         # Probe: does namespace-profile-ubuntu-8-cores have a Cache Volume?
         # The same action failed on namespace-profile-ubuntu-2-cores with
         # "nscloud-cache-action requires a cache volume to be configured", but

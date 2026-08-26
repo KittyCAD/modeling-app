@@ -97,7 +97,7 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: namespacelabs/nscloud-cache-action@v1
         with:

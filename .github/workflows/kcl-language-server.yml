@@ -119,7 +119,7 @@ jobs:
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
           target: ${{ matrix.target }}
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
@@ -248,7 +248,7 @@ jobs:
           cache: false
           components: rust-src
           rustflags: "" # Use .cargo/config.toml
-      - name: Rust cache on the Namespace volume
+      - name: Cargo dependency cache on the Namespace volume
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
