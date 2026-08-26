@@ -95,89 +95,11 @@ describe('createOnWebSocketMessage', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
-  it('reports backend Engine disconnect failures with the cloud project ID', () => {
-    dispatchFailureMessage(
-      'modeling connection interrupted; please reconnect and retry',
-      'cloud-project-123'
-    )
-
-    expect(reportClientError).toHaveBeenCalledOnce()
-    expect(setConnectionError).toHaveBeenCalledWith({
-      kind: EngineConnectionErrorKind.BackendDisconnect,
-      message: 'modeling connection interrupted; please reconnect and retry',
-      terminal: true,
-    })
-    expect(reportClientError).toHaveBeenCalledWith({
-      code: 'engine_backend_disconnect',
-      message: 'modeling connection interrupted; please reconnect and retry',
-      extra: {
-        source: 'EngineWebSocket',
-        errorCode: 'internal_api',
-        cloudProjectId: 'cloud-project-123',
-      },
-    })
-  })
-
-  it('reports backend Engine disconnect failures for local-only projects', () => {
-    dispatchFailureMessage(
-      'modeling connection interrupted; please reconnect and retry'
-    )
-
-    expect(reportClientError).toHaveBeenCalledWith({
-      code: 'engine_backend_disconnect',
-      message: 'modeling connection interrupted; please reconnect and retry',
-      extra: {
-        source: 'EngineWebSocket',
-        errorCode: 'internal_api',
-      },
-    })
-  })
-
   it('does not report other internal API failures as backend disconnects', () => {
     dispatchFailureMessage('modeling service unavailable; please retry')
 
     expect(setConnectionError).not.toHaveBeenCalled()
     expect(reportClientError).not.toHaveBeenCalled()
-  })
-
-  it('stops reconnecting when the authorization token is invalid', () => {
-    dispatchFailureMessage(
-      'The authorization token is invalid.',
-      undefined,
-      'auth_token_invalid'
-    )
-
-    const connectionError: EngineConnectionError = {
-      kind: EngineConnectionErrorKind.AuthTokenInvalid,
-      message: 'The authorization token is invalid.',
-      terminal: true,
-    }
-    expect(setConnectionError).toHaveBeenCalledWith(connectionError)
-    expect(notifySessionExpired).toHaveBeenCalledWith('engine-websocket')
-    expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
-      connectionError,
-    })
-    expect(disconnectAll).not.toHaveBeenCalled()
-  })
-
-  it('stops reconnecting when the user has too many active connections', () => {
-    dispatchFailureMessage(
-      'Too many active connections, only 2 allowed per user.',
-      undefined,
-      'bad_request'
-    )
-
-    const connectionError: EngineConnectionError = {
-      kind: EngineConnectionErrorKind.TooManyConnections,
-      message: 'Too many active connections, only 2 allowed per user.',
-      terminal: true,
-    }
-    expect(setConnectionError).toHaveBeenCalledWith(connectionError)
-    expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
-      connectionError,
-    })
   })
 
   it('keeps other bad request failures retryable', () => {
@@ -218,6 +140,7 @@ describe('createOnWebSocketMessage', () => {
       websocketClosed: true,
       connectionError,
     })
+    expect(disconnectAll).not.toHaveBeenCalled()
   })
 
   it('handles typed invalid authorization tokens', () => {

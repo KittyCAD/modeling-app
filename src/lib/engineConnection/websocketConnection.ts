@@ -19,11 +19,6 @@ import { mark } from '@src/lib/performance'
 import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 
-const MODELING_BACKEND_DISCONNECTED_MESSAGE =
-  'modeling connection interrupted; please reconnect and retry'
-const MODELING_CONCURRENCY_LIMIT_MESSAGE =
-  /^Too many active connections, only \d+ allowed per user\.$/
-
 // TODO: Replace these compatibility types with the generated SDK types after
 // KittyCAD/api#4472 is released in @kittycad/lib.
 type ModelingConnectionErrorCode =
@@ -237,51 +232,6 @@ export const createOnWebSocketMessage = ({
     }
 
     if (!message.success && 'errors' in message) {
-      const backendDisconnectError = message.errors.find(
-        (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
-      )
-      const authTokenInvalidError = message.errors.find(
-        (error) => error.error_code === 'auth_token_invalid'
-      )
-      const concurrencyLimitError = message.errors.find(
-        (error) =>
-          error.error_code === 'bad_request' &&
-          MODELING_CONCURRENCY_LIMIT_MESSAGE.test(error.message)
-      )
-
-      const terminalConnectionError: EngineConnectionError | undefined =
-        backendDisconnectError
-          ? {
-              kind: EngineConnectionErrorKind.BackendDisconnect,
-              message: backendDisconnectError.message,
-              terminal: true,
-            }
-          : authTokenInvalidError
-            ? {
-                kind: EngineConnectionErrorKind.AuthTokenInvalid,
-                message: authTokenInvalidError.message,
-                terminal: true,
-              }
-            : concurrencyLimitError
-              ? {
-                  kind: EngineConnectionErrorKind.TooManyConnections,
-                  message: concurrencyLimitError.message,
-                  terminal: true,
-                }
-              : undefined
-
-      if (terminalConnectionError) {
-        setConnectionError(terminalConnectionError)
-      }
-
-      if (backendDisconnectError) {
-        reportBackendDisconnect({
-          message: backendDisconnectError.message,
-          errorCode: backendDisconnectError.error_code,
-          requestId: message.request_id,
-        })
-      }
-
       const errorsString = message?.errors
         ?.map((error) => {
           return `  - ${error.error_code}: ${error.message}`
@@ -299,18 +249,6 @@ export const createOnWebSocketMessage = ({
          * The server will spam ping you with this until you send them. If you see a few then it stops then you set the headers in the websocket safely.
          */
         console.error(`Error from server:\n${errorsString}`)
-      }
-
-      if (authTokenInvalidError) {
-        notifySessionExpired('engine-websocket')
-      }
-
-      if (authTokenInvalidError || concurrencyLimitError) {
-        tearDownManager({
-          websocketClosed: true,
-          connectionError: terminalConnectionError,
-        })
-        return
       }
 
       const firstError = message.errors[0]
