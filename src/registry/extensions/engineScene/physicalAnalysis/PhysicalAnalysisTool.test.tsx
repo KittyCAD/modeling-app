@@ -11,12 +11,26 @@ vi.mock('@kittycad/ui-components', () => ({
   CopyTextButton: ({ children }: { children: React.ReactNode }) => (
     <div>{children}</div>
   ),
-  Draggable: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
+  Draggable: ({
+    children,
+    style,
+    'data-testid': testId,
+  }: {
+    children: React.ReactNode
+    style?: React.CSSProperties
+    'data-testid'?: string
+  }) => (
+    <div style={style} data-testid={testId}>
+      {children}
+    </div>
   ),
 }))
 
-import { PhysicalAnalysisTool } from './PhysicalAnalysisTool'
+import { measurementToolService } from '../measurementToolService'
+import {
+  PhysicalAnalysisDraggablePanel,
+  PhysicalAnalysisTool,
+} from './PhysicalAnalysisTool'
 import { physicalAnalysisService } from './physicalAnalysisService'
 
 type SceneCommand = { cmd: Record<string, unknown> }
@@ -28,7 +42,7 @@ function modelingResponse(type: string, data: unknown) {
 }
 
 function setupModelingContext(defaultLengthUnit: string | undefined) {
-  const sentCommands: Array<Record<string, unknown>> = []
+  const sentCommands: Record<string, unknown>[] = []
   const sendSceneCommand = vi.fn((request: SceneCommand) => {
     const cmd = request.cmd
     sentCommands.push(cmd)
@@ -110,11 +124,13 @@ function setupDeferredModelingContext(defaultLengthUnit: string) {
   return { release: () => release?.() }
 }
 
-describe('PhysicalAnalysisTool', () => {
+describe('physical analysis tool', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     globalThis.localStorage.clear()
     physicalAnalysisService.reloadPreferences()
+    physicalAnalysisService.close()
+    measurementToolService.close()
   })
 
   it('seeds the unit dropdowns from the file length unit', async () => {
@@ -246,5 +262,27 @@ describe('PhysicalAnalysisTool', () => {
     })
     expect(screen.queryByText('1,000')).not.toBeInTheDocument()
     expect(screen.queryByText('7.85')).not.toBeInTheDocument()
+  })
+
+  it('only offsets the panel when the measurement panel is open', () => {
+    setupModelingContext('mm')
+    physicalAnalysisService.open()
+    const containerRef = { current: document.createElement('div') }
+    const { rerender } = render(
+      <PhysicalAnalysisDraggablePanel containerRef={containerRef} top={8} />
+    )
+
+    expect(screen.getByTestId('physical-analysis-draggable-panel')).toHaveStyle(
+      { left: '8px' }
+    )
+
+    measurementToolService.open()
+    rerender(
+      <PhysicalAnalysisDraggablePanel containerRef={containerRef} top={8} />
+    )
+
+    expect(screen.getByTestId('physical-analysis-draggable-panel')).toHaveStyle(
+      { left: '344px' }
+    )
   })
 })

@@ -241,6 +241,35 @@ export function reportCloudSyncConflictCopyDetected() {
   })
 }
 
+export function reportCloudSyncUntrackedLocalChanges({
+  remoteProjectId,
+  remoteRevision,
+  baseFileCount,
+  localFileCount,
+}: {
+  remoteProjectId: string
+  remoteRevision?: Revision
+  baseFileCount: number
+  localFileCount: number
+}) {
+  submit({
+    code: ClientErrorCode.CloudSyncUntrackedLocalChanges,
+    errorName: 'CloudSyncUntrackedLocalChanges',
+    message: 'Cloud sync detected local changes without queued work.',
+    route,
+    dedupeKey: `CloudSync:untracked-local-changes:${remoteProjectId}:${remoteRevision ?? 'none'}`,
+    extra: {
+      source: 'CloudSyncEngine',
+      operation: 'reconcile-project',
+      remoteProjectId,
+      remoteRevision,
+      baseFileCount,
+      localFileCount,
+      recoveryAction: 'sync-project',
+    },
+  })
+}
+
 export type CloudSyncFailureOperation =
   | 'conflict-resolution'
   | 'mutation'

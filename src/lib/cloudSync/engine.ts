@@ -3,6 +3,7 @@ import env, { getEnvironmentNameFromEnv } from '@src/env'
 import {
   reportCloudSyncConflict,
   reportCloudSyncFailure,
+  reportCloudSyncUntrackedLocalChanges,
 } from '@src/lib/cloudSync/clientErrorReporting'
 import {
   CloudApiError,
@@ -152,6 +153,7 @@ let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
+let openedProjectContext: CloudSyncOpenedProject | undefined
 let syncScopeProjectPath: string | undefined
 let syncScopeSyncable = false
 const scheduledProjectDirectoryNameSyncs = new Set<string>()
@@ -581,8 +583,9 @@ function normalizeCloudSyncOpenedProject(
   return {
     projectPath: normalizedProjectPath,
     syncable:
-      openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
-      Boolean(openedProject.libraryPath?.trim()),
+      (openedProject.libraryType === CLOUD_PROJECT_LIBRARY_TYPE &&
+        Boolean(openedProject.libraryPath?.trim())) ||
+      Boolean(getCloudLibraryProjectRoot(normalizedProjectPath)),
   }
 }
 
@@ -2258,6 +2261,11 @@ async function applyLocalDataForConflict(
 
   const localFiles = await collectLocalProjectFiles(metadata.localProjectPath)
   const localManifest = await projectManifestFromFiles(localFiles)
+  const remoteFiles = filterCloudSyncProjectFilesForSync(
+    await parseProjectArchive(
+      await downloadRemoteProjectArchive(config, metadata.remoteProjectId)
+    )
+  )
   const updated = await updateRemoteProject({
     config,
     projectPath: metadata.localProjectPath,
@@ -2265,6 +2273,7 @@ async function applyLocalDataForConflict(
     files: localFiles,
     expectedRevision,
     entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+    deletedPaths: getRemovedProjectFilePaths(remoteFiles, localFiles),
   }).catch(rejectRemoteUploadFailure)
   await clearOutboxEntriesForProject(metadata.localProjectPath)
   await deleteLegacyConflictCopy(conflict)
@@ -2449,6 +2458,45 @@ async function markProjectConflict(
 
 function latestOutboxKind(entries: OutboxEntry[]) {
   return entries.toSorted((a, b) => (a.id ?? 0) - (b.id ?? 0)).at(-1)?.kind
+}
+
+function getOutboxDeletedPaths(
+  entries: OutboxEntry[],
+  uploadedFiles: ProjectArchiveFile[],
+  currentPaths?: Iterable<string>
+) {
+  const uploadedPaths = new Set(
+    uploadedFiles.map((file) => normalizeRelativePath(file.relativePath))
+  )
+  const currentPathSet = currentPaths
+    ? new Set(Array.from(currentPaths, normalizeRelativePath))
+    : undefined
+  return Array.from(
+    new Set(
+      entries
+        .flatMap((entry) => entry.deletedPaths ?? [])
+        .map(normalizeRelativePath)
+        .filter(
+          (path) =>
+            Boolean(path) &&
+            !uploadedPaths.has(path) &&
+            (!currentPathSet || currentPathSet.has(path))
+        )
+    )
+  ).sort()
+}
+
+function getRemovedProjectFilePaths(
+  previousFiles: ProjectArchiveFile[],
+  nextFiles: ProjectArchiveFile[]
+) {
+  const nextPaths = new Set(
+    nextFiles.map((file) => normalizeRelativePath(file.relativePath))
+  )
+  return previousFiles
+    .map((file) => normalizeRelativePath(file.relativePath))
+    .filter((path) => !nextPaths.has(path))
+    .sort()
 }
 
 function projectManifestEntryEqual(
@@ -2869,6 +2917,20 @@ async function syncProject(
         : true
     }
 
+    if (
+      entries.length === 0 &&
+      metadata.remoteProjectId &&
+      metadata.baseManifest &&
+      localChanged
+    ) {
+      reportCloudSyncUntrackedLocalChanges({
+        remoteProjectId: metadata.remoteProjectId,
+        remoteRevision: metadata.remoteRevision,
+        baseFileCount: Object.keys(metadata.baseManifest.files).length,
+        localFileCount: Object.keys(localManifest.files).length,
+      })
+    }
+
     const preflightAction = getCloudSyncProjectSyncPreflightAction({
       latestKind,
       tombstone: metadata.tombstone,
@@ -2934,6 +2996,11 @@ async function syncProject(
             files: localFiles,
             expectedRevision: metadata.remoteRevision,
             entrypointPath: getRemoteProjectEntrypointPath(remoteProject),
+            deletedPaths: getOutboxDeletedPaths(
+              entries,
+              localFiles,
+              Object.keys(metadata.baseManifest?.files ?? {})
+            ),
           })
       ).catch(rejectRemoteUploadFailure)
       await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -3020,6 +3087,11 @@ async function syncProject(
             project: remoteProject,
             files: autoReconciledFiles,
             expectedRevision: remoteRevision,
+            deletedPaths: getOutboxDeletedPaths(
+              entries,
+              autoReconciledFiles,
+              remoteFiles.map((file) => file.relativePath)
+            ),
           })
       ).catch(rejectRemoteUploadFailure)
       await replaceLocalProjectWithFiles(
@@ -3567,6 +3639,7 @@ function scheduleRemoteIndexSync(delay = 0) {
 export function setCloudSyncOpenedProject(
   openedProject?: CloudSyncOpenedProject
 ) {
+  openedProjectContext = openedProject
   const nextScope = normalizeCloudSyncOpenedProject(openedProject)
   const nextSyncScopeProjectPath = nextScope?.projectPath
   const nextSyncScopeSyncable = nextScope?.syncable ?? false
@@ -3812,7 +3885,8 @@ async function registerProjectMutation(
   projectPath: string,
   kind: OutboxEntry['kind'],
   targetPath: string,
-  sourcePath?: string
+  sourcePath?: string,
+  deletedPaths?: string[]
 ) {
   if (!isConfiguredForCloud() || isCloudSyncExcludedPath(targetPath)) {
     return
@@ -3889,6 +3963,7 @@ async function registerProjectMutation(
     kind,
     targetPath: normalizedTargetPath,
     sourcePath: sourcePath ? normalizePathForSync(sourcePath) : undefined,
+    deletedPaths: deletedPaths?.length ? deletedPaths : undefined,
     createdAt: nowIso(),
   })
   scheduleSync()
@@ -3926,11 +4001,18 @@ async function registerProjectRename(sourcePath: string, targetPath: string) {
     }
   }
 
+  const deletedPaths =
+    sourceProjectRoot &&
+    normalizePathForSync(sourceProjectRoot) ===
+      normalizePathForSync(targetProjectRoot)
+      ? await getObservedDeletedPaths(sourceProjectRoot, sourcePath)
+      : undefined
   await registerProjectMutation(
     targetProjectRoot,
     'upsert',
     targetPath,
-    sourcePath
+    sourcePath,
+    deletedPaths
   )
 }
 
@@ -3952,11 +4034,36 @@ async function afterRemoveMutation(targetPath: string) {
     return
   }
 
+  const deletingProject = isProjectRootPath(targetPath, projectRoot)
   await registerProjectMutation(
     projectRoot,
-    isProjectRootPath(targetPath, projectRoot) ? 'delete' : 'upsert',
-    targetPath
+    deletingProject ? 'delete' : 'upsert',
+    targetPath,
+    undefined,
+    deletingProject
+      ? undefined
+      : await getObservedDeletedPaths(projectRoot, targetPath)
   )
+}
+
+async function getObservedDeletedPaths(
+  projectRoot: string,
+  targetPath: string
+) {
+  const metadata = await getProjectMetadata(projectRoot)
+  const relativeTargetPath = normalizeRelativePath(
+    localFs.relative(projectRoot, targetPath)
+  )
+  if (!metadata?.baseManifest || !relativeTargetPath) {
+    return []
+  }
+
+  return Object.keys(metadata.baseManifest.files)
+    .filter(
+      (path) =>
+        path === relativeTargetPath || path.startsWith(`${relativeTargetPath}/`)
+    )
+    .sort()
 }
 
 export function configureCloudSyncLocalFileSystem(
@@ -4006,6 +4113,10 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
     resetSyncRetryBackoff()
+  }
+
+  if (projectDirectoryChanged && openedProjectContext) {
+    setCloudSyncOpenedProject(openedProjectContext)
   }
 
   if (!config.enabled) {

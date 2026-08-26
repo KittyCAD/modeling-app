@@ -18,7 +18,7 @@ import {
 export const PHYSICAL_ANALYSIS_STORAGE_KEY = 'physicalAnalysis.preferences'
 
 /**
- * A null unit means "follow the current file's length unit". Once the user
+ * A null preference means "follow the current file's length unit". Once the user
  * picks a unit explicitly it is persisted and pins, overriding the file.
  */
 export interface PhysicalAnalysisPreferences {

@@ -32,6 +32,7 @@ type PrepareProjectFilesForCloudUploadOptions = {
   expectedRevision?: Revision
   entrypointPath?: string
   publicationMetadata?: ProjectUploadPublicationMetadata
+  deletedPaths?: string[]
 }
 
 export function prepareProjectFilesForCloudUpload(
@@ -88,6 +89,14 @@ export function prepareProjectFilesForCloudUpload(
   }
   if (expectedRevision) {
     body.expected_revision = expectedRevision
+  }
+  if (
+    typeof optionsOrExpectedRevision !== 'string' &&
+    optionsOrExpectedRevision?.deletedPaths
+  ) {
+    body.deleted_paths = Array.from(
+      new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))
+    ).sort()
   }
 
   return {
