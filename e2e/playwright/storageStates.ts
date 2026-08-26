@@ -21,6 +21,25 @@ export function playwrightProjectLibraries(
   ]
 }
 
+/**
+ * Stands in for `get_user_self`. An empty image keeps the avatar deterministic
+ * rather than depending on a third-party image host.
+ */
+export const PLAYWRIGHT_USER = {
+  id: 'playwright-user-id',
+  name: 'Playwright User',
+  first_name: 'Playwright',
+  last_name: 'User',
+  email: 'playwright@zoo.dev',
+  image: '',
+  created_at: '2024-01-01T00:00:00.000Z',
+  updated_at: '2024-01-01T00:00:00.000Z',
+  can_train_on_data: false,
+  is_onboarded: true,
+  is_service_account: false,
+  deletion_scheduled: false,
+}
+
 export function playwrightPluginSettings({
   cloudSyncEnabled = false,
 }: {

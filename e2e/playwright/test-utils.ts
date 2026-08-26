@@ -37,6 +37,7 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import {
   PLAYWRIGHT_PROJECT_DIRECTORY,
+  PLAYWRIGHT_USER,
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
   playwrightPluginSettings,
@@ -964,6 +965,17 @@ export async function setup(
     !isArray(TEST_SETTINGS.project)
       ? TEST_SETTINGS.project
       : undefined
+
+  // The web home route gate waits on auth before it reads user features, so a
+  // real round trip here can outlast it and bounce the app to a demo project.
+  await context.unroute('**/user')
+  await context.route('**/user', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(PLAYWRIGHT_USER),
+    })
+  })
 
   await context.unroute('**/user/features')
   await context.route('**/user/features', async (route) => {
