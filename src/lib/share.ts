@@ -113,7 +113,7 @@ export async function publishCurrentProject(
 
 function getPublishErrorMessage(error: Error) {
   if (
-    /categor(?:y|ies)/i.test(error.message) &&
+    /(?:category|categories)/i.test(error.message) &&
     /not active|inactive|does not exist|invalid/i.test(error.message)
   ) {
     return 'One or more selected categories are no longer available. Choose an active category and try again.'
