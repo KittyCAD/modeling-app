@@ -31,6 +31,7 @@ type PublishDialogProps = {
   initialTitle?: string
   publishDisabled?: boolean
   publishRequiresUsername?: boolean
+  willMoveProjectToCloud?: boolean
   accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
@@ -45,6 +46,7 @@ export function PublishDialog({
   initialTitle = '',
   publishDisabled = false,
   publishRequiresUsername = false,
+  willMoveProjectToCloud = false,
   accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
@@ -409,6 +411,13 @@ export function PublishDialog({
           <section className="border-t border-chalkboard-20/70 pt-4 dark:border-chalkboard-80/70">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
+                {willMoveProjectToCloud && (
+                  <p className="mb-2 text-xs leading-5 text-chalkboard-70 dark:text-chalkboard-30">
+                    Publishing will also move this project from its current
+                    folder to your Personal Cloud library so it stays synced
+                    with your Zoo account.
+                  </p>
+                )}
                 <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                   {lastSubmittedText ? (
                     lastSubmittedText

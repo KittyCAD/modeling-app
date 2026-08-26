@@ -50,6 +50,24 @@ describe('PublishDialog', () => {
     )
   })
 
+  it('discloses when publishing will move the project to Personal Cloud', () => {
+    render(
+      <Popover>
+        <PublishDialog
+          onSubmit={vi.fn()}
+          accountUrl="https://zoo.dev/account"
+          willMoveProjectToCloud={true}
+        />
+      </Popover>
+    )
+
+    expect(
+      screen.getByText(
+        /Publishing will also move this project from its current folder to your Personal Cloud library/
+      )
+    ).toBeInTheDocument()
+  })
+
   it('registers the description editor with the Markdown keymap while focused', async () => {
     const unregisterActions = vi.fn()
     const registerActions = vi.fn((actions: MarkdownEditorActions) => {
