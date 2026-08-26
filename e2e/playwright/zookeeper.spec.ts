@@ -43,52 +43,49 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await expect(extrude).toBeVisible()
     })
   })
-  test('Chat history can be cleared', { tag: ['@desktop', '@web'] }, async ({
-    page,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    copilot,
-  }) => {
-    await page.setBodyDimensions({ width: 1500, height: 1000 })
-    await homePage.goToModelingScene()
-    await scene.settled()
+  test(
+    'Chat history can be cleared',
+    { tag: ['@desktop', '@web'] },
+    async ({ page, homePage, scene, toolbar, cmdBar, copilot }) => {
+      await page.setBodyDimensions({ width: 1500, height: 1000 })
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    await test.step('Submit placeholder prompt', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await copilot.conversationInput.fill(
-        `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
-      )
-      await copilot.submitButton.click()
-      await expect(copilot.placeHolderResponse).toBeVisible()
-    })
-
-    await test.step('Keep the current chat when clearing is dismissed', async () => {
-      await copilot.clearChatButton.click()
-      const confirmationDialog = page.getByRole('dialog', {
-        name: 'Start a new chat?',
+      await test.step('Submit placeholder prompt', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+        await copilot.conversationInput.fill(
+          `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
+        )
+        await copilot.submitButton.click()
+        await expect(copilot.placeHolderResponse).toBeVisible()
       })
-      await expect(confirmationDialog).toContainText(
-        'This will stop the current Zookeeper response and start a new conversation.'
-      )
-      await page.getByRole('button', { name: 'Keep current chat' }).click()
 
-      await expect(confirmationDialog).not.toBeVisible()
-      await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
-      await expect(copilot.clearChatButton).toBeVisible()
-    })
+      await test.step('Keep the current chat when clearing is dismissed', async () => {
+        await copilot.clearChatButton.click()
+        const confirmationDialog = page.getByRole('dialog', {
+          name: 'Start a new chat?',
+        })
+        await expect(confirmationDialog).toContainText(
+          'This will stop the current Zookeeper response and start a new conversation.'
+        )
+        await page.getByRole('button', { name: 'Keep current chat' }).click()
 
-    await test.step('Confirm clearing the chat history', async () => {
-      await copilot.clearChatButton.click()
-      await page.getByRole('button', { name: 'Start new chat' }).click()
-      await expect(copilot.welcomeSection).not.toBeVisible()
-      await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
+        await expect(confirmationDialog).not.toBeVisible()
+        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(1)
+        await expect(copilot.clearChatButton).toBeVisible()
+      })
 
-      await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(0)
-      await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(0)
-      await expect(copilot.clearChatButton).not.toBeVisible()
-    })
-  })
+      await test.step('Confirm clearing the chat history', async () => {
+        await copilot.clearChatButton.click()
+        await page.getByRole('button', { name: 'Start new chat' }).click()
+        await expect(copilot.welcomeSection).not.toBeVisible()
+        await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
+
+        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(0)
+        await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(0)
+        await expect(copilot.clearChatButton).not.toBeVisible()
+      })
+    }
+  )
 })
