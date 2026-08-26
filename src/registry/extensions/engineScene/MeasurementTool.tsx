@@ -744,6 +744,10 @@ export function MeasurementStatusBarItem() {
     [engineCommandManager]
   )
 
+  // Stamps the generation the current selection was made against. The scene
+  // generation is deliberately not a dependency here: this must only re-stamp
+  // when the selection itself changes, so a regeneration leaves the stamp behind
+  // and the request effect below can tell the selection is stale.
   useEffect(() => {
     selectionSceneGeneration.current =
       kclManager.engineSceneGenerationSignal.value
