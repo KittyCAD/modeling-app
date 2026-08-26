@@ -27,6 +27,8 @@ import {
   KCL_DEFAULT_ROTATE_ANGLE,
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import {
   canSubmitSelectionArg,
@@ -75,6 +77,28 @@ function bodyTypeRequiredForCommand(
   return typeof bodyTypeArg.required === 'function'
     ? bodyTypeArg.required({ argumentsToSubmit })
     : bodyTypeArg.required
+}
+
+function bodyTypeOptionsForCommand(
+  commandName: 'Extrude' | 'Sweep' | 'Loft' | 'Revolve',
+  argumentsToSubmit: Record<string, unknown>
+) {
+  const commandConfig = modelingMachineCommandConfig[commandName]
+  if (!commandConfig || isArray(commandConfig)) {
+    throw new Error(`${commandName} should have a single command config`)
+  }
+
+  const bodyTypeArg = commandConfig.args?.bodyType
+  if (!bodyTypeArg || bodyTypeArg.inputType !== 'options') {
+    throw new Error(`${commandName} should expose bodyType options`)
+  }
+
+  const options =
+    typeof bodyTypeArg.options === 'function'
+      ? bodyTypeArg.options({ argumentsToSubmit })
+      : bodyTypeArg.options
+
+  return options.map(({ value }) => value)
 }
 
 describe('GDT Datum Default Name', () => {
@@ -215,6 +239,23 @@ describe('Extrude surface arguments', () => {
         length: parsedLength(),
       })
     ).toBe(true)
+  })
+
+  it('does not offer solid output for edge extrudes', () => {
+    const argumentsToSubmit = {
+      sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+      length: parsedLength(),
+    }
+
+    expect(bodyTypeOptionsForCommand('Extrude', argumentsToSubmit)).toEqual([
+      KCL_PRELUDE_BODY_TYPE_SURFACE,
+    ])
+    expect(
+      bodyTypeOptionsForCommand('Extrude', {
+        ...argumentsToSubmit,
+        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+      })
+    ).toEqual([KCL_PRELUDE_BODY_TYPE_SURFACE, KCL_PRELUDE_BODY_TYPE_SOLID])
   })
 
   it('requires method when extruding body edges after length is confirmed', () => {
