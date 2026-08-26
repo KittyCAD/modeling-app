@@ -1,4 +1,8 @@
-import type { RenderTarget, Scene } from 'three'
+import {
+  EquirectangularReflectionMapping,
+  type RenderTarget,
+  type Scene,
+} from 'three'
 import type Renderer from 'three/src/renderers/common/Renderer.js'
 
 const DEFAULT_ENVIRONMENT_INTENSITY = 0.85
@@ -24,28 +28,51 @@ export class EnvMapLoader {
     const roomEnvironment = new RoomEnvironment()
     const pmremGenerator = new PMREMGenerator(this.renderer)
 
+    let environmentRenderTarget: RenderTarget | null = null
     try {
-      const environmentRenderTarget = pmremGenerator.fromScene(
+      environmentRenderTarget = pmremGenerator.fromScene(
         roomEnvironment,
         0.04,
         0.1,
         100,
         { size: DEFAULT_PMREM_SIZE }
       )
-      this.environmentRenderTarget = environmentRenderTarget
       await this.device.queue.onSubmittedWorkDone()
     } catch (error) {
-      this.environmentRenderTarget?.dispose()
-      this.environmentRenderTarget = null
+      environmentRenderTarget?.dispose()
       throw error
     } finally {
       roomEnvironment.dispose()
       pmremGenerator.dispose()
     }
 
-    this.scene = scene
-    scene.environment = this.environmentRenderTarget.texture
-    scene.environmentIntensity = DEFAULT_ENVIRONMENT_INTENSITY
+    this.applyEnvironment(scene, environmentRenderTarget)
+  }
+
+  async loadHdr(scene: Scene, url: string) {
+    this.dispose()
+
+    const [{ HDRLoader }, { default: PMREMGenerator }] = await Promise.all([
+      import('three/examples/jsm/loaders/HDRLoader.js'),
+      import('three/src/renderers/common/extras/PMREMGenerator.js'),
+    ])
+    const hdrTexture = await new HDRLoader().loadAsync(url)
+    hdrTexture.mapping = EquirectangularReflectionMapping
+    const pmremGenerator = new PMREMGenerator(this.renderer)
+    let environmentRenderTarget: RenderTarget | null = null
+
+    try {
+      environmentRenderTarget = pmremGenerator.fromEquirectangular(hdrTexture)
+      await this.device.queue.onSubmittedWorkDone()
+    } catch (error) {
+      environmentRenderTarget?.dispose()
+      throw error
+    } finally {
+      hdrTexture.dispose()
+      pmremGenerator.dispose()
+    }
+
+    this.applyEnvironment(scene, environmentRenderTarget)
   }
 
   dispose() {
@@ -58,5 +85,15 @@ export class EnvMapLoader {
     this.environmentRenderTarget?.dispose()
     this.environmentRenderTarget = null
     this.scene = null
+  }
+
+  private applyEnvironment(
+    scene: Scene,
+    environmentRenderTarget: RenderTarget
+  ) {
+    this.environmentRenderTarget = environmentRenderTarget
+    this.scene = scene
+    scene.environment = environmentRenderTarget.texture
+    scene.environmentIntensity = DEFAULT_ENVIRONMENT_INTENSITY
   }
 }

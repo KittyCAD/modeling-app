@@ -1,5 +1,6 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
+import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type {
   WebGpuTrimPrimitiveState,
@@ -1729,7 +1730,23 @@ export const LocalWebGPUScene = ({
       const scene = new Scene()
       scene.background = new Color(backgroundColor)
       const envMapLoader = new EnvMapLoader(renderer, device)
-      await envMapLoader.loadDefault(scene)
+      const hdrEnvMapUrl = HDR_ENV_MAP_URL?.trim()
+      if (hdrEnvMapUrl) {
+        try {
+          await envMapLoader.loadHdr(scene, hdrEnvMapUrl)
+          logLocalWebGpuPreview('HDR environment loaded', {
+            url: hdrEnvMapUrl,
+          })
+        } catch (error) {
+          logLocalWebGpuPreview(
+            'HDR environment unavailable; using procedural fallback',
+            { url: hdrEnvMapUrl, error }
+          )
+          await envMapLoader.loadDefault(scene)
+        }
+      } else {
+        await envMapLoader.loadDefault(scene)
+      }
       if (disposed) {
         envMapLoader.dispose()
         renderer.dispose()
