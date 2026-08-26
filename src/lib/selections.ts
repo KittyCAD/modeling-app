@@ -2614,6 +2614,10 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
+    if (artifact.type === 'importedGeometry') {
+      incrementOrInitializeSelectionType('importedGeometry')
+      return true
+    }
     if (artifact.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
       return true
@@ -2688,6 +2692,8 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
+    } else if (inlineArtifact?.type === 'importedGeometry') {
+      incrementOrInitializeSelectionType('importedGeometry')
     } else if (inlineArtifact?.type === 'helix') {
       incrementOrInitializeSelectionType('helix')
     } else if (
@@ -2899,7 +2905,9 @@ function getBestCandidates(
 
     // Other valid artifact types
     if (
-      ['plane', 'cap', 'wall', 'sweep', 'pattern'].includes(entry.artifact.type)
+      ['plane', 'cap', 'wall', 'sweep', 'pattern', 'importedGeometry'].includes(
+        entry.artifact.type
+      )
     ) {
       return [entry]
     }

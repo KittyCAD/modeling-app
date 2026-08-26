@@ -178,7 +178,8 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
 
     const execRes = await mockExecAstAndReportErrors(
       codemodResult.modifiedAst,
-      rustContext
+      rustContext,
+      kclManager.path
     )
     if (isErr(execRes)) {
       const proposedCode = recast(codemodResult.modifiedAst, wasmInstance)

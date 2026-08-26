@@ -2753,7 +2753,10 @@ export class KclManager extends File {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program): Promise<null | Error> {
+  async executeAstMock(
+    ast: Program,
+    options?: { usePrevMemory?: boolean }
+  ): Promise<null | Error> {
     const newCode = recast(ast, await this.wasmInstancePromise)
     if (err(newCode)) {
       console.error(newCode)
@@ -2773,6 +2776,8 @@ export class KclManager extends File {
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
       rustContext: this.rustContext,
+      path: this.path,
+      usePrevMemory: options?.usePrevMemory,
     })
 
     this.logs = logs
@@ -2853,6 +2858,7 @@ export class KclManager extends File {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
+      usePrevMemory?: boolean
     }
   ): Promise<{
     newAst: Node<Program>
@@ -2908,7 +2914,9 @@ export class KclManager extends File {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      const didReParse = await this.executeAstMock(astWithUpdatedSource)
+      const didReParse = await this.executeAstMock(astWithUpdatedSource, {
+        usePrevMemory: optionalParams?.usePrevMemory,
+      })
       if (err(didReParse)) return Promise.reject(didReParse)
     }
 

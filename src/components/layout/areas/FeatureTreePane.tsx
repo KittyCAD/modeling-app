@@ -33,6 +33,10 @@ import {
   type OperationTreeNode,
 } from '@src/lib/featureTreeOperationTree'
 import {
+  type FeatureTreeActionAvailability,
+  getFeatureTreeCapabilities,
+} from '@src/lib/featureTreeTargets'
+import {
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
@@ -40,7 +44,6 @@ import {
   getOpTypeLabel,
   onHide,
   onUnhide,
-  stdLibMap,
 } from '@src/lib/operations'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
 import { err, isErr, reportRejection } from '@src/lib/trap'
@@ -426,11 +429,9 @@ function OperationItemGroup({
   engineCommandManager,
   onSelect,
   visibilityOperations,
-  isModuleOwned = false,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   items: Operation[]
-  isModuleOwned?: boolean
 }) {
   const contentItems = items.filter((item) => item.type !== 'GroupEnd')
   if (contentItems.length === 0) {
@@ -459,7 +460,6 @@ function OperationItemGroup({
           engineCommandManager={engineCommandManager}
           onSelect={onSelect}
           visibilityOperations={visibilityOperations}
-          isModuleOwned={isModuleOwned}
           liveLatestOperationKey={liveLatestOperationKey}
         />
       )
@@ -489,7 +489,6 @@ function OperationItemGroup({
               engineCommandManager={engineCommandManager}
               onSelect={onSelect}
               visibilityOperations={visibilityOperations}
-              isModuleOwned={isModuleOwned}
               liveLatestOperationKey={liveLatestOperationKey}
             />
           </div>
@@ -510,7 +509,6 @@ function OperationItemGroup({
                   onSelect={onSelect}
                   visibilityOperations={visibilityOperations}
                   size="sm"
-                  isModuleOwned={isModuleOwned}
                   liveLatestOperationKey={liveLatestOperationKey}
                 />
               )
@@ -549,7 +547,6 @@ function OperationItemGroup({
                 onSelect={onSelect}
                 visibilityOperations={visibilityOperations}
                 size="sm"
-                isModuleOwned={isModuleOwned}
                 liveLatestOperationKey={liveLatestOperationKey}
               />
             )
@@ -571,13 +568,11 @@ function OperationBranchGroup({
   engineCommandManager,
   onSelect,
   visibilityOperations,
-  isModuleOwned = false,
   liveActiveModuleId,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
   childItems: OperationTreeNode[]
-  isModuleOwned?: boolean
 }) {
   if (childItems.length === 0) {
     return (
@@ -591,7 +586,6 @@ function OperationBranchGroup({
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
         visibilityOperations={visibilityOperations}
-        isModuleOwned={true}
         liveLatestOperationKey={liveLatestOperationKey}
       />
     )
@@ -634,7 +628,6 @@ function OperationBranchGroup({
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
             visibilityOperations={visibilityOperations}
-            isModuleOwned={true}
             liveLatestOperationKey={liveLatestOperationKey}
           />
         </div>
@@ -654,7 +647,6 @@ function OperationBranchGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 visibilityOperations={visibilityOperations}
-                isModuleOwned={true}
                 liveLatestOperationKey={liveLatestOperationKey}
               />
             )
@@ -670,7 +662,6 @@ function OperationTreeNodeItem({
   ...props
 }: Omit<OperationProps, 'item'> & {
   node: OperationTreeNode
-  isModuleOwned?: boolean
 }) {
   if (isArray(node)) {
     return <OperationItemGroup items={node} {...props} />
@@ -838,7 +829,6 @@ interface OperationProps {
   onSelect: (sourceRange: SourceRange) => void
   visibilityOperations: Operation[]
   size?: 'default' | 'sm'
-  isModuleOwned?: boolean
   /** During live execution, the module that received the latest operation. */
   liveActiveModuleId?: number | null
   /** During live execution, the operation that was most recently added. */
@@ -972,7 +962,6 @@ const OperationItem = ({
   modelingActor,
   engineCommandManager,
   size,
-  isModuleOwned = false,
   referenceModuleId,
   visibilityOperations,
   liveLatestOperationKey,
@@ -989,19 +978,23 @@ const OperationItem = ({
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
+  const capabilities = useMemo(
+    () => getFeatureTreeCapabilities(item, ROOT_MODULE_ID),
+    [item]
+  )
   const sourceRange =
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isLiveLatest = liveLatestOperationKey === getOperationKey(item)
   const isEditorSelected = useMemo(() => {
-    if (!sourceRange) {
+    if (!capabilities.canSelect || !sourceRange) {
       return false
     }
 
     return kclManager.editorState.selection.ranges.some(({ from, to }) => {
       return isOverlap(sourceRange, topLevelRange(from, to))
     })
-  }, [kclManager.editorState.selection, sourceRange])
+  }, [capabilities.canSelect, kclManager.editorState.selection, sourceRange])
   const isSelected = isLiveLatest || isEditorSelected
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
@@ -1010,17 +1003,20 @@ const OperationItem = ({
   const isNamedView = item.type === 'StdLibCall' && item.name === 'view::named'
 
   const variableName = useMemo(() => {
-    // Module-owned ModuleInstance operations have a nodePath relative to their
-    // own module's AST, not the currently open file.  Looking up the import
-    // alias in the wrong AST would return a bogus result (e.g. the parent
-    // module's alias).  Other operation types (VariableDeclaration, etc.)
-    // derive their name from the operation data directly, so they're safe.
-    if (isModuleOwned && item.type === 'ModuleInstance') return undefined
+    // Imports owned by another module have a nodePath relative to that
+    // module's AST. Looking their alias up in the editable AST would return a
+    // bogus result (for example, the parent module's alias).
+    if (
+      !capabilities.canSelect &&
+      (item.type === 'ModuleInstance' || item.type === 'ImportedGeometry')
+    ) {
+      return undefined
+    }
     return getOperationVariableName(item, ast, wasmInstance)
-  }, [item, ast, wasmInstance, isModuleOwned])
+  }, [ast, capabilities.canSelect, item, wasmInstance])
 
   const errors = useMemo(() => {
-    if (isStaleReference || isModuleOwned) {
+    if (isStaleReference || !capabilities.canSelect) {
       return []
     }
     return diagnostics.filter(
@@ -1031,11 +1027,11 @@ const OperationItem = ({
         diag.to <= toUtf16(item.sourceRange[1], code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [diagnostics.length, isModuleOwned, isStaleReference])
+  }, [capabilities.canSelect, diagnostics.length, isStaleReference])
 
   const selectOperation = useCallback(
     async (providedSourceRange?: SourceRange) => {
-      if (isModuleOwned) {
+      if (!capabilities.canSelect) {
         return
       }
       const sketchSelectionContext = getFeatureTreeSketchSelectionContext({
@@ -1065,19 +1061,24 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [isModuleOwned, modelingActor, onSelect, item, kclManager]
+    [capabilities.canSelect, modelingActor, onSelect, item, kclManager]
   )
 
   const viewOperationSource = useCallback(
     async (providedSourceRange?: SourceRange) => {
-      if (item.type === 'GroupEnd') {
+      const sourceNavigation = providedSourceRange
+        ? { kind: 'source' as const, moduleId: providedSourceRange[2] }
+        : capabilities.sourceNavigation
+      if (!sourceNavigation || item.type === 'GroupEnd') {
         return
       }
 
-      const targetModuleId =
-        item.type === 'ModuleInstance'
-          ? item.moduleId
-          : (providedSourceRange?.[2] ?? item.sourceRange[2])
+      const targetModuleId = sourceNavigation.moduleId
+      const targetRange: SourceRange =
+        providedSourceRange ??
+        (sourceNavigation.kind === 'module'
+          ? [0, 0, targetModuleId]
+          : item.sourceRange)
       const targetModulePath = kclManager.execState.filenames[targetModuleId]
 
       const l = layout.signal.value
@@ -1090,25 +1091,28 @@ const OperationItem = ({
         if (app.project.executingPath !== targetPath) {
           kclManager.pendingFeatureTreeSourceSelection = {
             path: targetPath,
-            range: providedSourceRange ?? item.sourceRange,
+            range: targetRange,
           }
           await navigate(`${PATHS.FILE}/${encodeURIComponent(targetPath)}`)
           return
         }
       }
 
-      const moduleStartRange: SourceRange = [0, 0, targetModuleId]
-      const targetRange =
-        providedSourceRange ??
-        (item.type === 'ModuleInstance' ? moduleStartRange : item.sourceRange)
-
       onSelect(targetRange)
     },
-    [app, item, kclManager, layout, navigate, onSelect]
+    [
+      app,
+      capabilities.sourceNavigation,
+      item,
+      kclManager,
+      layout,
+      navigate,
+      onSelect,
+    ]
   )
 
   const enterEditFlow = useCallback(() => {
-    if (isModuleOwned) {
+    if (capabilities.edit !== 'enabled') {
       return
     }
     if (
@@ -1151,7 +1155,7 @@ const OperationItem = ({
       })
     }
   }, [
-    isModuleOwned,
+    capabilities.edit,
     item,
     modelingActor,
     commandBarActor,
@@ -1159,103 +1163,59 @@ const OperationItem = ({
     systemDeps,
   ])
 
-  function enterAppearanceFlow() {
-    if (isModuleOwned) return
+  function enterModelingCommandFlow(
+    availability: FeatureTreeActionAvailability,
+    name: 'Appearance' | 'Translate' | 'Rotate' | 'Scale' | 'Clone'
+  ) {
+    if (availability !== 'enabled') return
     selectOperation()
       .then(() => {
-        if (
-          item.type === 'StdLibCall' ||
-          (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
-        ) {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Appearance', groupId: 'modeling' },
-          })
-        }
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name, groupId: 'modeling' },
+        })
       })
       .catch((e) => toast.error(e))
+  }
+
+  function enterAppearanceFlow() {
+    enterModelingCommandFlow(capabilities.appearance, 'Appearance')
   }
 
   function enterTranslateFlow() {
-    if (isModuleOwned) return
-    selectOperation()
-      .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Translate', groupId: 'modeling' },
-          })
-        }
-      })
-      .catch((e) => toast.error(e))
+    enterModelingCommandFlow(capabilities.translate, 'Translate')
   }
 
   function enterRotateFlow() {
-    if (isModuleOwned) return
-    selectOperation()
-      .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Rotate', groupId: 'modeling' },
-          })
-        }
-      })
-      .catch((e) => toast.error(e))
+    enterModelingCommandFlow(capabilities.rotate, 'Rotate')
   }
 
   function enterScaleFlow() {
-    if (isModuleOwned) return
-    selectOperation()
-      .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Scale', groupId: 'modeling' },
-          })
-        }
-      })
-      .catch((e) => toast.error(e))
+    enterModelingCommandFlow(capabilities.scale, 'Scale')
   }
 
   function enterCloneFlow() {
-    if (isModuleOwned) return
-    selectOperation()
-      .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
-          commandBarActor.send({
-            type: 'Find and select command',
-            data: { name: 'Clone', groupId: 'modeling' },
-          })
-        }
-      })
-      .catch((e) => toast.error(e))
+    enterModelingCommandFlow(capabilities.clone, 'Clone')
   }
 
   function deleteOperation() {
-    if (isModuleOwned) {
+    if (capabilities.remove !== 'enabled' || item.type === 'GroupEnd') {
       return
     }
-    if (
-      item.type === 'StdLibCall' ||
-      item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration'
-    ) {
-      const maybeArtifact =
-        getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
-        undefined
-      sendDeleteCommand({
-        artifact: maybeArtifact,
-        targetSourceRange: item.sourceRange,
-        systemDeps,
-      }).catch((e) => {
-        toast.error(isErr(e) ? e.message : JSON.stringify(e))
-      })
-    }
+    const artifact =
+      getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
+      undefined
+    sendDeleteCommand({
+      artifact,
+      targetSourceRange: item.sourceRange,
+      systemDeps,
+    }).catch((e) => {
+      toast.error(isErr(e) ? e.message : JSON.stringify(e))
+    })
   }
 
   function startSketchOnOffsetPlane() {
-    if (isModuleOwned) {
+    if (!capabilities.canSelect) {
       return
     }
     if (isOffsetPlane(item)) {
@@ -1301,29 +1261,74 @@ const OperationItem = ({
 
   const menuItems = useMemo(
     () => {
-      const viewSourceMenuItem = (
-        <ContextMenuItem
-          onClick={() => {
-            if (item.type === 'GroupEnd') {
-              return
-            }
-            void viewOperationSource().catch(reportRejection)
-          }}
-        >
-          View KCL source code
-        </ContextMenuItem>
-      )
+      const viewSourceMenuItems = capabilities.sourceNavigation
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                void viewOperationSource().catch(reportRejection)
+              }}
+            >
+              View KCL source code
+            </ContextMenuItem>,
+          ]
+        : []
 
       if (isStaleReference) {
         return []
       }
 
-      if (isModuleOwned) {
-        return [viewSourceMenuItem]
+      if (!capabilities.canSelect) {
+        return viewSourceMenuItems
       }
 
+      const modelingActionMenuItems = [
+        {
+          availability: capabilities.appearance,
+          label: 'Set appearance',
+          onClick: enterAppearanceFlow,
+          testId: 'context-menu-set-appearance',
+        },
+        {
+          availability: capabilities.translate,
+          label: 'Translate',
+          onClick: enterTranslateFlow,
+          testId: 'context-menu-set-translate',
+        },
+        {
+          availability: capabilities.rotate,
+          label: 'Rotate',
+          onClick: enterRotateFlow,
+          testId: 'context-menu-set-rotate',
+        },
+        {
+          availability: capabilities.scale,
+          label: 'Scale',
+          onClick: enterScaleFlow,
+          testId: 'context-menu-set-scale',
+        },
+        {
+          availability: capabilities.clone,
+          label: 'Clone',
+          onClick: enterCloneFlow,
+          testId: 'context-menu-clone',
+        },
+      ].flatMap(({ availability, label, onClick, testId }) =>
+        availability === 'hidden'
+          ? []
+          : [
+              <ContextMenuItem
+                key={testId}
+                disabled={availability === 'disabled'}
+                onClick={onClick}
+                data-testid={testId}
+              >
+                {label}
+              </ContextMenuItem>,
+            ]
+      )
+
       return [
-        viewSourceMenuItem,
+        ...viewSourceMenuItems,
         ...(item.type === 'GroupBegin' && item.group.type === 'FunctionCall'
           ? [
               <ContextMenuItem
@@ -1363,16 +1368,10 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' ||
-        item.type === 'VariableDeclaration' ||
-        (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+        ...(capabilities.edit !== 'hidden'
           ? [
               <ContextMenuItem
-                disabled={
-                  item.type !== 'VariableDeclaration' &&
-                  item.type === 'StdLibCall' &&
-                  stdLibMap[item.name]?.prepareToEdit === undefined
-                }
+                disabled={capabilities.edit === 'disabled'}
                 onClick={enterEditFlow}
                 hotkey="Double click"
               >
@@ -1380,78 +1379,12 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' ||
-        (item.type === 'GroupBegin' && item.group.type === 'FunctionCall')
-          ? [
-              <ContextMenuItem
-                disabled={
-                  !(
-                    (item.type === 'GroupBegin' &&
-                      item.group.type === 'FunctionCall') ||
-                    (item.type === 'StdLibCall' &&
-                      stdLibMap[item.name]?.supportsAppearance)
-                  )
-                }
-                onClick={enterAppearanceFlow}
-                data-testid="context-menu-set-appearance"
-              >
-                Set appearance
-              </ContextMenuItem>,
-            ]
-          : []),
-        ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
-          ? [
-              <ContextMenuItem
-                onClick={enterTranslateFlow}
-                data-testid="context-menu-set-translate"
-                disabled={
-                  item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform &&
-                  !stdLibMap[item.name]?.supportsTranslate
-                }
-              >
-                Translate
-              </ContextMenuItem>,
-              <ContextMenuItem
-                onClick={enterRotateFlow}
-                data-testid="context-menu-set-rotate"
-                disabled={
-                  item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform &&
-                  !stdLibMap[item.name]?.supportsRotate
-                }
-              >
-                Rotate
-              </ContextMenuItem>,
-              <ContextMenuItem
-                onClick={enterScaleFlow}
-                data-testid="context-menu-set-scale"
-                disabled={
-                  item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform &&
-                  !stdLibMap[item.name]?.supportsScale
-                }
-              >
-                Scale
-              </ContextMenuItem>,
-              <ContextMenuItem
-                onClick={enterCloneFlow}
-                data-testid="context-menu-clone"
-                disabled={
-                  item.type !== 'GroupBegin' &&
-                  !stdLibMap[item.name]?.supportsTransform
-                }
-              >
-                Clone
-              </ContextMenuItem>,
-            ]
-          : []),
-        ...(item.type === 'StdLibCall' ||
-        item.type === 'GroupBegin' ||
-        item.type === 'VariableDeclaration'
+        ...modelingActionMenuItems,
+        ...(capabilities.remove !== 'hidden'
           ? [
               <ContextMenuItem
                 onClick={deleteOperation}
+                disabled={capabilities.remove === 'disabled'}
                 hotkey="Delete"
                 data-testid="context-menu-delete"
               >
@@ -1463,8 +1396,8 @@ const OperationItem = ({
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
+      capabilities,
       item,
-      isModuleOwned,
       isStaleReference,
       layout.signal.value,
       viewOperationSource,
@@ -1495,7 +1428,7 @@ const OperationItem = ({
         ) : undefined
       }
       Tooltip={
-        isModuleOwned ? undefined : (
+        !capabilities.canSelect ? undefined : (
           <Tooltip
             delay={500}
             position="bottom-left"
@@ -1536,21 +1469,21 @@ const OperationItem = ({
                 }
               }
             }
-          : isStaleReference || isModuleOwned
+          : isStaleReference || !capabilities.canSelect
             ? undefined
             : () => {
                 void selectOperation()
               }
       }
       onContextMenu={
-        isStaleReference || isModuleOwned
+        isStaleReference || !capabilities.canSelect
           ? undefined
           : () => {
               void selectOperation()
             }
       }
       onDoubleClick={
-        sketchNoFace || isStaleReference || isModuleOwned
+        sketchNoFace || isStaleReference || capabilities.edit !== 'enabled'
           ? undefined
           : enterEditFlow
       } // no double click in "Sketch no face" mode
@@ -1560,7 +1493,7 @@ const OperationItem = ({
       size={size}
       visibilityToggle={
         !isStaleReference &&
-        !isModuleOwned &&
+        capabilities.canSelect &&
         visibilityState.canToggleVisibility
           ? {
               visible: visibilityState.hideOperation === undefined,

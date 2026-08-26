@@ -3473,6 +3473,45 @@ describe('mixed entity-reference selection highlighting', () => {
   })
 })
 
+describe('imported geometry code selection', () => {
+  const codeRef = {
+    range: [10, 20, 0] as SourceRange,
+    pathToNode: [],
+    nodePath: { steps: [] },
+  }
+  const importedGeometry: Artifact = {
+    type: 'importedGeometry',
+    id: 'imported-geometry-id',
+    codeRef,
+    consumed: false,
+  }
+  const artifactGraph: ArtifactGraph = new Map([
+    [importedGeometry.id, importedGeometry],
+  ])
+
+  test('preserves the artifact when the editor mirrors a feature-tree cursor', () => {
+    const result = codeToIdSelections(
+      [
+        {
+          codeRef: {
+            range: [codeRef.range[1], codeRef.range[1], 0],
+            pathToNode: [],
+          },
+        },
+      ],
+      artifactGraph,
+      buildArtifactIndex(artifactGraph)
+    )
+
+    expect(result).toEqual([
+      {
+        id: importedGeometry.id,
+        range: [codeRef.range[1], codeRef.range[1], 0],
+      },
+    ])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
   test('preserves the clicked pattern copy identity in viewport selections', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
