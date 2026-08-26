@@ -5,7 +5,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
 {
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "cube",
       "moduleId": 0,
       "nodePath": {
@@ -45,7 +45,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/input.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "cube",
       "moduleId": 0,
       "nodePath": {
@@ -287,7 +287,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
   ],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/othercube.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "cube",
       "moduleId": 0,
       "nodePath": {

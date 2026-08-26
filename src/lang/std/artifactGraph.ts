@@ -869,7 +869,9 @@ export function getArtifactFromRange(
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
-        codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
+        codeRef.range[0] === range[0] &&
+        codeRef.range[1] === range[1] &&
+        codeRef.range[2] === range[2]
       if (match) {
         // Favor the first sketch block artifact since multiple artifacts may be
         // created here.

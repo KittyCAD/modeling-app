@@ -75,6 +75,7 @@ pub(crate) use state::TangencyMode;
 use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
+#[cfg(test)]
 use crate::NodePathExt;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
@@ -1725,9 +1726,10 @@ impl ExecutorContext {
             self.get_universe(program, exec_state).await?
         };
 
-        // Push ModuleInstance ops for the root module's direct imports before
-        // child modules execute. This lets the live feature tree show module
-        // names immediately rather than waiting for the root module body to run.
+        // Push module/imported-geometry operations for the root module's direct
+        // imports before child modules execute. This lets the live feature tree
+        // show import names immediately rather than waiting for the root module
+        // body to run.
         // Sort by source position so they appear in source-code order (the
         // universe_map is a HashMap with non-deterministic iteration order).
         let mut sorted_imports: Vec<_> = universe_map.iter().collect();
@@ -1748,16 +1750,18 @@ impl ExecutorContext {
                     .module_name()
                     .unwrap_or_else(|| value.file_name().unwrap_or_default());
                 let source_range = SourceRange::from(import_stmt);
-                exec_state.push_op(crate::execution::cad_op::Operation::ModuleInstance {
+                if let Some(operation) = crate::execution::cad_op::operation_from_import(
                     name,
-                    module_id: *module_id,
-                    glob: matches!(
+                    *module_id,
+                    &import_stmt.path,
+                    matches!(
                         import_stmt.selector,
                         crate::parsing::ast::types::ImportSelector::Glob(_)
                     ),
-                    node_path: crate::NodePath::placeholder(),
                     source_range,
-                });
+                ) {
+                    exec_state.push_op(operation);
+                }
             }
         }
 
@@ -1922,8 +1926,8 @@ impl ExecutorContext {
             }
         }
 
-        // The early-pushed ModuleInstance operations have already served their
-        // purpose (firing onOperation callbacks for the live feature tree).
+        // The early-pushed import operations have already served their purpose
+        // (firing onOperation callbacks for the live feature tree).
         // Clear them so they don't duplicate the operations the root module
         // body will produce when it actually executes its import statements.
         exec_state.mod_local.artifacts.operations.clear();

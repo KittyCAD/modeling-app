@@ -1287,13 +1287,15 @@ impl ExecutorContext {
             let name = import_stmt
                 .module_name()
                 .unwrap_or_else(|| value.file_name().unwrap_or_default());
-            exec_state.push_op(Operation::ModuleInstance {
+            if let Some(operation) = crate::execution::cad_op::operation_from_import(
                 name,
                 module_id,
-                glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
-                node_path: NodePath::placeholder(),
+                &import_stmt.path,
+                matches!(import_stmt.selector, ImportSelector::Glob(_)),
                 source_range,
-            });
+            ) {
+                exec_state.push_op(operation);
+            }
         }
 
         match &import_stmt.selector {

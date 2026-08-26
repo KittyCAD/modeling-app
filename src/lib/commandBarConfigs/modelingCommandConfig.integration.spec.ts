@@ -459,6 +459,58 @@ describe('Transform arguments', () => {
       }
     }
   })
+
+  it('accepts imported geometry only for operations supported by KCL', () => {
+    for (const [commandName, argName] of [
+      ['Appearance', 'objects'],
+      ['Delete', 'objects'],
+      ['Translate', 'objects'],
+      ['Rotate', 'objects'],
+      ['Scale', 'objects'],
+      ['Clone', 'objects'],
+      ['Pattern Circular 3D', 'solids'],
+      ['Pattern Linear 3D', 'solids'],
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const selectionTypes = (
+        commandConfig.args as unknown as Record<
+          string,
+          { selectionTypes?: string[] } | undefined
+        >
+      )?.[argName]?.selectionTypes
+      if (!selectionTypes) {
+        throw new Error(`${commandName}.${argName} should select geometry`)
+      }
+      expect(selectionTypes).toContain('importedGeometry')
+    }
+
+    for (const [commandName, argName] of [
+      ['Boolean Subtract', 'solids'],
+      ['Boolean Union', 'solids'],
+      ['Boolean Intersect', 'solids'],
+      ['Boolean Split', 'targets'],
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const selectionTypes = (
+        commandConfig.args as unknown as Record<
+          string,
+          { selectionTypes?: string[] } | undefined
+        >
+      )?.[argName]?.selectionTypes
+      if (!selectionTypes) {
+        throw new Error(`${commandName}.${argName} should select solids`)
+      }
+      expect(selectionTypes).not.toContain('importedGeometry')
+    }
+  })
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()

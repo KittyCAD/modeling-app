@@ -106,6 +106,26 @@ describe('FeatureTreePane', () => {
       })
     })
 
+    it('keeps imported geometry as a leaf instead of expanding its backing file', () => {
+      const importedGeometry: Operation = {
+        type: 'ImportedGeometry',
+        name: 'mesh',
+        moduleId: 1,
+        nodePath: defaultNodePath(),
+        sourceRange: [0, 10, 0],
+      }
+      const operationsByModule: OperationsByModule = {
+        map: {
+          0: [importedGeometry],
+          1: [createVariableDeclarationOperation([0, 11, 1], 'ignored')],
+        },
+      }
+
+      expect(buildOperationTree(operationsByModule, 0)).toEqual([
+        importedGeometry,
+      ])
+    })
+
     it('car wheel assembly: modules first, children nested, parameters deduped', () => {
       // Models the car-wheel-assembly import graph:
       //   main.kcl (module 0)
