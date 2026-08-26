@@ -398,8 +398,9 @@ pub struct SketchConstraintStatus {
     /// - The same name for two sketches, when a function body declares the
     ///   sketch and is called more than once.
     ///
-    /// The report carries no other sketch identifier, so a caller cannot tell
-    /// apart two entries that share a name.
+    /// This name is accepted by [`ExecOutcome::render_sketch_png`]. Because
+    /// the report carries no other sketch identifier, rendering returns an
+    /// ambiguity error when multiple sketches share a name.
     pub name: String,
     /// Overall constraint status derived from per-segment freedom.
     pub status: ConstraintKind,
@@ -510,7 +511,6 @@ pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Objec
     let mut under_constrained = Vec::new();
     let mut over_constrained = Vec::new();
     let mut errors = Vec::new();
-
     for obj in scene_objects {
         let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
             continue;
@@ -555,6 +555,41 @@ impl ExecOutcome {
     /// Line/Arc/Circle) are skipped to avoid double-counting.
     pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
         sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
+    /// Render one sketch from this execution result as a PNG, colored by
+    /// solver freedom.
+    pub fn render_sketch_png(
+        &self,
+        sketch_name: &str,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        use crate::front::ObjectKind;
+        use crate::tooling::sketch_visualizer::SketchVisualizationError;
+
+        let sketches = self
+            .scene_objects
+            .iter()
+            .filter_map(|object| match &object.kind {
+                ObjectKind::Sketch(sketch) if object.label == sketch_name => Some(sketch),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        let sketch = match sketches.as_slice() {
+            [] => {
+                return Err(SketchVisualizationError::SketchNotFound {
+                    name: sketch_name.to_owned(),
+                });
+            }
+            [sketch] => *sketch,
+            _ => {
+                return Err(SketchVisualizationError::AmbiguousSketchName {
+                    name: sketch_name.to_owned(),
+                    count: sketches.len(),
+                });
+            }
+        };
+
+        crate::tooling::sketch_visualizer::render_sketch_png(&self.scene_objects, sketch)
     }
 }
 
