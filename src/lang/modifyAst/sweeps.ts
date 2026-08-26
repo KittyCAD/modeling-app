@@ -800,6 +800,7 @@ export function addRevolve({
   sketches: Selections
   angle: KclCommandValue
   wasmInstance: ModuleType
+  axisOrEdge?: 'Axis' | 'Edge'
   axis?: string
   edge?: Selections
   tolerance?: KclCommandValue
