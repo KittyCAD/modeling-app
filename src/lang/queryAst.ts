@@ -1793,9 +1793,9 @@ export function retrieveSelectionsFromOpArg(
     }
 
     if (artifact.type === 'segment') {
-      const correspondingWall = artifactGraph
-        .values()
-        .find((a) => a.type === 'wall' && a.segId === artifact?.id)
+      const correspondingWall = Array.from(artifactGraph.values()).find(
+        (a) => a.type === 'wall' && a.segId === artifact?.id
+      )
       if (correspondingWall) {
         artifact = correspondingWall
       }
@@ -1835,15 +1835,12 @@ export function findOperationArtifact(
   artifactGraph: ArtifactGraph
 ) {
   const nodePath = JSON.stringify(operation.nodePath)
-  const artifact = artifactGraph
-    .values()
-    .toArray()
-    .find(
-      (a) =>
-        'codeRef' in a &&
-        JSON.stringify(a.codeRef?.nodePath) === nodePath &&
-        a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
-    )
+  const artifact = Array.from(artifactGraph.values()).find(
+    (a) =>
+      'codeRef' in a &&
+      JSON.stringify(a.codeRef?.nodePath) === nodePath &&
+      a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
+  )
   return artifact
 }
 

@@ -1,0 +1,61 @@
+// Socket Head Cap Screw
+// Screw for mating the flanges together in the pipe flange assembly
+
+@settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
+
+import boltLength, boltHeadLength from "parameters.kcl"
+
+export fn bolt() {
+  headSketch = sketch(on = XZ) {
+    headCircle = circle(start = [var 0.469in, var 0in], center = [var 0in, var 0in])
+  }
+  headRegion = region(segments = [headSketch.headCircle])
+  boltHead = extrude(
+    headRegion,
+    length = -boltHeadLength,
+    tagStart = $headStart,
+    tagEnd = $headEnd,
+  )
+    |> fillet(
+         edges = [
+           {
+             sideFaces = [headRegion.tags.headCircle, headStart]
+           },
+           {
+             sideFaces = [headRegion.tags.headCircle, headEnd]
+           }
+         ],
+         radius = 0.020,
+       )
+
+  // Cut the drive with an independent sketch on the head's original plane.
+  // This avoids a face-derived cutter whose direction is ambiguous after the
+  // head fillets while preserving the legacy 75% recess depth.
+  hexSketch = sketch(on = offsetPlane(XZ, offset = -boltHeadLength)) {
+    hex1 = line(start = [var 0.25in, var 0.1443375673in], end = [var 0.25in, var -0.1443375673in])
+    hex2 = line(start = [var 0.25in, var -0.1443375673in], end = [var 0in, var -0.2886751346in])
+    coincident([hex1.end, hex2.start])
+    hex3 = line(start = [var 0in, var -0.2886751346in], end = [var -0.25in, var -0.1443375673in])
+    coincident([hex2.end, hex3.start])
+    hex4 = line(start = [var -0.25in, var -0.1443375673in], end = [var -0.25in, var 0.1443375673in])
+    coincident([hex3.end, hex4.start])
+    hex5 = line(start = [var -0.25in, var 0.1443375673in], end = [var 0in, var 0.2886751346in])
+    coincident([hex4.end, hex5.start])
+    hex6 = line(start = [var 0in, var 0.2886751346in], end = [var 0.25in, var 0.1443375673in])
+    coincident([hex5.end, hex6.start])
+    coincident([hex6.end, hex1.start])
+  }
+  hexRegion = region(segments = [hexSketch.hex1, hexSketch.hex2], direction = CW)
+  hexCut = extrude(hexRegion, length = boltHeadLength * 0.75)
+  recessedHead = subtract(boltHead, tools = [hexCut])
+
+  shaftSketch = sketch(on = XZ) {
+    shaftCircle = circle(start = [var 0.3125in, var 0in], center = [var 0in, var 0in])
+  }
+  shaft = extrude(region(segments = [shaftSketch.shaftCircle]), length = boltLength)
+
+  boltResult = union([recessedHead, shaft])
+    |> appearance(color = "#4dd043", metalness = 90, roughness = 90)
+
+  return boltResult
+}

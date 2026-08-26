@@ -1,0 +1,53 @@
+// Split Washer (Flat Version)
+// A flat split washer is a small metal ring with a gap that helps keep a fastener from loosening under vibration.
+// Categories: Fasteners
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+washerHoleDiameter = 4
+washerOuterDiameter = 8
+washerThickness = 1
+washerSplitWidth = 1
+
+washerSketch = sketch(on = XY) {
+  outerCircle = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
+  innerCircle = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([outerCircle.center, ORIGIN])
+  coincident([innerCircle.center, ORIGIN])
+  horizontal([outerCircle.center, outerCircle.start])
+  horizontal([innerCircle.center, innerCircle.start])
+  diameter(outerCircle) == washerOuterDiameter
+  diameter(innerCircle) == washerHoleDiameter
+}
+outerRegion = region(segments = [washerSketch.outerCircle])
+washerRing = extrude(outerRegion, length = washerThickness)
+
+clearance = washerThickness * 0.5
+wedgeLength = washerOuterDiameter / 2 + clearance
+wedgeHeight = washerThickness + clearance * 2
+wedgeSketch = sketch(on = offsetPlane(XY, offset = -clearance)) {
+  leftEdge = line(start = [var 0mm, var -0.5mm], end = [var 0mm, var 0.5mm])
+  topEdge = line(start = [var 0mm, var 0.5mm], end = [var 4.5mm, var 0.5mm])
+  rightEdge = line(start = [var 4.5mm, var 0.5mm], end = [var 4.5mm, var -0.5mm])
+  bottomEdge = line(start = [var 4.5mm, var -0.5mm], end = [var 0mm, var -0.5mm])
+  coincident([leftEdge.end, topEdge.start])
+  coincident([topEdge.end, rightEdge.start])
+  coincident([rightEdge.end, bottomEdge.start])
+  coincident([bottomEdge.end, leftEdge.start])
+  horizontalDistance([ORIGIN, leftEdge.start]) == 0
+  verticalDistance([ORIGIN, leftEdge.start]) == -washerSplitWidth / 2
+  verticalDistance([leftEdge.start, leftEdge.end]) == washerSplitWidth
+  horizontalDistance([topEdge.start, topEdge.end]) == wedgeLength
+  vertical(leftEdge)
+  horizontal(topEdge)
+  vertical(rightEdge)
+  horizontal(bottomEdge)
+}
+wedgeRegion = region(segments = [
+  wedgeSketch.leftEdge,
+  wedgeSketch.topEdge
+])
+wedgeBody = extrude(wedgeRegion, length = wedgeHeight)
+splitWasherBody = subtract(washerRing, tools = [wedgeBody])
+
+hide([washerSketch, wedgeSketch])

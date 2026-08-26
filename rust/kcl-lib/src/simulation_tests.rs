@@ -331,8 +331,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
-            if render_to_png {
-                twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
+            if render_to_png
+                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+            {
+                panic!(
+                    "Image assertion failed: {err}; input KCL file: {}",
+                    test.entry_point.display()
+                );
             }
 
             // Ensure the step has data.

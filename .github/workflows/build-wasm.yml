@@ -37,7 +37,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v23
         continue-on-error: true
         with:
           name: prepared-wasm
@@ -97,11 +97,14 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Use Rust cache
+      - name: Rust cache on the Namespace volume
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
+        uses: namespacelabs/nscloud-cache-action@v1
         with:
-          workspaces: "./rust"
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}

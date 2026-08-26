@@ -1922,6 +1922,31 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  // Balance scales, for physical/mass properties. Distinct from `scale`,
+  // which is the scale transform operation.
+  scales: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="scales"
+    >
+      <path
+        d="M10 4.5V16.5M6.5 16.5H13.5M3.5 6.5H16.5M10 4.5C10.5523 4.5 11 4.94772 11 5.5C11 6.05228 10.5523 6.5 10 6.5C9.44772 6.5 9 6.05228 9 5.5C9 4.94772 9.44772 4.5 10 4.5Z"
+        stroke="currentColor"
+      />
+      <path
+        d="M1.5 11.5C1.5 11.5 2.5 13 4 13C5.5 13 6.5 11.5 6.5 11.5L4 6.5L1.5 11.5Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.5 11.5C13.5 11.5 14.5 13 16 13C17.5 13 18.5 11.5 18.5 11.5L16 6.5L13.5 11.5Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
   scale: (
     <svg
       viewBox="0 0 20 20"
