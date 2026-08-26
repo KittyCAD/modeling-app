@@ -91,6 +91,7 @@ impl KclErrorDetails {
             .map(|s| BacktraceItem {
                 source_range: *s,
                 fn_name: None,
+                kind: BacktraceItemKind::Call,
             })
             .collect();
         KclErrorDetails {
@@ -142,6 +143,10 @@ impl KclError {
 
     pub fn new_invalid_expression(details: KclErrorDetails) -> KclError {
         KclError::InvalidExpression { details }
+    }
+
+    pub fn new_max_call_stack(details: KclErrorDetails) -> KclError {
+        KclError::MaxCallStack { details }
     }
 
     pub fn refactor(message: String) -> KclError {
@@ -219,54 +224,8 @@ impl KclError {
         }
     }
 
-    pub fn source_ranges(&self) -> Vec<SourceRange> {
-        match &self {
-            KclError::Lexical { details: e } => e.source_ranges.clone(),
-            KclError::Syntax { details: e } => e.source_ranges.clone(),
-            KclError::Semantic { details: e } => e.source_ranges.clone(),
-            KclError::ImportCycle { details: e } => e.source_ranges.clone(),
-            KclError::Argument { details: e } => e.source_ranges.clone(),
-            KclError::Type { details: e } => e.source_ranges.clone(),
-            KclError::UserDefined { details: e } => e.source_ranges.clone(),
-            KclError::Io { details: e } => e.source_ranges.clone(),
-            KclError::Unexpected { details: e } => e.source_ranges.clone(),
-            KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
-            KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
-            KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
-            KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
-            KclError::Refactor { details: e } => e.source_ranges.clone(),
-            KclError::Engine { details: e } => e.source_ranges.clone(),
-            KclError::EngineHangup { details: e, .. } => e.source_ranges.clone(),
-            KclError::EngineInternal { details: e } => e.source_ranges.clone(),
-            KclError::Internal { details: e } => e.source_ranges.clone(),
-        }
-    }
-
-    /// Get the inner error message.
-    pub fn message(&self) -> &str {
-        match &self {
-            KclError::Lexical { details: e } => &e.message,
-            KclError::Syntax { details: e } => &e.message,
-            KclError::Semantic { details: e } => &e.message,
-            KclError::ImportCycle { details: e } => &e.message,
-            KclError::Argument { details: e } => &e.message,
-            KclError::Type { details: e } => &e.message,
-            KclError::UserDefined { details: e } => &e.message,
-            KclError::Io { details: e } => &e.message,
-            KclError::Unexpected { details: e } => &e.message,
-            KclError::ValueAlreadyDefined { details: e } => &e.message,
-            KclError::UndefinedValue { details: e, .. } => &e.message,
-            KclError::InvalidExpression { details: e } => &e.message,
-            KclError::MaxCallStack { details: e } => &e.message,
-            KclError::Refactor { details: e } => &e.message,
-            KclError::Engine { details: e } => &e.message,
-            KclError::EngineHangup { details: e, .. } => &e.message,
-            KclError::EngineInternal { details: e } => &e.message,
-            KclError::Internal { details: e } => &e.message,
-        }
-    }
-
-    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+    /// The error details shared by every variant.
+    pub fn details(&self) -> &KclErrorDetails {
         match self {
             KclError::Lexical { details: e }
             | KclError::Syntax { details: e }
@@ -285,13 +244,13 @@ impl KclError {
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => e.backtrace.clone(),
+            | KclError::Internal { details: e } => e,
         }
     }
 
-    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
-        let mut new = self.clone();
-        match &mut new {
+    /// Mutable access to the error details shared by every variant.
+    pub fn details_mut(&mut self) -> &mut KclErrorDetails {
+        match self {
             KclError::Lexical { details: e }
             | KclError::Syntax { details: e }
             | KclError::Semantic { details: e }
@@ -309,52 +268,76 @@ impl KclError {
             | KclError::Engine { details: e }
             | KclError::EngineHangup { details: e, .. }
             | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => {
-                e.backtrace = source_ranges
-                    .iter()
-                    .map(|s| BacktraceItem {
-                        source_range: *s,
-                        fn_name: None,
-                    })
-                    .collect();
-                e.source_ranges = source_ranges;
-            }
+            | KclError::Internal { details: e } => e,
         }
+    }
+
+    pub fn source_ranges(&self) -> Vec<SourceRange> {
+        self.details().source_ranges.clone()
+    }
+
+    /// Get the inner error message.
+    pub fn message(&self) -> &str {
+        &self.details().message
+    }
+
+    pub fn backtrace(&self) -> Vec<BacktraceItem> {
+        self.details().backtrace.clone()
+    }
+
+    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+        let mut new = self.clone();
+        let e = new.details_mut();
+        e.backtrace = source_ranges
+            .iter()
+            .map(|s| BacktraceItem {
+                source_range: *s,
+                fn_name: None,
+                kind: BacktraceItemKind::Call,
+            })
+            .collect();
+        e.source_ranges = source_ranges;
 
         new
     }
 
     pub fn add_unwind_location(&self, last_fn_name: Option<String>, source_range: SourceRange) -> Self {
         let mut new = self.clone();
-        match &mut new {
-            KclError::Lexical { details: e }
-            | KclError::Syntax { details: e }
-            | KclError::Semantic { details: e }
-            | KclError::ImportCycle { details: e }
-            | KclError::Argument { details: e }
-            | KclError::Type { details: e }
-            | KclError::UserDefined { details: e }
-            | KclError::Io { details: e }
-            | KclError::Unexpected { details: e }
-            | KclError::ValueAlreadyDefined { details: e }
-            | KclError::UndefinedValue { details: e, .. }
-            | KclError::InvalidExpression { details: e }
-            | KclError::MaxCallStack { details: e }
-            | KclError::Refactor { details: e }
-            | KclError::Engine { details: e }
-            | KclError::EngineHangup { details: e, .. }
-            | KclError::EngineInternal { details: e }
-            | KclError::Internal { details: e } => {
-                if let Some(item) = e.backtrace.last_mut() {
-                    item.fn_name = last_fn_name;
-                }
-                e.backtrace.push(BacktraceItem {
-                    source_range,
-                    fn_name: None,
-                });
-                e.source_ranges.push(source_range);
-            }
+        let e = new.details_mut();
+        if let Some(item) = e.backtrace.last_mut() {
+            item.fn_name = last_fn_name;
         }
+        e.backtrace.push(BacktraceItem {
+            source_range,
+            fn_name: None,
+            kind: BacktraceItemKind::Call,
+        });
+        e.source_ranges.push(source_range);
+
+        new
+    }
+
+    /// Add the statement that imported the module containing this error.
+    ///
+    /// `import_path` is the path as written in the import statement.
+    ///
+    /// This mirrors how [`KclError::add_unwind_location`] records function
+    /// calls, keeping source ranges ordered innermost first: the current last
+    /// frame (the imported module's code) is labeled `import <path>`, and the
+    /// import statement's own location is appended as the new outermost frame.
+    pub fn add_import_location(&self, import_path: &str, source_range: SourceRange) -> Self {
+        let mut new = self.clone();
+        let e = new.details_mut();
+        if let Some(item) = e.backtrace.last_mut() {
+            item.fn_name = Some(format!("import {import_path}"));
+            item.kind = BacktraceItemKind::Import;
+        }
+        e.backtrace.push(BacktraceItem {
+            source_range,
+            fn_name: None,
+            kind: BacktraceItemKind::Call,
+        });
+        e.source_ranges.push(source_range);
 
         new
     }
@@ -368,6 +351,20 @@ impl KclError {
 pub struct BacktraceItem {
     pub source_range: SourceRange,
     pub fn_name: Option<String>,
+    #[serde(default)]
+    pub kind: BacktraceItemKind,
+}
+
+/// What kind of execution step a backtrace frame records.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum BacktraceItemKind {
+    /// A function call.
+    #[default]
+    Call,
+    /// An import of a module whose execution failed.
+    Import,
 }
 
 impl std::fmt::Display for BacktraceItem {
@@ -401,6 +398,7 @@ impl From<CompilationIssue> for KclErrorDetails {
         let backtrace = vec![BacktraceItem {
             source_range: err.source_range,
             fn_name: None,
+            kind: BacktraceItemKind::Call,
         }];
         KclErrorDetails {
             source_ranges: vec![err.source_range],
@@ -425,5 +423,49 @@ impl From<pyo3::PyErr> for KclError {
 impl From<KclError> for pyo3::PyErr {
     fn from(error: KclError) -> Self {
         pyo3::exceptions::PyException::new_err(error.to_string())
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ModuleId;
+
+    #[test]
+    fn add_import_location_marks_the_imported_frame() {
+        let inner = SourceRange::new(0, 1, ModuleId::from_usize(1));
+        let import_site = SourceRange::new(5, 9, ModuleId::default());
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![inner]))
+            .add_import_location("part.kcl", import_site);
+
+        let backtrace = error.backtrace();
+        assert_eq!(backtrace.len(), 2);
+        assert_eq!(backtrace[0].fn_name.as_deref(), Some("import part.kcl"));
+        assert_eq!(backtrace[0].kind, BacktraceItemKind::Import);
+        assert_eq!(backtrace[0].source_range, inner);
+        assert_eq!(backtrace[1].fn_name, None);
+        assert_eq!(backtrace[1].kind, BacktraceItemKind::Call);
+        assert_eq!(backtrace[1].source_range, import_site);
+        assert_eq!(error.source_ranges(), vec![inner, import_site]);
+    }
+
+    #[test]
+    fn add_unwind_location_keeps_call_kind() {
+        let inner = SourceRange::new(0, 1, ModuleId::default());
+        let call_site = SourceRange::new(5, 9, ModuleId::default());
+        let error = KclError::new_semantic(KclErrorDetails::new("boom".to_owned(), vec![inner]))
+            .add_unwind_location(Some("f".to_owned()), call_site);
+
+        let backtrace = error.backtrace();
+        assert_eq!(backtrace.len(), 2);
+        assert_eq!(backtrace[0].fn_name.as_deref(), Some("f"));
+        assert_eq!(backtrace[0].kind, BacktraceItemKind::Call);
+        assert_eq!(backtrace[1].kind, BacktraceItemKind::Call);
+    }
+
+    #[test]
+    fn backtrace_item_kind_defaults_to_call_in_serde() {
+        // Payloads serialized before the kind field existed must still parse.
+        let item: BacktraceItem = serde_json::from_str(r#"{"sourceRange":[0,1,0],"fnName":null}"#).unwrap();
+        assert_eq!(item.kind, BacktraceItemKind::Call);
     }
 }

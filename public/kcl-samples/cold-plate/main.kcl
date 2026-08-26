@@ -3,7 +3,7 @@
 // Categories: Automotive, Aerospace, Computer Hardware
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 tubeDiameter = 5 / 8
@@ -462,13 +462,7 @@ tubeSectionSketch = sketch(on = offsetPlane(YZ, offset = tubeInletX)) {
 ]) == tubeInnerRadius
 }
 
-tubeSectionProfile = region(
-  point = [
-    tubeLowerPassY + tubeInnerRadius + wallThickness / 2,
-    grooveFloorZ
-  ],
-  sketch = tubeSectionSketch,
-)
+tubeSectionProfile = region(segments = [tubeSectionSketch.outerCircle])
 tubeWallBody = sweep(tubeSectionProfile, path = copperTubeSweepPath)
 tubeWall = appearance(tubeWallBody, color = "#b81b0a")
 hide(tubeSectionSketch)

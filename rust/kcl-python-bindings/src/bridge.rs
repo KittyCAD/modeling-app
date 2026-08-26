@@ -6,6 +6,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 pub mod bounding_box;
+pub mod compilation_issue;
 pub mod physical_properties;
 pub mod sketch_constraints;
 

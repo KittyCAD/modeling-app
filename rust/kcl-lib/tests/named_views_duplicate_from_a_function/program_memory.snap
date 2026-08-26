@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing named_views_duplicate_from_a_function.kcl
+---
+{
+  "first": {
+    "type": "NamedView",
+    "value": {
+      "artifactId": "[uuid]",
+      "name": "Front",
+      "camera": {
+        "look": {
+          "type": "oriented",
+          "orientation": "Front"
+        },
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
+      },
+      "baseline": "Show",
+      "exceptIds": []
+    }
+  },
+  "frontView": {
+    "type": "Function"
+  }
+}

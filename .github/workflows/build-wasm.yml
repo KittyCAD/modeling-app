@@ -19,7 +19,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v4.0.2
+        uses: dorny/paths-filter@v4.0.3
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -37,7 +37,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v23
         continue-on-error: true
         with:
           name: prepared-wasm
@@ -48,16 +48,31 @@ jobs:
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
+      - name: Validate Wasm cache
+        id: validate-wasm
+        if: ${{ steps.download-wasm.outcome == 'success' }}
+        shell: bash
+        run: |
+          expected_rust_tree=$(git rev-parse HEAD:rust)
+          cached_rust_tree=$(cat rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree 2>/dev/null || true)
+
+          if [[ "${cached_rust_tree}" == "${expected_rust_tree}" ]]; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "Cached Wasm was built from a different Rust tree; rebuilding."
+          fi
+
       - name: Build Wasm condition
         id: wasm
         env:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
-          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
+          CACHE_VALID: ${{ steps.validate-wasm.outputs.valid || 'false' }}
           RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
         run: |
-          # Build Wasm with Rust changes, cache misses, or for stacked PRs
+          # Build Wasm with Rust changes, stale/missing caches, or for stacked PRs
           if [[ "${RUST_CHANGES}" == 'true' || \
-                "${DOWNLOAD_OUTCOME}" == 'failure' || \
+                "${CACHE_VALID}" != 'true' || \
                 ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
@@ -82,34 +97,29 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Use Rust cache
+      - name: Rust cache on the Namespace volume
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
+        uses: namespacelabs/nscloud-cache-action@v1
         with:
-          workspaces: "./rust"
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: npm run build:wasm
 
-      - name: Generate TypeScript bindings
+      - name: Use committed TypeScript bindings
         if: ${{ steps.wasm.outputs.should-build-wasm != 'true' }}
         shell: bash
         run: |
-          cd rust
-          cargo test -p kcl-lib --features artifact-graph export_bindings
-          cd ..
+          cp -R rust/kcl-lib/expected-bindings/ts-rs rust/kcl-lib/bindings
 
-      - name: Check TypeScript-facing bindings against expected
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+      - name: Record Wasm Rust tree
         shell: bash
-        run: |
-          ./scripts/update-expected-bindings.sh
-          git add -A -- rust/kcl-lib/expected-bindings/
-          git diff --cached --exit-code -- rust/kcl-lib/expected-bindings/ \
-            || (echo 'Generated bindings differ from rust/kcl-lib/expected-bindings/.' \
-                     'If this API change is intentional, run `npm run bindings:update` and commit the result.' >&2; exit 1)
+        run: git rev-parse HEAD:rust > rust/kcl-wasm-lib/pkg/kcl_wasm_lib.rust-tree
 
       - name: Copy Wasm to public
         run: |

@@ -4,6 +4,7 @@ import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   filterCloudSyncProjectFilesForSync,
+  notifyCloudSyncRemoveMutation,
   notifyCloudSyncRenameMutation,
   notifyCloudSyncWriteLikeMutation,
   type ProjectArchiveFile,
@@ -439,6 +440,46 @@ describe('cloud sync file policy', () => {
     )
 
     expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('records acknowledged files removed by a local mutation', async () => {
+    const obsoletePath = `${projectPath}/old/obsolete.kcl`
+    const files = new Map([
+      [`${projectPath}/main.kcl`, 'cube = 1\n'],
+      [`${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`, projectToml],
+    ])
+    configureCloudSyncLocalFileSystem(
+      createCloudSyncTestFs(files, { projectDirectory })
+    )
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: projectPath,
+      projectName: 'bracket',
+      remoteProjectId,
+      remoteRevision,
+      baseManifest: await projectManifestFromFiles([
+        projectFile('main.kcl', 'cube = 1\n'),
+        projectFile('old/obsolete.kcl', 'obsolete = 1\n'),
+        projectFile(PROJECT_SETTINGS_FILE_NAME, projectToml),
+      ]),
+    })
+    configureCloudSyncEngine({
+      enabled: true,
+      baseUrl,
+      environmentName: 'dev.zoo.dev',
+      cloudProjectDirectoryPaths: [projectDirectory],
+      autoEnrollCloudLibraryProjects: false,
+    })
+
+    await notifyCloudSyncRemoveMutation(obsoletePath)
+
+    await expect(getAllOutboxEntries()).resolves.toMatchObject([
+      {
+        kind: 'upsert',
+        projectPath,
+        deletedPaths: ['old/obsolete.kcl'],
+      },
+    ])
   })
 
   it('clears ignored-file-only pending work without uploading a new revision', async () => {

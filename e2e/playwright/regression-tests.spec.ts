@@ -1,7 +1,7 @@
 import path from 'path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { Page } from '@playwright/test'
+import fs from 'fs'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
@@ -14,6 +14,11 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+const bracket = fs.readFileSync(
+  path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
@@ -781,8 +786,22 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
 
     await page.waitForTimeout(100)
     await test.step('Enter the seeded washer-face sketch', async () => {
+      // Helper to verify that use of legacy sketch mode is logged
+      const legacySketchClientError = page.waitForRequest(
+        (request) => {
+          if (request.method() !== 'POST') return false
+          if (!request.url().includes('/user/client-errors')) return false
+          try {
+            return request.postDataJSON()?.code === 'legacy_sketch_mode'
+          } catch {
+            return false
+          }
+        },
+        { timeout: 15_000 }
+      )
       await toolbar.editSketch(1)
       await toolbar.expectToolbarMode.toBe('sketching')
+      await legacySketchClientError
     })
 
     await test.step('Draw a circle and verify code', async () => {

@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/named_views_duplicate_across_modules/panel.kcl
+---
+@settings(experimentalFeatures = allow)
+
+export panelFront = view::named("Front", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show)

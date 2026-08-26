@@ -889,7 +889,7 @@ impl Backend {
         };
 
         for diagnostic in diagnostics {
-            let lsp_d = diagnostic.to_lsp_diagnostics(&params.text);
+            let lsp_d = diagnostic.to_lsp_diagnostics(&params.text, &params.uri);
             // Make sure we don't duplicate diagnostics.
             for d in lsp_d {
                 if !items.iter().any(|x| x == &d) {

@@ -3,8 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
-import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
-import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { useProjectSearch } from '@src/components/ProjectSearchBar'
@@ -28,12 +27,13 @@ import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
-  formatProjectLibraryPathForDisplay,
   type ProjectLibrary,
   projectLibrariesFromSettings,
 } from '@src/lib/projectLibraries'
@@ -65,6 +65,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -76,23 +77,211 @@ import {
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import {
+  type ProjectCardDragProps,
+  ProjectCardList,
+  type ProjectLibraryDragController,
+  type ProjectLibraryDropTargetProps,
+  ProjectLibraryHomeSummarySlot,
+  ProjectLibraryPreviewRow,
+} from '@src/routes/HomeProjectCards'
+import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
   reportOnboardingStartFailure,
 } from '@src/routes/Onboarding/utils'
 import type { HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
-  Link,
   useLocation,
   useNavigate,
   useParams,
   useSearchParams,
 } from 'react-router-dom'
 
-const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
+const HOME_PROJECT_CARD_DRAG_MIME = 'application/x-zoo-home-project'
+const HOME_PROJECT_CARD_DRAG_PREVIEW_ID = 'home-project-card-drag-preview'
+
+interface HomeProjectCardDragData {
+  projectId: string
+}
+
+function writeHomeProjectCardDragData(
+  dataTransfer: DataTransfer,
+  project: HomeProjectEntry
+) {
+  dataTransfer.clearData()
+  dataTransfer.effectAllowed = 'move'
+  dataTransfer.setData(
+    HOME_PROJECT_CARD_DRAG_MIME,
+    JSON.stringify({
+      projectId: project.id,
+    } satisfies HomeProjectCardDragData)
+  )
+  dataTransfer.setData('text/plain', getHomeProjectDisplayName(project))
+}
+
+function readHomeProjectCardDragData(
+  dataTransfer: DataTransfer
+): HomeProjectCardDragData | undefined {
+  const serialized = dataTransfer.getData(HOME_PROJECT_CARD_DRAG_MIME)
+  if (!serialized) {
+    return undefined
+  }
+
+  try {
+    const data = JSON.parse(serialized) as Partial<HomeProjectCardDragData>
+    return typeof data.projectId === 'string'
+      ? { projectId: data.projectId }
+      : undefined
+  } catch {
+    return undefined
+  }
+}
+
+interface UseProjectLibraryDragOptions {
+  projects: HomeProjectEntry[]
+  projectActions: HomeProjectActionsService
+  onMoveToLibrary: (project: HomeProjectEntry, libraryId: string) => void
+}
+
+function useProjectLibraryDrag({
+  projects,
+  projectActions,
+  onMoveToLibrary,
+}: UseProjectLibraryDragOptions): ProjectLibraryDragController {
+  const [draggedProjectId, setDraggedProjectId] = useState<string>()
+  const [dragOverLibraryId, setDragOverLibraryId] = useState<string>()
+  const draggedProject = useMemo(
+    () =>
+      draggedProjectId
+        ? projects.find((project) => project.id === draggedProjectId)
+        : undefined,
+    [draggedProjectId, projects]
+  )
+  const finishProjectDrag = useCallback(() => {
+    removeDragPreviewElement(HOME_PROJECT_CARD_DRAG_PREVIEW_ID)
+    setDraggedProjectId(undefined)
+    setDragOverLibraryId(undefined)
+  }, [])
+  const canMoveProjectToLibrary = useCallback(
+    (project: HomeProjectEntry | undefined, library: ProjectLibrary) =>
+      Boolean(
+        project &&
+          projectActions
+            .getMoveToLibraryTargets(project)
+            .some((target) => target.library.id === library.id)
+      ),
+    [projectActions]
+  )
+  const canDropOnLibrary = useCallback(
+    (library: ProjectLibrary) =>
+      canMoveProjectToLibrary(draggedProject, library),
+    [canMoveProjectToLibrary, draggedProject]
+  )
+  const getProjectCardDragProps = useCallback(
+    (project: HomeProjectEntry): ProjectCardDragProps => {
+      if (!projectActions.canMoveToLibrary(project)) {
+        return { draggable: false }
+      }
+
+      return {
+        draggable: true,
+        onDragStart: (event) => {
+          if (!projectActions.canMoveToLibrary(project)) {
+            event.preventDefault()
+            return
+          }
+
+          const projectDisplayName = getHomeProjectDisplayName(project)
+          writeHomeProjectCardDragData(event.dataTransfer, project)
+          setDragPreview(event.dataTransfer, {
+            id: HOME_PROJECT_CARD_DRAG_PREVIEW_ID,
+            text: `Move ${projectDisplayName}`,
+            offsetX: 12,
+            offsetY: 12,
+          })
+          setDraggedProjectId(project.id)
+          setDragOverLibraryId(undefined)
+        },
+        onDragEnd: finishProjectDrag,
+      }
+    },
+    [finishProjectDrag, projectActions]
+  )
+  const getLibraryDropTargetProps = useCallback(
+    (library: ProjectLibrary): ProjectLibraryDropTargetProps => ({
+      onDragOver: (event) => {
+        if (!canDropOnLibrary(library)) {
+          return
+        }
+
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+        setDragOverLibraryId(library.id)
+      },
+      onDragLeave: (event) => {
+        if (
+          event.relatedTarget instanceof Node &&
+          event.currentTarget.contains(event.relatedTarget)
+        ) {
+          return
+        }
+
+        setDragOverLibraryId((currentLibraryId) =>
+          currentLibraryId === library.id ? undefined : currentLibraryId
+        )
+      },
+      onDrop: (event) => {
+        if (!canDropOnLibrary(library)) {
+          return
+        }
+
+        const droppedProjectId =
+          readHomeProjectCardDragData(event.dataTransfer)?.projectId ??
+          draggedProject?.id
+        const project = projects.find((entry) => entry.id === droppedProjectId)
+        if (!project || !canMoveProjectToLibrary(project, library)) {
+          finishProjectDrag()
+          return
+        }
+
+        event.preventDefault()
+        event.stopPropagation()
+        event.dataTransfer.dropEffect = 'move'
+        onMoveToLibrary(project, library.id)
+        finishProjectDrag()
+      },
+    }),
+    [
+      canDropOnLibrary,
+      canMoveProjectToLibrary,
+      draggedProject?.id,
+      finishProjectDrag,
+      onMoveToLibrary,
+      projects,
+    ]
+  )
+  const isLibraryDragOver = useCallback(
+    (library: ProjectLibrary) =>
+      dragOverLibraryId === library.id && canDropOnLibrary(library),
+    [canDropOnLibrary, dragOverLibraryId]
+  )
+
+  useEffect(() => {
+    return () => removeDragPreviewElement(HOME_PROJECT_CARD_DRAG_PREVIEW_ID)
+  }, [])
+
+  return useMemo(
+    () => ({
+      getProjectCardDragProps,
+      getLibraryDropTargetProps,
+      isLibraryDragOver,
+    }),
+    [getLibraryDropTargetProps, getProjectCardDragProps, isLibraryDragOver]
+  )
+}
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -103,7 +292,7 @@ const Home = () => {
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  useQueryParamEffects(kclManager)
+  useQueryParamEffects()
 
   useEffect(() => {
     if (!keymap) {
@@ -128,8 +317,8 @@ const Home = () => {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
-  const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(
@@ -191,22 +380,31 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
-  const moveProjectToLibrary = (project: HomeProjectEntry) => {
-    if (!homeProjectActions.canMoveToLibrary(project)) {
-      return
-    }
+  const moveProjectToLibrary = useCallback(
+    (project: HomeProjectEntry, libraryId?: string) => {
+      if (!homeProjectActions.canMoveToLibrary(project)) {
+        return
+      }
 
-    commands.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Move to library',
-        argDefaultValues: {
-          project: project.id,
+      commands.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Move project',
+          argDefaultValues: {
+            project: project.id,
+            ...(libraryId ? { library: libraryId } : {}),
+          },
         },
-      },
-    })
-  }
+      })
+    },
+    [commands, homeProjectActions]
+  )
+  const projectLibraryDrag = useProjectLibraryDrag({
+    projects: homeProjectEntries,
+    projectActions: homeProjectActions,
+    onMoveToLibrary: moveProjectToLibrary,
+  })
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: projectLibraryWatchKey tracks library identity and paths without rebinding on icon/title-only renders.
   useEffect(() => {
@@ -386,6 +584,15 @@ const Home = () => {
           }
           library={selectedProjectLibrary}
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
+          libraryHomeSummary={
+            selectedProjectLibrary ? (
+              <ProjectLibraryHomeSummarySlot
+                library={selectedProjectLibrary}
+                projects={scopedHomeProjectEntries}
+                projectLibraryTypes={projectLibraryTypes}
+              />
+            ) : undefined
+          }
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -579,6 +786,8 @@ const Home = () => {
             projectActions={homeProjectActions}
             showCloudSyncUi={hasCloudSyncFeature}
             onMoveToLibrary={moveProjectToLibrary}
+            projectLibraryDrag={projectLibraryDrag}
+            projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         )}
@@ -622,26 +831,8 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
-}
-
-function getProjectLibraryRoute(library: ProjectLibrary) {
-  return `${PATHS.LIBRARY}/${encodeURIComponent(library.id)}`
-}
-
-function getProjectLibraryIconName(library: ProjectLibrary): CustomIconName {
-  if (library.type === 'cloud' || library.icon === 'cloud') {
-    return 'cloud'
-  }
-
-  if (library.icon === 'network') {
-    return 'network'
-  }
-
-  return 'folder'
-}
-
-function projectCountLabel(count: number) {
-  return `${count} project${count === 1 ? '' : 's'}`
+  projectLibraryDrag?: ProjectLibraryDragController
+  projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
 function shouldShowLoadingMoreProjects(
@@ -664,17 +855,30 @@ function ProjectLibraryOverview({
   projectActions,
   showCloudSyncUi,
   onMoveToLibrary,
+  projectLibraryDrag,
+  projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
   const state = useSystemIOState()
   const libraryRows = libraries
-    .map((library) => ({
-      library,
-      projects: getHomeProjectEntriesForLibrary(
-        query.length > 0 ? searchResults : projects,
+    .map((library) => {
+      const libraryProjects = getHomeProjectEntriesForLibrary(
+        projects,
         library.id
-      ).toSorted(getSortFunction(sort)),
-    }))
+      ).toSorted(getSortFunction(sort))
+      const displayedProjects =
+        query.length > 0
+          ? getHomeProjectEntriesForLibrary(searchResults, library.id).toSorted(
+              getSortFunction(sort)
+            )
+          : libraryProjects
+
+      return {
+        library,
+        libraryProjects,
+        projects: displayedProjects,
+      }
+    })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
   const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
@@ -694,16 +898,19 @@ function ProjectLibraryOverview({
         <>
           {libraryRows.length > 0 ? (
             <div className="flex flex-col gap-8">
-              {libraryRows.map(({ library, projects }) => (
+              {libraryRows.map(({ library, libraryProjects, projects }) => (
                 <ProjectLibraryPreviewRow
                   key={library.id}
                   library={library}
                   projects={projects}
+                  libraryProjects={libraryProjects}
                   query={query}
                   projectStatuses={projectStatuses}
                   projectActions={projectActions}
                   showCloudSyncUi={showCloudSyncUi}
                   onMoveToLibrary={onMoveToLibrary}
+                  projectLibraryDrag={projectLibraryDrag}
+                  projectLibraryTypes={projectLibraryTypes}
                 />
               ))}
             </div>
@@ -753,82 +960,6 @@ function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
           Add library
         </ActionButton>
       </div>
-    </section>
-  )
-}
-
-interface ProjectLibraryPreviewRowProps {
-  library: ProjectLibrary
-  projects: HomeProjectEntry[]
-  query: string
-  projectStatuses: Map<string, ProjectStatus>
-  projectActions: HomeProjectActionsService
-  showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
-}
-
-function ProjectLibraryPreviewRow({
-  library,
-  projects,
-  query,
-  projectStatuses,
-  projectActions,
-  showCloudSyncUi,
-  onMoveToLibrary,
-}: ProjectLibraryPreviewRowProps) {
-  const previewProjects =
-    query.length > 0
-      ? projects
-      : projects.slice(0, PROJECT_LIBRARY_PREVIEW_LIMIT)
-
-  return (
-    <section className="flex flex-col gap-3">
-      <Link
-        to={getProjectLibraryRoute(library)}
-        className="group flex items-center gap-3 rounded-sm border border-transparent p-1 !no-underline hover:border-primary/30 hover:bg-primary/5"
-        data-testid="project-library-link"
-      >
-        <span className="grid h-8 w-8 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
-          <CustomIcon
-            name={getProjectLibraryIconName(library)}
-            className="h-5 w-5"
-          />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-base font-semibold text-chalkboard-100 dark:text-chalkboard-10">
-            {library.title}
-          </span>
-          <span className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30">
-            {formatProjectLibraryPathForDisplay(library)}
-          </span>
-        </span>
-        <span className="hidden flex-none text-xs text-chalkboard-70 dark:text-chalkboard-30 sm:block">
-          {projectCountLabel(projects.length)}
-        </span>
-        <CustomIcon
-          name="arrowRight"
-          className="h-5 w-5 flex-none text-chalkboard-60 group-hover:text-primary"
-        />
-      </Link>
-      {previewProjects.length > 0 ? (
-        <ProjectCardList
-          projects={previewProjects}
-          projectStatuses={projectStatuses}
-          projectActions={projectActions}
-          showCloudSyncUi={showCloudSyncUi}
-          showSourceStatusBadges={false}
-          onMoveToLibrary={onMoveToLibrary}
-          density="compact"
-          className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-        />
-      ) : (
-        <p
-          className="rounded-sm border border-dashed border-chalkboard-30 p-4 text-sm text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30"
-          data-testid="project-library-empty"
-        >
-          No projects
-        </p>
-      )}
     </section>
   )
 }
@@ -901,52 +1032,6 @@ function ProjectGrid({
         </>
       )}
     </section>
-  )
-}
-
-interface ProjectCardListProps {
-  projects: HomeProjectEntry[]
-  projectStatuses: Map<string, ProjectStatus>
-  projectActions: HomeProjectActionsService
-  showCloudSyncUi: boolean
-  onMoveToLibrary: (project: HomeProjectEntry) => void
-  density?: 'default' | 'compact'
-  showDetails?: boolean
-  showSourceStatusBadges?: boolean
-  className?: string
-}
-
-function ProjectCardList({
-  projects,
-  projectStatuses,
-  projectActions,
-  showCloudSyncUi,
-  onMoveToLibrary,
-  density = 'default',
-  showDetails = true,
-  showSourceStatusBadges = true,
-  className = 'grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4',
-}: ProjectCardListProps) {
-  return (
-    <ul className={className}>
-      {projects.map((project) => (
-        <AppProjectCard
-          key={project.id}
-          project={project}
-          projectActions={projectActions}
-          projectStatus={
-            project.remoteProjectId
-              ? projectStatuses.get(project.remoteProjectId)
-              : undefined
-          }
-          density={density}
-          showDetails={showDetails}
-          showCloudSyncUi={showCloudSyncUi}
-          showSourceStatusBadges={showSourceStatusBadges}
-          onMoveToLibrary={onMoveToLibrary}
-        />
-      ))}
-    </ul>
   )
 }
 

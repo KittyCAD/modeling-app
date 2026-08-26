@@ -3,7 +3,7 @@
 // Categories: Fasteners
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 innerDiameter = 0.203
@@ -20,6 +20,6 @@ washerSketch = sketch(on = XY) {
   distance([circle2.start, circle2.center]) == innerDiameter / 2
 }
 
-ringRegion = region(point = [0.15in, 0in], sketch = washerSketch)
+ringRegion = region(segments = [washerSketch.circle1])
 hide(washerSketch)
 washer = extrude(ringRegion, length = thicknessNom)

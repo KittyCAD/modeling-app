@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing named_views_negative_distance.kcl
+---
+KCL Semantic error
+
+  × semantic: `distance` must be greater than zero.
+    ╭─[12:7]
+ 11 │ 
+ 12 │ bad = view::oriented(view::Orientation::Front, distance = -50)
+    ·       ────────────────────────────┬───────────────────────────
+    ·                                   ╰── tests/named_views_negative_distance/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: `distance` must be greater than zero.
+          ╭─[12:7]
+       11 │
+       12 │ bad = view::oriented(view::Orientation::Front, distance = -50)
+          ·       ────────────────────────────┬───────────────────────────
+          ·                                   ╰── tests/
+      named_views_negative_distance/input.kcl
+          ╰────

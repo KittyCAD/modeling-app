@@ -2,7 +2,7 @@
 // Parametric model of a USB-C style connector shell, rear housing, and swept cable.
 // Categories: Electronics, Connector, Consumer Hardware
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Outer shell dimensions and wall settings
 shellLength = 6.8
@@ -59,7 +59,7 @@ shellBody = extrude(
          ]),
          getCommonEdge(faces = [
            region001.tags.line3,
-           region001.tags.line1
+           region001.tags.line2
          ]),
          getCommonEdge(faces = [
            region001.tags.line2,
@@ -67,7 +67,7 @@ shellBody = extrude(
          ]),
          getCommonEdge(faces = [
            region001.tags.line4,
-           region001.tags.line2
+           region001.tags.line1
          ])
        ],
        radius = shellCornerRadius,

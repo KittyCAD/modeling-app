@@ -32,6 +32,9 @@ Revolve occurs around a local sketch axis rather than a global axis.
 You can provide more than one sketch to revolve, and they will all be
 revolved around the same axis.
 
+**NOTE:** Currently,, revolved bodies don't support being scaled in a non-uniform
+way (i.e. scaled differently along each axis).
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -495,7 +498,7 @@ ringProfile = sketch(on = XZ) {
   coincident([edge4.end, edge1.start])
 }
 
-ringRegion = region(point = [5mm, 2mm], sketch = ringProfile)
+ringRegion = region(segments = [ringProfile.edge1, ringProfile.edge2])
 ring = revolve(ringRegion, axis = Y)
 
 ```
@@ -570,7 +573,7 @@ sketch001 = sketch(on = XZ) {
   horizontal(line3)
   line5 = line(start = [var 0.94mm, var -3.66mm], end = [var 0.05mm, var 4.57mm])
 }
-region001 = region(point = [-2.48mm, -1.8875mm], sketch = sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2])
 revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)
 
 ```

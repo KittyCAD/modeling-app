@@ -3,7 +3,7 @@
 // Categories: Automotive, Aerospace
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 bodyDiameter = 5.8
@@ -163,13 +163,10 @@ bodyProfile = sketch(on = XY) {
 ]) == bodyDiameter / 2 - wallThickness
 }
 
-bodyRegion = region(
-  point = [
-    0in,
-    bodyDiameter / 2 - (wallThickness / 2)
-  ],
-  sketch = bodyProfile,
-)
+bodyRegion = region(segments = [
+  bodyProfile.frontWall,
+  bodyProfile.frontOuterRun
+])
 bodyBlank = revolve(bodyRegion, axis = X)
 hide(bodyProfile)
 

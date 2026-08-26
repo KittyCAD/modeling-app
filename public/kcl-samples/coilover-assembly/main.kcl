@@ -3,7 +3,7 @@
 // Categories: Automotive
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 import "coilover-bottom.kcl" as coiloverBottom
 import "spring.kcl" as coiloverSpring

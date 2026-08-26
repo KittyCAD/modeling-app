@@ -6,7 +6,10 @@ import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/Zook
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
+import {
+  LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
+} from '@src/lib/constants'
 import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -505,6 +508,8 @@ export const ZookeeperConversationPane = (props: {
               type: ZookeeperManagerStates.ContinueCheck,
               projectName: project.name,
               projectFiles,
+              engineApiCallId:
+                props.contextModeling.engineCommandManager.apiCallId,
               activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
                     currentFileEntry: currentLoaderFile,
@@ -523,6 +528,15 @@ export const ZookeeperConversationPane = (props: {
         }
 
         if (context.conversation !== undefined) {
+          return
+        }
+
+        // This avoids getting into an infinite loop when setup is requested
+        // without an API token. The machine caches setup and stays in Await,
+        // which wakes this subscriber while there is still no conversation.
+        // Without this return, we would send the same setup event over and over.
+        // Setup is already queued and will resume when a token arrives.
+        if (context.cachedSetup !== undefined) {
           return
         }
 
@@ -585,13 +599,16 @@ export const ZookeeperConversationPane = (props: {
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
   useEffect(() => {
-    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
-    if (ttcPromptParam) {
-      setDefaultPrompt(ttcPromptParam)
+    const promptParam =
+      searchParams.get(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY) ??
+      searchParams.get(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
+    if (promptParam) {
+      setDefaultPrompt(promptParam)
 
       // Now clear that param
       const newSearchParams = new URLSearchParams(searchParams)
       newSearchParams.delete(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
+      newSearchParams.delete(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
       setSearchParams(newSearchParams, { replace: true })
     }
   }, [searchParams, setSearchParams])

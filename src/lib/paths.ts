@@ -65,6 +65,23 @@ function getRelativePathIfContained(
   return relativePath
 }
 
+export function normalizeFilesystemPathForComparison(path: string): string {
+  const hasWindowsSeparator = path.includes('\\')
+  const normalizedPath = path.replace(/\\/g, '/').replace(/\/+$/g, '')
+  const hasWindowsDrive = /^[a-zA-Z]:\//.test(normalizedPath)
+
+  return hasWindowsSeparator || hasWindowsDrive
+    ? normalizedPath.toLowerCase()
+    : normalizedPath
+}
+
+function areFilesystemPathsEqual(left: string, right: string): boolean {
+  return (
+    normalizeFilesystemPathForComparison(left) ===
+    normalizeFilesystemPathForComparison(right)
+  )
+}
+
 export const PATHS = {
   INDEX: '/',
   HOME,
@@ -135,31 +152,56 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string
+  id: string,
+  {
+    activeProjectPath,
+    candidateProjectDirectories = [],
+  }: {
+    activeProjectPath?: string
+    candidateProjectDirectories?: readonly string[]
+  } = {}
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
-  const projectDirectory = getProjectDirectorySetting(configuration)
-  const relativeToRoot = projectDirectory
-    ? getRelativePathIfContained(projectDirectory, id)
+  const relativeToActiveProject = activeProjectPath
+    ? getRelativePathIfContained(activeProjectPath, id)
     : undefined
-  if (projectDirectory && relativeToRoot !== undefined) {
-    projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = projectName
-      ? fsZds.join(projectDirectory, projectName)
-      : projectDirectory
-    projectName = projectName === '' ? null : projectName
+  if (activeProjectPath && relativeToActiveProject !== undefined) {
+    projectName = fsZds.basename(activeProjectPath)
+    projectPath = activeProjectPath
   } else {
-    projectPath = id
-    if (fsZds.extname(id) === '.kcl') {
-      projectPath = fsZds.dirname(id)
+    const configuredProjectDirectory = getProjectDirectorySetting(configuration)
+    const projectDirectory = [
+      ...candidateProjectDirectories,
+      configuredProjectDirectory,
+    ]
+      .filter((directory): directory is string => Boolean(directory))
+      .filter(
+        (directory) => getRelativePathIfContained(directory, id) !== undefined
+      )
+      .toSorted((left, right) => right.length - left.length)
+      .at(0)
+    const relativeToRoot = projectDirectory
+      ? getRelativePathIfContained(projectDirectory, id)
+      : undefined
+    if (projectDirectory && relativeToRoot !== undefined) {
+      projectName = relativeToRoot.split(fsZds.sep)[0]
+      projectPath = projectName
+        ? fsZds.join(projectDirectory, projectName)
+        : projectDirectory
+      projectName = projectName === '' ? null : projectName
+    } else {
+      projectPath = id
+      if (fsZds.extname(id) === '.kcl') {
+        projectPath = fsZds.dirname(id)
+      }
+      projectName = fsZds.basename(projectPath)
     }
-    projectName = fsZds.basename(projectPath)
   }
 
-  if (projectPath !== id) {
+  if (!areFilesystemPathsEqual(projectPath, id)) {
     currentFileName = fsZds.basename(id)
     currentFilePath = id
   }

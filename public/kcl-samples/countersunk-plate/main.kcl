@@ -3,7 +3,7 @@
 // Categories: Manufacturing, Construction
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Primary dimensions
 boltSpacing = 5
@@ -125,7 +125,13 @@ plateSketch = sketch(on = XY) {
   radius(centerClearanceCircle) == centerHoleDiameter / 2
 }
 
-plateRegion = region(point = [1.6in, 0in], sketch = plateSketch)
+plateRegion = region(
+  segments = [
+    plateSketch.upperRightTransition,
+    plateSketch.rightEndArc
+  ],
+  direction = CW,
+)
 plateBody = extrude(plateRegion, length = plateThickness, tagEnd = $topFace)
 
 plateWithTopCountersink = hole::hole(

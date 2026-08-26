@@ -7,6 +7,12 @@ function makeRemoteProject(
   overrides: Partial<ProjectResponse> = {}
 ): ProjectResponse {
   return {
+    access: {
+      can_delete: true,
+      can_edit: true,
+      can_manage_organization: false,
+      scope: 'personal',
+    },
     category_ids: [],
     created_at: '2026-04-01T00:00:00Z',
     description: 'Existing description',

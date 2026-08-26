@@ -3,7 +3,7 @@
 // Categories: Manufacturing
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 id = 1 / 8
@@ -26,10 +26,8 @@ grommetProfile = sketch(on = YZ) {
   coincident([line3.end, line4.start])
   line5 = line(start = [var 0.09in, var 0.13in], end = [var 0.09in, var 0.03in])
   coincident([line4.end, line5.start])
-  line6 = line(start = [var 0.09in, var 0.03in], end = [var 0.09in, var 0.03in])
-  coincident([line5.end, line6.start])
   line7 = line(start = [var 0.09in, var 0.03in], end = [var 0.09in, var 0in])
-  coincident([line6.end, line7.start])
+  coincident([line5.end, line7.start])
   line8 = line(start = [var 0.09in, var 0in], end = [var 0.06in, var 0in])
   coincident([line7.end, line8.start])
   coincident([line8.end, line1.start])
@@ -38,10 +36,12 @@ grommetProfile = sketch(on = YZ) {
   vertical(line3)
   horizontal(line4)
   vertical(line5)
-  horizontal(line6)
   vertical(line7)
 }
 
-grommetRegion = region(point = [1.5265mm, 2.032mm], sketch = grommetProfile)
+grommetRegion = region(segments = [
+  grommetProfile.line1,
+  grommetProfile.line2
+])
 // Revolve the profile to create the grommet
 grommet = revolve(grommetRegion, axis = Y, angle = 330.0)

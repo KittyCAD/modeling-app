@@ -35,11 +35,19 @@ jobs:
       - name: Install rust
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
-          cache-workspaces: rust
+          # Caching is handled by the Namespace cache volume below.
+          cache: false
           components: clippy
           rustflags: '' # Use .cargo/config.toml
           # We need this to run clippy for the wasm32 target.
           target: wasm32-unknown-unknown
+      - name: Rust cache on the Namespace volume
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            rust/target
+            ~/.cargo/registry
+            ~/.cargo/git
 
       - name: Run clippy
         run: |

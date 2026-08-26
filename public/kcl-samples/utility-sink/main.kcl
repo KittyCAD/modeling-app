@@ -3,7 +3,7 @@
 // Categories: Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 tableHeight = 850
@@ -176,11 +176,11 @@ pillarProfile = sketch(on = pillarPlane) {
 
 pillarProfiles = patternLinear2d(
   region(
-    point = [
-      blockSubdivisionWidth + profileThickness / 2,
-      profileThickness / 2
+    segments = [
+      pillarProfile.leftEdge,
+      pillarProfile.topEdge
     ],
-    sketch = pillarProfile,
+    direction = CW,
   ),
   instances = 2,
   distance = blockDepth,
@@ -288,7 +288,13 @@ tableTopProfile = sketch(on = tableTopPlane) {
   horizontalDistance([topEdge.start, topEdge.end]) == tableWidth
 }
 
-tableTopRegion = region(point = [tableWidth / 2, tableDepth / 2], sketch = tableTopProfile)
+tableTopRegion = region(
+  segments = [
+    tableTopProfile.leftEdge,
+    tableTopProfile.topEdge
+  ],
+  direction = CW,
+)
 tableTopBody = extrude(tableTopRegion, length = -metalThickness)
 hide(tableTopProfile)
 
@@ -332,13 +338,10 @@ sinkOutsideProfile = sketch(on = sinkPlaneOutside) {
   horizontalDistance([topEdge.start, topEdge.end]) == -sinkWidth
 }
 
-sinkOutsideRegion = region(
-  point = [
-    -sinkOffsetLeft - (sinkWidth / 2),
-    sinkOffsetFront + sinkLength / 2
-  ],
-  sketch = sinkOutsideProfile,
-)
+sinkOutsideRegion = region(segments = [
+  sinkOutsideProfile.leftEdge,
+  sinkOutsideProfile.topEdge
+])
 sinkBodyOutside = extrude(sinkOutsideRegion, length = sinkDepth)
 hide(sinkOutsideProfile)
 
@@ -375,11 +378,11 @@ sinkInsideProfile = sketch(on = sinkPlaneInside) {
 }
 
 sinkInsideRegion = region(
-  point = [
-    sinkOffsetLeft + sinkWidth / 2,
-    sinkOffsetFront + sinkLength / 2
+  segments = [
+    sinkInsideProfile.leftEdge,
+    sinkInsideProfile.topEdge
   ],
-  sketch = sinkInsideProfile,
+  direction = CW,
 )
 sinkBodyInside = extrude(sinkInsideRegion, length = -sinkDepth)
 hide(sinkInsideProfile)
@@ -417,7 +420,7 @@ tapPlateSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 ]) == 40
 }
 
-tapPlateRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPlateSketch)
+tapPlateRegion = region(segments = [tapPlateSketch.tapPlateCircle])
 tapPlateSeed = extrude(tapPlateRegion, length = 5)
 tapPlate = patternLinear3d(
   tapPlateSeed,
@@ -458,7 +461,7 @@ tapPillarSketch = sketch(on = offsetPlane(XY, offset = tableHeight)) {
 ]) == 15
 }
 
-tapPillarRegion = region(point = [blockWidth / 2, tableDepth - 55], sketch = tapPillarSketch)
+tapPillarRegion = region(segments = [tapPillarSketch.tapPillarCircle])
 tapPillarSeed = extrude(tapPillarRegion, length = 170)
 tapPillar = patternLinear3d(
   tapPillarSeed,
@@ -496,7 +499,7 @@ tapNoseSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
 ]) == 10
 }
 
-tapNoseRegion = region(point = [blockWidth / 2, tableHeight + 100], sketch = tapNoseSketch)
+tapNoseRegion = region(segments = [tapNoseSketch.tapNoseCircle])
 tapNoseSeed = extrude(tapNoseRegion, length = sinkWidth / 2.5)
 tapNose = patternLinear3d(
   tapNoseSeed,
@@ -537,7 +540,7 @@ tapHandleSketch = sketch(on = offsetPlane(XZ, offset = 55 - tableDepth)) {
 ]) == 4
 }
 
-tapHandleRegion = region(point = [blockWidth / 2, tableHeight + 150], sketch = tapHandleSketch)
+tapHandleRegion = region(segments = [tapHandleSketch.tapHandleCircle])
 tapHandleSeed = extrude(tapHandleRegion, length = 70)
 tapHandle = patternLinear3d(
   tapHandleSeed,
@@ -587,11 +590,11 @@ doorProfile = sketch(on = doorPlane) {
 
 // Workaround: region -> extrude -> 3D pattern stayed closer than extruding a patterned 2D profile.
 doorRegion = region(
-  point = [
-    doorStart + doorWidth / 2,
-    profileThickness / 2
+  segments = [
+    doorProfile.leftEdge,
+    doorProfile.topEdge
   ],
-  sketch = doorProfile,
+  direction = CW,
 )
 doorSeed = extrude(doorRegion, length = doorHeight)
 doorRow = patternLinear3d(
@@ -641,11 +644,11 @@ panelProfile = sketch(on = doorPlane) {
 }
 
 panelRegion = region(
-  point = [
-    profileThickness / 2,
-    doorStart + panelWidth / 2
+  segments = [
+    panelProfile.leftEdge,
+    panelProfile.topEdge
   ],
-  sketch = panelProfile,
+  direction = CW,
 )
 panelSeed = extrude(panelRegion, length = doorHeight)
 panelBody = patternLinear3d(

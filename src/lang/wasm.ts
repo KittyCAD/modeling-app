@@ -56,6 +56,7 @@ export type {
   PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
   GdtAnnotationArtifact,
+  NamedViewArtifact as KclNamedViewArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,

@@ -29,29 +29,105 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 jobs:
+  changes:
+    runs-on: namespace-profile-ubuntu-2-cores
+    if: github.event_name != 'schedule'
+    outputs:
+      packaging: ${{ steps.filter.outputs.packaging == 'true' || steps.gates.outputs.found == 'true' }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - id: filter
+        name: Check for packaging changes
+        uses: dorny/paths-filter@v4.0.3
+        # A tag push has no previous ref to diff against, so this step can
+        # fail there. A tag forces the full matrix on its own.
+        continue-on-error: true
+        with:
+          # These inputs decide whether a wheel builds and links on one
+          # architecture but not another.
+          filters: |
+            packaging:
+              - 'rust/kcl-python-bindings/**'
+              - 'rust/Cargo.lock'
+              - 'rust/**/Cargo.toml'
+              - 'rust/rust-toolchain.toml'
+              - '.tool-versions'
+              - '.github/workflows/kcl-python-bindings.yml'
+      - id: gates
+        name: Check for platform-gated code
+        shell: bash
+        # Linux stands in for Windows and macOS only while no crate in the
+        # wheel compiles differently per platform. This step tests that
+        # premise on every run instead of assuming it. A hit forces the full
+        # matrix. Unlisted crates are scanned, so a new crate fails safe.
+        # kcl-language-server is excluded because it is not in the wheel, and
+        # wasm32 gates are excluded because no wheel targets wasm.
+        run: |
+          if rg -n 'cfg\([^)]*target_(os|family|env|arch)' \
+               --glob '*.rs' \
+               --glob '!rust/kcl-language-server/**' \
+               rust/ | rg -v wasm32; then
+            echo 'Platform-gated code found; building every architecture.'
+            echo 'found=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'found=false' >> "$GITHUB_OUTPUT"
+          fi
   linux-x86_64:
     name: kcl-python-bindings (linux-x86_64)
     runs-on: namespace-profile-ubuntu-8-cores
+    # The hourly schedule exists to observe flaky tests. It runs the test job
+    # and nothing else.
+    if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: 3.x
+          python-version-file: .tool-versions
+      - name: sccache cache on the Namespace volume
+        # See the macos job.
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # The workspace sets `[profile.release] debug = true`, but no wheel
+          # ships debug info: Linux embeds DWARF in the .so and --strip removes
+          # it, while mac and Windows write it to .dSYM and .pdb sidecars that
+          # are not packaged. Generating it costs build time for output that is
+          # then discarded.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
+          # maturin-action mounts GITHUB_WORKSPACE at the same path inside the
+          # container, so this resolves on both sides. The SCCACHE_ prefix is
+          # on its list of variables forwarded into the container.
+          RUSTC_WRAPPER: sccache
+          SCCACHE_DIR: ${{ github.workspace }}/.sccache
+          SCCACHE_CACHE_SIZE: 20G
         with:
           working-directory: rust/kcl-python-bindings
           target: x86_64
-          # --strip removes debug symbols from the .so. The workspace sets
-          # `[profile.release] debug = true`, which on Linux embeds DWARF debug
-          # info directly into the .so (mac/Windows keep it in sidecar
-          # .dSYM/.pdb files that aren't packaged), pushing the wheel past
-          # PyPI's 100MB limit. Stripping keeps the published wheel small.
+          # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
+          # limit.
           args: --release --out dist --find-interpreter --strip
-          sccache: 'true'
+          # Off so the volume above is used instead of the GitHub cache. That
+          # also means the container has no sccache, so before-script installs
+          # one.
+          sccache: 'false'
           manylinux: auto
           before-script-linux: |
-            yum install openssl-devel -y
+            curl -fsSL https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz \
+              | tar -xz -C /tmp
+            install -m 0755 /tmp/sccache-v0.10.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache
+            sccache --version
+      - name: sccache cache contents
+        # sccache ran inside the container and its server exited with
+        # it. Measuring the directory answers whether the container wrote to
+        # the mounted volume path.
+        if: always()
+        shell: bash
+        run: |
+          du -sh .sccache 2>&1 || true
+          echo "objects: $(find .sccache -type f 2>/dev/null | wc -l)"
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -60,6 +136,9 @@ jobs:
   windows:
     name: kcl-python-bindings (windows)
     runs-on: namespace-profile-windows-8-cores
+    needs: changes
+    # Linux is the representative target on every other run.
+    if: needs.changes.outputs.packaging == 'true' || startsWith(github.ref, 'refs/tags/')
     strategy:
       matrix:
         target:
@@ -69,15 +148,38 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: 3.x
+          # Same reason as the macos job: install the set instead of letting
+          # the runner image decide what gets published.
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
           architecture: ${{ matrix.target }}
+      - name: Install sccache
+        uses: taiki-e/install-action@sccache
+      - name: sccache cache on the Namespace volume
+        # See the macos job.
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          RUSTC_WRAPPER: sccache
+          SCCACHE_DIR: ${{ github.workspace }}/.sccache
+          SCCACHE_CACHE_SIZE: 20G
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter --strip
-          sccache: 'true'
+          # Off so the volume above is used instead of the GitHub cache.
+          sccache: 'false'
+      - name: sccache stats
+        if: always()
+        run: sccache --show-stats
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -85,13 +187,9 @@ jobs:
           path: rust/kcl-python-bindings/dist
   macos:
     name: kcl-python-bindings (macos)
-    runs-on: macos-latest
-    # runs-on: namespace-profile-macos-6-cores
-    # TODO: Figure out if there is a way to make this work with Namespace
-    # Enabling this results in the following error on GitHub Actions:
-    #   $ /opt/homebrew/bin/python3 -m pip install sccache>=0.10.0
-    #   error: externally-managed-environment
-    #   To install Python packages system-wide, try brew install <package>
+    needs: changes
+    if: needs.changes.outputs.packaging == 'true' || startsWith(github.ref, 'refs/tags/')
+    runs-on: namespace-profile-macos-6-cores
     strategy:
       matrix:
         target:
@@ -101,14 +199,49 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: 3.x
+          # `--find-interpreter` builds a wheel for every interpreter it finds,
+          # so the runner image would otherwise decide what gets published.
+          # This image carries 3.13 and 3.14; GitHub's carried 3.11 to 3.14.
+          # Installing the set makes it the same on any image.
+          python-version: |
+            3.11
+            3.12
+            3.13
+            3.14
+      - name: Install sccache
+        uses: taiki-e/install-action@sccache
+      - name: sccache cache on the Namespace volume
+        # The GitHub Actions cache is capped at 10GB per repository, and
+        # sccache alone filled it: 8.5GB across 3069 entries, after which every
+        # write failed. This volume reports 100GB.
+        uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
+        env:
+          # maturin-action sets these itself when its own `sccache` input is
+          # on. They are set here because that input is off.
+          RUSTC_WRAPPER: sccache
+          SCCACHE_DIR: ${{ github.workspace }}/.sccache
+          # sccache evicts its own contents at this size. The volume is shared
+          # with nothing else on this profile.
+          SCCACHE_CACHE_SIZE: 20G
+          # See the linux job.
+          CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter --strip
-          sccache: 'true'
+          # Off because maturin-action installs sccache with
+          # `python3 -m pip install`, which this image's Homebrew Python
+          # refuses under PEP 668. The step above installs it instead.
+          sccache: 'false'
+      - name: sccache stats
+        # maturin-action prints these itself only when its own `sccache` input
+        # is on.
+        if: always()
+        run: sccache --show-stats
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -129,7 +262,7 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.0.1
       - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           rustflags: '' # Use .cargo/config.toml
@@ -160,10 +293,11 @@ jobs:
   sdist:
     name: kcl-python-bindings (sdist)
     runs-on: namespace-profile-ubuntu-8-cores
+    if: github.event_name != 'schedule'
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.0.1
       - name: Create venv
         run: |
           uv venv .venv
@@ -194,7 +328,7 @@ jobs:
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@v10.0.1
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings

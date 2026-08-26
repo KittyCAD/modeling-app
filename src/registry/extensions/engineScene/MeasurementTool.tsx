@@ -12,9 +12,12 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import {
+  getModelingData as getModelingDataForResponse,
+  getResponseErrorMessage as getResponseErrorMessageWithFallback,
+} from '@src/lib/engineConnection/utils'
 import { reportRejection } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { uuidv4 } from '@src/lib/utils'
 import {
   type RefObject,
   useCallback,
@@ -47,7 +50,23 @@ import {
   getMeasurementEntities,
   getVolumeUnit,
   type MeasurementEntity,
+  unitAreaLabels,
+  unitVolumeLabels,
 } from './measurementUtils'
+
+const measurementFailedMessage = 'Measurement failed'
+
+function getResponseErrorMessage(response: unknown): string {
+  return getResponseErrorMessageWithFallback(response, measurementFailedMessage)
+}
+
+function getModelingData(response: unknown, expectedType: string) {
+  return getModelingDataForResponse(
+    response,
+    expectedType,
+    measurementFailedMessage
+  )
+}
 
 type MeasurementStatus = 'idle' | 'measuring'
 
@@ -77,10 +96,6 @@ type MeasurementResult =
       entityIdsKey: string
     }
 
-type ModelingDataResult =
-  | { type: 'data'; data: unknown }
-  | { type: 'error'; error: Error }
-
 type SendModelingCommand = (cmd: ModelingCmd) => Promise<unknown>
 
 function getMeasurementEntityLabel(entity: MeasurementEntity): string {
@@ -97,56 +112,6 @@ function getMeasurementEntityLabel(entity: MeasurementEntity): string {
   }
 
   return 'Entity'
-}
-
-function getResponseErrorMessage(response: unknown): string {
-  if (response instanceof Error) {
-    return response.message
-  }
-
-  if (isArray(response)) {
-    for (const item of response) {
-      if (
-        typeof item !== 'object' ||
-        item === null ||
-        !('errors' in item) ||
-        !isArray(item.errors)
-      ) {
-        continue
-      }
-
-      const [firstError] = item.errors
-      if (
-        typeof firstError === 'object' &&
-        firstError !== null &&
-        'message' in firstError &&
-        typeof firstError.message === 'string'
-      ) {
-        return firstError.message
-      }
-    }
-  }
-
-  return 'Measurement failed'
-}
-
-function getModelingData(
-  response: unknown,
-  expectedType: string
-): ModelingDataResult {
-  if (!isModelingResponse(response)) {
-    return {
-      type: 'error',
-      error: new Error(getResponseErrorMessage(response)),
-    }
-  }
-
-  const modelingResponse = response.resp.data.modeling_response
-  if (modelingResponse.type !== expectedType || !('data' in modelingResponse)) {
-    return { type: 'error', error: new Error('Measurement failed') }
-  }
-
-  return { type: 'data', data: modelingResponse.data }
 }
 
 function MeasurementValue({
@@ -424,7 +389,7 @@ function getMeasurementResultSummary(result: MeasurementResult): string {
     return `${formatDistance(result.length)} ${result.unit}`
   }
 
-  return `${formatDistance(result.volume)} ${result.volumeUnit}`
+  return `${formatDistance(result.volume)} ${unitVolumeLabels[result.volumeUnit]}`
 }
 
 function getMeasurementResultText(result: MeasurementResult): string {
@@ -446,9 +411,9 @@ function getMeasurementResultText(result: MeasurementResult): string {
   }
 
   return [
-    `Volume: ${formatDistance(result.volume)} ${result.volumeUnit}`,
+    `Volume: ${formatDistance(result.volume)} ${unitVolumeLabels[result.volumeUnit]}`,
     `Surface area: ${formatDistance(result.surfaceArea)} ${
-      result.surfaceAreaUnit
+      unitAreaLabels[result.surfaceAreaUnit]
     }`,
     `CoM: ${formatPoint3d(result.centerOfMass)} ${result.centerOfMassUnit}`,
   ].join('\n')
@@ -698,12 +663,12 @@ export function MeasurementTool() {
           <MeasurementValue
             label="Volume"
             value={matchingResult.volume}
-            unit={matchingResult.volumeUnit}
+            unit={unitVolumeLabels[matchingResult.volumeUnit]}
           />
           <MeasurementValue
             label="Surface area"
             value={matchingResult.surfaceArea}
-            unit={matchingResult.surfaceAreaUnit}
+            unit={unitAreaLabels[matchingResult.surfaceAreaUnit]}
           />
           <MeasurementPointValue
             label="CoM"

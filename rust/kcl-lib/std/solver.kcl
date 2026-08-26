@@ -12,8 +12,8 @@
 ///   horizontal(line1)
 ///   equalLength([line2, line3])
 /// }
-/// 
-/// triangleRegion = region(point = [0.5mm, 0.5mm], sketch = triangle)
+///
+/// triangleRegion = region(segments = [triangle.line1, triangle.line2])
 /// extrude(triangleRegion, length = 5)
 /// ```
 ///
@@ -58,7 +58,7 @@ export ORIGIN = [0mm, 0mm]: Point2d
 ///   inside = point(at = [var 1mm, var 1mm])
 /// }
 ///
-/// solid = extrude(region(point = profile.inside), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn point(
@@ -80,7 +80,7 @@ export fn point(
 ///   coincident([edge4.end, edge1.start])
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn line(
@@ -104,7 +104,7 @@ export fn line(
 ///   coincident([base.start, top.end])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.base, profile.top]), length = 2)
 /// ```
 /// ```kcl,norun,sketchSolve
 /// height = 2
@@ -125,7 +125,7 @@ export fn line(
 ///   coincident([base.end, top.end])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 2mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.base, profile.top]), length = 2)
 /// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn arc(
@@ -163,7 +163,7 @@ export fn arc(
 ///   coincident([edge4.end, edge1.start])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.circle1, profile.edge1]), length = 2)
 /// ```
 @(impl = std_rust_constrainable, feature_tree = true)
 export fn circle(
@@ -222,7 +222,7 @@ export fn controlPointSpline(
 ///   coincident([edge4.end, edge1.start])
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn coincident(
@@ -269,7 +269,7 @@ export fn coincident(
 ///   distance([edge1.start, edge2.end]) == 5mm
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn distance(
@@ -293,7 +293,7 @@ export fn distance(
 ///   radius(arch) == 4mm
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.base, profile.arch]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn radius(
@@ -322,7 +322,7 @@ export fn radius(
 ///   coincident([edge4.end, edge1.start])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.guide, profile.edge1]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn diameter(
@@ -340,6 +340,8 @@ export fn diameter(
 /// than the first, and swapping the points negates the sign. For example,
 /// `horizontalDistance([ORIGIN, point]) == 5mm` places `point` at X = 5mm,
 /// while `horizontalDistance([point, ORIGIN]) == 5mm` places it at X = -5mm.
+/// Negative values are valid: if the second point is left of the first, use a
+/// negative value (or swap the points and use the corresponding positive value).
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -354,7 +356,7 @@ export fn diameter(
 ///   horizontalDistance([edge4.start, edge2.start]) == 6mm
 /// }
 ///
-/// solid = extrude(region(point = [3mm, 2mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn horizontalDistance(
@@ -374,6 +376,8 @@ export fn horizontalDistance(
 /// than the first, and swapping the points negates the sign. For example,
 /// `verticalDistance([ORIGIN, point]) == 5mm` places `point` at Y = 5mm,
 /// while `verticalDistance([point, ORIGIN]) == 5mm` places it at Y = -5mm.
+/// Negative values are valid: if the second point is below the first, use a
+/// negative value (or swap the points and use the corresponding positive value).
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -388,7 +392,7 @@ export fn horizontalDistance(
 ///   verticalDistance([edge1.start, edge4.start]) == 5mm
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 2mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn verticalDistance(
@@ -414,7 +418,7 @@ export fn verticalDistance(
 ///   equalLength([side1, side2])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.base, profile.side1]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn equalLength(
@@ -425,15 +429,16 @@ export fn equalLength(
 /// Constrain circular segments to have equal radius.
 ///
 /// ```kcl,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
 /// sketch1 = sketch(on = XY) {
 ///   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])
 ///   circle2 = circle(start = [var 10mm, var 0mm], center = [var 6mm, var 0mm])
 ///   equalRadius([circle1, circle2])
-///   tangent([circle1, circle2])
 /// }
 ///
-/// solid1 = extrude(region(point = sketch1.circle1.center, sketch = sketch1), length = 2)
-/// solid2 = extrude(region(point = sketch1.circle2.center, sketch = sketch1), length = 2)
+/// solid1 = extrude(region(segments = [sketch1.circle1]), length = 2)
+/// solid2 = extrude(region(segments = [sketch1.circle2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn equalRadius(
@@ -456,7 +461,7 @@ export fn equalRadius(
 ///   parallel([base, top])
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.base, profile.right]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn parallel(
@@ -481,7 +486,7 @@ export fn parallel(
 ///   perpendicular([edge1, edge2])
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn perpendicular(
@@ -510,7 +515,7 @@ export fn perpendicular(
 ///   angle([line1, line2]) == 60deg
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.line1, profile.line2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true, deprecated_since = "2.0")
 export fn angle(
@@ -545,8 +550,8 @@ export fn angle(
 ///   angleDimension(lines = [line1, line2], sector = 1, inverse = true) == 300deg
 /// }
 ///
-/// normalSolid = extrude(region(point = [2mm, 1mm], sketch = normalProfile), length = 2)
-/// inverseSolid = extrude(region(point = [9mm, 1mm], sketch = inverseProfile), length = 2)
+/// normalSolid = extrude(region(segments = [normalProfile.line1, normalProfile.line2]), length = 2)
+/// inverseSolid = extrude(region(segments = [inverseProfile.line1, inverseProfile.line2]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn angleDimension(
@@ -584,7 +589,7 @@ export fn angleDimension(
 ///   coincident([tangentLine.end, line1.start])
 /// }
 ///
-/// solid = extrude(region(point = [1mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.guideArc, profile.tangentLine]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn tangent(
@@ -610,7 +615,7 @@ export fn tangent(
 ///   coincident([line2.end, arc1.center])
 ///   midpoint(arc1, point = line2.start)
 /// }
-/// solid = extrude(region(point = [1, 2], sketch = profile), length = 5)
+/// solid = extrude(region(segments = [profile.line1, profile.arc1]), length = 5)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn midpoint(
@@ -648,7 +653,7 @@ export fn midpoint(
 ///   coincident([axis.start, ORIGIN])
 /// }
 ///
-/// solid = extrude(region(point = [0mm, 0.1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.left, profile.right]), length = 2)
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn symmetric(
@@ -681,7 +686,7 @@ export fixed = coincident
 ///   horizontal(edge1)
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 /// ```kcl,norun
 /// profile = sketch(on = XY) {
@@ -727,7 +732,7 @@ export fn horizontal(
 ///   vertical(edge2)
 /// }
 ///
-/// solid = extrude(region(point = [2mm, 1mm], sketch = profile), length = 2)
+/// solid = extrude(region(segments = [profile.edge1, profile.edge2]), length = 2)
 /// ```
 /// ```kcl,norun
 /// profile = sketch(on = XY) {

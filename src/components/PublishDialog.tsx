@@ -6,6 +6,8 @@ import {
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
+import { AquariumStatusDetails } from '@src/components/AquariumStatusBadge'
+import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
@@ -33,6 +35,7 @@ type PublishDialogProps = {
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
   markdownEditorKeymap?: PublishDialogMarkdownEditorKeymap
+  projectStatus?: ProjectStatus | null
 }
 
 const AQUARIUM_TERMS_URL = 'https://zoo.dev/aquarium-terms-of-use'
@@ -46,6 +49,7 @@ export function PublishDialog({
   publicationDetails = null,
   isLoadingPublicationDetails = false,
   markdownEditorKeymap,
+  projectStatus = null,
 }: PublishDialogProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState('')
@@ -227,6 +231,8 @@ export function PublishDialog({
             void handleSubmit()
           }}
         >
+          <AquariumStatusDetails projectStatus={projectStatus} />
+
           <section className="flex flex-col gap-3">
             <div>
               <label

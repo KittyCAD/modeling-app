@@ -1367,6 +1367,45 @@ impl<'a> FromKclValue<'a> for TyF64 {
     }
 }
 
+// The next three impls map by variant name alone. The declared KCL signature
+// has already coerced the argument, and enum coercion is nominal, so a value
+// reaching them is a variant of the right enum.
+impl<'a> FromKclValue<'a> for crate::execution::Orientation {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Visibility {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::Projection {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Enum { value } = arg else {
+            return None;
+        };
+        Self::from_kcl_variant(value.variant())
+    }
+}
+
+impl<'a> FromKclValue<'a> for crate::execution::CameraView {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::CameraView { value } = arg else {
+            return None;
+        };
+        Some((**value).clone())
+    }
+}
+
 impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
