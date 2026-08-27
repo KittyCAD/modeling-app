@@ -1,8 +1,8 @@
 import { Registry } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { KclManager } from '@src/lang/KclManager'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
+import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -143,6 +143,7 @@ describe('project session extension', () => {
     expect(projectSession.getFileSystemOperations()).toEqual(
       expect.objectContaining({
         cp: expect.any(Function),
+        batch: expect.any(Function),
         mkdir: expect.any(Function),
         rename: expect.any(Function),
         rm: expect.any(Function),
@@ -226,37 +227,61 @@ describe('project session extension', () => {
       files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
     })
 
-    expect(project.mocks.createFile).toHaveBeenCalledWith({
-      path: '/projects/bracket/new.kcl',
+    const batchFacade = expect.objectContaining({
+      id: expect.any(String),
+      run: expect.any(Function),
+      writeFile: expect.any(Function),
     })
-    expect(project.mocks.writeFile).toHaveBeenCalledWith({
-      path: '/projects/bracket/main.kcl',
-      contents: 'cube(1)',
-    })
-    expect(project.mocks.createFolder).toHaveBeenCalledWith({
-      path: '/projects/bracket/parts',
-    })
-    expect(project.mocks.renameEntry).toHaveBeenCalledWith({
-      oldPath: '/projects/bracket/old.kcl',
-      newPath: '/projects/bracket/new.kcl',
-    })
-    expect(project.mocks.copyEntry).toHaveBeenCalledWith({
-      sourcePath: '/projects/bracket/new.kcl',
-      targetPath: '/projects/bracket/copy.kcl',
-    })
-    expect(project.mocks.moveEntry).toHaveBeenCalledWith({
-      sourcePath: '/projects/bracket/copy.kcl',
-      targetPath: '/projects/bracket/parts/copy.kcl',
-    })
-    expect(project.mocks.deleteEntry).toHaveBeenCalledWith({
-      path: '/projects/bracket/parts/copy.kcl',
-    })
-    expect(project.mocks.archiveEntry).toHaveBeenCalledWith({
-      path: '/projects/bracket/new.kcl',
-    })
-    expect(project.mocks.applyFilePatch).toHaveBeenCalledWith({
-      files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
-    })
+    expect(project.mocks.createFile).toHaveBeenCalledWith(
+      { path: '/projects/bracket/new.kcl' },
+      batchFacade
+    )
+    expect(project.mocks.writeFile).toHaveBeenCalledWith(
+      {
+        path: '/projects/bracket/main.kcl',
+        contents: 'cube(1)',
+      },
+      batchFacade
+    )
+    expect(project.mocks.createFolder).toHaveBeenCalledWith(
+      { path: '/projects/bracket/parts' },
+      batchFacade
+    )
+    expect(project.mocks.renameEntry).toHaveBeenCalledWith(
+      {
+        oldPath: '/projects/bracket/old.kcl',
+        newPath: '/projects/bracket/new.kcl',
+      },
+      batchFacade
+    )
+    expect(project.mocks.copyEntry).toHaveBeenCalledWith(
+      {
+        sourcePath: '/projects/bracket/new.kcl',
+        targetPath: '/projects/bracket/copy.kcl',
+      },
+      batchFacade
+    )
+    expect(project.mocks.moveEntry).toHaveBeenCalledWith(
+      {
+        sourcePath: '/projects/bracket/copy.kcl',
+        targetPath: '/projects/bracket/parts/copy.kcl',
+      },
+      batchFacade
+    )
+    expect(project.mocks.deleteEntry).toHaveBeenCalledWith(
+      { path: '/projects/bracket/parts/copy.kcl' },
+      batchFacade
+    )
+    expect(project.mocks.archiveEntry).toHaveBeenCalledWith(
+      { path: '/projects/bracket/new.kcl' },
+      batchFacade
+    )
+    expect(project.mocks.applyFilePatch).toHaveBeenCalledWith(
+      {
+        files: [{ path: '/projects/bracket/main.kcl', contents: 'cube(2)' }],
+      },
+      batchFacade
+    )
     expect(project.mocks.refreshProjectTree).toHaveBeenCalledTimes(9)
     expect(projectSession.projectTree.value?.name).toBe('bracket-fresh')
     expect(projectSession.mutation.value).toEqual({
@@ -298,6 +323,54 @@ describe('project session extension', () => {
       operation: 'create-file',
       lastTargetPath: '/projects/bracket/new.kcl',
     })
+  })
+
+  it('keeps project mutations exclusive through their tree refresh', async () => {
+    const projectSession = configureProjectSession()
+    const project = createFakeProject()
+    let finishCreateFile: (() => void) | undefined
+    const order: string[] = []
+    project.mocks.createFile = vi.fn(
+      () =>
+        new Promise<string>((resolve) => {
+          order.push('create:start')
+          finishCreateFile = () => {
+            order.push('create:end')
+            resolve('/projects/bracket/new.kcl')
+          }
+        })
+    )
+    project.mocks.writeFile = vi.fn(async () => {
+      order.push('write')
+      return '/projects/bracket/main.kcl'
+    })
+    project.createFile = project.mocks.createFile
+    project.writeFile = project.mocks.writeFile
+    projectSession.setProject(project)
+
+    const create = projectSession.createFile({
+      path: '/projects/bracket/new.kcl',
+    })
+    const write = projectSession.writeFile({
+      path: '/projects/bracket/main.kcl',
+      contents: 'cube(1)',
+    })
+    await flushMicrotasks()
+
+    expect(order).toEqual(['create:start'])
+    expect(projectSession.mutation.value.operation).toBe('create-file')
+
+    finishCreateFile?.()
+    await Promise.all([create, write])
+
+    expect(order).toEqual(['create:start', 'create:end', 'write'])
+    const queue = registry?.get(fsOperationQueue)
+    expect(
+      queue?.getJournal().map(({ kind, status }) => ({ kind, status }))
+    ).toEqual([
+      { kind: 'create-file', status: 'completed' },
+      { kind: 'write-file', status: 'completed' },
+    ])
   })
 
   it('rejects mutating methods when no project is open', async () => {

@@ -189,7 +189,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import type { FsOperationQueueService } from '@src/registry/contracts/fsOperationQueue'
+import type { FsMutationOperations } from '@src/registry/contracts/fsOperationQueue'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -368,10 +368,7 @@ interface ZDSProjectFilePatchInput {
  * ZDSProject owns project-level mutation semantics, but the actual filesystem
  * effects run through the registry queue for ordering and journaling.
  */
-export type ZDSProjectFileSystemOperations = Pick<
-  FsOperationQueueService,
-  'cp' | 'mkdir' | 'rename' | 'rm' | 'writeFile'
->
+export type ZDSProjectFileSystemOperations = FsMutationOperations
 
 export interface ZDSProjectFileSystemOperationProvider {
   getFileSystemOperations: () => ZDSProjectFileSystemOperations
@@ -727,9 +724,11 @@ export class ZDSProject {
     )
   }
 
-  private async movePath(sourcePath: string, targetPath: string) {
-    const fileSystemOperations = this.fileSystemOperations
-
+  private async movePath(
+    sourcePath: string,
+    targetPath: string,
+    fileSystemOperations: ZDSProjectFileSystemOperations
+  ) {
     await fileSystemOperations.mkdir(fsZds.dirname(targetPath), {
       recursive: true,
     })
@@ -763,22 +762,30 @@ export class ZDSProject {
     return ownedProject
   }
 
-  async createFile(input: ZDSProjectFileWriteInput) {
-    return this.writeFile({
-      ...input,
-      overwrite: false,
-      useDefaultKclContents: input.useDefaultKclContents ?? true,
-    })
+  async createFile(
+    input: ZDSProjectFileWriteInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
+    return this.writeFile(
+      {
+        ...input,
+        overwrite: false,
+        useDefaultKclContents: input.useDefaultKclContents ?? true,
+      },
+      fileSystemOperations
+    )
   }
 
-  async writeFile(input: ZDSProjectFileWriteInput) {
+  async writeFile(
+    input: ZDSProjectFileWriteInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.path)
 
     if (input.overwrite === false && (await this.pathExists(input.path))) {
       return Promise.reject(new Error(`File already exists: ${input.path}`))
     }
 
-    const fileSystemOperations = this.fileSystemOperations
     await fileSystemOperations.mkdir(fsZds.dirname(input.path), {
       recursive: true,
     })
@@ -789,18 +796,24 @@ export class ZDSProject {
     return input.path
   }
 
-  async createFolder(input: ZDSProjectPathInput) {
+  async createFolder(
+    input: ZDSProjectPathInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.path)
 
     if (await this.pathExists(input.path)) {
       return Promise.reject(new Error(`Folder already exists: ${input.path}`))
     }
 
-    await this.fileSystemOperations.mkdir(input.path, { recursive: true })
+    await fileSystemOperations.mkdir(input.path, { recursive: true })
     return input.path
   }
 
-  async renameEntry(input: ZDSProjectRenameInput) {
+  async renameEntry(
+    input: ZDSProjectRenameInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.oldPath, input.newPath)
 
     if (input.oldPath === input.newPath) {
@@ -810,61 +823,83 @@ export class ZDSProject {
       return Promise.reject(new Error(`Path already exists: ${input.newPath}`))
     }
 
-    await this.fileSystemOperations.rename(input.oldPath, input.newPath)
+    await fileSystemOperations.rename(input.oldPath, input.newPath)
     this.rewriteProjectEntryPaths(input.oldPath, input.newPath)
     return input.newPath
   }
 
-  async deleteEntry(input: ZDSProjectPathInput) {
+  async deleteEntry(
+    input: ZDSProjectPathInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.path)
 
-    await this.fileSystemOperations.rm(input.path, { recursive: true })
+    await fileSystemOperations.rm(input.path, { recursive: true })
     this.closeProjectEntryEditors(input.path)
     this.forgetProjectEntryFiles(input.path)
     return input.path
   }
 
-  async copyEntry(input: ZDSProjectCopyMoveInput) {
+  async copyEntry(
+    input: ZDSProjectCopyMoveInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.sourcePath, input.targetPath)
 
-    await this.fileSystemOperations.cp(input.sourcePath, input.targetPath, {
+    await fileSystemOperations.cp(input.sourcePath, input.targetPath, {
       recursive: true,
       force: false,
     })
     return input.targetPath
   }
 
-  async moveEntry(input: ZDSProjectCopyMoveInput) {
+  async moveEntry(
+    input: ZDSProjectCopyMoveInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.sourcePath, input.targetPath)
 
-    await this.movePath(input.sourcePath, input.targetPath)
+    await this.movePath(
+      input.sourcePath,
+      input.targetPath,
+      fileSystemOperations
+    )
     this.rewriteProjectEntryPaths(input.sourcePath, input.targetPath)
     return input.targetPath
   }
 
-  async archiveEntry(input: ZDSProjectPathInput) {
+  async archiveEntry(
+    input: ZDSProjectPathInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(input.path)
 
     const archivedPath = await toArchivePath(input.path)
-    await this.movePath(input.path, archivedPath)
+    await this.movePath(input.path, archivedPath, fileSystemOperations)
     this.closeProjectEntryEditors(input.path)
     this.forgetProjectEntryFiles(input.path)
     return { archivedPath }
   }
 
-  async applyFilePatch(input: ZDSProjectFilePatchInput) {
+  async applyFilePatch(
+    input: ZDSProjectFilePatchInput,
+    fileSystemOperations = this.fileSystemOperations
+  ) {
     await this.ensureProjectPaths(...input.files.map((file) => file.path))
 
     for (const file of input.files) {
       if (file.contents === null) {
-        await this.fileSystemOperations.rm(file.path)
+        await fileSystemOperations.rm(file.path)
       } else {
-        await this.writeFile({
-          path: file.path,
-          contents: file.contents,
-          overwrite: true,
-          useDefaultKclContents: false,
-        })
+        await this.writeFile(
+          {
+            path: file.path,
+            contents: file.contents,
+            overwrite: true,
+            useDefaultKclContents: false,
+          },
+          fileSystemOperations
+        )
       }
     }
 
