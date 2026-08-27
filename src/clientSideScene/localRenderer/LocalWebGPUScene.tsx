@@ -29,10 +29,10 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { useEffect, useRef } from 'react'
 import {
+  Box3,
   BufferAttribute,
   BufferGeometry,
   Color,
-  DirectionalLight,
   DoubleSide,
   FrontSide,
   Group,
@@ -595,28 +595,6 @@ function convertEngineWorldVectorToGltfWorld(
   scale = 1
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
-}
-
-type PreviewLighting = {
-  cameraDirectionalLight: DirectionalLight
-}
-
-function createPreviewLighting(scene: Scene): PreviewLighting {
-  const cameraDirectionalLight = new DirectionalLight(0xffffff, 0.25)
-  scene.add(cameraDirectionalLight, cameraDirectionalLight.target)
-
-  return {
-    cameraDirectionalLight,
-  }
-}
-
-function updatePreviewLighting(
-  lighting: PreviewLighting,
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-) {
-  lighting.cameraDirectionalLight.position.copy(camera.position)
-  lighting.cameraDirectionalLight.target.position.copy(target)
 }
 
 function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
@@ -1268,12 +1246,14 @@ function summarizePickedObject(
 
 export const LocalWebGPUScene = ({
   backgroundColor,
+  enableSSAO,
   onVisibilityChange,
   onExportReady,
   forceHide = false,
   commandProxyEnabled = true,
 }: {
   backgroundColor: string
+  enableSSAO: boolean
   onVisibilityChange: (isVisible: boolean) => void
   onExportReady?: (exportScene: (() => Promise<void>) | null) => void
   forceHide?: boolean
@@ -1281,9 +1261,16 @@ export const LocalWebGPUScene = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const { kclManager } = useSingletons()
+  const enableSSAORef = useRef(enableSSAO)
   const forceHideRef = useRef(forceHide)
   const commandProxyEnabledRef = useRef(commandProxyEnabled)
   const isVisibleRef = useRef(false)
+  const requestRenderRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    enableSSAORef.current = enableSSAO
+    requestRenderRef.current?.()
+  }, [enableSSAO])
 
   useEffect(() => {
     forceHideRef.current = forceHide
@@ -1294,6 +1281,7 @@ export const LocalWebGPUScene = ({
 
     container.style.opacity =
       isVisibleRef.current && !forceHideRef.current ? '1' : '0'
+    requestRenderRef.current?.()
   }, [forceHide])
 
   useEffect(() => {
@@ -1321,7 +1309,6 @@ export const LocalWebGPUScene = ({
     let resizeObserver: ResizeObserver | null = null
     let currentModel: Object3D | null = null
     let currentTrimResources: WebGpuTrimResources | null = null
-    let previewLighting: PreviewLighting | null = null
     let currentRefreshId = 0
     let isVisible = false
     let pendingRefreshRequest = false
@@ -1474,9 +1461,6 @@ export const LocalWebGPUScene = ({
       previewCamera.lookAt(previewTarget)
       previewCamera.updateProjectionMatrix()
       previewCamera.updateMatrixWorld(true)
-      if (previewLighting) {
-        updatePreviewLighting(previewLighting, previewCamera, previewTarget)
-      }
       requestRender?.()
     }
 
@@ -1657,11 +1641,17 @@ export const LocalWebGPUScene = ({
 
     const initialize = async () => {
       logLocalWebGpuPreview('initializing preview renderer')
-      const [{ default: WebGPURenderer }, { createWebGpuTrimResources }] =
-        await Promise.all([
-          import('three/src/renderers/webgpu/WebGPURenderer.js'),
-          import('@src/clientSideScene/webgpuTrim'),
-        ])
+      const [
+        { WebGPURenderer, RenderPipeline },
+        { createWebGpuTrimResources },
+        { pass, vec3, vec4 },
+        { ao },
+      ] = await Promise.all([
+        import('three/webgpu'),
+        import('@src/clientSideScene/webgpuTrim'),
+        import('three/tsl'),
+        import('three/examples/jsm/tsl/display/GTAONode.js'),
+      ])
 
       if (disposed) {
         logLocalWebGpuPreview(
@@ -1781,8 +1771,6 @@ export const LocalWebGPUScene = ({
         renderer.dispose()
         return
       }
-      previewLighting = createPreviewLighting(scene)
-
       const exportCurrentScene = async () => {
         if (!currentModel) {
           logLocalWebGpuPreview('GLB export skipped; no current model')
@@ -1861,6 +1849,100 @@ export const LocalWebGPUScene = ({
           syncPreviewCameraFromShared()
         })
 
+      // Three's WebGPU ambient-occlusion implementation is GTAO. Reconstruct
+      // normals from depth so edge and sketch line materials do not need to
+      // provide a normal output to an MRT render pass.
+      type AmbientOcclusionPass = ReturnType<typeof ao> & {
+        dispose: () => void
+      }
+      const createAmbientOcclusion = ao as (
+        depthNode: Parameters<typeof ao>[0],
+        normalNode: Parameters<typeof ao>[1] | null,
+        camera: Parameters<typeof ao>[2]
+      ) => AmbientOcclusionPass
+      let ambientOcclusionRadius = 0.01
+      let ambientOcclusionPipeline: {
+        camera: PerspectiveCamera | OrthographicCamera
+        pipeline: InstanceType<typeof RenderPipeline>
+        scenePass: ReturnType<typeof pass>
+        aoPass: AmbientOcclusionPass
+      } | null = null
+
+      const disposeAmbientOcclusionPipeline = () => {
+        ambientOcclusionPipeline?.pipeline.dispose()
+        ambientOcclusionPipeline?.scenePass.dispose()
+        ambientOcclusionPipeline?.aoPass.dispose()
+        ambientOcclusionPipeline = null
+      }
+
+      const configureAmbientOcclusion = (aoPass: AmbientOcclusionPass) => {
+        aoPass.radius.value = ambientOcclusionRadius
+        aoPass.thickness.value = ambientOcclusionRadius * 3
+        aoPass.distanceFallOff.value = 0.5
+        aoPass.scale.value = 1
+      }
+
+      const updateAmbientOcclusionScale = (model: Object3D) => {
+        const size = new Box3().setFromObject(model).getSize(new Vector3())
+        const modelScale = Math.max(size.x, size.y, size.z)
+        if (!Number.isFinite(modelScale) || modelScale <= 0) {
+          return
+        }
+
+        // Render-packet geometry is expressed in meters. Keep the sampling
+        // radius proportional to the part instead of GTAO's room-scale default.
+        ambientOcclusionRadius = Math.max(modelScale * 0.05, 0.00001)
+        if (ambientOcclusionPipeline) {
+          configureAmbientOcclusion(ambientOcclusionPipeline.aoPass)
+        }
+      }
+
+      const renderPreview = () => {
+        if (!previewCamera) {
+          return
+        }
+
+        if (!enableSSAORef.current || forceHideRef.current) {
+          renderer.render(scene, previewCamera)
+          return
+        }
+
+        if (ambientOcclusionPipeline?.camera !== previewCamera) {
+          disposeAmbientOcclusionPipeline()
+
+          // GTAO expects a regular depth texture. The renderer itself can keep
+          // using MSAA, but this intermediate pass must be single-sampled.
+          const scenePass = pass(scene, previewCamera, { samples: 0 })
+          const scenePassColor = scenePass.getTextureNode()
+          const scenePassDepth = scenePass.getTextureNode('depth')
+          const aoPass = createAmbientOcclusion(
+            scenePassDepth,
+            null,
+            previewCamera
+          )
+          aoPass.resolutionScale = 0.5
+          configureAmbientOcclusion(aoPass)
+
+          const pipeline = new RenderPipeline(renderer)
+          const aoOutput = aoPass.getTextureNode()
+          // Preserve some indirect light even at maximum occlusion while
+          // leaving enough contrast to make the setting visibly effective.
+          const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
+          pipeline.outputNode = scenePassColor.mul(
+            vec4(vec3(ambientOcclusion), 1)
+          )
+
+          ambientOcclusionPipeline = {
+            camera: previewCamera,
+            pipeline,
+            scenePass,
+            aoPass,
+          }
+        }
+
+        ambientOcclusionPipeline.pipeline.render()
+      }
+
       requestRender = () => {
         if (disposed || !previewCamera || animationFrameId !== -1) {
           return
@@ -1872,9 +1954,10 @@ export const LocalWebGPUScene = ({
             return
           }
 
-          renderer.render(scene, previewCamera)
+          renderPreview()
         })
       }
+      requestRenderRef.current = requestRender
 
       const resize = () => {
         const width = container.clientWidth
@@ -2466,6 +2549,7 @@ export const LocalWebGPUScene = ({
             ])
           )
           currentModel = packetModel.model
+          updateAmbientOcclusionScale(currentModel)
           parserState = packetModel.parserState
           hydrateCurrentModelMetadata()
           scene.add(currentModel)
@@ -2531,7 +2615,8 @@ export const LocalWebGPUScene = ({
           cancelAnimationFrame(animationFrameId)
         }
         requestRender = null
-        previewLighting = null
+        requestRenderRef.current = null
+        disposeAmbientOcclusionPipeline()
         envMapLoader.dispose()
         renderer.dispose()
       }

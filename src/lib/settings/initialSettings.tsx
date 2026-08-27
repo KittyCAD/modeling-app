@@ -331,7 +331,6 @@ function createCoreSettings() {
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
       }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
