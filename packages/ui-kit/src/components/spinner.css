@@ -1,0 +1,35 @@
+.zds-spinner {
+  --zds-spinner-size: var(--zds-size-icon-md);
+  --zds-spinner-thickness: 1.5px;
+
+  display: inline-block;
+  inline-size: var(--zds-spinner-size);
+  block-size: var(--zds-spinner-size);
+  flex: none;
+  border: var(--zds-spinner-thickness) solid var(--zds-border-default);
+  border-block-start-color: var(--zds-accent);
+  border-radius: var(--zds-radius-pill);
+  animation: zds-spin 700ms linear infinite;
+}
+
+.zds-spinner--small {
+  --zds-spinner-size: var(--zds-size-icon-sm);
+  --zds-spinner-thickness: 1.25px;
+}
+
+.zds-spinner--large {
+  --zds-spinner-size: var(--zds-size-icon-lg);
+  --zds-spinner-thickness: 2px;
+}
+
+@keyframes zds-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zds-spinner {
+    animation-duration: 2s;
+  }
+}

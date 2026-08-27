@@ -1,0 +1,35 @@
+.zds-tooltip {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: var(--zds-z-tooltip);
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  max-inline-size: 280px;
+  padding: var(--zds-space-1) var(--zds-space-2);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-overlay);
+  box-shadow: var(--zds-shadow-overlay);
+  color: var(--zds-text-primary);
+  font-size: var(--zds-font-size-mini);
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-tooltip[data-visible="true"] {
+  opacity: 1;
+}
+
+.zds-tooltip__shortcut {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+  padding: 1px var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  white-space: nowrap;
+}

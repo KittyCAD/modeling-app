@@ -1,0 +1,152 @@
+/*
+ * The drawing sheet.
+ *
+ * A preview plate above, a title block below. The card itself is content
+ * material — small radius, raised surface — while the title block's internal
+ * divisions are hairlines, the way a real sheet corner is ruled.
+ */
+
+.zds-sheet {
+  --zds-sheet-plate-aspect: 4 / 3;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-raised);
+  overflow: hidden;
+  transition:
+    border-color var(--zds-motion-fast) var(--zds-motion-ease),
+    transform var(--zds-motion-fast) var(--zds-motion-ease-out);
+}
+
+.zds-sheet:hover {
+  border-color: var(--zds-border-strong);
+}
+
+/* A 1px lift rather than a scale: the card should feel like it was picked up
+   off the stack, not zoomed. */
+.zds-sheet:hover,
+.zds-sheet:focus-within {
+  transform: translateY(-1px);
+}
+
+.zds-sheet[data-selected="true"] {
+  border-color: var(--zds-accent);
+}
+
+.zds-sheet__plate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: var(--zds-sheet-plate-aspect);
+  background: var(--zds-surface-sunken);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  overflow: hidden;
+}
+
+.zds-sheet__plate > img,
+.zds-sheet__plate > canvas {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.zds-sheet__no-preview {
+  color: var(--zds-text-disabled);
+}
+
+/* The title block ------------------------------------------------- */
+
+.zds-sheet__block {
+  display: flex;
+  flex-direction: column;
+}
+
+.zds-sheet__name-row {
+  padding: var(--zds-space-2) var(--zds-space-3);
+  font-size: var(--zds-font-size-body);
+  font-weight: var(--zds-font-weight-medium);
+  letter-spacing: var(--zds-tracking-tight);
+  line-height: var(--zds-line-height-snug);
+  min-inline-size: 0;
+}
+
+.zds-sheet__name {
+  display: block;
+  inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--zds-text-primary);
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+/*
+ * Stretch the name's hit area over the whole card, so the card is one target
+ * while remaining a single real button in the accessibility tree.
+ */
+.zds-sheet__name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.zds-sheet__name:hover {
+  color: var(--zds-text-accent);
+}
+
+.zds-sheet__name:focus-visible {
+  outline: none;
+}
+
+.zds-sheet__name:focus-visible::after {
+  outline: 2px solid var(--zds-border-focus);
+  outline-offset: -2px;
+  border-radius: var(--zds-radius-content);
+}
+
+/* Fields are ruled off from each other with hairlines, like sheet fields. */
+.zds-sheet__fields {
+  display: flex;
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-sheet__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-inline-size: 0;
+  padding: var(--zds-space-1) var(--zds-space-3) var(--zds-space-2);
+}
+
+.zds-sheet__field + .zds-sheet__field {
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-sheet__field dd {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--zds-text-secondary);
+}
+
+.zds-sheet__actions {
+  position: absolute;
+  inset-block-start: var(--zds-space-1);
+  inset-inline-end: var(--zds-space-1);
+  display: flex;
+  gap: var(--zds-space-025);
+  /* Above the name's stretched hit area. */
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-sheet:hover .zds-sheet__actions,
+.zds-sheet:focus-within .zds-sheet__actions {
+  opacity: 1;
+}

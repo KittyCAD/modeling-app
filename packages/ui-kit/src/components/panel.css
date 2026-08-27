@@ -1,0 +1,43 @@
+.zds-panel {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  min-inline-size: 0;
+  block-size: 100%;
+  inline-size: 100%;
+  background: var(--zds-surface-panel);
+  overflow: hidden;
+}
+
+.zds-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zds-space-2);
+  /* Matches the status bar height so panel headers and the chassis strips
+     share one horizontal rhythm across the window. */
+  block-size: var(--zds-size-statusbar);
+  padding-inline: var(--zds-space-3);
+  flex: none;
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-panel__heading {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-025);
+  flex: none;
+}
+
+.zds-panel__body {
+  flex: 1;
+  min-block-size: 0;
+  min-inline-size: 0;
+  position: relative;
+}

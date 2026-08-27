@@ -1,0 +1,11 @@
+.zds-icon {
+  --zds-icon-size: var(--zds-size-icon-md);
+  --zds-icon-stroke: 1.25;
+
+  inline-size: var(--zds-icon-size);
+  block-size: var(--zds-icon-size);
+  flex: none;
+  stroke: currentColor;
+  stroke-width: var(--zds-icon-stroke);
+  fill: none;
+}

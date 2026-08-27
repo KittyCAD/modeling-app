@@ -1,0 +1,67 @@
+.zds-field {
+  --zds-field-height: var(--zds-size-control-md);
+  --zds-field-bg: var(--zds-surface-sunken);
+  --zds-field-border: var(--zds-border-default);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  min-inline-size: 0;
+}
+
+.zds-field--small {
+  --zds-field-height: var(--zds-size-control-sm);
+}
+
+.zds-field--large {
+  --zds-field-height: var(--zds-size-control-lg);
+}
+
+.zds-field__label {
+  color: var(--zds-text-tertiary);
+}
+
+.zds-field__control {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  block-size: var(--zds-field-height);
+  padding-inline: var(--zds-space-2);
+  background: var(--zds-field-bg);
+  border: var(--zds-size-hairline) solid var(--zds-field-border);
+  border-radius: var(--zds-radius-content);
+  transition: border-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-field__control:focus-within {
+  border-color: var(--zds-border-focus);
+}
+
+.zds-field__icon {
+  color: var(--zds-text-tertiary);
+}
+
+.zds-field__input {
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 100%;
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-primary);
+}
+
+.zds-field__input::placeholder {
+  color: var(--zds-text-disabled);
+}
+
+.zds-field__input:focus-visible {
+  outline: none;
+}
+
+/* Search fields carry the query itself, so they are set in mono: the value is
+   data, not prose. */
+.zds-field__input[type="search"],
+.zds-field__input[type="number"] {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}

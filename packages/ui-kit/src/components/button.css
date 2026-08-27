@@ -1,0 +1,145 @@
+/*
+ * Buttons.
+ *
+ * Every visual decision is exposed as a custom property on `.zds-button`, so a
+ * host app can restyle the component without touching this file or fighting
+ * selector specificity.
+ */
+
+.zds-button {
+  --zds-button-bg: transparent;
+  --zds-button-fg: var(--zds-text-primary);
+  --zds-button-border: transparent;
+  --zds-button-bg-hover: var(--zds-surface-hover);
+  --zds-button-bg-active: var(--zds-surface-active);
+  --zds-button-radius: var(--zds-radius-content);
+  --zds-button-height: var(--zds-size-control-md);
+  --zds-button-padding: var(--zds-space-2);
+  --zds-button-gap: var(--zds-space-2);
+  --zds-button-font-size: var(--zds-font-size-small);
+  --zds-button-font-weight: var(--zds-font-weight-medium);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zds-button-gap);
+  block-size: var(--zds-button-height);
+  padding-inline: var(--zds-button-padding);
+  border: var(--zds-size-hairline) solid var(--zds-button-border);
+  border-radius: var(--zds-button-radius);
+  background: var(--zds-button-bg);
+  color: var(--zds-button-fg);
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-button-font-size);
+  font-weight: var(--zds-button-font-weight);
+  letter-spacing: var(--zds-tracking-tight);
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  transition:
+    background-color var(--zds-motion-fast) var(--zds-motion-ease),
+    border-color var(--zds-motion-fast) var(--zds-motion-ease),
+    color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-button:hover:not(:disabled) {
+  background: var(--zds-button-bg-hover);
+}
+
+.zds-button:active:not(:disabled) {
+  background: var(--zds-button-bg-active);
+}
+
+.zds-button:disabled {
+  color: var(--zds-text-disabled);
+  --zds-button-bg: transparent;
+}
+
+.zds-button[aria-pressed="true"] {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
+}
+
+/* Sizes ------------------------------------------------------------ */
+
+.zds-button--small {
+  --zds-button-height: var(--zds-size-control-sm);
+  --zds-button-padding: var(--zds-space-2);
+  --zds-button-gap: var(--zds-space-1);
+  --zds-button-font-size: var(--zds-font-size-mini);
+}
+
+.zds-button--large {
+  --zds-button-height: var(--zds-size-control-lg);
+  --zds-button-padding: var(--zds-space-4);
+  --zds-button-font-size: var(--zds-font-size-body);
+}
+
+.zds-button--icon-only {
+  --zds-button-padding: 0px;
+  inline-size: var(--zds-button-height);
+}
+
+/* Variants --------------------------------------------------------- */
+
+/*
+ * Primary is the only button that uses accent as a fill. There should be at
+ * most one on screen at a time; the accent is the app's scarcest resource.
+ */
+.zds-button--primary {
+  --zds-button-bg: var(--zds-accent);
+  --zds-button-fg: var(--zds-accent-contrast);
+  --zds-button-bg-hover: oklch(from var(--zds-accent) calc(l + 0.05) c h);
+  --zds-button-bg-active: oklch(from var(--zds-accent) calc(l - 0.03) c h);
+  --zds-button-font-weight: var(--zds-font-weight-semibold);
+}
+
+.zds-button--primary:disabled {
+  --zds-button-bg: var(--zds-accent-muted);
+  --zds-button-fg: var(--zds-text-disabled);
+}
+
+.zds-button--secondary {
+  --zds-button-bg: var(--zds-surface-raised);
+  --zds-button-border: var(--zds-border-default);
+}
+
+.zds-button--ghost {
+  --zds-button-fg: var(--zds-text-secondary);
+}
+
+.zds-button--ghost:hover:not(:disabled) {
+  --zds-button-fg: var(--zds-text-primary);
+}
+
+.zds-button--danger {
+  --zds-button-fg: var(--zds-text-fault);
+  --zds-button-border: var(--zds-border-subtle);
+  --zds-button-bg-hover: oklch(from var(--zds-status-fault) l c h / 0.14);
+  --zds-button-bg-active: oklch(from var(--zds-status-fault) l c h / 0.22);
+}
+
+/*
+ * Chassis buttons are part of the frame, not content: square corners so they
+ * tile against the seams, and a muted resting colour so a row of them reads as
+ * one strip rather than as a row of separate controls.
+ */
+.zds-button--chassis {
+  --zds-button-radius: var(--zds-radius-chassis);
+  --zds-button-fg: var(--zds-text-tertiary);
+  --zds-button-height: 100%;
+  --zds-button-padding: var(--zds-space-2);
+}
+
+.zds-button--chassis:hover:not(:disabled) {
+  --zds-button-fg: var(--zds-text-primary);
+}
+
+.zds-button--chassis[aria-pressed="true"] {
+  --zds-button-fg: var(--zds-text-primary);
+}
+
+.zds-button__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

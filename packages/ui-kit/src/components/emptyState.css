@@ -1,0 +1,69 @@
+.zds-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zds-space-2);
+  block-size: 100%;
+  inline-size: 100%;
+  padding: var(--zds-space-6);
+  text-align: center;
+  /* Empty surfaces read as sunken: nothing has been placed on them yet. */
+  background: var(--zds-surface-sunken);
+}
+
+/*
+ * The mark is a drafting-style blank plate: a dashed square, the way an
+ * unresolved detail is left on a drawing sheet.
+ */
+.zds-empty__mark {
+  display: grid;
+  place-items: center;
+  inline-size: var(--zds-space-10);
+  block-size: var(--zds-space-10);
+  margin-block-end: var(--zds-space-1);
+  border: var(--zds-size-hairline) dashed var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-empty__eyebrow {
+  color: var(--zds-text-tertiary);
+}
+
+.zds-empty__title {
+  font-size: var(--zds-font-size-body);
+  font-weight: var(--zds-font-weight-medium);
+  color: var(--zds-text-secondary);
+  letter-spacing: var(--zds-tracking-tight);
+}
+
+.zds-empty__description {
+  max-inline-size: 34ch;
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+  line-height: var(--zds-line-height-body);
+}
+
+.zds-empty__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  margin-block-start: var(--zds-space-2);
+}
+
+.zds-empty--page .zds-empty__mark {
+  inline-size: var(--zds-space-16);
+  block-size: var(--zds-space-16);
+}
+
+.zds-empty--page .zds-empty__title {
+  font-size: var(--zds-font-size-title);
+  color: var(--zds-text-primary);
+  letter-spacing: var(--zds-tracking-display);
+}
+
+.zds-empty--page .zds-empty__description {
+  max-inline-size: 44ch;
+  font-size: var(--zds-font-size-body);
+}

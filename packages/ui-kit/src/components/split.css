@@ -1,0 +1,83 @@
+.zds-split {
+  --zds-split-gutter: var(--zds-size-hairline);
+  /* How far past the visible hairline the drag target extends. */
+  --zds-split-grab: 4px;
+
+  display: grid;
+  block-size: 100%;
+  inline-size: 100%;
+  min-block-size: 0;
+  min-inline-size: 0;
+  background: var(--zds-surface-chassis);
+}
+
+.zds-split--inline {
+  grid-auto-flow: column;
+}
+
+.zds-split--block {
+  grid-auto-flow: row;
+}
+
+.zds-split__pane {
+  position: relative;
+  min-inline-size: 0;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+/*
+ * The gutter is one hairline wide but grabbable well past that. Making the hit
+ * area larger than the visual keeps dense layouts usable without drawing thick
+ * dividers between every pane.
+ */
+.zds-split__gutter {
+  position: relative;
+  background: var(--zds-seam-shadow);
+  transition: background-color var(--zds-motion-fast) var(--zds-motion-ease);
+  touch-action: none;
+}
+
+.zds-split__gutter::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+}
+
+.zds-split--inline > .zds-split__gutter {
+  cursor: col-resize;
+}
+
+.zds-split--inline > .zds-split__gutter::after {
+  inset-block: 0;
+  inset-inline: calc(-1 * var(--zds-split-grab));
+}
+
+.zds-split--block > .zds-split__gutter {
+  cursor: row-resize;
+}
+
+.zds-split--block > .zds-split__gutter::after {
+  inset-inline: 0;
+  inset-block: calc(-1 * var(--zds-split-grab));
+}
+
+.zds-split__gutter:hover,
+.zds-split__gutter:focus-visible,
+.zds-split[data-dragging="true"] .zds-split__gutter:focus-within {
+  background: var(--zds-accent);
+}
+
+.zds-split__gutter:focus-visible {
+  outline: none;
+}
+
+/* While dragging, stop text selection and pointer events inside the panes so
+   the drag cannot be stolen by an iframe, a canvas, or a text run. */
+.zds-split[data-dragging="true"] {
+  user-select: none;
+}
+
+.zds-split[data-dragging="true"] .zds-split__pane {
+  pointer-events: none;
+}
