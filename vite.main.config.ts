@@ -1,99 +1,41 @@
-// @ts-ignore: No types available
-import { lezer } from '@lezer/generator/rollup'
-import viteJsPluginReact from '@vitejs/plugin-react'
-import type { ConfigEnv, UserConfig } from 'vite'
-import { mergeConfig } from 'vite'
-import vitePluginPackageVersion from 'vite-plugin-package-version'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig } from 'vitest/config'
-import { configDefaults } from 'vitest/config'
-
+import type { ConfigEnv } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import {
   external,
   getBuildConfig,
   getBuildDefine,
-  ignoredWatchPathGlobs,
   pluginHotRestart,
 } from './vite.base.config'
 
-// https://vitejs.dev/config
+/**
+ * Electron main process build.
+ *
+ * The main process is Node, not a browser: no JSX, no CSS, no polyfills. Its
+ * only job here is to be bundled to CJS with Electron and the Node builtins
+ * left external.
+ */
 export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'build'>
   const { forgeConfigSelf } = forgeEnv
-  const define = getBuildDefine(forgeEnv)
-  const config = {
-    server: {
-      open: true,
-      port: 3000,
-      watch: {
-        ignored: ignoredWatchPathGlobs,
-      },
-    },
-    test: {
-      pool: 'forks',
-      poolOptions: {
-        forks: {
-          maxForks: 2,
-          minForks: 1,
-        },
-      },
-      setupFiles: ['src/setupTests.ts', '@vitest/web-worker'],
-      environment: 'happy-dom',
-      coverage: {
-        provider: 'v8',
-      },
-      exclude: [...configDefaults.exclude, '**/e2e/**/*'],
-      deps: {
-        optimizer: {
-          web: {
-            include: ['vitest-canvas-mock'],
-          },
-        },
-      },
-      clearMocks: true,
-      restoreMocks: true,
-      mockReset: true,
-      reporters: process.env.GITHUB_ACTIONS
-        ? ['dot', 'github-actions']
-        : ['verbose', 'hanging-process'],
-      testTimeout: 1000,
-      hookTimeout: 1000,
-      teardownTimeout: 1000,
-    },
+
+  return mergeConfig(getBuildConfig(forgeEnv), {
+    // A Node bundle has no use for the public directory, and copying it here
+    // duplicates every asset in the app into the build output.
+    publicDir: false,
     build: {
       lib: {
-        entry: forgeConfigSelf?.entry ?? 'src/main.ts',
+        entry: forgeConfigSelf?.entry ?? 'src/desktop/main.ts',
         fileName: () => '[name].js',
         formats: ['cjs'],
       },
-      rollupOptions: {
-        external,
-      },
+      rollupOptions: { external },
     },
     resolve: {
-      // Load the Node.js entry.
+      // Load the Node.js entry of any dependency, not the browser one.
       mainFields: ['module', 'jsnext:main', 'jsnext'],
-      alias: {
-        '@kittycad/codemirror-lsp-client':
-          '/packages/codemirror-lsp-client/src',
-      },
+      alias: [{ find: '@src', replacement: '/src' }],
     },
-    plugins: [
-      pluginHotRestart('restart'),
-      viteJsPluginReact({
-        babel: {
-          plugins: [['module:@preact/signals-react-transform']],
-        },
-      }),
-      viteTsconfigPaths(),
-      vitePluginPackageVersion(),
-      lezer(),
-    ],
-    worker: {
-      plugins: () => [viteTsconfigPaths()],
-    },
-    define,
-  }
-
-  return mergeConfig(getBuildConfig(forgeEnv), config)
+    plugins: [pluginHotRestart('restart')],
+    define: getBuildDefine(forgeEnv),
+  })
 })

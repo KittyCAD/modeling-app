@@ -150,7 +150,10 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
     name: '@electron-forge/plugin-vite:hot-restart',
     closeBundle() {
       if (command === 'reload') {
-        for (const server of Object.values(process.viteDevServers)) {
+        // Only populated while electron-forge is running a dev server. A plain
+        // build (`npm run tronb:vite:dev`) has none, and iterating undefined
+        // here used to fail the whole build after the bundle had succeeded.
+        for (const server of Object.values(process.viteDevServers ?? {})) {
           // Preload scripts hot reload.
           server.ws.send({ type: 'full-reload' })
         }

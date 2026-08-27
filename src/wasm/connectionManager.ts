@@ -17,7 +17,10 @@
  * `src/wasm/fileSystemManager.ts`.
  */
 
-import type { ModelingCommandRequest, WasmEngineTransport } from '@src/wasm/bridge'
+import type {
+  ModelingCommandRequest,
+  WasmEngineTransport,
+} from '@src/wasm/bridge'
 
 function transport(): WasmEngineTransport {
   const host = globalThis as typeof globalThis & {

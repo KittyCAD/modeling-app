@@ -1,43 +1,33 @@
-import type { ConfigEnv, UserConfig } from 'vite'
+import type { ConfigEnv } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { external, getBuildConfig, pluginHotRestart } from './vite.base.config'
 
-import {
-  external,
-  getBuildConfig,
-  getBuildDefine,
-  pluginHotRestart,
-} from './vite.base.config'
-
-// https://vitejs.dev/config
+/**
+ * Preload build.
+ *
+ * Runs in a privileged context alongside the renderer, so it is bundled the
+ * same way as the main process: CJS, Electron external.
+ */
 export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'build'>
-  const define = getBuildDefine(forgeEnv)
-  const { root, mode, forgeConfigSelf } = forgeEnv
-  const config: UserConfig = {
-    root,
-    mode,
-    base: './',
+  const { forgeConfigSelf } = forgeEnv
+
+  return mergeConfig(getBuildConfig(forgeEnv), {
+    // A Node bundle has no use for the public directory, and copying it here
+    // duplicates every asset in the app into the build output.
+    publicDir: false,
     build: {
       lib: {
-        entry: forgeConfigSelf?.entry ?? 'src/preload.ts',
+        entry: forgeConfigSelf?.entry ?? 'src/desktop/preload.ts',
         fileName: () => '[name].js',
         formats: ['cjs'],
       },
-      rollupOptions: {
-        external,
-      },
+      rollupOptions: { external },
     },
     resolve: {
-      // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext'],
+      alias: [{ find: '@src', replacement: '/src' }],
     },
-    plugins: [pluginHotRestart('restart'), viteTsconfigPaths()],
-    worker: {
-      plugins: () => [viteTsconfigPaths()],
-    },
-    define,
-  }
-
-  return mergeConfig(getBuildConfig(forgeEnv), config)
+    plugins: [pluginHotRestart('reload')],
+  })
 })
