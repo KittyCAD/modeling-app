@@ -29,7 +29,15 @@ export type BufferId = string
  */
 export interface BufferStructuralContext {
   bufferId: BufferId
-  /** Null for a scratch buffer with no file behind it. */
+  /**
+   * The buffer's resource identity: an absolute path the filesystem accepts.
+   *
+   * Absolute rather than project-relative because this is what capabilities
+   * *act on* — persistence writes it, and an LSP will address it. The
+   * project-relative form is a presentation concern and lives on the session.
+   *
+   * Null for a scratch buffer with no file behind it.
+   */
   path: string | null
   languageId: string
   fileBacked: boolean
@@ -122,6 +130,7 @@ export type BufferReconcileOutcome =
  */
 export interface BufferSnapshot {
   bufferId: BufferId
+  /** Absolute resource path. Null for a scratch buffer. */
   path: string | null
   pathRevision: number
   version: number
@@ -149,7 +158,7 @@ export interface FileBackedTextBuffer {
   readonly state: ReadonlySignal<EditorState>
   readonly text: ReadonlySignal<string>
 
-  /** Null for a scratch buffer. */
+  /** Absolute resource path. Null for a scratch buffer. */
   readonly path: ReadonlySignal<string | null>
   readonly name: ReadonlySignal<string>
   /** Increments on every path change. Guards path-scoped async work. */

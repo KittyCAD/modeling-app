@@ -42,6 +42,9 @@ export interface ProjectSession {
    *
    * `path` is project-relative. Every file type takes this one path — KCL,
    * markdown, TOML, plaintext — so nothing downstream branches on which.
+   *
+   * Buffers themselves hold absolute paths, since that is what capabilities act
+   * on; the session is where the two representations meet.
    */
   openFile(path: string): Promise<FileBackedTextBuffer>
   /** A buffer with no file behind it. Never autosaved. */
@@ -52,6 +55,15 @@ export interface ProjectSession {
   buffer(bufferId: BufferId): FileBackedTextBuffer | undefined
   /** The buffer open for a project-relative path, if any. */
   bufferForPath(path: string): FileBackedTextBuffer | undefined
+  /**
+   * A buffer's path relative to the project root.
+   *
+   * The presentation form: breadcrumbs, the explorer, and the URL all want this
+   * rather than an absolute path nobody needs to read.
+   */
+  relativePathFor(buffer: FileBackedTextBuffer): string | null
+  /** The active buffer's project-relative path, for the URL and the top bar. */
+  readonly activeBufferPath: ReadonlySignal<string | null>
   closeBuffer(bufferId: BufferId): void
   setActiveBuffer(bufferId: BufferId | null): void
   setExecutingBuffer(bufferId: BufferId | null): void
@@ -82,6 +94,7 @@ export interface ProjectSession {
 
 export interface BufferReconcileReport {
   bufferId: BufferId
+  /** Project-relative, for reporting to the user. */
   path: string
   outcome: 'unchanged' | 'adopted' | 'diverged'
 }

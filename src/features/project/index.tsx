@@ -131,8 +131,9 @@ export default defineRegistryItemFactory((ctx) => {
     return {
       kind: 'project' as const,
       projectId: session.project.value.id,
-      // A scratch buffer has no path, so it contributes nothing to the URL.
-      filePath: session.activeBuffer.value?.path.value ?? undefined,
+      // Project-relative, and absent for a scratch buffer, which has no path to
+      // put in a URL at all.
+      filePath: session.activeBufferPath.value ?? undefined,
     }
   })
 

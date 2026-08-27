@@ -84,9 +84,16 @@ export function createProjectSession(
     }
   }
 
+  /** Callers pass project-relative paths; buffers hold absolute ones. */
   const bufferForPath = (path: string) => {
-    const normalized = normalizePath(path)
-    return buffers.value.find((buffer) => buffer.path.peek() === normalized)
+    const absolute = absolutePath(normalizePath(path))
+    return buffers.value.find((buffer) => buffer.path.peek() === absolute)
+  }
+
+  const relativePathFor = (buffer: FileBackedTextBuffer) => {
+    const current = buffer.path.peek()
+    if (current === null) return null
+    return relativePath(project.peek().path, current) ?? current
   }
 
   const openFile = async (path: string) => {
@@ -97,9 +104,12 @@ export function createProjectSession(
       return existing
     }
 
-    const contents = await fileSystem.readTextFile(absolutePath(normalized))
+    const absolute = absolutePath(normalized)
+    const contents = await fileSystem.readTextFile(absolute)
     const buffer = createFileBackedTextBuffer({
-      path: normalized,
+      // Absolute: this is the resource capabilities act on. Persistence writes
+      // it and an LSP would address it; the relative form is presentation only.
+      path: absolute,
       contents,
       // Clean on open: what is on screen is what is on disk.
       baseContent: contents,
@@ -220,9 +230,16 @@ export function createProjectSession(
     },
     setExecutingBuffer,
 
+    relativePathFor,
+    activeBufferPath: computed(() => {
+      const buffer = activeBuffer.value
+      return buffer ? relativePathFor(buffer) : null
+    }),
+
     renameBufferPath(bufferId, nextPath) {
-      // Identity is untouched; only the path metadata moves.
-      bufferById(bufferId)?.setPath(normalizePath(nextPath))
+      // Identity is untouched; only the path metadata moves. Accepts a
+      // project-relative path, like every other session API.
+      bufferById(bufferId)?.setPath(absolutePath(normalizePath(nextPath)))
     },
 
     refreshFiles,

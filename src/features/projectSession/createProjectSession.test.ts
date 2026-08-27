@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
+import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
+import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
 import { createProjectSession } from '@src/features/projectSession/createProjectSession'
 import {
   type FakeFileSystem,
@@ -100,10 +102,20 @@ describe('project session', () => {
     expect(session.activeBuffer.value?.id).toBe(buffer.id)
   })
 
-  it('resolves buffer paths against the project folder', async () => {
-    await session.openFile('main.kcl')
-    // The buffer keeps the project-relative path; only reads are absolute.
-    expect(session.activeBuffer.value?.path.value).toBe('main.kcl')
+  it('gives the buffer an absolute resource path and the session a relative one', async () => {
+    const buffer = await session.openFile('main.kcl')
+
+    // Absolute is what capabilities act on: persistence writes this path.
+    expect(buffer.path.value).toBe('/projects/bracket/main.kcl')
+    // Relative is presentation: breadcrumbs, the explorer, and the URL.
+    expect(session.relativePathFor(buffer)).toBe('main.kcl')
+    expect(session.activeBufferPath.value).toBe('main.kcl')
+  })
+
+  it('has no relative path for a scratch buffer', () => {
+    const buffer = session.openScratch()
+    expect(session.relativePathFor(buffer)).toBeNull()
+    expect(session.activeBufferPath.value).toBeNull()
   })
 
   it('assigns language from the extension', async () => {
@@ -284,7 +296,9 @@ describe('project snapshots', () => {
     buffer.dispatch({ changes: { from: 0, insert: '// draft\n' } })
 
     const snapshot = session.captureSnapshot()
-    const captured = snapshot.buffers.find((b) => b.path === 'main.kcl')
+    const captured = snapshot.buffers.find(
+      (b) => b.path === '/projects/bracket/main.kcl'
+    )
 
     // The point of reading buffers rather than the filesystem: a commit or an
     // export sees what the user is looking at.
@@ -293,6 +307,39 @@ describe('project snapshots', () => {
     expect(fileSystem.files.get('/projects/bracket/main.kcl')).toBe(
       'thickness = 4'
     )
+  })
+
+  it('writes autosaves to the file the buffer actually came from', async () => {
+    // The regression this guards: persistence used the buffer's path verbatim,
+    // and the buffer held a project-relative one, so every save landed at the
+    // filesystem root instead of inside the project. The dirty flag still
+    // cleared, so only checking the bytes catches it.
+    const persisted = createFakeFileSystem({
+      '/projects/bracket/main.kcl': 'thickness = 4',
+    })
+    const withPersistence = createProjectSession(realization, library, {
+      fileSystem: persisted,
+      capabilities: combineCapabilities([
+        createPersistenceCapability({
+          fileSystem: () => persisted,
+          queue: () => createFsOperationQueue(),
+        }),
+      ]),
+      themes: [],
+    })
+    await settle()
+
+    const buffer = await withPersistence.openFile('main.kcl')
+    buffer.dispatch({ changes: { from: 0, insert: '// saved\n' } })
+    // Disposal flushes the pending write, so the debounce need not be waited on.
+    withPersistence.closeBuffer(buffer.id)
+    await settle()
+    await settle()
+
+    expect(persisted.files.get('/projects/bracket/main.kcl')).toContain(
+      '// saved'
+    )
+    expect(persisted.files.has('main.kcl')).toBe(false)
   })
 
   it('records identity and versions for every buffer', async () => {

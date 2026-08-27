@@ -78,7 +78,7 @@ function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
       <header class="zds-editor__bar">
         <span class="zds-label">{buffer.languageId}</span>
         <span class="zds-editor__path zds-value">
-          {buffer.path.value ?? 'scratch buffer'}
+          {sessions.current.value?.relativePathFor(buffer) ?? 'scratch buffer'}
         </span>
         {buffer.dirty.value ? (
           <span class="zds-editor__dirty zds-label" title="Unsaved changes">
