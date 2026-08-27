@@ -65,11 +65,15 @@ function createConstraintObject({
   }
 }
 
-function createMouseEvent(point: Coords2d) {
+function createMouseEvent(
+  point: Coords2d,
+  { shiftKey = false }: { shiftKey?: boolean } = {}
+) {
   return {
     mouseEvent: {
       which: 1,
       detail: 1,
+      shiftKey,
     },
     intersectionPoint: {
       twoD: {
@@ -446,6 +450,68 @@ describe('dimensionTool distance selection', () => {
 })
 
 describe('dimensionTool', () => {
+  it('starts a smart line-length draft on the first unmodified click', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      lineStart,
+      lineEnd,
+      line,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([2, 1.5]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      segments: [1, 2],
+      distance: { value: 5, units: 'Mm' },
+    })
+
+    callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 1
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[0][3]
+    ).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: [1, 2],
+      distance: { value: 4, units: 'Mm' },
+    })
+
+    callbacks.onMove(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 2
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[1][3]
+    ).toMatchObject({
+      type: 'VerticalDistance',
+      segments: [1, 2],
+      distance: { value: 3, units: 'Mm' },
+    })
+
+    callbacks.onClick(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 3
+    )
+    const commitCall = (rustContext.editDistanceConstraint as any).mock.calls[2]
+    expect(commitCall[3].type).toBe('VerticalDistance')
+    expect(commitCall[5]).toBe(true)
+    expect(commitCall[6]).toBe(true)
+  })
+
   it('creates a distance draft after selecting the origin and a point', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const point = createPointApiObject({ id: 2, x: 4, y: 3 })
@@ -537,7 +603,10 @@ describe('dimensionTool', () => {
     expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
   })
 
-  async function expectPointLineDraft(clicks: [Coords2d, Coords2d]) {
+  async function expectPointLineDraft(
+    clicks: [Coords2d, Coords2d],
+    { shiftFirst = false }: { shiftFirst?: boolean } = {}
+  ) {
     const sketch = createSketchApiObject({ id: 0 })
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
     const lineEnd = createPointApiObject({ id: 2, x: 10, y: 0 })
@@ -552,7 +621,7 @@ describe('dimensionTool', () => {
     ])
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent(clicks[0]))
+    callbacks.onClick(createMouseEvent(clicks[0], { shiftKey: shiftFirst }))
     callbacks.onClick(createMouseEvent(clicks[1]))
 
     await waitFor(
@@ -574,10 +643,13 @@ describe('dimensionTool', () => {
   })
 
   it('creates a point-to-line draft after selecting a line then a point', async () => {
-    await expectPointLineDraft([
-      [5, 0],
-      [5, 4],
-    ])
+    await expectPointLineDraft(
+      [
+        [5, 0],
+        [5, 4],
+      ],
+      { shiftFirst: true }
+    )
   })
 
   it('creates a distance draft after selecting two parallel lines', async () => {
@@ -599,7 +671,8 @@ describe('dimensionTool', () => {
     ])
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([5, 0]))
+    callbacks.onClick(createMouseEvent([5, 0], { shiftKey: true }))
+    expect((rustContext.addConstraint as any).mock.calls).toHaveLength(0)
     callbacks.onClick(createMouseEvent([5, 4]))
 
     await waitFor(
@@ -653,7 +726,7 @@ describe('dimensionTool', () => {
       ])
       const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-      callbacks.onClick(createMouseEvent(clicks[0]))
+      callbacks.onClick(createMouseEvent(clicks[0], { shiftKey: true }))
       callbacks.onClick(createMouseEvent(clicks[1]))
 
       await waitFor(
@@ -831,7 +904,7 @@ describe('dimensionTool', () => {
       createParentHarness(objects)
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([8, 0]))
+    callbacks.onClick(createMouseEvent([8, 0], { shiftKey: true }))
     callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(
@@ -927,7 +1000,7 @@ describe('dimensionTool', () => {
     const { actor, sceneInfra, rustContext } = createParentHarness(objects)
     const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
 
-    callbacks.onClick(createMouseEvent([8, 0]))
+    callbacks.onClick(createMouseEvent([8, 0], { shiftKey: true }))
     callbacks.onClick(createMouseEvent([2.5, 4.330127018922193]))
 
     await waitFor(
