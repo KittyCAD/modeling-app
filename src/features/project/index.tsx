@@ -214,14 +214,22 @@ export default defineRegistryItemFactory((ctx) => {
             const session = await sessions().open(decodeURIComponent(match[1]))
             if (!session) return true
 
-            // The file is a nicety on top of the project: a bad one should not
-            // stop the project from opening.
             const file = url.searchParams.get('file')
-            if (file) {
-              await session.openFile(file).catch((error) => {
-                console.warn(`project: could not open "${file}"`, error)
-              })
+
+            if (!file) {
+              // Absence is part of what the URL describes. Without this, going
+              // Back to a fileless URL would leave the buffer on screen and the
+              // URL and the view would disagree — the one thing this design is
+              // meant to make impossible. The buffer stays open; only the
+              // selection clears, which is the point of separating the two.
+              session.setActiveBuffer(null)
+              return true
             }
+
+            // A bad file should not stop the project from opening.
+            await session.openFile(file).catch((error) => {
+              console.warn(`project: could not open "${file}"`, error)
+            })
             return true
           },
         }),
