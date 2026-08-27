@@ -963,19 +963,37 @@ describe('project system', () => {
       await expect(fsZds.readFile(renamedPath, 'utf8')).resolves.toBe(
         'created = true\n'
       )
-      expect(queue.getJournal()).toEqual([
+      const journal = queue.getJournal()
+      const writeBatch = journal[0]
+      const renameBatch = journal[3]
+      expect(journal).toEqual([
+        expect.objectContaining({
+          kind: 'write-file',
+          metadata: { service: 'projectSession' },
+          status: 'completed',
+          targetPath: createdPath,
+        }),
         expect.objectContaining({
           kind: 'mkdir',
+          parentId: writeBatch.id,
           status: 'completed',
           targetPath: fsZds.dirname(createdPath),
         }),
         expect.objectContaining({
           kind: 'write-file',
+          parentId: writeBatch.id,
           status: 'completed',
           targetPath: createdPath,
         }),
         expect.objectContaining({
+          kind: 'rename-entry',
+          metadata: { service: 'projectSession' },
+          status: 'completed',
+          targetPath: renamedPath,
+        }),
+        expect.objectContaining({
           kind: 'rename',
+          parentId: renameBatch.id,
           sourcePath: createdPath,
           status: 'completed',
           targetPath: renamedPath,
