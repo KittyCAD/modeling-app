@@ -454,7 +454,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
         `fillet001 = fillet(
   part,
   tags = getCommonEdge(faces = [
-    boxRegion.tags.rightEdge,
+    part.sketch.tags.rightEdge,
     part.faces.capEnd001
   ]),
   radius = 1,
