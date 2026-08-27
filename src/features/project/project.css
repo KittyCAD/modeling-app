@@ -92,7 +92,7 @@
   white-space: nowrap;
 }
 
-.zds-editor__badge {
+.zds-editor__dirty {
   flex: none;
   padding: 1px var(--zds-space-1);
   border: var(--zds-size-hairline) solid var(--zds-border-subtle);
@@ -100,39 +100,40 @@
   color: var(--zds-text-flag);
 }
 
-.zds-editor__body {
+/*
+ * The divergence bar.
+ *
+ * Flag-coloured rather than fault-coloured: a file changing under you is a
+ * decision to make, not a failure. It sits between the header and the document
+ * so it cannot be scrolled away from.
+ */
+.zds-editor__divergence {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  flex: none;
+  padding: var(--zds-space-2) var(--zds-space-3);
+  background: oklch(from var(--zds-status-warn) l c h / 0.12);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  color: var(--zds-text-flag);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-editor__divergence-text {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* The CodeMirror mount point. The editor owns its own scrolling. */
+.zds-editor__host {
   flex: 1;
   min-block-size: 0;
+  min-inline-size: 0;
+  overflow: hidden;
 }
 
-.zds-editor__doc {
-  margin: 0;
-  padding-block: var(--zds-space-2);
-  font-family: var(--zds-font-mono);
-  font-size: var(--zds-font-size-small);
-  line-height: 1.6;
-  color: var(--zds-text-secondary);
-  tab-size: 2;
-}
-
-.zds-editor__line {
-  display: flex;
-  gap: var(--zds-space-3);
-}
-
-.zds-editor__gutter {
-  flex: none;
-  inline-size: 3ch;
-  padding-inline-start: var(--zds-space-3);
-  text-align: end;
-  color: var(--zds-text-disabled);
-  font-variant-numeric: tabular-nums;
-  user-select: none;
-}
-
-.zds-editor__text {
-  white-space: pre;
-  padding-inline-end: var(--zds-space-4);
+.zds-editor__host .cm-editor {
+  block-size: 100%;
 }
 
 /* Viewport --------------------------------------------------------- */

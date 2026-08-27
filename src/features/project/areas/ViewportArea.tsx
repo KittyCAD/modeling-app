@@ -22,7 +22,7 @@ export function ViewportArea() {
   const kclBuffers = useComputed(
     () =>
       session.value?.buffers.value.filter(
-        (buffer) => buffer.languageId === 'kcl'
+        (buffer) => buffer.languageId.value === 'kcl'
       ) ?? []
   )
 

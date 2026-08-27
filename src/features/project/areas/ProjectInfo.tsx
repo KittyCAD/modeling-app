@@ -105,7 +105,7 @@ export function ProjectInfo() {
                     </span>
                   ) : null}
                 </button>
-                {buffer.languageId === 'kcl' &&
+                {buffer.languageId.value === 'kcl' &&
                 executing.value?.id !== buffer.id ? (
                   <Button
                     variant="ghost"

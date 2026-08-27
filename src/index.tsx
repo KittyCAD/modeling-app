@@ -3,6 +3,8 @@ import { render } from 'preact'
 import { AppProvider } from '@src/app/context'
 import { createApp } from '@src/app/createApp'
 import { navigationService } from '@src/contracts/navigation'
+import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import { projectSessionService } from '@src/contracts/projectSession'
 import { themeService } from '@src/contracts/theme'
 import { AppShell } from '@src/features/shell/AppShell'
 
@@ -37,7 +39,21 @@ render(
 )
 
 if (import.meta.env.DEV) {
-  // Handy at a console breakpoint: `__zds.registry.inspect()` prints every
-  // resolved value spec and service provider with its source path.
-  Object.assign(window, { __zds: { app, theme, navigation } })
+  // Handy at a console breakpoint. `__zds.app.registry.inspect()` prints every
+  // resolved value spec and service provider with its source path, and the
+  // services below are the ones worth poking at by hand:
+  // `__zds.session.current.value.activeBuffer.value.snapshot()`.
+  Object.assign(window, {
+    __zds: {
+      app,
+      theme,
+      navigation,
+      get session() {
+        return app.registry.get(projectSessionService)
+      },
+      get libraries() {
+        return app.registry.get(projectLibrariesService)
+      },
+    },
+  })
 }
