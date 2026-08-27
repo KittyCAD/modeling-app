@@ -9,9 +9,9 @@ import {
 } from '@src/hooks/useProjectStatus'
 import type { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
 import {
   type CurrentProjectPublicationDetails,
   getCurrentProjectPublicationDetails,
@@ -19,10 +19,6 @@ import {
 } from '@src/lib/share'
 import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import {
-  homeProjectActionsService,
-  homeProjectEntriesValueSpec,
-} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -208,18 +204,15 @@ function PublishPopoverContent({
       }
 
       if (willMoveProjectToCloud && project) {
-        // A project-library move is normally initiated from Home, where no
-        // editor or project-settings watcher still owns the source path. Put
-        // this open-project move into the same lifecycle before touching disk.
-        app.closeProject()
-        app.settings.actor.send({ type: 'clear.project' })
-        await navigate(PATHS.HOME)
-
-        const movedDefaultFile = await moveProjectToCloudLibrary(app, project)
-        if (err(movedDefaultFile)) {
+        const moved = await moveOpenedProjectToCloudLibrary({
+          app,
+          project,
+          navigate,
+        })
+        if (err(moved)) {
           console.error(
             'Project was submitted to Aquarium but could not be moved to Personal Cloud',
-            movedDefaultFile
+            moved
           )
           toast.error(
             'Project submitted to Aquarium, but it could not be moved to Personal Cloud.',
@@ -227,8 +220,6 @@ function PublishPopoverContent({
           )
           return false
         }
-
-        await navigate(`${PATHS.FILE}/${encodeURIComponent(movedDefaultFile)}`)
       }
 
       return true
@@ -282,45 +273,6 @@ function PublishPopoverContent({
       )}
     </>
   )
-}
-
-/**
- * Moves the just-published local realization into its configured cloud library.
- * Publishing runs first so project.toml contains the remote ID before cloud
- * sync adopts the moved directory.
- */
-async function moveProjectToCloudLibrary(app: App, project: Project) {
-  try {
-    const actions = app.registry.optional(homeProjectActionsService)
-    const homeProject = app.registry
-      .get(homeProjectEntriesValueSpec)
-      .find((entry) => entry.localProjectPath === project.path)
-    const cloudLibraryTarget = homeProject
-      ? actions
-          ?.getMoveToLibraryTargets(homeProject)
-          .find((target) => target.library.type === CLOUD_PROJECT_LIBRARY_TYPE)
-      : undefined
-
-    if (!actions || !homeProject || !cloudLibraryTarget) {
-      return new Error('No cloud library is available for the open project.')
-    }
-
-    const result = await actions.moveToLibrary(
-      homeProject,
-      cloudLibraryTarget.library.id
-    )
-    if (!result?.defaultFile) {
-      return new Error(
-        'Moving the open project did not return its new file path.'
-      )
-    }
-
-    return result.defaultFile
-  } catch (error) {
-    return error instanceof Error
-      ? error
-      : new Error('Moving the open project to Personal Cloud failed.')
-  }
 }
 
 const aquariumStatusIcons = {
