@@ -1,4 +1,8 @@
-import { appendValueSpec, defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 
 export interface ProjectSummary {
@@ -64,4 +68,5 @@ export const projectsContract = defineContract({
   projectCatalogService: defineService<ProjectCatalog>('projects.catalog'),
 })
 
-export const { projectSourcesValueSpec, projectCatalogService } = projectsContract
+export const { projectSourcesValueSpec, projectCatalogService } =
+  projectsContract

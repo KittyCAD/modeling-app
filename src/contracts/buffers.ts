@@ -21,4 +21,12 @@ export interface EditorBuffer {
   readonly dirty: ReadonlySignal<boolean>
   /** Increments on every committed change. Used to reject stale work. */
   readonly version: ReadonlySignal<number>
+  /**
+   * The document as text.
+   *
+   * Survives the move to CodeMirror as a projection of the state's `doc`, so
+   * consumers that only want to read the document do not have to know about
+   * transactions.
+   */
+  readonly text: ReadonlySignal<string>
 }
