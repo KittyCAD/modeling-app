@@ -442,12 +442,16 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
         )
     )
 
-  const runQueuedMutation = <Result>(
+  /**
+   * Holds one queue batch across a session mutation and its derived refreshes.
+   * The bound facade lets nested project operations join without re-enqueueing.
+   */
+  const runFileSystemMutation = <Result>(
     operation: ProjectSessionMutationOperation,
     targetPath: string | undefined,
-    run: () => Promise<Result>
+    run: (fileSystemOperations: FsOperationBatch) => Promise<Result>
   ) =>
-    ctx.services.get(fsOperationQueue).run(
+    ctx.services.get(fsOperationQueue).batch(
       {
         kind: operation,
         targetPath,
@@ -455,7 +459,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           service: 'projectSession',
         },
       },
-      async () => {
+      async (fileSystemOperations) => {
         setMutation({
           pending: true,
           operation,
@@ -463,7 +467,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           lastTargetPath: mutation.value.lastTargetPath,
         })
         try {
-          const result = await run()
+          const result = await run(fileSystemOperations)
           setMutation({
             pending: false,
             operation,
@@ -481,7 +485,9 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       }
     )
 
-  const getDefaultProjectDirectoryPath = async () => {
+  const getDefaultProjectDirectoryPath = async (
+    fileSystemOperations?: FsOperationBatch
+  ) => {
     const currentSettings = settings.value?.current.value
     const configuredProjectDirectoryPath = currentSettings
       ? getDefaultDirectoryProjectLibraryPath(
@@ -498,8 +504,13 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       return Promise.reject(configuration)
     }
 
-    const projectDirectoryPath =
-      await ensureProjectDirectoryExists(configuration)
+    const ensureDirectory = () => ensureProjectDirectoryExists(configuration)
+    const projectDirectoryPath = fileSystemOperations
+      ? await fileSystemOperations.run(
+          { kind: 'ensure-project-directory' },
+          ensureDirectory
+        )
+      : await ensureDirectory()
     if (!projectDirectoryPath) {
       return Promise.reject(
         new Error('Unable to determine the project directory.')
@@ -517,13 +528,16 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     projectDirectoryPath,
     requestedProjectName,
     useReservedProjectName,
+    fileSystemOperations,
   }: {
     projectDirectoryPath?: string
     requestedProjectName?: string
     useReservedProjectName?: boolean
+    fileSystemOperations: FsOperationBatch
   }) => {
     const resolvedProjectDirectoryPath =
-      projectDirectoryPath ?? (await getDefaultProjectDirectoryPath())
+      projectDirectoryPath ??
+      (await getDefaultProjectDirectoryPath(fileSystemOperations))
     const targetProjectName = requestedProjectName || getDefaultProjectName()
     const projectName = useReservedProjectName
       ? targetProjectName
@@ -546,10 +560,12 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   const createKclFiles = (input: ProjectSessionCreateKclFilesInput) =>
-    runQueuedMutation(
+    runFileSystemMutation(
       'create-project-kcl-files',
       input.requestedProjectName,
-      async (): Promise<ProjectSessionProjectFilesResult> => {
+      async (
+        fileSystemOperations
+      ): Promise<ProjectSessionProjectFilesResult> => {
         if (input.files.length === 0) {
           return Promise.reject(
             new Error('Cannot create project files without any files.')
@@ -567,6 +583,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           projectDirectoryPath: input.projectDirectoryPath,
           requestedProjectName: writeProjectName,
           useReservedProjectName: input.useReservedProjectName,
+          fileSystemOperations,
         })
         let firstFileName: string | undefined
         let firstFilePath: string | undefined
@@ -603,14 +620,21 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             ? fsZds.join(relativeFileDirectory, fileName)
             : fileName
 
-          await createNewProjectDirectory(
-            targetProjectName,
-            wasmInstance,
-            file.requestedCode,
-            undefined,
-            projectRelativeFileName,
-            projectDirectoryPath,
-            input.requestedProjectTitle ?? targetProjectName
+          await fileSystemOperations.run(
+            {
+              kind: 'create-project-directory',
+              targetPath: targetProjectRoot,
+            },
+            () =>
+              createNewProjectDirectory(
+                targetProjectName,
+                wasmInstance,
+                file.requestedCode,
+                undefined,
+                projectRelativeFileName,
+                projectDirectoryPath,
+                input.requestedProjectTitle ?? targetProjectName
+              )
           )
           firstFileName ??= fileName
           firstFilePath ??= fsZds.join(
@@ -641,10 +665,12 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     )
 
   const importProjectFiles = (input: ProjectSessionImportProjectFilesInput) =>
-    runQueuedMutation(
+    runFileSystemMutation(
       'import-project-files',
       input.requestedProjectName,
-      async (): Promise<ProjectSessionProjectFilesResult> => {
+      async (
+        fileSystemOperations
+      ): Promise<ProjectSessionProjectFilesResult> => {
         if (input.files.length === 0) {
           return Promise.reject(
             new Error(
@@ -658,6 +684,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
             projectDirectoryPath: input.projectDirectoryPath,
             requestedProjectName: input.requestedProjectName,
             useReservedProjectName: true,
+            fileSystemOperations,
           })
         const requestedFileNameWithExtension =
           input.requestedFileNameWithExtension || ''
@@ -675,11 +702,16 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
           )
         }
 
-        await fsZds.mkdir(projectRoot, { recursive: true })
+        await fileSystemOperations.mkdir(projectRoot, { recursive: true })
         for (const file of input.files) {
           const targetPath = fsZds.join(projectRoot, file.requestedFileName)
-          await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-          await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+          await fileSystemOperations.mkdir(fsZds.dirname(targetPath), {
+            recursive: true,
+          })
+          await fileSystemOperations.writeFile(
+            targetPath,
+            Uint8Array.from(file.requestedData)
+          )
         }
 
         const filePath = requestedFileNameWithExtension
@@ -704,31 +736,37 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     )
 
   const writeFileAtPath = (input: ProjectSessionWriteFileAtPathInput) =>
-    runQueuedMutation('write-file-at-path', input.path, async () => {
-      if (!input.overwrite) {
-        try {
-          await fsZds.stat(input.path)
-          return Promise.reject(
-            new Error(`File "${fsZds.basename(input.path)}" already exists.`)
-          )
-        } catch (error) {
-          if (!isPathNotFoundError(error)) {
-            return Promise.reject(error)
+    runFileSystemMutation(
+      'write-file-at-path',
+      input.path,
+      async (fileSystemOperations) => {
+        if (!input.overwrite) {
+          try {
+            await fsZds.stat(input.path)
+            return Promise.reject(
+              new Error(`File "${fsZds.basename(input.path)}" already exists.`)
+            )
+          } catch (error) {
+            if (!isPathNotFoundError(error)) {
+              return Promise.reject(error)
+            }
           }
         }
-      }
 
-      await fsZds.mkdir(fsZds.dirname(input.path), { recursive: true })
-      await fsZds.writeFile(
-        input.path,
-        typeof input.contents === 'string'
-          ? new TextEncoder().encode(input.contents)
-          : input.contents
-      )
-      invalidateProjectLibraryRealizations()
-      await refreshOpenProjectTreeForPath(input.path)
-      return input.path
-    })
+        await fileSystemOperations.mkdir(fsZds.dirname(input.path), {
+          recursive: true,
+        })
+        await fileSystemOperations.writeFile(
+          input.path,
+          typeof input.contents === 'string'
+            ? new TextEncoder().encode(input.contents)
+            : input.contents
+        )
+        invalidateProjectLibraryRealizations()
+        await refreshOpenProjectTreeForPath(input.path)
+        return input.path
+      }
+    )
 
   const openProjectFile = (input: ProjectSessionOpenEditorInput) =>
     runProjectOperation(
@@ -763,7 +801,14 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       clearCloudSyncOpenedProject()
     },
     getProjectTree: () => projectTree.value,
-    getDefaultProjectDirectoryPath,
+    getDefaultProjectDirectoryPath: () =>
+      ctx.services.get(fsOperationQueue).batch(
+        {
+          kind: 'ensure-project-directory',
+          metadata: { service: 'projectSession' },
+        },
+        getDefaultProjectDirectoryPath
+      ),
     waitForIdle: () => ctx.services.get(fsOperationQueue).waitForIdle(),
     refreshProjectTree,
     openEditor: openProjectFile,
