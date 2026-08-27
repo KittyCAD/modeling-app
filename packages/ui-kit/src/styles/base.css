@@ -1,0 +1,218 @@
+/*
+ * Base typography and the shared vocabulary of the design language.
+ *
+ * Everything here is a device that carries meaning, not a utility grab bag:
+ *
+ *   .zds-label       the metadata voice — mono, uppercase, tracked
+ *   .zds-numeric     figures that must hold their column
+ *   .zds-seam-*      machined panel gaps between chassis regions
+ *   .zds-datum       the focus marker, and the one place accent appears
+ *   .zds-rule        a drafting rule with tick terminators
+ */
+
+body {
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-body);
+  line-height: var(--zds-line-height-body);
+  letter-spacing: var(--zds-tracking-tight);
+  color: var(--zds-text-primary);
+  background: var(--zds-surface-chassis);
+  font-feature-settings:
+    "cv05" 1,
+    "cv08" 1,
+    "ss03" 1;
+}
+
+/*
+ * The metadata voice.
+ *
+ * Every micro-label in the chassis uses this: status bar fields, pane rail
+ * names, title-block field names, section eyebrows. Setting metadata in mono
+ * and content in sans is what makes the shell read as an instrument rather
+ * than as a web page, and it means you can tell at a glance whether a piece of
+ * text is a value or a name for one.
+ */
+.zds-label {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  font-weight: var(--zds-font-weight-medium);
+  line-height: var(--zds-line-height-tight);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+}
+
+/* Values sitting next to a .zds-label. Mono, but not shouted. */
+.zds-value {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--zds-tracking-none);
+  color: var(--zds-text-secondary);
+}
+
+/* Any figure that changes in place — coordinates, counts, timings. Tabular
+   figures stop the surrounding layout from twitching as digits change. */
+.zds-numeric {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.zds-display {
+  font-size: var(--zds-font-size-display);
+  font-weight: var(--zds-font-weight-semibold);
+  line-height: var(--zds-line-height-tight);
+  letter-spacing: var(--zds-tracking-display);
+  color: var(--zds-text-primary);
+}
+
+.zds-title {
+  font-size: var(--zds-font-size-title);
+  font-weight: var(--zds-font-weight-semibold);
+  line-height: var(--zds-line-height-snug);
+  letter-spacing: var(--zds-tracking-display);
+}
+
+.zds-body-secondary {
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+  line-height: var(--zds-line-height-body);
+}
+
+/*
+ * Seams.
+ *
+ * A chassis divider is drawn as two hairlines: a dark scribe line and a light
+ * land on the near side. That is what a real panel gap looks like, and it
+ * separates dense regions far more legibly than a single grey border while
+ * using less contrast.
+ */
+.zds-seam-block-end {
+  border-block-end: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+  box-shadow: 0 var(--zds-size-hairline) 0 0 var(--zds-seam-light);
+}
+
+.zds-seam-block-start {
+  border-block-start: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+  box-shadow: 0 calc(-1 * var(--zds-size-hairline)) 0 0 var(--zds-seam-light)
+    inset;
+}
+
+.zds-seam-inline-end {
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+  box-shadow: var(--zds-size-hairline) 0 0 0 var(--zds-seam-light);
+}
+
+.zds-seam-inline-start {
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+  box-shadow: calc(-1 * var(--zds-size-hairline)) 0 0 0 var(--zds-seam-light);
+}
+
+/*
+ * The datum stripe.
+ *
+ * Borrowed from the datum feature symbol in GD&T. A 2px accent bar on the
+ * inline-start edge of whichever surface has focus. This is the only routine
+ * use of accent colour in the chassis, which is what makes it readable: if
+ * something is green, it is either live or it is where your keystrokes go.
+ */
+.zds-datum {
+  position: relative;
+}
+
+.zds-datum::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: var(--zds-size-datum-stripe);
+  background: var(--zds-accent);
+  opacity: 0;
+  transition: opacity var(--zds-motion-fast) var(--zds-motion-ease);
+  pointer-events: none;
+}
+
+.zds-datum[data-focused="true"]::before {
+  opacity: 1;
+}
+
+/*
+ * A drafting rule: a hairline that terminates in ticks, the way an extension
+ * line does on a dimensioned drawing. Used to separate sections on the home
+ * screen, where a plain border would read as a web page divider.
+ */
+.zds-rule {
+  position: relative;
+  block-size: var(--zds-size-hairline);
+  background: var(--zds-border-subtle);
+  border: none;
+  margin: 0;
+}
+
+.zds-rule::before,
+.zds-rule::after {
+  content: "";
+  position: absolute;
+  inset-block-start: -3px;
+  inline-size: var(--zds-size-hairline);
+  block-size: 7px;
+  background: var(--zds-border-default);
+}
+
+.zds-rule::before {
+  inset-inline-start: 0;
+}
+
+.zds-rule::after {
+  inset-inline-end: 0;
+}
+
+/* Scroll regions inside panels. Thin, and only visible while in use. */
+.zds-scroll {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--zds-border-default) transparent;
+  overscroll-behavior: contain;
+}
+
+.zds-scroll::-webkit-scrollbar {
+  inline-size: 10px;
+  block-size: 10px;
+}
+
+.zds-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.zds-scroll::-webkit-scrollbar-thumb {
+  background: var(--zds-border-default);
+  border: 3px solid transparent;
+  border-radius: var(--zds-radius-pill);
+  background-clip: content-box;
+}
+
+.zds-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--zds-border-strong);
+  background-clip: content-box;
+}
+
+.zds-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Drag regions for the desktop frameless window. */
+.zds-drag-region {
+  -webkit-app-region: drag;
+}
+
+.zds-no-drag-region {
+  -webkit-app-region: no-drag;
+}

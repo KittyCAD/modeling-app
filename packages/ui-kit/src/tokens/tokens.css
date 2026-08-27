@@ -1,0 +1,296 @@
+/*
+ * Zoo Design Studio design tokens.
+ *
+ * Three layers, in order. Components may only read from layer 2 and 3.
+ *
+ *   1. Ramps      --zds-ramp-*      Raw OKLCH scales. Theme-independent.
+ *   2. Semantics  --zds-surface-*   What a colour means. Remapped per theme.
+ *                 --zds-text-*
+ *                 --zds-border-*
+ *   3. Scales     --zds-space-*     Dimensional systems. Theme-independent.
+ *                 --zds-font-*
+ *                 --zds-radius-*
+ *                 --zds-motion-*
+ *
+ * The visual thesis is an instrument, not a document. Two materials:
+ * the chassis (app frame — square corners, hairline seams, mono labels) and
+ * content (cards, menus, fields — small radius, sans text). Accent colour is
+ * rationed: it marks focus and live state, never decoration.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- *
+   * Layer 1 — ramps
+   * ---------------------------------------------------------------- */
+
+  /* Chassis: near-neutral, cooled slightly so it recedes behind the
+     viewport's rendered geometry instead of competing with it. */
+  --zds-ramp-chassis-50: oklch(98.6% 0.003 255);
+  --zds-ramp-chassis-100: oklch(96.2% 0.004 255);
+  --zds-ramp-chassis-200: oklch(91.5% 0.005 255);
+  --zds-ramp-chassis-300: oklch(84.5% 0.006 255);
+  --zds-ramp-chassis-400: oklch(71.5% 0.008 255);
+  --zds-ramp-chassis-500: oklch(59.5% 0.009 255);
+  --zds-ramp-chassis-600: oklch(48.5% 0.01 255);
+  --zds-ramp-chassis-700: oklch(37.5% 0.011 255);
+  --zds-ramp-chassis-800: oklch(28.5% 0.012 255);
+  --zds-ramp-chassis-850: oklch(24.2% 0.012 255);
+  --zds-ramp-chassis-900: oklch(20.5% 0.011 255);
+  --zds-ramp-chassis-950: oklch(16.5% 0.01 255);
+  --zds-ramp-chassis-1000: oklch(12.5% 0.009 255);
+
+  /* Signal: Zoo's green. The only chromatic accent in the chassis. */
+  --zds-ramp-signal-100: oklch(95.5% 0.09 156);
+  --zds-ramp-signal-200: oklch(92% 0.14 156);
+  --zds-ramp-signal-300: oklch(88.5% 0.19 156);
+  --zds-ramp-signal-400: oklch(82% 0.183 156);
+  --zds-ramp-signal-500: oklch(72% 0.163 156);
+  --zds-ramp-signal-600: oklch(61% 0.14 157);
+  --zds-ramp-signal-700: oklch(50% 0.116 158);
+  --zds-ramp-signal-800: oklch(38% 0.09 159);
+  --zds-ramp-signal-900: oklch(28% 0.068 160);
+
+  /* Fault: errors, failed execution, disconnection. */
+  --zds-ramp-fault-100: oklch(94% 0.045 25);
+  --zds-ramp-fault-200: oklch(87% 0.09 25);
+  --zds-ramp-fault-300: oklch(78% 0.15 25);
+  --zds-ramp-fault-400: oklch(70% 0.19 25);
+  --zds-ramp-fault-500: oklch(62% 0.212 25);
+  --zds-ramp-fault-600: oklch(54% 0.2 25);
+  --zds-ramp-fault-700: oklch(45% 0.17 25);
+  --zds-ramp-fault-800: oklch(35% 0.13 25);
+  --zds-ramp-fault-900: oklch(26% 0.095 25);
+
+  /* Flag: warnings, tolerance notices, unsaved work. */
+  --zds-ramp-flag-100: oklch(96% 0.05 85);
+  --zds-ramp-flag-200: oklch(91% 0.1 85);
+  --zds-ramp-flag-300: oklch(85% 0.145 85);
+  --zds-ramp-flag-400: oklch(78% 0.155 82);
+  --zds-ramp-flag-500: oklch(70% 0.145 79);
+  --zds-ramp-flag-600: oklch(60% 0.13 76);
+  --zds-ramp-flag-700: oklch(49% 0.107 74);
+  --zds-ramp-flag-800: oklch(38% 0.083 72);
+  --zds-ramp-flag-900: oklch(28% 0.062 70);
+
+  /* Datum: informational, links, selection. A drafting blue. */
+  --zds-ramp-datum-100: oklch(95% 0.035 245);
+  --zds-ramp-datum-200: oklch(89% 0.07 245);
+  --zds-ramp-datum-300: oklch(81% 0.11 248);
+  --zds-ramp-datum-400: oklch(72% 0.135 252);
+  --zds-ramp-datum-500: oklch(63% 0.155 255);
+  --zds-ramp-datum-600: oklch(54% 0.16 258);
+  --zds-ramp-datum-700: oklch(45% 0.14 260);
+  --zds-ramp-datum-800: oklch(35% 0.11 262);
+  --zds-ramp-datum-900: oklch(26% 0.082 264);
+
+  /* ---------------------------------------------------------------- *
+   * Layer 3 — dimensional scales (theme-independent)
+   * ---------------------------------------------------------------- */
+
+  /* Space: 4px base. Quarter steps exist for hairline work in the chassis. */
+  --zds-space-0: 0px;
+  --zds-space-px: 1px;
+  --zds-space-025: 2px;
+  --zds-space-05: 3px;
+  --zds-space-1: 4px;
+  --zds-space-2: 8px;
+  --zds-space-3: 12px;
+  --zds-space-4: 16px;
+  --zds-space-5: 20px;
+  --zds-space-6: 24px;
+  --zds-space-8: 32px;
+  --zds-space-10: 40px;
+  --zds-space-12: 48px;
+  --zds-space-16: 64px;
+  --zds-space-20: 80px;
+  --zds-space-24: 96px;
+
+  /* Type. Two families with distinct jobs:
+     sans carries content, mono carries metadata and every number that
+     needs to hold its column. */
+  --zds-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --zds-font-mono: "Source Code Pro", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --zds-font-size-micro: 10px;
+  --zds-font-size-mini: 11px;
+  --zds-font-size-small: 12px;
+  --zds-font-size-body: 13px;
+  --zds-font-size-large: 15px;
+  --zds-font-size-title: 18px;
+  --zds-font-size-display: 28px;
+  --zds-font-size-hero: 42px;
+
+  --zds-line-height-tight: 1.15;
+  --zds-line-height-snug: 1.35;
+  --zds-line-height-body: 1.55;
+
+  --zds-font-weight-regular: 400;
+  --zds-font-weight-medium: 500;
+  --zds-font-weight-semibold: 600;
+  --zds-font-weight-bold: 700;
+
+  /* Metadata labels are set in mono, uppercase, widely tracked. This is the
+     instrument voice; it is the single most recognisable type decision here. */
+  --zds-tracking-label: 0.09em;
+  --zds-tracking-tight: -0.011em;
+  --zds-tracking-display: -0.022em;
+  --zds-tracking-none: 0em;
+
+  /* Radius. Two materials: the chassis is machined and square, content is
+     softened. Never mix them on the same element. */
+  --zds-radius-chassis: 0px;
+  --zds-radius-content: 3px;
+  --zds-radius-content-lg: 5px;
+  --zds-radius-pill: 999px;
+
+  /* Chrome dimensions. Dense on purpose: every pixel of chrome is a pixel
+     not showing geometry. */
+  --zds-size-topbar: 38px;
+  --zds-size-statusbar: 24px;
+  --zds-size-rail: 40px;
+  --zds-size-control-sm: 22px;
+  --zds-size-control-md: 28px;
+  --zds-size-control-lg: 34px;
+  --zds-size-icon-sm: 12px;
+  --zds-size-icon-md: 16px;
+  --zds-size-icon-lg: 20px;
+  --zds-size-datum-stripe: 2px;
+  --zds-size-hairline: 1px;
+
+  /* Motion. Short and mechanical. Chrome should never feel like it is easing
+     into place while you are trying to hit a target in it. */
+  --zds-motion-instant: 60ms;
+  --zds-motion-fast: 120ms;
+  --zds-motion-normal: 180ms;
+  --zds-motion-slow: 300ms;
+  --zds-motion-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --zds-motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --zds-z-content: 0;
+  --zds-z-rail: 10;
+  --zds-z-overlay: 100;
+  --zds-z-popover: 200;
+  --zds-z-modal: 300;
+  --zds-z-toast: 400;
+  --zds-z-tooltip: 500;
+}
+
+/* ------------------------------------------------------------------ *
+ * Layer 2 — semantics, dark theme (the default)
+ * ------------------------------------------------------------------ */
+
+:root,
+[data-zds-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces, from furthest back to closest to the reader. */
+  --zds-surface-viewport: var(--zds-ramp-chassis-1000);
+  --zds-surface-chassis: var(--zds-ramp-chassis-950);
+  --zds-surface-panel: var(--zds-ramp-chassis-900);
+  --zds-surface-raised: var(--zds-ramp-chassis-850);
+  --zds-surface-overlay: var(--zds-ramp-chassis-850);
+  --zds-surface-sunken: var(--zds-ramp-chassis-1000);
+  --zds-surface-hover: oklch(100% 0 0 / 0.055);
+  --zds-surface-active: oklch(100% 0 0 / 0.09);
+  --zds-surface-selected: oklch(from var(--zds-ramp-datum-500) l c h / 0.22);
+  --zds-surface-scrim: oklch(0% 0 0 / 0.6);
+
+  /* Text. Four levels is enough; more than that and hierarchy stops reading. */
+  --zds-text-primary: var(--zds-ramp-chassis-100);
+  --zds-text-secondary: var(--zds-ramp-chassis-300);
+  --zds-text-tertiary: var(--zds-ramp-chassis-400);
+  --zds-text-disabled: var(--zds-ramp-chassis-600);
+  --zds-text-inverse: var(--zds-ramp-chassis-1000);
+  --zds-text-accent: var(--zds-ramp-signal-300);
+  --zds-text-fault: var(--zds-ramp-fault-300);
+  --zds-text-flag: var(--zds-ramp-flag-300);
+  --zds-text-datum: var(--zds-ramp-datum-300);
+
+  /* Borders. `subtle` is for grouping, `strong` for real separation. */
+  --zds-border-subtle: oklch(100% 0 0 / 0.08);
+  --zds-border-default: oklch(100% 0 0 / 0.14);
+  --zds-border-strong: oklch(100% 0 0 / 0.24);
+  --zds-border-focus: var(--zds-ramp-signal-300);
+
+  /* Seams: the signature divider. A dark scribe line with a light land above
+     it, so panel edges read as a machined gap rather than a drawn border. */
+  --zds-seam-shadow: oklch(0% 0 0 / 0.5);
+  --zds-seam-light: oklch(100% 0 0 / 0.06);
+
+  --zds-accent: var(--zds-ramp-signal-300);
+  --zds-accent-muted: var(--zds-ramp-signal-800);
+  --zds-accent-contrast: var(--zds-ramp-chassis-1000);
+
+  --zds-status-ok: var(--zds-ramp-signal-300);
+  --zds-status-warn: var(--zds-ramp-flag-300);
+  --zds-status-fault: var(--zds-ramp-fault-400);
+  --zds-status-idle: var(--zds-ramp-chassis-500);
+
+  --zds-shadow-overlay:
+    0 1px 0 var(--zds-seam-light) inset, 0 8px 24px -6px oklch(0% 0 0 / 0.7), 0
+    2px 6px -2px oklch(0% 0 0 / 0.5);
+  --zds-shadow-raised: 0 1px 3px oklch(0% 0 0 / 0.4);
+}
+
+/* ------------------------------------------------------------------ *
+ * Layer 2 — semantics, light theme
+ *
+ * Not an inversion. In light the chassis becomes paper-white and separation
+ * comes from borders rather than from elevation, because there is no dark
+ * ground for a shadow to sit on.
+ * ------------------------------------------------------------------ */
+
+[data-zds-theme="light"] {
+  color-scheme: light;
+
+  --zds-surface-viewport: var(--zds-ramp-chassis-200);
+  --zds-surface-chassis: var(--zds-ramp-chassis-100);
+  --zds-surface-panel: var(--zds-ramp-chassis-50);
+  --zds-surface-raised: oklch(100% 0 0);
+  --zds-surface-overlay: oklch(100% 0 0);
+  --zds-surface-sunken: var(--zds-ramp-chassis-200);
+  --zds-surface-hover: oklch(0% 0 0 / 0.045);
+  --zds-surface-active: oklch(0% 0 0 / 0.075);
+  --zds-surface-selected: oklch(from var(--zds-ramp-datum-500) l c h / 0.14);
+  --zds-surface-scrim: oklch(0% 0 0 / 0.3);
+
+  --zds-text-primary: var(--zds-ramp-chassis-1000);
+  --zds-text-secondary: var(--zds-ramp-chassis-700);
+  --zds-text-tertiary: var(--zds-ramp-chassis-600);
+  --zds-text-disabled: var(--zds-ramp-chassis-400);
+  --zds-text-inverse: var(--zds-ramp-chassis-50);
+  --zds-text-accent: var(--zds-ramp-signal-700);
+  --zds-text-fault: var(--zds-ramp-fault-600);
+  --zds-text-flag: var(--zds-ramp-flag-700);
+  --zds-text-datum: var(--zds-ramp-datum-600);
+
+  --zds-border-subtle: oklch(0% 0 0 / 0.08);
+  --zds-border-default: oklch(0% 0 0 / 0.15);
+  --zds-border-strong: oklch(0% 0 0 / 0.28);
+  --zds-border-focus: var(--zds-ramp-signal-600);
+
+  --zds-seam-shadow: oklch(0% 0 0 / 0.14);
+  --zds-seam-light: oklch(100% 0 0 / 0.9);
+
+  --zds-accent: var(--zds-ramp-signal-600);
+  --zds-accent-muted: var(--zds-ramp-signal-200);
+  --zds-accent-contrast: oklch(100% 0 0);
+
+  --zds-status-ok: var(--zds-ramp-signal-600);
+  --zds-status-warn: var(--zds-ramp-flag-600);
+  --zds-status-fault: var(--zds-ramp-fault-600);
+  --zds-status-idle: var(--zds-ramp-chassis-500);
+
+  --zds-shadow-overlay:
+    0 8px 24px -8px oklch(0% 0 0 / 0.18), 0 2px 6px -2px oklch(0% 0 0 / 0.12);
+  --zds-shadow-raised: 0 1px 2px oklch(0% 0 0 / 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --zds-motion-instant: 0ms;
+    --zds-motion-fast: 0ms;
+    --zds-motion-normal: 0ms;
+    --zds-motion-slow: 0ms;
+  }
+}

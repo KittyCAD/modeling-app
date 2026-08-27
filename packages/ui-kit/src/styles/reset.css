@@ -1,0 +1,107 @@
+/*
+ * Minimal reset. Only removes browser defaults that actively fight a dense
+ * application layout; it does not try to normalise everything.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  /* An app shell owns its own scrolling. Page-level scroll here is always a bug. */
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+  text-align: inherit;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+a {
+  color: var(--zds-text-datum);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img,
+svg,
+canvas,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+svg {
+  fill: none;
+}
+
+/* Focus is never removed, only replaced. Pointer interaction stays quiet;
+   keyboard interaction is always visibly tracked. */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--zds-border-focus);
+  outline-offset: 1px;
+}
+
+::selection {
+  background: var(--zds-surface-selected);
+}
+
+[hidden] {
+  display: none !important;
+}
