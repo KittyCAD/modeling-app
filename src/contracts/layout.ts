@@ -1,4 +1,8 @@
-import { appendValueSpec, defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { ReadonlySignal, Signal } from '@preact/signals'
 import type { IconName } from '@kittycad/ui-kit'
 import type { ComponentChildren } from 'preact'
@@ -40,7 +44,22 @@ export interface RailNode {
   size: number
 }
 
-export type LayoutNode = AreaNode | SplitNode | RailNode
+/**
+ * Rails docked around a centre.
+ *
+ * Rails are sized in pixels and the centre takes what is left, which does not
+ * express as fractions — so a dock is its own node rather than a `SplitNode`
+ * with special cases. This is also the shape every IDE layout actually has.
+ */
+export interface DockNode {
+  type: 'dock'
+  id: string
+  start?: RailNode
+  end?: RailNode
+  center: LayoutNode
+}
+
+export type LayoutNode = AreaNode | SplitNode | RailNode | DockNode
 
 export interface AreaContext {
   /** The layout node the area is mounted in, for areas that care. */
@@ -63,6 +82,12 @@ export interface AreaDefinition {
   shortcut?: string
   /** Dropped from rails and layouts entirely while false. */
   available?: ReadonlySignal<boolean>
+  /**
+   * `panel` gives the area a heading strip and a scrolling body. `bare` hands
+   * it the region untouched, for a canvas or an editor that owns its own
+   * chrome.
+   */
+  chrome?: 'panel' | 'bare'
   render: (context: AreaContext) => ComponentChildren
 }
 
@@ -85,6 +110,13 @@ export interface LayoutService {
    * a command all one code path — the component has no private copy to drift.
    */
   sizesFor(nodeId: string): Signal<number[]>
+  /**
+   * A stable, writable extent in pixels for one rail's expanded region.
+   *
+   * Rails are sized in pixels rather than fractions: a file tree wants the same
+   * width whether the window is 1280 or 3840 wide.
+   */
+  extentFor(nodeId: string, fallback?: number): Signal<number>
   isAreaOpen(areaId: string): ReadonlySignal<boolean>
   toggleArea(areaId: string): void
   openArea(areaId: string): void

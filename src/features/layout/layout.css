@@ -1,0 +1,163 @@
+/* Layout chrome: rails, regions, and bare area hosts. */
+
+.zds-layout {
+  display: flex;
+  flex: 1;
+  min-block-size: 0;
+  min-inline-size: 0;
+  background: var(--zds-surface-chassis);
+}
+
+.zds-layout__bare {
+  position: relative;
+  block-size: 100%;
+  inline-size: 100%;
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+/* Rails ------------------------------------------------------------ */
+
+.zds-rail-group {
+  display: flex;
+  block-size: 100%;
+  min-block-size: 0;
+  background: var(--zds-surface-chassis);
+}
+
+.zds-rail-group[data-side="inline-end"] {
+  /* Mirrors the strip and region so the strip stays outermost. */
+  flex-direction: row-reverse;
+}
+
+.zds-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--zds-space-px);
+  flex: none;
+  inline-size: var(--zds-size-rail);
+  padding-block: var(--zds-space-1);
+  background: var(--zds-surface-chassis);
+}
+
+/* The seam always faces the content, whichever side the rail is docked to. */
+.zds-rail-group[data-side="inline-start"] > .zds-rail {
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+}
+
+.zds-rail-group[data-side="inline-end"] > .zds-rail {
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-seam-shadow);
+}
+
+.zds-rail__button {
+  --zds-button-height: var(--zds-size-control-lg);
+  inline-size: var(--zds-size-control-lg);
+}
+
+/*
+ * A pressed rail button gets the datum stripe rather than a background fill,
+ * so the rail reads as a set of tabs into the region beside it instead of a
+ * row of independently toggled buttons.
+ */
+.zds-rail__button[aria-pressed="true"] {
+  background: var(--zds-surface-panel);
+  position: relative;
+}
+
+.zds-rail__button[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  inset-block: 3px;
+  inline-size: var(--zds-size-datum-stripe);
+  background: var(--zds-accent);
+}
+
+.zds-rail-group[data-side="inline-start"] .zds-rail__button::before {
+  inset-inline-start: 0;
+}
+
+.zds-rail-group[data-side="inline-end"] .zds-rail__button::before {
+  inset-inline-end: 0;
+}
+
+.zds-rail__region {
+  --zds-rail-extent: 280px;
+
+  position: relative;
+  display: flex;
+  flex: none;
+  inline-size: var(--zds-rail-extent);
+  min-inline-size: 0;
+  block-size: 100%;
+  min-block-size: 0;
+  background: var(--zds-surface-panel);
+}
+
+.zds-rail__region > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* The drag handle straddles the region's outer edge, one hairline wide with a
+   grab area either side of it. */
+.zds-rail__handle {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 9px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: var(--zds-z-rail);
+}
+
+.zds-rail-group[data-side="inline-start"] .zds-rail__handle {
+  inset-inline-end: -4px;
+}
+
+.zds-rail-group[data-side="inline-end"] .zds-rail__handle {
+  inset-inline-start: -4px;
+}
+
+.zds-rail__handle::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 4px;
+  inline-size: var(--zds-size-hairline);
+  background: var(--zds-seam-shadow);
+  transition: background-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-rail__handle:hover::after,
+.zds-rail__handle:focus-visible::after {
+  background: var(--zds-accent);
+}
+
+.zds-rail__handle:focus-visible {
+  outline: none;
+}
+
+/* Dock ------------------------------------------------------------- */
+
+.zds-dock {
+  display: flex;
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.zds-dock__center {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+.zds-dock__center > * {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
