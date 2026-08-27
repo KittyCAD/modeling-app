@@ -7,18 +7,33 @@
  */
 
 import { contextBridge, ipcRenderer } from 'electron'
-import { type DirectoryEntry, channels } from './channels'
+import { type DirectoryEntry, type FileStatResult, channels } from './channels'
 
 const desktop = {
   platform: process.platform,
 
+  /** The default projects directory, and the first granted root. */
   projectsDirectory: (): Promise<string> =>
     ipcRenderer.invoke(channels.projectsDirectory),
 
-  chooseProjectsDirectory: (): Promise<string | null> =>
-    ipcRenderer.invoke(channels.chooseProjectsDirectory),
+  /** Every directory the user has granted access to. */
+  grantedRoots: (): Promise<string[]> =>
+    ipcRenderer.invoke(channels.grantedRoots),
 
-  /** Bytes of a file, relative to the projects directory. */
+  /**
+   * Prompt for a directory. Choosing one grants access to it, which is how a
+   * library outside the default projects directory becomes reachable.
+   */
+  chooseDirectory: (options?: {
+    title?: string
+    defaultPath?: string
+  }): Promise<string | null> =>
+    ipcRenderer.invoke(channels.chooseDirectory, options ?? {}),
+
+  stat: (path: string): Promise<FileStatResult> =>
+    ipcRenderer.invoke(channels.stat, path),
+
+  /** Bytes of a file. */
   readFile: async (path: string): Promise<Uint8Array> =>
     // Rebuilt here so callers get a real Uint8Array rather than the array that
     // survived structured cloning.

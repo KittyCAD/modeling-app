@@ -6,10 +6,17 @@
  * never sees these — it only sees the methods `preload.ts` exposes.
  */
 export const channels = {
-  /** Absolute path of the directory projects live in. */
+  /** Absolute path of the default directory projects live in. */
   projectsDirectory: 'fs:projectsDirectory',
-  /** Ask the user to choose a different projects directory. */
-  chooseProjectsDirectory: 'fs:chooseProjectsDirectory',
+  /**
+   * Ask the user to pick a directory. Choosing one grants access to it, so this
+   * is the only way a path outside the default projects directory becomes
+   * reachable.
+   */
+  chooseDirectory: 'fs:chooseDirectory',
+  /** Directories the user has granted access to. */
+  grantedRoots: 'fs:grantedRoots',
+  stat: 'fs:stat',
   readFile: 'fs:readFile',
   readTextFile: 'fs:readTextFile',
   writeTextFile: 'fs:writeTextFile',
@@ -29,4 +36,10 @@ export type Channel = (typeof channels)[keyof typeof channels]
 export interface DirectoryEntry {
   name: string
   kind: 'file' | 'directory'
+}
+
+export interface FileStatResult {
+  kind: 'file' | 'directory'
+  size: number
+  modifiedAt: number
 }

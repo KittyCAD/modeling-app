@@ -38,43 +38,103 @@ const contentSecurityPolicy = [
 ].join('; ')
 
 // ---------------------------------------------------------------------------
-// Projects directory
+// Granted roots
 // ---------------------------------------------------------------------------
 
-let projectsDirectory: string | null = null
+/**
+ * Directories the renderer is allowed to touch.
+ *
+ * Seeded with the default projects directory. Anything else gets in only by the
+ * user picking it in an OS dialog, which is what makes "a library can live
+ * anywhere on disk" safe: reach is granted by explicit consent, not asserted by
+ * the renderer. Persisted so a configured library still resolves after a
+ * restart.
+ */
+let grantedRoots: string[] = []
 
-async function ensureProjectsDirectory(): Promise<string> {
-  projectsDirectory ??= path.join(app.getPath('documents'), 'Zoo Design Studio')
-  await fs.mkdir(projectsDirectory, { recursive: true })
-  return projectsDirectory
+function grantsFile(): string {
+  return path.join(app.getPath('userData'), 'granted-roots.json')
+}
+
+function defaultProjectsDirectory(): string {
+  return path.join(app.getPath('documents'), 'Zoo Design Studio')
+}
+
+async function loadGrantedRoots(): Promise<void> {
+  const fallback = defaultProjectsDirectory()
+  await fs.mkdir(fallback, { recursive: true })
+
+  let stored: string[] = []
+  try {
+    const raw = await fs.readFile(grantsFile(), 'utf8')
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) {
+      stored = parsed.filter(
+        (entry): entry is string => typeof entry === 'string'
+      )
+    }
+  } catch {
+    // No grants yet, or the file is unreadable. The default root is enough to
+    // start; a lost grant costs the user one dialog, not their data.
+  }
+
+  grantedRoots = Array.from(new Set([fallback, ...stored]))
+}
+
+async function saveGrantedRoots(): Promise<void> {
+  try {
+    await fs.writeFile(
+      grantsFile(),
+      JSON.stringify(grantedRoots, null, 2),
+      'utf8'
+    )
+  } catch (error) {
+    console.error('Could not persist granted roots', error)
+  }
+}
+
+async function grantRoot(directory: string): Promise<void> {
+  if (grantedRoots.includes(directory)) return
+  grantedRoots = [...grantedRoots, directory]
+  await saveGrantedRoots()
+}
+
+function isInside(root: string, candidate: string): boolean {
+  const relative = path.relative(root, candidate)
+  return (
+    relative === '' ||
+    (!relative.startsWith('..') && !path.isAbsolute(relative))
+  )
 }
 
 /**
- * Confine a renderer-supplied path to the projects directory.
+ * Confine a renderer-supplied path to one of the granted roots.
  *
- * Every filesystem channel goes through this. The renderer is the least
- * trusted part of a desktop app — it will eventually run third-party plugin
- * code — so a path it supplies must not be able to reach the rest of the disk,
- * whether through `..`, an absolute path, or a symlink pointing out of the tree.
+ * Checks the resolved path, so a file that does not exist yet is still
+ * validated, and then what it really points at, so a symlink cannot lead out of
+ * every granted tree. The renderer is the least trusted part of a desktop app
+ * and will eventually run third-party plugin code.
  */
-async function resolveInsideProjects(requested: string): Promise<string> {
-  const realRoot = await fs.realpath(await ensureProjectsDirectory())
-  const resolved = path.resolve(realRoot, requested)
+async function resolveGranted(requested: string): Promise<string> {
+  if (grantedRoots.length === 0) await loadGrantedRoots()
 
-  // Check the resolved path first, so a file that does not exist yet is still
-  // validated before anything tries to create it.
-  const relative = path.relative(realRoot, resolved)
-  if (relative.startsWith('..') || path.isAbsolute(relative)) {
-    throw new Error(`Path escapes the projects directory: ${requested}`)
+  const resolved = path.isAbsolute(requested)
+    ? path.resolve(requested)
+    : path.resolve(grantedRoots[0], requested)
+
+  const realRoots = await Promise.all(
+    grantedRoots.map((root) => fs.realpath(root).catch(() => root))
+  )
+
+  if (!realRoots.some((root) => isInside(root, resolved))) {
+    throw new Error(`Path is outside every granted directory: ${requested}`)
   }
 
-  // Then check what it really points at, to catch a symlink out of the tree.
   try {
     const real = await fs.realpath(resolved)
-    const realRelative = path.relative(realRoot, real)
-    if (realRelative.startsWith('..') || path.isAbsolute(realRelative)) {
+    if (!realRoots.some((root) => isInside(root, real))) {
       throw new Error(
-        `Path resolves outside the projects directory: ${requested}`
+        `Path resolves outside every granted directory: ${requested}`
       )
     }
     return real
@@ -90,34 +150,58 @@ async function resolveInsideProjects(requested: string): Promise<string> {
 // ---------------------------------------------------------------------------
 
 function registerIpcHandlers() {
-  ipcMain.handle(channels.projectsDirectory, () => ensureProjectsDirectory())
+  ipcMain.handle(channels.projectsDirectory, async () => {
+    if (grantedRoots.length === 0) await loadGrantedRoots()
+    return grantedRoots[0]
+  })
 
-  ipcMain.handle(channels.chooseProjectsDirectory, async () => {
-    const result = await dialog.showOpenDialog({
-      title: 'Choose a projects folder',
-      properties: ['openDirectory', 'createDirectory'],
-      defaultPath: await ensureProjectsDirectory(),
-    })
-    if (result.canceled || result.filePaths.length === 0) return null
-    projectsDirectory = result.filePaths[0]
-    return projectsDirectory
+  ipcMain.handle(channels.grantedRoots, async () => {
+    if (grantedRoots.length === 0) await loadGrantedRoots()
+    return [...grantedRoots]
+  })
+
+  ipcMain.handle(
+    channels.chooseDirectory,
+    async (_event, options: { title?: string; defaultPath?: string } = {}) => {
+      if (grantedRoots.length === 0) await loadGrantedRoots()
+      const result = await dialog.showOpenDialog({
+        title: options.title ?? 'Choose a folder',
+        properties: ['openDirectory', 'createDirectory'],
+        defaultPath: options.defaultPath ?? grantedRoots[0],
+      })
+      if (result.canceled || result.filePaths.length === 0) return null
+
+      // Picking a directory is the grant.
+      const chosen = result.filePaths[0]
+      await grantRoot(chosen)
+      return chosen
+    }
+  )
+
+  ipcMain.handle(channels.stat, async (_event, target: string) => {
+    const stats = await fs.stat(await resolveGranted(target))
+    return {
+      kind: stats.isDirectory() ? 'directory' : 'file',
+      size: stats.size,
+      modifiedAt: stats.mtimeMs,
+    }
   })
 
   ipcMain.handle(channels.readFile, async (_event, target: string) => {
-    const file = await resolveInsideProjects(target)
+    const file = await resolveGranted(target)
     // A plain array, not a Buffer: Buffers arrive over IPC as serialised
     // objects, and the renderer wants bytes it can hand to a Uint8Array.
     return Array.from(await fs.readFile(file))
   })
 
   ipcMain.handle(channels.readTextFile, async (_event, target: string) =>
-    fs.readFile(await resolveInsideProjects(target), 'utf8')
+    fs.readFile(await resolveGranted(target), 'utf8')
   )
 
   ipcMain.handle(
     channels.writeTextFile,
     async (_event, target: string, contents: string) => {
-      const file = await resolveInsideProjects(target)
+      const file = await resolveGranted(target)
       await fs.mkdir(path.dirname(file), { recursive: true })
       await fs.writeFile(file, contents, 'utf8')
     }
@@ -125,7 +209,7 @@ function registerIpcHandlers() {
 
   ipcMain.handle(channels.exists, async (_event, target: string) => {
     try {
-      await fs.stat(await resolveInsideProjects(target))
+      await fs.stat(await resolveGranted(target))
       return true
     } catch {
       return false
@@ -135,7 +219,7 @@ function registerIpcHandlers() {
   ipcMain.handle(
     channels.readDirectory,
     async (_event, target: string): Promise<DirectoryEntry[]> => {
-      const directory = await resolveInsideProjects(target)
+      const directory = await resolveGranted(target)
       const entries = await fs.readdir(directory, { withFileTypes: true })
       return entries
         .filter((entry) => !entry.name.startsWith('.'))
@@ -149,7 +233,7 @@ function registerIpcHandlers() {
   ipcMain.handle(
     channels.listFilesRecursive,
     async (_event, target: string): Promise<string[]> => {
-      const root = await resolveInsideProjects(target)
+      const root = await resolveGranted(target)
 
       const walk = async (directory: string): Promise<string[]> => {
         const entries = await fs.readdir(directory, { withFileTypes: true })
@@ -171,20 +255,17 @@ function registerIpcHandlers() {
   )
 
   ipcMain.handle(channels.makeDirectory, async (_event, target: string) => {
-    await fs.mkdir(await resolveInsideProjects(target), { recursive: true })
+    await fs.mkdir(await resolveGranted(target), { recursive: true })
   })
 
   ipcMain.handle(channels.remove, async (_event, target: string) => {
     // Trash rather than unlink: losing a project to a misrouted delete is not
     // something the person who did it can undo.
-    await shell.trashItem(await resolveInsideProjects(target))
+    await shell.trashItem(await resolveGranted(target))
   })
 
   ipcMain.handle(channels.rename, async (_event, from: string, to: string) => {
-    await fs.rename(
-      await resolveInsideProjects(from),
-      await resolveInsideProjects(to)
-    )
+    await fs.rename(await resolveGranted(from), await resolveGranted(to))
   })
 
   ipcMain.handle(channels.openExternal, async (_event, url: string) => {
@@ -261,6 +342,7 @@ app.whenReady().then(
       )
     }
 
+    void loadGrantedRoots()
     registerIpcHandlers()
     createWindow()
 
