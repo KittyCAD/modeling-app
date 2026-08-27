@@ -1,4 +1,8 @@
-import { appendValueSpec, defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 import type { IconName } from '@kittycad/ui-kit'
 

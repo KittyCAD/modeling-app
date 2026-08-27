@@ -1,0 +1,118 @@
+/*
+ * The command palette.
+ *
+ * Content material: raised surface, small radius, real shadow. Positioned in
+ * the upper third rather than centred, so the list grows downward into space
+ * that is already empty and the input never moves.
+ */
+
+.zds-palette {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 12vh auto 1fr;
+  justify-items: center;
+  z-index: var(--zds-z-modal);
+}
+
+.zds-palette__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--zds-surface-scrim);
+  cursor: default;
+}
+
+.zds-palette__sheet {
+  grid-row: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: min(560px, calc(100vw - var(--zds-space-8)));
+  max-block-size: 60vh;
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content-lg);
+  background: var(--zds-surface-overlay);
+  box-shadow: var(--zds-shadow-overlay);
+  overflow: hidden;
+}
+
+.zds-palette__search {
+  flex: none;
+  padding: var(--zds-space-2);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-palette__search .zds-field__control {
+  --zds-field-height: var(--zds-size-control-lg);
+  background: transparent;
+  border-color: transparent;
+}
+
+.zds-palette__search .zds-field__input {
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-large);
+}
+
+.zds-palette__list {
+  flex: 1;
+  min-block-size: 0;
+  padding: var(--zds-space-1);
+}
+
+.zds-palette__row {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  inline-size: 100%;
+  block-size: var(--zds-size-control-lg);
+  padding-inline: var(--zds-space-2);
+  border-radius: var(--zds-radius-content);
+  color: var(--zds-text-secondary);
+}
+
+.zds-palette__row[aria-selected="true"] {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
+}
+
+.zds-palette__row[aria-disabled="true"] {
+  color: var(--zds-text-disabled);
+}
+
+/* Keeps titles aligned whether or not a command has an icon. */
+.zds-palette__no-icon {
+  inline-size: var(--zds-size-icon-sm);
+  flex: none;
+}
+
+.zds-palette__title {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: start;
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-palette__category {
+  flex: none;
+  color: var(--zds-text-disabled);
+}
+
+.zds-palette__shortcut {
+  flex: none;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+  padding: 1px var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+}
+
+.zds-palette__empty {
+  padding: var(--zds-space-6) var(--zds-space-4);
+  text-align: center;
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+}
