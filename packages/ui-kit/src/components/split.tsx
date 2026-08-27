@@ -46,13 +46,18 @@ export function Split({
   const container = useRef<HTMLDivElement>(null)
 
   /**
-   * One template string drives every pane extent, so a drag frame is a single
-   * style write on the container rather than N writes across the panes.
+   * Sizes are published as one custom property, `--zds-split-template`, and the
+   * stylesheet decides which axis it drives. That keeps the component from
+   * knowing about grid axes at all, and it means a host app can reinterpret the
+   * template — or override it entirely — in CSS.
+   *
+   * A drag frame is therefore a single property write on the container rather
+   * than N writes across the panes.
    *
    * Keyed on `sizes` identity, not created once on mount: a caller that swaps in
-   * a different sizes signal — which is what resetting a layout does — must get
-   * an effect that reads the new one. `useSignalEffect` would keep subscribing
-   * to the signal it first saw.
+   * a different sizes signal — which is exactly what resetting a layout does —
+   * must get an effect that reads the new one. `useSignalEffect` would go on
+   * subscribing to the signal it first saw.
    */
   useEffect(
     () =>
@@ -62,16 +67,9 @@ export function Split({
         const template = normalize(sizes.value, panes.length)
           .map((fraction) => `minmax(0, ${fraction}fr)`)
           .join(' var(--zds-split-gutter) ')
-        element.style.setProperty(
-          isInline ? 'grid-template-columns' : 'grid-template-rows',
-          template
-        )
-        element.style.setProperty(
-          isInline ? 'grid-template-rows' : 'grid-template-columns',
-          ''
-        )
+        element.style.setProperty('--zds-split-template', template)
       }),
-    [sizes, panes.length, isInline]
+    [sizes, panes.length]
   )
 
   const totalExtent = () => {

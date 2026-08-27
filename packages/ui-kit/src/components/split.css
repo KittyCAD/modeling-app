@@ -11,12 +11,21 @@
   background: var(--zds-surface-chassis);
 }
 
+/*
+ * The component publishes `--zds-split-template`; these rules decide which axis
+ * it drives. Splitting the responsibility this way keeps grid axes out of the
+ * component and leaves the template overridable from CSS.
+ */
 .zds-split--inline {
   grid-auto-flow: column;
+  grid-template-columns: var(--zds-split-template);
+  grid-template-rows: 100%;
 }
 
 .zds-split--block {
   grid-auto-flow: row;
+  grid-template-rows: var(--zds-split-template);
+  grid-template-columns: 100%;
 }
 
 .zds-split__pane {

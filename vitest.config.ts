@@ -1,51 +1,56 @@
-// @ts-ignore: No types available
-import { lezer } from '@lezer/generator/rollup'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), lezer()],
+  resolve: {
+    alias: [
+      { find: '@kittycad/registry', replacement: '/packages/registry/src' },
+      { find: '@kittycad/ui-kit', replacement: '/packages/ui-kit/src' },
+      { find: '@src', replacement: '/src' },
+      { find: '@root', replacement: '/' },
+    ],
+    // The registry imports @preact/signals-core while the app imports
+    // @preact/signals; two copies would make a signal created in one invisible
+    // to the other.
+    dedupe: ['preact', '@preact/signals', '@preact/signals-core'],
+  },
   test: {
-    globalSetup: './src/test-setup/global-setup.ts',
     environment: 'happy-dom',
-    setupFiles: ['./src/setupTests.ts'],
+    setupFiles: ['./src/test/setup.ts'],
+    globals: false,
+    clearMocks: true,
+    restoreMocks: true,
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
-      '**/cypress/**',
-      '**/.{idea,git,cache,output,temp}/**',
+      '**/build/**',
+      '**/.vite/**',
+      // React-based, with its own runner and setup: `npm run test:ui-components`.
+      'packages/ui-components/**',
     ],
-    server: {
-      deps: {
-        external: [/^playwright(?:\/|$)/, /^@playwright\//],
-        inline: [/e2e/, /packages/],
-      },
-    },
-    reporters: ['default', 'junit'],
-    outputFile: {
-      junit: 'test-results/junit.xml',
-    },
     projects: [
       {
         extends: true,
         test: {
           name: 'unit',
           include: [
-            'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-            'packages/registry/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.test.{ts,tsx}',
+            'packages/registry/src/**/*.test.{ts,tsx}',
+            'packages/ui-kit/src/**/*.test.{ts,tsx}',
+            'packages/codemirror-*/src/**/*.test.{ts,tsx}',
           ],
         },
       },
       {
         extends: true,
+        // Slower tests that build a whole registry and render into the DOM.
         test: {
           name: 'integration',
           include: [
-            'src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-            'packages/registry/src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.spec.{ts,tsx}',
+            'packages/registry/src/**/*.spec.{ts,tsx}',
+            'packages/ui-kit/src/**/*.spec.{ts,tsx}',
           ],
-          hookTimeout: 30_000,
-          retry: 2,
+          hookTimeout: 20_000,
         },
       },
     ],
