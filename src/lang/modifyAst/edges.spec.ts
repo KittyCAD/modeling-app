@@ -310,7 +310,7 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
     })
 
     it('should add a fillet to the post-subtract body when selecting the original box edge', async () => {
-      const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 boxLength = 100
 boxWidth = 100
@@ -454,7 +454,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
         `fillet001 = fillet(
   part,
   tags = getCommonEdge(faces = [
-    boxRegion.tags.topEdge,
+    boxRegion.tags.rightEdge,
     part.faces.capEnd001
   ]),
   radius = 1,
