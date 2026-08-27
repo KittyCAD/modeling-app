@@ -103,6 +103,144 @@ describe('fs operation queue extension', () => {
     ])
   })
 
+  it('keeps batch operations exclusive from top-level queue work', async () => {
+    registry = new Registry()
+    registry.configure([fsOperationQueueRegistryItem])
+    const queue = registry.get(fsOperationQueue)
+    const mkdirGate = createDeferred<void>()
+    const order: string[] = []
+
+    fsZdsMocks.mkdir.mockImplementationOnce(async () => {
+      order.push('batch:mkdir:start')
+      await mkdirGate.promise
+      order.push('batch:mkdir:end')
+    })
+    fsZdsMocks.cp.mockImplementationOnce(async () => {
+      order.push('batch:cp')
+    })
+    fsZdsMocks.writeFile.mockImplementationOnce(async () => {
+      order.push('external:write')
+    })
+
+    const batched = queue.batch(
+      {
+        kind: 'move-entry',
+        sourcePath: '/project/source',
+        targetPath: '/project/target',
+      },
+      async (batch) => {
+        order.push('batch:start')
+        await batch.mkdir('/project/target', { recursive: true })
+        await batch.cp('/project/source', '/project/target', {
+          recursive: true,
+        })
+        order.push('batch:end')
+      }
+    )
+    const external = queue.writeFile(
+      '/project/external.kcl',
+      new Uint8Array([1])
+    )
+
+    await flushMicrotasks()
+
+    expect(order).toEqual(['batch:start', 'batch:mkdir:start'])
+    expect(queue.state.value.current).toMatchObject({
+      kind: 'move-entry',
+      status: 'running',
+    })
+    expect(queue.state.value.queued).toEqual([
+      expect.objectContaining({ kind: 'write-file', status: 'queued' }),
+    ])
+
+    mkdirGate.resolve()
+    await batched
+    await external
+
+    expect(order).toEqual([
+      'batch:start',
+      'batch:mkdir:start',
+      'batch:mkdir:end',
+      'batch:cp',
+      'batch:end',
+      'external:write',
+    ])
+    const journal = queue.getJournal()
+    const batchRecord = journal.find((record) => record.kind === 'move-entry')
+    expect(batchRecord).toMatchObject({ status: 'completed' })
+    expect(
+      journal.filter((record) => record.parentId === batchRecord?.id)
+    ).toEqual([
+      expect.objectContaining({ kind: 'mkdir', status: 'completed' }),
+      expect.objectContaining({ kind: 'cp', status: 'completed' }),
+    ])
+  })
+
+  it('serializes concurrently requested operations within a batch', async () => {
+    registry = new Registry()
+    registry.configure([fsOperationQueueRegistryItem])
+    const queue = registry.get(fsOperationQueue)
+    const firstGate = createDeferred<void>()
+    const order: string[] = []
+
+    await queue.batch({ kind: 'parallel-request' }, async (batch) => {
+      const first = batch.run({ kind: 'first-child' }, async () => {
+        order.push('first:start')
+        await firstGate.promise
+        order.push('first:end')
+      })
+      const second = batch.run({ kind: 'second-child' }, async () => {
+        order.push('second:start')
+      })
+
+      await flushMicrotasks()
+      expect(order).toEqual(['first:start'])
+      firstGate.resolve()
+      await Promise.all([first, second])
+    })
+
+    expect(order).toEqual(['first:start', 'first:end', 'second:start'])
+  })
+
+  it('records a caught child failure while allowing batch fallback work', async () => {
+    registry = new Registry()
+    registry.configure([fsOperationQueueRegistryItem])
+    const queue = registry.get(fsOperationQueue)
+    const renameError = new Error('cross-device rename')
+    fsZdsMocks.rename.mockRejectedValueOnce(renameError)
+    fsZdsMocks.cp.mockResolvedValueOnce(undefined)
+    fsZdsMocks.rm.mockResolvedValueOnce(undefined)
+
+    await expect(
+      queue.batch({ kind: 'move-entry' }, async (batch) => {
+        try {
+          await batch.rename('/project/source', '/project/target')
+        } catch {
+          await batch.cp('/project/source', '/project/target', {
+            recursive: true,
+          })
+          await batch.rm('/project/source', { recursive: true })
+        }
+        return 'moved'
+      })
+    ).resolves.toBe('moved')
+
+    const journal = queue.getJournal()
+    const batchRecord = journal.find((record) => record.kind === 'move-entry')
+    expect(batchRecord).toMatchObject({ status: 'completed' })
+    expect(
+      journal.filter((record) => record.parentId === batchRecord?.id)
+    ).toEqual([
+      expect.objectContaining({
+        kind: 'rename',
+        status: 'failed',
+        error: renameError,
+      }),
+      expect.objectContaining({ kind: 'cp', status: 'completed' }),
+      expect.objectContaining({ kind: 'rm', status: 'completed' }),
+    ])
+  })
+
   it('keeps draining after a queued operation fails', async () => {
     registry = new Registry()
     registry.configure([fsOperationQueueRegistryItem])
