@@ -12,6 +12,7 @@ readable at `git show main:src/...`.
 | 2 | Preact Signals for reactive state | throughout; no state machines | done |
 | 3 | Thin view layer | `packages/ui-kit`, `src/features/*/**.tsx` | partly |
 | 4 | CodeMirror owns buffer state; `projectSession` owns the project | `src/contracts/buffers.ts`, `src/features/projectSession/` | shape only |
+| — | Project libraries (ported from main) | `src/contracts/projectLibraries.ts`, `src/features/projectLibraries/` | directory type |
 | 5 | The router follows app state | `src/features/navigation/` | done |
 | 6 | Point-and-click tools as macro actions | — | not started |
 | 7 | Publishable UI building blocks | `packages/ui-kit` | done |
@@ -162,8 +163,47 @@ re-renders when it changes.
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
 - Settings, auth, and cloud sync — settings will be signals plus a
   registry-composed schema, not a state machine
+- Cloud and network library types. The type contribution is the seam; nothing in
+  the service, Home, or routing should need to change
+- Drag-and-drop between libraries, which `main` has and this does not: moving a
+  project is a per-card action here
 - Storybook for ui-kit; `packages/ui-components` should be deleted once its
   useful components and its Storybook setup are ported over
+
+## Project libraries
+
+Ported from `main`, and the replacement for what was briefly a `ProjectSource`.
+A **library** is a configured place projects live. A library **type** is the kind
+of place it is — `directory` is the only one so far.
+
+Four properties that matter, all of which have a test:
+
+- **A project is identified by its folder, not by its library.** Two libraries
+  whose paths overlap see the same folder; that is one project belonging to both.
+- **Library ids derive from type, path, and source**, so they survive renames and
+  reloads and are stable enough to appear in a URL. The library at the default
+  root keeps a fixed id.
+- **Operations route to the owning library's type.** The service knows nothing
+  about directories. A move is `moveProjectFrom` plus `moveProjectTo`, so a move
+  between differing types is the source handing bytes to the target.
+- **Nested library roots are excluded from a parent's discovery.** A library
+  inside another library's folder is a library, not a project. Libraries at the
+  *same* path still share their projects — that is the intended overlap.
+
+Discovery is kept per library, so refreshing one does not discard the others.
+
+Titles and folder names are deliberately separable: the title lives in
+`project.toml` and the folder gets a safe, unique derivative of it.
+
+## Filesystem
+
+One `FileSystem` service, two implementations, so directory libraries work on
+both platforms:
+
+- **OPFS** on the web. Real directories, private to the origin, persistent.
+- **The preload bridge** on desktop, where every path is confined in the main
+  process to a **granted root** — the default projects directory plus anything
+  the user picked in an OS dialog. Picking is the grant; grants persist.
 
 ## The WASM boundary
 
@@ -178,8 +218,8 @@ an array, and `sendModelingCommandFromWasm` must resolve to msgpack bytes as a
 `Uint8Array`. Providers are registered on `globalThis`, which is confined to
 that directory and explained there.
 
-Neither provider is registered yet, so both report a clear reason: no project
-open, or not connected to the engine.
+The file system provider is registered by the filesystem feature. The engine
+transport is not, so it still reports that nothing is connected.
 
 ## Desktop
 
@@ -197,9 +237,8 @@ The trust boundary:
 - the preload exposes named methods, never `ipcRenderer` or a caller-chosen
   channel
 
-There is no desktop `ProjectSource` yet, so the desktop app still reads projects
-from browser storage. Wiring the IPC surface to a real filesystem source, and to
-the WASM file system provider, is the obvious next step.
+The desktop app reads and writes real project folders through this, and the KCL
+standard library reads imported files through the same service.
 
 ## Running it
 
