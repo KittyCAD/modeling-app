@@ -473,9 +473,7 @@ export function PublishDialog({
 function getSubmitButtonLabel(
   publicationDetails: CurrentProjectPublicationDetails | null
 ) {
-  return publicationDetails &&
-    publicationDetails.publicationStatus !== 'draft' &&
-    publicationDetails.publicationStatus !== undefined
+  return publicationDetails && hasBeenSubmitted(publicationDetails)
     ? 'Update submission'
     : 'Submit for review'
 }
@@ -483,7 +481,7 @@ function getSubmitButtonLabel(
 function getLastSubmittedText(
   publicationDetails: CurrentProjectPublicationDetails | null
 ) {
-  if (!publicationDetails || publicationDetails.publicationStatus === 'draft') {
+  if (!publicationDetails || !hasBeenSubmitted(publicationDetails)) {
     return null
   }
 
@@ -491,6 +489,12 @@ function getLastSubmittedText(
     publicationDetails.submittedAt || publicationDetails.updatedAt
 
   return `This project was last submitted for review on ${formatDate(lastSubmittedAt)}.`
+}
+
+function hasBeenSubmitted(
+  publicationDetails: CurrentProjectPublicationDetails
+): boolean {
+  return !['private', 'draft'].includes(publicationDetails.publicationStatus)
 }
 
 function formatDate(value: string) {
