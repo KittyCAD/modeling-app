@@ -8,11 +8,14 @@ import {
   editorThemesValueSpec,
 } from '@src/contracts/buffers'
 import { fileSystemService } from '@src/contracts/fileSystem'
+import { executionCoordinatorService } from '@src/contracts/execution'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
+import { projectSessionService } from '@src/contracts/projectSession'
 import {
   baselineCapability,
   readOnlyCapability,
 } from '@src/features/editorCapabilities/baseline'
+import { createExecutionAdapterCapability } from '@src/features/editorCapabilities/executionAdapter'
 import { languageCapability } from '@src/features/editorCapabilities/language'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
 import { zooEditorTheme } from '@src/features/editorCapabilities/theme'
@@ -32,6 +35,15 @@ export default defineRegistryItemFactory((ctx) => {
     queue: () => ctx.services.get(fsOperationQueueService),
   })
 
+  const executionAdapter = createExecutionAdapterCapability({
+    coordinator: () => ctx.services.get(executionCoordinatorService),
+    captureSnapshot: () =>
+      ctx.services
+        .get(projectSessionService)
+        .current.peek()
+        ?.captureSnapshot() ?? null,
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'editorCapabilities',
@@ -40,6 +52,7 @@ export default defineRegistryItemFactory((ctx) => {
         provide(editorCapabilitiesValueSpec, baselineCapability),
         provide(editorCapabilitiesValueSpec, languageCapability),
         provide(editorCapabilitiesValueSpec, persistence),
+        provide(editorCapabilitiesValueSpec, executionAdapter),
         provide(editorThemesValueSpec, zooEditorTheme),
       ],
     }),

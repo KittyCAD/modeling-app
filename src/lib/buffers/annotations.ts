@@ -24,6 +24,17 @@ export type BufferOrigin =
   /** A single-file semantic edit: formatting, a modelling action, an agent. */
   | 'semantic'
 
+/**
+ * An explicit request to execute this buffer now.
+ *
+ * Carried as an annotation so a re-run travels the same dispatch boundary as
+ * every other change, and so the request stays declarative data in a
+ * transaction rather than a side channel around the buffer. A re-run is not an
+ * edit, so it changes no text — which is exactly why it needs saying out loud:
+ * the adapter otherwise only reacts to content changes.
+ */
+export const requestExecution = Annotation.define<boolean>()
+
 /** Read the origin off a transaction, defaulting to a user edit. */
 export function originOf(transaction: {
   annotation: (annotation: typeof bufferOrigin) => BufferOrigin | undefined

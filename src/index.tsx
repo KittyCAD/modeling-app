@@ -3,6 +3,7 @@ import { render } from 'preact'
 import { AppProvider } from '@src/app/context'
 import { createApp } from '@src/app/createApp'
 import { navigationService } from '@src/contracts/navigation'
+import { executionCoordinatorService } from '@src/contracts/execution'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { themeService } from '@src/contracts/theme'
@@ -53,6 +54,9 @@ if (import.meta.env.DEV) {
       },
       get libraries() {
         return app.registry.get(projectLibrariesService)
+      },
+      get execution() {
+        return app.registry.get(executionCoordinatorService)
       },
     },
   })
