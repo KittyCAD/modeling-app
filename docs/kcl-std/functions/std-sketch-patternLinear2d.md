@@ -17,7 +17,10 @@ patternLinear2d(
 ): [Sketch; 1+]
 ```
 
-
+This function returns raw [`Sketch`](/docs/kcl-std/types/std-types-Sketch) values. If a KCL 2 sketch block is passed
+directly, its named members are not copied to the returned sketches. Create
+a region from the named segments before patterning, as shown below, or
+consume the returned sketches without accessing sketch-block members.
 
 ### Arguments
 
@@ -39,11 +42,17 @@ patternLinear2d(
 ```kcl
 // / Pattern using a named axis.
 
-exampleSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 1)
-  |> patternLinear2d(axis = X, instances = 7, distance = 4)
+exampleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  fixed([circle1.center, ORIGIN])
+  radius(circle1) == 1mm
+}
 
-example = extrude(exampleSketch, length = 1)
+exampleProfiles = region(segments = [exampleSketch.circle1])
+  |> patternLinear2d(axis = X, instances = 7, distance = 4mm)
+
+example = extrude(exampleProfiles, length = 1mm)
+hide(exampleSketch)
 
 ```
 
@@ -64,11 +73,17 @@ example = extrude(exampleSketch, length = 1)
 ```kcl
 // / Pattern using a raw axis.
 
-exampleSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = 1)
-  |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4)
+exampleSketch = sketch(on = XZ) {
+  circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  fixed([circle1.center, ORIGIN])
+  radius(circle1) == 1mm
+}
 
-example = extrude(exampleSketch, length = 1)
+exampleProfiles = region(segments = [exampleSketch.circle1])
+  |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4mm)
+
+example = extrude(exampleProfiles, length = 1mm)
+hide(exampleSketch)
 
 ```
 
