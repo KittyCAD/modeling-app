@@ -107,6 +107,7 @@ pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
+pub use execution::EnvironmentRef;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;

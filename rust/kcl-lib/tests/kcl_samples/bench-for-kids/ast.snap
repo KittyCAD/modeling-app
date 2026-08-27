@@ -8277,7 +8277,7 @@ description: Result of parsing bench-for-kids.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; Toys, Games, & Recreation",
             "style": "line"
           }
         },

@@ -85,10 +85,10 @@ description: Variables in memory after executing washer.kcl
           ],
           "radius": 0.219000000001,
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -115,10 +115,10 @@ description: Variables in memory after executing washer.kcl
           ],
           "radius": 0.1014999999985,
           "tag": {
-            "commentStart": 903,
-            "end": 910,
+            "commentStart": 915,
+            "end": 922,
             "moduleId": 0,
-            "start": 903,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -214,10 +214,10 @@ description: Variables in memory after executing washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 720,
-            "end": 727,
+            "commentStart": 732,
+            "end": 739,
             "moduleId": 0,
-            "start": 720,
+            "start": 732,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -228,10 +228,10 @@ description: Variables in memory after executing washer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 903,
-            "end": 910,
+            "commentStart": 915,
+            "end": 922,
             "moduleId": 0,
-            "start": 903,
+            "start": 915,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -259,10 +259,10 @@ description: Variables in memory after executing washer.kcl
             ],
             "radius": 0.219000000001,
             "tag": {
-              "commentStart": 720,
-              "end": 727,
+              "commentStart": 732,
+              "end": 739,
               "moduleId": 0,
-              "start": 720,
+              "start": 732,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -289,10 +289,10 @@ description: Variables in memory after executing washer.kcl
             ],
             "radius": 0.1014999999985,
             "tag": {
-              "commentStart": 903,
-              "end": 910,
+              "commentStart": 915,
+              "end": 922,
               "moduleId": 0,
-              "start": 903,
+              "start": 915,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -640,10 +640,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.219000000001,
                   "tag": {
-                    "commentStart": 720,
-                    "end": 727,
+                    "commentStart": 732,
+                    "end": 739,
                     "moduleId": 0,
-                    "start": 720,
+                    "start": 732,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -687,10 +687,10 @@ description: Variables in memory after executing washer.kcl
                   ],
                   "radius": 0.1014999999985,
                   "tag": {
-                    "commentStart": 903,
-                    "end": 910,
+                    "commentStart": 915,
+                    "end": 922,
                     "moduleId": 0,
-                    "start": 903,
+                    "start": 915,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },

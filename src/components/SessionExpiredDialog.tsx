@@ -5,6 +5,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp } from '@src/lib/boot'
 import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import { generateSignInUrl } from '@src/routes/utils'
 import { useNavigate } from 'react-router-dom'
@@ -73,10 +74,23 @@ export function SessionExpiredDialogHostContent({
                 You have been logged out. Sign in again to reconnect cloud sync
                 and the modeling stream.
               </Dialog.Description>
+              <p className="mt-2 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+                Your account may be blocked if you've seen this multiple times.
+              </p>
             </div>
           </div>
 
           <div className="flex justify-end gap-2 p-4">
+            <ActionButton
+              Element="externalLink"
+              to={withSiteBaseURL('/account')}
+              tabIndex={0}
+              iconStart={{ icon: 'link' }}
+              className="py-1"
+              rel="noreferrer"
+            >
+              Check your account standing
+            </ActionButton>
             <ActionButton
               Element="button"
               type="button"
