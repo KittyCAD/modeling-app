@@ -162,16 +162,56 @@ re-renders when it changes.
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
 - Settings, auth, and cloud sync — settings will be signals plus a
   registry-composed schema, not a state machine
-- The desktop shell: `src/main.ts` and `src/preload.ts` went out with the old
-  runtime, so `npm run tron:*` is broken until it is rebuilt
 - Storybook for ui-kit; `packages/ui-components` should be deleted once its
   useful components and its Storybook setup are ported over
+
+## The WASM boundary
+
+`kcl-lib` names two TypeScript modules by path — see `src/wasm/`. wasm-bindgen
+resolves them at *Rust compile time*, so deleting one is a `cargo build` failure
+with no TypeScript involved. If you move them, update the two
+`#[wasm_bindgen(module = ...)]` literals in `rust/kcl-lib/`.
+
+The method shapes are dictated by Rust. Two are easy to get subtly wrong:
+`getAllFiles` must resolve to a JSON *string* that Rust parses with serde, not
+an array, and `sendModelingCommandFromWasm` must resolve to msgpack bytes as a
+`Uint8Array`. Providers are registered on `globalThis`, which is confined to
+that directory and explained there.
+
+Neither provider is registered yet, so both report a clear reason: no project
+open, or not connected to the engine.
+
+## Desktop
+
+`src/desktop/` is the Electron main process and preload. The main process owns
+the window, the security policy, and privileged filesystem access — nothing
+else; behaviour belongs in the renderer where the registry can compose it.
+
+The trust boundary:
+
+- every filesystem channel is confined to the projects directory by
+  `resolveInsideProjects`, which validates the resolved path *and* what it
+  really points at, so neither `..` nor a symlink can leave the tree
+- `openExternal` accepts only http(s)
+- deletes go to the OS trash, not `unlink`
+- the preload exposes named methods, never `ipcRenderer` or a caller-chosen
+  channel
+
+There is no desktop `ProjectSource` yet, so the desktop app still reads projects
+from browser storage. Wiring the IPC surface to a real filesystem source, and to
+the WASM file system provider, is the obvious next step.
 
 ## Running it
 
 ```
-npm start           # dev server on :3000
-npx tsc --noEmit    # typecheck
-npx vitest run      # unit + integration
-npm run fmt         # biome
+npm start            # web dev server on :3000
+make run-desktop     # wasm + desktop bundles + electron
+npm run build:wasm   # just the wasm bundle
+npx tsc --noEmit     # typecheck
+npx vitest run       # unit + integration
+npm run fmt          # biome
 ```
+
+`make run-desktop` depends on `public/kcl_wasm_lib_bg.wasm`, which needs the
+Rust toolchain and wasm-pack (`npm run install:rust`, `npm run
+install:wasm-pack:sh`).
