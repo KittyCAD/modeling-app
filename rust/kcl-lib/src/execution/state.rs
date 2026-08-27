@@ -648,6 +648,7 @@ impl ExecState {
             variables,
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
+            source_files: self.global.id_to_source,
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,

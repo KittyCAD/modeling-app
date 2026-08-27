@@ -2546,6 +2546,7 @@ name = "kcl-python-bindings"
 version = "0.3.180"
 dependencies = [
  "anyhow",
+ "indexmap 2.14.0",
  "kcl-api",
  "kcl-lib",
  "kittycad-modeling-cmds",
@@ -2554,6 +2555,7 @@ dependencies = [
  "pyo3-stub-gen",
  "serde",
  "serde_json",
+ "tempfile",
  "tokio",
  "uuid",
 ]

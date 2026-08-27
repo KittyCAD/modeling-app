@@ -129,6 +129,7 @@ impl GlobalState {
             variables,
             filenames: self.exec_state.filenames(),
             operations: self.exec_state.operations_by_module(),
+            source_files: self.exec_state.id_to_source,
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,

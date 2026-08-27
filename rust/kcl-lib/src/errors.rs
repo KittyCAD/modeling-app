@@ -238,7 +238,7 @@ impl KclErrorWithOutputs {
             refactor_metadata: outcome.refactor_metadata,
             scene_graph: Default::default(),
             filenames: outcome.filenames,
-            source_files: Default::default(),
+            source_files: outcome.source_files,
             default_planes: outcome.default_planes,
         }
     }
@@ -587,6 +587,24 @@ pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: Comp
     };
     let report = miette::Report::new(report);
     format!("{report:?}")
+}
+
+/// Render a [`CompilationIssue`] against the source identified by its module
+/// id, falling back to the caller's source for top-level issues and callers
+/// that do not retain module sources.
+pub fn render_compilation_issue_miette_with_source_files(
+    filename: &str,
+    source: &str,
+    source_files: &IndexMap<ModuleId, ModuleSource>,
+    issue: CompilationIssue,
+) -> String {
+    if !issue.source_range.module_id().is_top_level()
+        && let Some(module_source) = source_files.get(&issue.source_range.module_id())
+    {
+        return render_compilation_issue_miette(&module_source.path.to_string(), &module_source.source, issue);
+    }
+
+    render_compilation_issue_miette(filename, source, issue)
 }
 
 impl IntoDiagnostic for KclError {

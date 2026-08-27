@@ -13,6 +13,7 @@ bench = false
 
 [dependencies]
 anyhow = { workspace = true }
+indexmap = { workspace = true }
 kcl-lib = { path = "../kcl-lib", features = [
   "pyo3",
   "engine",
@@ -32,6 +33,7 @@ uuid = { workspace = true, features = ["v4"] }
 [dev-dependencies]
 # Auto initialize the Python interpreter in test code.
 pyo3 = { workspace = true, features = ["auto-initialize"] }
+tempfile = "3.27"
 
 [lints]
 workspace = true

@@ -2053,6 +2053,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             filenames,
+            source_files,
             default_planes,
             ..
         } = err;
@@ -2062,6 +2063,7 @@ impl FrontendState {
         Ok(ExecOutcome {
             variables,
             filenames,
+            source_files,
             operations,
             artifact_graph,
             scene_objects,
@@ -9334,6 +9336,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            source_files: Default::default(),
             default_planes: Default::default(),
         };
 
@@ -9488,6 +9491,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            source_files: Default::default(),
             default_planes: Default::default(),
         }
     }

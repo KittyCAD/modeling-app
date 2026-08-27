@@ -100,11 +100,12 @@ fn add_execution_issues(
     report: &mut SketchConstraintReport,
     filename: &str,
     code: &str,
+    source_files: &indexmap::IndexMap<kcl_lib::ModuleId, kcl_lib::ModuleSource>,
     issues: Vec<kcl_lib::CompilationIssue>,
 ) {
     for issue in issues {
         let severity = issue.severity;
-        let rendered = kcl_lib::render_compilation_issue_miette(filename, code, issue);
+        let rendered = kcl_lib::render_compilation_issue_miette_with_source_files(filename, code, source_files, issue);
         if severity.is_fatal() {
             report.execution_fatals.push(rendered);
         } else if severity.is_err() {
@@ -286,14 +287,25 @@ impl ExecOutcome {
     /// Render the given compilation issue as a miette report string, using
     /// the source code and filename captured at execution time.
     fn report(&self, issue: &CompilationIssue) -> String {
-        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
+        kcl_lib::render_compilation_issue_miette_with_source_files(
+            &self.filename,
+            &self.code,
+            &self.inner.source_files,
+            issue.inner.clone(),
+        )
     }
 
     /// Analyze all sketches from this execution and group them by constraint
     /// status.
     fn sketch_constraint_report(&self) -> SketchConstraintReport {
         let mut report: SketchConstraintReport = self.inner.sketch_constraint_report().into();
-        add_execution_issues(&mut report, &self.filename, &self.code, self.inner.issues.clone());
+        add_execution_issues(
+            &mut report,
+            &self.filename,
+            &self.code,
+            &self.inner.source_files,
+            self.inner.issues.clone(),
+        );
         report
     }
 
@@ -398,7 +410,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
             let mut report: SketchConstraintReport = outcome.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, outcome.issues);
+            add_execution_issues(&mut report, &filename, &code, &outcome.source_files, outcome.issues);
             Ok(report)
         }
         Err(err) => {
@@ -407,7 +419,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             }
             let error_text = render_miette(err.clone(), &code);
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, err.non_fatal);
+            add_execution_issues(&mut report, &filename, &code, &err.source_files, err.non_fatal);
             report.is_complete = false;
             report.kcl_error = Some(KclErrorInfo {
                 phase: "execution".to_string(),
@@ -1390,5 +1402,56 @@ result = subtract(cube, tools = [cylinder])
             report.contains("[22:10]"),
             "report should include a line:column marker for the source span: {report}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_outcome_report_renders_imported_warning_from_imported_source() {
+        let project = tempfile::TempDir::with_prefix("zma_imported_warning_report").unwrap();
+        let main_path = project.path().join("main.kcl");
+        let imported_path = project.path().join("derived.kcl");
+        let main = "import derived from \"derived.kcl\"\n\nresult = derived()\n";
+        // Put the warning beyond the end of the top-level source. Rendering the
+        // imported range against `main` reproduces miette's `OutOfBounds` label.
+        let imported = format!(
+            "{}export fn derived() {{\n  return PI * 2\n}}\n",
+            "// imported-module padding\n".repeat(300)
+        );
+        tokio::fs::write(&main_path, main).await.unwrap();
+        tokio::fs::write(&imported_path, &imported).await.unwrap();
+
+        let outcome = execute_impl(KclInput::Path(main_path.display().to_string()), true)
+            .await
+            .expect("mock execution should succeed with a warning");
+        let issues = outcome.issues().expect("issues should convert");
+        let warning = issues
+            .iter()
+            .find(|issue| issue.is_warning())
+            .unwrap_or_else(|| panic!("expected an imported warning, got: {issues:?}"));
+        assert!(!warning.inner.source_range.module_id().is_top_level());
+
+        let report = outcome.report(warning);
+
+        assert!(
+            !report.contains("Failed to read contents for label"),
+            "report rendered an imported range against the top-level source: {report}"
+        );
+        assert!(
+            report.contains("return PI * 2"),
+            "report should include the imported source snippet: {report}"
+        );
+        assert!(
+            report.contains("derived.kcl"),
+            "report should label the imported filename: {report}"
+        );
+
+        let sketch_report = outcome.sketch_constraint_report();
+        let rendered_warning = sketch_report
+            .warnings
+            .iter()
+            .find(|rendered| rendered.contains("unknown or incompatible units"))
+            .unwrap_or_else(|| panic!("sketch report should include the imported warning: {sketch_report:?}"));
+        assert!(!rendered_warning.contains("OutOfBounds"));
+        assert!(rendered_warning.contains("return PI * 2"));
+        assert!(rendered_warning.contains("derived.kcl"));
     }
 }
