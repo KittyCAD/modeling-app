@@ -1,6 +1,6 @@
 import type { UnitLength } from '@kittycad/lib'
 import { describe, expect, it } from 'vitest'
-import { getAreaUnit, getVolumeUnit } from './measurementUtils'
+import { getAreaUnit, getVolumeUnit } from '../measurementUtils'
 import {
   convertMaterialDensity,
   getDefaultDensityUnit,

@@ -12,6 +12,7 @@ import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
+import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps } from 'react'
 import { Link } from 'react-router-dom'
@@ -39,12 +40,14 @@ export interface ProjectLibraryDragController {
 interface ProjectLibraryPreviewRowProps {
   library: ProjectLibrary
   projects: HomeProjectEntry[]
+  libraryProjects?: HomeProjectEntry[]
   query: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
 function getProjectLibraryRoute(library: ProjectLibrary) {
@@ -55,15 +58,33 @@ function projectCountLabel(count: number) {
   return `${count} project${count === 1 ? '' : 's'}`
 }
 
+export function ProjectLibraryHomeSummarySlot({
+  library,
+  projects,
+  projectLibraryTypes,
+}: {
+  library: ProjectLibrary
+  projects: readonly HomeProjectEntry[]
+  projectLibraryTypes?: ReadonlyMap<string, ProjectLibraryTypeContribution>
+}) {
+  const HomeSummary = projectLibraryTypes?.get(library.type)?.homeSummary
+
+  return HomeSummary ? (
+    <HomeSummary library={library} projects={projects} />
+  ) : null
+}
+
 export function ProjectLibraryPreviewRow({
   library,
   projects,
+  libraryProjects = projects,
   query,
   projectStatuses,
   projectActions,
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
+  projectLibraryTypes,
 }: ProjectLibraryPreviewRowProps) {
   const previewProjects =
     query.length > 0
@@ -86,39 +107,52 @@ export function ProjectLibraryPreviewRow({
       aria-label={`${library.title} library`}
       {...libraryDropTargetProps}
     >
-      <Link
-        to={getProjectLibraryRoute(library)}
-        className="group flex items-center gap-3 rounded-sm border border-transparent p-1 !no-underline hover:border-primary/30 hover:bg-primary/5"
-        data-testid="project-library-link"
-      >
-        <div className="grid h-8 w-8 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
-          <CustomIcon
-            name={getProjectLibraryIconName(library)}
-            className="h-5 w-5"
-          />
-          <Tooltip position="right" contentClassName="max-w-xs text-xs">
-            {getProjectLibrarySummaryTooltip(library)}
-          </Tooltip>
-        </div>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-base font-semibold text-chalkboard-100 dark:text-chalkboard-10">
-            {library.title}
+      <div className="group flex items-center gap-3 rounded-sm border border-transparent p-1 hover:border-primary/30 hover:bg-primary/5">
+        <Link
+          to={getProjectLibraryRoute(library)}
+          className="flex min-w-0 flex-1 items-center gap-3 !no-underline"
+          data-testid="project-library-link"
+        >
+          <div className="grid h-8 w-8 flex-none place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
+            <CustomIcon
+              name={getProjectLibraryIconName(library)}
+              className="h-5 w-5"
+            />
+            <Tooltip position="right" contentClassName="max-w-xs text-xs">
+              {getProjectLibrarySummaryTooltip(library)}
+            </Tooltip>
+          </div>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-base font-semibold text-chalkboard-100 dark:text-chalkboard-10">
+              {library.title}
+            </span>
+            <span
+              className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30"
+              data-testid="project-library-summary-description"
+            >
+              {getProjectLibrarySummaryDescription(library)}
+            </span>
           </span>
-          <span
-            className="block truncate text-xs text-chalkboard-70 dark:text-chalkboard-30"
-            data-testid="project-library-summary-description"
-          >
-            {getProjectLibrarySummaryDescription(library)}
-          </span>
-        </span>
+        </Link>
+        <ProjectLibraryHomeSummarySlot
+          library={library}
+          projects={libraryProjects}
+          projectLibraryTypes={projectLibraryTypes}
+        />
         <span className="hidden flex-none text-xs text-chalkboard-70 dark:text-chalkboard-30 sm:block">
           {projectCountLabel(projects.length)}
         </span>
-        <CustomIcon
-          name="arrowRight"
-          className="h-5 w-5 flex-none text-chalkboard-60 group-hover:text-primary"
-        />
-      </Link>
+        <Link
+          to={getProjectLibraryRoute(library)}
+          aria-label={`Open ${library.title} library`}
+          className="flex flex-none !no-underline"
+        >
+          <CustomIcon
+            name="arrowRight"
+            className="h-5 w-5 text-chalkboard-60 group-hover:text-primary"
+          />
+        </Link>
+      </div>
       {previewProjects.length > 0 ? (
         <ProjectCardList
           projects={previewProjects}

@@ -30,7 +30,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
-import { physicalAnalysisService } from './physicalAnalysisService'
+import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
