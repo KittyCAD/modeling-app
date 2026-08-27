@@ -8862,7 +8862,7 @@ description: Result of parsing cassette.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive",
+            "value": "Categories: Automotive & Transportation; Mechanical Components",
             "style": "line"
           }
         },

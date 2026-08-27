@@ -1209,7 +1209,7 @@ description: Result of parsing planetary-gearset.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive, Aerospace",
+            "value": "Categories: Mechanical Components; Automotive & Transportation",
             "style": "line"
           }
         },

@@ -1,6 +1,6 @@
 // Round Table
 // Simple round table with a base, single leg, and tabletop
-// Categories: Construction, Maker
+// Categories: Home & Lifestyle
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
