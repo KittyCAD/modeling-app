@@ -1,38 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-zds-theme="dark">
 
 <head>
   <meta charset="utf-8" />
   <!--
-        This all-blocking CSP is replaced by the vite html-transform plugin.
+    This all-blocking CSP is replaced by the vite html-transform plugin.
 
-        We have to use the <meta> tag because the Electron app is hosted over file:// and does not support HTTP headers.
-        Reporting functionality is not supported with <meta> tags so we have to get this right.
-    -->
+    It has to be a <meta> tag because the desktop app is served over file://
+    and cannot set HTTP headers.
+  -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none';">
 
   <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark light" />
   <meta name="description" content="An open-source CAD modeling tool from the future by Zoo." />
-  <link rel="apple-touch-icon" href="/logo192.png" />
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="stylesheet" href="./fonts/inter/inter.css" />
-  <link rel="stylesheet" href="./fonts/source-code-pro/source-code-variable.css" />
-  <script defer data-domain="app.zoo.dev" src="https://plausible.corp.zoo.dev/js/script.tagged-events.js"></script>
+
+  <!-- Both faces ship with the app: no network dependency, and no CSP hole. -->
+  <link rel="stylesheet" href="/fonts/inter/inter.css" />
+  <link rel="stylesheet" href="/fonts/source-code-pro/source-code-variable.css" />
+
   <title>Zoo Design Studio</title>
 </head>
 
-<body class="body-bg">
+<body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root" class="h-screen overflow-y-auto"></div>
+  <div id="root"></div>
   <script type="module" src="/src/index.tsx"></script>
-  <script type="module">
-    // Polyfill for anchor positioning in CSS thanks to Oddbird
-    if (!("anchorName" in document.documentElement.style)) {
-      import("https://unpkg.com/@oddbird/css-anchor-positioning");
-    }
-  </script>
 </body>
 
 </html>

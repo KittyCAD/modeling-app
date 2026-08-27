@@ -180,6 +180,7 @@
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.3",
     "@playwright/test": "^1.60.0",
+    "@preact/preset-vite": "^2.10.6",
     "@preact/signals-react-transform": "^0.8.2",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^15.0.7",

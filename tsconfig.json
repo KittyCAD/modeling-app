@@ -9,9 +9,10 @@
       "@kittycad/codemirror-lang-kcl": [
         "./packages/codemirror-lang-kcl/src/index.ts"
       ],
+      "@kittycad/ui-kit": ["./packages/ui-kit/src/index.ts"],
+      "@kittycad/ui-kit/*": ["./packages/ui-kit/src/*"],
       "@kittycad/ui-components": ["./packages/ui-components/src/index.ts"],
       "@rust/*": ["./rust/*"],
-      "@e2e/*": ["./e2e/*"],
       "@src/*": ["./src/*"],
       "@public/*": ["./public/*"],
       "@root/*": ["./*"]
@@ -38,12 +39,16 @@
     "composite": false,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
   },
-  "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
+  "include": ["src", "packages", "*.ts", "rust", "types"],
   "exclude": [
     "**/*.stories.tsx",
     "node_modules",
+    // React-based and superseded by packages/ui-kit. It has its own tsconfig
+    // and JSX runtime, which would clash with the preact one set above.
+    "packages/ui-components",
     "./*.grammar",
     "vite.config.ts",
     "forge.config.ts",
