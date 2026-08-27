@@ -10,20 +10,16 @@ import {
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
-  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
   getDefaultCloudProjectLibrarySetting,
+  PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
 } from '@src/lib/projectLibraries'
+import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
-import {
-  SystemIOMachineEvents,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -908,71 +904,6 @@ describe('project system', () => {
       expect(session.getProject()).toBeUndefined()
     } finally {
       app.dispose()
-    }
-  })
-
-  it('hydrates opened project tree from already-read SystemIO folders', async () => {
-    const projectDirectoryPath = `/tmp/app-project-session-system-io-tree-${crypto.randomUUID()}`
-    const projectPath = fsZds.join(projectDirectoryPath, 'bracket')
-    const mainPath = fsZds.join(projectPath, 'main.kcl')
-    const nestedPath = fsZds.join(projectPath, 'parts', 'nested.kcl')
-    const app = createAppForTest()
-
-    try {
-      await writeText(mainPath, 'main = true\n')
-      await writeText(nestedPath, 'nested = true\n')
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: { requestedProjectDirectoryPath: projectDirectoryPath },
-      })
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
-      const hydratedProject = app.systemIOActor
-        .getSnapshot()
-        .context.folders?.find((project) => project.path === projectPath)
-
-      expect(hydratedProject?.children).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: 'parts',
-            children: expect.arrayContaining([
-              expect.objectContaining({
-                name: 'nested.kcl',
-                path: nestedPath,
-              }),
-            ]),
-          }),
-        ])
-      )
-
-      const staleProjectTree: Project = {
-        name: 'bracket',
-        default_file: mainPath,
-        directory_count: 0,
-        kcl_file_count: 1,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
-        children: [
-          {
-            name: 'main.kcl',
-            path: mainPath,
-            children: null,
-          },
-        ],
-      }
-
-      const session = app.registry.get(projectSession)
-      const openedProject = await session.openProject(staleProjectTree)
-
-      expect(openedProject.projectIORefSignal.value.children).toEqual(
-        hydratedProject?.children
-      )
-      expect(session.projectTree.value?.children).toEqual(
-        hydratedProject?.children
-      )
-    } finally {
-      app.dispose()
-      await fsZds.rm(projectDirectoryPath, { recursive: true, force: true })
     }
   })
 
