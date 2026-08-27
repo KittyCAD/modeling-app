@@ -29,7 +29,8 @@ function sortedBySequence(records: readonly FsOperationQueueRecord[]) {
 }
 
 function createFileSystemOperations(
-  run: FsOperationBatch['run']
+  run: FsOperationBatch['run'],
+  fileSystem: FsMutationOperations
 ): FsMutationOperations {
   return {
     cp: (src, dest, options) =>
@@ -39,7 +40,7 @@ function createFileSystemOperations(
           sourcePath: src,
           targetPath: dest,
         },
-        () => Promise.resolve(fsZds.cp(src, dest, options))
+        () => Promise.resolve(fileSystem.cp(src, dest, options))
       ),
     mkdir: (path, options) =>
       run(
@@ -47,7 +48,7 @@ function createFileSystemOperations(
           kind: 'mkdir',
           targetPath: path,
         },
-        () => fsZds.mkdir(path, options)
+        () => fileSystem.mkdir(path, options)
       ),
     rename: (src, dest, options) =>
       run(
@@ -56,7 +57,7 @@ function createFileSystemOperations(
           sourcePath: src,
           targetPath: dest,
         },
-        () => fsZds.rename(src, dest, options)
+        () => fileSystem.rename(src, dest, options)
       ),
     rm: (path, options) =>
       run(
@@ -64,7 +65,7 @@ function createFileSystemOperations(
           kind: 'rm',
           targetPath: path,
         },
-        () => fsZds.rm(path, options)
+        () => fileSystem.rm(path, options)
       ),
     writeFile: (path, data, options) =>
       run(
@@ -72,12 +73,15 @@ function createFileSystemOperations(
           kind: 'write-file',
           targetPath: path,
         },
-        () => fsZds.writeFile(path, data, options)
+        () => fileSystem.writeFile(path, data, options)
       ),
   }
 }
 
-export const fsOperationQueueExtension = defineRegistryItemFactory(() => {
+/** Create an isolated queue over a supplied filesystem mutation adapter. */
+export function createFsOperationQueueService(
+  fileSystem: FsMutationOperations = fsZds
+): FsOperationQueueService {
   const state = signal<FsOperationQueueState>(emptyQueueState)
   let queueTail: Promise<unknown> = Promise.resolve()
   let nextSequence = 0
@@ -210,7 +214,7 @@ export const fsOperationQueueExtension = defineRegistryItemFactory(() => {
       const batchFacade: FsOperationBatch = {
         id: batchRecord.id,
         run: runInBatch,
-        ...createFileSystemOperations(runInBatch),
+        ...createFileSystemOperations(runInBatch, fileSystem),
       }
 
       try {
@@ -220,7 +224,7 @@ export const fsOperationQueueExtension = defineRegistryItemFactory(() => {
       }
     })
 
-  const fileSystemOperations = createFileSystemOperations(run)
+  const fileSystemOperations = createFileSystemOperations(run, fileSystem)
 
   const serviceImpl: FsOperationQueueService = {
     state,
@@ -250,6 +254,12 @@ export const fsOperationQueueExtension = defineRegistryItemFactory(() => {
     },
     ...fileSystemOperations,
   }
+
+  return serviceImpl
+}
+
+export const fsOperationQueueExtension = defineRegistryItemFactory(() => {
+  const serviceImpl = createFsOperationQueueService()
 
   return {
     item: defineRuntimeRegistryItem({
