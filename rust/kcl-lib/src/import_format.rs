@@ -41,7 +41,7 @@ fn extension_from_path(path: &str) -> Option<String> {
 }
 
 /// Parse a canonical import format identifier or a supported file extension.
-pub fn import_format_from_name(name: &str) -> Option<FileImportFormat> {
+pub(crate) fn import_format_from_name(name: &str) -> Option<FileImportFormat> {
     let name = name.to_ascii_lowercase();
     formats_for_extension(&name)
         .and_then(|formats| formats.first().copied())
@@ -53,7 +53,7 @@ pub fn import_format_from_name(name: &str) -> Option<FileImportFormat> {
 /// Creo part files end in `.prt` or a positive numeric version such as
 /// `.prt.1`. Matching is case-insensitive and applies to the complete basename,
 /// rather than only the final path extension.
-pub fn is_creo_import_path(path: &str) -> bool {
+fn is_creo_import_path(path: &str) -> bool {
     let Some(file_name) = path.rsplit(['/', '\\']).next() else {
         return false;
     };
@@ -76,7 +76,7 @@ pub fn is_creo_import_path(path: &str) -> bool {
 }
 
 /// Classify an import path by its complete filename.
-pub fn import_format_from_path(path: &str) -> Option<FileImportFormat> {
+pub(crate) fn import_format_from_path(path: &str) -> Option<FileImportFormat> {
     if let Some(format) = extension_from_path(path)
         .and_then(|extension| formats_for_extension(&extension))
         .and_then(|formats| formats.first().copied())

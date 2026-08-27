@@ -65,7 +65,7 @@ mod fmt;
 mod frontend;
 mod fs;
 pub(crate) mod id;
-pub mod import_format;
+mod import_format;
 pub mod lint;
 mod log;
 mod lsp;
