@@ -81,10 +81,16 @@ function createApp({
   project = defaultProject,
   hasCloudSyncFeature = false,
   homeProjectActions,
+  writeToFile = vi.fn().mockResolvedValue(undefined),
+  closeProject = vi.fn(),
+  settingsSend = vi.fn(),
 }: {
   project?: Project
   hasCloudSyncFeature?: boolean
   homeProjectActions?: HomeProjectActionsService
+  writeToFile?: ReturnType<typeof vi.fn>
+  closeProject?: ReturnType<typeof vi.fn>
+  settingsSend?: ReturnType<typeof vi.fn>
 } = {}) {
   return {
     projectSignal: {
@@ -110,13 +116,13 @@ function createApp({
         wasmInstancePromise: Promise.resolve({}),
         path: '/projects/example/main.kcl',
         code: '',
-        writeToFile: vi.fn().mockResolvedValue(undefined),
+        writeToFile,
       },
     },
-    closeProject: vi.fn(),
+    closeProject,
     settings: {
       actor: {
-        send: vi.fn(),
+        send: settingsSend,
       },
     },
     registry: {
@@ -222,6 +228,9 @@ describe('PublishButton', () => {
       const moveToLibrary = vi.fn().mockResolvedValue({
         defaultFile: '/cloud/example/main.kcl',
       })
+      const writeToFile = vi.fn().mockResolvedValue(undefined)
+      const closeProject = vi.fn()
+      const settingsSend = vi.fn()
       const homeProjectActions = {
         getMoveToLibraryTargets: vi.fn().mockReturnValue([cloudLibraryTarget]),
         moveToLibrary,
@@ -230,6 +239,9 @@ describe('PublishButton', () => {
         project: localProject,
         hasCloudSyncFeature,
         homeProjectActions,
+        writeToFile,
+        closeProject,
+        settingsSend,
       })
       const dialogProps = await openPublishDialog(app)
       expect(dialogProps.willMoveProjectToCloud).toBe(shouldMove)
@@ -239,8 +251,8 @@ describe('PublishButton', () => {
       })
 
       expect(mockState.publishCurrentProject).toHaveBeenCalledOnce()
-      expect(app.singletons.kclManager.writeToFile).toHaveBeenCalledWith('')
-      expect(app.singletons.kclManager.writeToFile).toHaveBeenCalledBefore(
+      expect(writeToFile).toHaveBeenCalledWith('')
+      expect(writeToFile).toHaveBeenCalledBefore(
         mockState.publishCurrentProject
       )
       expect(moveToLibrary).toHaveBeenCalledTimes(shouldMove ? 1 : 0)
@@ -252,11 +264,11 @@ describe('PublishButton', () => {
         expect(
           mockState.publishCurrentProject.mock.invocationCallOrder[0]
         ).toBeLessThan(moveToLibrary.mock.invocationCallOrder[0])
-        expect(app.closeProject).toHaveBeenCalledOnce()
-        expect(app.settings.actor.send).toHaveBeenCalledWith({
+        expect(closeProject).toHaveBeenCalledOnce()
+        expect(settingsSend).toHaveBeenCalledWith({
           type: 'clear.project',
         })
-        expect(app.closeProject).toHaveBeenCalledBefore(moveToLibrary)
+        expect(closeProject).toHaveBeenCalledBefore(moveToLibrary)
       }
     }
   )

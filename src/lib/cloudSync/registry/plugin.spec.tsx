@@ -19,6 +19,7 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -1109,10 +1110,10 @@ describe('cloud sync project library', () => {
     vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
     vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
     vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
-      parts.join('/').replace(/\/{2,}/g, '/')
+      webSafeJoin(parts).replace(/\/{2,}/g, '/')
     )
     vi.spyOn(fsZds, 'dirname').mockImplementation((path) =>
-      path.split('/').slice(0, -1).join('/')
+      webSafeJoin(webSafePathSplit(path).slice(0, -1))
     )
     vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
     vi.spyOn(fsZds, 'resolve').mockImplementation((path) => `/${path}`)
