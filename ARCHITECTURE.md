@@ -12,6 +12,7 @@ readable at `git show main:src/...`.
 | 2 | Preact Signals for reactive state | throughout; no state machines | done |
 | 3 | Thin view layer | `packages/ui-kit`, `src/features/*/**.tsx` | partly |
 | 4 | CodeMirror owns buffer state; `projectSession` owns the project | `src/contracts/buffers.ts`, `src/features/projectSession/` | done (see below) |
+| — | Execution: coordinator-owned, capability-enabled | `src/contracts/execution.ts`, `src/features/execution/` | no engine yet |
 | — | Project libraries (ported from main) | `src/contracts/projectLibraries.ts`, `src/features/projectLibraries/` | directory type |
 | 5 | The router follows app state | `src/features/navigation/` | done |
 | 6 | Point-and-click tools as macro actions | — | not started |
@@ -174,15 +175,63 @@ a hidden dependency of every subsystem.
 Opening a project opens no buffer: "no active buffer" is a state the UI must
 handle anyway, so it is where you land.
 
-### Not built yet, from #6836
+## Execution
 
-- The execution coordinator and the privileged KCL execution adapter (#6836)
+The coordinator owns everything asynchronous; the adapter is a capability; the
+executor is injected. Nothing about a modelling runtime lives in a buffer or an
+extension, because an extension that owned one would tie its lifetime to a
+mounted view.
+
+**The coordinator** (`src/features/execution/`) owns:
+
+- **supersession** — a newer request for a buffer aborts the older one, queued or
+  in flight
+- **shared-engine serialization** — one run at a time, since there is one engine;
+  other buffers queue, oldest-first so continuous typing in one cannot starve
+  another
+- **stale-result rejection** — a result applies only if the buffer is still at the
+  version the request captured
+
+Requests carry a versioned capture, never live state. Draining starts on a
+microtask, not synchronously, so a same-tick resubmit collapses before the
+executor is handed work that is already dead.
+
+State is keyed by buffer, so several executing buffers are representable even
+though the session UI picks one.
+
+**The adapter** applies only to eligible buffers — KCL, executing, not read-only.
+Eligibility is *structural*, so changing which buffer executes reconfigures the
+bundle once. Diagnostics come back through `setDiagnostics`: a transaction of
+declarative data that never rebuilds the bundle, because diagnostics are
+volatile. Re-run is an annotated transaction through the buffer
+(`requestExecution`), not a call around it — a re-run changes no text, so it has
+to say so explicitly.
+
+**Executors** are contributions with an order, so an engine-backed executor
+installs beside the offline one and wins by declaring a lower order. A build with
+no executor for a language reports `idle`, not an error.
+
+### What is shipped vs. what #6836 wants
+
+Shipped: the coordinator, the adapter, and one real executor — `kcl.analysis`,
+which runs `parse_wasm` and produces diagnostics. Live KCL errors in the gutter,
+entirely offline.
+
+**Not shipped: the engine.** "Execution" in #6836 means submitting to the
+modelling engine and getting geometry. That needs the websocket transport, auth,
+and a stream, and `src/wasm/connectionManager.ts` is the seam it plugs into —
+its transport provider is still unregistered, which is why the viewport says
+"not connected".
+
+Also outstanding:
+
 - `ProjectActionHistory` and the `HistoryCoordinator` (#13353) — local buffer
   undo works; coordinated multi-buffer undo does not exist
 - Prepared project mutations (#13354) — the snapshot half is done, the
   `PreparedProjectMutation` half is not
 - LSP as a capability, and a filesystem watcher. `reconcileExternalChange` and
   the queue's write tokens are the seams a watcher will use
+- `kcl_lint`, for warnings beyond what the parser reports
 
 ## Layout is data
 
@@ -231,8 +280,8 @@ re-renders when it changes.
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
 - Settings, auth, and cloud sync — settings will be signals plus a
   registry-composed schema, not a state machine
-- Execution: the coordinator, the KCL execution adapter, and the engine
-  connection. See the buffers section for what #6836 still wants
+- The engine connection: websocket transport, auth, and the stream. The
+  coordinator and adapter are built; see the execution section
 - Cloud and network library types. The type contribution is the seam; nothing in
   the service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a
