@@ -10,7 +10,7 @@ use crate::execution::typed_path::TypedPath;
 use crate::fs::FileSystem;
 use crate::wasm::JsFuture;
 
-#[wasm_bindgen(module = "/../../src/lang/std/fileSystemManager.ts")]
+#[wasm_bindgen(module = "/../../src/wasm/fileSystemManager.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type FileSystemManager;
