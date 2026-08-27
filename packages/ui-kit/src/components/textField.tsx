@@ -1,4 +1,4 @@
-import type { JSX } from 'preact'
+import type { JSX, RefObject } from 'preact'
 import { useMemo } from 'preact/hooks'
 import type { IconName } from '../icons'
 import { Icon } from './icon'
@@ -22,6 +22,8 @@ export interface TextFieldProps extends BaseProps {
   type?: 'text' | 'search' | 'number' | 'password' | 'email'
   disabled?: MaybeSignal<boolean>
   autofocus?: boolean
+  /** Direct access to the input, for callers that must focus or select it. */
+  inputRef?: RefObject<HTMLInputElement>
   /** Fires on every keystroke, with the current value. */
   onValueInput?: (value: string) => void
   onKeyDown?: JSX.KeyboardEventHandler<HTMLInputElement>
@@ -46,6 +48,7 @@ export function TextField({
   type = 'text',
   disabled,
   autofocus,
+  inputRef,
   onValueInput,
   onKeyDown,
   onSubmit,
@@ -72,6 +75,7 @@ export function TextField({
           <Icon name={icon} size="small" class="zds-field__icon" />
         ) : null}
         <input
+          ref={inputRef}
           class="zds-field__input"
           id={inputId}
           type={type}

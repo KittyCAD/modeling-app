@@ -167,6 +167,34 @@ body {
   inset-inline-end: 0;
 }
 
+/*
+ * A construction grid.
+ *
+ * Marks a surface as a modelling space that happens to be empty, rather than a
+ * panel that failed to load. Used behind an empty viewport and on a project
+ * card with no preview, so the two read as the same kind of nothing.
+ *
+ * Kept at very low contrast on purpose: this is orientation, not content.
+ */
+.zds-grid-field {
+  position: relative;
+}
+
+.zds-grid-field::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--zds-border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--zds-border-subtle) 1px, transparent 1px);
+  background-size: var(--zds-grid-field-size, 32px)
+    var(--zds-grid-field-size, 32px);
+  background-position: center center;
+  /* Fades at the edges so the grid does not fight the panel seams. */
+  mask-image: radial-gradient(circle at center, black, transparent 78%);
+  pointer-events: none;
+}
+
 /* Scroll regions inside panels. Thin, and only visible while in use. */
 .zds-scroll {
   overflow: auto;

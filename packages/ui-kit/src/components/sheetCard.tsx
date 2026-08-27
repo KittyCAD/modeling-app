@@ -45,7 +45,7 @@ export function SheetCard({
       class={cx('zds-sheet', className)}
       data-selected={selected ?? false}
     >
-      <div class="zds-sheet__plate">
+      <div class="zds-sheet__plate zds-grid-field">
         {preview ?? (
           <span class="zds-label zds-sheet__no-preview">No preview</span>
         )}

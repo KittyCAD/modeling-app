@@ -13,7 +13,7 @@
     ".": "./src/index.ts",
     "./tokens": "./src/tokens/index.ts",
     "./tokens.css": "./src/tokens/tokens.css",
-    "./styles.css": "./src/styles/index.css"
+    "./styles.css": "./src/styles.css"
   },
   "peerDependencies": {
     "preact": "^10.29.0",

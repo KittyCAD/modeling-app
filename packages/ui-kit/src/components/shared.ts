@@ -10,11 +10,16 @@ import type { JSX } from 'preact'
  */
 export type MaybeSignal<T> = T | ReadonlySignal<T>
 
-/** Props every component accepts, so host apps can always reach the element. */
+/**
+ * Props every component accepts, so host apps can always reach the element.
+ *
+ * Deliberately excludes `title`: several components use that word for their own
+ * visible heading, and having it also mean the native tooltip attribute makes
+ * both meanings unreliable. Components that want a tooltip take one explicitly.
+ */
 export interface BaseProps {
   class?: string
   id?: string
-  title?: string
   'data-testid'?: string
 }
 

@@ -1,7 +1,6 @@
-import type { Signal } from '@preact/signals'
-import { useSignalEffect } from '@preact/signals'
+import { type Signal, effect } from '@preact/signals'
 import { Fragment, type ComponentChildren, type JSX } from 'preact'
-import { useRef } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
 import { type BaseProps, cx } from './shared'
 import './split.css'
 
@@ -46,23 +45,34 @@ export function Split({
   const isInline = orientation === 'inline'
   const container = useRef<HTMLDivElement>(null)
 
-  // One template string drives every pane extent, so a drag frame is a single
-  // style write on the container rather than N writes across the panes.
-  useSignalEffect(() => {
-    const element = container.current
-    if (!element) return
-    const template = normalize(sizes.value, panes.length)
-      .map((fraction) => `minmax(0, ${fraction}fr)`)
-      .join(' var(--zds-split-gutter) ')
-    element.style.setProperty(
-      isInline ? 'grid-template-columns' : 'grid-template-rows',
-      template
-    )
-    element.style.setProperty(
-      isInline ? 'grid-template-rows' : 'grid-template-columns',
-      ''
-    )
-  })
+  /**
+   * One template string drives every pane extent, so a drag frame is a single
+   * style write on the container rather than N writes across the panes.
+   *
+   * Keyed on `sizes` identity, not created once on mount: a caller that swaps in
+   * a different sizes signal — which is what resetting a layout does — must get
+   * an effect that reads the new one. `useSignalEffect` would keep subscribing
+   * to the signal it first saw.
+   */
+  useEffect(
+    () =>
+      effect(() => {
+        const element = container.current
+        if (!element) return
+        const template = normalize(sizes.value, panes.length)
+          .map((fraction) => `minmax(0, ${fraction}fr)`)
+          .join(' var(--zds-split-gutter) ')
+        element.style.setProperty(
+          isInline ? 'grid-template-columns' : 'grid-template-rows',
+          template
+        )
+        element.style.setProperty(
+          isInline ? 'grid-template-rows' : 'grid-template-columns',
+          ''
+        )
+      }),
+    [sizes, panes.length, isInline]
+  )
 
   const totalExtent = () => {
     const element = container.current

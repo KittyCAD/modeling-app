@@ -37,6 +37,10 @@
 }
 
 .zds-sheet__plate {
+  /* Tighter than the viewport's, so a thumbnail-sized plate still reads as a
+     grid rather than as two stray lines. */
+  --zds-grid-field-size: 18px;
+
   position: relative;
   display: grid;
   place-items: center;
