@@ -6,7 +6,10 @@ import {
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lang/KclManager'
-import { fsOperationQueue } from '@src/registry/contracts/fsOperationQueue'
+import {
+  type FsOperationBatch,
+  fsOperationQueue,
+} from '@src/registry/contracts/fsOperationQueue'
 import {
   type ProjectSessionApplyFilePatchInput,
   type ProjectSessionEntryCopyMoveInput,
@@ -93,7 +96,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
-  const runProjectMutation = async <Result>(
+  const runProjectOperation = async <Result>(
     operation: ProjectSessionMutationOperation,
     targetPath: string | undefined,
     run: (currentProject: ZDSProject) => Promise<Result>,
@@ -133,6 +136,30 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     }
   }
 
+  const runProjectMutation = <Result>(
+    operation: ProjectSessionMutationOperation,
+    targetPath: string | undefined,
+    run: (
+      currentProject: ZDSProject,
+      fileSystemOperations: FsOperationBatch
+    ) => Promise<Result>,
+    options: { refreshProjectTree?: boolean } = {}
+  ) =>
+    ctx.services.get(fsOperationQueue).batch(
+      {
+        kind: operation,
+        targetPath,
+        metadata: { service: 'projectSession' },
+      },
+      (fileSystemOperations) =>
+        runProjectOperation(
+          operation,
+          targetPath,
+          (currentProject) => run(currentProject, fileSystemOperations),
+          options
+        )
+    )
+
   const serviceImpl: ProjectSessionService = {
     project,
     projectTree,
@@ -151,7 +178,7 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
     getProjectTree: () => projectTree.value,
     refreshProjectTree,
     openEditor: (input: ProjectSessionOpenEditorInput) =>
-      runProjectMutation(
+      runProjectOperation(
         'open-editor',
         input.path,
         (currentProject) =>
@@ -203,42 +230,48 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
       }
     },
     createFile: (input: ProjectSessionFileWriteInput) =>
-      runProjectMutation('create-file', input.path, (currentProject) =>
-        currentProject.createFile(input)
+      runProjectMutation('create-file', input.path, (currentProject, batch) =>
+        currentProject.createFile(input, batch)
       ),
     writeFile: (input: ProjectSessionFileWriteInput) =>
-      runProjectMutation('write-file', input.path, (currentProject) =>
-        currentProject.writeFile(input)
+      runProjectMutation('write-file', input.path, (currentProject, batch) =>
+        currentProject.writeFile(input, batch)
       ),
     createFolder: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('create-folder', input.path, (currentProject) =>
-        currentProject.createFolder(input)
+      runProjectMutation('create-folder', input.path, (currentProject, batch) =>
+        currentProject.createFolder(input, batch)
       ),
     renameEntry: (input: ProjectSessionEntryRenameInput) =>
-      runProjectMutation('rename-entry', input.newPath, (currentProject) =>
-        currentProject.renameEntry(input)
+      runProjectMutation(
+        'rename-entry',
+        input.newPath,
+        (currentProject, batch) => currentProject.renameEntry(input, batch)
       ),
     deleteEntry: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('delete-entry', input.path, (currentProject) =>
-        currentProject.deleteEntry(input)
+      runProjectMutation('delete-entry', input.path, (currentProject, batch) =>
+        currentProject.deleteEntry(input, batch)
       ),
     copyEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runProjectMutation('copy-entry', input.targetPath, (currentProject) =>
-        currentProject.copyEntry(input)
+      runProjectMutation(
+        'copy-entry',
+        input.targetPath,
+        (currentProject, batch) => currentProject.copyEntry(input, batch)
       ),
     moveEntry: (input: ProjectSessionEntryCopyMoveInput) =>
-      runProjectMutation('move-entry', input.targetPath, (currentProject) =>
-        currentProject.moveEntry(input)
+      runProjectMutation(
+        'move-entry',
+        input.targetPath,
+        (currentProject, batch) => currentProject.moveEntry(input, batch)
       ),
     archiveEntry: (input: ProjectSessionEntryPathInput) =>
-      runProjectMutation('archive-entry', input.path, (currentProject) =>
-        currentProject.archiveEntry(input)
+      runProjectMutation('archive-entry', input.path, (currentProject, batch) =>
+        currentProject.archiveEntry(input, batch)
       ),
     applyFilePatch: (input: ProjectSessionApplyFilePatchInput) =>
       runProjectMutation(
         'apply-file-patch',
         input.files.at(-1)?.path,
-        (currentProject) => currentProject.applyFilePatch(input)
+        (currentProject, batch) => currentProject.applyFilePatch(input, batch)
       ),
     getCurrentProjectLibraryId: () => currentProjectLibraryId.value,
     setCurrentProjectLibraryId: (libraryId) => {
