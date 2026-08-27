@@ -667,7 +667,7 @@ export fn symmetric(
 ///
 /// `fixed()` is an alias for `coincident()`. By convention, `fixed()` is used when one of the points is a known location, not solved with constraints and not another point in the sketch.
 ///
-/// Passing one segment, such as `fixed(edge)`, does not freeze the entire segment. Pass the point to anchor and its fixed position.
+/// Calling `fixed()` with one segment, such as `fixed(edge)`, is invalid and produces an argument error. `fixed()` requires an array of at least two points or segments. To anchor a point to a fixed position, pass both values, for example `fixed([edge.start, ORIGIN])`.
 ///
 /// ```kcl,no3d,sketchSolve
 /// profile = sketch(on = XY) {
