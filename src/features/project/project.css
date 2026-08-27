@@ -1,0 +1,226 @@
+/* Project workspace areas: file tree, editor, viewport, title block. */
+
+/* File tree -------------------------------------------------------- */
+
+.zds-tree {
+  padding-block: var(--zds-space-1);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-tree__row {
+  --zds-tree-depth: 0;
+
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: var(--zds-size-control-sm);
+  /* Indent grows from the row's own padding so the hover and selection fills
+     still span the full panel width. */
+  padding-inline: calc(
+      var(--zds-space-3) +
+      var(--zds-tree-depth) *
+      var(--zds-space-3)
+    )
+    var(--zds-space-2);
+  color: var(--zds-text-secondary);
+  transition: background-color var(--zds-motion-instant) var(--zds-motion-ease);
+}
+
+.zds-tree__row:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-tree__row[aria-current="true"] {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
+  /* The datum motif again: this row is where your keystrokes would go. */
+  box-shadow: inset var(--zds-size-datum-stripe) 0 0 0 var(--zds-accent);
+}
+
+.zds-tree__row--directory {
+  color: var(--zds-text-tertiary);
+  cursor: default;
+}
+
+.zds-tree__row--directory:hover {
+  background: transparent;
+  color: var(--zds-text-tertiary);
+}
+
+.zds-tree__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-tree__status {
+  display: grid;
+  place-items: center;
+  padding-block: var(--zds-space-6);
+}
+
+/* Editor ----------------------------------------------------------- */
+
+.zds-editor {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  min-block-size: 0;
+  background: var(--zds-surface-panel);
+}
+
+.zds-editor__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-3);
+  flex: none;
+  block-size: var(--zds-size-statusbar);
+  padding-inline: var(--zds-space-3);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-editor__path {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-editor__badge {
+  flex: none;
+  padding: 1px var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  color: var(--zds-text-flag);
+}
+
+.zds-editor__body {
+  flex: 1;
+  min-block-size: 0;
+}
+
+.zds-editor__doc {
+  margin: 0;
+  padding-block: var(--zds-space-2);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-small);
+  line-height: 1.6;
+  color: var(--zds-text-secondary);
+  tab-size: 2;
+}
+
+.zds-editor__line {
+  display: flex;
+  gap: var(--zds-space-3);
+}
+
+.zds-editor__gutter {
+  flex: none;
+  inline-size: 3ch;
+  padding-inline-start: var(--zds-space-3);
+  text-align: end;
+  color: var(--zds-text-disabled);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.zds-editor__text {
+  white-space: pre;
+  padding-inline-end: var(--zds-space-4);
+}
+
+/* Viewport --------------------------------------------------------- */
+
+.zds-viewport {
+  position: relative;
+  block-size: 100%;
+  inline-size: 100%;
+  background: var(--zds-surface-viewport);
+  overflow: hidden;
+}
+
+.zds-viewport .zds-empty {
+  position: relative;
+  background: transparent;
+}
+
+/* Title block panel ------------------------------------------------ */
+
+.zds-info {
+  padding: var(--zds-space-3);
+}
+
+.zds-info__block {
+  display: grid;
+  gap: var(--zds-space-2);
+}
+
+.zds-info__field {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--zds-space-2);
+}
+
+.zds-info__field dd {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--zds-text-primary);
+}
+
+.zds-info__rule {
+  margin-block: var(--zds-space-3);
+}
+
+.zds-info__heading {
+  margin-block-end: var(--zds-space-2);
+}
+
+.zds-info__buffers {
+  display: grid;
+  gap: var(--zds-space-px);
+}
+
+.zds-info__buffer {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+}
+
+.zds-info__buffer-name {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  flex: 1;
+  min-inline-size: 0;
+  block-size: var(--zds-size-control-sm);
+  padding-inline: var(--zds-space-1);
+  border-radius: var(--zds-radius-content);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-info__buffer-name:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-info__buffer-name[aria-current="true"] {
+  color: var(--zds-text-primary);
+  box-shadow: inset var(--zds-size-datum-stripe) 0 0 0 var(--zds-accent);
+}
+
+.zds-info__dirty {
+  color: var(--zds-text-flag);
+}

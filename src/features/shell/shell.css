@@ -1,0 +1,250 @@
+/*
+ * The chassis.
+ *
+ * Three strips in a column: top bar, main area, status bar. The strips are
+ * chassis material — square corners, seams facing the content — and the main
+ * area is the only part that scrolls or resizes.
+ */
+
+.zds-shell {
+  display: grid;
+  grid-template-rows: var(--zds-size-topbar) minmax(0, 1fr) var(
+      --zds-size-statusbar
+    );
+  block-size: 100vh;
+  block-size: 100dvh;
+  inline-size: 100%;
+  background: var(--zds-surface-chassis);
+  overflow: hidden;
+}
+
+.zds-shell__main {
+  position: relative;
+  display: flex;
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  background: var(--zds-surface-viewport);
+}
+
+.zds-shell__main > * {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+/* Top bar ---------------------------------------------------------- */
+
+.zds-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  block-size: var(--zds-size-topbar);
+  background: var(--zds-surface-chassis);
+  z-index: var(--zds-z-rail);
+}
+
+.zds-topbar__zone {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  min-inline-size: 0;
+  padding-inline: var(--zds-space-2);
+}
+
+.zds-topbar__zone[data-zone="start"] {
+  justify-content: start;
+}
+
+.zds-topbar__zone[data-zone="center"] {
+  justify-content: center;
+  /* The centre zone is the app's identity line; it must not be squeezed out by
+     a long list of actions on either side. */
+  padding-inline: var(--zds-space-4);
+}
+
+.zds-topbar__zone[data-zone="end"] {
+  justify-content: end;
+}
+
+/* Contributed items opt out of the window drag region so they stay clickable
+   on desktop, where the rest of the bar moves the window. */
+.zds-topbar__item {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  -webkit-app-region: no-drag;
+}
+
+/* Status bar ------------------------------------------------------- */
+
+.zds-statusbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: stretch;
+  block-size: var(--zds-size-statusbar);
+  background: var(--zds-surface-chassis);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+  z-index: var(--zds-z-rail);
+}
+
+.zds-statusbar__zone {
+  display: flex;
+  align-items: stretch;
+  min-inline-size: 0;
+}
+
+.zds-statusbar__zone[data-zone="center"] {
+  justify-content: center;
+}
+
+.zds-statusbar__zone[data-zone="end"] {
+  justify-content: end;
+}
+
+/*
+ * Status fields are ruled off from each other, so the bar reads as one
+ * instrument readout divided into fields rather than as a row of buttons.
+ */
+.zds-statusbar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  padding-inline: var(--zds-space-2);
+  min-inline-size: 0;
+  white-space: nowrap;
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-statusbar__zone[data-zone="end"] .zds-statusbar__item:last-child {
+  border-inline-end: none;
+}
+
+/* Brand ------------------------------------------------------------ */
+
+.zds-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  padding-inline: var(--zds-space-1);
+  min-inline-size: 0;
+}
+
+/*
+ * The mark is a filled square with a notched corner: a datum feature symbol,
+ * the same motif the focus stripe uses. One idea, used twice.
+ */
+.zds-brand__mark {
+  inline-size: 14px;
+  block-size: 14px;
+  flex: none;
+  background: var(--zds-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 65% 100%, 0 100%);
+}
+
+.zds-brand__name {
+  font-size: var(--zds-font-size-small);
+  font-weight: var(--zds-font-weight-semibold);
+  letter-spacing: var(--zds-tracking-tight);
+  color: var(--zds-text-primary);
+  white-space: nowrap;
+}
+
+/* Breadcrumb ------------------------------------------------------- */
+
+/*
+ * The centre of the top bar names what is open, project then file, in mono.
+ * It is a readout, not navigation — clicking the project name is the only
+ * action, and it goes home.
+ */
+.zds-crumbs {
+  display: flex;
+  align-items: baseline;
+  gap: var(--zds-space-2);
+  min-inline-size: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-crumbs__project {
+  color: var(--zds-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zds-crumbs__project:hover {
+  color: var(--zds-text-primary);
+}
+
+.zds-crumbs__separator {
+  color: var(--zds-text-disabled);
+  flex: none;
+}
+
+.zds-crumbs__file {
+  color: var(--zds-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zds-crumbs__dirty {
+  color: var(--zds-text-flag);
+  flex: none;
+}
+
+/* Status bar pieces ------------------------------------------------ */
+
+.zds-status-field {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.zds-status-field__name {
+  color: var(--zds-text-disabled);
+  text-transform: uppercase;
+  letter-spacing: var(--zds-tracking-label);
+}
+
+.zds-status-field__value {
+  color: var(--zds-text-secondary);
+}
+
+.zds-status-button {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  block-size: 100%;
+  padding-inline: var(--zds-space-1);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+  transition: color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-status-button:hover {
+  color: var(--zds-text-primary);
+}
+
+/*
+ * Overlays sit above every strip. The wrapper itself is inert so a closed
+ * overlay cannot swallow clicks; each overlay re-enables pointer events on
+ * whatever it actually draws.
+ */
+.zds-shell__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--zds-z-modal);
+  pointer-events: none;
+}
+
+.zds-shell__overlay > * {
+  pointer-events: auto;
+}

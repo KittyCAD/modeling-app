@@ -11,6 +11,26 @@ export interface ShellItem {
   order?: number
   /** Omitted from the DOM entirely while false. */
   visible?: ReadonlySignal<boolean>
+  /**
+   * Must return a component element, not JSX that calls hooks inline.
+   *
+   * Items render inside the shell's own component, so a hook called directly in
+   * `render` would belong to the shell — and its position in the hook order
+   * would shift whenever the item list changed.
+   */
+  render: () => ComponentChildren
+}
+
+/**
+ * A layer drawn above the whole frame: the command palette, dialogs, toasts.
+ *
+ * Overlays are contributed rather than rendered by the shell so that a feature
+ * owning a modal owns its mounting too, instead of the shell accumulating a
+ * list of every dialog in the app.
+ */
+export interface Overlay {
+  id: string
+  order?: number
   render: () => ComponentChildren
 }
 
@@ -70,7 +90,16 @@ export const shellContract = defineContract({
     defaultValue: [],
     combine: (inputs) => byOrder(dedupeById(inputs)),
   }),
+  overlaysValueSpec: defineValueSpec<Overlay, Overlay[]>({
+    name: 'shell.overlays',
+    defaultValue: [],
+    combine: (inputs) => byOrder(dedupeById(inputs)),
+  }),
 })
 
-export const { topBarItemsValueSpec, statusBarItemsValueSpec, screensValueSpec } =
-  shellContract
+export const {
+  topBarItemsValueSpec,
+  statusBarItemsValueSpec,
+  screensValueSpec,
+  overlaysValueSpec,
+} = shellContract

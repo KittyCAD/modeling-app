@@ -1,0 +1,99 @@
+/*
+ * The sheet index.
+ *
+ * A reading surface rather than a chassis surface, so it gets a measure, real
+ * vertical rhythm, and the panel background instead of the viewport's.
+ */
+
+.zds-home {
+  block-size: 100%;
+  inline-size: 100%;
+  background: var(--zds-surface-chassis);
+}
+
+.zds-home__inner {
+  /* Wide enough for four sheets, capped so the ruled line stays a line and not
+     a horizon. */
+  max-inline-size: 1180px;
+  margin-inline: auto;
+  padding: var(--zds-space-10) var(--zds-space-8) var(--zds-space-16);
+}
+
+.zds-home__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--zds-space-6);
+  flex-wrap: wrap;
+}
+
+.zds-home__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+  min-inline-size: 0;
+}
+
+.zds-home__actions {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--zds-space-2);
+}
+
+.zds-home__search {
+  inline-size: 200px;
+}
+
+.zds-home__rule {
+  margin-block: var(--zds-space-4) var(--zds-space-6);
+}
+
+.zds-home__error {
+  margin-block-end: var(--zds-space-4);
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border: var(--zds-size-hairline) solid var(--zds-status-fault);
+  border-radius: var(--zds-radius-content);
+  background: oklch(from var(--zds-status-fault) l c h / 0.1);
+  color: var(--zds-text-fault);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-home__loading {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-3);
+  padding-block: var(--zds-space-10);
+  justify-content: center;
+}
+
+.zds-home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--zds-space-4);
+}
+
+/* Empty states here fill the space below the rule rather than the whole
+   screen, so the heading and the New project action stay reachable. */
+.zds-home .zds-empty {
+  min-block-size: 340px;
+  background: transparent;
+}
+
+@media (max-width: 640px) {
+  .zds-home__inner {
+    padding: var(--zds-space-6) var(--zds-space-4) var(--zds-space-10);
+  }
+
+  .zds-home__header {
+    align-items: stretch;
+  }
+
+  .zds-home__actions {
+    flex-wrap: wrap;
+  }
+
+  .zds-home__search {
+    flex: 1;
+    inline-size: auto;
+  }
+}
