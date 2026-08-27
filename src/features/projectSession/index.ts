@@ -6,7 +6,8 @@ import {
 } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
-import { projectCatalogService } from '@src/contracts/projects'
+import { fileSystemService } from '@src/contracts/fileSystem'
+import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import {
   type ProjectSession,
   projectSessionService,
@@ -17,14 +18,17 @@ import { createProjectSession } from '@src/features/projectSession/createProject
  * Owns which project is open.
  *
  * Exactly one session at a time, and `null` is a first-class value rather than
- * an error path — it is what the home screen is for. Everything that used to be
- * reached through "the current project" goes through this service, so there is
- * one place that knows a project is open and one place that can close it.
+ * an error path — it is what the home screen is for. Projects are addressed by
+ * realization id, so opening one goes through the libraries service and this
+ * feature never learns what kind of library it came from.
  */
 export default defineRegistryItemFactory((ctx) => {
   const current = signal<ProjectSession | null>(null)
   const opening = signal<string | null>(null)
   const error = signal<string | null>(null)
+
+  const libraries = () => ctx.services.get(projectLibrariesService)
+  const fileSystem = () => ctx.services.get(fileSystemService)
 
   const close = () => {
     current.value = null
@@ -39,19 +43,22 @@ export default defineRegistryItemFactory((ctx) => {
     error.value = null
 
     try {
-      const catalog = ctx.services.get(projectCatalogService)
-      const source = catalog.sourceFor(projectId)
-      if (!source) throw new Error(`No source owns project "${projectId}"`)
+      const service = libraries()
 
-      // Ask the source rather than the aggregated list: on a deep link the
-      // catalog may not have listed anything yet.
-      await source.refresh()
-      const summary = source.projects.value.find(
-        (project) => project.id === projectId
-      )
-      if (!summary) throw new Error(`No project "${projectId}"`)
+      // A deep link can arrive before anything has been scanned, so discovery
+      // has to be given a chance before concluding the project is missing.
+      let realization = service.realization(projectId)
+      if (!realization) {
+        await service.refresh()
+        realization = service.realization(projectId)
+      }
+      if (!realization) throw new Error(`No project "${projectId}"`)
 
-      const session = createProjectSession(summary, source)
+      const library = realization.libraryIds
+        .map((id) => service.library(id))
+        .find((candidate) => candidate !== undefined)
+
+      const session = createProjectSession(realization, library, fileSystem())
       current.value = session
       return session
     } catch (caught) {

@@ -1,67 +1,64 @@
-import { computed, signal } from '@preact/signals'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { ProjectSource, ProjectSummary } from '@src/contracts/projects'
 import { createProjectSession } from '@src/features/projectSession/createProjectSession'
+import {
+  type FakeFileSystem,
+  createFakeFileSystem,
+} from '@src/test/fakeFileSystem'
+import type {
+  ProjectLibrary,
+  ProjectLibraryRealization,
+} from '@src/lib/projectLibraries'
 
-const summary: ProjectSummary = {
-  id: 'test:fixture',
-  name: 'fixture',
-  sourceId: 'test',
-  modifiedAt: 0,
-  fileCount: 3,
-  revision: 1,
+const library: ProjectLibrary = {
+  id: 'directory-abc',
+  title: 'Local Projects',
+  path: '/projects',
+  type: 'directory',
+  order: 0,
 }
 
-/** A minimal in-memory source, so these tests exercise the session alone. */
-function createSource(
-  files: Record<string, string> = {
-    'main.kcl': 'thickness = 4',
-    'lid.kcl': '// lid',
-    'README.md': '# fixture',
-  }
-): ProjectSource {
-  const projects = signal([summary])
-  return {
-    id: 'test',
-    label: 'Test',
-    projects: computed(() => projects.value),
-    state: computed(() => 'ready' as const),
-    error: computed(() => null),
-    refresh: async () => {},
-    create: async () => summary,
-    rename: async () => {},
-    delete: async () => {},
-    listFiles: async () =>
-      Object.keys(files).map((path) => ({
-        path,
-        name: path,
-        kind: 'file' as const,
-      })),
-    readFile: async (_id, path) => {
-      const contents = files[path]
-      if (contents === undefined) throw new Error(`no file ${path}`)
-      return contents
-    },
-    writeFile: async () => {},
-  }
+const realization: ProjectLibraryRealization = {
+  id: 'local:/projects/bracket',
+  libraryIds: [library.id],
+  path: '/projects/bracket',
+  name: 'bracket',
+  modifiedAt: 0,
+  fileCount: 3,
+  kclFileCount: 2,
+  directoryCount: 0,
+  readWriteAccess: true,
+  defaultFile: 'main.kcl',
 }
 
 /** Let the constructor's file listing settle. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 describe('project session', () => {
-  let source: ProjectSource
+  let fileSystem: FakeFileSystem
   let session: ReturnType<typeof createProjectSession>
 
   beforeEach(async () => {
-    source = createSource()
-    session = createProjectSession(summary, source)
+    fileSystem = createFakeFileSystem({
+      '/projects/bracket/main.kcl': 'thickness = 4',
+      '/projects/bracket/lid.kcl': '// lid',
+      '/projects/bracket/README.md': '# bracket',
+    })
+    session = createProjectSession(realization, library, fileSystem)
     await settle()
   })
 
-  it('lists files on open', () => {
+  it('lists files on open, relative to the project root', () => {
     expect(session.filesState.value).toBe('ready')
-    expect(session.files.value.map((file) => file.path)).toContain('main.kcl')
+    // Locale-alphabetical, which is case-insensitive: lid, main, then README.
+    expect(session.files.value.map((file) => file.path)).toEqual([
+      'lid.kcl',
+      'main.kcl',
+      'README.md',
+    ])
+  })
+
+  it('reports the library it was opened through', () => {
+    expect(session.library.value?.id).toBe(library.id)
   })
 
   it('opens no buffer, so the editor lands on its empty state', () => {
@@ -71,11 +68,11 @@ describe('project session', () => {
   })
 
   it('reports a listing failure instead of pretending the project is empty', async () => {
-    const failing = createSource()
-    failing.listFiles = async () => {
+    const failing = createFakeFileSystem({})
+    failing.readDirectory = async () => {
       throw new Error('unreadable')
     }
-    const broken = createProjectSession(summary, failing)
+    const broken = createProjectSession(realization, library, failing)
     await settle()
 
     expect(broken.filesState.value).toBe('error')
@@ -90,6 +87,12 @@ describe('project session', () => {
     expect(buffer.text.value).toBe('thickness = 4')
     expect(buffer.dirty.value).toBe(false)
     expect(session.activeBuffer.value?.id).toBe(buffer.id)
+  })
+
+  it('resolves buffer paths against the project folder', async () => {
+    await session.openFile('main.kcl')
+    // The buffer keeps the project-relative path; only reads are absolute.
+    expect(session.activeBuffer.value?.path.value).toBe('main.kcl')
   })
 
   it('assigns language from the extension', async () => {

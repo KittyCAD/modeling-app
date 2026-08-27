@@ -97,3 +97,161 @@
     inline-size: auto;
   }
 }
+
+/* Libraries --------------------------------------------------------- */
+
+.zds-home__section {
+  display: flex;
+  flex-direction: column;
+}
+
+.zds-home__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+  transition: color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-home__back:hover {
+  color: var(--zds-text-primary);
+}
+
+/* The library's own location, under its title. A readout, not a control. */
+.zds-home__library-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  margin-block-start: var(--zds-space-1);
+  color: var(--zds-text-tertiary);
+  min-inline-size: 0;
+}
+
+.zds-home__library-meta .zds-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-library-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+}
+
+.zds-library-list__item {
+  position: relative;
+}
+
+/*
+ * A library row is content material, and reads as a plate you can pick up:
+ * the same 1px lift as a sheet card, so the two surfaces feel related.
+ */
+.zds-library-row {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-4);
+  inline-size: 100%;
+  padding: var(--zds-space-3) var(--zds-space-4);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-raised);
+  text-align: start;
+  transition:
+    border-color var(--zds-motion-fast) var(--zds-motion-ease),
+    transform var(--zds-motion-fast) var(--zds-motion-ease-out);
+}
+
+.zds-library-row:hover {
+  border-color: var(--zds-border-strong);
+  transform: translateY(-1px);
+}
+
+.zds-library-row__mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--zds-space-8);
+  block-size: var(--zds-space-8);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-sunken);
+  color: var(--zds-text-secondary);
+}
+
+.zds-library-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.zds-library-row__title {
+  font-size: var(--zds-font-size-body);
+  font-weight: var(--zds-font-weight-medium);
+  letter-spacing: var(--zds-tracking-tight);
+  color: var(--zds-text-primary);
+}
+
+.zds-library-row__description {
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-library-row__path {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--zds-text-disabled);
+}
+
+/* Ruled off like a title-block field, so the count reads as data. */
+.zds-library-row__count {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+  align-items: flex-end;
+  padding-inline-start: var(--zds-space-4);
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-library-row__chevron {
+  flex: none;
+  color: var(--zds-text-disabled);
+}
+
+.zds-library-row:hover .zds-library-row__chevron {
+  color: var(--zds-text-secondary);
+}
+
+/* Remove sits above the row's hit area, revealed on hover like a card action. */
+.zds-library-row__actions {
+  position: absolute;
+  inset-block-start: var(--zds-space-1);
+  inset-inline-end: var(--zds-space-1);
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-library-list__item:hover .zds-library-row__actions,
+.zds-library-list__item:focus-within .zds-library-row__actions {
+  opacity: 1;
+}
+
+.zds-library-add,
+.zds-home__rename {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--zds-space-2);
+}
+
+.zds-library-add .zds-field {
+  inline-size: 200px;
+}

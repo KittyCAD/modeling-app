@@ -6,7 +6,16 @@ import type {
 } from '@src/contracts/fileSystem'
 import { basename, dirname, normalizePath } from '@src/lib/paths'
 
+/** Every path is reachable, since the whole origin store is ours. */
 const ROOT = '/'
+/**
+ * Where the default library goes.
+ *
+ * A named folder rather than the store root, so that "every folder in the
+ * store" is not the same set as "every project", and so a second library can be
+ * a sibling of this one.
+ */
+const DEFAULT_ROOT = '/projects'
 
 /**
  * The browser's origin-private filesystem.
@@ -74,7 +83,7 @@ export function createOpfsFileSystem(): FileSystem {
   return {
     id: 'opfs',
     roots: computed(() => roots.value) as ReadonlySignal<readonly string[]>,
-    defaultRoot: computed(() => ROOT),
+    defaultRoot: computed(() => DEFAULT_ROOT),
 
     async stat(path): Promise<FileStat> {
       const normalized = normalizePath(path)

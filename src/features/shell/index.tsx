@@ -48,7 +48,9 @@ function Crumbs() {
 
   return (
     <nav class="zds-crumbs" aria-label="Open project">
-      <span class="zds-crumbs__project">{project.value.name}</span>
+      <span class="zds-crumbs__project">
+        {project.value.title ?? project.value.name}
+      </span>
       {buffer.value ? (
         <>
           <span class="zds-crumbs__separator" aria-hidden="true">

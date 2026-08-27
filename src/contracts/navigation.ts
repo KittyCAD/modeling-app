@@ -13,6 +13,8 @@ import type { ReadonlySignal } from '@preact/signals'
  */
 export type AppLocation =
   | { kind: 'home' }
+  /** The project index for one library. */
+  | { kind: 'library'; libraryId: string }
   | { kind: 'project'; projectId: string; filePath?: string }
   | { kind: 'settings'; section?: string }
 

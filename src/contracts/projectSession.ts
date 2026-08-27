@@ -1,7 +1,11 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 import type { EditorBuffer } from '@src/contracts/buffers'
-import type { ProjectFile, ProjectSummary } from '@src/contracts/projects'
+import type { ProjectFile } from '@src/contracts/projects'
+import type {
+  ProjectLibrary,
+  ProjectLibraryRealization,
+} from '@src/lib/projectLibraries'
 
 /**
  * One open project.
@@ -16,7 +20,10 @@ import type { ProjectFile, ProjectSummary } from '@src/contracts/projects'
  * why you cannot look at a second file without disturbing the model.
  */
 export interface ProjectSession {
-  readonly project: ReadonlySignal<ProjectSummary>
+  /** The project folder this session is open on. */
+  readonly project: ReadonlySignal<ProjectLibraryRealization>
+  /** The library it was opened through. Undefined if that library went away. */
+  readonly library: ReadonlySignal<ProjectLibrary | undefined>
   readonly files: ReadonlySignal<readonly ProjectFile[]>
   readonly filesState: ReadonlySignal<'loading' | 'ready' | 'error'>
 
@@ -38,6 +45,7 @@ export interface ProjectSessionService {
   readonly current: ReadonlySignal<ProjectSession | null>
   readonly opening: ReadonlySignal<string | null>
   readonly error: ReadonlySignal<string | null>
+  /** `projectId` is a realization id, as minted by the libraries service. */
   open(projectId: string): Promise<ProjectSession | null>
   close(): void
 }

@@ -2,7 +2,7 @@ import { useComputed } from '@preact/signals'
 import { Button, EmptyState } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import { projectSessionService } from '@src/contracts/projectSession'
-import { formatRelativeTime, formatRevision } from '@src/lib/format'
+import { formatRelativeTime } from '@src/lib/format'
 import '../project.css'
 
 /**
@@ -17,6 +17,7 @@ export function ProjectInfo() {
 
   const session = useComputed(() => sessions.current.value)
   const project = useComputed(() => session.value?.project.value ?? null)
+  const library = useComputed(() => session.value?.library.value ?? null)
   const active = useComputed(() => session.value?.activeBuffer.value ?? null)
   const executing = useComputed(
     () => session.value?.executingBuffer.value ?? null
@@ -39,16 +40,18 @@ export function ProjectInfo() {
       <dl class="zds-info__block">
         <div class="zds-info__field">
           <dt class="zds-label">Name</dt>
-          <dd class="zds-value">{project.value.name}</dd>
+          <dd class="zds-value" title={project.value.name}>
+            {project.value.title ?? project.value.name}
+          </dd>
         </div>
         <div class="zds-info__field">
-          <dt class="zds-label">Where</dt>
-          <dd class="zds-value">{project.value.location ?? '—'}</dd>
+          <dt class="zds-label">Library</dt>
+          <dd class="zds-value">{library.value?.title ?? 'Unknown'}</dd>
         </div>
         <div class="zds-info__field">
-          <dt class="zds-label">Rev</dt>
-          <dd class="zds-value zds-numeric">
-            {formatRevision(project.value.revision)}
+          <dt class="zds-label">Folder</dt>
+          <dd class="zds-value" title={project.value.path}>
+            {project.value.path}
           </dd>
         </div>
         <div class="zds-info__field">
@@ -56,6 +59,10 @@ export function ProjectInfo() {
           <dd class="zds-value zds-numeric">
             {formatRelativeTime(project.value.modifiedAt)}
           </dd>
+        </div>
+        <div class="zds-info__field">
+          <dt class="zds-label">KCL</dt>
+          <dd class="zds-value zds-numeric">{project.value.kclFileCount}</dd>
         </div>
         <div class="zds-info__field">
           <dt class="zds-label">Files</dt>
