@@ -3,7 +3,7 @@ import {
   type RenderTarget,
   type Scene,
 } from 'three'
-import type Renderer from 'three/src/renderers/common/Renderer.js'
+import type { Renderer } from 'three/webgpu'
 
 const DEFAULT_ENVIRONMENT_INTENSITY = 1
 const DEFAULT_PMREM_SIZE = 128
@@ -20,11 +20,10 @@ export class EnvMapLoader {
   async loadDefault(scene: Scene) {
     this.dispose()
 
-    const [{ default: PMREMGenerator }, { RoomEnvironment }] =
-      await Promise.all([
-        import('three/src/renderers/common/extras/PMREMGenerator.js'),
-        import('three/examples/jsm/environments/RoomEnvironment.js'),
-      ])
+    const [{ PMREMGenerator }, { RoomEnvironment }] = await Promise.all([
+      import('three/webgpu'),
+      import('three/examples/jsm/environments/RoomEnvironment.js'),
+    ])
     const roomEnvironment = new RoomEnvironment()
     const pmremGenerator = new PMREMGenerator(this.renderer)
 
@@ -52,9 +51,9 @@ export class EnvMapLoader {
   async loadHdr(scene: Scene, url: string) {
     this.dispose()
 
-    const [{ HDRLoader }, { default: PMREMGenerator }] = await Promise.all([
+    const [{ HDRLoader }, { PMREMGenerator }] = await Promise.all([
       import('three/examples/jsm/loaders/HDRLoader.js'),
-      import('three/src/renderers/common/extras/PMREMGenerator.js'),
+      import('three/webgpu'),
     ])
     const hdrTexture = await new HDRLoader().loadAsync(url)
     hdrTexture.mapping = EquirectangularReflectionMapping

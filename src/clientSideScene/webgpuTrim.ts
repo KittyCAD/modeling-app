@@ -3,10 +3,12 @@ import type {
   RenderPacketTrimLoop,
 } from '@src/lib/rustContext'
 import { DataTexture, NearestFilter, RedFormat, UnsignedByteType } from 'three'
-import MeshStandardNodeMaterial, {
+import {
+  MeshStandardNodeMaterial,
   type MeshStandardNodeMaterialParameters,
-} from 'three/src/materials/nodes/MeshStandardNodeMaterial.js'
-import type Node from 'three/src/nodes/core/Node.js'
+  type Node,
+  StorageBufferAttribute,
+} from 'three/webgpu'
 import {
   bool,
   Fn,
@@ -18,8 +20,7 @@ import {
   uniform,
   uv,
   vec2,
-} from 'three/src/nodes/TSL.js'
-import StorageBufferAttribute from 'three/src/renderers/common/StorageBufferAttribute.js'
+} from 'three/tsl'
 
 const TRIM_MASK_SIZE = 256
 const TRIM_MASK_BOUNDARY_WIDTH = 4
