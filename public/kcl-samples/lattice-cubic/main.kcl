@@ -1,6 +1,6 @@
 // cubic lattice model
 // Parametric three dimensional grid of spheres and rods used for teaching crystal lattice geometry and spatial repetition
-// Categories: Maker
+// Categories: Science & Education; Parametric
 
 // units
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

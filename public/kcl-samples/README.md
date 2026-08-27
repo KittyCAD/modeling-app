@@ -12,7 +12,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
 
-2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. The third comment line in each sample's `main.kcl` must be "Categories:" followed by a category value or comma-separated category values.
+2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. The third comment line in each sample's `main.kcl` must be "Categories:" followed by a category value or semicolon-separated category values. Semicolons are used because category names may contain commas.
 
 3. **Inline Comments:** Use inline comments to explain non-obvious parts of the code. Each major section should have a comment describing its purpose.
 
@@ -282,4 +282,3 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 [![wing-spar](screenshots/wing-spar.png)](wing-spar/main.kcl)
 #### [zoo-logo](zoo-logo/main.kcl) ([screenshot](screenshots/zoo-logo.png))
 [![zoo-logo](screenshots/zoo-logo.png)](zoo-logo/main.kcl)
-
