@@ -7926,7 +7926,7 @@ description: Result of parsing camshaft.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive",
+            "value": "Categories: Automotive & Transportation; Mechanical Components",
             "style": "line"
           }
         },

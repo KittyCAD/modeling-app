@@ -13,8 +13,8 @@ description: Lints counterdrilled-weldment.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      2974,
-      3301,
+      2973,
+      3300,
       0
     ],
     "overridden": false,

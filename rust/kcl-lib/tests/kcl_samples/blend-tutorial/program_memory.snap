@@ -479,10 +479,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 220,
-            "end": 225,
+            "commentStart": 234,
+            "end": 239,
             "moduleId": 0,
-            "start": 220,
+            "start": 234,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -569,10 +569,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 579,
-            "end": 584,
+            "commentStart": 593,
+            "end": 598,
             "moduleId": 0,
-            "start": 579,
+            "start": 593,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -659,10 +659,10 @@ description: Variables in memory after executing blend-tutorial.kcl
             -140.0
           ],
           "tag": {
-            "commentStart": 1291,
-            "end": 1296,
+            "commentStart": 1305,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1291,
+            "start": 1305,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -880,10 +880,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -30.0
                   ],
                   "tag": {
-                    "commentStart": 220,
-                    "end": 225,
+                    "commentStart": 234,
+                    "end": 239,
                     "moduleId": 0,
-                    "start": 220,
+                    "start": 234,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1102,10 +1102,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -30.0
                   ],
                   "tag": {
-                    "commentStart": 579,
-                    "end": 584,
+                    "commentStart": 593,
+                    "end": 598,
                     "moduleId": 0,
-                    "start": 579,
+                    "start": 593,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1324,10 +1324,10 @@ description: Variables in memory after executing blend-tutorial.kcl
                     -140.0
                   ],
                   "tag": {
-                    "commentStart": 1291,
-                    "end": 1296,
+                    "commentStart": 1305,
+                    "end": 1310,
                     "moduleId": 0,
-                    "start": 1291,
+                    "start": 1305,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

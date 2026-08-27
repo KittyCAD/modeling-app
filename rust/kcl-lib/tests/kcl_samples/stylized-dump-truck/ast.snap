@@ -29879,7 +29879,7 @@ description: Result of parsing stylized-dump-truck.kcl
         "preComments": [
           "// Stylized Toy Dump Truck",
           "// A simplified, parametric 3D toy dump truck with front cab, extended cargo bed, and four wheels.",
-          "// Categories: Maker",
+          "// Categories: Toys, Games, & Recreation; Art & Design; Parametric",
           "",
           "",
           "// The model includes:",
