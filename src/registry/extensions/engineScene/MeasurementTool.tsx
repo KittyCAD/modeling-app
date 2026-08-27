@@ -706,9 +706,10 @@ export function MeasurementStatusBarItem() {
 
   const isIdle = state.matches('idle')
   const sceneGeneration = kclManager.engineSceneGenerationSignal.value
+  const selectionRanges = state.context.selectionRanges
   const selectedEntities = useMemo(
-    () => getMeasurementEntities(state.context.selectionRanges),
-    [state.context.selectionRanges]
+    () => getMeasurementEntities(selectionRanges),
+    [selectionRanges]
   )
   const selectedEntityIdsKey = selectedEntities
     .map((entity) => `${entity.kind}:${entity.id}`)
@@ -744,12 +745,13 @@ export function MeasurementStatusBarItem() {
     [engineCommandManager]
   )
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: the generation must stay captured until the selection changes, so regeneration makes the selection stale.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selection identity marks a new occurrence even when the derived entity key is unchanged.
   useEffect(() => {
     selectionSceneGeneration.current =
       kclManager.engineSceneGenerationSignal.value
-  }, [kclManager, measurementInputKey])
+  }, [kclManager, selectionRanges])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a same-key reselection must restart measurement after its generation stamp is refreshed.
   useEffect(() => {
     latestRequestKey.current = measurementInputKey
     setResult(null)
@@ -795,6 +797,7 @@ export function MeasurementStatusBarItem() {
     measurementInputKey,
     measurementTarget,
     sceneGeneration,
+    selectionRanges,
     selectedEntityIdsKey,
     sendModelingCommand,
     unit,

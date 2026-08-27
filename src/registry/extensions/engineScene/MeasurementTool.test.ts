@@ -357,16 +357,29 @@ describe('MeasurementStatusBarItem', () => {
       },
     },
   }
+  const edgeSelection: Selections = {
+    graphSelections: [],
+    otherSelections: [
+      {
+        type: 'enginePrimitive',
+        entityId: 'stale-edge',
+        primitiveIndex: 0,
+        primitiveType: 'edge',
+      },
+    ],
+  }
 
   function mockStatusBar({
     generation,
     idleState = { value: true },
+    selectionRanges = { value: edgeSelection },
     sendSceneCommand = vi.fn(async ({ cmd }: { cmd: { type: string } }) =>
       cmd.type === 'edge_get_length' ? edgeLengthResponse : { success: false }
     ),
   }: {
     generation: { value: number }
     idleState?: { value: boolean }
+    selectionRanges?: { value: Selections }
     sendSceneCommand?: ReturnType<typeof vi.fn>
   }) {
     vi.mocked(useModelingContext).mockReturnValue({
@@ -379,16 +392,8 @@ describe('MeasurementStatusBarItem', () => {
             isExecutingSignal: { value: false },
             engineSceneGenerationSignal: generation,
           },
-          selectionRanges: {
-            graphSelections: [],
-            otherSelections: [
-              {
-                type: 'enginePrimitive',
-                entityId: 'stale-edge',
-                primitiveIndex: 0,
-                primitiveType: 'edge',
-              },
-            ],
+          get selectionRanges() {
+            return selectionRanges.value
           },
           store: {},
         },
@@ -397,10 +402,15 @@ describe('MeasurementStatusBarItem', () => {
     return sendSceneCommand
   }
 
-  it('skips edge_get_length after regeneration returns to idle with stale selection', async () => {
+  it('skips a stale selection and measures it after a fresh reselection', async () => {
     const generation = { value: 1 }
     const idleState = { value: true }
-    const sendSceneCommand = mockStatusBar({ generation, idleState })
+    const selectionRanges = { value: edgeSelection }
+    const sendSceneCommand = mockStatusBar({
+      generation,
+      idleState,
+      selectionRanges,
+    })
     const { rerender } = render(createElement(MeasurementStatusBarItem))
 
     await waitFor(() => expect(sendSceneCommand).toHaveBeenCalled())
@@ -419,6 +429,21 @@ describe('MeasurementStatusBarItem', () => {
       )
     })
     expect(sendSceneCommand).not.toHaveBeenCalled()
+
+    selectionRanges.value = {
+      ...edgeSelection,
+      otherSelections: [...edgeSelection.otherSelections],
+    }
+    rerender(createElement(MeasurementStatusBarItem))
+
+    await waitFor(() =>
+      expect(sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'modeling_cmd_req',
+          cmd: { type: 'edge_get_length', edge_id: 'stale-edge' },
+        })
+      )
+    )
   })
 
   it('measures a selected edge when selection matches the current scene generation', async () => {
