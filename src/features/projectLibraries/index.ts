@@ -1,0 +1,94 @@
+import {
+  defineRegistryItemFactory,
+  defineRuntimeRegistryItem,
+  provide,
+  provideService,
+} from '@kittycad/registry'
+import { computed } from '@preact/signals'
+import { commandsValueSpec } from '@src/contracts/commands'
+import { fileSystemService } from '@src/contracts/fileSystem'
+import {
+  projectLibrariesService,
+  projectLibraryDefaultsValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/contracts/projectLibraries'
+import { createProjectLibrariesService } from '@src/features/projectLibraries/createProjectLibrariesService'
+
+/**
+ * Provides the libraries service.
+ *
+ * Holds no knowledge of any library type: types and starting defaults are both
+ * contributions, so this feature is complete as it stands even when cloud
+ * libraries arrive.
+ */
+export default defineRegistryItemFactory((ctx) => {
+  const types = computed(() => ctx.valueSpecs.get(projectLibraryTypesValueSpec))
+  const defaults = computed(() =>
+    ctx.valueSpecs.get(projectLibraryDefaultsValueSpec)
+  )
+
+  // Constructed lazily on first read so the filesystem service is resolved
+  // outside graph construction.
+  let service: ReturnType<typeof createProjectLibrariesService> | null = null
+  const get = () => {
+    service ??= createProjectLibrariesService(
+      ctx.services.get(fileSystemService),
+      types,
+      defaults
+    )
+    return service
+  }
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'projectLibraries',
+      dispose: () => service?.dispose(),
+      providesServices: [
+        provideService(projectLibrariesService, {
+          get settings() {
+            return get().settings
+          },
+          get libraries() {
+            return get().libraries
+          },
+          get types() {
+            return get().types
+          },
+          get realizations() {
+            return get().realizations
+          },
+          get state() {
+            return get().state
+          },
+          get error() {
+            return get().error
+          },
+          library: (id) => get().library(id),
+          realization: (id) => get().realization(id),
+          realizationsFor: (id) => get().realizationsFor(id),
+          type: (name) => get().type(name),
+          refresh: (id) => get().refresh(id),
+          addLibrary: (setting) => get().addLibrary(setting),
+          updateLibrary: (id, patch) => get().updateLibrary(id, patch),
+          removeLibrary: (id) => get().removeLibrary(id),
+          reorderLibrary: (from, to) => get().reorderLibrary(from, to),
+          canRemoveLibrary: (id) => get().canRemoveLibrary(id),
+          createProject: (id, title) => get().createProject(id, title),
+          renameProject: (id, title) => get().renameProject(id, title),
+          deleteProject: (id) => get().deleteProject(id),
+          moveTargetsFor: (id) => get().moveTargetsFor(id),
+          moveProject: (id, target) => get().moveProject(id, target),
+        }),
+      ],
+      provides: [
+        provide(commandsValueSpec, {
+          id: 'libraries.refresh',
+          title: 'Refresh project libraries',
+          category: 'Project',
+          icon: 'refresh',
+          run: () => get().refresh(),
+        }),
+      ],
+    }),
+  }
+}, 'projectLibraries')
