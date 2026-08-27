@@ -216,6 +216,34 @@ describe('publishCurrentProject', () => {
       { duration: 5000 }
     )
   })
+
+  it('shows a useful error when a category is rejected', async () => {
+    mockState.createProject.mockResolvedValueOnce(
+      new Error(
+        'category `retired-category` is not active or does not exist'
+      ) as never
+    )
+
+    const published = await publishCurrentProject({
+      token: 'token-123',
+      project: makeProject(),
+      currentFilePath: '/projects/bracket/main.kcl',
+      currentFileContents: 'part001 = startSketchOn(XY)',
+      wasmInstance: {} as never,
+      submission: {
+        title: 'Bracket',
+        description: 'A mounting bracket.',
+        categoryIds: ['retired-category'],
+      },
+    })
+
+    expect(published).toBe(false)
+    expect(mockState.toastError).toHaveBeenCalledWith(
+      'One or more selected categories are no longer available. Choose an active category and try again.',
+      { duration: 5000 }
+    )
+    expect(mockState.publishProject).not.toHaveBeenCalled()
+  })
 })
 
 describe('getCurrentProjectPublicationDetails', () => {
