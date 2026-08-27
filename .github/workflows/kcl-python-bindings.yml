@@ -37,11 +37,6 @@ jobs:
       - uses: actions/setup-python@v7.0.0
         with:
           python-version-file: .tool-versions
-      - name: sccache cache on the Namespace volume
-        # See the macos job.
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         env:
@@ -51,37 +46,16 @@ jobs:
           # are not packaged. Generating it costs build time for output that is
           # then discarded.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
-          # maturin-action mounts GITHUB_WORKSPACE at the same path inside the
-          # container, so this resolves on both sides. The SCCACHE_ prefix is
-          # on its list of variables forwarded into the container.
-          RUSTC_WRAPPER: sccache
-          SCCACHE_DIR: ${{ github.workspace }}/.sccache
-          SCCACHE_CACHE_SIZE: 20G
         with:
           working-directory: rust/kcl-python-bindings
           target: x86_64
           # --strip is a backstop. Without it a debug .so exceeds PyPI's 100MB
           # limit.
           args: --release --out dist --find-interpreter --strip
-          # Off so the volume above is used instead of the GitHub cache. That
-          # also means the container has no sccache, so before-script installs
-          # one.
-          sccache: 'false'
+          sccache: 'true'
           manylinux: auto
           before-script-linux: |
-            curl -fsSL https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-v0.10.0-x86_64-unknown-linux-musl.tar.gz \
-              | tar -xz -C /tmp
-            install -m 0755 /tmp/sccache-v0.10.0-x86_64-unknown-linux-musl/sccache /usr/local/bin/sccache
-            sccache --version
-      - name: sccache cache contents
-        # sccache ran inside the container and its server exited with
-        # it. Measuring the directory answers whether the container wrote to
-        # the mounted volume path.
-        if: always()
-        shell: bash
-        run: |
-          du -sh .sccache 2>&1 || true
-          echo "objects: $(find .sccache -type f 2>/dev/null | wc -l)"
+            yum install openssl-devel -y
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -107,30 +81,16 @@ jobs:
             3.13
             3.14
           architecture: ${{ matrix.target }}
-      - name: Install sccache
-        uses: taiki-e/install-action@sccache
-      - name: sccache cache on the Namespace volume
-        # See the macos job.
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         env:
-          RUSTC_WRAPPER: sccache
-          SCCACHE_DIR: ${{ github.workspace }}/.sccache
-          SCCACHE_CACHE_SIZE: 20G
           # See the linux job.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
           working-directory: rust/kcl-python-bindings
           target: ${{ matrix.target }}
           args: --release --out dist --find-interpreter --strip
-          # Off so the volume above is used instead of the GitHub cache.
-          sccache: 'false'
-      - name: sccache stats
-        if: always()
-        run: sccache --show-stats
+          sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v7
         with:
@@ -159,23 +119,13 @@ jobs:
             3.14
       - name: Install sccache
         uses: taiki-e/install-action@sccache
-      - name: sccache cache on the Namespace volume
-        # The GitHub Actions cache is capped at 10GB per repository, and
-        # sccache alone filled it: 8.5GB across 3069 entries, after which every
-        # write failed. This volume reports 100GB.
-        uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: .sccache
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         env:
           # maturin-action sets these itself when its own `sccache` input is
           # on. They are set here because that input is off.
           RUSTC_WRAPPER: sccache
-          SCCACHE_DIR: ${{ github.workspace }}/.sccache
-          # sccache evicts its own contents at this size. The volume is shared
-          # with nothing else on this profile.
-          SCCACHE_CACHE_SIZE: 20G
+          SCCACHE_GHA_ENABLED: 'true'
           # See the linux job.
           CARGO_PROFILE_RELEASE_DEBUG: '0'
         with:
