@@ -11,7 +11,7 @@ readable at `git show main:src/...`.
 | 1 | Registry for composable capabilities | `src/contracts/`, `src/features/` | done |
 | 2 | Preact Signals for reactive state | throughout; no state machines | done |
 | 3 | Thin view layer | `packages/ui-kit`, `src/features/*/**.tsx` | partly |
-| 4 | CodeMirror owns buffer state; `projectSession` owns the project | `src/contracts/buffers.ts`, `src/features/projectSession/` | shape only |
+| 4 | CodeMirror owns buffer state; `projectSession` owns the project | `src/contracts/buffers.ts`, `src/features/projectSession/` | done (see below) |
 | — | Project libraries (ported from main) | `src/contracts/projectLibraries.ts`, `src/features/projectLibraries/` | directory type |
 | 5 | The router follows app state | `src/features/navigation/` | done |
 | 6 | Point-and-click tools as macro actions | — | not started |
@@ -100,21 +100,89 @@ ignored a layout reset.
 - Derived from a signal that may be replaced → key it explicitly:
   `useMemo(() => computed(...), [theSignal])`, `useEffect(() => effect(...), [theSignal])`.
 
-## Buffers and the project session
+## Buffers
 
-`projectSession` owns one open project: its files, its buffers, and which buffer
-is being **viewed** versus **executed**. Those are separate signals on purpose.
-Collapsing them into one "current file" is what turns the active file into a
-hidden dependency of every subsystem, and it is why you cannot read a second
-file without disturbing the model.
+Implements KittyCAD/modeling-app#13185 and #13189. Two properties carry the
+design, and both are easy to break:
 
-Buffer ids are minted, never derived from paths, so a rename moves a buffer
-without anything downstream noticing. Opening a project opens no buffer: "no
-active buffer" is a state the UI must handle anyway, so it is where you land.
+**One dispatch boundary.** A mounted view does not dispatch to itself — its
+`dispatchTransactions` is routed into the buffer, which applies the transactions
+and *then* pushes them to the view. Typing, a command, an LSP response, a
+modelling action, an agent, and filesystem reconciliation all take the same
+path, which is what makes versioning, change events, and stale-work rejection
+possible. CodeMirror's `updateListener` would have been too late and would have
+made the view the owner of the state.
 
-`EditorBuffer` is a phase-one shape — identity, naming, text, dirty, version.
-The CodeMirror `EditorState` and the single dispatch boundary every transaction
-passes through arrive with the editor itself.
+**The document outlives the view.** State lives in the buffer, so unmounting is
+not a document operation and `undo` works with nothing on screen. `runCommand`
+takes a `StateCommand` and needs no view.
+
+Other invariants, each with a test:
+
+- `id` is generated, never derived from the path. A rename moves a buffer rather
+  than replacing it, so background work holding a reference survives the move.
+- `pathRevision` and `version` are tracked separately: one guards path-scoped
+  async work, the other rejects a save that finished after a newer edit.
+  `markSaved` returning false *is* that rejection.
+- `dirty` is a content comparison, not a flag, so undoing back to the saved
+  content makes a buffer clean again for free.
+- Reconciliation never overwrites unsaved edits. A clean buffer adopts; a dirty
+  one records a divergence and leaves the document alone.
+- A buffer's `path` is **absolute** — the resource capabilities act on.
+  Project-relative paths are presentation and live on the session
+  (`relativePathFor`, `activeBufferPath`).
+
+### Capabilities
+
+One application-level ValueSpec, combined into a deterministic resolver — not
+one registry per buffer. Each buffer evaluates it against its own **structural**
+context (path identity, language, file-backed, executing role, read-only) and
+applies the result through a single `Compartment`.
+
+The structural/volatile line is the expensive thing to get wrong. Diagnostics,
+cursor state, dirty state, execution results, and remote divergence must **not**
+be structural: they flow through transactions, state fields, facets, and
+signals. A test asserts that typing never rebuilds the bundle.
+
+A capability contributes CodeMirror extensions, a live binding returning a
+disposer, or both. The binding shape exists because a `updateListener` cannot
+serve a buffer with no view — autosave is exactly that case.
+
+Two CodeMirror details worth remembering:
+
+- `userEvent: undefined` does **not** keep a change out of history. Only
+  `Transaction.addToHistory.of(false)` does.
+- History groups recent changes by time, so a programmatic replacement that
+  should be its own undo step needs `isolateHistory`.
+
+### Snapshots
+
+`captureSnapshot()` reads buffers, not the filesystem, so a commit or an export
+sees what the user is looking at. Synchronous and O(1) per buffer — CodeMirror
+documents are persistent, so no copy is needed and the capture stays valid while
+the user keeps typing. No "save all", and observers never see a mixture of old
+and new project state. Each capture carries one operation id.
+
+### Project session
+
+`projectSession` owns the buffer collection and its lifecycle: one path for every
+file type plus scratch buffers, lookup by id and by path, and the executing role
+pushed into the buffer since capabilities key off it. Viewing and executing are
+separate signals on purpose — collapsing them is what turns the active file into
+a hidden dependency of every subsystem.
+
+Opening a project opens no buffer: "no active buffer" is a state the UI must
+handle anyway, so it is where you land.
+
+### Not built yet, from #6836
+
+- The execution coordinator and the privileged KCL execution adapter (#6836)
+- `ProjectActionHistory` and the `HistoryCoordinator` (#13353) — local buffer
+  undo works; coordinated multi-buffer undo does not exist
+- Prepared project mutations (#13354) — the snapshot half is done, the
+  `PreparedProjectMutation` half is not
+- LSP as a capability, and a filesystem watcher. `reconcileExternalChange` and
+  the queue's write tokens are the seams a watcher will use
 
 ## Layout is data
 
@@ -163,6 +231,8 @@ re-renders when it changes.
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
 - Settings, auth, and cloud sync — settings will be signals plus a
   registry-composed schema, not a state machine
+- Execution: the coordinator, the KCL execution adapter, and the engine
+  connection. See the buffers section for what #6836 still wants
 - Cloud and network library types. The type contribution is the seam; nothing in
   the service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a
