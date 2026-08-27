@@ -28,6 +28,7 @@ import {
 } from '@src/lib/utils2d'
 import {
   getLinePoints,
+  isLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
@@ -376,6 +377,27 @@ function pointSelectionFromObject(object: ApiObject | undefined) {
       object.kind.segment.position.x.value,
       object.kind.segment.position.y.value,
     ] as Coords2d,
+  }
+}
+
+function getLineLengthDraftContext(
+  selection: LineSelection,
+  objects: ApiObject[]
+): DimensionDraftContext | null {
+  const line = objects[selection.id]
+  if (!isLineSegment(line)) {
+    return null
+  }
+
+  const point0 = pointSelectionFromObject(objects[line.kind.segment.start])
+  const point1 = pointSelectionFromObject(objects[line.kind.segment.end])
+  if (!point0 || !point1) {
+    return null
+  }
+
+  return {
+    type: 'distance',
+    distance: { kind: 'pointPoint', point0, point1 },
   }
 }
 
@@ -1104,6 +1126,21 @@ function addDimensionListener({
         if (selection) {
           runtime.firstSelection = selection
           updateSelectedEntities(self, [selection])
+
+          if (selection.type === 'line' && !args.mouseEvent.shiftKey) {
+            const draftContext = getLineLengthDraftContext(
+              selection,
+              initialObjects
+            )
+            if (draftContext) {
+              runtime.draftContext = draftContext
+              sendParent(self, {
+                type: 'update hovered id',
+                data: { hoveredId: null },
+              })
+              requestDraftPreview(runtime, context, self, mousePoint)
+            }
+          }
         }
       } else if (!runtime.draftContext) {
         // Second click: complete a line/line, point/point, or point/line pair.
