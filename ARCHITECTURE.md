@@ -976,6 +976,16 @@ Folder contributes its directory field and picker; Cloud contributes its source,
 local materialization path and account/sync state. A future provider adds its
 own connection fields without adding a conditional to Settings.
 
+### Plugins are persisted slot policy
+
+The registry already models a plugin as a runtime-toggleable slot with a stable
+controller outside it. `createAppPlugin` adds the application policy: one
+user-level boolean setting and a `PluginActivationContribution` connecting that
+setting to the controller. The always-on `pluginManagement` feature performs
+the synchronization, so disabling a plugin cannot disable the mechanism that
+would turn it back on. A platform may force a plugin active while hiding its
+toggle; Cloud sync does this on web, where it is storage infrastructure.
+
 ## Execution
 
 The coordinator owns everything asynchronous; the adapter is a capability; the
@@ -1327,7 +1337,6 @@ readers wrong.
 ## What is not built yet
 
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
-- Cloud sync
 - Token storage on desktop uses browser storage; the existing app uses a
   per-environment config file, which survives a cleared profile and supports
   environment switching. Settings already write one, so the mechanism exists
@@ -1336,8 +1345,8 @@ readers wrong.
 - An engine-idle signal, so the view can be framed automatically after execution
 - Selection and the feature tree. Camera controls are in; clicking the model to
   select something is not, and it plugs into the same interaction seam
-- Cloud and network library types. The type contribution is the seam; nothing in
-  the service, Home, or routing should need to change
+- Network library types. The type contribution is the seam; nothing in the
+  service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a
   project is a per-card action here
 - Storybook for ui-kit; `packages/ui-components` should be deleted once its
@@ -1377,10 +1386,12 @@ same `FileSystem` and directory helpers as a Folder library. The `cloudSync`
 service owns only the relationship between those bytes and Zoo's whole-project
 archive API.
 
-There is no `systemIOActor`, settings actor, plugin activation machine or global
-sync engine. One service has explicit `FileSystem`, auth-token and API
-dependencies; async runs are serialized per library, while Preact signals only
-report status and the remote index. Its lifecycle is registry disposal.
+There is no `systemIOActor` or settings actor. One always-on service extension
+has explicit `FileSystem`, auth-token, plugin-policy and API dependencies; async
+runs are serialized per library, while Preact signals only report status and the
+remote index. The plugin controls whether the registered engine may perform
+replication and owns the activation effect that materializes the Personal Cloud
+library entry. Its lifecycle is registry disposal.
 
 Each cloud materialization root carries a small `.zds-cloud-sync.json` index.
 For every relationship it records the remote id and revision plus the manifest
@@ -1405,15 +1416,28 @@ after a Cloud library has been seen, and when a hidden tab becomes visible. A
 failed upload leaves both the local project and its recorded base in place, so a
 later run can retry from durable state.
 
+Library-provider policy is enforced in the service, not only in Settings. Folder
+is desktop-only. Web exposes exactly one Cloud library and normalizes it to
+`/documents/zoo-design-studio-projects`, replacing a persisted legacy default
+Folder entry without moving its OPFS bytes. Desktop starts Folder at
+`Documents/zoo-design-studio-projects`; Personal Cloud materializes at
+`~/Library/CloudStorage/Zoo/personal` on macOS and `~/Zoo/personal` elsewhere.
+
 ## Filesystem
 
-One `FileSystem` service, two implementations, so directory libraries work on
+One `FileSystem` service, two implementations, so local materializations work on
 both platforms:
 
 - **OPFS** on the web. Real directories, private to the origin, persistent.
 - **The preload bridge** on desktop, where every path is confined in the main
-  process to a **granted root** — the default projects directory plus anything
-  the user picked in an OS dialog. Picking is the grant; grants persist.
+  process to a **granted root** — the default projects and Personal Cloud
+  directories plus anything the user picked in an OS dialog. Picking is the
+  grant; grants persist.
+
+The contract exposes separate `defaultRoot` and `defaultCloudRoot` signals.
+They intentionally coincide on web for compatibility and intentionally diverge
+on desktop so app-managed cloud bytes do not masquerade as a user-selected
+Folder library.
 
 Text and byte writes are both part of the contract. Cloud archives can contain
 images and imported geometry, so decoding them as text would silently corrupt a

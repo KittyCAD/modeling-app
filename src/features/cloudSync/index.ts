@@ -1,9 +1,13 @@
 import {
+  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  pluginsValueSpec,
   provide,
   provideService,
 } from '@kittycad/registry'
+import { computed, effect } from '@preact/signals'
+import { createAppPlugin } from '@src/app/createAppPlugin'
 import { authService } from '@src/contracts/auth'
 import { cloudSyncService } from '@src/contracts/cloudSync'
 import { commandsValueSpec } from '@src/contracts/commands'
@@ -14,15 +18,25 @@ import { createCloudApi } from '@src/features/cloudSync/cloudApi'
 import { createCloudSyncService } from '@src/features/cloudSync/createCloudSyncService'
 import { CLOUD_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 
-/** Cloud archive replication, provided independently of the Cloud library UI. */
-export default defineRegistryItemFactory((ctx) => {
+export const CLOUD_SYNC_PLUGIN_ID = 'cloudSync'
+
+/** Always-on service extension containing the synchronization engine itself. */
+const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   let service: ReturnType<typeof createCloudSyncService> | null = null
   const get = () => {
     if (service) return service
     const auth = ctx.services.get(authService)
+    const plugin = ctx.valueSpecs
+      .get(pluginsValueSpec)
+      .find((candidate) => candidate.id === CLOUD_SYNC_PLUGIN_ID)
+    const active = plugin
+      ? ctx.services.get(plugin.service).active
+      : computed(() => false)
+
     service = createCloudSyncService({
       fileSystem: ctx.services.get(fileSystemService),
       token: auth.token,
+      enabled: active,
       api: createCloudApi({ token: () => auth.token.value }),
       backgroundIntervalMs: ctx.services.get(runtimeService).info.value.isTest
         ? 0
@@ -33,7 +47,7 @@ export default defineRegistryItemFactory((ctx) => {
 
   return {
     item: defineRuntimeRegistryItem({
-      id: 'cloudSync',
+      id: 'cloudSync.extension',
       dispose: () => service?.dispose(),
       providesServices: [
         provideService(cloudSyncService, {
@@ -57,6 +71,52 @@ export default defineRegistryItemFactory((ctx) => {
           dispose: () => get().dispose(),
         }),
       ],
+    }),
+  }
+}, 'cloudSync.extension')
+
+/**
+ * Opt-in Cloud behavior.
+ *
+ * Entering the plugin slot materializes Personal Cloud once both platform
+ * paths are known. Leaving the slot stops this policy, but does not unregister
+ * the library type or synchronization service extension.
+ */
+const cloudSyncBehavior = defineRegistryItemFactory((ctx) => {
+  let stop: (() => void) | undefined
+  let disposed = false
+
+  queueMicrotask(() => {
+    if (disposed) return
+    const libraries = ctx.services.get(projectLibrariesService)
+    const fileSystem = ctx.services.get(fileSystemService)
+    const runtime = ctx.services.get(runtimeService)
+    stop = effect(() => {
+      if (
+        libraries.libraries.value.some(
+          (library) => library.type === CLOUD_LIBRARY_TYPE
+        )
+      )
+        return
+
+      const cloud = libraries.type(CLOUD_LIBRARY_TYPE)
+      const setting = cloud?.newLibrarySetting?.({
+        defaultRoot: fileSystem.defaultRoot.value,
+        defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+        ...runtime.info.value,
+      })
+      if (!setting?.path) return
+      libraries.addLibrary(setting)
+    })
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloudSync.behavior',
+      dispose: () => {
+        disposed = true
+        stop?.()
+      },
       provides: [
         provide(commandsValueSpec, {
           id: 'cloudSync.sync',
@@ -65,10 +125,11 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'refresh',
           run: async () => {
             const libraries = ctx.services.get(projectLibrariesService)
+            const sync = ctx.services.get(cloudSyncService)
             await Promise.all(
               libraries.libraries.value
                 .filter((library) => library.type === CLOUD_LIBRARY_TYPE)
-                .map((library) => get().syncLibrary(library))
+                .map((library) => sync.syncLibrary(library))
             )
             await libraries.refresh()
           },
@@ -76,4 +137,24 @@ export default defineRegistryItemFactory((ctx) => {
       ],
     }),
   }
-}, 'cloudSync')
+}, 'cloudSync.behavior')
+
+const cloudSyncPlugin = createAppPlugin({
+  id: CLOUD_SYNC_PLUGIN_ID,
+  title: 'Cloud sync',
+  description: 'Synchronize projects in Personal Cloud with your Zoo account.',
+  items: [cloudSyncBehavior],
+  enabledByDefault: false,
+  activation: {
+    forceEnabledOn: ['web'],
+    setting: {
+      platforms: ['desktop'],
+      toml: ['settings', 'plugins', 'cloud_sync'],
+    },
+  },
+})
+
+export default defineRegistryItem({
+  id: 'cloudSync',
+  uses: [cloudSyncExtension, cloudSyncPlugin],
+})

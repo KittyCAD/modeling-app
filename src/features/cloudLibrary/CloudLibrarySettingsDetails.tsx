@@ -17,16 +17,18 @@ export function CloudLibrarySettingsDetails({
 
   const statusText = !signedIn
     ? 'Sign in to connect this library to your Zoo account.'
-    : status.value.state === 'syncing' &&
-        status.value.activeLibraryId === library.id
-      ? 'Synchronizing local and cloud projects…'
-      : status.value.state === 'conflict'
-        ? `${status.value.conflictCount} project conflict${status.value.conflictCount === 1 ? '' : 's'} need attention.`
-        : status.value.state === 'error'
-          ? status.value.error || 'Cloud sync failed.'
-          : status.value.lastSyncedAt
-            ? `Last synchronized ${new Date(status.value.lastSyncedAt).toLocaleString()}.`
-            : 'Ready to synchronize.'
+    : !status.value.enabled
+      ? 'Cloud sync is turned off in Plugins settings.'
+      : status.value.state === 'syncing' &&
+          status.value.activeLibraryId === library.id
+        ? 'Synchronizing local and cloud projects…'
+        : status.value.state === 'conflict'
+          ? `${status.value.conflictCount} project conflict${status.value.conflictCount === 1 ? '' : 's'} need attention.`
+          : status.value.state === 'error'
+            ? status.value.error || 'Cloud sync failed.'
+            : status.value.lastSyncedAt
+              ? `Last synchronized ${new Date(status.value.lastSyncedAt).toLocaleString()}.`
+              : 'Ready to synchronize.'
 
   return (
     <div class="zds-cloud-library-settings">
@@ -44,7 +46,11 @@ export function CloudLibrarySettingsDetails({
           <Button
             icon="refresh"
             label="Sync now"
-            disabled={readOnly || status.value.state === 'syncing'}
+            disabled={
+              readOnly ||
+              !status.value.enabled ||
+              status.value.state === 'syncing'
+            }
             onClick={() => void sync.syncLibrary(library).catch(() => {})}
           />
         ) : (

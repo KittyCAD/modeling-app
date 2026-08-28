@@ -113,13 +113,15 @@ function subject(
   const fileSystem = createFakeFileSystem(initialFiles)
   const cloud = fakeCloudApi(remote)
   const token = signal<string | null>('token')
+  const enabled = signal(true)
   const service = createCloudSyncService({
     fileSystem,
     token,
+    enabled,
     api: cloud.api,
     backgroundIntervalMs: 0,
   })
-  return { fileSystem, cloud, token, service }
+  return { fileSystem, cloud, token, enabled, service }
 }
 
 describe('cloud sync service', () => {
@@ -238,6 +240,26 @@ describe('cloud sync service', () => {
 
     expect(test.cloud.calls.create).toBe(0)
     expect(test.service.status.value.state).toBe('disabled')
+    test.service.dispose()
+  })
+
+  it('keeps the engine registered but inert while its plugin is disabled', async () => {
+    const test = subject({ '/cloud/bracket/main.kcl': 'base' })
+    test.enabled.value = false
+
+    await test.service.syncLibrary(library)
+
+    expect(test.cloud.calls.create).toBe(0)
+    expect(test.service.status.value).toMatchObject({
+      enabled: false,
+      state: 'disabled',
+    })
+
+    // Local-first operations still protect the user's device state even when
+    // replication policy is off.
+    await test.service.deleteProject(library, '/cloud/bracket')
+    expect(await test.fileSystem.exists('/cloud/bracket')).toBe(false)
+    expect(test.cloud.calls.delete).toEqual([])
     test.service.dispose()
   })
 })

@@ -1,4 +1,4 @@
-import { computed, type ReadonlySignal, signal } from '@preact/signals'
+import { computed, effect, type ReadonlySignal, signal } from '@preact/signals'
 import type {
   CloudSyncService,
   CloudSyncStatus,
@@ -78,6 +78,8 @@ function parseIndex(value: string | null): SyncIndex {
 export interface CreateCloudSyncServiceOptions {
   fileSystem: FileSystem
   token: ReadonlySignal<string | null>
+  /** Runtime policy. The engine stays registered while this turns work off. */
+  enabled?: ReadonlySignal<boolean>
   api: CloudApi
   /** Set to zero in deterministic tests. */
   backgroundIntervalMs?: number
@@ -93,18 +95,29 @@ export interface CreateCloudSyncServiceOptions {
 export function createCloudSyncService({
   fileSystem,
   token,
+  enabled = signal(true),
   api,
   backgroundIntervalMs = 30_000,
 }: CreateCloudSyncServiceOptions): CloudSyncService {
   const status = signal<CloudSyncStatus>({
-    enabled: Boolean(token.value),
-    state: token.value ? 'idle' : 'disabled',
+    enabled: enabled.value && Boolean(token.value),
+    state: enabled.value && token.value ? 'idle' : 'disabled',
     conflictCount: 0,
   })
   const remoteProjects = signal<readonly RemoteCloudProject[]>([])
   const registeredLibraries = new Map<string, ProjectLibrary>()
   const running = new Map<string, Promise<void>>()
   let disposed = false
+
+  const stopEnabledPolicy = effect(() => {
+    const active = enabled.value && Boolean(token.value)
+    if (!active) {
+      remoteProjects.value = []
+      status.value = { enabled: false, state: 'disabled', conflictCount: 0 }
+    } else if (status.value.state === 'disabled') {
+      status.value = { enabled: true, state: 'idle', conflictCount: 0 }
+    }
+  })
 
   const indexPath = (library: ProjectLibrary) =>
     joinPath(library.path, INDEX_FILE)
@@ -173,7 +186,7 @@ export function createCloudSyncService({
   }
 
   const reconcile = async (library: ProjectLibrary) => {
-    if (!token.value) {
+    if (!enabled.value || !token.value) {
       remoteProjects.value = []
       status.value = { enabled: false, state: 'disabled', conflictCount: 0 }
       return
@@ -330,8 +343,8 @@ export function createCloudSyncService({
       .catch((error) => {
         status.value = {
           ...status.value,
-          enabled: Boolean(token.value),
-          state: token.value ? 'error' : 'disabled',
+          enabled: enabled.value && Boolean(token.value),
+          state: enabled.value && token.value ? 'error' : 'disabled',
           activeLibraryId: library.id,
           error: errorMessage(error),
         }
@@ -345,7 +358,7 @@ export function createCloudSyncService({
   const interval =
     backgroundIntervalMs > 0
       ? setInterval(() => {
-          if (!token.value || disposed) return
+          if (!enabled.value || !token.value || disposed) return
           for (const library of registeredLibraries.values()) {
             void syncLibrary(library).catch(() => {})
           }
@@ -353,7 +366,12 @@ export function createCloudSyncService({
       : undefined
 
   const onVisibility = () => {
-    if (document.visibilityState !== 'visible' || !token.value) return
+    if (
+      document.visibilityState !== 'visible' ||
+      !enabled.value ||
+      !token.value
+    )
+      return
     for (const library of registeredLibraries.values()) {
       void syncLibrary(library).catch(() => {})
     }
@@ -369,6 +387,7 @@ export function createCloudSyncService({
     syncProject: async (library) => syncLibrary(library),
 
     async relocateProject(library, fromPath, toPath) {
+      if (!enabled.value || !token.value) return
       const index = await readIndex(library)
       const record = index.projects.find(
         (candidate) => candidate.localName === basename(normalizePath(fromPath))
@@ -379,6 +398,11 @@ export function createCloudSyncService({
     },
 
     async deleteProject(library, projectPath) {
+      if (!enabled.value || !token.value) {
+        if (await fileSystem.exists(projectPath))
+          await fileSystem.remove(projectPath)
+        return
+      }
       const index = await readIndex(library)
       const name = basename(normalizePath(projectPath))
       const record = index.projects.find(
@@ -395,6 +419,7 @@ export function createCloudSyncService({
     },
 
     async disconnectProject(library, projectPath) {
+      if (!enabled.value || !token.value) return
       const index = await readIndex(library)
       const name = basename(normalizePath(projectPath))
       const record = index.projects.find(
@@ -409,6 +434,7 @@ export function createCloudSyncService({
     },
 
     async remoteProjectId(library, projectPath) {
+      if (!enabled.value || !token.value) return undefined
       const name = basename(normalizePath(projectPath))
       return (await readIndex(library)).projects.find(
         (record) => record.localName === name
@@ -416,6 +442,7 @@ export function createCloudSyncService({
     },
 
     async resolveConflict(library, projectPath, resolution) {
+      if (!enabled.value || !token.value) return
       const index = await readIndex(library)
       const name = basename(normalizePath(projectPath))
       const record = index.projects.find(
@@ -451,6 +478,7 @@ export function createCloudSyncService({
 
     dispose() {
       disposed = true
+      stopEnabledPolicy()
       if (interval !== undefined) clearInterval(interval)
       if (typeof document !== 'undefined') {
         document.removeEventListener('visibilitychange', onVisibility)
