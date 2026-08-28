@@ -1,8 +1,14 @@
+import { ContextMenu } from '@kittycad/ui-kit'
 import { useSignalEffect } from '@preact/signals'
-import { useEffect, useRef } from 'preact/hooks'
-import { useValueSpec } from '@src/app/context'
+import { useService, useValueSpec } from '@src/app/context'
+import { commandService } from '@src/contracts/commands'
 import type { EngineConnection } from '@src/contracts/engine'
-import { sceneInteractionsValueSpec } from '@src/contracts/scene'
+import {
+  sceneContextMenuItemsValueSpec,
+  sceneInteractionsValueSpec,
+} from '@src/contracts/scene'
+import { resolveContextMenu } from '@src/lib/contextMenu'
+import { useEffect, useRef } from 'preact/hooks'
 import './engineScene.css'
 
 /**
@@ -25,6 +31,8 @@ import './engineScene.css'
 export function EngineStream({ engine }: { engine: EngineConnection }) {
   const video = useRef<HTMLVideoElement>(null)
   const interactions = useValueSpec(sceneInteractionsValueSpec)
+  const contextMenuItems = useValueSpec(sceneContextMenuItemsValueSpec)
+  const commands = useService(commandService)
 
   useSignalEffect(() => {
     const element = video.current
@@ -77,17 +85,40 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
   }
 
   return (
-    <video
-      ref={video}
-      class="zds-viewport__stream"
-      muted
-      playsInline
-      autoPlay
-      tabIndex={-1}
-      onPointerDown={takeFocus}
-      // The engine's own frames are the content; nothing here is decorative,
-      // but there is no alternative text for a live 3D scene either.
-      aria-label="Modeling engine viewport"
+    <ContextMenu
+      label="Scene actions"
+      sections={(event) => {
+        const element = video.current
+        if (!element) return []
+        const rect = element.getBoundingClientRect()
+        return resolveContextMenu(
+          contextMenuItems.value,
+          {
+            at: {
+              x: event.clientX - rect.left,
+              y: event.clientY - rect.top,
+              viewport: { width: rect.width, height: rect.height },
+            },
+          },
+          commands
+        )
+      }}
+      target={(contextMenu) => (
+        <video
+          ref={video}
+          class="zds-viewport__stream"
+          muted
+          playsInline
+          autoPlay
+          tabIndex={-1}
+          onPointerDown={takeFocus}
+          onContextMenu={contextMenu.onContextMenu}
+          aria-haspopup={contextMenu['aria-haspopup']}
+          // The engine's own frames are the content; nothing here is decorative,
+          // but there is no alternative text for a live 3D scene either.
+          aria-label="Modeling engine viewport"
+        />
+      )}
     />
   )
 }

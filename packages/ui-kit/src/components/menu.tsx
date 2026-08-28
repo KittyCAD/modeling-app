@@ -1,5 +1,5 @@
-import { useComputed, useSignal } from '@preact/signals'
-import type { ComponentChildren } from 'preact'
+import { useSignal } from '@preact/signals'
+import type { ComponentChildren, Ref } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import type { IconName } from '../icons'
 import { Icon } from './icon'
@@ -41,6 +41,105 @@ export interface MenuProps extends BaseProps {
   label: string
 }
 
+interface MenuPanelProps extends BaseProps {
+  sections: MenuSection[]
+  label: string
+  highlighted: number
+  onHighlight: (index: number) => void
+  onSelect: (item: MenuItem) => void
+  panelRef?: Ref<HTMLDivElement>
+  style?: preact.JSX.CSSProperties
+}
+
+/** Flat selectable order shared by anchored menus and context menus. */
+export const selectableMenuItems = (sections: readonly MenuSection[]) =>
+  sections.flatMap((section) =>
+    (section.items ?? []).filter((item) => !item.disabled)
+  )
+
+/**
+ * The common menu surface.
+ *
+ * Kept separate from how a menu opens: an anchored menu and a context menu
+ * have different positioning and focus lifecycles, but their groups, rows and
+ * keyboard highlight must render identically.
+ */
+export function MenuPanel({
+  sections,
+  label,
+  highlighted,
+  onHighlight,
+  onSelect,
+  panelRef,
+  class: className,
+  id,
+  'data-testid': dataTestId,
+  style,
+}: MenuPanelProps) {
+  let itemIndex = -1
+
+  return (
+    <div
+      ref={panelRef}
+      id={id}
+      data-testid={dataTestId}
+      class={cx('zds-menu__panel', className)}
+      style={style}
+      role="menu"
+      aria-label={label}
+      tabIndex={-1}
+    >
+      {sections.map((section, sectionIndex) => (
+        <div
+          class="zds-menu__section"
+          key={section.id}
+          // A rule between groups, never above the first one.
+          data-first={sectionIndex === 0}
+        >
+          {section.label ? (
+            <p class="zds-label zds-menu__section-label">{section.label}</p>
+          ) : null}
+          {section.content ? (
+            <div class="zds-menu__content">{section.content}</div>
+          ) : null}
+          {(section.items ?? []).map((item) => {
+            if (!item.disabled) itemIndex += 1
+            const index = itemIndex
+
+            return (
+              <button
+                type="button"
+                class="zds-menu__item"
+                key={item.id}
+                role="menuitem"
+                disabled={item.disabled}
+                data-destructive={item.destructive ?? false}
+                aria-current={
+                  !item.disabled && index === highlighted ? 'true' : undefined
+                }
+                onPointerEnter={() => {
+                  if (!item.disabled) onHighlight(index)
+                }}
+                onClick={() => onSelect(item)}
+              >
+                {item.icon ? (
+                  <Icon name={item.icon} size="small" />
+                ) : (
+                  <span class="zds-menu__no-icon" aria-hidden="true" />
+                )}
+                <span class="zds-menu__label">{item.label}</span>
+                {item.shortcut ? (
+                  <kbd class="zds-menu__shortcut">{item.shortcut}</kbd>
+                ) : null}
+              </button>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 /**
  * A menu anchored to a trigger.
  *
@@ -65,12 +164,10 @@ export function Menu({
   const container = useRef<HTMLDivElement>(null)
   const triggerElement = useRef<HTMLElement | null>(null)
 
-  /** Flat list of selectable items, for keyboard navigation across sections. */
-  const selectable = useComputed(() =>
-    sections.flatMap((section) =>
-      (section.items ?? []).filter((item) => !item.disabled)
-    )
-  )
+  // Plain props belong in the render body. Memoising this with `useComputed`
+  // would pin the first `sections` array because there is no signal read for a
+  // later prop change to invalidate.
+  const selectable = selectableMenuItems(sections)
 
   const close = () => {
     open.value = false
@@ -98,15 +195,20 @@ export function Menu({
         case 'ArrowDown':
         case 'ArrowUp': {
           event.preventDefault()
-          const count = selectable.value.length
+          const count = selectable.length
           if (count === 0) return
           const delta = event.key === 'ArrowDown' ? 1 : -1
-          highlighted.value = (highlighted.value + delta + count) % count
+          highlighted.value =
+            highlighted.value < 0
+              ? delta > 0
+                ? 0
+                : count - 1
+              : (highlighted.value + delta + count) % count
           break
         }
         case 'Enter':
         case ' ': {
-          const item = selectable.value[highlighted.value]
+          const item = selectable[highlighted.value]
           if (!item) return
           event.preventDefault()
           close()
@@ -124,8 +226,6 @@ export function Menu({
       window.removeEventListener('keydown', onKeyDown, { capture: true })
     }
   })
-
-  let itemIndex = -1
 
   return (
     <div
@@ -146,60 +246,18 @@ export function Menu({
       })}
 
       {open.value ? (
-        <div class="zds-menu__panel" role="menu" aria-label={label}>
-          {sections.map((section, sectionIndex) => (
-            <div
-              class="zds-menu__section"
-              key={section.id}
-              // A rule between groups, never above the first one.
-              data-first={sectionIndex === 0}
-            >
-              {section.label ? (
-                <p class="zds-label zds-menu__section-label">{section.label}</p>
-              ) : null}
-              {section.content ? (
-                <div class="zds-menu__content">{section.content}</div>
-              ) : null}
-              {(section.items ?? []).map((item) => {
-                if (!item.disabled) itemIndex += 1
-                const index = itemIndex
-
-                return (
-                  <button
-                    type="button"
-                    class="zds-menu__item"
-                    key={item.id}
-                    role="menuitem"
-                    disabled={item.disabled}
-                    data-destructive={item.destructive ?? false}
-                    aria-current={
-                      !item.disabled && index === highlighted.value
-                        ? 'true'
-                        : undefined
-                    }
-                    onPointerEnter={() => {
-                      if (!item.disabled) highlighted.value = index
-                    }}
-                    onClick={() => {
-                      close()
-                      item.onSelect?.()
-                    }}
-                  >
-                    {item.icon ? (
-                      <Icon name={item.icon} size="small" />
-                    ) : (
-                      <span class="zds-menu__no-icon" aria-hidden="true" />
-                    )}
-                    <span class="zds-menu__label">{item.label}</span>
-                    {item.shortcut ? (
-                      <kbd class="zds-menu__shortcut">{item.shortcut}</kbd>
-                    ) : null}
-                  </button>
-                )
-              })}
-            </div>
-          ))}
-        </div>
+        <MenuPanel
+          sections={sections}
+          label={label}
+          highlighted={highlighted.value}
+          onHighlight={(index) => {
+            highlighted.value = index
+          }}
+          onSelect={(item) => {
+            close()
+            item.onSelect?.()
+          }}
+        />
       ) : null}
     </div>
   )

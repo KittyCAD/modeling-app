@@ -17,6 +17,12 @@ export {
   type ButtonVariant,
 } from './components/button'
 export {
+  ContextMenu,
+  type ContextMenuProps,
+  type ContextMenuTargetProps,
+  fitContextMenuPosition,
+} from './components/contextMenu'
+export {
   EmptyState,
   type EmptyStateProps,
 } from './components/emptyState'

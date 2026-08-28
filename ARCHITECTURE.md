@@ -288,6 +288,34 @@ component stays what it is, which is a video with a size.
 The contract says nothing about *what* the surface is, which is deliberate; see
 [The camera](#the-camera) for what that buys.
 
+### Context menus are contributed actions
+
+The pointer-positioned surface is `ContextMenu` in `ui-kit`; it owns the things
+that are true of every context menu — viewport fitting, outside-click dismissal,
+Escape, keyboard traversal, focus return, and the shared menu material. Its
+target is a render prop, so adding one never wraps a video, canvas, or tree row
+in an element that changes its layout or semantics.
+
+Its contents are application data. `sceneContextMenuItemsValueSpec` and
+`fileExplorerContextMenuItemsValueSpec` collect actions, grouped into ordered
+sections and resolved against the context at the instant the menu opens. A scene
+action receives the point in renderer-independent scene pixels; a file action
+receives the exact `ProjectFile` row and its session, so an extension can answer
+by selection, file kind, or any capability it captured without either component
+learning what that extension does.
+
+The scene token lives in `contracts/scene.ts`, not `engineScene.ts`, for the same
+reason interactions do: Zoom to Fit and selection-aware actions still belong on
+the surface when a local renderer replaces the stream. `EngineStream` is merely
+today's consumer.
+
+Entries prefer a `commandId`. Presentation and availability then come from the
+command, and selecting the row reaches the same behavior as the palette or a
+keybinding. A direct contextual handler is the fallback while commands take no
+arguments. Right-clicking a file first selects that row, which makes the existing
+argument-free rename and delete commands act on what was actually clicked rather
+than on a stale tree selection.
+
 ### Which settings reach the engine, and how
 
 Not one mechanism but three, and the difference is visible to the user:

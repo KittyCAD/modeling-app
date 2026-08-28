@@ -1,0 +1,16 @@
+.zds-context-menu__layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--zds-z-popover);
+}
+
+.zds-context-menu__backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: default;
+}
+
+.zds-context-menu__panel {
+  position: fixed;
+  inset: auto;
+}

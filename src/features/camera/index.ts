@@ -7,8 +7,9 @@ import { computed, effect } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import {
-  type StandardView,
   cameraDriverService,
+  type StandardView,
+  sceneContextMenuItemsValueSpec,
   sceneInteractionsValueSpec,
 } from '@src/contracts/scene'
 import {
@@ -163,6 +164,11 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'cube',
           enabled: hasRenderer,
           run: () => driver()?.zoomToFit(),
+        }),
+        provide(sceneContextMenuItemsValueSpec, {
+          id: 'camera.zoomToFit',
+          section: { id: 'view', label: 'View' },
+          commandId: 'camera.zoomToFit',
         }),
         provide(keybindingsValueSpec, {
           keystrokes: ['v', 'f'],

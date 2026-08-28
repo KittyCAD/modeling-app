@@ -1,18 +1,26 @@
+import {
+  Button,
+  ContextMenu,
+  type ContextMenuTargetProps,
+  EmptyState,
+  Icon,
+  Spinner,
+  TextField,
+} from '@kittycad/ui-kit'
 import { useComputed, useSignalEffect } from '@preact/signals'
-import { useEffect, useRef } from 'preact/hooks'
-import type { ComponentChildren } from 'preact'
-import { Button, EmptyState, Icon, Spinner, TextField } from '@kittycad/ui-kit'
-import { useService } from '@src/app/context'
+import { useService, useValueSpec } from '@src/app/context'
+import { commandService } from '@src/contracts/commands'
+import { fileExplorerContextMenuItemsValueSpec } from '@src/contracts/fileExplorer'
 import { keybindingService } from '@src/contracts/keybindings'
-import type { ProjectFile } from '@src/contracts/projects'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { projectSessionService } from '@src/contracts/projectSession'
+import type { ProjectFile } from '@src/contracts/projects'
 import {
-  type Draft,
   cancelDelete,
   cancelDraft,
   collapseAll,
   confirmDelete,
+  type Draft,
   directoryFor,
   draft,
   expandedPaths,
@@ -27,6 +35,9 @@ import {
   toggleExpanded,
   updateDraft,
 } from '@src/features/project/areas/fileExplorerState'
+import { resolveContextMenu } from '@src/lib/contextMenu'
+import type { ComponentChildren } from 'preact'
+import { useEffect, useRef } from 'preact/hooks'
 import '../project.css'
 
 /** Active while the file tree has focus, so F2 and Delete mean what they say. */
@@ -324,28 +335,36 @@ function FileRow({
 
     return (
       <li>
-        <div class="zds-tree__line">
-          <button
-            type="button"
-            class="zds-tree__row zds-tree__row--directory"
-            style={{ '--zds-tree-depth': String(depth) }}
-            aria-expanded={isOpen}
-            data-selected={isSelected ? 'true' : undefined}
-            onClick={() => {
-              selectedPath.value = file.path
-              toggleExpanded(file.path)
-            }}
-          >
-            <Icon
-              name={isOpen ? 'chevronDown' : 'chevronRight'}
-              size="small"
-              class="zds-tree__twisty"
-            />
-            <Icon name="folder" size="small" />
-            <span class="zds-tree__name">{file.name}</span>
-          </button>
-          <RowActions file={file} files={files} />
-        </div>
+        <FileRowContextMenu
+          file={file}
+          session={session}
+          render={(contextMenu) => (
+            <div class="zds-tree__line">
+              <button
+                type="button"
+                class="zds-tree__row zds-tree__row--directory"
+                style={{ '--zds-tree-depth': String(depth) }}
+                aria-expanded={isOpen}
+                aria-haspopup={contextMenu['aria-haspopup']}
+                data-selected={isSelected ? 'true' : undefined}
+                onContextMenu={contextMenu.onContextMenu}
+                onClick={() => {
+                  selectedPath.value = file.path
+                  toggleExpanded(file.path)
+                }}
+              >
+                <Icon
+                  name={isOpen ? 'chevronDown' : 'chevronRight'}
+                  size="small"
+                  class="zds-tree__twisty"
+                />
+                <Icon name="folder" size="small" />
+                <span class="zds-tree__name">{file.name}</span>
+              </button>
+              <RowActions file={file} files={files} />
+            </div>
+          )}
+        />
 
         {isOpen ? (
           <Children
@@ -363,24 +382,71 @@ function FileRow({
 
   return (
     <li>
-      <div class="zds-tree__line">
-        <button
-          type="button"
-          class="zds-tree__row"
-          style={{ '--zds-tree-depth': String(depth) }}
-          aria-current={isActive ? 'true' : undefined}
-          data-selected={isSelected ? 'true' : undefined}
-          onClick={() => {
-            selectedPath.value = file.path
-            void session?.openFile(file.path)
-          }}
-        >
-          <Icon name={iconFor(file)} size="small" />
-          <span class="zds-tree__name">{file.name}</span>
-        </button>
-        <RowActions file={file} files={files} />
-      </div>
+      <FileRowContextMenu
+        file={file}
+        session={session}
+        render={(contextMenu) => (
+          <div class="zds-tree__line">
+            <button
+              type="button"
+              class="zds-tree__row"
+              style={{ '--zds-tree-depth': String(depth) }}
+              aria-current={isActive ? 'true' : undefined}
+              aria-haspopup={contextMenu['aria-haspopup']}
+              data-selected={isSelected ? 'true' : undefined}
+              onContextMenu={contextMenu.onContextMenu}
+              onClick={() => {
+                selectedPath.value = file.path
+                void session?.openFile(file.path)
+              }}
+            >
+              <Icon name={iconFor(file)} size="small" />
+              <span class="zds-tree__name">{file.name}</span>
+            </button>
+            <RowActions file={file} files={files} />
+          </div>
+        )}
+      />
     </li>
+  )
+}
+
+/** A row supplies the context; the ui-kit only owns opening and positioning. */
+function FileRowContextMenu({
+  file,
+  session,
+  render,
+}: {
+  file: ProjectFile
+  session: ProjectSession | null
+  render: (props: ContextMenuTargetProps) => ComponentChildren
+}) {
+  const contributions = useValueSpec(fileExplorerContextMenuItemsValueSpec)
+  const commands = useService(commandService)
+
+  return (
+    <ContextMenu
+      label={`Actions for ${file.name}`}
+      sections={() => {
+        if (!session) return []
+        return resolveContextMenu(
+          contributions.value,
+          { entry: file, session },
+          commands
+        )
+      }}
+      target={(props) =>
+        render({
+          ...props,
+          onContextMenu: (event) => {
+            // Commands without arguments act on the tree selection. A context
+            // click names that selection before resolving their availability.
+            selectedPath.value = file.path
+            props.onContextMenu(event)
+          },
+        })
+      }
+    />
   )
 }
 

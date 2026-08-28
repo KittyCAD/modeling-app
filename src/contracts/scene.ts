@@ -4,10 +4,11 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ReadonlySignal } from '@preact/signals'
-import type { ComponentChildren } from 'preact'
+import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { ContextMenuContribution } from '@src/contracts/contextMenu'
 import { byOrder, dedupeById } from '@src/lib/registryOrdering'
+import type { ComponentChildren } from 'preact'
 
 /**
  * Something that reacts to input over whatever surface the scene is drawn on.
@@ -46,6 +47,11 @@ export interface ScenePoint {
   x: number
   y: number
   viewport: { width: number; height: number }
+}
+
+/** The renderer-independent facts available when the scene menu opens. */
+export interface SceneContextMenuContext {
+  at: ScenePoint
 }
 
 export interface CameraGesture {
@@ -163,11 +169,20 @@ export const sceneContract = defineContract({
     defaultValue: [],
     combine: (inputs) => byOrder(dedupeById(inputs)),
   }),
+  sceneContextMenuItemsValueSpec: defineValueSpec<
+    ContextMenuContribution<SceneContextMenuContext>,
+    ContextMenuContribution<SceneContextMenuContext>[]
+  >({
+    name: 'scene.contextMenuItems',
+    defaultValue: [],
+    combine: (inputs) => byOrder(dedupeById(inputs)),
+  }),
   cameraDriverService: defineService<CameraDriver>('scene.cameraDriver'),
 })
 
 export const {
   sceneInteractionsValueSpec,
   sceneItemsValueSpec,
+  sceneContextMenuItemsValueSpec,
   cameraDriverService,
 } = sceneContract

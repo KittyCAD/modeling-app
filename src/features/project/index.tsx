@@ -3,10 +3,15 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import { computed, useComputed } from '@preact/signals'
 import { StatusDot } from '@kittycad/ui-kit'
+import { computed, useComputed } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { fileExplorerContextMenuItemsValueSpec } from '@src/contracts/fileExplorer'
+import {
+  keybindingScopesValueSpec,
+  keybindingsValueSpec,
+} from '@src/contracts/keybindings'
 import type { LayoutNode } from '@src/contracts/layout'
 import {
   layoutAreasValueSpec,
@@ -14,17 +19,12 @@ import {
   layoutService,
 } from '@src/contracts/layout'
 import {
-  keybindingScopesValueSpec,
-  keybindingsValueSpec,
-} from '@src/contracts/keybindings'
-import {
   locationSourcesValueSpec,
   urlRoutesValueSpec,
 } from '@src/contracts/navigation'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { screensValueSpec, statusBarItemsValueSpec } from '@src/contracts/shell'
-import { ProjectScreen } from '@src/features/project/ProjectScreen'
 import {
   CODE_AREA_ID,
   EXPLORER_AREA_ID,
@@ -49,6 +49,7 @@ import {
 } from '@src/features/project/areas/fileExplorerState'
 import { ProjectInfo } from '@src/features/project/areas/ProjectInfo'
 import { ViewportArea } from '@src/features/project/areas/ViewportArea'
+import { ProjectScreen } from '@src/features/project/ProjectScreen'
 
 /**
  * The default project arrangement.
@@ -389,6 +390,46 @@ export default defineRegistryItemFactory((ctx) => {
         }),
         fileCommand('files.collapseAll', 'Collapse folders', 'collapse', () => {
           collapseAll()
+        }),
+
+        provide(fileExplorerContextMenuItemsValueSpec, {
+          id: 'files.newFile',
+          order: 0,
+          section: { id: 'create', order: 0 },
+          commandId: 'files.newFile',
+          visible: ({ entry }) => entry.kind === 'directory',
+        }),
+        provide(fileExplorerContextMenuItemsValueSpec, {
+          id: 'files.newFolder',
+          order: 10,
+          section: { id: 'create', order: 0 },
+          commandId: 'files.newFolder',
+          visible: ({ entry }) => entry.kind === 'directory',
+        }),
+        provide(fileExplorerContextMenuItemsValueSpec, {
+          id: 'files.rename',
+          order: 0,
+          section: { id: 'manage', order: 100 },
+          label: 'Rename',
+          commandId: 'files.rename',
+        }),
+        provide(fileExplorerContextMenuItemsValueSpec, {
+          id: 'files.deleteFile',
+          order: 10,
+          section: { id: 'manage', order: 100 },
+          label: 'Delete file',
+          destructive: true,
+          commandId: 'files.delete',
+          visible: ({ entry }) => entry.kind === 'file',
+        }),
+        provide(fileExplorerContextMenuItemsValueSpec, {
+          id: 'files.deleteFolder',
+          order: 10,
+          section: { id: 'manage', order: 100 },
+          label: 'Delete folder',
+          destructive: true,
+          commandId: 'files.delete',
+          visible: ({ entry }) => entry.kind === 'directory',
         }),
 
         toggleAreaCommand(CODE_AREA_ID, 'Toggle code panel', '⌘1'),
