@@ -20,9 +20,9 @@ describe('clone variable-less pipe', () => {
   |> extrude(length = 1)`
     const ast = assertParse(code, instance)
     const { artifactGraph } = await enginelessExecutor(ast, rustContext)
-    const sweep = artifactGraph
-      .values()
-      .find((artifact) => artifact.type === 'sweep')
+    const sweep = Array.from(artifactGraph.values()).find(
+      (artifact) => artifact.type === 'sweep'
+    )
     if (!sweep) {
       throw new Error('Expected the pipe to produce a sweep')
     }
