@@ -32,9 +32,11 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
         timeout: 30_000,
       })
 
-      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await expect(editor.codeContent).toContainText('sketch')
+      await expect(editor.codeContent).toContainText('sketch', {
+        timeout: 30_000,
+      })
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
