@@ -458,6 +458,10 @@ enum Kont {
     /// An if arm's block completed; unwrap its value as the if's result.
     IfArmDone {
         node: Arc<Node<IfExpression>>,
+        /// True when the arm body runs in its own scope environment (a
+        /// 3.0-preview entry point), which must be popped on completion and
+        /// on unwind.
+        env_pushed: bool,
     },
     AscribeDone {
         node: Arc<Node<AscribedExpression>>,
@@ -941,6 +945,13 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         Kont::PipeSeq { saved_pipe_value, .. } => {
             exec_state.mod_local.pipe_value = saved_pipe_value;
         }
+        Kont::IfArmDone { env_pushed, .. } => {
+            // Pop the arm's scope environment (3.0-preview) when unwinding
+            // out of the arm via error, exit(), or return.
+            if env_pushed {
+                exec_state.mut_stack().pop_env()?;
+            }
+        }
         // Evaluation-only continuations hold no ambient state.
         Kont::BinaryLhsDone { .. }
         | Kont::BinaryRhsDone { .. }
@@ -952,7 +963,6 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         | Kont::MemberPropDone { .. }
         | Kont::MemberObjDone { .. }
         | Kont::IfCondDone { .. }
-        | Kont::IfArmDone { .. }
         | Kont::AscribeDone { .. }
         | Kont::LabelDone { .. }
         | Kont::PipeFirstDone { .. }
@@ -1339,7 +1349,10 @@ async fn step_apply(
                 } else {
                     BlockRef::Program(node.else_ifs[arm - 1].then_val.arc())
                 };
-                konts.push(Kont::IfArmDone { node });
+                // An error here leaves no env pushed and IfArmDone unpushed,
+                // so unwinding stays balanced.
+                let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                konts.push(Kont::IfArmDone { node, env_pushed });
                 push_block(block, BodyType::Block, konts);
                 step_block_kick(konts, exec_state, ctx).await
             } else if arm < node.else_ifs.len() {
@@ -1353,12 +1366,19 @@ async fn step_apply(
                 Ok(Control::Eval(Box::new(cond)))
             } else {
                 let block = BlockRef::Program(node.final_else.arc());
-                konts.push(Kont::IfArmDone { node });
+                let env_pushed = crate::execution::exec_ast::if_arm_scope_begin(exec_state)?;
+                konts.push(Kont::IfArmDone { node, env_pushed });
                 push_block(block, BodyType::Block, konts);
                 step_block_kick(konts, exec_state, ctx).await
             }
         }
-        Kont::IfArmDone { node } => {
+        Kont::IfArmDone { node, env_pushed } => {
+            // Pop the arm scope before unwrapping; values escaping the arm
+            // stay valid because environments that may still be referenced
+            // are preserved.
+            if env_pushed {
+                exec_state.mut_stack().pop_env()?;
+            }
             let block_result = applied.expect_block()?;
             // Blocks used as if arms must end in an expression (enforced by
             // the parser), so this is always Some.

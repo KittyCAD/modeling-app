@@ -6811,7 +6811,8 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch.
+        // Check the `if` branch. Conditions are evaluated in the enclosing
+        // scope; only arm bodies get their own scope (under 3.0-preview).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6823,11 +6824,7 @@ impl Node<IfExpression> {
             .await?;
         let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
-            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
+            return exec_if_arm(ctx, &self.then_val, exec_state).await;
         }
 
         // Check any `else if` branches.
@@ -6843,19 +6840,52 @@ impl Node<IfExpression> {
                 .await?;
             let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
-                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
+                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
             }
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
+        exec_if_arm(ctx, &self.final_else, exec_state).await
     }
+}
+
+/// Begin an if-arm scope. Under a 3.0-preview entry point, each
+/// if/else-if/else arm body gets its own scope: bindings made inside the arm
+/// are visible from their declaration to the arm's closing brace, never
+/// outside it, and may shadow bindings from enclosing scopes. Under older
+/// entry points the arm shares the enclosing environment (bindings leak out
+/// and shadowing is a redefinition error). Returns whether a scope
+/// environment was pushed; the caller must pop it on every path. Shared by
+/// both executors.
+pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
+    if !exec_state.use_kcl_v3_control_flow() {
+        return Ok(false);
+    }
+    exec_state.mut_stack().push_new_env_for_scope()?;
+    Ok(true)
+}
+
+/// Execute one if/else-if/else arm body in its own scope (under a
+/// 3.0-preview entry point). Values escaping the arm -- including closures
+/// declared in it -- stay valid after the pop because environments that may
+/// still be referenced are preserved, exactly as for function returns.
+async fn exec_if_arm(
+    ctx: &ExecutorContext,
+    block: &Node<Program>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    let scoped = if_arm_scope_begin(exec_state)?;
+    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
+    if scoped {
+        // Pop on success (including Return/Exit control flow escaping the
+        // arm) and error alike. A pop failure wins over the block's error,
+        // matching call_abort_on_arg_binding_failure.
+        exec_state.mut_stack().pop_env()?;
+    }
+    // Block must end in an expression, so this has to be Some.
+    // Enforced by the parser.
+    // See https://github.com/KittyCAD/modeling-app/issues/4015
+    result.map(|block_result| block_result.unwrap())
 }
 
 #[derive(Debug)]
