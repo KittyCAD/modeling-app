@@ -142,7 +142,7 @@ impl RuntimeFlagResolve for ExecutorKind {
     }
 
     fn resolve_default() -> Self {
-        Self::Recursive
+        Self::Machine
     }
 
     /// Select the executor from the `KCL_EXECUTOR` environment variable:
@@ -2557,7 +2557,7 @@ mod tests {
     fn unset_runtime_flag_and_missing_env_selects_default_executor() {
         assert_eq!(
             resolve_from_sources::<ExecutorKind>(RuntimeFlag::Unset, None, None),
-            ExecutorKind::Recursive
+            ExecutorKind::Machine
         );
     }
 
