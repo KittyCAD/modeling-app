@@ -16,6 +16,11 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import {
+  VERCEL_AUTOMATION_BYPASS_SECRET_ENV,
+  VERCEL_VISITOR_PASSWORD_ENV,
+  shouldUseVercelVisitorPasswordFallback,
+} from '@src/lib/vercelProtection'
 import dotenv from 'dotenv'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
@@ -94,8 +99,55 @@ export function runningOnWindows() {
 
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
+  await dismissBlockingOnboardingPromptIfPresent(page)
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
-    timeout: 20_000,
+    timeout: 45_000,
+  })
+}
+
+async function dismissBlockingOnboardingPromptIfPresent(page: Page) {
+  const dismissButtons = [
+    page.getByTestId('onboarding-dismiss'),
+    page.getByTestId('onboarding-not-right-now'),
+    page.getByRole('button', { name: /^Dismiss/ }),
+  ]
+
+  for (const dismissButton of dismissButtons) {
+    if (
+      await dismissButton
+        .first()
+        .isVisible()
+        .catch(() => false)
+    ) {
+      await dismissButton.first().click()
+      await expect(dismissButton.first()).toBeHidden({ timeout: 10_000 })
+      return
+    }
+  }
+}
+
+async function unlockVercelVisitorPasswordIfNeeded(page: Page) {
+  const visitorPassword = process.env[VERCEL_VISITOR_PASSWORD_ENV]
+  if (!shouldUseVercelVisitorPasswordFallback() || !visitorPassword) {
+    return
+  }
+
+  const passwordInput = page.getByPlaceholder('Visitor password').first()
+  const isVisitorPasswordPage = await passwordInput
+    .isVisible()
+    .catch(() => false)
+
+  if (!isVisitorPasswordPage) {
+    return
+  }
+
+  await passwordInput.fill(visitorPassword)
+  await Promise.all([
+    page.waitForLoadState('domcontentloaded').catch(() => undefined),
+    page.getByRole('button', { name: /^Unlock$/ }).click(),
+  ])
+  await expect(page.getByPlaceholder('Visitor password')).toBeHidden({
+    timeout: 10_000,
   })
 }
 
@@ -365,8 +417,15 @@ async function waitForAuthAndLsp(page: Page) {
   })
 
   if (process.env.VERCEL_BASE_URL) {
+    const useVisitorPasswordFallback = shouldUseVercelVisitorPasswordFallback()
+    const vercelStartupPath =
+      token && !useVisitorPasswordFallback
+        ? `/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${encodeURIComponent(token)}`
+        : '/'
+    let didNavigateWithToken = false
+
     // set bypass secret for the page's requests based on the hostname
-    let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+    const secret = process.env[VERCEL_AUTOMATION_BYPASS_SECRET_ENV]
     if (secret) {
       await page.route('**/*', async (route, request) => {
         const url = request.url()
@@ -385,10 +444,21 @@ async function waitForAuthAndLsp(page: Page) {
       })
     }
 
-    if (token) {
+    if (useVisitorPasswordFallback) {
+      await page.goto(vercelStartupPath)
+      await unlockVercelVisitorPasswordIfNeeded(page)
+      didNavigateWithToken = Boolean(token)
+    }
+
+    if (token && !didNavigateWithToken) {
       // Vercel is external to Playwright, so the token is provided in the URL
-      await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
+      await page.goto(vercelStartupPath)
       await waitForPageLoad(page)
+    } else if (token) {
+      await waitForPageLoad(page)
+      if (useVisitorPasswordFallback) {
+        return waitForLspPromise
+      }
     }
   }
 
@@ -1755,10 +1825,6 @@ export async function pinchFromCenter(
 }
 
 export const closeOnboardingModalIfPresent = async (page: Page) => {
-  const onboardingNotRightNow = page.getByTestId('onboarding-not-right-now')
   await expect(page.getByTestId('stream')).toBeVisible({ timeout: 10_000 })
-  if (await onboardingNotRightNow.isVisible()) {
-    await onboardingNotRightNow.click()
-    await expect(onboardingNotRightNow).toBeHidden()
-  }
+  await dismissBlockingOnboardingPromptIfPresent(page)
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run ZDS GUI Fuzz"
+  short_description: "Run iterative ZDS GUI and message-flow QA"
+  default_prompt: "Use $run-zds-gui-fuzz to run an iterative point-and-click or Zookeeper message-flow QA campaign, review the screenshots and structured browser evidence, classify failures, and choose the next experiment."

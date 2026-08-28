@@ -146,6 +146,8 @@
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot",
     "test:e2e:kcl": "(cd rust && just test && just lint)",
     "test:e2e:web": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@web --project=\"Google Chrome\"",
+    "test:gui-fuzz": "bash ./scripts/run-gui-fuzz.sh",
+    "test:gui-fuzz:campaign": "node ./scripts/run-gui-fuzz-campaign.mjs",
     "test:e2e:desktop": "cross-env TARGET=desktop playwright test --config=playwright.electron.config.ts --grep=@desktop",
     "test:e2e:desktop:local": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep=@desktop --grep-invert=\"$(curl --silent https://https://test-analysis-bot.corp.zoo.dev/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
     "test:e2e:desktop:local-engine": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep=@desktop --grep-invert=\"@skipLocalEngine\" --grep-invert=\"$(curl --silent https://https://test-analysis-bot.corp.zoo.dev/projects/KittyCAD/modeling-app/tests/disabled/regex)\""

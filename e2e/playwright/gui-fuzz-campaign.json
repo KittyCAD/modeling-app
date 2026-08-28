@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "name": "core-modeling",
+  "description": "Coverage-guided point-and-click QA for core Zoo Design Studio modeling workflows.",
+  "target": "https://app.zoo.dev",
+  "stopOnNeedsTriage": true,
+  "scenarios": [
+    {
+      "id": "rectangle-control",
+      "title": "Rectangle sketch and extrusion control",
+      "feature": "sketch.rectangle+solid.extrude",
+      "hypothesis": "A fresh Top-plane rectangle can be selected and extruded into exactly one body.",
+      "spec": "e2e/playwright/gui-fuzz-point-click.spec.ts",
+      "role": "control",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "knife-line-profile",
+      "title": "Closed line profile and knife extrusion",
+      "feature": "sketch.line+profile.closure+solid.extrude",
+      "hypothesis": "A multi-segment closed profile produces one selectable region and a 4 mm knife solid.",
+      "spec": "e2e/playwright/gui-fuzz-knife.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "extrude-history",
+      "title": "Extrusion undo and redo regeneration",
+      "feature": "history.undo+history.redo+solid.regeneration",
+      "hypothesis": "Undo removes the submitted extrusion and Body 1; redo restores both code and geometry.",
+      "spec": "e2e/playwright/gui-fuzz-extrude-history.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "editor-sketch-sync",
+      "title": "Editor rewrite followed by point-and-click sketch",
+      "feature": "editor.execution+sketch.point-click.sync",
+      "hypothesis": "Rewriting a valid settings-only program preserves the engine-side sketch object for subsequent point-and-click segments.",
+      "spec": "e2e/playwright/gui-fuzz-editor-sketch-sync.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "symmetric-extrude",
+      "title": "Symmetric point-and-click extrusion",
+      "feature": "solid.extrude.symmetric",
+      "hypothesis": "A point-and-click rectangle can be previewed and submitted as an 8 mm symmetric extrusion with one resulting body.",
+      "spec": "e2e/playwright/gui-fuzz-symmetric-extrude.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "negative-extrude",
+      "title": "Negative point-and-click extrusion",
+      "feature": "solid.extrude.negative-length",
+      "hypothesis": "A negative extrusion length reverses the preview and final geometry without validation or selection-state errors.",
+      "spec": "e2e/playwright/gui-fuzz-negative-extrude.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "fillet-apply-edit",
+      "title": "Fillet application and feature-tree edit",
+      "feature": "solid.fillet+feature-tree.edit",
+      "hypothesis": "A selected extrusion edge can receive a 1 mm fillet, then regenerate after its feature-tree radius is edited to 0.5 mm.",
+      "spec": "e2e/playwright/gui-fuzz-fillet-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "chamfer-apply-edit",
+      "title": "Chamfer application and feature-tree edit",
+      "feature": "solid.chamfer+feature-tree.edit",
+      "hypothesis": "A selected extrusion edge can receive a 1 mm chamfer, then regenerate after its feature-tree length is edited to 0.5 mm.",
+      "spec": "e2e/playwright/gui-fuzz-chamfer-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "four-hole-mounting-plate",
+      "title": "Four-hole mounting plate with upstream countersink edit",
+      "feature": "hole.repeated+feature-tree.upstream-edit+solid.regeneration",
+      "hypothesis": "Four GUI-created blind holes remain valid when the first upstream hole is edited into a countersink, preserving all downstream features and one body.",
+      "spec": "e2e/playwright/gui-fuzz-four-hole-plate.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "sketch-edit-regeneration",
+      "title": "Sketch edit and solid regeneration",
+      "feature": "sketch.edit+solid.regeneration",
+      "hypothesis": "Moving a rectangle vertex after extrusion regenerates the body without stale regions or selections.",
+      "spec": "e2e/playwright/gui-fuzz-sketch-edit-regeneration.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 3
+    },
+    {
+      "id": "multi-body-booleans",
+      "title": "Multi-body subtraction history and reload",
+      "feature": "solid.subtract+history.undo+history.redo+project.reload+solid.regeneration",
+      "hypothesis": "Subtracting one selected solid from another reduces six bodies to five, undo restores both inputs, redo restores the boolean result, and reload preserves its KCL, geometry, body count, and Feature Tree state.",
+      "spec": "e2e/playwright/gui-fuzz-boolean-history.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "shell-upstream-edit",
+      "title": "Shell regeneration with downstream linear pattern",
+      "feature": "solid.shell+pattern.linear3d+feature-tree.upstream-edit+solid.regeneration",
+      "hypothesis": "Resubmitting an upstream Shell preserves its extrusion input, the downstream linear pattern, valid KCL, and rendered bodies.",
+      "spec": "e2e/playwright/gui-fuzz-shell-upstream-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "pattern-chain-edit",
+      "title": "Upstream linear-pattern edit with downstream pattern",
+      "feature": "pattern.linear3d+pattern.chained+feature-tree.upstream-edit+solid.regeneration",
+      "hypothesis": "Editing the first of two chained linear patterns preserves extrude001 -> pattern001 -> pattern002, valid KCL, and the regenerated body grid.",
+      "spec": "e2e/playwright/gui-fuzz-pattern-chain-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "circular-pattern-chain-edit",
+      "title": "Upstream circular-pattern edit with downstream linear pattern",
+      "feature": "pattern.circular3d+pattern.linear3d+feature-tree.upstream-edit+solid.regeneration",
+      "hypothesis": "Editing a circular pattern that feeds a linear pattern preserves extrude001 -> pattern001 -> pattern002, valid KCL, and the regenerated body grid.",
+      "spec": "e2e/playwright/gui-fuzz-circular-pattern-chain-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "translate-upstream-edit",
+      "title": "Upstream Translate edit with downstream linear pattern",
+      "feature": "transform.translate+pattern.linear3d+feature-tree.upstream-edit+solid.regeneration",
+      "hypothesis": "Editing a translation that feeds a linear pattern preserves its extrusion input, downstream pattern, valid KCL, and regenerated bodies.",
+      "spec": "e2e/playwright/gui-fuzz-translate-upstream-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "settings-route-reload",
+      "title": "Settings route normalization after reload",
+      "feature": "project.reload+navigation.settings+route.normalization",
+      "hypothesis": "Reloading a file route leaves the Settings status-bar link with one path separator, opens project settings, and returns to the same file without router warnings.",
+      "spec": "e2e/playwright/gui-fuzz-settings-route.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 1
+    },
+    {
+      "id": "connection-recovery",
+      "title": "Pending extrusion across modeling connection recovery",
+      "feature": "network.recovery+command.submission",
+      "hypothesis": "A recoverable modeling connection interruption preserves a reviewed extrusion and submits it exactly once.",
+      "spec": "e2e/playwright/gui-fuzz-connection-recovery.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 3
+    },
+    {
+      "id": "revolve-create-edit",
+      "title": "Offset profile revolve creation and angle edit",
+      "feature": "solid.revolve+feature-tree.edit+solid.regeneration",
+      "hypothesis": "An offset rectangle can be revolved 360 degrees around the X axis, then edited to 180 degrees while preserving one valid body.",
+      "spec": "e2e/playwright/gui-fuzz-revolve-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 3
+    },
+    {
+      "id": "loft-profile-edit",
+      "title": "Two-region Loft creation and V-degree edit",
+      "feature": "solid.loft+region.segments+feature-tree.edit+solid.regeneration",
+      "hypothesis": "Two segmented circle regions on offset planes can be lofted into one solid, then regenerated after a Feature Tree V-degree edit.",
+      "spec": "e2e/playwright/gui-fuzz-loft-profile-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 3
+    },
+    {
+      "id": "sweep-helix-edit",
+      "title": "Helix Sweep creation and sectional edit",
+      "feature": "solid.sweep+path.helix+feature-tree.edit+solid.regeneration",
+      "hypothesis": "A circular region can be swept along a helix path into one body, then regenerated after enabling sectional mode from the Feature Tree.",
+      "spec": "e2e/playwright/gui-fuzz-sweep-helix-edit.spec.ts",
+      "role": "exploration",
+      "status": "active",
+      "repeatEach": 3
+    }
+  ],
+  "queue": []
+}
