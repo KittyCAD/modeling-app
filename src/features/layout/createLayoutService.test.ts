@@ -115,6 +115,24 @@ describe('layout service', () => {
     expect(layout.isAreaOpen('info').value).toBe(false)
   })
 
+  /**
+   * A hosted area is drawn by another area, but its state still lives in the
+   * rail that lists it — that is the whole of what `hostedBy` relies on. Drop
+   * the id from the rail and the file tree becomes untoggleable and unpersisted.
+   */
+  it('toggles a hosted area through the rail that lists it', () => {
+    const hosted = create([
+      area('files'),
+      { ...area('outline'), hostedBy: 'files' },
+      area('info'),
+    ])
+    hosted.applyPreset('modeling')
+
+    expect(hosted.isAreaOpen('outline').value).toBe(false)
+    hosted.toggleArea('outline')
+    expect(hosted.isAreaOpen('outline').value).toBe(true)
+  })
+
   it('ignores a toggle for an area that belongs to no rail', () => {
     const before = layout.root.value
     layout.toggleArea('editor')

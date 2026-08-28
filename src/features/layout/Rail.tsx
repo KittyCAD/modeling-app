@@ -3,10 +3,8 @@ import { useMemo } from 'preact/hooks'
 import { Button, Split } from '@kittycad/ui-kit'
 import type { LayoutService, RailNode } from '@src/contracts/layout'
 import { AreaHost } from '@src/features/layout/AreaHost'
+import { inlineResizeHandlers } from '@src/features/layout/inlineResize'
 import './layout.css'
-
-const MIN_EXTENT = 180
-const MAX_EXTENT = 720
 
 interface RailProps {
   node: RailNode
@@ -24,7 +22,10 @@ interface RailProps {
  * on its own is a complete, usable rail.
  */
 export function Rail({ node, layout }: RailProps) {
-  const extent = layout.extentFor(node.id, 280)
+  // Seeded from the node, so a preset that asks for a 560px code panel gets one.
+  // The rail used to pass a constant here, which quietly ignored every preset's
+  // stated size.
+  const extent = layout.extentFor(node.id, node.size)
 
   /**
    * The extent is handed to the element as a signal-valued `style`.
@@ -55,51 +56,20 @@ export function Rail({ node, layout }: RailProps) {
     .map((areaId) => layout.area(areaId))
     .filter((area): area is AreaFromLayout => Boolean(area))
     .filter((area) => area.available?.value ?? true)
+    // A hosted area is listed here for its state and its toggle, but another
+    // area draws it — so it gets neither an icon here nor a slot in the region.
+    .filter((area) => !area.hostedBy)
 
   const openAreas = areas.filter((area) => node.openAreaIds.includes(area.id))
 
   const stackSizes = layout.sizesFor(`${node.id}:stack`)
 
-  const beginResize = (event: PointerEvent) => {
-    if (event.button !== 0) return
-    event.preventDefault()
-
-    const handle = event.currentTarget as HTMLElement
-    handle.setPointerCapture(event.pointerId)
-
-    const startX = event.clientX
-    const startExtent = extent.peek()
-    // For a rail docked to the inline end, dragging left must widen it.
-    const direction = node.side === 'inline-end' ? -1 : 1
-
-    const onMove = (move: PointerEvent) => {
-      const next = startExtent + (move.clientX - startX) * direction
-      extent.value = Math.min(Math.max(next, MIN_EXTENT), MAX_EXTENT)
-    }
-
-    const onUp = () => {
-      handle.removeEventListener('pointermove', onMove)
-      handle.removeEventListener('pointerup', onUp)
-      handle.removeEventListener('pointercancel', onUp)
-    }
-
-    handle.addEventListener('pointermove', onMove)
-    handle.addEventListener('pointerup', onUp)
-    handle.addEventListener('pointercancel', onUp)
-  }
-
-  const nudge = (event: KeyboardEvent) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
-    event.preventDefault()
-
-    const step =
-      (event.shiftKey ? 40 : 12) * (event.key === 'ArrowRight' ? 1 : -1)
-    const direction = node.side === 'inline-end' ? -1 : 1
-    extent.value = Math.min(
-      Math.max(extent.peek() + step * direction, MIN_EXTENT),
-      MAX_EXTENT
-    )
-  }
+  const resize = inlineResizeHandlers(extent, {
+    // A rail docked to the inline end widens as the pointer moves left.
+    direction: node.side === 'inline-end' ? -1 : 1,
+    min: node.minExtent,
+    max: node.maxExtent,
+  })
 
   return (
     <div class="zds-rail-group" data-side={node.side}>
@@ -153,8 +123,8 @@ export function Rail({ node, layout }: RailProps) {
             aria-orientation="vertical"
             aria-label="Resize panels"
             tabIndex={0}
-            onPointerDown={beginResize}
-            onKeyDown={nudge}
+            onPointerDown={resize.onPointerDown}
+            onKeyDown={resize.onKeyDown}
           />
         </div>
       ) : null}

@@ -54,12 +54,17 @@ export function EditorArea() {
         eyebrow="Editor"
         title="No file open"
         description="Pick a file from Files to open it here. Opening a file does not change what the engine is executing."
+        // Only offered when the tree is actually hidden: an action that does
+        // nothing is worse than no action, and here the files are usually
+        // already sitting alongside.
         actions={
-          <Button
-            icon="sidebarLeft"
-            label="Show files"
-            onClick={() => layout.openArea(EXPLORER_AREA_ID)}
-          />
+          layout.isAreaOpen(EXPLORER_AREA_ID).value ? undefined : (
+            <Button
+              icon="sidebarLeft"
+              label="Show files"
+              onClick={() => layout.openArea(EXPLORER_AREA_ID)}
+            />
+          )
         }
       />
     )
@@ -70,12 +75,27 @@ export function EditorArea() {
 
 function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
   const sessions = useService(projectSessionService)
+  const layout = useService(layoutService)
 
   const divergence = useComputed(() => buffer.divergence.value)
 
   return (
     <div class="zds-editor">
       <header class="zds-editor__bar">
+        {/*
+          The file tree's hide/show, in the bar of the panel it lives in rather
+          than out on the rail. The tree is part of reading code, so its
+          affordance belongs where the code is.
+        */}
+        <Button
+          variant="ghost"
+          size="small"
+          iconOnly
+          icon="sidebarLeft"
+          label="Files"
+          pressed={layout.isAreaOpen(EXPLORER_AREA_ID)}
+          onClick={() => layout.toggleArea(EXPLORER_AREA_ID)}
+        />
         <span class="zds-label">{buffer.languageId}</span>
         <span class="zds-editor__path zds-value">
           {sessions.current.value?.relativePathFor(buffer) ?? 'scratch buffer'}

@@ -578,6 +578,39 @@ setter, so a drag, a restored layout, and a command are one path with no private
 copy in a component to drift. `dock` exists because rails are sized in pixels
 and the centre takes the remainder, which does not express as fractions.
 
+### The viewport is the centre; code is a panel
+
+The modelling preset docks the **code panel** on the start rail and gives the
+whole centre to the viewport. The editor used to hold half the window as an
+`area` node in a split, which made it the one thing in a CAD app you could not
+put away — and `isAreaOpen` reports any area placed directly in the tree as
+open, so "toggle the editor" was not even expressible.
+
+The file tree lives *inside* the code panel. It is still its own contributed
+area, listed on the rail that owns its open state and its width, but
+`hostedBy: 'project.code'` tells the rail not to draw it: neither an icon in the
+strip nor a slot in the region. `CodeArea` draws it instead, and its hide/show is
+a button in the editor's own bar. So `toggleArea`, `extentFor`, the toggle
+command and persistence all work on it unchanged, while the affordance sits where
+the activity is — choosing which file to read is part of reading code, and the
+tree's only consumer is the editor.
+
+The alternative was to let a rail's expanded region hold an arbitrary layout
+subtree. More general, and it answers a question nobody has asked: what the icon
+strip toggles when the region is not an area.
+
+Two things this forces, both easy to get wrong:
+
+- **A structural change is a version bump.** `PersistedLayout.version` is the
+  migration. The saved `root` is restored verbatim, so editing a preset moves
+  nobody — including your own dev profile — until the version changes and the
+  screen re-seeds. Node ids belong to the preset that made them; a stale tree is
+  worse than none.
+- **Rail bounds are per node.** A title block is pointless over 400px and a code
+  editor is cramped at 720, so `minExtent`/`maxExtent` live on the node, and the
+  starting `size` is what seeds `extentFor`. The rail used to pass a constant
+  fallback, which silently ignored every preset's stated width.
+
 ## Design system
 
 Three token layers, in strict order. Components may only read 2 and 3.

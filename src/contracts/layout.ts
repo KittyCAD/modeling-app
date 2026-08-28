@@ -40,8 +40,23 @@ export interface RailNode {
   areaIds: string[]
   /** Areas currently expanded. Empty is normal: the rail collapses flat. */
   openAreaIds: string[]
-  /** Extent of the expanded region, as a fraction of the parent. */
+  /**
+   * Starting extent of the expanded region, in pixels.
+   *
+   * Pixels rather than a fraction, for the same reason the whole node exists: a
+   * file tree wants the same width at 1280 as at 3840. It is a starting point
+   * only — once dragged, `extentFor(node.id)` is the answer.
+   */
   size: number
+  /**
+   * Bounds for the expanded region, in pixels.
+   *
+   * Per-node rather than global because what counts as too narrow depends on
+   * what is in there: a title block is unreadable under 180px and pointless
+   * over 400, while a code editor is still cramped at 720.
+   */
+  minExtent?: number
+  maxExtent?: number
 }
 
 /**
@@ -88,6 +103,22 @@ export interface AreaDefinition {
    * chrome.
    */
   chrome?: 'panel' | 'bare'
+  /**
+   * The id of another area that renders this one.
+   *
+   * A rail still lists a hosted area, so `toggleArea`, `isAreaOpen`,
+   * `extentFor`, the toggle command and persistence all behave exactly as they
+   * do for a docked panel — but neither the icon strip nor the expanded region
+   * draws it. Its host draws it, wherever it belongs and with whatever
+   * affordance belongs there.
+   *
+   * This is how the file tree sits inside the code panel with its own toggle
+   * rather than beside it in the rail. The alternative was to let a rail's
+   * region hold a whole layout subtree, which is more general and answers a
+   * question nobody has asked yet: what the icon strip toggles when the region
+   * is not an area.
+   */
+  hostedBy?: string
   render: (context: AreaContext) => ComponentChildren
 }
 

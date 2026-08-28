@@ -22,13 +22,13 @@ import { projectSessionService } from '@src/contracts/projectSession'
 import { screensValueSpec, statusBarItemsValueSpec } from '@src/contracts/shell'
 import { ProjectScreen } from '@src/features/project/ProjectScreen'
 import {
-  EDITOR_AREA_ID,
+  CODE_AREA_ID,
   EXPLORER_AREA_ID,
   INFO_AREA_ID,
   PROJECT_LAYOUT_PRESET,
   VIEWPORT_AREA_ID,
 } from '@src/features/project/areaIds'
-import { EditorArea } from '@src/features/project/areas/EditorArea'
+import { CodeArea } from '@src/features/project/areas/CodeArea'
 import { FileExplorer } from '@src/features/project/areas/FileExplorer'
 import { ProjectInfo } from '@src/features/project/areas/ProjectInfo'
 import { ViewportArea } from '@src/features/project/areas/ViewportArea'
@@ -36,9 +36,17 @@ import { ViewportArea } from '@src/features/project/areas/ViewportArea'
 /**
  * The default project arrangement.
  *
- * Files on the left rail, the title block on the right rail and closed by
- * default, and the editor beside the viewport in the middle. Expressed as data
- * so it can be persisted, migrated, and swapped for another preset.
+ * The model is the centre and takes whatever is left over; the code panel and
+ * the title block are rails around it. That ordering is the point: this is a CAD
+ * app, so the one thing that should never be dismissable is the geometry — and
+ * the editor, which used to hold half the window permanently, is now a panel you
+ * can put away.
+ *
+ * The file tree does not appear here. It is hosted inside the code panel (see
+ * `CodeArea`), listed on the rail that owns its state but drawn in there.
+ *
+ * Expressed as data so it can be persisted, migrated, and swapped for another
+ * preset.
  */
 function buildModelingLayout(): LayoutNode {
   return {
@@ -48,9 +56,13 @@ function buildModelingLayout(): LayoutNode {
       type: 'rail',
       id: 'project.rail.start',
       side: 'inline-start',
-      areaIds: [EXPLORER_AREA_ID],
-      openAreaIds: [EXPLORER_AREA_ID],
-      size: 280,
+      areaIds: [CODE_AREA_ID, EXPLORER_AREA_ID],
+      openAreaIds: [CODE_AREA_ID, EXPLORER_AREA_ID],
+      size: 620,
+      // A code panel is still cramped at the rail default of 720, and it has a
+      // file strip inside it taking its own share.
+      minExtent: 320,
+      maxExtent: 1200,
     },
     end: {
       type: 'rail',
@@ -59,20 +71,12 @@ function buildModelingLayout(): LayoutNode {
       areaIds: [INFO_AREA_ID],
       openAreaIds: [],
       size: 300,
+      maxExtent: 420,
     },
     center: {
-      type: 'split',
-      id: 'project.center',
-      orientation: 'inline',
-      sizes: [0.45, 0.55],
-      children: [
-        { type: 'area', id: 'project.center.editor', areaId: EDITOR_AREA_ID },
-        {
-          type: 'area',
-          id: 'project.center.viewport',
-          areaId: VIEWPORT_AREA_ID,
-        },
-      ],
+      type: 'area',
+      id: 'project.center.viewport',
+      areaId: VIEWPORT_AREA_ID,
     },
   }
 }
@@ -163,15 +167,19 @@ export default defineRegistryItemFactory((ctx) => {
           id: EXPLORER_AREA_ID,
           title: 'Files',
           icon: 'folder',
-          shortcut: '⌘1',
+          shortcut: '⌘⇧1',
+          // Drawn by the code panel, not by the rail. Still an area, so its
+          // width, its open state and its toggle stay with the layout service.
+          hostedBy: CODE_AREA_ID,
           render: () => <FileExplorer />,
         }),
         provide(layoutAreasValueSpec, {
-          id: EDITOR_AREA_ID,
-          title: 'Editor',
+          id: CODE_AREA_ID,
+          title: 'Code',
           icon: 'fileCode',
+          shortcut: '⌘1',
           chrome: 'bare',
-          render: () => <EditorArea />,
+          render: () => <CodeArea />,
         }),
         provide(layoutAreasValueSpec, {
           id: VIEWPORT_AREA_ID,
@@ -251,10 +259,40 @@ export default defineRegistryItemFactory((ctx) => {
           render: () => <BufferField />,
         }),
 
-        toggleAreaCommand(EXPLORER_AREA_ID, 'Toggle files panel', '⌘1'),
+        toggleAreaCommand(CODE_AREA_ID, 'Toggle code panel', '⌘1'),
         toggleAreaCommand(INFO_AREA_ID, 'Toggle project panel', '⌘2'),
+
+        /**
+         * Files, which is a toggle with one wrinkle.
+         *
+         * The tree lives inside the code panel, so revealing it while that panel
+         * is closed would open something nobody can see. Asking for files when
+         * there is no code panel means asking for both.
+         */
+        provide(commandsValueSpec, {
+          id: `layout.toggle.${EXPLORER_AREA_ID}`,
+          title: 'Toggle files',
+          category: 'View',
+          icon: 'folder',
+          shortcut: '⌘⇧1',
+          enabled: hasProject,
+          run: () => {
+            const layout = ctx.services.get(layoutService)
+            if (!layout.isAreaOpen(CODE_AREA_ID).value) {
+              layout.openArea(CODE_AREA_ID)
+              layout.openArea(EXPLORER_AREA_ID)
+              return
+            }
+            layout.toggleArea(EXPLORER_AREA_ID)
+          },
+        }),
+
         provide(keybindingsValueSpec, {
           combo: 'Mod+1',
+          commandId: `layout.toggle.${CODE_AREA_ID}`,
+        }),
+        provide(keybindingsValueSpec, {
+          combo: 'Mod+Shift+1',
           commandId: `layout.toggle.${EXPLORER_AREA_ID}`,
         }),
         provide(keybindingsValueSpec, {

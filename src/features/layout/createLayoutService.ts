@@ -15,8 +15,25 @@ import type {
 
 const STORAGE_KEY = 'zds.layout'
 
+/**
+ * The saved arrangement.
+ *
+ * The version is the migration, and dropping the payload is the whole strategy:
+ * node ids and structure belong to the preset that produced them, so a stored
+ * tree from an older shape is worse than none — the screen re-seeds from the
+ * current preset when there is nothing to restore.
+ *
+ * Bump it whenever a preset's structure or node ids change. Without that, an
+ * existing install keeps the old layout forever and only "Reset panel layout"
+ * shows the new one.
+ *
+ * - 1: files and the title block in rails, editor and viewport split down the
+ *   middle.
+ * - 2: the code panel (editor, hosting the file tree) in the start rail, with
+ *   the viewport taking the whole centre.
+ */
 interface PersistedLayout {
-  version: 1
+  version: 2
   presetId: string | null
   root: LayoutNode | null
   sizes: Record<string, number[]>
@@ -28,7 +45,7 @@ function readPersisted(): PersistedLayout | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as PersistedLayout
-    return parsed.version === 1 ? parsed : null
+    return parsed.version === 2 ? parsed : null
   } catch {
     return null
   }
@@ -128,7 +145,7 @@ export function createLayoutService(
   const persist = () => {
     try {
       const payload: PersistedLayout = {
-        version: 1,
+        version: 2,
         presetId: presetId.peek(),
         root: root.peek(),
         sizes: Object.fromEntries(

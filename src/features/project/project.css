@@ -64,6 +64,83 @@
   padding-block: var(--zds-space-6);
 }
 
+/* Code panel ------------------------------------------------------- */
+
+/*
+ * The file strip and the editor, side by side inside one rail region.
+ *
+ * The strip is sized in pixels and the editor takes the remainder, which is the
+ * dock's own arrangement one level down — a file tree wants the same width
+ * whatever the panel around it is doing.
+ */
+.zds-code {
+  display: flex;
+  block-size: 100%;
+  min-block-size: 0;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.zds-code__files {
+  --zds-code-files: 220px;
+
+  position: relative;
+  display: flex;
+  flex: none;
+  inline-size: var(--zds-code-files);
+  min-inline-size: 0;
+  block-size: 100%;
+  min-block-size: 0;
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-code__files > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.zds-code__editor {
+  display: flex;
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 0;
+}
+
+.zds-code__editor > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* Straddles the strip's inner edge, matching the rail handle either side of it. */
+.zds-code__handle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: -4px;
+  inline-size: 9px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: var(--zds-z-rail);
+}
+
+.zds-code__handle::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 4px;
+  inline-size: var(--zds-size-hairline);
+  background: transparent;
+  transition: background-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-code__handle:hover::after,
+.zds-code__handle:focus-visible::after {
+  background: var(--zds-accent);
+}
+
+.zds-code__handle:focus-visible {
+  outline: none;
+}
+
 /* Editor ----------------------------------------------------------- */
 
 .zds-editor {
