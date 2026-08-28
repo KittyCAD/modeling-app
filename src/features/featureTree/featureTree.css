@@ -117,3 +117,22 @@
   font-size: var(--zds-font-size-small);
   line-height: var(--zds-line-height-body);
 }
+
+.zds-feature-tree__rollback {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  margin: var(--zds-space-2) var(--zds-space-1);
+  color: var(--zds-accent);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  text-transform: uppercase;
+}
+
+.zds-feature-tree__rollback::before,
+.zds-feature-tree__rollback::after {
+  flex: 1;
+  block-size: var(--zds-size-hairline);
+  background: currentColor;
+  content: "";
+}

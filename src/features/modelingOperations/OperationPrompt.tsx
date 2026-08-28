@@ -115,8 +115,9 @@ export function OperationPrompt() {
    */
   useEffect(() => {
     if (!field) return
-    draft.value =
-      field.prompt.kind === 'boolean'
+    draft.value = field.answer
+      ? (field.raw ?? field.answer.source)
+      : field.prompt.kind === 'boolean'
         ? 'false'
         : ((field.prompt.kind === 'choice'
             ? field.prompt.options[0]?.value
@@ -142,7 +143,9 @@ export function OperationPrompt() {
   // Position among all the arguments, not among the ones left: "2 of 5" should
   // not count down as answers arrive.
   const position = pending.fields.indexOf(field) + 1
-  const remaining = pending.fields.filter(worthAsking).length
+  const remaining = pending.edit
+    ? pending.fields.length - pending.fields.indexOf(field)
+    : pending.fields.filter(worthAsking).length
 
   const submit = () => void modeling.answer(draft.value)
 

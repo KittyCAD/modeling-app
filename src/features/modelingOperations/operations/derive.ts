@@ -4,8 +4,8 @@ import type {
   ModelingOperation,
   ProjectEdit,
 } from '@src/contracts/modelingOperations'
-import type { OperationAnnotations } from '@src/lib/kclStdlib/shapes'
 import { freeName } from '@src/lib/kclStdlib/program'
+import type { OperationAnnotations } from '@src/lib/kclStdlib/shapes'
 
 /**
  * One operation, as its exceptions.
@@ -98,9 +98,7 @@ export function derivedOperation(spec: OperationSpec): ModelingOperation {
 
     plan:
       spec.plan ??
-      (({ command, inputs, resolved, program, path }): ProjectEdit => {
-        const name = freeName(program.ast, stem)
-
+      (({ command, inputs, resolved, program, path, edit }): ProjectEdit => {
         /*
          * The special argument is written unlabelled, which is how KCL reads "the
          * thing this acts on" — and what makes the call pipeable later without
@@ -119,11 +117,51 @@ export function derivedOperation(spec: OperationSpec): ModelingOperation {
               // rather than written empty.
               return answer ? [`${input.name} = ${answer.source}`] : []
             }),
+          ...(edit?.preservedArguments ?? []),
         ]
 
         // `preferredName` is the callee as it is written in source, which for a
         // module function is qualified: `gdt::flatness`.
         const callee = command.preferredName ?? command.name
+
+        if (edit) {
+          const written = program.source.slice(edit.call.from, edit.call.to)
+          const opening = written.indexOf('(')
+          const writtenCallee =
+            opening === -1 ? callee : written.slice(0, opening).trim()
+          const afterStatement = endOfLine(program.source, edit.statement.to)
+          const hasDownstreamCode =
+            program.source.slice(afterStatement).trim().length > 0
+
+          return {
+            label: `Updated ${spec.title}`,
+            changes: {
+              [path]: [
+                {
+                  from: edit.rollback.from,
+                  to: edit.rollback.to,
+                  insert: '',
+                },
+                {
+                  from: edit.call.from,
+                  to: edit.call.to,
+                  insert: `${writtenCallee}(${args.join(', ')})`,
+                },
+                ...(hasDownstreamCode
+                  ? [
+                      {
+                        from: afterStatement,
+                        to: afterStatement,
+                        insert: 'exit()\n',
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          }
+        }
+
+        const name = freeName(program.ast, stem)
         const statement = `${name} = ${callee}(${args.join(', ')})`
 
         const source = program.source
@@ -144,4 +182,9 @@ export function derivedOperation(spec: OperationSpec): ModelingOperation {
         }
       }),
   }
+}
+
+function endOfLine(source: string, offset: number): number {
+  const newline = source.indexOf('\n', offset)
+  return newline === -1 ? source.length : newline + 1
 }

@@ -67,7 +67,10 @@ function nodesFrom(
     if (operation.type === 'GroupEnd') {
       continue
     }
-    if (operation.type === 'StdLibCall' && operation.name === 'hide') {
+    if (
+      operation.type === 'StdLibCall' &&
+      (operation.name === 'hide' || operation.name === 'exit')
+    ) {
       continue
     }
 

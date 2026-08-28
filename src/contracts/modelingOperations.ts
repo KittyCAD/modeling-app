@@ -207,6 +207,24 @@ export interface PlanContext {
   program: ParsedProgram
   /** Project-relative path of the file being edited. */
   path: string
+  /** The existing call being changed, absent when this is a new operation. */
+  edit?: OperationEditTarget
+}
+
+/**
+ * The source-owned context for editing one existing operation.
+ *
+ * Every offset is UTF-16 and belongs to `ParsedProgram.source`. Keeping the
+ * rollback marker here makes applying an edit one ordinary source transaction:
+ * replace the call, remove the boundary before it, then put that boundary after
+ * the statement so the edited result executes without any downstream features.
+ */
+export interface OperationEditTarget {
+  call: { from: number; to: number }
+  statement: { from: number; to: number }
+  rollback: { from: number; to: number }
+  /** Written keyword arguments this operation's edit surface does not expose. */
+  preservedArguments: readonly string[]
 }
 
 /**

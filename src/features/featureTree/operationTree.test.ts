@@ -27,7 +27,7 @@ const operations = (map: OperationsByModule['map']): OperationsByModule => ({
 })
 
 describe('feature tree operations', () => {
-  it('nests operations inside sketch blocks and omits hide calls', () => {
+  it('nests operations inside sketch blocks and omits non-feature calls', () => {
     const tree = buildOperationTree(
       operations({
         0: [
@@ -41,6 +41,7 @@ describe('feature tree operations', () => {
           call('hide', 20),
           { type: 'GroupEnd' },
           call('extrude', 31),
+          call('exit', 40),
         ],
       })
     )

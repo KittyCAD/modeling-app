@@ -4,6 +4,7 @@ import type {
   ArgumentPrompt,
   ArgumentResolver,
   ModelingOperation,
+  OperationEditTarget,
   ParsedProgram,
   ProjectEdit,
   ResolvedArgument,
@@ -76,6 +77,10 @@ export interface PendingOperation {
   program: ParsedProgram
   /** Project-relative path of the buffer being edited. */
   path: string
+  /** Present when Apply replaces an operation instead of appending one. */
+  edit?: OperationEditTarget
+  /** The field currently shown by the sequential surface during an edit. */
+  editField?: string
   /**
    * Which field is receiving what gets picked in the scene.
    *
@@ -125,6 +130,12 @@ export interface OperationRunner {
   start(
     operationId: string,
     answers?: Readonly<Record<string, string>>
+  ): Promise<void>
+  /** Begin changing an existing operation with its written answers supplied. */
+  startEdit(
+    operationId: string,
+    answers: Readonly<Record<string, string>>,
+    target: OperationEditTarget
   ): Promise<void>
   /** Answer the field being asked about. Empty skips an optional one. */
   answer(value: string): Promise<void>
@@ -205,7 +216,14 @@ export function createOperationRunner(
     activeKclBuffer() ? operations.value : []
   )
 
-  const asking = computed(() => pending.value?.fields.find(worthAsking) ?? null)
+  const asking = computed(() => {
+    const state = pending.value
+    if (!state) return null
+    if (state.edit && state.editField) {
+      return fieldNamed(state, state.editField)
+    }
+    return state.fields.find(worthAsking) ?? null
+  })
 
   const ready = computed(() => {
     const state = pending.value
@@ -491,6 +509,7 @@ export function createOperationRunner(
         resolved,
         program: state.program,
         path: state.path,
+        ...(state.edit ? { edit: state.edit } : {}),
       })
 
       /*
@@ -568,6 +587,20 @@ export function createOperationRunner(
     const next = await record(state, name, value)
     pending.value = next
 
+    if (next.edit) {
+      const current = fieldNamed(next, name)
+      if (!current || current.error) return
+
+      const following = next.fields[next.fields.indexOf(current) + 1]
+      if (following) {
+        pending.value = { ...next, editField: following.input.name }
+        return
+      }
+
+      await apply(next)
+      return
+    }
+
     if (!next.fields.some(worthAsking) && !next.fields.some((f) => f.error)) {
       await apply(next)
     }
@@ -608,76 +641,119 @@ export function createOperationRunner(
     })
   }
 
+  const start = async (
+    operationId: string,
+    answers?: Readonly<Record<string, string>>,
+    edit?: OperationEditTarget
+  ) => {
+    const operation = operations.value.find(
+      (candidate) => candidate.id === operationId
+    )
+    if (!operation) return
+
+    const target = activeKclBuffer()
+    if (!target) return
+
+    // Declared shape first: a language construct describes itself, because
+    // nothing generates a description of it.
+    const command = operation.shape ?? stdLibCommand(operation.stdlib)
+    if (!command) {
+      console.warn(
+        `modeling: no stdlib shape for ${operation.stdlib}; is kcl-lib newer than these bindings?`
+      )
+      return
+    }
+
+    const program = await parse(target.buffer.text.value)
+    const inputs = derivedInputs(command, operation.annotations)
+
+    let state = await recompute({
+      operation,
+      command,
+      fields: inputs.map((input) => ({
+        input,
+        methods: [],
+        method: '',
+        // Replaced by the first recompute; nothing is ever shown from here.
+        prompt: { kind: 'expression' },
+        answer: null,
+        raw: null,
+        skipped: false,
+        error: null,
+      })),
+      program,
+      path: target.path,
+      ...(edit ? { edit, editField: inputs[0]?.name } : {}),
+      focus: null,
+      error: null,
+      busy: false,
+    })
+
+    /*
+     * Supplied answers go in declared order.
+     *
+     * A resolver sees the answers that came before it, so filling `sketches`
+     * before `length` is not a stylistic choice — it is the order in which the
+     * arguments were declared to depend on each other. A caller handing over a
+     * bag of answers should not have to know that.
+     */
+    for (const input of inputs) {
+      const supplied = answers?.[input.name]
+      if (supplied === undefined) continue
+
+      /*
+       * Existing values are source, not interaction answers.
+       *
+       * A face argument such as `[solid.tags.wall]` is already valid KCL; it is
+       * not an engine entity id for the selection resolver to translate. Open
+       * editable reference fields on the source method so their written value
+       * survives intact. The user can still switch back to scene selection.
+       */
+      if (edit) {
+        const field = fieldNamed(state, input.name)
+        const sourceResolver = resolversFor(input).find(
+          (resolver) => resolver.id === 'modeling.resolver.source'
+        )
+        if (field && sourceResolver) {
+          const prompt = await promptWith(
+            sourceResolver,
+            input,
+            state.program,
+            answersOf(state.fields)
+          )
+          state = await recompute({
+            ...state,
+            fields: state.fields.with(state.fields.indexOf(field), {
+              ...field,
+              method: sourceResolver.id,
+              prompt,
+              error: null,
+            }),
+          })
+        }
+      }
+      state = await record(state, input.name, supplied)
+    }
+
+    for (const name of Object.keys(answers ?? {})) {
+      if (!inputs.some((input) => input.name === name)) {
+        console.warn(`modeling: ${operation.id} has no argument ${name}`)
+      }
+    }
+
+    pending.value = state
+  }
+
   return {
     pending: computed(() => pending.value),
     asking,
     ready,
     available,
 
-    async start(operationId, answers) {
-      const operation = operations.value.find(
-        (candidate) => candidate.id === operationId
-      )
-      if (!operation) return
+    start,
 
-      const target = activeKclBuffer()
-      if (!target) return
-
-      // Declared shape first: a language construct describes itself, because
-      // nothing generates a description of it.
-      const command = operation.shape ?? stdLibCommand(operation.stdlib)
-      if (!command) {
-        console.warn(
-          `modeling: no stdlib shape for ${operation.stdlib}; is kcl-lib newer than these bindings?`
-        )
-        return
-      }
-
-      const program = await parse(target.buffer.text.value)
-      const inputs = derivedInputs(command, operation.annotations)
-
-      let state = await recompute({
-        operation,
-        command,
-        fields: inputs.map((input) => ({
-          input,
-          methods: [],
-          method: '',
-          // Replaced by the first recompute; nothing is ever shown from here.
-          prompt: { kind: 'expression' },
-          answer: null,
-          raw: null,
-          skipped: false,
-          error: null,
-        })),
-        program,
-        path: target.path,
-        focus: null,
-        error: null,
-        busy: false,
-      })
-
-      /*
-       * Supplied answers go in declared order.
-       *
-       * A resolver sees the answers that came before it, so filling `sketches`
-       * before `length` is not a stylistic choice — it is the order in which the
-       * arguments were declared to depend on each other. A caller handing over a
-       * bag of answers should not have to know that.
-       */
-      for (const input of inputs) {
-        const supplied = answers?.[input.name]
-        if (supplied === undefined) continue
-        state = await record(state, input.name, supplied)
-      }
-
-      for (const name of Object.keys(answers ?? {})) {
-        if (!inputs.some((input) => input.name === name)) {
-          console.warn(`modeling: ${operation.id} has no argument ${name}`)
-        }
-      }
-
-      pending.value = state
+    async startEdit(operationId, answers, target) {
+      await start(operationId, answers, target)
     },
 
     async answer(value) {

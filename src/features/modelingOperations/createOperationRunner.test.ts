@@ -209,6 +209,49 @@ describe('running a modelling operation', () => {
     )
   })
 
+  it('edits a prefilled operation and advances its rollback boundary', async () => {
+    const source =
+      '@settings(experimentalFeatures = allow)\n' +
+      'profile001 = startProfile(XY, at = [0, 0])\n' +
+      'exit()\n' +
+      'solid = extrude(profile001, length = 10, symmetric = true)\n' +
+      'later = fillet(solid, radius = 2)\n'
+    const { runner, buffer } = setup({ source })
+    const rollbackFrom = source.indexOf('exit()')
+    const callFrom = source.indexOf('extrude(')
+    const callTo = source.indexOf(')', callFrom) + 1
+    const statementFrom = source.indexOf('solid =')
+    const statementTo = source.indexOf('\n', statementFrom)
+
+    await runner.startEdit(
+      'modeling.extrude',
+      { sketches: 'profile001', length: '10' },
+      {
+        call: { from: callFrom, to: callTo },
+        statement: { from: statementFrom, to: statementTo },
+        rollback: { from: rollbackFrom, to: rollbackFrom + 'exit()\n'.length },
+        preservedArguments: ['symmetric = true'],
+      }
+    )
+
+    expect(runner.asking.value?.input.name).toBe('sketches')
+    expect(runner.asking.value?.raw).toBe('profile001')
+    expect(runner.asking.value?.method).toBe('modeling.resolver.source')
+
+    await runner.answer('profile001')
+    expect(runner.asking.value?.input.name).toBe('length')
+    expect(runner.asking.value?.raw).toBe('10')
+    await runner.answer('12')
+
+    expect(buffer.text.value).toBe(
+      '@settings(experimentalFeatures = allow)\n' +
+        'profile001 = startProfile(XY, at = [0, 0])\n' +
+        'solid = extrude(profile001, length = 12, symmetric = true)\n' +
+        'exit()\n' +
+        'later = fillet(solid, radius = 2)\n'
+    )
+  })
+
   /** An optional argument left blank is left out of the call, not written empty. */
   it('omits an optional argument nobody answered', async () => {
     const { runner, buffer } = setup()

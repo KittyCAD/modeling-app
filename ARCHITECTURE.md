@@ -1177,6 +1177,24 @@ to be active. Clicking a root-module row activates that executing buffer and
 selects the operation's source. kcl-lib reports UTF-8 byte offsets and CodeMirror
 uses UTF-16 positions, so the conversion happens explicitly at this boundary.
 
+Double-clicking a directly bound root operation edits it through the same
+stdlib-derived flow that creates operations. Its written arguments seed the
+fields, and a root `exit()` is moved immediately before the statement first, so
+scene selection sees only the geometry that operation consumes. Applying
+replaces the call and moves `exit()` after the statement in the same source
+transaction, which renders the edited result without executing anything later.
+There is no engine rollback state: the boundary is ordinary, undoable KCL, and
+enabling `experimentalFeatures = allow` is a persistent source change.
+
+Only direct top-level calls are offered for now. A stage inside a pipeline, a
+function, or a sketch block has no root statement boundary immediately before
+it; pretending otherwise would roll back farther than the row says. Supporting
+those means a source transformation that first extracts the stage, not a more
+permissive double-click handler. The runtime trace also ends at `exit()`, so the
+HUD currently shows the built prefix and the rollback marker; a future parsed
+source outline can show honest, unbuilt rows below it without retaining stale
+runtime operations.
+
 Sketch and function groups become nested disclosures, imported modules expand at
 most once, cycles terminate, and `hide` calls stay implementation detail rather
 than features. Imported-module rows are visible but do not navigate yet because

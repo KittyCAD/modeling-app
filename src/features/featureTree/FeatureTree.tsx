@@ -4,6 +4,7 @@ import { Icon } from '@kittycad/ui-kit'
 import { useComputed } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { kclSceneService } from '@src/contracts/kclScene'
+import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import { projectSessionService } from '@src/contracts/projectSession'
 import type { OperationTreeNode } from '@src/features/featureTree/operationTree'
 import {
@@ -12,6 +13,11 @@ import {
   operationKind,
   operationLabel,
 } from '@src/features/featureTree/operationTree'
+import {
+  editableFeatureFor,
+  rollbackBeforeFeature,
+  rollbackExitRange,
+} from '@src/features/featureTree/rollbackEdit'
 import { bufferOrigin, requestFocus } from '@src/lib/buffers/annotations'
 import { sourceRangeToUtf16 } from '@src/lib/kcl/sourceRange'
 import { useState } from 'preact/hooks'
@@ -22,11 +28,13 @@ function FeatureNode({
   source,
   selectedOffset,
   reveal,
+  edit,
 }: {
   node: OperationTreeNode
   source: string
   selectedOffset: number | null
   reveal: (node: OperationTreeNode) => void
+  edit: (node: OperationTreeNode) => void
 }) {
   // Imported modules are useful context but can contain whole models. Folding
   // them initially keeps the executing file's own timeline in view; structural
@@ -77,6 +85,7 @@ function FeatureNode({
             type="button"
             class="zds-feature-tree__branch-target"
             onClick={() => reveal(node)}
+            onDblClick={() => edit(node)}
           >
             {row}
           </button>
@@ -90,6 +99,7 @@ function FeatureNode({
                 source={source}
                 selectedOffset={selectedOffset}
                 reveal={reveal}
+                edit={edit}
               />
             ))}
           </ul>
@@ -105,6 +115,7 @@ function FeatureNode({
         class="zds-feature-tree__row"
         aria-current={selected ? 'true' : undefined}
         onClick={() => reveal(node)}
+        onDblClick={() => edit(node)}
         disabled={node.moduleId !== 0}
       >
         <span class="zds-feature-tree__disclosure-spacer" />
@@ -117,6 +128,7 @@ function FeatureNode({
 /** The KCL operation timeline belonging to the scene's executing buffer. */
 export function FeatureTree() {
   const scene = useService(kclSceneService)
+  const modeling = useService(modelingOperationsService)
   const sessions = useService(projectSessionService)
   const tree = useComputed(() => buildOperationTree(scene.operations.value))
   const selectedOffset = useComputed(
@@ -153,6 +165,58 @@ export function FeatureTree() {
     })
   }
 
+  const edit = (node: OperationTreeNode) => {
+    const runtime = node.operation
+    if (node.moduleId !== 0 || runtime.type !== 'StdLibCall') {
+      return
+    }
+
+    const program = scene.program.peek()
+    const session = sessions.current.peek()
+    const buffer = session?.executingBuffer.peek()
+    if (
+      !program ||
+      !session ||
+      !buffer ||
+      buffer.text.peek() !== program.source
+    ) {
+      return
+    }
+
+    session.setActiveBuffer(buffer.id)
+    const operation = modeling.available
+      .peek()
+      .find((candidate) => candidate.stdlib === runtime.name)
+    if (!operation) {
+      return
+    }
+
+    const feature = editableFeatureFor(
+      program.source,
+      program.ast,
+      runtime,
+      operation
+    )
+    if (!feature) {
+      return
+    }
+
+    const rollback = rollbackBeforeFeature(program.source, feature)
+    buffer.dispatch({
+      changes: rollback.changes.map((change) => ({
+        from: change.from,
+        to: change.to,
+        insert: change.insert,
+      })),
+      annotations: bufferOrigin.of('semantic'),
+    })
+    void modeling.startEdit(
+      feature.operationId,
+      feature.answers,
+      rollback.target
+    )
+  }
+
   if (!scene.program.value) {
     return (
       <p class="zds-feature-tree__empty">
@@ -161,7 +225,9 @@ export function FeatureTree() {
     )
   }
 
-  if (tree.value.length === 0) {
+  const rollback = rollbackExitRange(scene.program.value.source)
+
+  if (tree.value.length === 0 && !rollback) {
     return <p class="zds-feature-tree__empty">No modeling operations yet.</p>
   }
 
@@ -175,9 +241,15 @@ export function FeatureTree() {
             source={scene.program.value?.source ?? ''}
             selectedOffset={selectedOffset.value}
             reveal={reveal}
+            edit={edit}
           />
         ))}
       </ul>
+      {rollback ? (
+        <div class="zds-feature-tree__rollback">
+          <span>Rollback</span>
+        </div>
+      ) : null}
     </nav>
   )
 }

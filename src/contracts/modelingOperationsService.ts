@@ -1,11 +1,14 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
-import type { ModelingOperation } from '@src/contracts/modelingOperations'
-import type { OperationLayout } from '@src/features/modelingOperations/presentation'
+import type {
+  ModelingOperation,
+  OperationEditTarget,
+} from '@src/contracts/modelingOperations'
 import type {
   ArgumentField,
   PendingOperation,
 } from '@src/features/modelingOperations/createOperationRunner'
+import type { OperationLayout } from '@src/features/modelingOperations/presentation'
 
 /**
  * Running a modelling operation.
@@ -32,6 +35,12 @@ export interface ModelingOperationsService {
   start(
     operationId: string,
     answers?: Readonly<Record<string, string>>
+  ): Promise<void>
+  /** Begin changing an existing call, prefilled with its written arguments. */
+  startEdit(
+    operationId: string,
+    answers: Readonly<Record<string, string>>,
+    target: OperationEditTarget
   ): Promise<void>
   /** Answer the argument being asked about. Empty skips an optional one. */
   answer(value: string): Promise<void>
