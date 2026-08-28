@@ -192,7 +192,7 @@ class ExecOutcome:
     def report(self, issue: CompilationIssue) -> builtins.str:
         r"""
         Render the given compilation issue as a miette report string, using
-        the source code and filename captured at execution time.
+        the source code and filenames captured at execution time.
         """
     def sketch_constraint_report(self) -> SketchConstraintReport:
         r"""
