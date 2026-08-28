@@ -101,7 +101,7 @@ function CommandButton({
   return (
     <Button
       variant="ghost"
-      size="small"
+      size="medium"
       label={command.title}
       icon={command.icon}
       iconOnly={command.icon !== undefined}

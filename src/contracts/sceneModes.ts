@@ -130,6 +130,19 @@ export interface SceneModeService {
   readonly lastUsed: ReadonlySignal<ReadonlyMap<string, string>>
   /** No-ops if the mode is missing or unavailable. */
   enter(modeId: string): void
+  /**
+   * Forget which mode was asked for, landing back where you start.
+   *
+   * How a mode is *left*. Entering is inferred — selecting something inside a
+   * sketch is a request to edit that sketch — so leaving has to be said, or the
+   * inference becomes a trap: the cursor stays in the block, so the condition
+   * that entered the mode is still true and nothing takes you out of it.
+   *
+   * Deliberately "forget", not "enter the first mode". The fallback already
+   * knows what to land on, and this way a mode contributed later becomes the
+   * place you land without this method learning about it.
+   */
+  reset(): void
   noteUsed(groupId: string, commandId: string): void
 }
 
@@ -141,6 +154,15 @@ export interface SceneModeService {
  * without owning any tools, and a feature that owns a tool can put it in
  * somebody else's mode.
  */
+/**
+ * The command that means "stop what I was doing".
+ *
+ * A constant rather than a service dependency, because the two features that
+ * need to agree about it sit on opposite sides of the seam: the toolbar owns
+ * modes, and the scene owns clicks. A shared string is the smaller coupling.
+ */
+export const EXIT_MODE_COMMAND = 'scene.exitMode'
+
 export const sceneModesContract = defineContract({
   sceneModesValueSpec: defineValueSpec<SceneMode, SceneMode[]>({
     name: 'scene.modes',

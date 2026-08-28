@@ -35,6 +35,21 @@ export type BufferOrigin =
  */
 export const requestExecution = Annotation.define<boolean>()
 
+/**
+ * An explicit request for the keyboard.
+ *
+ * Travels with the transaction for the same reason `requestExecution` does: it
+ * is a declarative part of what the change *meant*, not a side channel around
+ * the buffer, and only a mounted view can honour it.
+ *
+ * What asks for this is an edit that puts the cursor somewhere on purpose — an
+ * empty sketch block waiting to be drawn in. Leaving the cursor there while the
+ * keyboard is somewhere else would be half of the gesture: nothing would be
+ * typed into it, and anything reading "where is the user" from focus would say
+ * they had not arrived.
+ */
+export const requestFocus = Annotation.define<boolean>()
+
 /** Read the origin off a transaction, defaulting to a user edit. */
 export function originOf(transaction: {
   annotation: (annotation: typeof bufferOrigin) => BufferOrigin | undefined

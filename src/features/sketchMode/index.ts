@@ -51,18 +51,20 @@ export default defineRegistryItemFactory((ctx) => {
       .filter((range): range is SourceRange => range !== null)
 
     /*
-     * The cursor counts only while the file on screen is the file being run.
-     *
-     * Offsets from another buffer address this program's text by coincidence, and
-     * a cursor in `bracket.kcl` must not put you inside a sketch in `main.kcl`.
+     * The cursor's facts, gathered here and judged there: which of them
+     * disqualify a cursor is a rule worth testing, so it lives in
+     * `sketchContextAt`.
      */
     const session = ctx.services.optional(projectSessionService)?.current.value
     const executing = session?.executingBuffer.value ?? null
     const active = session?.activeBuffer.value ?? null
-    const cursor =
-      executing && active?.id === executing.id
-        ? active.state.value.selection.main.head
-        : null
+
+    const cursor = active
+      ? {
+          offset: active.state.value.selection.main.head,
+          executing: active.id === executing?.id,
+        }
+      : null
 
     return sketchContextAt(scene.program.value, ranges, cursor)
   })

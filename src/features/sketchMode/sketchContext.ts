@@ -4,6 +4,26 @@ import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
 import { sketchBlockAt } from '@src/lib/kclStdlib/program'
 
 /**
+ * Where the text cursor is, and which program it addresses.
+ *
+ * `executing` is the only condition on it. An offset from another buffer
+ * addresses this program's text by coincidence, and a cursor in `bracket.kcl`
+ * must not put you inside a sketch in `main.kcl`.
+ *
+ * Focus deliberately does *not* gate this. It was tried, to make sketch mode
+ * escapable, and it took the mode away from the case that needs it most: Start
+ * sketch writes a block with the code panel closed, so there is no view to hold
+ * focus and the sketch it just made would not count. Leaving is now something the
+ * user says — a click on nothing, or Escape — rather than something inferred from
+ * where the keyboard is.
+ */
+export interface SketchCursor {
+  offset: number
+  /** Whether the buffer holding it is the one being executed. */
+  executing: boolean
+}
+
+/**
  * The sketch the user is in, if any.
  *
  * "In a sketch" is read from the file rather than remembered. There is no
@@ -23,7 +43,7 @@ import { sketchBlockAt } from '@src/lib/kclStdlib/program'
 export function sketchContextAt(
   program: ExecutedProgram | null,
   selection: readonly SourceRange[],
-  cursor: number | null
+  cursor: SketchCursor | null
 ): SketchBlockRange | null {
   if (!program) return null
 
@@ -32,7 +52,7 @@ export function sketchContextAt(
     if (found) return found
   }
 
-  if (cursor === null) return null
+  if (!cursor || !cursor.executing) return null
 
   /*
    * A cursor past the end of what was executed says nothing.
@@ -41,7 +61,7 @@ export function sketchContextAt(
    * longer exists. Answering from it would put someone in a sketch because of
    * where a *different* file's braces were.
    */
-  if (cursor > program.source.length) return null
+  if (cursor.offset > program.source.length) return null
 
-  return sketchBlockAt(program.ast, cursor)
+  return sketchBlockAt(program.ast, cursor.offset)
 }

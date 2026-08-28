@@ -14,6 +14,7 @@ import type { ProjectSession } from '@src/contracts/projectSession'
 import type { DerivedInput } from '@src/lib/kclStdlib/shapes'
 import { derivedInputs, stdLibCommand } from '@src/lib/kclStdlib/shapes'
 import { mergeTextEdits } from '@src/features/modelingOperations/mergeEdits'
+import { requestFocus } from '@src/lib/buffers/annotations'
 
 /**
  * One argument of a running operation, and everything known about it.
@@ -516,6 +517,13 @@ export function createOperationRunner(
             insert: change.insert,
           })),
           ...(focus === null ? {} : { selection: { anchor: focus } }),
+          /*
+           * Asking for the cursor to be somewhere is asking for the user to be
+           * there, so the keyboard comes too. Half the gesture — a caret in a new
+           * sketch block that nothing types into — would leave the app looking
+           * like it had moved somebody who is still where they were.
+           */
+          ...(focus === null ? {} : { annotations: [requestFocus.of(true)] }),
         })
       }
 

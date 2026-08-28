@@ -336,6 +336,51 @@ describe('running a modelling operation', () => {
     expect(buffer.text.value).toContain('extrude(profile001)')
   })
 
+  /*
+   * What makes "start a sketch and draw in it" one gesture rather than two: the
+   * caret is left where the drawing goes.
+   */
+  it('leaves the cursor where the plan asked for it', async () => {
+    const operation: ModelingOperation = {
+      ...extrudeOperation,
+      id: 'modeling.focusing',
+      plan: ({ path, program }) => ({
+        label: 'Focused',
+        changes: {
+          [path]: [
+            {
+              from: program.source.length,
+              to: program.source.length,
+              insert: 'block()\n',
+            },
+          ],
+        },
+        focus: { path, offset: program.source.length + 3 },
+      }),
+    }
+
+    const { runner, buffer } = setup({ operations: [operation] })
+
+    await runner.start('modeling.focusing')
+    await runner.answer('profile001')
+    await runner.answer('3')
+
+    expect(buffer.state.value.selection.main.head).toBe(
+      'profile001 = startProfile(XY, at = [0, 0])\n'.length + 3
+    )
+  })
+
+  it('leaves the cursor alone when no plan asked', async () => {
+    const { runner, buffer } = setup()
+    const before = buffer.state.value.selection.main.head
+
+    await runner.start('modeling.extrude')
+    await runner.answer('profile001')
+    await runner.answer('3')
+
+    expect(buffer.state.value.selection.main.head).toBe(before)
+  })
+
   it('appends a newline when the file does not end with one', async () => {
     const { runner, buffer } = setup({
       source: 'profile001 = startProfile(XY, at = [0, 0])',
@@ -555,7 +600,7 @@ describe('answering from the scene', () => {
     entities: computed(() => entities),
     picking: computed(() => false),
     select: () => {},
-    selectAt: async () => {},
+    selectAt: async () => null,
     clear: () => {},
   })
 

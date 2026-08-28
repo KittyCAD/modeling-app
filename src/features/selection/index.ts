@@ -5,9 +5,10 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
-import { commandsValueSpec } from '@src/contracts/commands'
+import { commandService, commandsValueSpec } from '@src/contracts/commands'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { sceneInteractionsValueSpec } from '@src/contracts/scene'
+import { EXIT_MODE_COMMAND } from '@src/contracts/sceneModes'
 import { scenePickerService, selectionService } from '@src/contracts/selection'
 import {
   createClickRecogniser,
@@ -64,10 +65,23 @@ export default defineRegistryItemFactory((ctx) => {
 
             return createClickRecogniser(element, {
               onClick: (event) => {
-                void selection.selectAt(
-                  pointFor(event),
-                  selectionModeFor(event)
-                )
+                const mode = selectionModeFor(event)
+
+                void selection.selectAt(pointFor(event), mode).then((hit) => {
+                  /*
+                   * A plain click on nothing is a statement, not a failed
+                   * selection: it is how somebody says "nothing, thanks" with the
+                   * pointer, and it should mean what Escape means.
+                   *
+                   * Run as a command rather than reached for directly, because
+                   * what "stop what I was doing" involves belongs to whoever owns
+                   * modes — this only knows that the user said it. Shift and Alt
+                   * clicks are excluded: those are adjustments to a selection, so
+                   * missing with one is a miss rather than a statement.
+                   */
+                  if (hit !== null || mode !== 'replace') return
+                  ctx.services.optional(commandService)?.run(EXIT_MODE_COMMAND)
+                })
               },
             })
           },

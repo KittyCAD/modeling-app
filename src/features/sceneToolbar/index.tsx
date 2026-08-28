@@ -13,10 +13,12 @@ import {
 } from '@src/contracts/keybindings'
 import { sceneItemsValueSpec } from '@src/contracts/scene'
 import {
+  EXIT_MODE_COMMAND,
   sceneModeGatesValueSpec,
   sceneModeService,
   sceneModesValueSpec,
 } from '@src/contracts/sceneModes'
+import { selectionService } from '@src/contracts/selection'
 import { SceneToolbar } from '@src/features/sceneToolbar/SceneToolbar'
 import { createSceneModeService } from '@src/features/sceneToolbar/createSceneModeService'
 import { syncModeKeymapScope } from '@src/features/sceneToolbar/modeKeymapScope'
@@ -81,6 +83,38 @@ export default defineRegistryItemFactory((ctx) => {
           zone: 'top',
           order: 0,
           render: () => <SceneToolbar />,
+        }),
+
+        /**
+         * Escape: stop what I was doing.
+         *
+         * Entering a mode is inferred — selecting inside a sketch is a request to
+         * edit that sketch — so leaving has to be sayable, or the inference is a
+         * trap. This is the saying, and a click on nothing in the scene runs the
+         * same command, because a click on nothing means the same thing.
+         *
+         * It clears the selection too. Both are "I am done with this", and
+         * splitting them would mean pressing Escape twice for one intention.
+         *
+         * Base scope, so it is live wherever nothing more local has claimed
+         * Escape: the palette, a rename field and the argument prompt all handle
+         * their own first, and the keymap leaves bare keys to whatever is taking
+         * text.
+         */
+        provide(commandsValueSpec, {
+          id: EXIT_MODE_COMMAND,
+          title: 'Leave the current mode',
+          category: 'Scene',
+          icon: 'close',
+          run: () => {
+            modes.reset()
+            ctx.services.optional(selectionService)?.clear()
+          },
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Escape'],
+          commandId: EXIT_MODE_COMMAND,
         }),
 
         ...builtInModes.flatMap((mode) => [

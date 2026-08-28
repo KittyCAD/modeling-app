@@ -88,6 +88,10 @@ export function createSceneModeService(
       requested.value = modeId
     },
 
+    reset() {
+      requested.value = null
+    },
+
     noteUsed(groupId, commandId) {
       const next = new Map(lastUsed.peek())
       next.set(groupId, commandId)

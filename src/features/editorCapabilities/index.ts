@@ -21,6 +21,7 @@ import {
   baselineCapability,
   readOnlyCapability,
 } from '@src/features/editorCapabilities/baseline'
+import { focusRequestCapability } from '@src/features/editorCapabilities/focusRequest'
 import { createExecutionAdapterCapability } from '@src/features/editorCapabilities/executionAdapter'
 import {
   CODE_EDITOR_SCOPE,
@@ -95,6 +96,7 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         provide(editorCapabilitiesValueSpec, keymapScope),
+        provide(editorCapabilitiesValueSpec, focusRequestCapability),
         provide(editorCapabilitiesValueSpec, selectionReveal),
         provide(editorCapabilitiesValueSpec, readOnlyCapability),
         provide(editorCapabilitiesValueSpec, baselineCapability),
