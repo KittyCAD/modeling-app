@@ -13,6 +13,7 @@ import {
   assertParse,
   defaultNodePath,
   nodePathFromRange,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
@@ -1240,6 +1241,59 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
       expect(argDefaultValues.note).toBe('Note on XY')
       expect(argDefaultValues.framePlane).toBe('XZ')
+    })
+  })
+
+  describe('Clone edit flow', () => {
+    it('enters edit flow with the existing cloned object selection', async () => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const code = `extrude001 = extrude(profile001, length = 1)
+clone001 = clone(extrude001)`
+      const operation = stdlib('clone')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.nodePath = await buildNodePath(
+        code,
+        'clone(extrude001)',
+        instance
+      )
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'source-sweep' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          sweepArtifact('source-sweep', 'source-path'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        objects?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        variableName?: string
+        nodeToEdit?: unknown
+      }
+      expect(result.data.name).toBe('Clone')
+      expect(argDefaultValues.objects?.graphSelections).toHaveLength(1)
+      expect(argDefaultValues.objects?.otherSelections).toEqual([])
+      expect(argDefaultValues.variableName).toBe('clone')
+      expect(argDefaultValues.nodeToEdit).toEqual(
+        pathToNodeFromRustNodePath(operation.nodePath)
+      )
     })
   })
 

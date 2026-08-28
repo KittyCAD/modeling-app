@@ -56,6 +56,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
@@ -1242,6 +1243,34 @@ const prepareToEditRingGear: PrepareToEditCallback = async ({
     pressureAngle,
     helixAngle,
     gearHeight,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Clone command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditClone: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+}) => {
+  const baseCommand = {
+    name: 'Clone',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall' || operation.name !== 'clone') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
+  const argDefaultValues: ModelingCommandSchema['Clone'] = {
+    objects,
+    variableName: KCL_DEFAULT_CONSTANT_PREFIXES.CLONE,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -3785,6 +3814,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   clone: {
     label: 'Clone',
     icon: 'clone',
+    prepareToEdit: prepareToEditClone,
     supportsAppearance: true,
     supportsTransform: true,
   },
