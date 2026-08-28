@@ -14,7 +14,9 @@ import {
   engineConnectionService,
 } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
+import { projectSessionService } from '@src/contracts/projectSession'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
+import { autoConnectOnProjectOpen } from '@src/features/engine/autoConnect'
 import { createEngineConnection } from '@src/features/engine/createEngineConnection'
 import { setWasmEngineTransport } from '@src/wasm/bridge'
 
@@ -174,6 +176,38 @@ export default defineRegistryItemFactory((ctx) => {
     await connection.connect()
   }
 
+  /**
+   * Connect when a project opens with something to render.
+   *
+   * Deferred by a microtask because reading a service during graph construction
+   * is not allowed, and the policy itself lives next door: this is the wiring
+   * that says which signals mean "a project with geometry, signed in, idle".
+   */
+  let stopAutoConnect: (() => void) | null = null
+  let disposed = false
+  queueMicrotask(() => {
+    if (disposed) return
+
+    // Optional: the engine works without any notion of projects, and a build
+    // with no session feature has nothing that could open one.
+    const sessions = ctx.services.optional(projectSessionService)
+    if (!sessions) return
+
+    const auth = ctx.services.get(authService)
+
+    stopAutoConnect = autoConnectOnProjectOpen({
+      project: computed(() => sessions.current.value?.project.value.id ?? null),
+      executing: computed(() =>
+        Boolean(sessions.current.value?.executingBuffer.value)
+      ),
+      signedIn: computed(() => auth.token.value !== null),
+      // Narrowed to the status on purpose: `state` changes with every ping, and
+      // an effect reading it whole would wake on each one.
+      offline: computed(() => connection.state.value.status === 'offline'),
+      connect: () => connection.connect(),
+    })
+  })
+
   const releaseTransport = setWasmEngineTransport({
     fireModelingCommand: (request) => connection.fire(request),
     sendModelingCommand: (request) => connection.send(request),
@@ -189,6 +223,8 @@ export default defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine',
       dispose: () => {
+        disposed = true
+        stopAutoConnect?.()
         releaseTransport()
         connection.dispose()
       },
