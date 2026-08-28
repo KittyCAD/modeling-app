@@ -1,0 +1,275 @@
+import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import type { StdLibCommandShape } from '@rust/kcl-lib/bindings/StdLibCommandTypes'
+import type {
+  ArgumentPrompt,
+  ArgumentResolver,
+  ModelingOperation,
+  ParsedProgram,
+  ProjectEdit,
+  ResolvedArgument,
+  ResolvedInputs,
+} from '@src/contracts/modelingOperations'
+import type { ProjectSession } from '@src/contracts/projectSession'
+import type { DerivedInput } from '@src/lib/kclStdlib/shapes'
+import { derivedInputs, stdLibCommand } from '@src/lib/kclStdlib/shapes'
+
+/**
+ * An operation part way through being asked about.
+ *
+ * A record in a signal, not a state machine. The states are "asking about
+ * argument n" and "not running", the transitions are answer and cancel, and a
+ * machine would be enforcing nothing that the index does not already say. The
+ * file tree's draft row is the same shape for the same reason.
+ */
+export interface PendingOperation {
+  operation: ModelingOperation
+  command: StdLibCommandShape
+  inputs: readonly DerivedInput[]
+  /** Which input is being asked about. */
+  index: number
+  prompt: ArgumentPrompt
+  resolved: ResolvedInputs
+  program: ParsedProgram
+  /** Project-relative path of the buffer being edited. */
+  path: string
+  error: string | null
+  busy: boolean
+}
+
+export interface OperationRunnerDependencies {
+  operations: ReadonlySignal<readonly ModelingOperation[]>
+  resolvers: ReadonlySignal<readonly ArgumentResolver[]>
+  session: () => ProjectSession | null
+  /** Injected: parsing needs the WASM module, and a test does not. */
+  parse: (source: string) => Promise<ParsedProgram>
+}
+
+export interface OperationRunner {
+  readonly pending: ReadonlySignal<PendingOperation | null>
+  /** Operations that could run right now, for enabling their commands. */
+  readonly available: ReadonlySignal<readonly ModelingOperation[]>
+  start(operationId: string): Promise<void>
+  /** Answer the current argument. Empty skips an optional one. */
+  answer(value: string): Promise<void>
+  cancel(): void
+}
+
+const KCL = 'kcl'
+
+/**
+ * Runs a modelling operation: derive its arguments, ask for them, apply the edit.
+ *
+ * The order is the whole design. Arguments are *derived* from the stdlib shape,
+ * *asked* through whichever resolver claims each type, and the operation is only
+ * consulted at the end, to write the call. So adding an operation adds no UI, and
+ * adding a resolver adds no operation.
+ */
+export function createOperationRunner(
+  dependencies: OperationRunnerDependencies
+): OperationRunner {
+  const { operations, resolvers, session, parse } = dependencies
+
+  const pending = signal<PendingOperation | null>(null)
+
+  const activeKclBuffer = () => {
+    const current = session()
+    const buffer = current?.activeBuffer.value ?? null
+    if (!current || !buffer) return null
+    if (buffer.languageId.value !== KCL) return null
+
+    const path = current.relativePathFor(buffer)
+    return path ? { session: current, buffer, path } : null
+  }
+
+  const available = computed(() =>
+    // Every operation needs a KCL buffer to write into. Which arguments it can
+    // fill is decided when it starts, because that needs the program parsed.
+    activeKclBuffer() ? operations.value : []
+  )
+
+  const resolverFor = (input: DerivedInput) =>
+    [...resolvers.value]
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .find((resolver) => resolver.handles(input))
+
+  /**
+   * Move to the next argument, or finish.
+   *
+   * Optional arguments whose resolver has nothing to offer are skipped rather
+   * than shown empty — a choice with no options is a dead end, and for an
+   * optional argument it is simply not applicable here.
+   */
+  const advance = async (state: PendingOperation): Promise<void> => {
+    for (let index = state.index; index < state.inputs.length; index += 1) {
+      const input = state.inputs[index]
+      const resolver = resolverFor(input)
+
+      if (!resolver) {
+        if (input.required) {
+          pending.value = {
+            ...state,
+            index,
+            error: `Nothing knows how to supply ${input.name}.`,
+            busy: false,
+          }
+          return
+        }
+        continue
+      }
+
+      const prompt = await resolver.prompt({
+        input,
+        program: state.program,
+        resolved: state.resolved,
+      })
+
+      if (prompt.kind === 'choice' && prompt.options.length === 0) {
+        if (input.required) {
+          pending.value = {
+            ...state,
+            index,
+            prompt,
+            error: prompt.empty ?? `There is no ${input.name} to choose.`,
+            busy: false,
+          }
+          return
+        }
+        continue
+      }
+
+      pending.value = { ...state, index, prompt, error: null, busy: false }
+      return
+    }
+
+    await apply(state)
+  }
+
+  const apply = async (state: PendingOperation): Promise<void> => {
+    const target = activeKclBuffer()
+    if (!target) {
+      pending.value = { ...state, error: 'The file is no longer open.' }
+      return
+    }
+
+    pending.value = { ...state, busy: true, error: null }
+
+    try {
+      const edit: ProjectEdit = await state.operation.plan({
+        command: state.command,
+        inputs: state.inputs,
+        resolved: state.resolved,
+        program: state.program,
+        path: state.path,
+      })
+
+      for (const [path, edits] of Object.entries(edit.changes)) {
+        const buffer = target.session.bufferForPath(path)
+        if (!buffer) {
+          // Only open buffers for now. Editing a file nobody has open means
+          // opening it or writing behind the session's back, and both are
+          // decisions this should not make quietly.
+          throw new Error(`${path} is not open.`)
+        }
+
+        buffer.dispatch({
+          changes: edits.map((change) => ({
+            from: change.from,
+            to: change.to,
+            insert: change.insert,
+          })),
+        })
+      }
+
+      pending.value = null
+    } catch (caught) {
+      pending.value = {
+        ...state,
+        busy: false,
+        error: caught instanceof Error ? caught.message : 'That did not work.',
+      }
+    }
+  }
+
+  return {
+    pending: computed(() => pending.value),
+    available,
+
+    async start(operationId) {
+      const operation = operations.value.find(
+        (candidate) => candidate.id === operationId
+      )
+      if (!operation) return
+
+      const target = activeKclBuffer()
+      if (!target) return
+
+      const command = stdLibCommand(operation.stdlib)
+      if (!command) {
+        console.warn(
+          `modeling: no stdlib shape for ${operation.stdlib}; is kcl-lib newer than these bindings?`
+        )
+        return
+      }
+
+      const program = await parse(target.buffer.text.value)
+      const inputs = derivedInputs(command, operation.annotations)
+
+      await advance({
+        operation,
+        command,
+        inputs,
+        index: 0,
+        // Replaced immediately by `advance`; a prompt is never shown from here.
+        prompt: { kind: 'expression' },
+        resolved: {},
+        program,
+        path: target.path,
+        error: null,
+        busy: false,
+      })
+    },
+
+    async answer(value) {
+      const state = pending.value
+      if (!state || state.busy) return
+
+      const input = state.inputs[state.index]
+      const trimmed = value.trim()
+
+      if (trimmed.length === 0) {
+        if (input.required) {
+          pending.value = { ...state, error: `${input.name} is needed.` }
+          return
+        }
+        // Skipped, and left out of the call entirely rather than written empty.
+        await advance({ ...state, index: state.index + 1, error: null })
+        return
+      }
+
+      const resolver = resolverFor(input)
+      const source = resolver?.toSource
+        ? resolver.toSource(trimmed, {
+            input,
+            program: state.program,
+            resolved: state.resolved,
+          })
+        : trimmed
+
+      const resolved: Record<string, ResolvedArgument> = {
+        ...state.resolved,
+        [input.name]: { source },
+      }
+
+      await advance({
+        ...state,
+        index: state.index + 1,
+        resolved,
+        error: null,
+      })
+    },
+
+    cancel() {
+      pending.value = null
+    },
+  }
+}

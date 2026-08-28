@@ -1,0 +1,79 @@
+/* The operation prompt: one dialog for every argument of every operation. */
+
+.zds-operation {
+  position: fixed;
+  inset: 0;
+  z-index: var(--zds-z-overlay);
+  display: grid;
+  /* Above the middle, so the code the operation is about to change stays in
+     view while its arguments are being answered. */
+  place-items: start center;
+  padding-block-start: 12vh;
+}
+
+.zds-operation__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--zds-surface-scrim);
+  border: none;
+  cursor: default;
+}
+
+.zds-operation__sheet {
+  position: relative;
+  display: grid;
+  gap: var(--zds-space-3);
+  inline-size: min(28rem, calc(100vw - var(--zds-space-6)));
+  padding: var(--zds-space-4);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content-lg);
+  background: var(--zds-surface-panel);
+  box-shadow: var(--zds-shadow-overlay);
+}
+
+.zds-operation__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--zds-space-2);
+}
+
+.zds-operation__step {
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-operation__field {
+  display: grid;
+  gap: var(--zds-space-2);
+}
+
+.zds-operation__name {
+  display: flex;
+  align-items: baseline;
+  gap: var(--zds-space-2);
+  font-family: var(--zds-font-mono);
+  color: var(--zds-text-primary);
+}
+
+.zds-operation__optional {
+  color: var(--zds-text-tertiary);
+}
+
+/* The stdlib's own documentation, which is the point of deriving: nobody writes
+   this help text twice. */
+.zds-operation__docs {
+  color: var(--zds-text-secondary);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-operation__error {
+  color: var(--zds-text-fault);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-operation__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--zds-space-2);
+}

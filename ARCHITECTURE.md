@@ -430,6 +430,69 @@ Three flows, contributed, because which are possible depends on the platform:
 | Web redirect | browser | A full navigation, since that is what makes the site's cookie readable here. |
 | Paste a token | everywhere | The fallback. Ordered last: it asks the most of the user. |
 
+## Modelling operations
+
+An operation is derived from KCL's standard library, asked about through
+resolvers, and applied as text. Three layers, and the seams between them are the
+point: adding an operation adds no UI, adding a resolver adds no operation, and
+adding a *surface* — a code action, a toolbar — changes neither.
+
+**`src/lib/kclStdlib/`** reads the generated shapes. `extrude` has fifteen
+arguments; a useful flow asks for two. Which two is annotation; that only those
+two appear is a rule — required arguments are in, named ones are in, deprecated
+and experimental stay out unless named. So a new argument in kcl-lib cannot
+silently appear in a flow.
+
+`special` is the argument the operation *acts on*, and it is derived rather than
+declared: exactly one argument per command has it, always first, in 155 of the
+201. That is why `ModelingOperation` has no `target` field — it would hand-write
+what the generator already emits.
+
+**A resolver says how a *type* is supplied**, never how an operation is. It
+answers with an *interaction shape* — a choice, an expression, a flag — and never
+with a component, so one prompt renders every argument of every operation. The
+binding resolver is derived twice over: which types can be referenced comes from
+what stdlib functions return, and which bindings hold one comes from what each
+binding's initialiser called. A new sketch-producing function becomes selectable
+with no change anywhere.
+
+This is where selection lands. Picking a face in the viewport answers the same
+question a different way, so it arrives as a resolver claiming `Sketch | Face |
+Solid` and nothing else moves. That is why selection was not a prerequisite:
+`extrude`'s special argument can be answered from the program today.
+
+**An operation returns an edit and never applies one.** `ProjectEdit` is keyed by
+path and holds offsets and text — plain data, because the same edit has to survive
+being previewed in a review, recorded in history as one entry, and eventually
+arriving from kcl-lib as an LSP `WorkspaceEdit` computed somewhere else. A plan
+that has not been applied can be shown, refused or recorded; one that applies
+itself can only be undone.
+
+### Parse to understand, insert text to edit
+
+The AST says what is bound and what each binding produces. The edit is text at an
+offset. Parse-mutate-recast would rewrite the whole file, so a one-line insertion
+would arrive as a diff touching every line the formatter disagrees with — and the
+user's formatting would lose an argument it never entered.
+
+### There is no modelling mode
+
+No machine holds "currently extruding". There is a record of which argument is
+being asked about, and cancelling leaves nothing behind. The existing app's
+`modelingMachine` is the thing this is deliberately not.
+
+### Where the edit should eventually live
+
+In kcl-lib, as a macro reached through `workspace/executeCommand` — one
+implementation for the app, the CLI, and an agent. It is local for now because
+that iterates without a Rust round trip, and `plan` is async and returns plain
+data so the swap touches one function.
+
+Worth knowing about LSP code actions specifically: they carry **no user input**.
+`textDocument/codeAction` returns a pre-computed edit or a command, and there is
+no step where the server asks which plane. So a code action is a *trigger* for an
+operation whose arguments were gathered here, and never the operation itself.
+
 ## The KCL language server
 
 The server is already in the WASM lib the analysis executor loads —
