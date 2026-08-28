@@ -111,6 +111,8 @@ export function createSelectionResolver(
 
       const references: string[] = []
       const prerequisites: TextEdit[] = []
+      /** The first reason nothing could be written, if that is how this ends. */
+      let reason: string | undefined
       const taken = new Set(boundNames(program.ast))
 
       /** A free name that also avoids the ones minted in this same answer. */
@@ -157,9 +159,28 @@ export function createSelectionResolver(
           const face = faceReference(entityId, {
             artifacts: graph?.artifacts.value ?? new Map(),
             program: program.ast,
+            source: program.source,
           })
-          if (face) {
+
+          if (face?.kind === 'reference') {
             if (!references.includes(face.source)) references.push(face.source)
+            continue
+          }
+
+          /*
+           * A face nobody can name stops here rather than falling through.
+           *
+           * The fallback would write what the *program* calls the code that made
+           * it — `region001` for a swept region's wall — and a region is not a
+           * face. Writing it would produce KCL that fails on the next run, with
+           * nothing to connect the failure to the click that caused it.
+           */
+          if (face?.kind === 'unavailable') {
+            reason ??= face.reason
+            console.warn(
+              `selection: no KCL reference for ${entity.kind ?? 'entity'} ${entityId}`,
+              { sourceRange: entity.sourceRange, reason: face.reason }
+            )
             continue
           }
         }
@@ -218,12 +239,17 @@ export function createSelectionResolver(
 
       // Several selected things in one binding are one reference, and several
       // bindings are a list — which is what an argument with an arity wants.
+      const source =
+        references.length > 1
+          ? `[${references.join(', ')}]`
+          : (references[0] ?? '')
+
       return {
-        source:
-          references.length > 1
-            ? `[${references.join(', ')}]`
-            : (references[0] ?? ''),
+        source,
         prerequisites,
+        // Only when nothing came of it: a reason beside an answer would be a
+        // warning about something that worked.
+        ...(source === '' && reason ? { unavailable: reason } : {}),
       }
     },
   }

@@ -444,7 +444,11 @@ export function createOperationRunner(
      * nothing. Writing it anyway produced `extrude(, length = 9)`.
      */
     if (argument.source.trim().length === 0) {
-      if (field.input.required) return refuse(`${field.input.name} is needed.`)
+      // The resolver's reason, when it has one: "on is needed" is true and
+      // useless to somebody looking at the face they just clicked.
+      if (field.input.required) {
+        return refuse(argument.unavailable ?? `${field.input.name} is needed.`)
+      }
       return recompute({
         ...state,
         fields: state.fields.with(index, {

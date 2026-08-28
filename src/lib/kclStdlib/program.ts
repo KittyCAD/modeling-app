@@ -283,6 +283,42 @@ export function sketchBlockAt(
   return null
 }
 
+/**
+ * The segments a region names, as they are written.
+ *
+ * Sliced out of the source rather than rebuilt from the AST, because the point is
+ * to show somebody the text that is already in their file: `s.l1`, not a
+ * re-rendering of a member expression that might differ in some detail.
+ *
+ * For suggesting a reference the app cannot derive. A region is bounded by every
+ * segment that closes it and names only the ones it needed to, so this is a list
+ * of candidates and never an answer.
+ */
+export function regionSegmentSources(
+  program: Program,
+  source: string,
+  regionName: string
+): readonly string[] {
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === regionName
+  )
+  if (!declaration || declaration.type !== 'VariableDeclaration') return []
+
+  const call = declaration.declaration.init
+  if (call.type !== 'CallExpressionKw') return []
+
+  const segments = call.arguments.find(
+    (argument) => argument.label?.name === 'segments'
+  )?.arg
+  if (!segments || segments.type !== 'ArrayExpression') return []
+
+  return segments.elements
+    .map((element) => source.slice(element.start, element.end).trim())
+    .filter(Boolean)
+}
+
 /** Every name bound at the top level, for choosing one that is free. */
 export function boundNames(program: Program): ReadonlySet<string> {
   const names = new Set<string>()

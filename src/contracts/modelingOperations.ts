@@ -78,6 +78,16 @@ export interface ResolvedArgument {
    * cancelling must leave nothing behind.
    */
   prerequisites?: readonly TextEdit[]
+  /**
+   * Why nothing could be written, when `source` is empty.
+   *
+   * A resolver can accept an answer and still be unable to express it — a face
+   * the artifact graph cannot trace back to a segment is the case that matters.
+   * Without this the caller can only report that the argument is still
+   * outstanding, which tells somebody looking at a face they *have* selected
+   * that they have not selected one.
+   */
+  unavailable?: string
 }
 
 export type ResolvedInputs = Readonly<Record<string, ResolvedArgument>>
