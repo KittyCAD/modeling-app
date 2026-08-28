@@ -2,9 +2,11 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
-import { effect } from '@preact/signals'
+import { computed, effect, signal } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
+import { type KclSceneService, kclSceneService } from '@src/contracts/kclScene'
 import { type Executor, executorsValueSpec } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { settingsService } from '@src/contracts/settings'
@@ -23,6 +25,11 @@ import {
 } from '@src/features/kclExecution/execOutcome'
 import { executorSettingsJson } from '@src/features/kclExecution/executorSettings'
 import { bufferOrigin, requestExecution } from '@src/lib/buffers/annotations'
+import {
+  type ArtifactMap,
+  artifactsFrom,
+  sourceRangeFor,
+} from '@src/lib/kcl/artifacts'
 
 /**
  * Executes KCL against the engine.
@@ -42,6 +49,15 @@ export default defineRegistryItemFactory((ctx) => {
   const sessions = () => ctx.services.get(projectSessionService)
   const settings = () => ctx.services.get(settingsService)
   let owner: ReturnType<typeof createKclContextOwner> | null = null
+
+  /**
+   * What the last run built.
+   *
+   * Replaced wholesale rather than merged: the graph describes one execution of
+   * one program, and half of the previous scene mixed into the current one would
+   * name entities the engine no longer has.
+   */
+  const artifacts = signal<ArtifactMap>(new Map())
 
   const contextOwner = () => {
     owner ??= createKclContextOwner(engine())
@@ -145,20 +161,37 @@ export default defineRegistryItemFactory((ctx) => {
         )) as KclSceneGraphDelta
 
         const outcome = delta?.exec_outcome ?? {}
+        // Published as it arrives: this is the only place the graph exists, and
+        // selection cannot name what was clicked without it.
+        artifacts.value = artifactsFrom(outcome.artifactGraph)
+
         return {
           requestId: request.requestId,
           diagnostics: diagnosticsFromOutcome(outcome, request.contents.length),
           outcome: summarize(outcome),
         }
       } catch (thrown) {
-        // A KCL error is a result, not a run failure: the user wants it in the
-        // gutter, not an execution marked broken.
+        /*
+         * A KCL error is a result, not a run failure: the user wants it in the
+         * gutter, not an execution marked broken.
+         *
+         * The artifacts are left alone rather than cleared. A failed run has
+         * usually built most of the scene, the engine is still showing it, and
+         * clearing them would make everything on screen unselectable because of
+         * a typo further down the file.
+         */
         return {
           requestId: request.requestId,
           diagnostics: diagnosticsFromFailure(thrown, request.contents.length),
         }
       }
     },
+  }
+
+  const scene: KclSceneService = {
+    artifacts: computed(() => artifacts.value),
+    artifactFor: (entityId) => artifacts.value.get(entityId),
+    sourceRangeFor: (entityId) => sourceRangeFor(artifacts.value, entityId),
   }
 
   return {
@@ -169,6 +202,7 @@ export default defineRegistryItemFactory((ctx) => {
         stopWatching?.()
         owner?.reset()
       },
+      providesServices: [provideService(kclSceneService, scene)],
       provides: [provide(executorsValueSpec, executor)],
     }),
   }
