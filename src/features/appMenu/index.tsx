@@ -64,6 +64,12 @@ export default defineRegistryItem({
           icon: 'folder',
           commandId: 'libraries.showAll',
         },
+        {
+          id: 'fitView',
+          label: 'Fit the model in view',
+          icon: 'grid',
+          commandId: 'engine.fitView',
+        },
       ],
     }),
   ],
