@@ -177,8 +177,8 @@ describe('running a modelling operation', () => {
 
     // The first argument is the special one: what the operation acts on. Its
     // options are derived from what each binding's initialiser returns.
-    const first = runner.pending.value
-    expect(first?.inputs[first.index].name).toBe('sketches')
+    const first = runner.asking.value
+    expect(first?.input.name).toBe('sketches')
     expect(first?.prompt).toMatchObject({
       kind: 'choice',
       options: [
@@ -192,8 +192,8 @@ describe('running a modelling operation', () => {
 
     await runner.answer('profile001')
 
-    const second = runner.pending.value
-    expect(second?.inputs[second.index].name).toBe('length')
+    const second = runner.asking.value
+    expect(second?.input.name).toBe('length')
     expect(second?.prompt).toEqual({
       kind: 'expression',
       unit: 'Length',
@@ -226,7 +226,7 @@ describe('running a modelling operation', () => {
     await runner.start('modeling.extrude')
     await runner.answer('')
 
-    expect(runner.pending.value?.error).toMatch(/sketches is needed/)
+    expect(runner.asking.value?.error).toMatch(/sketches is needed/)
     expect(buffer.text.value).not.toContain('extrude')
   })
 
@@ -259,9 +259,9 @@ describe('running a modelling operation', () => {
 
     await runner.start('modeling.extrude')
 
-    expect(runner.pending.value?.error).toBeNull()
-    expect(runner.pending.value?.method).toBe('modeling.resolver.source')
-    expect(runner.pending.value?.prompt.kind).toBe('expression')
+    expect(runner.asking.value?.error).toBeNull()
+    expect(runner.asking.value?.method).toBe('modeling.resolver.source')
+    expect(runner.asking.value?.prompt.kind).toBe('expression')
   })
 
   it('still says so when typing is not offered either', async () => {
@@ -272,7 +272,7 @@ describe('running a modelling operation', () => {
 
     await runner.start('modeling.extrude')
 
-    expect(runner.pending.value?.error).toMatch(/Nothing in this file produces/)
+    expect(runner.asking.value?.error).toMatch(/Nothing in this file produces/)
   })
 
   it('does not offer to run against a file that is not KCL', async () => {
@@ -328,7 +328,7 @@ describe('running a modelling operation', () => {
 
     await runner.start('modeling.exotic')
     await runner.answer('profile001')
-    expect(runner.pending.value?.method).toBe('modeling.resolver.source')
+    expect(runner.asking.value?.method).toBe('modeling.resolver.source')
 
     await runner.answer('')
 
@@ -354,7 +354,7 @@ describe('running a modelling operation', () => {
     const { runner } = setup()
     await runner.start('modeling.extrude')
 
-    const state = runner.pending.value
+    const state = runner.asking.value
     expect(state?.methods.map((method) => method.label)).toEqual([
       'Existing value',
       'Type it',
@@ -398,7 +398,7 @@ describe('several ways to answer one argument', () => {
 
     await runner.start('modeling.extrude')
 
-    const state = runner.pending.value
+    const state = runner.asking.value
     expect(state?.methods.map((method) => method.id)).toEqual([
       'modeling.resolver.binding',
       'test.resolver.region',
@@ -417,7 +417,7 @@ describe('several ways to answer one argument', () => {
     await runner.start('modeling.extrude')
     await runner.chooseMethod('test.resolver.region')
 
-    const state = runner.pending.value
+    const state = runner.asking.value
     expect(state?.method).toBe('test.resolver.region')
     expect(state?.prompt).toMatchObject({
       kind: 'choice',
@@ -437,8 +437,8 @@ describe('several ways to answer one argument', () => {
 
     await runner.start('modeling.extrude')
 
-    expect(runner.pending.value?.method).toBe('test.resolver.region')
-    expect(runner.pending.value?.error).toBeNull()
+    expect(runner.asking.value?.method).toBe('test.resolver.region')
+    expect(runner.asking.value?.error).toBeNull()
   })
 
   it('uses the chosen method to turn the answer into source', async () => {
@@ -462,7 +462,7 @@ describe('several ways to answer one argument', () => {
     await runner.start('modeling.extrude')
     await runner.chooseMethod('modeling.resolver.boolean')
 
-    expect(runner.pending.value?.method).toBe('modeling.resolver.binding')
+    expect(runner.asking.value?.method).toBe('modeling.resolver.binding')
   })
 
   /**
@@ -591,8 +591,8 @@ describe('answering from the scene', () => {
     const { runner, buffer } = setup({ resolvers: resolverFor(selection) })
 
     await runner.start('modeling.extrude')
-    expect(runner.pending.value?.method).toBe('modeling.resolver.selection')
-    expect(runner.pending.value?.prompt).toMatchObject({
+    expect(runner.asking.value?.method).toBe('modeling.resolver.selection')
+    expect(runner.asking.value?.prompt).toMatchObject({
       kind: 'selection',
       accepts: expect.arrayContaining(['Sketch']),
     })
@@ -743,6 +743,218 @@ describe('answering from the scene', () => {
 
     // Nothing to refer to and nothing to write, so the required argument is
     // refused rather than written as an empty reference.
-    expect(runner.pending.value?.error).toMatch(/sketches is needed/)
+    expect(runner.asking.value?.error).toMatch(/sketches is needed/)
+  })
+
+  /**
+   * Which field a click lands in is not the same question as which field is
+   * being asked about — a dialog has one of the first and several of the second.
+   */
+  it('arms a field for the scene, and refuses one a click cannot answer', async () => {
+    const selection = selectionOf([
+      entity({ entityId: 'wall', kind: 'wall', sourceRange: [5, 20, 1] }),
+    ])
+
+    const { runner } = setup({ resolvers: resolverFor(selection) })
+
+    await runner.start('modeling.extrude')
+
+    runner.focus('sketches')
+    expect(runner.pending.value?.focus).toBe('sketches')
+
+    // `length` is an expression: there is nothing for a click to land in, so
+    // arming it would point the scene at a field that cannot hold the answer.
+    runner.focus('length')
+    expect(runner.pending.value?.focus).toBe('sketches')
+
+    runner.focus(null)
+    expect(runner.pending.value?.focus).toBeNull()
+  })
+})
+
+/**
+ * A caller that already knows some answers.
+ *
+ * Point-and-click, a toolbar button acting on what is selected, a deep link and
+ * an agent are all this: the arguments arrive together rather than one question
+ * at a time, and it has to be the same run either way.
+ */
+describe('starting with answers already known', () => {
+  it('does not ask about an argument that arrived answered', async () => {
+    const { runner } = setup()
+
+    await runner.start('modeling.extrude', { sketches: 'profile001' })
+
+    expect(runner.asking.value?.input.name).toBe('length')
+  })
+
+  it('applies only when told to, even with nothing left to ask', async () => {
+    const { runner, buffer } = setup()
+
+    await runner.start('modeling.extrude', {
+      sketches: 'profile001',
+      length: '12',
+    })
+
+    expect(runner.asking.value).toBeNull()
+    expect(runner.ready.value).toBe(true)
+    // Supplying every argument is not the same as asking for it to happen,
+    // which is where a review step goes.
+    expect(buffer.text.value).not.toContain('extrude(')
+
+    await runner.submit()
+
+    expect(buffer.text.value).toContain('extrude(profile001, length = 12)')
+    expect(runner.pending.value).toBeNull()
+  })
+
+  it('resolves a supplied answer, so it can carry a prerequisite', async () => {
+    const { runner, buffer } = setup({
+      resolvers: [regionLike, expressionResolver],
+    })
+
+    await runner.start('modeling.extrude', { sketches: 'front', length: '3' })
+    await runner.submit()
+
+    // The prerequisite the resolver produced landed with the operation, which it
+    // could only do if the answer went through the resolver rather than being
+    // taken as source text.
+    expect(buffer.text.value).toContain('/* named */')
+    expect(buffer.text.value).toContain('extrude(region001, length = 3)')
+  })
+
+  /**
+   * The case a caller that is not a person creates.
+   *
+   * Picking from a list on screen cannot produce an answer that was not on it.
+   * Naming one from somewhere else can, and the argument schema is the only
+   * thing in a position to notice.
+   */
+  it('refuses an answer that was never one of the choices', async () => {
+    const { runner, buffer } = setup()
+
+    await runner.start('modeling.extrude', { sketches: 'profile404' })
+
+    expect(runner.asking.value?.input.name).toBe('sketches')
+    expect(runner.asking.value?.error).toMatch(
+      /profile404 is not one of the choices/
+    )
+
+    await runner.submit()
+    expect(buffer.text.value).not.toContain('extrude(')
+  })
+
+  it('ignores an argument the operation does not have', async () => {
+    const { runner } = setup()
+
+    await runner.start('modeling.extrude', { nonsense: '3' })
+
+    expect(runner.asking.value?.input.name).toBe('sketches')
+  })
+
+  it('will not submit while a required argument is outstanding', async () => {
+    const { runner, buffer } = setup()
+
+    await runner.start('modeling.extrude')
+    await runner.submit()
+
+    expect(runner.asking.value?.error).toMatch(/sketches is needed/)
+    expect(buffer.text.value).not.toContain('extrude(')
+  })
+})
+
+describe('answering in any order', () => {
+  it('takes an answer for an argument nobody has asked about yet', async () => {
+    const { runner } = setup()
+
+    await runner.start('modeling.extrude')
+    await runner.supply('length', '12')
+
+    // Still the first question: answering a later argument is not answering
+    // this one, and nothing was skipped on its behalf.
+    expect(runner.asking.value?.input.name).toBe('sketches')
+
+    await runner.supply('sketches', 'profile001')
+
+    expect(runner.asking.value).toBeNull()
+  })
+
+  it('reopens an argument whose answer was taken back', async () => {
+    const { runner } = setup()
+
+    await runner.start('modeling.extrude', { sketches: 'profile001' })
+    expect(runner.asking.value?.input.name).toBe('length')
+
+    await runner.clear('sketches')
+
+    expect(runner.asking.value?.input.name).toBe('sketches')
+    expect(runner.ready.value).toBe(false)
+  })
+
+  /**
+   * Why the argument being asked about cannot be a stored index.
+   *
+   * A prompt is a function of the other answers, so changing one answer can
+   * change what another was chosen from — and an answer that is no longer on
+   * offer must not be written into the call.
+   */
+  it('drops an answer the options no longer contain', async () => {
+    const dependent: ArgumentResolver = {
+      id: 'test.resolver.dependent',
+      label: 'Depth for this sketch',
+      handles: (input) => input.name === 'length',
+      prompt: ({ resolved }) => ({
+        kind: 'choice',
+        options:
+          resolved.sketches?.source === 'profile001'
+            ? [{ value: '10', label: '10' }]
+            : [{ value: '20', label: '20' }],
+      }),
+    }
+
+    const { runner } = setup({
+      bindings: [
+        { name: 'profile001', via: 'startProfile' },
+        { name: 'profile002', via: 'startProfile' },
+      ],
+      resolvers: [bindingResolver, dependent],
+    })
+
+    await runner.start('modeling.extrude', {
+      sketches: 'profile001',
+      length: '10',
+    })
+    expect(runner.asking.value).toBeNull()
+
+    await runner.supply('sketches', 'profile002')
+
+    const length = runner.pending.value?.fields.find(
+      (field) => field.input.name === 'length'
+    )
+    expect(length?.answer).toBeNull()
+    expect(length?.error).toMatch(/no longer available/)
+    expect(runner.asking.value?.input.name).toBe('length')
+  })
+
+  it('keeps an answer that nothing invalidated', async () => {
+    const { runner } = setup({
+      bindings: [
+        { name: 'profile001', via: 'startProfile' },
+        { name: 'profile002', via: 'startProfile' },
+      ],
+    })
+
+    await runner.start('modeling.extrude', {
+      sketches: 'profile001',
+      length: '12',
+    })
+
+    await runner.supply('sketches', 'profile002')
+
+    const length = runner.pending.value?.fields.find(
+      (field) => field.input.name === 'length'
+    )
+    // `length` is typed rather than chosen, so nothing about it went stale.
+    expect(length?.answer).toMatchObject({ source: '12' })
   })
 })
