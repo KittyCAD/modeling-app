@@ -392,11 +392,15 @@ export function addClone({
     if (err(bodyIndex)) {
       return bodyIndex
     }
+    const sourceStatement = modifiedAst.body[bodyIndex]
+    if (!sourceStatement) {
+      return new Error('Could not find source statement for clone')
+    }
     const declaration = createVariableDeclaration(
       variableName,
       expression.node.expression
     )
-    declaration.preComments = expression.node.preComments
+    declaration.preComments = sourceStatement.preComments
     modifiedAst.body[bodyIndex] = declaration
 
     return {
