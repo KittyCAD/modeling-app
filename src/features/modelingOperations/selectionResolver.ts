@@ -165,7 +165,10 @@ export function createSelectionResolver(
             },
             // Gathered when the face was clicked, because that is when the
             // engine was there to ask.
-            entity.originCurve
+            {
+              originCurve: entity.originCurve,
+              faceIndex: entity.faceIndex,
+            }
           )
 
           if (face?.kind === 'reference') {

@@ -124,6 +124,45 @@ export function createEngineScenePicker(
     },
 
     /**
+     * The uuid of a solid's nth face.
+     *
+     * The same command KCL's `faceId(body, index = n)` sends when it runs, which
+     * is what makes an index worth writing down: asking it here confirms that the
+     * index means the face under the pointer, rather than hoping an ordering
+     * happens to line up.
+     */
+    async faceUuid(solidId: string, index: number) {
+      if (!ready.peek()) return null
+
+      try {
+        const bytes = await getConnection().sendCommand({
+          type: 'solid3d_get_face_uuid',
+          object_id: solidId,
+          face_index: index,
+        })
+
+        const message = msgpackDecode(bytes) as {
+          resp?: {
+            data?: {
+              modeling_response?: {
+                type?: string
+                data?: { face_id?: string | null }
+              }
+            }
+          }
+        }
+
+        const response = message.resp?.data?.modeling_response
+        if (response?.type !== 'solid3d_get_face_uuid') return null
+
+        return response.data?.face_id ?? null
+      } catch {
+        // An index the solid does not have, which is an answer too.
+        return null
+      }
+    },
+
+    /**
      * Ask the engine how an area would be written as a region.
      *
      * `region_get_resolvable_intersection_info` answers with the two curves that

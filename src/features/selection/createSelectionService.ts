@@ -7,6 +7,7 @@ import type {
   SelectedEntity,
   SelectionMode,
   SelectionService,
+  SweptFace,
 } from '@src/contracts/selection'
 import { faceReference, sweptPathFor } from '@src/lib/kcl/faceReferences'
 
@@ -41,7 +42,10 @@ export function createSelectionService(
   const describe = (
     entityId: string,
     region: PickedRegion | null = null,
-    originCurve: string | null = null
+    engine: { originCurve: string | null; faceIndex: number | null } = {
+      originCurve: null,
+      faceIndex: null,
+    }
   ): SelectedEntity => {
     const graph = scene()
     return {
@@ -49,7 +53,8 @@ export function createSelectionService(
       kind: graph?.artifactFor(entityId)?.type ?? null,
       sourceRange: graph?.sourceRangeFor(entityId) ?? null,
       region,
-      originCurve,
+      originCurve: engine.originCurve,
+      faceIndex: engine.faceIndex,
     }
   }
 
@@ -66,13 +71,15 @@ export function createSelectionService(
    * reason: the click is where the engine is available, and turning a selection
    * into KCL afterwards has to be able to happen without waiting.
    */
-  const originCurveFor = async (
+  const engineFactsFor = async (
     entityId: string,
     picker: ScenePicker
-  ): Promise<string | null> => {
+  ): Promise<{ originCurve: string | null; faceIndex: number | null }> => {
+    const nothing = { originCurve: null, faceIndex: null }
+
     const graph = scene()
     const executed = graph?.program.value
-    if (!graph || !executed) return null
+    if (!graph || !executed) return nothing
 
     const context = {
       artifacts: graph.artifacts.value,
@@ -81,19 +88,18 @@ export function createSelectionService(
     }
 
     // A face the file can already name needs nothing from the engine.
-    if (faceReference(entityId, context)?.kind !== 'unavailable') return null
+    if (faceReference(entityId, context)?.kind !== 'unavailable') return nothing
 
     const path = sweptPathFor(entityId, context)
-    if (!path) return null
+    if (!path) return nothing
 
     const faces = await picker.sweptFaces(path)
     const curve = faces.find((face) => face.face === entityId)?.curve ?? null
 
     /*
-     * Worth reporting when it differs. kcl-lib sets a wall's segment to this
-     * curve, so the two agreeing is the expected case and tells us the engine has
-     * nothing more to offer; the two differing is the case this call exists for,
-     * and it should be visible when it happens.
+     * Worth reporting when the curve differs. kcl-lib sets a wall's segment to
+     * this curve, so the two agreeing is the expected case and tells us the
+     * engine has nothing more to offer on that front.
      */
     const held = graph.artifactFor(entityId)
     const known = held?.type === 'wall' ? held.segId : null
@@ -104,7 +110,49 @@ export function createSelectionService(
       )
     }
 
-    return curve && curve !== known ? curve : null
+    return {
+      originCurve: curve && curve !== known ? curve : null,
+      faceIndex: await faceIndexFor(entityId, path, faces, picker),
+    }
+  }
+
+  /**
+   * Which of the solid's face indices is this face.
+   *
+   * Verified, never guessed: `faceId(body, index = n)` asks the engine what an
+   * index means when the KCL runs, so the same question is asked here and the
+   * answer compared with the face under the pointer. A reference written from a
+   * confirmed index is right; one written from an assumed ordering is a coin
+   * toss that fails silently on somebody else's model.
+   *
+   * The position in the face list is tried first, because it usually *is* the
+   * index, and confirming one guess costs one round trip. Only if that misses
+   * does it ask about the rest, together rather than in turn.
+   */
+  const faceIndexFor = async (
+    entityId: string,
+    solidId: string,
+    faces: readonly SweptFace[],
+    picker: ScenePicker
+  ): Promise<number | null> => {
+    if (faces.length === 0) return null
+
+    const guess = faces.findIndex((face) => face.face === entityId)
+
+    if (guess >= 0 && (await picker.faceUuid(solidId, guess)) === entityId) {
+      return guess
+    }
+
+    const answers = await Promise.all(
+      Array.from({ length: faces.length }, (_, index) =>
+        index === guess
+          ? Promise.resolve(null)
+          : picker.faceUuid(solidId, index)
+      )
+    )
+
+    const found = answers.findIndex((uuid) => uuid === entityId)
+    return found >= 0 ? found : null
   }
 
   const select = (
@@ -176,9 +224,12 @@ export function createSelectionService(
          * Failure is an answer here too: an engine that will not say leaves the
          * selection exactly as it would have been.
          */
-        const originCurve = known
-          ? await originCurveFor(entityId, available).catch(() => null)
-          : null
+        const engineFacts = known
+          ? await engineFactsFor(entityId, available).catch(() => ({
+              originCurve: null,
+              faceIndex: null,
+            }))
+          : { originCurve: null, faceIndex: null }
 
         if (mode === 'remove') {
           entities.value = entities.value.filter(
@@ -187,7 +238,7 @@ export function createSelectionService(
           return entityId
         }
 
-        const entity = describe(entityId, region, originCurve)
+        const entity = describe(entityId, region, engineFacts)
 
         if (mode === 'add') {
           const held = entities.value.some(

@@ -568,11 +568,22 @@ faceOf(extrude001, face = region001.tags.line1)     // through the region
 faceOf(extrude001, face = triangle.line1)           // the segment, swept directly
 ```
 
-Each answer records *which* route produced it, so a disagreement with the engine
-is diagnosable rather than mysterious. The brittle route is deliberately not
-taken: `faceId(solid, index = 3)` resolves to a different face as soon as the model
-changes, and a reference that silently means something else later is worse than one
-that was never written — so an imported face reports that it cannot be named yet.
+A fourth route exists for the face no name reaches — a side face of a swept
+*region*, where every segment the region built carries the range of the `region(…)`
+call and none is a line anybody can point at:
+
+```
+faceOf(extrude001, face = faceId(extrude001, index = 3))
+```
+
+It is brittle by construction, since the index is an ordering of the solid's
+faces, and it is what kcl-lib writes for the same case. What makes it safe enough
+to write is that the index is **verified**: `faceId` sends
+`solid3d_get_face_uuid` when the KCL runs, so the picker asks the same question at
+click time and keeps the index whose uuid is the face under the pointer. An
+assumed ordering would fail silently on somebody else's model; a confirmed one is
+right when written and wrong only once the model has moved on. A name always wins
+over an index, and each answer records which route produced it.
 
 **Which kind of reference a click produces is the argument's decision, not the
 click's.** A wall clicked for `region(segments = …)` is the segment that drew it;

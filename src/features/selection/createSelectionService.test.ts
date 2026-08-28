@@ -65,6 +65,7 @@ function setup(
       askedForFaces.push(solidId)
       return options.faces ?? []
     },
+    faceUuid: async () => null,
   }
 
   const scene: KclSceneService = {
@@ -98,6 +99,7 @@ describe('selecting by clicking', () => {
         sourceRange: [40, 70, 0],
         region: null,
         originCurve: null,
+        faceIndex: null,
       },
     ])
   })
@@ -118,6 +120,7 @@ describe('selecting by clicking', () => {
         sourceRange: null,
         region: null,
         originCurve: null,
+        faceIndex: null,
       },
     ])
   })
@@ -134,6 +137,7 @@ describe('selecting by clicking', () => {
         sourceRange: null,
         region: null,
         originCurve: null,
+        faceIndex: null,
       },
     ])
   })
@@ -237,6 +241,7 @@ describe('selecting by clicking', () => {
         sourceRange: [40, 70, 0],
         region: null,
         originCurve: null,
+        faceIndex: null,
       },
     ])
 
@@ -421,6 +426,8 @@ describe('asking the engine which curve made a face', () => {
       faces?: readonly SweptFace[]
       artifacts?: ReturnType<typeof artifactsFrom>
       program?: ExecutedProgram | null
+      /** What the engine says the nth face's uuid is. */
+      uuidByIndex?: (index: number) => string | null
     } = {}
   ) => {
     const map = options.artifacts ?? regionGraph
@@ -435,6 +442,7 @@ describe('asking the engine which curve made a face', () => {
         askedForFaces.push(solidId)
         return options.faces ?? []
       },
+      faceUuid: async (_solidId, index) => options.uuidByIndex?.(index) ?? null,
     }
 
     const scene: KclSceneService = {
@@ -542,6 +550,7 @@ describe('asking the engine which curve made a face', () => {
       sweptFaces: async () => {
         throw new Error('the engine went away')
       },
+      faceUuid: async () => null,
     }
 
     const selection = createSelectionService({
@@ -558,5 +567,146 @@ describe('asking the engine which curve made a face', () => {
 
     expect(selection.entities.value[0].entityId).toBe('wall')
     expect(selection.entities.value[0].originCurve).toBeNull()
+  })
+})
+
+/*
+ * The engine's face index is what lets somebody sketch on a side face the file
+ * cannot name. It is confirmed against the engine first, because an assumed
+ * ordering fails silently on somebody else's model.
+ */
+describe('finding the engine face index', () => {
+  const named = (start: number, end: number) => ({
+    range: [start, end, 0] as [number, number, number],
+    nodePath: {} as never,
+    pathToNode: [],
+  })
+
+  const wallFaces: readonly SweptFace[] = [
+    { face: 'other', curve: 'c0', cap: 'none' },
+    { face: 'wall', curve: 'regionSeg', cap: 'none' },
+    { face: 'top', curve: null, cap: 'top' },
+  ]
+
+  const setupIndex = (uuidByIndex: (index: number) => string | null) => {
+    const map = artifactsFrom({
+      map: {
+        regionSeg: {
+          type: 'segment',
+          id: 'regionSeg',
+          pathId: 'regionPath',
+          codeRef: named(309, 367),
+        },
+        sweep: {
+          type: 'sweep',
+          id: 'sweep',
+          subType: 'extrusion',
+          pathId: 'regionPath',
+          surfaceIds: [],
+          edgeIds: [],
+          codeRef: named(382, 413),
+        },
+        wall: {
+          type: 'wall',
+          id: 'wall',
+          segId: 'regionSeg',
+          sweepId: 'sweep',
+          edgeCutEdgeIds: [],
+          pathIds: [],
+          faceCodeRef: named(0, 0),
+          cmdId: 'c1',
+        },
+      },
+    })
+
+    const askedIndices: number[] = []
+    const executed = {
+      source: 'x'.repeat(420),
+      ast: {
+        body: [
+          {
+            type: 'VariableDeclaration',
+            start: 369,
+            end: 413,
+            declaration: {
+              type: 'VariableDeclarator',
+              id: { type: 'Identifier', name: 'extrude001' },
+              init: {
+                type: 'CallExpressionKw',
+                unlabeled: null,
+                arguments: [],
+                callee: {
+                  type: 'Name',
+                  path: [],
+                  name: { type: 'Identifier', name: 'extrude' },
+                },
+              },
+            },
+          },
+        ],
+      },
+    } as unknown as ExecutedProgram
+
+    const picker: ScenePicker = {
+      id: 'fake',
+      ready: computed(() => true),
+      pick: async () => 'wall',
+      describeRegion: async () => null,
+      sweptFaces: async () => wallFaces,
+      faceUuid: async (_solidId, index) => {
+        askedIndices.push(index)
+        return uuidByIndex(index)
+      },
+    }
+
+    const selection = createSelectionService({
+      picker: () => picker,
+      scene: () => ({
+        artifacts: computed(() => map),
+        artifactFor: (id: string) => map.get(id),
+        sourceRangeFor: (id: string) => sourceRangeFor(map, id),
+        program: computed(() => executed),
+      }),
+    })
+
+    return { selection, askedIndices }
+  }
+
+  /* One round trip when the list order is the index order, which it usually is. */
+  it('confirms the position in the face list and stops there', async () => {
+    const app = setupIndex((index) => (index === 1 ? 'wall' : 'other'))
+
+    await app.selection.selectAt(at)
+
+    expect(app.selection.entities.value[0].faceIndex).toBe(1)
+    expect(app.askedIndices).toEqual([1])
+  })
+
+  it('asks about the rest when the guess is wrong', async () => {
+    const app = setupIndex((index) => (index === 2 ? 'wall' : 'nope'))
+
+    await app.selection.selectAt(at)
+
+    expect(app.selection.entities.value[0].faceIndex).toBe(2)
+    // The guess, then the others together.
+    expect(app.askedIndices).toContain(0)
+    expect(app.askedIndices).toContain(2)
+  })
+
+  it('keeps no index when the engine never names the face', async () => {
+    const app = setupIndex(() => 'somebody-else')
+
+    await app.selection.selectAt(at)
+
+    expect(app.selection.entities.value[0].faceIndex).toBeNull()
+  })
+
+  it('still selects the face when the engine will not answer', async () => {
+    const app = setupIndex(() => null)
+
+    await app.selection.selectAt(at)
+
+    expect(app.selection.entities.value[0].entityId).toBe('wall')
+    expect(app.selection.entities.value[0].faceIndex).toBeNull()
   })
 })

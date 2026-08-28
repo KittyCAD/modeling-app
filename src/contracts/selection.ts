@@ -37,6 +37,15 @@ export interface SelectedEntity {
    * the engine is available and the waiting is already happening.
    */
   originCurve?: string | null
+  /**
+   * The engine's index for this face, when nothing else could name it.
+   *
+   * Verified rather than guessed: the engine was asked which uuid each index
+   * means, and this is the one that answered with the face under the pointer. So
+   * a reference written from it refers to the right face *now* — the index is
+   * only as stable as the model, which is why it is the last resort.
+   */
+  faceIndex?: number | null
 }
 
 /** What the engine knows about an area that is not in the file yet. */
@@ -106,6 +115,18 @@ export interface ScenePicker {
    * find out, and "no faces" is an answer.
    */
   sweptFaces(solidId: string): Promise<readonly SweptFace[]>
+  /**
+   * The uuid of a solid's *n*th face.
+   *
+   * `solid3d_get_face_uuid`, which is the command KCL's own `faceId(body, index
+   * = n)` sends. Asking it is how a face index can be *verified* rather than
+   * guessed: the engine says which uuid an index means, so a reference written
+   * from it refers to the face that was actually clicked.
+   *
+   * Null for an index the solid does not have, which is also how you find out
+   * how many it has.
+   */
+  faceUuid(solidId: string, index: number): Promise<string | null>
 }
 
 /**

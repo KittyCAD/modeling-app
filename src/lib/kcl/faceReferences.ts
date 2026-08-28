@@ -77,6 +77,16 @@ export type FaceReferenceVia =
   | 'wall.regionTag'
   /** `faceOf(solid, face = triangle.line1)` — through the swept segment. */
   | 'wall.segment'
+  /**
+   * `faceOf(solid, face = faceId(solid, index = 3))` — the engine's own index.
+   *
+   * Last, and brittle by construction: the index is an ordering of the solid's
+   * faces, so it survives nothing that reorders them. kcl-lib writes exactly
+   * this for a face it cannot otherwise name, and the index is verified against
+   * the engine before it is written, so it is right when written and wrong only
+   * once the model has moved on.
+   */
+  | 'wall.faceIndex'
 
 /**
  * What can be said about the face an entity is.
@@ -127,25 +137,37 @@ export function solidReference(
  * an edge. Those have names of their own and are read straight out of the
  * program; only faces need this.
  */
+/**
+ * What the engine could add, gathered when the face was clicked.
+ *
+ * Both are only worth having when the file cannot name the face by itself, and
+ * both cost a round trip, so they are fetched at selection time and carried
+ * rather than looked up here.
+ */
+export interface EngineFaceFacts {
+  /**
+   * The curve the engine says made this face.
+   *
+   * The same value as the graph's segment in the ordinary case — kcl-lib builds a
+   * wall's segment *from* this curve — so it matters exactly where the two
+   * disagree.
+   */
+  originCurve?: string | null
+  /** The engine's index for the face, verified against it. */
+  faceIndex?: number | null
+}
+
 export function faceReference(
   entityId: string,
   context: KclReferenceContext,
-  /**
-   * The curve the engine says made this face, when the graph's own answer was
-   * unusable and somebody went and asked.
-   *
-   * Tried only after the graph's, and only for a wall. It is the same value in
-   * the ordinary case — kcl-lib builds a wall's segment *from* this curve — so it
-   * matters exactly where the two disagree.
-   */
-  originCurve?: string | null
+  engine: EngineFaceFacts = {}
 ): FaceLookup | null {
   const artifact = context.artifacts.get(entityId)
   if (!artifact) return null
 
   if (artifact.type === 'cap') return capReference(artifact, context)
   if (artifact.type === 'wall') {
-    return wallReference(artifact, context, originCurve)
+    return wallReference(artifact, context, engine)
   }
 
   /*
@@ -214,7 +236,7 @@ function capReference(
 function wallReference(
   wall: Extract<Artifact, { type: 'wall' }>,
   context: KclReferenceContext,
-  originCurve?: string | null
+  engine: EngineFaceFacts
 ): FaceLookup {
   const solid = solidReference(wall.sweepId, context)
   if (!solid) return unavailable(NO_SOLID)
@@ -226,7 +248,7 @@ function wallReference(
    */
   const parts =
     segmentParts(wall.segId, context) ??
-    (originCurve ? segmentParts(originCurve, context) : null)
+    (engine.originCurve ? segmentParts(engine.originCurve, context) : null)
 
   /*
    * A segment has a name only inside a sketch block. Anywhere else — and a
@@ -240,9 +262,27 @@ function wallReference(
       ? sweptRegionName(context.program, sweep.codeRef.range[0])
       : null
 
+  /*
+   * Nothing in the file names this face, so fall back to the engine's index.
+   *
+   * Written as `faceId(solid, index = n)`, which is what kcl-lib writes for the
+   * same case, and the index has been checked against the engine — it is the one
+   * whose uuid is the face that was clicked. Brittle across changes to the model
+   * and not brittle *now*, which is the trade being made: a reference that has to
+   * be revisited when the sketch changes beats being unable to sketch on the face
+   * at all.
+   */
   if (!parts) {
+    if (typeof engine.faceIndex === 'number') {
+      return {
+        kind: 'reference',
+        source: `faceOf(${solid}, face = faceId(${solid}, index = ${engine.faceIndex}))`,
+        via: 'wall.faceIndex',
+      }
+    }
+
     return unavailable(
-      `That face came from sweeping a region, and the artifact graph does not say which segment made it. ${suggestion(solid, region, context)}`
+      `That face came from sweeping a region, and neither the artifact graph nor the engine could name it. ${suggestion(solid, region, context)}`
     )
   }
 

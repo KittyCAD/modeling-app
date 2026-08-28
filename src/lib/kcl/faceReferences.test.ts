@@ -176,6 +176,57 @@ const graph = artifactsFrom({
   },
 })
 
+/** Offset 321 is the `region(` call: where a region's segments all point. */
+const REGION_CALL = 321
+
+const sweptRegion = {
+  artifacts: artifactsFrom({
+    map: {
+      // The region's own segment: its code is the region call, not a line.
+      regionSeg: {
+        type: 'segment',
+        id: 'regionSeg',
+        pathId: 'regionPath',
+        codeRef: codeRef(REGION_CALL, 367),
+      },
+      sweep: {
+        type: 'sweep',
+        id: 'sweep',
+        subType: 'extrusion',
+        pathId: 'regionPath',
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: codeRef(382, 413),
+      },
+      wall: {
+        type: 'wall',
+        id: 'wall',
+        segId: 'regionSeg',
+        sweepId: 'sweep',
+        edgeCutEdgeIds: [],
+        pathIds: [],
+        faceCodeRef: codeRef(0, 0),
+        cmdId: 'c1',
+      },
+      cap: {
+        type: 'cap',
+        id: 'cap',
+        subType: 'end',
+        sweepId: 'sweep',
+        edgeCutEdgeIds: [],
+        pathIds: [],
+        faceCodeRef: codeRef(0, 0),
+        cmdId: 'c2',
+      },
+    },
+  }),
+  program: program(
+    sketchWithSegment('s', 'l1', [41, 308], [63, 99]),
+    declare('region001', regionCall(), [309, 368]),
+    declare('extrude001', call('extrude', name('region001')), [369, 413])
+  ),
+}
+
 const context = (options: { region?: boolean } = {}) => ({
   artifacts: graph,
   program: sketchProgram(options),
@@ -267,8 +318,6 @@ describe('what is not a face', () => {
  * them can be told apart. kcl-lib's own graph snapshots show the same thing.
  */
 describe('a side face of a swept region', () => {
-  const REGION_CALL = 321
-
   /** The reported file, whose offsets these are. */
   const SOURCE = `@settings(experimentalFeatures = allow)
 
@@ -284,54 +333,6 @@ region001 = region(segments = [s.l1, s.l2], direction = CW)
 extrude001 = extrude(region001, length = 10)
 `
 
-  const sweptRegion = {
-    artifacts: artifactsFrom({
-      map: {
-        // The region's own segment: its code is the region call, not a line.
-        regionSeg: {
-          type: 'segment',
-          id: 'regionSeg',
-          pathId: 'regionPath',
-          codeRef: codeRef(REGION_CALL, 367),
-        },
-        sweep: {
-          type: 'sweep',
-          id: 'sweep',
-          subType: 'extrusion',
-          pathId: 'regionPath',
-          surfaceIds: [],
-          edgeIds: [],
-          codeRef: codeRef(382, 413),
-        },
-        wall: {
-          type: 'wall',
-          id: 'wall',
-          segId: 'regionSeg',
-          sweepId: 'sweep',
-          edgeCutEdgeIds: [],
-          pathIds: [],
-          faceCodeRef: codeRef(0, 0),
-          cmdId: 'c1',
-        },
-        cap: {
-          type: 'cap',
-          id: 'cap',
-          subType: 'end',
-          sweepId: 'sweep',
-          edgeCutEdgeIds: [],
-          pathIds: [],
-          faceCodeRef: codeRef(0, 0),
-          cmdId: 'c2',
-        },
-      },
-    }),
-    program: program(
-      sketchWithSegment('s', 'l1', [41, 308], [63, 99]),
-      declare('region001', regionCall(), [309, 368]),
-      declare('extrude001', call('extrude', name('region001')), [369, 413])
-    ),
-  }
-
   /*
    * It used to answer `faceOf(extrude001, face = region001.tags.region001)` —
    * using the region's name where a segment's belongs — and the caller then wrote
@@ -342,7 +343,9 @@ extrude001 = extrude(region001, length = 10)
     const lookup = faceReference('wall', sweptRegion)
 
     expect(lookup?.kind).toBe('unavailable')
-    expect(reasonOf(lookup)).toMatch(/does not say which segment/)
+    expect(reasonOf(lookup)).toMatch(
+      /neither the artifact graph nor the engine/
+    )
   })
 
   /*
@@ -424,7 +427,9 @@ describe('a face named from the engine curve', () => {
 
   it('uses the engine curve when the graph segment has no name', () => {
     expect(
-      sourceOf(faceReference('wall', withSketchSegment, 'sketchSeg'))
+      sourceOf(
+        faceReference('wall', withSketchSegment, { originCurve: 'sketchSeg' })
+      )
     ).toBe('faceOf(extrude001, face = region001.tags.l1)')
   })
 
@@ -433,14 +438,51 @@ describe('a face named from the engine curve', () => {
   })
 
   it('ignores an engine curve that is no more nameable', () => {
-    expect(faceReference('wall', withSketchSegment, 'regionSeg')?.kind).toBe(
-      'unavailable'
-    )
+    expect(
+      faceReference('wall', withSketchSegment, { originCurve: 'regionSeg' })
+        ?.kind
+    ).toBe('unavailable')
   })
 
   /** The path the engine has to be asked about is the segment's own. */
   it('finds the path a face belongs to', () => {
     expect(sweptPathFor('wall', withSketchSegment)).toBe('regionPath')
     expect(sweptPathFor('sweep', withSketchSegment)).toBeNull()
+  })
+})
+
+/*
+ * The last resort, and the one that lets somebody sketch on a side face today.
+ * The index is the engine's, checked against it before being written.
+ */
+describe('a face named by its engine index', () => {
+  it('writes the index when nothing in the file can name the face', () => {
+    expect(sourceOf(faceReference('wall', sweptRegion, { faceIndex: 3 }))).toBe(
+      'faceOf(extrude001, face = faceId(extrude001, index = 3))'
+    )
+  })
+
+  it('reports the route, so a brittle reference is identifiable', () => {
+    const lookup = faceReference('wall', sweptRegion, { faceIndex: 0 })
+
+    expect(lookup?.kind === 'reference' && lookup.via).toBe('wall.faceIndex')
+  })
+
+  /* Index zero is an index. */
+  it('does not mistake the first face for no face', () => {
+    expect(
+      sourceOf(faceReference('wall', sweptRegion, { faceIndex: 0 }))
+    ).toContain('index = 0')
+  })
+
+  /* A name beats an index: the index is only as stable as the model. */
+  it('prefers a segment the file names', () => {
+    expect(sourceOf(faceReference('wall', context(), { faceIndex: 3 }))).toBe(
+      'faceOf(extrude001, face = triangle.line1)'
+    )
+  })
+
+  it('still says why when there is no index either', () => {
+    expect(faceReference('wall', sweptRegion, {})?.kind).toBe('unavailable')
   })
 })
