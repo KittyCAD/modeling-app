@@ -357,7 +357,7 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
                                   shouldClearHistory:
                                     !shouldRecordZookeeperHistory,
                                   shouldExecute: true,
-                                  shouldResetCamera: true,
+                                  shouldResetCamera: false,
                                   shouldWriteToDisk:
                                     !shouldRecordZookeeperHistory,
                                 }

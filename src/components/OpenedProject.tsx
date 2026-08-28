@@ -34,7 +34,6 @@ import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -70,7 +69,6 @@ export function OpenedProject() {
   const { auth, billing, settings, layout, project, systemIOActor, registry } =
     app
   const { kclManager } = useSingletons()
-  const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -145,19 +143,8 @@ export function OpenedProject() {
       return
     }
 
-    kclManager
-      .executeCode()
-      .then(async () => {
-        if (reloadBehavior === 'execute-and-reset-camera') {
-          await resetCameraPosition({
-            sceneInfra: kclManager.sceneInfra,
-            engineCommandManager: kclManager.engineCommandManager,
-            settingsActor,
-          })
-        }
-      })
-      .catch(reportRejection)
-  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
+    kclManager.executeCode().catch(reportRejection)
+  }, [systemIOState, kclManager, modelingState, modelingSend])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {

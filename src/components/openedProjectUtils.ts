@@ -5,7 +5,6 @@ export interface ModelingStateMatcher {
 export type ZookeeperProjectReloadBehavior =
   | 'exit-sketch-solve'
   | 'execute-without-camera-reset'
-  | 'execute-and-reset-camera'
 
 export function getZookeeperProjectReloadBehavior(
   modelingState?: ModelingStateMatcher | null
@@ -14,9 +13,5 @@ export function getZookeeperProjectReloadBehavior(
     return 'exit-sketch-solve'
   }
 
-  if (modelingState?.matches('Sketch')) {
-    return 'execute-without-camera-reset'
-  }
-
-  return 'execute-and-reset-camera'
+  return 'execute-without-camera-reset'
 }
