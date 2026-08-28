@@ -47,8 +47,10 @@ let operationCounter = 0
  * subsystem, and it is why you otherwise cannot read a second file without
  * disturbing the model.
  *
- * Opening a project deliberately opens no buffer. "No active buffer" is a state
- * the UI has to handle anyway, so it is where you land.
+ * Creating a session deliberately opens no buffer. "No active buffer" is a state
+ * the UI has to handle anyway, and which file a project starts in is a decision
+ * about projects rather than about buffers — it belongs to the caller, so this
+ * stays a buffer collection with no default of its own.
  */
 export function createProjectSession(
   realization: ProjectLibraryRealization,

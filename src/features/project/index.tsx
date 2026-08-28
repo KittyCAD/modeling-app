@@ -287,18 +287,30 @@ export default defineRegistryItemFactory((ctx) => {
             const match = url.pathname.match(/^\/project\/([^/]+)$/)
             if (!match) return false
 
-            const session = await sessions().open(decodeURIComponent(match[1]))
+            const projectId = decodeURIComponent(match[1])
+            // Read before opening: afterwards there is no way to tell a project
+            // that was already open from one this call opened.
+            const wasOpen =
+              sessions().current.value?.project.value.id === projectId
+
+            const session = await sessions().open(projectId)
             if (!session) return true
 
             const file = url.searchParams.get('file')
 
             if (!file) {
-              // Absence is part of what the URL describes. Without this, going
-              // Back to a fileless URL would leave the buffer on screen and the
-              // URL and the view would disagree — the one thing this design is
-              // meant to make impossible. The buffer stays open; only the
-              // selection clears, which is the point of separating the two.
-              session.setActiveBuffer(null)
+              /*
+               * Absence is part of what the URL describes. Without this, going
+               * Back to a fileless URL would leave the buffer on screen and the
+               * URL and the view would disagree — the one thing this design is
+               * meant to make impossible. The buffer stays open; only the
+               * selection clears, which is the point of separating the two.
+               *
+               * Only for a project that was already open, though. Opening one
+               * lands in its default file, and clearing here would undo that
+               * before anybody saw it.
+               */
+              if (wasOpen) session.setActiveBuffer(null)
               return true
             }
 

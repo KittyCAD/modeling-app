@@ -172,8 +172,12 @@ pushed into the buffer since capabilities key off it. Viewing and executing are
 separate signals on purpose — collapsing them is what turns the active file into
 a hidden dependency of every subsystem.
 
-Opening a project opens no buffer: "no active buffer" is a state the UI must
-handle anyway, so it is where you land.
+The session itself opens no buffer, because "no active buffer" is a state the UI
+must handle anyway. Which file you land in is a separate decision, made a layer
+up in the registry factory: the project's own nominated default, then `main.kcl`,
+then nothing. Keeping it there means the session stays a buffer collection with
+no opinion about projects, and landing in nothing stays a supported destination
+rather than a fallback nobody exercises.
 
 ### Creating, renaming, deleting
 

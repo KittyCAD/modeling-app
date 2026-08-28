@@ -97,7 +97,7 @@ describe('project session', () => {
     expect(session.library.value?.id).toBe(library.id)
   })
 
-  it('opens no buffer, so the editor lands on its empty state', () => {
+  it('opens no buffer of its own, leaving the default to its caller', () => {
     expect(session.buffers.value).toHaveLength(0)
     expect(session.activeBuffer.value).toBeNull()
     expect(session.executingBuffer.value).toBeNull()

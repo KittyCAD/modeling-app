@@ -15,6 +15,7 @@ import { fileSystemService } from '@src/contracts/fileSystem'
 import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import { openDefaultFile } from '@src/features/projectSession/openDefaultFile'
 import {
   type ProjectSession,
   projectSessionService,
@@ -87,6 +88,13 @@ export default defineRegistryItemFactory((ctx) => {
       })
       current.peek()?.dispose()
       current.value = session
+
+      // Land in a file rather than in an empty editor. This is the only place
+      // that can decide it: the realization knows its own default, and only
+      // here is it known that a project was *just* opened rather than already
+      // being open.
+      await openDefaultFile(session, realization, fileSystem())
+
       return session
     } catch (caught) {
       const message =
