@@ -90,6 +90,16 @@ export function SettingsDialog({ level }: SettingsDialogProps) {
       window.removeEventListener('keydown', onKeyDown, { capture: true })
   })
 
+  const location = levelInfo.location.value ?? 'not stored'
+  const lastSlash = location.lastIndexOf('/')
+  const locationParts =
+    lastSlash === -1
+      ? { dir: '', file: location }
+      : {
+          dir: location.slice(0, lastSlash + 1),
+          file: location.slice(lastSlash + 1),
+        }
+
   if (!isOpen) return null
 
   return (
@@ -213,9 +223,19 @@ export function SettingsDialog({ level }: SettingsDialogProps) {
             </p>
           ) : null}
           {/* The path, plainly. Settings that live in a file someone cannot
-              find are settings they cannot back up, diff, or fix by hand. */}
-          <p class="zds-label zds-settings__location">
-            {levelInfo.location.value ?? 'not stored'}
+              find are settings they cannot back up, diff, or fix by hand.
+
+              Split so the file name is never what gets truncated: the
+              directory can lose its middle, but "user.toml" is the part that
+              tells you what you are looking at. */}
+          <p
+            class="zds-value zds-settings__location"
+            title={levelInfo.location.value ?? undefined}
+          >
+            <span class="zds-settings__location-dir">{locationParts.dir}</span>
+            <span class="zds-settings__location-file">
+              {locationParts.file}
+            </span>
           </p>
         </footer>
       </div>

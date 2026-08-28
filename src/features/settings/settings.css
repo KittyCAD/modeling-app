@@ -243,14 +243,30 @@
   background: var(--zds-surface-raised);
 }
 
+/* A path, in the value voice rather than the label voice: `.zds-label` is
+   uppercased, and a filesystem path shouted back is both wrong and unreadable. */
 .zds-settings__location {
+  display: flex;
   flex: 1;
+  justify-content: flex-end;
+  min-inline-size: 0;
+  font-size: var(--zds-font-size-micro);
   color: var(--zds-text-disabled);
+  white-space: nowrap;
+}
+
+/* The directory gives up its middle first. Reversing the text direction to
+   truncate from the left is the usual trick and it moves the leading slash to
+   the end of the line, which is worse than the problem. */
+.zds-settings__location-dir {
+  min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  direction: rtl;
-  text-align: start;
+}
+
+.zds-settings__location-file {
+  flex: none;
+  color: var(--zds-text-tertiary);
 }
 
 .zds-settings__error {
