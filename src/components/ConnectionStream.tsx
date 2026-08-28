@@ -42,12 +42,7 @@ import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
-import { getNormalisedCoordinates, throttle, uuidv4 } from '@src/lib/utils'
-import type {
-  MouseEventHandler,
-  PointerEventHandler,
-  WheelEventHandler,
-} from 'react'
+import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
@@ -183,86 +178,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       modelingMachineState,
       sceneInfra.camControls.wasDragging,
     ]
-  )
-
-  const throttledLocalHover = useMemo(
-    () =>
-      throttle<React.MouseEvent<HTMLDivElement, MouseEvent>>((event) => {
-        if (!videoRef.current) return
-        const { x, y } = getNormalisedCoordinates(
-          event,
-          videoRef.current,
-          engineCommandManager.streamDimensions
-        )
-        void engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'highlight_set_entity',
-            selected_at_window: { x, y },
-          },
-          cmd_id: uuidv4(),
-        })
-      }, 30),
-    [engineCommandManager]
-  )
-
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (!isNetworkOkay) return
-      if (!videoRef.current) return
-      if (!isLocalRenderVisible) return
-      if (isSketchInteractionMode) return
-      if (sceneInfra.camControls.wasDragging === true) return
-
-      throttledLocalHover(e)
-    },
-    [
-      isNetworkOkay,
-      isLocalRenderVisible,
-      isSketchInteractionMode,
-      sceneInfra.camControls.wasDragging,
-      throttledLocalHover,
-    ]
-  )
-
-  const handlePointerDown: PointerEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (!isLocalRenderVisible) return
-      if (isSketchInteractionMode) return
-
-      sceneInfra.camControls.onExternalMouseDown(e.nativeEvent)
-    },
-    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
-  )
-
-  const handlePointerMove: PointerEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (!isLocalRenderVisible) return
-      if (isSketchInteractionMode) return
-
-      sceneInfra.camControls.onMouseMove(e.nativeEvent)
-    },
-    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
-  )
-
-  const handlePointerUp: PointerEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (!isLocalRenderVisible) return
-      if (isSketchInteractionMode) return
-
-      sceneInfra.camControls.onExternalMouseUp(e.nativeEvent)
-    },
-    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
-  )
-
-  const handleWheel: WheelEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      if (!isLocalRenderVisible) return
-      if (isSketchInteractionMode) return
-
-      sceneInfra.camControls.onMouseWheel(e.nativeEvent)
-    },
-    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
   )
 
   /**
@@ -721,9 +636,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         : isLocalRenderVisible
   const shouldEnableLocalWebGpuSelectionProxy =
     shouldShowLocalWebGpuScene && !isSketchInteractionMode
-  const shouldShowClientSideScene =
-    !isLocalRenderVisible || isSketchInteractionMode
-
   return (
     <div
       role="presentation"
@@ -732,12 +644,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       style={style}
       id="stream"
       data-testid="stream"
-      onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onWheel={handleWheel}
       onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
@@ -776,7 +683,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           settingsValues.modeling.enableTouchControls.current
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
-        forceHide={!shouldShowClientSideScene}
       />
       {props.streamLayers.map((layer) => {
         return (
