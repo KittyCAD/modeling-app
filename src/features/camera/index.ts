@@ -3,9 +3,11 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import { effect } from '@preact/signals'
+import { computed, effect } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import {
+  type StandardView,
   cameraDriverService,
   sceneInteractionsValueSpec,
 } from '@src/contracts/scene'
@@ -39,9 +41,37 @@ import {
  * The driver is resolved optionally, and gestures are dropped while there is
  * none. A viewport with nothing rendering in it is not broken.
  */
+/**
+ * The six axis views and the isometric, with the keystroke that asks for each.
+ *
+ * Numbered as the existing app numbers them, which is neither alphabetical nor
+ * axis order: it is the order a machinist reads a drawing in.
+ */
+const standardViews: readonly {
+  view: StandardView
+  title: string
+  keystroke: string
+}[] = [
+  { view: 'top', title: 'Top view', keystroke: '1' },
+  { view: 'right', title: 'Right view', keystroke: '2' },
+  { view: 'front', title: 'Front view', keystroke: '3' },
+  { view: 'back', title: 'Back view', keystroke: '4' },
+  { view: 'bottom', title: 'Bottom view', keystroke: '5' },
+  { view: 'left', title: 'Left view', keystroke: '6' },
+  { view: 'isometric', title: 'Reset view', keystroke: 'r' },
+]
+
 export default defineRegistryItemFactory((ctx) => {
   const settings = () => ctx.services.get(settingsService)
   const driver = () => ctx.services.optional(cameraDriverService)
+
+  /**
+   * Whether there is anything to point.
+   *
+   * A viewport with no renderer is not broken, and neither is a view command
+   * with nothing to show: it is unavailable, and the palette says so.
+   */
+  const hasRenderer = computed(() => driver()?.ready.value ?? false)
 
   /**
    * State the projection preference; the driver keeps it true.
@@ -95,6 +125,48 @@ export default defineRegistryItemFactory((ctx) => {
               },
               orbit: () => settings().read(cameraOrbitSetting),
             }),
+        }),
+
+        /**
+         * The named views.
+         *
+         * Commands first and keystrokes second: a view is a thing you can ask
+         * for from the palette, and `v 1` is one way of asking. The sequence is
+         * the existing app's — `v` then a digit, `v f` to fit, `v r` to reset —
+         * because it is muscle memory worth keeping.
+         *
+         * All of them are dropped while no renderer is attached rather than
+         * being hidden, so the palette can say what exists and why it is not
+         * available.
+         */
+        ...standardViews.map(({ view, title }) =>
+          provide(commandsValueSpec, {
+            id: `camera.view.${view}`,
+            title,
+            category: 'View',
+            icon: 'cube' as const,
+            enabled: hasRenderer,
+            run: () => driver()?.standardView(view),
+          })
+        ),
+        ...standardViews.map(({ view, keystroke }) =>
+          provide(keybindingsValueSpec, {
+            keystrokes: ['v', keystroke],
+            commandId: `camera.view.${view}`,
+          })
+        ),
+
+        provide(commandsValueSpec, {
+          id: 'camera.zoomToFit',
+          title: 'Zoom to fit',
+          category: 'View',
+          icon: 'cube',
+          enabled: hasRenderer,
+          run: () => driver()?.zoomToFit(),
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['v', 'f'],
+          commandId: 'camera.zoomToFit',
         }),
 
         provide(commandsValueSpec, {

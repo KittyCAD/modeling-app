@@ -6,6 +6,7 @@ import type {
   CameraGesture,
   CameraZoomRequest,
   ScenePoint,
+  StandardView,
 } from '@src/contracts/scene'
 
 /**
@@ -18,6 +19,23 @@ import type {
  * why the limit lives here rather than in the gesture recogniser.
  */
 const MOVE_INTERVAL_MS = 1000 / 15
+
+/**
+ * How far out a named view starts from.
+ *
+ * Nominal — a fit follows immediately — so this only has to be outside whatever
+ * is being modelled rather than related to it.
+ */
+const DISTANCE = 1000
+
+/** Space left around the model by a fit. The existing app's number. */
+const FIT_PADDING = 0.1
+
+interface Point {
+  x: number
+  y: number
+  z: number
+}
 
 /**
  * The camera driver for the streamed engine.
@@ -110,6 +128,42 @@ export function createEngineCameraDriver(
     )
   }
 
+  /**
+   * Where to look from, for each named view.
+   *
+   * The distance is nominal: `zoom_to_fit` follows every one of these and moves
+   * the camera along the direction it was given, so what these fix is the
+   * *direction* and which way is up. Far enough out that the fit does not have to
+   * start from inside the geometry.
+   *
+   * Up is Z for the side views, and Y for the two along Z, where Z would be
+   * degenerate. Bottom flips it so the part does not read mirrored.
+   */
+  const VANTAGES: Record<
+    Exclude<StandardView, 'isometric'>,
+    { vantage: Point; up: Point }
+  > = {
+    top: { vantage: { x: 0, y: 0, z: DISTANCE }, up: { x: 0, y: 1, z: 0 } },
+    bottom: {
+      vantage: { x: 0, y: 0, z: -DISTANCE },
+      up: { x: 0, y: -1, z: 0 },
+    },
+    front: { vantage: { x: 0, y: -DISTANCE, z: 0 }, up: { x: 0, y: 0, z: 1 } },
+    back: { vantage: { x: 0, y: DISTANCE, z: 0 }, up: { x: 0, y: 0, z: 1 } },
+    right: { vantage: { x: DISTANCE, y: 0, z: 0 }, up: { x: 0, y: 0, z: 1 } },
+    left: { vantage: { x: -DISTANCE, y: 0, z: 0 }, up: { x: 0, y: 0, z: 1 } },
+  }
+
+  const sendZoomToFit = () => {
+    getConnection().fireCommand({
+      type: 'zoom_to_fit',
+      // Empty is everything. The padding is the existing app's number.
+      object_ids: [],
+      padding: FIT_PADDING,
+      animated: false,
+    })
+  }
+
   return {
     id: 'engine',
     ready,
@@ -148,6 +202,39 @@ export function createEngineCameraDriver(
         type: 'default_camera_zoom',
         magnitude: request.magnitude,
       })
+    },
+
+    standardView(view) {
+      if (!ready.peek()) return
+
+      if (view === 'isometric') {
+        // The engine's own isometric, which is safe under either projection: it
+        // changes the direction and not the lens.
+        getConnection().fireCommand({
+          type: 'view_isometric',
+          padding: FIT_PADDING,
+        })
+        return
+      }
+
+      const { vantage, up } = VANTAGES[view]
+      getConnection().fireCommand({
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage,
+        up,
+      })
+      // Then frame it. The existing app instead keeps a mirror of the camera in
+      // the client so it can preserve the current distance and target; that
+      // needs `default_camera_get_settings` and a decoded reply, and a fit is a
+      // better answer than a preserved distance for a view someone asked for by
+      // name.
+      sendZoomToFit()
+    },
+
+    zoomToFit() {
+      if (!ready.peek()) return
+      sendZoomToFit()
     },
 
     setProjection(next) {

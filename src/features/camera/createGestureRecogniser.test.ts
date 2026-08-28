@@ -28,6 +28,8 @@ function createFakeDriver() {
       gesture: (gesture: CameraGesture) => gestures.push(gesture),
       zoom: (request: CameraZoomRequest) => zooms.push(request),
       setProjection: vi.fn(),
+      standardView: vi.fn(),
+      zoomToFit: vi.fn(),
     } satisfies CameraDriver,
     gestures,
     zooms,

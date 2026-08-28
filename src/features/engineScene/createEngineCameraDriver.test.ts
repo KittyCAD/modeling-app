@@ -167,4 +167,69 @@ describe('createEngineCameraDriver', () => {
       parameters: { fov_y: 45 },
     })
   })
+
+  describe('named views', () => {
+    it('looks along the axis, then frames what is there', () => {
+      driver.standardView('front')
+
+      expect(fake.sent).toEqual([
+        {
+          type: 'default_camera_look_at',
+          center: { x: 0, y: 0, z: 0 },
+          // Front is looking from -Y, with Z up.
+          vantage: { x: 0, y: -1000, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+        {
+          type: 'zoom_to_fit',
+          object_ids: [],
+          padding: 0.1,
+          animated: false,
+        },
+      ])
+    })
+
+    it('puts up along Y for the two views down Z, where Z is degenerate', () => {
+      driver.standardView('top')
+      driver.standardView('bottom')
+
+      const looks = fake.sent.filter(
+        (cmd) => cmd.type === 'default_camera_look_at'
+      )
+
+      expect(looks[0]).toMatchObject({
+        vantage: { x: 0, y: 0, z: 1000 },
+        up: { x: 0, y: 1, z: 0 },
+      })
+      // Flipped, or the part reads mirrored from underneath.
+      expect(looks[1]).toMatchObject({
+        vantage: { x: 0, y: 0, z: -1000 },
+        up: { x: 0, y: -1, z: 0 },
+      })
+    })
+
+    it('asks the engine for its own isometric', () => {
+      driver.standardView('isometric')
+
+      // One command, not a look-at and a fit: `view_isometric` already frames,
+      // and it leaves the projection alone.
+      expect(fake.sent).toEqual([{ type: 'view_isometric', padding: 0.1 }])
+    })
+
+    it('fits on its own', () => {
+      driver.zoomToFit()
+      expect(fake.sent).toEqual([
+        { type: 'zoom_to_fit', object_ids: [], padding: 0.1, animated: false },
+      ])
+    })
+
+    it('says nothing while there is no connection', () => {
+      fake.status.value = 'offline'
+
+      driver.standardView('top')
+      driver.zoomToFit()
+
+      expect(fake.sent).toEqual([])
+    })
+  })
 })

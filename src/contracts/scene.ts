@@ -51,6 +51,22 @@ export interface CameraGesture {
   at: ScenePoint
 }
 
+/**
+ * A named viewpoint.
+ *
+ * The six axis views plus the isometric three-quarter, which is what "reset the
+ * view" means: a direction, not a position. Where the camera ends up is the
+ * renderer's business, because only it knows where the geometry is.
+ */
+export type StandardView =
+  | 'top'
+  | 'bottom'
+  | 'front'
+  | 'back'
+  | 'left'
+  | 'right'
+  | 'isometric'
+
 export interface CameraZoomRequest {
   /** Already scaled for the device pixel ratio. Positive zooms in. */
   magnitude: number
@@ -86,6 +102,16 @@ export interface CameraDriver {
    * it knows when that happened.
    */
   setProjection(projection: CameraProjectionType): void
+  /**
+   * Look from a named direction, and frame the scene from there.
+   *
+   * One call rather than "point the camera" plus "fit", because the two are one
+   * intention and splitting them would let a renderer that charges per message
+   * pay twice for something the user asked for once.
+   */
+  standardView(view: StandardView): void
+  /** Frame everything there is. */
+  zoomToFit(): void
 }
 
 export const sceneContract = defineContract({
