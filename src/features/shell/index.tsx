@@ -101,7 +101,11 @@ function FileMenu({ session }: { session: ProjectSessionService }) {
               ? 'play'
               : 'fileCode') as IconName,
             onSelect: () => {
-              void choose(file.path)
+              void choose(file.path).catch((error) => {
+                // A file that vanished between the listing and the click. The
+                // explorer reports the project as it is on the next refresh.
+                console.warn(`shell: could not open ${file.path}`, error)
+              })
             },
           })),
         }))
