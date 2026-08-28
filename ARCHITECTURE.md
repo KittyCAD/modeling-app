@@ -180,8 +180,21 @@ handle anyway, so it is where you land.
 The scene is rendered on the engine and streamed back, so this owns a websocket
 (commands and WebRTC signalling) and a peer connection (the video track).
 
-Three constraints the server enforces by disconnecting rather than explaining,
-all of which cost time to find:
+### The wire format
+
+Commands go out as **JSON text**, unwrapped: the Rust side hands over a complete
+`WebSocketRequest`, and wrapping it again produces a message the engine accepts
+and never answers. Responses arrive as msgpack *or* JSON and are always
+re-encoded as msgpack, because the Rust side only deserialises that.
+
+Pending commands correlate on the envelope's `cmd_id` — what the engine echoes as
+`request_id` — not on a separately-passed id.
+
+`startNewSession` must **not** reconnect. KCL's runtime calls it at the start of
+every execution.
+
+Three further constraints the server enforces by disconnecting rather than
+explaining, all of which cost time to find:
 
 - A `success: false` message is **not always a rejection**. The engine sends
   "please send Authorization" the moment the socket opens, before processing the
@@ -190,6 +203,8 @@ all of which cost time to find:
   is not enough.
 - The engine **allocates its render target at connect time**, so the viewport
   size must be reported before connecting. A resize needs a reconnect.
+- Protocol responses carry a `request_id` too, so they must be matched by
+  response *type* before any id-based routing.
 
 State is a status signal plus a *stage* signal rather than a state machine: every
 transition is driven by an inbound message, and the stage is what makes a stall
@@ -280,21 +295,40 @@ to say so explicitly.
 installs beside the offline one and wins by declaring a lower order. A build with
 no executor for a language reports `idle`, not an error.
 
-### What is shipped vs. what #6836 wants
+### Two executors, composed
 
-Shipped: the coordinator, the adapter, and one real executor — `kcl.analysis`,
-which runs `parse_wasm` and produces diagnostics. Live KCL errors in the gutter,
-entirely offline.
+| Executor | Order | Accepts when | Produces |
+| --- | --- | --- | --- |
+| `kcl.execution` | 0 | engine connected | geometry, plus diagnostics |
+| `kcl.analysis` | 100 | always | diagnostics only |
 
-**The engine connection is built** (`src/features/engine/`). It authenticates,
-negotiates WebRTC, streams the engine's video into the viewport, and is
-registered as the WASM engine transport — so `EngineCommandManager` carries KCL's
-modelling commands.
+Signed out or disconnected you get errors in the gutter; connected you get a
+model. Neither executor knows about the other, and adding the engine-backed one
+changed nothing in the coordinator or the adapter.
 
-**What is still missing is the KCL execution path**: nothing submits a program to
-the engine, so the scene is empty. That needs the WASM `Context`
-(`new Context(engineManager, fsManager)` then `context.execute(ast, path,
-settings)`), plus routing unmatched responses into `context.sendResponse`.
+The WASM `Context` belongs to the **connection**, not the app: it holds a scene
+and a command cache on the engine, so reusing one across a reconnect leaves it
+pointing at a scene that no longer exists. It is built lazily and dropped when
+the session ends.
+
+`free()` is deliberately never called on it. An execution may still hold a borrow,
+and wasm-bindgen throws "attempted to take ownership of Rust value while it was
+borrowed" — which then surfaces as a bogus KCL error attributed to the user's
+code.
+
+Unmatched engine responses are fed to `context.sendResponse`: fired commands are
+answered too, and `kcl-lib` is tracking them.
+
+A KCL error is a *result*, not a run failure. Parse errors short-circuit before
+the engine is touched, so the precise message wins over a vaguer one from further
+down.
+
+### Framing the model is explicit
+
+`engine.fitView` is a command, not something automatic after execution. KCL
+*fires* most geometry commands without awaiting them, so `execute` resolving does
+not mean the engine has built the model — fitting then reliably frames an empty
+scene. Automatic framing needs an engine-idle signal, which is not built.
 
 Also outstanding:
 
@@ -356,8 +390,9 @@ re-renders when it changes.
 - Token storage on desktop uses browser storage; the existing app uses a
   per-environment config file, which survives a cleared profile and supports
   environment switching
-- The engine connection: websocket transport, auth, and the stream. The
-  coordinator and adapter are built; see the execution section
+- An engine-idle signal, so the view can be framed automatically after execution
+- Selection, camera controls, and the feature tree: the viewport is a video
+  stream with no interaction wired to it yet
 - Cloud and network library types. The type contribution is the seam; nothing in
   the service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a
