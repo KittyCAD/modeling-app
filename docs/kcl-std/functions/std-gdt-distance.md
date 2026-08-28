@@ -103,9 +103,8 @@ gdt::distance(
 
 ```kcl
 @settings(kclVersion = 2.0)
-// Example of a distance annotation with no tolerance.
 
-@settings(kclVersion = 2.0)
+// Example of a distance annotation with no tolerance.
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -6.19mm, var 4.16mm], end = [var 7.91mm, var 4.16mm])
