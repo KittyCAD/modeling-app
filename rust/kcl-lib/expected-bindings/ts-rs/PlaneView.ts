@@ -4,4 +4,4 @@ import type { ApiObjectId } from "./FrontendApi";
 import type { PlaneKindView } from "./PlaneKindView";
 import type { Point3dView } from "./Point3dView";
 
-export type PlaneView = { id: string, artifactId: ArtifactId, objectId: ApiObjectId | null, kind: PlaneKindView, origin: Point3dView, xAxis: Point3dView, yAxis: Point3dView, zAxis: Point3dView, };
+export type PlaneView = { artifactId: ArtifactId, id: string, objectId: ApiObjectId | null, kind: PlaneKindView, origin: Point3dView, xAxis: Point3dView, yAxis: Point3dView, zAxis: Point3dView, };

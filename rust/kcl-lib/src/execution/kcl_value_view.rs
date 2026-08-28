@@ -12,11 +12,22 @@ fn json_view<T: Serialize>(value: &T) -> serde_json::Value {
 }
 
 fn tag_declarator_view(tag: TagNode) -> TagDeclaratorView {
-    TagDeclaratorView { name: tag.inner.name }
+    TagDeclaratorView {
+        comment_start: tag.comment_start,
+        end: tag.end,
+        module_id: tag.module_id,
+        start: tag.start,
+        type_: TagDeclaratorViewType::TagDeclarator,
+        name: tag.inner.name,
+        digest: tag.inner.digest,
+    }
 }
 
 fn tag_identifier_view(tag: TagIdentifier) -> TagIdentifierView {
-    TagIdentifierView { value: tag.value }
+    TagIdentifierView {
+        type_: TagIdentifierViewType::TagIdentifier,
+        value: tag.value,
+    }
 }
 
 fn point3d_view(point: runtime::Point3d) -> Point3dView {

@@ -113,20 +113,44 @@ pub struct SketchVarView {
     pub ty: NumericType,
 }
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+pub enum TagIdentifierViewType {
+    #[default]
+    TagIdentifier,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
 pub struct TagIdentifierView {
+    #[serde(rename = "type")]
+    #[ts(rename = "type", type = "\"TagIdentifier\"")]
+    pub type_: TagIdentifierViewType,
     pub value: String,
 }
 
-/// The source-independent portion of a tag declaration.
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+pub enum TagDeclaratorViewType {
+    #[default]
+    TagDeclarator,
+}
+
+/// The presentational portion of a tag declaration, including its source location.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export, rename = "TagDeclarator")]
-#[serde(tag = "type", rename = "TagDeclarator")]
+#[serde(rename_all = "camelCase")]
 pub struct TagDeclaratorView {
+    pub comment_start: usize,
+    pub end: usize,
+    pub module_id: ModuleId,
+    pub start: usize,
+    #[serde(rename = "type")]
+    #[ts(rename = "type", type = "\"TagDeclarator\"")]
+    pub type_: TagDeclaratorViewType,
     #[serde(rename = "value")]
     pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<[u8; 32]>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
@@ -149,8 +173,9 @@ pub struct Point3dView {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaneView {
-    pub id: uuid::Uuid,
     pub artifact_id: ArtifactId,
+    pub id: uuid::Uuid,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub object_id: Option<ObjectId>,
     pub kind: PlaneKindView,
     pub origin: Point3dView,
@@ -348,7 +373,6 @@ pub struct SketchView {
     #[ts(rename = "type", type = "\"Sketch\"")]
     pub type_: SketchViewType,
     pub id: uuid::Uuid,
-    pub original_id: uuid::Uuid,
     pub paths: Vec<PathView>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub inner_paths: Vec<PathView>,
@@ -357,6 +381,7 @@ pub struct SketchView {
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub tags: IndexMap<String, TagIdentifierView>,
     pub artifact_id: ArtifactId,
+    pub original_id: uuid::Uuid,
     pub units: UnitLength,
     pub is_closed: ProfileClosedView,
 }
@@ -484,6 +509,39 @@ mod tests {
         assert_eq!(
             serde_json::to_value(value).unwrap(),
             serde_json::json!({ "type": "TagDeclarator", "value": "edge01" })
+        );
+    }
+
+    #[test]
+    fn nested_tag_views_keep_their_discriminators_and_source_location() {
+        let identifier = TagIdentifierView {
+            type_: TagIdentifierViewType::TagIdentifier,
+            value: "edge01".to_owned(),
+        };
+        assert_eq!(
+            serde_json::to_value(identifier).unwrap(),
+            serde_json::json!({ "type": "TagIdentifier", "value": "edge01" })
+        );
+
+        let declarator = TagDeclaratorView {
+            comment_start: 4,
+            end: 10,
+            module_id: ModuleId::default(),
+            start: 5,
+            type_: TagDeclaratorViewType::TagDeclarator,
+            name: "edge01".to_owned(),
+            digest: None,
+        };
+        assert_eq!(
+            serde_json::to_value(declarator).unwrap(),
+            serde_json::json!({
+                "commentStart": 4,
+                "end": 10,
+                "moduleId": 0,
+                "start": 5,
+                "type": "TagDeclarator",
+                "value": "edge01"
+            })
         );
     }
 }
