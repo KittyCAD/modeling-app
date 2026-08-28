@@ -6,6 +6,7 @@ import {
   derivedOperation,
   operationIdFor,
 } from '@src/features/modelingOperations/operations/derive'
+import { startSketchSpec } from '@src/features/modelingOperations/operations/startSketch'
 import {
   ANNOTATING_MODE,
   MODELING_MODE,
@@ -99,6 +100,17 @@ const gdtTool = (
  */
 export const MODELING_TOOLS: readonly ModelingTool[] = [
   // Create ------------------------------------------------------------------
+  /*
+   * First, because it is where a part starts — and because it is the one tool
+   * that needs nothing to exist first.
+   */
+  {
+    ...startSketchSpec,
+    mode: MODELING_MODE,
+    section: 'create',
+    order: 5,
+    key: 's',
+  },
   {
     stdlib: 'extrude',
     title: 'Extrude',

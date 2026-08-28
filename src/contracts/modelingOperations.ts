@@ -36,6 +36,19 @@ export interface ProjectEdit {
   /** Past tense and specific: "Extruded profile001 by 10". */
   label: string
   changes: Readonly<Record<string, readonly TextEdit[]>>
+  /**
+   * Where to leave the cursor, in the document as the edit will leave it.
+   *
+   * Opt-in, because most operations should not move it: writing a statement at
+   * the end of the file is no reason to take somebody away from the line they
+   * were reading. What it is for is an operation whose *point* is to put you
+   * somewhere — an empty sketch block is an invitation, and leaving the cursor
+   * outside it would be handing over a form with the pen still in your pocket.
+   *
+   * Offsets are in the new document, so an operation computes them from the text
+   * it inserted rather than mapping anything.
+   */
+  focus?: { path: string; offset: number }
 }
 
 /** A KCL program, parsed, with the source it was parsed from. */
@@ -169,6 +182,19 @@ export interface ModelingOperation {
   id: string
   /** The stdlib command this derives from. */
   stdlib: string
+  /**
+   * The argument shape, when kcl-lib does not generate one.
+   *
+   * A sketch block is a language construct rather than a function, so nothing
+   * generates a description of what it takes — but it takes something, and every
+   * layer above works in shapes. Declaring one here keeps the construct on the
+   * same path as the 201 functions instead of beside it: the same argument
+   * derivation, the same resolvers, the same prompt.
+   *
+   * Rare by design. A shape declared for something kcl-lib *does* describe is a
+   * second opinion that will drift.
+   */
+  shape?: StdLibCommandShape
   title: string
   category?: string
   annotations?: OperationAnnotations

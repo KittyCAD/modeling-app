@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedInputs } from '@src/contracts/modelingOperations'
 import { derivedOperation } from '@src/features/modelingOperations/operations/derive'
 import type { OperationSpec } from '@src/features/modelingOperations/operations/derive'
+import { startSketchSpec } from '@src/features/modelingOperations/operations/startSketch'
 import { derivedInputs, stdLibCommand } from '@src/lib/kclStdlib/shapes'
 
 /**
@@ -28,7 +29,7 @@ const plan = (
   names: readonly string[] = []
 ) => {
   const operation = derivedOperation(spec)
-  const command = stdLibCommand(spec.stdlib)
+  const command = operation.shape ?? stdLibCommand(spec.stdlib)
   if (!command) throw new Error(`no shape for ${spec.stdlib}`)
 
   return operation.plan({
@@ -164,5 +165,64 @@ describe('what a derived edit calls itself', () => {
     )
 
     expect(edit.label).toBe('Added a note')
+  })
+})
+
+describe('starting a sketch', () => {
+  const START_SKETCH = { ...startSketchSpec }
+
+  it('writes an empty sketch block on the chosen plane', async () => {
+    const edit = await plan(START_SKETCH, { on: { source: 'XY' } })
+
+    expect(edit.changes['main.kcl'][0].insert).toBe(
+      'sketch001 = sketch(on = XY) {\n\n}\n'
+    )
+  })
+
+  /*
+   * The cursor lands on the blank line inside the block. This is what puts the
+   * app in sketch mode: being in a sketch is read from where the cursor is.
+   */
+  it('leaves the cursor inside the block', async () => {
+    const source = 'x = 1\n'
+    const edit = await plan(START_SKETCH, { on: { source: 'XY' } }, source)
+
+    const document = source + (edit.changes['main.kcl'][0].insert ?? '')
+    const offset = edit.focus?.offset ?? -1
+
+    expect(edit.focus?.path).toBe('main.kcl')
+    expect(document.slice(offset - 1, offset + 1)).toBe('\n\n')
+    expect(document.slice(offset)).toBe('\n}\n')
+  })
+
+  it('numbers the sketch around names already taken', async () => {
+    const edit = await plan(
+      START_SKETCH,
+      { on: { source: 'XZ' } },
+      'sketch001 = 1\n',
+      ['sketch001']
+    )
+
+    expect(edit.changes['main.kcl'][0].insert).toContain('sketch002 = sketch(')
+  })
+
+  it('says which plane it started on', async () => {
+    const edit = await plan(START_SKETCH, { on: { source: '-YZ' } })
+
+    expect(edit.label).toBe('Started a sketch on -YZ')
+  })
+
+  it('takes a face as readily as a plane', async () => {
+    const edit = await plan(START_SKETCH, { on: { source: 'topFace' } })
+
+    expect(edit.changes['main.kcl'][0].insert).toContain('sketch(on = topFace)')
+  })
+
+  /* Declared rather than generated: kcl-lib describes functions, not blocks. */
+  it('carries its own argument shape', () => {
+    const operation = derivedOperation(START_SKETCH)
+
+    expect(operation.shape?.args.map((arg) => arg.name)).toEqual(['on'])
+    expect(operation.shape?.args[0].required).toBe(true)
   })
 })

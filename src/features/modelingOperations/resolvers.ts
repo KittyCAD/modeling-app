@@ -103,6 +103,46 @@ export const booleanResolver: ArgumentResolver = {
 }
 
 /**
+ * The planes every KCL file has.
+ *
+ * `XY`, `XZ`, `YZ` and their negatives are values, not bindings — they are not
+ * declared anywhere, so no amount of reading the program finds them, and a fresh
+ * file offered "nothing in this file produces a Plane yet" for the one argument
+ * it certainly could answer.
+ *
+ * The negatives are the same planes facing the other way, which is how you sketch
+ * on the underside of something without writing a rotation.
+ *
+ * First among the methods, because on an empty file this is the only one that can
+ * answer: there is no binding to pick and nothing rendered to click.
+ */
+const STANDARD_PLANES: readonly { value: string; detail: string }[] = [
+  { value: 'XY', detail: 'Top, looking down the Z axis' },
+  { value: 'XZ', detail: 'Front, looking along the Y axis' },
+  { value: 'YZ', detail: 'Right, looking along the X axis' },
+  { value: '-XY', detail: 'Bottom' },
+  { value: '-XZ', detail: 'Back' },
+  { value: '-YZ', detail: 'Left' },
+]
+
+export const standardPlaneResolver: ArgumentResolver = {
+  id: 'modeling.resolver.standardPlane',
+  label: 'Standard plane',
+  order: -20,
+
+  handles: (input) => namedTypesIn(input.type).includes('Plane'),
+
+  prompt: () => ({
+    kind: 'choice',
+    options: STANDARD_PLANES.map((plane) => ({
+      value: plane.value,
+      label: plane.value,
+      detail: plane.detail,
+    })),
+  }),
+}
+
+/**
  * What a value of this type looks like written down.
  *
  * A placeholder, not validation. Some KCL types have a canonical short form that
@@ -175,6 +215,7 @@ export const sourceResolver: ArgumentResolver = {
 }
 
 export const builtInResolvers = [
+  standardPlaneResolver,
   bindingResolver,
   expressionResolver,
   booleanResolver,

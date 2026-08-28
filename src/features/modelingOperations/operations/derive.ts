@@ -1,4 +1,5 @@
 import type { IconName } from '@kittycad/ui-kit'
+import type { StdLibCommandShape } from '@rust/kcl-lib/bindings/StdLibCommandTypes'
 import type {
   ModelingOperation,
   ProjectEdit,
@@ -32,6 +33,21 @@ export interface OperationSpec extends OperationAnnotations {
   category?: string
   /** Variable name stem. Defaults to the function's own name. */
   stem?: string
+  /**
+   * The argument shape, for a construct kcl-lib does not describe.
+   *
+   * Only for something that is not a function — the sketch block. A shape
+   * declared for a function that *is* generated is a second opinion that drifts.
+   */
+  shape?: StdLibCommandShape
+  /**
+   * How to write it, when it is not a call.
+   *
+   * The generic writer writes `name = fn(args)`, which is every stdlib function
+   * and no language construct. A spec that needs different text supplies it here
+   * and keeps everything else — the derived arguments, the resolvers, the prompt.
+   */
+  plan?: ModelingOperation['plan']
 }
 
 /** `gdt::flatness` → `flatness`, which is both the stem and the id's tail. */
@@ -76,49 +92,54 @@ export function derivedOperation(spec: OperationSpec): ModelingOperation {
       ...(spec.labels ? { labels: spec.labels } : {}),
     },
 
-    plan: ({ command, inputs, resolved, program, path }): ProjectEdit => {
-      const name = freeName(program.ast, stem)
+    ...(spec.shape ? { shape: spec.shape } : {}),
 
-      /*
-       * The special argument is written unlabelled, which is how KCL reads "the
-       * thing this acts on" — and what makes the call pipeable later without
-       * being rewritten.
-       */
-      const special = inputs.find((input) => input.special)
-      const target = special ? resolved[special.name]?.source : undefined
+    plan:
+      spec.plan ??
+      (({ command, inputs, resolved, program, path }): ProjectEdit => {
+        const name = freeName(program.ast, stem)
 
-      const args = [
-        ...(target ? [target] : []),
-        ...inputs
-          .filter((input) => !input.special)
-          .flatMap((input) => {
-            const answer = resolved[input.name]
-            // An argument that was skipped is left out of the call entirely
-            // rather than written empty.
-            return answer ? [`${input.name} = ${answer.source}`] : []
-          }),
-      ]
+        /*
+         * The special argument is written unlabelled, which is how KCL reads "the
+         * thing this acts on" — and what makes the call pipeable later without
+         * being rewritten.
+         */
+        const special = inputs.find((input) => input.special)
+        const target = special ? resolved[special.name]?.source : undefined
 
-      // `preferredName` is the callee as it is written in source, which for a
-      // module function is qualified: `gdt::flatness`.
-      const callee = command.preferredName ?? command.name
-      const statement = `${name} = ${callee}(${args.join(', ')})`
+        const args = [
+          ...(target ? [target] : []),
+          ...inputs
+            .filter((input) => !input.special)
+            .flatMap((input) => {
+              const answer = resolved[input.name]
+              // An argument that was skipped is left out of the call entirely
+              // rather than written empty.
+              return answer ? [`${input.name} = ${answer.source}`] : []
+            }),
+        ]
 
-      const source = program.source
-      const separator = source.length === 0 || source.endsWith('\n') ? '' : '\n'
+        // `preferredName` is the callee as it is written in source, which for a
+        // module function is qualified: `gdt::flatness`.
+        const callee = command.preferredName ?? command.name
+        const statement = `${name} = ${callee}(${args.join(', ')})`
 
-      return {
-        label: target ? `${spec.past} ${target}` : spec.past,
-        changes: {
-          [path]: [
-            {
-              from: source.length,
-              to: source.length,
-              insert: `${separator}${statement}\n`,
-            },
-          ],
-        },
-      }
-    },
+        const source = program.source
+        const separator =
+          source.length === 0 || source.endsWith('\n') ? '' : '\n'
+
+        return {
+          label: target ? `${spec.past} ${target}` : spec.past,
+          changes: {
+            [path]: [
+              {
+                from: source.length,
+                to: source.length,
+                insert: `${separator}${statement}\n`,
+              },
+            ],
+          },
+        }
+      }),
   }
 }

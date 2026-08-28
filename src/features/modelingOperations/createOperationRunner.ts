@@ -246,12 +246,24 @@ export function createOperationRunner(
           throw new Error(`${path} is not open.`)
         }
 
+        /*
+         * The cursor moves in the same transaction as the text.
+         *
+         * Two dispatches would put a selection into a document that has already
+         * been reported once, so anything watching the buffer would see the edit
+         * without the cursor and then the cursor on its own. One transaction is
+         * also one undo entry, which is what makes an operation that repositions
+         * you as reversible as one that does not.
+         */
+        const focus = edit.focus?.path === path ? edit.focus.offset : null
+
         buffer.dispatch({
           changes: edits.map((change) => ({
             from: change.from,
             to: change.to,
             insert: change.insert,
           })),
+          ...(focus === null ? {} : { selection: { anchor: focus } }),
         })
       }
 
@@ -278,7 +290,9 @@ export function createOperationRunner(
       const target = activeKclBuffer()
       if (!target) return
 
-      const command = stdLibCommand(operation.stdlib)
+      // Declared shape first: a language construct describes itself, because
+      // nothing generates a description of it.
+      const command = operation.shape ?? stdLibCommand(operation.stdlib)
       if (!command) {
         console.warn(
           `modeling: no stdlib shape for ${operation.stdlib}; is kcl-lib newer than these bindings?`

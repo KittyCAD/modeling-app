@@ -94,15 +94,24 @@ describe('deriving the toolbar from the tools', () => {
 describe('the shipped catalog', () => {
   it('derives every tool from a stdlib function that exists', () => {
     const missing = MODELING_TOOLS.filter(
-      (entry) => stdLibCommand(entry.stdlib) === undefined
+      (entry) => !entry.shape && stdLibCommand(entry.stdlib) === undefined
     )
 
     expect(missing.map((entry) => entry.stdlib)).toEqual([])
   })
 
+  /* A declared shape for something kcl-lib describes is a second opinion. */
+  it('declares a shape only for what kcl-lib does not describe', () => {
+    const redundant = MODELING_TOOLS.filter(
+      (entry) => entry.shape && stdLibCommand(entry.stdlib) !== undefined
+    )
+
+    expect(redundant.map((entry) => entry.stdlib)).toEqual([])
+  })
+
   it('only prompts for arguments its function actually has', () => {
     const unknown = MODELING_TOOLS.flatMap((entry) => {
-      const command = stdLibCommand(entry.stdlib)
+      const command = entry.shape ?? stdLibCommand(entry.stdlib)
       const names = new Set(command?.args.map((arg) => arg.name) ?? [])
       return (entry.prompt ?? [])
         .filter((name) => !names.has(name))
@@ -114,7 +123,7 @@ describe('the shipped catalog', () => {
 
   it('labels only arguments its function actually has', () => {
     const unknown = MODELING_TOOLS.flatMap((entry) => {
-      const command = stdLibCommand(entry.stdlib)
+      const command = entry.shape ?? stdLibCommand(entry.stdlib)
       const names = new Set(command?.args.map((arg) => arg.name) ?? [])
       return Object.keys(entry.labels ?? {})
         .filter((name) => !names.has(name))
