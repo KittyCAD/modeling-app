@@ -46,5 +46,13 @@ Valid properties are:
   - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
   cause a warning), `deny` (the default, experimental features cause an error).
 - `kclVersion`: the version of the KCL language and standard libary to execute with.
+  - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
+  - When the file being executed declares `"3.0-preview"`, that version governs the whole
+    execution, including any files it imports. Under `"3.0-preview"`:
+    - `return` immediately exits the enclosing function; statements after an executed
+      `return` do not run.
+    - Each `if`/`else if`/`else` branch body introduces its own scope: a variable declared
+      inside a branch is visible from its declaration to the branch's closing brace, never
+      outside it, and may shadow a variable from an enclosing scope.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
