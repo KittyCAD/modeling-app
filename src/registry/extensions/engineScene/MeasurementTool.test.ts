@@ -22,6 +22,7 @@ import {
   getMeasurementEntities,
   getMeasurementEntityIds,
   getVolumeUnit,
+  graphSelectionsReferenceCurrentArtifacts,
   type MeasurementEntity,
   unitAreaLabels,
   unitVolumeLabels,
@@ -210,6 +211,51 @@ describe('MeasurementTool helpers', () => {
       { id: 'region-id', kind: 'other' },
       { id: 'plane-id', kind: 'other' },
     ])
+  })
+
+  it('detects graph selections whose artifacts were replaced after regeneration', () => {
+    const currentBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const staleBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const currentArtifactGraph = new Map([[currentBody.id, currentBody]])
+    const codeRef = {
+      range: [0, 1, 0] as [number, number, number],
+      pathToNode: [],
+    }
+
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: currentBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(true)
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: staleBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(false)
   })
 
   it('classifies non-code faces and bodies', () => {

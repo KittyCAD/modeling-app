@@ -103,6 +103,7 @@ use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -342,6 +343,12 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// Source code of each module, for rendering issues against the module
+    /// their source range points into. Not serialized to keep the WASM
+    /// payload small; native callers (e.g. the Python bindings) read it
+    /// directly.
+    #[serde(skip)]
+    pub source_files: IndexMap<ModuleId, ModuleSource>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
 }

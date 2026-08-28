@@ -49,6 +49,7 @@ import {
   getDistanceTypeForMode,
   getMeasurementEntities,
   getVolumeUnit,
+  graphSelectionsReferenceCurrentArtifacts,
   type MeasurementEntity,
   unitAreaLabels,
   unitVolumeLabels,
@@ -471,6 +472,14 @@ export function MeasurementTool() {
   const areaUnit = getAreaUnit(unit)
   const volumeUnit = getVolumeUnit(unit)
   const isIdle = state.matches('idle')
+  const graphSelectionsAreCurrent = useMemo(
+    () =>
+      graphSelectionsReferenceCurrentArtifacts(
+        state.context.selectionRanges,
+        kclManager.artifactGraph
+      ),
+    [state.context.selectionRanges, kclManager.artifactGraph]
+  )
 
   const sendModelingCommand = useCallback(
     (cmd: ModelingCmd) =>
@@ -489,7 +498,7 @@ export function MeasurementTool() {
     setResult(null)
     setErrorMessage(null)
 
-    if (!isIdle) {
+    if (!isIdle || !graphSelectionsAreCurrent) {
       return
     }
 
@@ -535,6 +544,7 @@ export function MeasurementTool() {
   }, [
     areaUnit,
     distanceMode,
+    graphSelectionsAreCurrent,
     isIdle,
     measurementInputKey,
     measurementTarget,
@@ -544,7 +554,7 @@ export function MeasurementTool() {
     volumeUnit,
   ])
 
-  if (!isIdle) {
+  if (!isIdle || !graphSelectionsAreCurrent) {
     return null
   }
 
@@ -711,6 +721,14 @@ export function MeasurementStatusBarItem() {
     () => getMeasurementEntities(selectionRanges),
     [selectionRanges]
   )
+  const graphSelectionsAreCurrent = useMemo(
+    () =>
+      graphSelectionsReferenceCurrentArtifacts(
+        state.context.selectionRanges,
+        kclManager.artifactGraph
+      ),
+    [state.context.selectionRanges, kclManager.artifactGraph]
+  )
   const selectedEntityIdsKey = selectedEntities
     .map((entity) => `${entity.kind}:${entity.id}`)
     .join(':')
@@ -756,7 +774,7 @@ export function MeasurementStatusBarItem() {
     latestRequestKey.current = measurementInputKey
     setResult(null)
 
-    if (!isIdle || !measurementTarget) {
+    if (!isIdle || !measurementTarget || !graphSelectionsAreCurrent) {
       return
     }
 
@@ -793,6 +811,7 @@ export function MeasurementStatusBarItem() {
   }, [
     areaUnit,
     defaultStatusDistanceMode,
+    graphSelectionsAreCurrent,
     isIdle,
     measurementInputKey,
     measurementTarget,
