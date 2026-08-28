@@ -16,6 +16,7 @@ import {
   keybindingService,
 } from '@src/contracts/keybindings'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { selectionService } from '@src/contracts/selection'
 import {
   baselineCapability,
   readOnlyCapability,
@@ -27,6 +28,7 @@ import {
 } from '@src/features/editorCapabilities/keymapScope'
 import { languageCapability } from '@src/features/editorCapabilities/language'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
+import { createSelectionRevealCapability } from '@src/features/editorCapabilities/selectionReveal'
 import { zooEditorTheme } from '@src/features/editorCapabilities/theme'
 
 /**
@@ -59,6 +61,16 @@ export default defineRegistryItemFactory((ctx) => {
         ?.captureSnapshot() ?? null,
   })
 
+  /**
+   * Reveal the code behind a selection.
+   *
+   * Optional, so a build with no selection feature is unchanged. Only the
+   * executing buffer gets it, since the artifact graph describes that program.
+   */
+  const selectionReveal = createSelectionRevealCapability({
+    selection: () => ctx.services.optional(selectionService),
+  })
+
   const keymapScope = createKeymapScopeCapability({
     keys: () => ctx.services.get(keybindingService),
   })
@@ -83,6 +95,7 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         provide(editorCapabilitiesValueSpec, keymapScope),
+        provide(editorCapabilitiesValueSpec, selectionReveal),
         provide(editorCapabilitiesValueSpec, readOnlyCapability),
         provide(editorCapabilitiesValueSpec, baselineCapability),
         provide(editorCapabilitiesValueSpec, languageCapability),

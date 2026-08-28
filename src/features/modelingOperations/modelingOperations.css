@@ -86,3 +86,28 @@
   justify-content: flex-end;
   gap: var(--zds-space-2);
 }
+
+/* The argument that is answered by clicking the model. */
+
+.zds-operation__selection {
+  display: grid;
+  gap: var(--zds-space-1);
+}
+
+.zds-operation__hint {
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-operation__picked {
+  display: grid;
+  gap: var(--zds-space-px);
+}
+
+.zds-operation__pick {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+}

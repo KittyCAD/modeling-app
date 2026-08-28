@@ -12,6 +12,7 @@ import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTex
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
 import { extrudeOperation } from '@src/features/modelingOperations/operations/extrude'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
+import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
 import { namedTypesIn } from '@src/lib/kclStdlib/types'
 
 /**
@@ -412,5 +413,72 @@ describe('several ways to answer one argument', () => {
 
     // Once, not twice, and no throw about overlapping ranges.
     expect(buffer.text.value.match(/named/g)).toHaveLength(1)
+  })
+})
+
+/**
+ * The chain the selection resolver exists for: an entity the engine reported, a
+ * source range from the artifact graph, and the binding that contains it.
+ */
+describe('answering from the scene', () => {
+  const selection = {
+    entities: computed(() => [
+      {
+        entityId: 'wall',
+        kind: 'wall' as const,
+        sourceRange: [5, 20, 1] as [number, number, number],
+      },
+    ]),
+    picking: computed(() => false),
+    select: () => {},
+    selectAt: async () => {},
+    clear: () => {},
+  }
+
+  it('refers to the binding the clicked geometry came from', async () => {
+    const { runner, buffer } = setup({
+      // The binding runs 0..39 in the fake program, so offset 5 is inside it.
+      resolvers: [
+        ...builtInResolvers,
+        createSelectionResolver(() => selection),
+      ],
+    })
+
+    await runner.start('modeling.extrude')
+    expect(runner.pending.value?.method).toBe('modeling.resolver.selection')
+    expect(runner.pending.value?.prompt).toMatchObject({
+      kind: 'selection',
+      accepts: expect.arrayContaining(['Sketch']),
+    })
+
+    // The prompt submits entity ids; the resolver turns them into KCL.
+    await runner.answer('wall')
+    await runner.answer('9')
+
+    expect(buffer.text.value).toContain('extrude(profile001, length = 9)')
+  })
+
+  it('contributes nothing for an entity outside every binding', async () => {
+    const nowhere = {
+      ...selection,
+      entities: computed(() => [
+        {
+          entityId: 'wall',
+          kind: 'wall' as const,
+          sourceRange: [9000, 9010, 1] as [number, number, number],
+        },
+      ]),
+    }
+
+    const { runner } = setup({
+      resolvers: [...builtInResolvers, createSelectionResolver(() => nowhere)],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('wall')
+
+    // Nothing to refer to yet, so the required argument is refused rather than
+    // written as an empty reference. Naming it is the prerequisite case.
+    expect(runner.pending.value?.error).toMatch(/sketches is needed/)
   })
 })

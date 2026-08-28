@@ -89,6 +89,14 @@ export type ArgumentPrompt =
     }
   | { kind: 'expression'; placeholder?: string; unit?: string | null }
   | { kind: 'boolean' }
+  /**
+   * Picked in the scene.
+   *
+   * The interaction that made the prompt non-modal: the answer arrives by
+   * clicking the model, so the sheet cannot cover it. `accepts` is the KCL types
+   * that would satisfy the argument, for saying what to click.
+   */
+  | { kind: 'selection'; accepts: readonly string[] }
 
 export interface ResolveRequest {
   input: DerivedInput

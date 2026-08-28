@@ -97,6 +97,38 @@ export function bindingsProducing(
   return found
 }
 
+/**
+ * The top-level binding whose statement contains an offset.
+ *
+ * This is what turns a selection into something a KCL call can refer to: the
+ * artifact graph says which *source range* drew the thing you clicked, and the
+ * name of the statement containing that range is how the rest of the program
+ * names it.
+ *
+ * Top level only, deliberately. A segment inside a sketch block is named too —
+ * `line1 = line(...)` — but referring to it from outside the block is a
+ * different question, and answering the easy one wrongly would be worse than not
+ * answering it.
+ */
+export function bindingContaining(
+  program: Program,
+  offset: number
+): ProgramBinding | null {
+  for (const item of program.body) {
+    if (item.type !== 'VariableDeclaration') continue
+    if (offset < item.start || offset > item.end) continue
+
+    return {
+      name: item.declaration.id.name,
+      via: producedBy(item.declaration.init) ?? 'unknown',
+      from: item.start,
+      to: item.end,
+    }
+  }
+
+  return null
+}
+
 /** Every name bound at the top level, for choosing one that is free. */
 export function boundNames(program: Program): ReadonlySet<string> {
   const names = new Set<string>()

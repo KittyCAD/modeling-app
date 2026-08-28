@@ -12,10 +12,12 @@ import {
 } from '@src/contracts/modelingOperations'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { selectionService } from '@src/contracts/selection'
 import { overlaysValueSpec } from '@src/contracts/shell'
 import { loadKclWasm } from '@src/features/kclAnalysis/wasmModule'
 import { OperationPrompt } from '@src/features/modelingOperations/OperationPrompt'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
+import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
 import { extrudeOperation } from '@src/features/modelingOperations/operations/extrude'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -69,6 +71,18 @@ export default defineRegistryItemFactory((ctx) => {
         provide(modelingOperationsValueSpec, extrudeOperation),
         ...builtInResolvers.map((resolver) =>
           provide(argumentResolversValueSpec, resolver)
+        ),
+
+        /**
+         * Answering by pointing at the model.
+         *
+         * Resolved optionally: a build with no selection feature — or a session
+         * with nothing rendering — simply offers one fewer way to answer, and
+         * every operation is unchanged.
+         */
+        provide(
+          argumentResolversValueSpec,
+          createSelectionResolver(() => ctx.services.optional(selectionService))
         ),
 
         /**

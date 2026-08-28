@@ -477,6 +477,33 @@ Two decisions worth keeping:
   Building up a selection and missing is a miss, not an instruction to start
   again.
 
+### What a selection is worth
+
+Two consumers, and between them they are the reason to have built it.
+
+**The editor reveals it.** A capability bound to the *executing* buffer — the one
+whose program produced the graph — moves the cursor to the code behind whatever
+was clicked. One direction only: cursor-to-selection is the other half and it
+closes a loop, since revealing sets the cursor which would select which would
+reveal. Breaking that needs an origin annotation and is worth doing deliberately.
+
+**An operation can take its argument from it.** The chain is the point, and every
+link already existed: the engine says which *entity*, the artifact graph says
+which *source range*, and the program says which *binding* contains it. The
+binding's name is what a KCL call can refer to — so clicking a wall and extruding
+it writes `extrude(profile001, length = 9)` with no tags, no uuids in the source,
+and nothing for the operation to know about.
+
+It is a method offered *alongside* picking by name, ordered first, because if
+something is already selected that is almost certainly what the operation is
+about. And it is why the prompt is docked rather than modal: the answer arrives by
+clicking the model.
+
+Geometry inside no top-level binding contributes nothing — there is nothing to
+refer to yet. That is exactly the prerequisite-edit case: naming it is the edit
+that would make the reference possible, and the machinery for that is already in
+place.
+
 ## Modelling operations
 
 An operation is derived from KCL's standard library, asked about through

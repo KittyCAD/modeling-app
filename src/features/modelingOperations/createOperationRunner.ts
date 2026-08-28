@@ -333,6 +333,24 @@ export function createOperationRunner(
           })
         : { source: trimmed }
 
+      /*
+       * An answer that resolves to nothing was not an answer.
+       *
+       * A resolver can accept an answer and still be unable to express it — the
+       * selection resolver does exactly that for geometry inside no named
+       * binding, since there is nothing to refer to yet. Checking the raw answer
+       * is not enough: it was `wall`, and only the resolver knows that came to
+       * nothing. Writing it anyway produced `extrude(, length = 9)`.
+       */
+      if (argument.source.trim().length === 0) {
+        if (input.required) {
+          pending.value = { ...state, error: `${input.name} is needed.` }
+          return
+        }
+        await advance({ ...state, index: state.index + 1, error: null })
+        return
+      }
+
       const resolved: Record<string, ResolvedArgument> = {
         ...state.resolved,
         [input.name]: argument,

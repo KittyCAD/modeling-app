@@ -1,8 +1,9 @@
-import { useSignal } from '@preact/signals'
+import { type Signal, useSignal } from '@preact/signals'
 import { useEffect, useRef } from 'preact/hooks'
-import { Button, Select, Switch, TextField } from '@kittycad/ui-kit'
+import { Button, Icon, Select, Switch, TextField } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
+import { selectionService } from '@src/contracts/selection'
 import './modelingOperations.css'
 
 /**
@@ -21,6 +22,58 @@ import './modelingOperations.css'
  * dismisses it. That also fixes something the old version got wrong on its own
  * terms — it claimed to keep the code in view and then covered it.
  */
+/**
+ * The argument that is answered by clicking the model.
+ *
+ * Reads the selection live rather than taking a snapshot, because the whole
+ * interaction is "click, look, click something else" — and the sheet is docked
+ * precisely so that is possible while this is on screen.
+ *
+ * The answer it submits is entity ids; turning those into KCL is the resolver's
+ * job, since only it knows that a wall's code is the segment that drew it.
+ */
+function SelectionField({
+  accepts,
+  draft,
+}: {
+  accepts: readonly string[]
+  draft: Signal<string>
+}) {
+  const selection = useService(selectionService)
+  const entities = selection.entities.value
+
+  // Kept in the draft as the selection changes, so Apply submits what is
+  // currently picked without the user having to confirm it twice.
+  draft.value = entities.map((entity) => entity.entityId).join(' ')
+
+  return (
+    <div class="zds-operation__selection">
+      {entities.length === 0 ? (
+        <p class="zds-operation__hint">
+          Click {accepts.length > 0 ? accepts.join(' or ') : 'geometry'} in the
+          scene.
+        </p>
+      ) : (
+        <ul class="zds-operation__picked">
+          {entities.map((entity) => (
+            <li key={entity.entityId} class="zds-operation__pick">
+              <Icon name="cube" size="small" />
+              <span class="zds-value">{entity.kind ?? 'geometry'}</span>
+              {/* Only what the graph could name; an entity with no code behind
+                  it is still shown, because it is still selected. */}
+              {entity.sourceRange ? (
+                <span class="zds-label">offset {entity.sourceRange[0]}</span>
+              ) : (
+                <span class="zds-label">not in this file</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export function OperationPrompt() {
   const modeling = useService(modelingOperationsService)
   const pending = modeling.pending.value
@@ -46,6 +99,9 @@ export function OperationPrompt() {
         : ((pending.prompt.kind === 'choice'
             ? pending.prompt.options[0]?.value
             : '') ?? '')
+    // A selection prompt fills the draft from what is picked, which may be
+    // nothing yet.
+
     input.current?.focus()
     input.current?.select()
   }, [pending?.operation.id, index, draft])
@@ -151,6 +207,10 @@ export function OperationPrompt() {
                 modeling.cancel()
               }}
             />
+          ) : null}
+
+          {pending.prompt.kind === 'selection' ? (
+            <SelectionField accepts={pending.prompt.accepts} draft={draft} />
           ) : null}
 
           {pending.prompt.kind === 'boolean' ? (
