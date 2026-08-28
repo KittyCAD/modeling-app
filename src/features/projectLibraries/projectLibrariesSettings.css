@@ -1,0 +1,102 @@
+.zds-library-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-4);
+}
+
+.zds-library-settings__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-3);
+  list-style: none;
+}
+
+.zds-library-settings__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-3);
+  padding: var(--zds-space-4);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-raised);
+}
+
+.zds-library-settings__heading,
+.zds-library-settings__common,
+.zds-library-settings__add,
+.zds-library-settings__folder {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--zds-space-3);
+}
+
+.zds-library-settings__icon {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  flex: none;
+  inline-size: var(--zds-space-8);
+  block-size: var(--zds-space-8);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  color: var(--zds-text-secondary);
+}
+
+.zds-library-settings__title,
+.zds-library-settings__folder .zds-field {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.zds-library-settings__order {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  gap: var(--zds-space-1);
+}
+
+.zds-library-settings__common .zds-select {
+  flex: 0 0 150px;
+}
+
+.zds-library-settings__description,
+.zds-library-settings__add-description {
+  flex: 1;
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-small);
+  line-height: var(--zds-line-height-body);
+}
+
+.zds-library-settings__location {
+  overflow: hidden;
+  color: var(--zds-text-disabled);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-library-settings__details {
+  padding-block-start: var(--zds-space-3);
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-library-settings__add {
+  justify-content: flex-end;
+  padding-block-start: var(--zds-space-2);
+}
+
+.zds-library-settings__add .zds-select {
+  min-inline-size: 180px;
+}
+
+@media (max-width: 720px) {
+  .zds-library-settings__common,
+  .zds-library-settings__add,
+  .zds-library-settings__folder {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .zds-library-settings__common .zds-select {
+    inline-size: 100%;
+  }
+}

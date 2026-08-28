@@ -8,13 +8,14 @@ import {
   projectLibraryDefaultsValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/contracts/projectLibraries'
+import { DirectoryLibrarySettingsDetails } from '@src/features/directoryLibrary/DirectoryLibrarySettingsDetails'
+import { readDirectoryLibraryRealizations } from '@src/features/directoryLibrary/directoryScanner'
+import { createDirectoryLibraryOperations } from '@src/features/directoryLibrary/operations'
 import {
   DEFAULT_LIBRARY_TITLE,
   DIRECTORY_LIBRARY_TYPE,
   NEW_LIBRARY_TITLE,
 } from '@src/lib/projectLibraries'
-import { createDirectoryLibraryOperations } from '@src/features/directoryLibrary/operations'
-import { readDirectoryLibraryRealizations } from '@src/features/directoryLibrary/directoryScanner'
 
 /**
  * The `directory` library type: a folder of project folders.
@@ -40,6 +41,7 @@ export default defineRegistryItemFactory((ctx) => {
           order: 0,
           description: 'Projects in this library are stored on this device.',
           locationLabel: 'Folder',
+          settingsDetails: DirectoryLibrarySettingsDetails,
           newLibrarySetting: ({ defaultRoot }) => ({
             title: NEW_LIBRARY_TITLE,
             path: defaultRoot,

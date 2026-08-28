@@ -12,7 +12,9 @@ import {
   projectLibraryDefaultsValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/contracts/projectLibraries'
+import { settingsSectionsValueSpec } from '@src/contracts/settings'
 import { createProjectLibrariesService } from '@src/features/projectLibraries/createProjectLibrariesService'
+import { ProjectLibrariesSettings } from '@src/features/projectLibraries/ProjectLibrariesSettings'
 
 /**
  * Provides the libraries service.
@@ -81,6 +83,16 @@ export default defineRegistryItemFactory((ctx) => {
         }),
       ],
       provides: [
+        provide(settingsSectionsValueSpec, {
+          id: 'libraries',
+          title: 'Libraries',
+          description:
+            'Choose where projects live. Each library provider contributes its own connection and storage details.',
+          icon: 'folder',
+          order: 30,
+          levels: ['user'],
+          render: () => <ProjectLibrariesSettings />,
+        }),
         provide(commandsValueSpec, {
           id: 'libraries.refresh',
           title: 'Refresh project libraries',

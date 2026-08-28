@@ -14,6 +14,7 @@ import type {
   ProjectLibraryType,
 } from '@src/lib/projectLibraries'
 import { mergeProjectLibrarySettings } from '@src/lib/projectLibraries'
+import type { ComponentChildren } from 'preact'
 
 export type LibraryLoadState = 'idle' | 'scanning' | 'ready' | 'error'
 
@@ -76,6 +77,24 @@ export interface ProjectLibraryTypeOperations {
 }
 
 /**
+ * The type-owned portion of one library row in Settings.
+ *
+ * The settings surface owns the list and its common fields. A type owns only
+ * the addressing that makes sense for it — a directory picker, a cloud source,
+ * or whatever a future provider needs — so adding a type never adds a branch to
+ * the settings feature.
+ */
+export interface ProjectLibrarySettingsDetailsProps {
+  library: ProjectLibrary
+  readOnly: boolean
+  update: (patch: Partial<ProjectLibrarySetting>) => void
+  chooseDirectory?: (options?: {
+    title?: string
+    defaultPath?: string
+  }) => Promise<string | null>
+}
+
+/**
  * A kind of place projects live.
  *
  * Types are contributed, so adding cloud or network libraries later means a new
@@ -95,6 +114,10 @@ export interface ProjectLibraryTypeContribution {
   newLibrarySetting?: (input: { defaultRoot: string }) => ProjectLibrarySetting
   /** False for types the user cannot remove, like a mandatory cloud library. */
   removable?: boolean
+  /** Type-specific fields rendered in the common library settings row. */
+  settingsDetails?: (
+    props: ProjectLibrarySettingsDetailsProps
+  ) => ComponentChildren
   operations?: ProjectLibraryTypeOperations
   /**
    * Find the project folders in one configured library.
