@@ -489,3 +489,54 @@ describe('capabilities', () => {
     expect(buffer.state.value.readOnly).toBe(true)
   })
 })
+
+describe('a disposed buffer', () => {
+  it('accepts no further change', () => {
+    const buffer = createBuffer()
+    append(buffer, ' // one')
+    const text = buffer.text.peek()
+    const version = buffer.version.peek()
+
+    buffer.dispose()
+    append(buffer, ' // two')
+
+    expect(buffer.text.peek()).toBe(text)
+    expect(buffer.version.peek()).toBe(version)
+  })
+
+  /**
+   * The failure this prevents: a history entry holding a closed buffer would
+   * walk its document backwards with the persistence binding already released,
+   * so the file would keep content the document no longer had and nothing would
+   * report it.
+   */
+  it('declines a command instead of running it against nothing', () => {
+    const buffer = createBuffer()
+    append(buffer, ' // typed')
+    buffer.dispose()
+
+    expect(buffer.runCommand(undo)).toBe(false)
+    expect(buffer.text.peek()).toContain('// typed')
+  })
+
+  it('says that it is disposed', () => {
+    const buffer = createBuffer()
+    expect(buffer.disposed.value).toBe(false)
+    buffer.dispose()
+    expect(buffer.disposed.value).toBe(true)
+  })
+
+  it('still answers questions about the document it held', () => {
+    const buffer = createBuffer()
+    buffer.dispose()
+
+    expect(buffer.text.peek()).toBe('thickness = 4')
+    expect(buffer.snapshot().content).toBe('thickness = 4')
+  })
+
+  it('can be disposed twice', () => {
+    const buffer = createBuffer()
+    buffer.dispose()
+    expect(() => buffer.dispose()).not.toThrow()
+  })
+})

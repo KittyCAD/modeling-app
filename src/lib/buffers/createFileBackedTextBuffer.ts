@@ -87,6 +87,7 @@ export function createFileBackedTextBuffer(
   const baseVersion = signal(0)
   const divergence = signal<string | null>(null)
   const hasView = signal(false)
+  const disposed = signal(false)
 
   const listeners = new Set<(change: BufferChange) => void>()
   /** Disposers for the capability bindings currently applied. */
@@ -170,6 +171,16 @@ export function createFileBackedTextBuffer(
 
   function dispatchTransactions(transactions: readonly Transaction[]) {
     if (transactions.length === 0) return
+    /*
+     * A disposed buffer accepts nothing.
+     *
+     * Every mutation funnels through here, so this is the whole of "inert".
+     * Before this, a disposed buffer went on applying transactions with its
+     * capability bindings already released — so an undo run against a closed
+     * buffer moved the document and wrote nothing, leaving the file holding
+     * content the document no longer had and nobody to notice.
+     */
+    if (disposed.peek()) return
 
     let docChanged = false
     for (const transaction of transactions) {
@@ -268,11 +279,17 @@ export function createFileBackedTextBuffer(
     executing: computed(() => executing.value),
     hasView: computed(() => hasView.value),
     structuralContext,
+    disposed: computed(() => disposed.value),
 
     dispatch,
     dispatchTransactions,
 
     runCommand(command) {
+      // A command against a disposed buffer did not run, and says so: `false` is
+      // what a `StateCommand` returns when it declines, and a caller walking a
+      // history stack needs to be able to tell.
+      if (disposed.peek()) return false
+
       // The same target shape CodeMirror's own StateCommands expect, so `undo`
       // and friends work unchanged with no view mounted.
       return command({
@@ -416,7 +433,14 @@ export function createFileBackedTextBuffer(
     },
 
     dispose() {
+      if (disposed.peek()) return
+
+      // Bindings go first, while the buffer still works: releasing them is what
+      // flushes a pending autosave, and that write has to be allowed to read the
+      // document it is saving.
       releaseBindings()
+      disposed.value = true
+
       view?.destroy()
       view = null
       hasView.value = false

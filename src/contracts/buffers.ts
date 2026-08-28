@@ -179,6 +179,16 @@ export interface FileBackedTextBuffer {
   readonly readOnly: ReadonlySignal<boolean>
   readonly executing: ReadonlySignal<boolean>
   readonly hasView: ReadonlySignal<boolean>
+  /**
+   * True once the buffer has been disposed.
+   *
+   * A disposed buffer is inert: it still answers questions about the document it
+   * held, and it accepts no further change. Anything holding a buffer id across
+   * time has to be able to ask — a history entry that walked a closed buffer
+   * backwards would move the document and write nothing, because the capability
+   * that saves it is already gone.
+   */
+  readonly disposed: ReadonlySignal<boolean>
   readonly structuralContext: ReadonlySignal<BufferStructuralContext>
 
   /**
