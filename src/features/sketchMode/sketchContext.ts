@@ -4,6 +4,29 @@ import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
 import { sketchBlockAt } from '@src/lib/kclStdlib/program'
 
 /**
+ * Where the text cursor is, and whether it speaks for the user.
+ *
+ * Both conditions matter and they fail differently.
+ *
+ * `focused` is what makes this escapable. A cursor is persistent — it sits in a
+ * sketch block long after somebody has moved on — so without it, opening a
+ * sketch would put the app in sketch mode for the rest of the session: clicking
+ * the scene would not change it, closing the code panel would not change it, and
+ * nothing short of moving the cursor would.
+ *
+ * `executing` is about which program the offset belongs to. An offset from
+ * another buffer addresses this program's text by coincidence, and a cursor in
+ * `bracket.kcl` must not put you inside a sketch in `main.kcl`.
+ */
+export interface SketchCursor {
+  offset: number
+  /** Whether the buffer holding it is the one being executed. */
+  executing: boolean
+  /** Whether the editor has the keyboard. */
+  focused: boolean
+}
+
+/**
  * The sketch the user is in, if any.
  *
  * "In a sketch" is read from the file rather than remembered. There is no
@@ -23,7 +46,7 @@ import { sketchBlockAt } from '@src/lib/kclStdlib/program'
 export function sketchContextAt(
   program: ExecutedProgram | null,
   selection: readonly SourceRange[],
-  cursor: number | null
+  cursor: SketchCursor | null
 ): SketchBlockRange | null {
   if (!program) return null
 
@@ -32,7 +55,7 @@ export function sketchContextAt(
     if (found) return found
   }
 
-  if (cursor === null) return null
+  if (!cursor || !cursor.focused || !cursor.executing) return null
 
   /*
    * A cursor past the end of what was executed says nothing.
@@ -41,7 +64,7 @@ export function sketchContextAt(
    * longer exists. Answering from it would put someone in a sketch because of
    * where a *different* file's braces were.
    */
-  if (cursor > program.source.length) return null
+  if (cursor.offset > program.source.length) return null
 
-  return sketchBlockAt(program.ast, cursor)
+  return sketchBlockAt(program.ast, cursor.offset)
 }

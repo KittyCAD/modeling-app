@@ -6,12 +6,14 @@ import {
 import { computed } from '@preact/signals'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { kclSceneService } from '@src/contracts/kclScene'
+import { keybindingService } from '@src/contracts/keybindings'
 import { projectSessionService } from '@src/contracts/projectSession'
 import {
   sceneModeGatesValueSpec,
   sceneModeService,
 } from '@src/contracts/sceneModes'
 import { selectionService } from '@src/contracts/selection'
+import { editorHasFocus } from '@src/features/editorCapabilities/keymapScope'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
 import {
   autoEnterSketchMode,
@@ -51,18 +53,25 @@ export default defineRegistryItemFactory((ctx) => {
       .filter((range): range is SourceRange => range !== null)
 
     /*
-     * The cursor counts only while the file on screen is the file being run.
+     * The cursor's facts, gathered here and judged there.
      *
-     * Offsets from another buffer address this program's text by coincidence, and
-     * a cursor in `bracket.kcl` must not put you inside a sketch in `main.kcl`.
+     * Which of them disqualify a cursor is a rule worth testing, so it lives in
+     * `sketchContextAt`; reading the keymap's own focus scope means the answer is
+     * the one the keyboard uses rather than a second opinion about where the user
+     * is.
      */
+    const keys = ctx.services.optional(keybindingService)
     const session = ctx.services.optional(projectSessionService)?.current.value
     const executing = session?.executingBuffer.value ?? null
     const active = session?.activeBuffer.value ?? null
-    const cursor =
-      executing && active?.id === executing.id
-        ? active.state.value.selection.main.head
-        : null
+
+    const cursor = active
+      ? {
+          offset: active.state.value.selection.main.head,
+          executing: active.id === executing?.id,
+          focused: keys ? editorHasFocus(keys) : false,
+        }
+      : null
 
     return sketchContextAt(scene.program.value, ranges, cursor)
   })

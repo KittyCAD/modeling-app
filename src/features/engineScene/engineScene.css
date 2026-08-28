@@ -28,3 +28,12 @@
 .zds-viewport__stream:active {
   cursor: grabbing;
 }
+
+/*
+ * No focus ring. The surface takes focus so that other things can lose it —
+ * there is no keyboard interface here to announce, and a ring around the whole
+ * viewport announces nothing but itself.
+ */
+.zds-viewport__stream:focus {
+  outline: none;
+}
