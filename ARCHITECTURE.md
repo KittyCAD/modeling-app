@@ -13,7 +13,7 @@ readable at `git show main:src/...`.
 | 3 | Thin view layer | `packages/ui-kit`, `src/features/*/**.tsx` | partly |
 | 4 | CodeMirror owns buffer state; `projectSession` owns the project | `src/contracts/buffers.ts`, `src/features/projectSession/` | done (see below) |
 | — | Execution: coordinator-owned, capability-enabled | `src/contracts/execution.ts`, `src/features/execution/` | no engine yet |
-| — | Project libraries (ported from main) | `src/contracts/projectLibraries.ts`, `src/features/projectLibraries/` | directory type |
+| — | Project libraries (ported from main) | `src/contracts/projectLibraries.ts`, `src/features/projectLibraries/` | directory + cloud |
 | 5 | The router follows app state | `src/features/navigation/` | done |
 | 6 | Point-and-click tools as macro actions | — | not started |
 | 7 | Publishable UI building blocks | `packages/ui-kit` | done |
@@ -963,6 +963,19 @@ false, and the real route claims it.
 The level being edited is *not* in the URL. A link to settings should open
 settings someone can act on, not resume a tab they were poking at.
 
+### Libraries are configuration, but not cascade values
+
+The Libraries section is another body-only section. An ordered collection of
+providers cannot honestly be represented as a scalar `SettingDefinition`, and
+library edits must immediately change discovery, so the body talks to the
+`projectLibraries` service directly.
+
+The surface owns only the common row: title, type, order, add and remove. The
+selected `ProjectLibraryTypeContribution` renders `settingsDetails` beneath it.
+Folder contributes its directory field and picker; Cloud contributes its source,
+local materialization path and account/sync state. A future provider adds its
+own connection fields without adding a conditional to Settings.
+
 ## Execution
 
 The coordinator owns everything asynchronous; the adapter is a capability; the
@@ -1334,7 +1347,8 @@ readers wrong.
 
 Ported from `main`, and the replacement for what was briefly a `ProjectSource`.
 A **library** is a configured place projects live. A library **type** is the kind
-of place it is — `directory` is the only one so far.
+of place it is — `directory` and `cloud` are contributions with the same
+discovery and operation contract.
 
 Four properties that matter, all of which have a test:
 
@@ -1355,6 +1369,42 @@ Discovery is kept per library, so refreshing one does not discard the others.
 Titles and folder names are deliberately separable: the title lives in
 `project.toml` and the folder gets a safe, unique derivative of it.
 
+### Cloud is local materialization plus replication
+
+A Cloud library is still a directory of ordinary project folders. That is the
+local-first boundary: opening, editing, scanning and project operations use the
+same `FileSystem` and directory helpers as a Folder library. The `cloudSync`
+service owns only the relationship between those bytes and Zoo's whole-project
+archive API.
+
+There is no `systemIOActor`, settings actor, plugin activation machine or global
+sync engine. One service has explicit `FileSystem`, auth-token and API
+dependencies; async runs are serialized per library, while Preact signals only
+report status and the remote index. Its lifecycle is registry disposal.
+
+Each cloud materialization root carries a small `.zds-cloud-sync.json` index.
+For every relationship it records the remote id and revision plus the manifest
+of the last acknowledged bytes. That base gives reconciliation four plain
+answers:
+
+- only local changed: upload with the acknowledged remote revision;
+- only remote changed: replace the local materialization from the archive;
+- neither changed: do nothing;
+- both changed: keep local bytes intact and record a conflict.
+
+Untracked local folders are enrolled because placement inside a Cloud library
+is explicit intent. Remote-only projects are materialized on library sync.
+Externally disappearing remote projects are recreated from local bytes rather
+than treating absence as authority to delete them. Explicit library Delete and
+Move-out operations are the destructive policy boundaries: Delete removes the
+remote before the local project, while Move-out disconnects the remote and then
+hands the local bytes to the destination library.
+
+Sync runs when Cloud discovery or an operation asks for it, every thirty seconds
+after a Cloud library has been seen, and when a hidden tab becomes visible. A
+failed upload leaves both the local project and its recorded base in place, so a
+later run can retry from durable state.
+
 ## Filesystem
 
 One `FileSystem` service, two implementations, so directory libraries work on
@@ -1364,6 +1414,11 @@ both platforms:
 - **The preload bridge** on desktop, where every path is confined in the main
   process to a **granted root** — the default projects directory plus anything
   the user picked in an OS dialog. Picking is the grant; grants persist.
+
+Text and byte writes are both part of the contract. Cloud archives can contain
+images and imported geometry, so decoding them as text would silently corrupt a
+project; the desktop byte-write channel is subject to the same granted-root
+resolution as every other filesystem mutation.
 
 ## Watching for external changes
 

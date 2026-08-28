@@ -1,0 +1,27 @@
+.zds-cloud-library-settings {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.45fr) minmax(220px, 1fr);
+  gap: var(--zds-space-3);
+}
+
+.zds-cloud-library-settings__status {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--zds-space-4);
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-small);
+}
+
+@media (max-width: 720px) {
+  .zds-cloud-library-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .zds-cloud-library-settings__status {
+    grid-column: auto;
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
