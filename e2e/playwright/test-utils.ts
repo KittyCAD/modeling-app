@@ -154,6 +154,19 @@ async function unlockVercelVisitorPasswordIfNeeded(page: Page) {
   }
 }
 
+function isLocalPlaywrightBaseUrl(url: string | undefined) {
+  if (!url) {
+    return false
+  }
+
+  try {
+    const hostname = new URL(url).hostname
+    return hostname === 'localhost' || hostname === '127.0.0.1'
+  } catch {
+    return false
+  }
+}
+
 async function removeCurrentCode(page: Page) {
   // First, hover the element in case the current mouse position is in the way
   await page.mouse.move(0, 0)
@@ -419,7 +432,10 @@ async function waitForAuthAndLsp(page: Page) {
     timeout: 45_000,
   })
 
-  if (process.env.VERCEL_BASE_URL) {
+  if (
+    process.env.VERCEL_BASE_URL &&
+    !isLocalPlaywrightBaseUrl(process.env.VERCEL_BASE_URL)
+  ) {
     const useVisitorPasswordFallback = shouldUseVercelVisitorPasswordFallback()
     const vercelStartupPath =
       token && !useVisitorPasswordFallback

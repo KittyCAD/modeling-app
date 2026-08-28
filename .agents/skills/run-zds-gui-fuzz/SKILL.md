@@ -162,6 +162,15 @@ until a control proves otherwise. A slightly longer startup wait is acceptable
 for preview validation, but do not mask a scenario-level failure after the scene
 has started.
 
+If a preview deployment cannot reach Design Studio because the run is redirected
+to sign-in before the scenario body, classify the attempt as **test setup** and
+try a local branch server before declaring the codemod unvalidated. Start the PR
+worktree app on `localhost:3000`, make the app environment match the available
+first-party token scope, and run the GUI-fuzz spec against `http://localhost:3000`
+without Vercel preview auth. If browser API calls from localhost are blocked or
+unauthorized before `Start Sketch` appears, preserve the screenshot/trace as a
+setup artifact and do not add it as product-failure evidence.
+
 ## Validate screenshots
 
 1. Locate the UTC-stamped run under `test-results/gui-fuzz/`.
