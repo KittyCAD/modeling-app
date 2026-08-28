@@ -1,4 +1,6 @@
-use super::{Point2d, Point3d, Point4d};
+use super::Point2d;
+use super::Point3d;
+use super::Point4d;
 
 impl Point2d<f64> {
     /// Set all components to zero.

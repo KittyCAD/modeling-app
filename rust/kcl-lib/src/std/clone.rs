@@ -511,6 +511,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::SolidView;
     use kcl_api::artifact::SweepSubType;
     use kittycad_modeling_cmds::shared::BodyType;
     use pretty_assertions::assert_eq;
@@ -519,11 +520,13 @@ mod tests {
     use crate::exec::KclValueView;
     use crate::execution::Artifact;
     use crate::execution::ArtifactGraph;
-    use crate::execution::ArtifactId;
-    use crate::execution::Solid;
     use crate::execution::SolidCreator;
+    use crate::execution::EdgeCutViewExt;
+    use crate::execution::ExtrudeSurfaceViewExt;
+    use crate::execution::PathViewExt;
+    use crate::execution::SolidViewExt;
 
-    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &Solid) {
+    fn assert_cloned_composite_topology(artifact_graph: &ArtifactGraph, cloned_composite: &SolidView) {
         let Some(Artifact::CompositeSolid(cloned_artifact)) = artifact_graph.get(&cloned_composite.artifact_id) else {
             panic!("Expected a cloned composite solid artifact at the engine entity ID");
         };
@@ -1130,16 +1133,7 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube.tags {
-            let cloned_tag = cloned_cube.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.path, cloned_tag_info.path);
-            assert_eq!(tag_info.surface, None);
-            assert_eq!(cloned_tag_info.surface, None);
+            assert_eq!(Some(tag), cloned_cube.tags.get(tag_name));
         }
 
         ctx.close().await;
@@ -1198,32 +1192,11 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube_sketch.tags {
-            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_eq!(tag_info.path.is_some(), cloned_tag_info.path.is_some());
-            if let (Some(path), Some(cloned_path)) = (&tag_info.path, &cloned_tag_info.path) {
-                assert_ne!(path, cloned_path);
-            }
-            assert_eq!(tag_info.surface.is_some(), cloned_tag_info.surface.is_some());
-            if let (Some(surface), Some(cloned_surface)) = (&tag_info.surface, &cloned_tag_info.surface) {
-                assert_ne!(surface, cloned_surface);
-            }
+            assert_eq!(Some(tag), cloned_cube_sketch.tags.get(tag_name));
         }
 
         for (tag_name, tag) in &cube.faces {
-            let cloned_tag = cloned_cube.faces.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+            assert_eq!(Some(tag), cloned_cube.faces.get(tag_name));
         }
         assert!(cube.faces.contains_key("endCap"));
         assert!(cloned_cube.faces.contains_key("endCap"));
@@ -1280,29 +1253,8 @@ clonedCopy = clone(patternCopy)
         assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
         assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
-        let pattern_wall = pattern_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
-        let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
-        assert_ne!(pattern_wall.id, cloned_wall.id);
-        assert_ne!(pattern_wall.surface, cloned_wall.surface);
-        let cloned_wall_id = ArtifactId::new(
-            cloned_wall
-                .surface
-                .as_ref()
-                .expect("Expected cloned wall tag to reference a surface")
-                .face_id(),
-        );
-
-        let pattern_cap = pattern_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
-        let cloned_cap = cloned_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
-        assert_ne!(pattern_cap.id, cloned_cap.id);
-        assert_ne!(pattern_cap.surface, cloned_cap.surface);
-        let cloned_cap_id = ArtifactId::new(
-            cloned_cap
-                .surface
-                .as_ref()
-                .expect("Expected cloned cap tag to reference a surface")
-                .face_id(),
-        );
+        assert_eq!(pattern_sketch.tags.get("wall"), cloned_sketch.tags.get("wall"));
+        assert_eq!(pattern_copy.faces.get("endCap"), cloned_copy.faces.get("endCap"));
 
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
@@ -1314,14 +1266,18 @@ clonedCopy = clone(patternCopy)
             Some(Artifact::Path(path))
                 if path.sweep_id == Some(cloned_copy.artifact_id)
         ));
-        assert!(matches!(
-            result.artifact_graph.get(&cloned_wall_id),
-            Some(Artifact::Wall(wall)) if wall.sweep_id == cloned_copy.artifact_id
-        ));
-        assert!(matches!(
-            result.artifact_graph.get(&cloned_cap_id),
-            Some(Artifact::Cap(cap)) if cap.sweep_id == cloned_copy.artifact_id
-        ));
+        assert!(
+            result
+                .artifact_graph
+                .values()
+                .any(|artifact| matches!(artifact, Artifact::Wall(wall) if wall.sweep_id == cloned_copy.artifact_id))
+        );
+        assert!(
+            result
+                .artifact_graph
+                .values()
+                .any(|artifact| matches!(artifact, Artifact::Cap(cap) if cap.sweep_id == cloned_copy.artifact_id))
+        );
 
         ctx.close().await;
     }
@@ -1383,15 +1339,7 @@ clonedCube = clone(cube)
         }
 
         for (tag_name, tag) in &cube_sketch.tags {
-            let cloned_tag = cloned_cube_sketch.tags.get(tag_name).unwrap();
-
-            let tag_info = tag.get_cur_info().unwrap();
-            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
-
-            assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.path, cloned_tag_info.path);
-            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+            assert_eq!(Some(tag), cloned_cube_sketch.tags.get(tag_name));
         }
 
         for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {

@@ -1,5 +1,6 @@
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 mod convert;
 mod only;
@@ -43,7 +44,7 @@ impl<T> Point2d<T> {
     /// Takes some closure, and calls it on each component of this point.
     /// # Examples
     /// ```
-    /// use kittycad_modeling_cmds::shared::Point2d;
+    /// use kcl_api::point::Point2d;
     /// let p0 = Point2d { x: 1.0, y: 1.0 };
     /// assert_eq!(p0.map(|n| n * 2.0), Point2d { x: 2.0, y: 2.0 });
     /// ```
@@ -99,7 +100,7 @@ impl<T> Point3d<T> {
     /// Takes some closure, and calls it on each component of this point.
     /// # Examples
     /// ```
-    /// use kittycad_modeling_cmds::shared::Point3d;
+    /// use kcl_api::point::Point3d;
     /// let p0 = Point3d {
     ///     x: 1.0,
     ///     y: 1.0,
@@ -155,7 +156,7 @@ impl<T> Point4d<T> {
     /// Takes some closure, and calls it on each component of this point.
     /// # Examples
     /// ```
-    /// use kittycad_modeling_cmds::shared::Point4d;
+    /// use kcl_api::point::Point4d;
     /// let p0 = Point4d {
     ///     x: 1.0,
     ///     y: 1.0,

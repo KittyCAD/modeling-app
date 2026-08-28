@@ -1,4 +1,6 @@
-use super::{Point2d, Point3d, Point4d};
+use super::Point2d;
+use super::Point3d;
+use super::Point4d;
 
 macro_rules! impl_only {
     ($typ:ident, $method:ident, $component:ident, $($i:ident),*) => {
@@ -8,7 +10,7 @@ macro_rules! impl_only {
         {
             #[doc = concat!("Set the `", stringify!($component), "` component to the given value, and all other components to their default.\n")]
             #[doc = "```\n"]
-            #[doc = concat!("use kittycad_modeling_cmds::shared::", stringify!($typ), ";")]
+            #[doc = concat!("use kcl_api::point::", stringify!($typ), ";")]
             #[doc = concat!("let expected = ", stringify!($typ), "{")]
             #[doc = concat!("\t", stringify!($component), ": 8,")]
                     $(

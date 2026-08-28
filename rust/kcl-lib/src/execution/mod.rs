@@ -31,7 +31,11 @@ use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
+pub use kcl_value_view::EdgeCutViewExt;
+pub use kcl_value_view::ExtrudeSurfaceViewExt;
 pub use kcl_value_view::KclValueView;
+pub use kcl_value_view::PathViewExt;
+pub use kcl_value_view::SolidViewExt;
 use kcmc::ImageFormat;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -819,6 +823,33 @@ pub struct TagEngineInfo {
 pub enum BodyType {
     Root,
     Block,
+}
+
+/// Metadata.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq, Copy)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Metadata {
+    /// The source range.
+    pub source_range: SourceRange,
+}
+
+impl From<Metadata> for Vec<SourceRange> {
+    fn from(meta: Metadata) -> Self {
+        vec![meta.source_range]
+    }
+}
+
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
+    }
+}
+
+impl From<SourceRange> for Metadata {
+    fn from(source_range: SourceRange) -> Self {
+        Self { source_range }
+    }
 }
 
 impl<T> From<NodeRef<'_, T>> for Metadata {

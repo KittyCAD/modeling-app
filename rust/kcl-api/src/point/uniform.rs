@@ -1,4 +1,6 @@
-use super::{Point2d, Point3d, Point4d};
+use super::Point2d;
+use super::Point3d;
+use super::Point4d;
 
 macro_rules! impl_uniform {
     ($typ:ident, $($i:ident),*) => {
