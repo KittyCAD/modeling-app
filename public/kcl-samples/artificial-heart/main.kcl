@@ -1,6 +1,6 @@
 // Artificial Heart
 // A model of a permanent electromagnetic blood pump
-// Categories: Medical
+// Categories: Medical & Assistive
 
 // Define units
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)

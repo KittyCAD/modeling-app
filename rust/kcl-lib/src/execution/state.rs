@@ -671,6 +671,7 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
             issues: self.global.issues,
+            source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         })
     }

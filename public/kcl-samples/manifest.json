@@ -2,7 +2,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "angle-gauge/main.kcl",
     "multipleFiles": false,
@@ -15,7 +16,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "artificial-heart/main.kcl",
     "multipleFiles": true,
@@ -32,7 +33,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
     "multipleFiles": true,
@@ -49,9 +51,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "ball-bearing/main.kcl",
     "multipleFiles": false,
@@ -64,7 +64,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": false,
@@ -77,7 +78,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Toys, Games, & Recreation"
     ],
     "pathFromProjectDirectoryToFirstFile": "bench-for-kids/main.kcl",
     "multipleFiles": false,
@@ -90,7 +92,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
     "multipleFiles": false,
@@ -103,7 +107,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "blend-tutorial/main.kcl",
     "multipleFiles": false,
@@ -116,7 +120,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
     "multipleFiles": false,
@@ -129,7 +133,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
     "multipleFiles": false,
@@ -142,7 +146,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "box/main.kcl",
     "multipleFiles": false,
@@ -155,10 +160,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "bracket/main.kcl",
     "multipleFiles": false,
@@ -171,10 +175,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace",
-      "Construction"
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "bracket-with-slot/main.kcl",
     "multipleFiles": false,
@@ -187,7 +189,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
     "multipleFiles": false,
@@ -200,7 +202,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
     "multipleFiles": false,
@@ -213,7 +216,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
@@ -231,7 +235,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
     "multipleFiles": false,
@@ -244,7 +249,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Home & Lifestyle",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
     "multipleFiles": false,
@@ -257,7 +263,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
     "multipleFiles": false,
@@ -270,7 +276,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
     "multipleFiles": true,
@@ -287,9 +294,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace",
-      "Computer Hardware"
+      "Electronics & Computing",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
     "multipleFiles": false,
@@ -302,7 +308,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
     "multipleFiles": false,
@@ -315,7 +321,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "cone/main.kcl",
     "multipleFiles": false,
@@ -328,8 +335,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "counterdrilled-weldment/main.kcl",
     "multipleFiles": false,
@@ -342,8 +348,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "countersunk-plate/main.kcl",
     "multipleFiles": false,
@@ -356,7 +361,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "cpu-cooler/main.kcl",
     "multipleFiles": true,
@@ -376,7 +382,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation"
     ],
     "pathFromProjectDirectoryToFirstFile": "crash-box/main.kcl",
     "multipleFiles": false,
@@ -389,7 +395,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
     "multipleFiles": false,
@@ -402,8 +409,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Medical"
+      "Mechanical Components",
+      "Robotics & Automation"
     ],
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
@@ -416,7 +423,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "cylinder/main.kcl",
     "multipleFiles": false,
@@ -429,7 +437,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "desk-edge-stopper/main.kcl",
     "multipleFiles": false,
@@ -442,7 +452,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "dining-table/main.kcl",
     "multipleFiles": false,
@@ -455,7 +465,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
@@ -468,7 +478,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "double-hook/main.kcl",
     "multipleFiles": false,
@@ -481,8 +493,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware",
-      "Maker"
+      "Electronics & Computing",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
@@ -495,7 +507,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Robotics & Automation",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "end-effector-gripper-fingers/main.kcl",
     "multipleFiles": false,
@@ -508,7 +521,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "engine-valve/main.kcl",
     "multipleFiles": false,
@@ -521,7 +535,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "exhaust-manifold/main.kcl",
     "multipleFiles": false,
@@ -534,7 +549,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "field-monitor-stand/main.kcl",
     "multipleFiles": false,
@@ -547,7 +563,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Mechanical Components",
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
@@ -560,8 +577,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "flat-bladed-impeller/main.kcl",
     "multipleFiles": false,
@@ -574,7 +592,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Electronics & Computing",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
@@ -587,7 +606,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Tools"
     ],
     "pathFromProjectDirectoryToFirstFile": "food-service-spatula/main.kcl",
     "multipleFiles": false,
@@ -600,7 +620,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "fun-stacker-toy/main.kcl",
     "multipleFiles": false,
@@ -613,7 +634,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "gallows-bracket/main.kcl",
     "multipleFiles": false,
@@ -626,8 +647,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace",
-      "Manufacturing"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "gas-impeller/main.kcl",
     "multipleFiles": false,
@@ -640,7 +661,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Science & Education",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "gdt-tutorial/main.kcl",
     "multipleFiles": false,
@@ -653,7 +675,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Mechanical Components",
+      "Robotics & Automation"
     ],
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
     "multipleFiles": false,
@@ -666,7 +689,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Art & Design"
     ],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man/main.kcl",
     "multipleFiles": false,
@@ -679,7 +702,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man-cookie-cutter/main.kcl",
     "multipleFiles": false,
@@ -692,7 +717,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "golf-tee/main.kcl",
     "multipleFiles": false,
@@ -705,7 +732,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate/main.kcl",
     "multipleFiles": false,
@@ -718,7 +747,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate-magnets/main.kcl",
     "multipleFiles": false,
@@ -731,7 +762,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins/main.kcl",
     "multipleFiles": false,
@@ -744,7 +777,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins-stacking-lip/main.kcl",
     "multipleFiles": false,
@@ -757,7 +792,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
     "multipleFiles": false,
@@ -770,8 +806,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Automotive & Transportation",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "hand-trolley/main.kcl",
     "multipleFiles": true,
@@ -788,8 +824,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical",
-      "Aerospace"
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "helium-tank/main.kcl",
     "multipleFiles": false,
@@ -802,8 +837,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
     "multipleFiles": false,
@@ -816,7 +850,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
@@ -829,7 +863,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "hex-nut-with-chamfer/main.kcl",
     "multipleFiles": false,
@@ -842,7 +876,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
@@ -855,7 +889,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components",
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "inner-thread/main.kcl",
     "multipleFiles": false,
@@ -868,7 +903,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "lattice-cubic/main.kcl",
     "multipleFiles": false,
@@ -881,7 +917,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
@@ -894,8 +932,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker",
-      "Construction"
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "linear-shelf-system/main.kcl",
     "multipleFiles": false,
@@ -908,8 +946,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace",
-      "Manufacturing"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "liquid-impeller/main.kcl",
     "multipleFiles": false,
@@ -922,7 +960,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "m4-hex-socket-countersunk-head-screw/main.kcl",
     "multipleFiles": false,
@@ -935,7 +973,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "m4-insert/main.kcl",
     "multipleFiles": false,
@@ -948,7 +987,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
     "multipleFiles": false,
@@ -961,7 +1000,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "modular-shelf-grid/main.kcl",
     "multipleFiles": false,
@@ -974,8 +1014,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
     "multipleFiles": false,
@@ -988,8 +1028,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive"
+      "Robotics & Automation",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
     "multipleFiles": true,
@@ -1007,7 +1047,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "parametric-shelf-unit/main.kcl",
     "multipleFiles": false,
@@ -1020,8 +1061,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "pillow-block-bearing/main.kcl",
     "multipleFiles": true,
@@ -1037,8 +1078,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe/main.kcl",
     "multipleFiles": false,
@@ -1051,8 +1092,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-elbow-90deg/main.kcl",
     "multipleFiles": false,
@@ -1065,8 +1106,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
     "multipleFiles": true,
@@ -1086,8 +1127,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-straight/main.kcl",
     "multipleFiles": false,
@@ -1100,8 +1141,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
     "multipleFiles": false,
@@ -1114,8 +1155,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Mechanical Components",
+      "Automotive & Transportation"
     ],
     "pathFromProjectDirectoryToFirstFile": "planetary-gearset/main.kcl",
     "multipleFiles": false,
@@ -1128,7 +1169,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace"
+      "Aerospace",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
     "multipleFiles": false,
@@ -1141,7 +1183,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing"
     ],
     "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
     "multipleFiles": false,
@@ -1154,8 +1196,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "radial-flow-centrifugal-impeller/main.kcl",
     "multipleFiles": false,
@@ -1168,8 +1211,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "rectangle-table/main.kcl",
     "multipleFiles": false,
@@ -1182,8 +1224,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "round-table/main.kcl",
     "multipleFiles": false,
@@ -1196,7 +1237,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "router-template-cross-bar/main.kcl",
     "multipleFiles": false,
@@ -1209,7 +1251,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "router-template-slate/main.kcl",
     "multipleFiles": false,
@@ -1223,7 +1266,8 @@
     "file": "main.kcl",
     "categories": [
       "Aerospace",
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "saturn-v/main.kcl",
     "multipleFiles": false,
@@ -1236,7 +1280,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
     "multipleFiles": false,
@@ -1249,7 +1294,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "shaft-grommet/main.kcl",
     "multipleFiles": false,
@@ -1262,8 +1307,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
@@ -1276,8 +1321,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Aerospace",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "single-impeller-blade/main.kcl",
     "multipleFiles": false,
@@ -1290,7 +1335,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Art & Design",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "snowman/main.kcl",
     "multipleFiles": false,
@@ -1303,7 +1349,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",
     "multipleFiles": false,
@@ -1316,7 +1362,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "sphere/main.kcl",
     "multipleFiles": false,
@@ -1329,7 +1376,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Architecture & Construction",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
     "multipleFiles": false,
@@ -1342,7 +1391,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
     "multipleFiles": false,
@@ -1355,7 +1404,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "split-washer-spring-version/main.kcl",
     "multipleFiles": false,
@@ -1368,8 +1417,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive"
+      "Mechanical Components",
+      "Automotive & Transportation"
     ],
     "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
     "multipleFiles": false,
@@ -1382,7 +1431,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
     "multipleFiles": false,
@@ -1395,7 +1446,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
     "multipleFiles": false,
@@ -1408,7 +1461,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
     "multipleFiles": false,
@@ -1421,7 +1476,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
     "multipleFiles": false,
@@ -1434,7 +1491,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
     "multipleFiles": false,
@@ -1447,7 +1506,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",
     "multipleFiles": false,
@@ -1460,7 +1521,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
     "multipleFiles": false,
@@ -1473,8 +1534,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "t-slot-frame/main.kcl",
     "multipleFiles": false,
@@ -1487,8 +1549,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
     "multipleFiles": false,
@@ -1501,8 +1563,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "t-slot-rectangle/main.kcl",
     "multipleFiles": false,
@@ -1515,8 +1578,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "t-slot-shelf/main.kcl",
     "multipleFiles": false,
@@ -1529,7 +1593,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
     "multipleFiles": false,
@@ -1542,8 +1606,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Computer Hardware"
+      "Architecture & Construction",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
     "multipleFiles": false,
@@ -1556,7 +1620,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "torus/main.kcl",
     "multipleFiles": false,
@@ -1569,7 +1634,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction",
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "truss-structure/main.kcl",
     "multipleFiles": false,
@@ -1582,8 +1648,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Mechanical Components",
+      "Industrial & Manufacturing",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
     "multipleFiles": false,
@@ -1596,9 +1663,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Electronics",
-      "Connector",
-      "Consumer Hardware"
+      "Electronics & Computing",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "usb-c/main.kcl",
     "multipleFiles": false,
@@ -1611,7 +1677,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Architecture & Construction",
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
     "multipleFiles": false,
@@ -1624,8 +1692,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Tools",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "v-block/main.kcl",
     "multipleFiles": false,
@@ -1638,8 +1706,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Computer Hardware"
+      "Electronics & Computing"
     ],
     "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
     "multipleFiles": true,
@@ -1659,7 +1726,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "washer/main.kcl",
     "multipleFiles": false,
@@ -1672,7 +1739,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "wedge/main.kcl",
     "multipleFiles": false,
@@ -1685,7 +1753,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "wheel-hub/main.kcl",
     "multipleFiles": false,
@@ -1698,7 +1767,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade-root-inserts/main.kcl",
     "multipleFiles": false,
@@ -1724,7 +1794,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Art & Design"
     ],
     "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
     "multipleFiles": false,

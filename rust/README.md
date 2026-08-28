@@ -13,8 +13,9 @@
     git add .
     git commit -m "Bump versions"
     ```
-4. Push the changes and get your PR approved.
-5. Publish the crates:
+4. Push the changes, get your PR approved, and merge it to main.
+5. Check out main, to the commit from your merged PR.
+6. Publish the crates:
     ```bash
     just publish-kcl-part1
     ```

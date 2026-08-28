@@ -1,6 +1,6 @@
 // Hex Nut with Chamfered Ends
 // This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole
-// Categories: Fasteners
+// Categories: Mechanical Components
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

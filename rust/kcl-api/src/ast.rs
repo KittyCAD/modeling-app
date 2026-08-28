@@ -1,11 +1,12 @@
 use parse_display::Display;
 use parse_display::FromStr;
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
 pub mod node_path;
 
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
