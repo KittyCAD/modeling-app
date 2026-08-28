@@ -553,6 +553,13 @@ type ArcSizeDimensionConstraintInput =
   | Extract<ApiConstraint, { type: 'Radius' }>
   | Extract<ApiConstraint, { type: 'Diameter' }>
 
+export type SizeDimensionConstraintInput =
+  | ArcSizeDimensionConstraintInput
+  | Extract<
+      ApiConstraint,
+      { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
+    >
+
 type ArcSizeDimensionUnit = Extract<
   ApiConstraint,
   { type: 'Radius' }
@@ -597,6 +604,61 @@ export function buildCircularSizeDimensionConstraintInput({
   }
 
   return null
+}
+
+function haveMatchingConstraintSegments(
+  first: readonly ConstraintSegment[],
+  second: readonly ConstraintSegment[]
+) {
+  if (first.length !== second.length) {
+    return false
+  }
+
+  const unmatched = [...second]
+  return first.every((segment) => {
+    const matchingIndex = unmatched.indexOf(segment)
+    if (matchingIndex === -1) {
+      return false
+    }
+    unmatched.splice(matchingIndex, 1)
+    return true
+  })
+}
+
+function dimensionsConstrainSameTarget(
+  existing: ApiConstraint,
+  candidate: SizeDimensionConstraintInput
+) {
+  switch (candidate.type) {
+    case 'Radius':
+      return existing.type === 'Radius' && existing.arc === candidate.arc
+    case 'Diameter':
+      return existing.type === 'Diameter' && existing.arc === candidate.arc
+    case 'Distance':
+    case 'HorizontalDistance':
+    case 'VerticalDistance':
+      return (
+        existing.type === candidate.type &&
+        haveMatchingConstraintSegments(existing.segments, candidate.segments)
+      )
+  }
+}
+
+/**
+ * Finds a dimension with the same kind and geometric target. Values, source
+ * expressions, and label positions do not make that dimension distinct.
+ */
+export function findMatchingDimensionConstraint(
+  candidate: SizeDimensionConstraintInput,
+  objects: readonly ApiObject[]
+): ApiObject | null {
+  return (
+    objects.find(
+      (object) =>
+        object?.kind.type === 'Constraint' &&
+        dimensionsConstrainSameTarget(object.kind.constraint, candidate)
+    ) ?? null
+  )
 }
 
 export function buildEqualLengthConstraintInput(

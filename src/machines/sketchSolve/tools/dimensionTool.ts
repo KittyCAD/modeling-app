@@ -28,6 +28,7 @@ import {
 } from '@src/lib/utils2d'
 import {
   buildCircularSizeDimensionConstraintInput,
+  findMatchingDimensionConstraint,
   getArcPoints,
   getLinePoints,
   isArcSegment,
@@ -175,10 +176,13 @@ type DraftRuntime = {
   draftContext: DimensionDraftContext | null
   draftConstraintId: number | null
   lastDraftKey: string | null
-  previewInFlight: boolean
+  previewWork: Promise<void> | null
+  previewDeletion: Promise<void> | null
   queuedMousePoint: Coords2d | null
+  matchingConstraintId: number | null
   // Used by async api calls in case tool got deactivated since
   active: boolean
+  cancelled: boolean
 }
 
 type ApiAngleConstraint = Extract<ApiConstraint, { type: 'Angle' }>
@@ -191,6 +195,7 @@ export type DimensionDistanceType = ApiDistanceConstraint['type']
 
 const ANGLE_SECTORS = [1, 2, 3, 4] as const satisfies readonly AngleSector[]
 const DIMENSION_PLACEMENT_PROMPT_TOAST_ID = 'dimension-tool-placement-prompt'
+const DIMENSION_ALREADY_EXISTS_TOAST_ID = 'dimension-tool-already-exists'
 
 function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
   return baseUnitToNumericSuffix(
@@ -211,9 +216,12 @@ function createRuntime(): DraftRuntime {
     draftContext: null,
     draftConstraintId: null,
     lastDraftKey: null,
-    previewInFlight: false,
+    previewWork: null,
+    previewDeletion: null,
     queuedMousePoint: null,
+    matchingConstraintId: null,
     active: true,
+    cancelled: false,
   }
 }
 
@@ -726,6 +734,19 @@ function sendCommittedDimensionResult(
   self.send({ type: 'done' })
 }
 
+function showMatchingDimension(
+  self: ParentSketchSolveSender,
+  constraintId: number
+) {
+  sendParent(self, {
+    type: 'update hovered id',
+    data: { hoveredId: constraintId },
+  })
+  toastToolbar('That dimension already exists.', {
+    id: DIMENSION_ALREADY_EXISTS_TOAST_ID,
+  })
+}
+
 async function commitCircularDimension(
   runtime: DraftRuntime,
   context: DimensionToolContext,
@@ -746,6 +767,17 @@ async function commitCircularDimension(
     return
   }
 
+  const matchingConstraint = findMatchingDimensionConstraint(
+    constraint,
+    context.initialObjects
+  )
+  if (matchingConstraint) {
+    deactivateRuntime(runtime)
+    showMatchingDimension(self, matchingConstraint.id)
+    self.send({ type: 'done' })
+    return
+  }
+
   try {
     deactivateRuntime(runtime)
     const result = await context.rustContext.addConstraint(
@@ -762,7 +794,9 @@ async function commitCircularDimension(
       getConstraintIdFromResult(result, constraint.type)
     )
   } catch (error) {
-    runtime.active = true
+    if (!runtime.cancelled) {
+      runtime.active = true
+    }
     runtime.firstSelection = null
     toastSketchSolveError(error)
   }
@@ -802,6 +836,44 @@ async function deleteInactivePreviewConstraint(
     jsAppSettings(context.rustContext.settingsActor),
     false
   )
+}
+
+async function deleteVisiblePreviewConstraint(
+  runtime: DraftRuntime,
+  context: DimensionToolContext,
+  self: ParentSketchSolveSender
+) {
+  if (runtime.previewDeletion) {
+    await runtime.previewDeletion
+    return
+  }
+
+  const constraintId = runtime.draftConstraintId
+  if (constraintId === null) {
+    return
+  }
+
+  const deletion = context.rustContext
+    .deleteObjects(
+      SKETCH_FILE_VERSION,
+      context.sketchId,
+      [constraintId],
+      [],
+      jsAppSettings(context.rustContext.settingsActor),
+      false
+    )
+    .then((result) => {
+      runtime.draftConstraintId = null
+      runtime.lastDraftKey = null
+      sendPreviewResultToParent(self, result)
+      sendParent(self, { type: 'clear draft entities' })
+    })
+  runtime.previewDeletion = deletion
+  try {
+    await deletion
+  } finally {
+    runtime.previewDeletion = null
+  }
 }
 
 function sendPreviewResultToParent(
@@ -871,6 +943,27 @@ async function updateDraftConstraint(
     mousePoint,
     getDefaultLengthUnit(context.kclManager)
   )
+  if (constraint.type !== 'Angle') {
+    const matchingConstraint = findMatchingDimensionConstraint(
+      constraint,
+      context.initialObjects
+    )
+    if (matchingConstraint) {
+      await deleteVisiblePreviewConstraint(runtime, context, self)
+      if (runtime.matchingConstraintId !== matchingConstraint.id) {
+        showMatchingDimension(self, matchingConstraint.id)
+      }
+      runtime.matchingConstraintId = matchingConstraint.id
+      return
+    }
+  }
+  if (runtime.matchingConstraintId !== null) {
+    sendParent(self, {
+      type: 'update hovered id',
+      data: { hoveredId: null },
+    })
+    runtime.matchingConstraintId = null
+  }
   const draftKey = getDraftKey(constraint)
   // Skip constraint edits when the mouse moved too little to change the draft.
   if (draftKey === runtime.lastDraftKey) {
@@ -934,12 +1027,11 @@ function requestDraftPreview(
   }
 
   runtime.queuedMousePoint = mousePoint
-  if (runtime.previewInFlight) {
+  if (runtime.previewWork) {
     return
   }
 
-  runtime.previewInFlight = true
-  void (async () => {
+  const previewWork = (async () => {
     try {
       while (runtime.active && runtime.queuedMousePoint) {
         const nextMousePoint = runtime.queuedMousePoint
@@ -949,9 +1041,10 @@ function requestDraftPreview(
     } catch (error) {
       toastSketchSolveError(error)
     } finally {
-      runtime.previewInFlight = false
+      runtime.previewWork = null
     }
   })()
+  runtime.previewWork = previewWork
 }
 
 async function commitDraftConstraint(
@@ -970,8 +1063,37 @@ async function commitDraftConstraint(
     getDefaultLengthUnit(context.kclManager)
   )
 
+  deactivateRuntime(runtime)
   try {
-    deactivateRuntime(runtime)
+    if (runtime.previewWork) {
+      await runtime.previewWork
+    }
+    if (runtime.cancelled) {
+      return
+    }
+
+    if (constraint.type !== 'Angle') {
+      const matchingConstraint = findMatchingDimensionConstraint(
+        constraint,
+        context.initialObjects
+      )
+      if (matchingConstraint) {
+        await deleteVisiblePreviewConstraint(runtime, context, self)
+        if (runtime.cancelled) {
+          return
+        }
+        showMatchingDimension(self, matchingConstraint.id)
+        self.send({ type: 'done' })
+        return
+      }
+    }
+
+    if (runtime.previewDeletion) {
+      await runtime.previewDeletion
+    }
+    if (runtime.cancelled) {
+      return
+    }
     const settings = jsAppSettings(context.rustContext.settingsActor)
     // This is normally never null, except for edge cases:
     // - click is faster than draft preview creation
@@ -999,7 +1121,9 @@ async function commitDraftConstraint(
     runtime.draftConstraintId = null
     sendCommittedDimensionResult(context, self, result, constraintId)
   } catch (error) {
-    runtime.active = true
+    if (!runtime.cancelled) {
+      runtime.active = true
+    }
     toastSketchSolveError(error)
   }
 }
@@ -1159,6 +1283,7 @@ function addDimensionListener({
 }) {
   const runtime = context.runtime
   runtime.active = true
+  runtime.cancelled = false
   const initialObjects = context.initialObjects
   const initialSelections =
     getInitialAngleLineSelections(
@@ -1296,11 +1421,40 @@ function removeDimensionListener({
   context: DimensionToolContext
 }) {
   deactivateRuntime(context.runtime)
+  context.runtime.cancelled = true
   toastToolbar.dismiss(DIMENSION_PLACEMENT_PROMPT_TOAST_ID)
   context.sceneInfra.setCallbacks({
     onClick: () => {},
     onMove: () => {},
   })
+}
+
+function deleteDraftEntitiesAfterPendingWork({
+  context,
+  self,
+}: {
+  context: DimensionToolContext
+  self: ParentSketchSolveSender
+}) {
+  const previewWork = context.runtime.previewWork
+  void (async () => {
+    if (previewWork) {
+      await previewWork
+    }
+
+    const previewDeletion = context.runtime.previewDeletion
+    if (previewDeletion) {
+      try {
+        await previewDeletion
+      } catch {
+        // The parent cleanup below retries a failed child-owned deletion.
+      }
+    }
+
+    if (context.runtime.draftConstraintId !== null) {
+      sendParent(self, { type: 'delete draft entities' })
+    }
+  })()
 }
 
 export const machine = setup({
@@ -1312,8 +1466,7 @@ export const machine = setup({
   actions: {
     'add dimension listener': addDimensionListener,
     'remove dimension listener': removeDimensionListener,
-    'delete draft entities': ({ self }) =>
-      sendParent(self, { type: 'delete draft entities' }),
+    'delete draft entities': deleteDraftEntitiesAfterPendingWork,
     'toast sketch solve error': ({ event }) => {
       toastSketchSolveError(event)
     },
