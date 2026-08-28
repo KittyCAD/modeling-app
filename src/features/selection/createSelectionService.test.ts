@@ -74,6 +74,7 @@ function setup(
     sourceRangeFor: (id) => sourceRangeFor(artifacts, id),
     // Selection reads the graph, not the program.
     program: computed(() => null),
+    operations: computed(() => ({ map: {} })),
   }
 
   const selection = createSelectionService({
@@ -452,6 +453,7 @@ describe('asking the engine which curve made a face', () => {
       program: computed(() =>
         options.program === undefined ? executed : options.program
       ),
+      operations: computed(() => ({ map: {} })),
     }
 
     const selection = createSelectionService({
@@ -560,6 +562,7 @@ describe('asking the engine which curve made a face', () => {
         artifactFor: (id: string) => map.get(id),
         sourceRangeFor: (id: string) => sourceRangeFor(map, id),
         program: computed(() => executed),
+        operations: computed(() => ({ map: {} })),
       }),
     })
 
@@ -666,6 +669,7 @@ describe('finding the engine face index', () => {
         artifactFor: (id: string) => map.get(id),
         sourceRangeFor: (id: string) => sourceRangeFor(map, id),
         program: computed(() => executed),
+        operations: computed(() => ({ map: {} })),
       }),
     })
 

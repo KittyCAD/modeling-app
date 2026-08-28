@@ -1,8 +1,9 @@
 import { defineContract, defineService } from '@kittycad/registry'
+import type { ReadonlySignal } from '@preact/signals'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
+import type { OperationsByModule } from '@rust/kcl-lib/bindings/OperationsByModule'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import type { ReadonlySignal } from '@preact/signals'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
 
 /**
@@ -45,6 +46,15 @@ export interface KclSceneService {
    * "should the Sketch mode button be enabled".
    */
   readonly program: ReadonlySignal<ExecutedProgram | null>
+  /**
+   * The operation timeline from the same run as `artifacts`.
+   *
+   * This is the feature tree's source of truth. It stays with the scene instead
+   * of the generic execution coordinator because only the KCL executor knows
+   * what an operation means, and because it describes the executing buffer —
+   * not whichever buffer happens to be visible in an editor.
+   */
+  readonly operations: ReadonlySignal<OperationsByModule>
 }
 
 export const kclSceneContract = defineContract({

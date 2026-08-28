@@ -5,14 +5,20 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals'
-import { engineConnectionService } from '@src/contracts/engine'
+import type { OperationsByModule } from '@rust/kcl-lib/bindings/OperationsByModule'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import { engineConnectionService } from '@src/contracts/engine'
+import { type Executor, executorsValueSpec } from '@src/contracts/execution'
+import type {
+  KclContextHandle,
+  KclContextService,
+} from '@src/contracts/kclContext'
+import { kclContextService } from '@src/contracts/kclContext'
 import {
   type ExecutedProgram,
   type KclSceneService,
   kclSceneService,
 } from '@src/contracts/kclScene'
-import { type Executor, executorsValueSpec } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { settingsService } from '@src/contracts/settings'
 import {
@@ -21,11 +27,6 @@ import {
   showScaleGridSetting,
 } from '@src/features/engineScene/settings'
 import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
-import type {
-  KclContextHandle,
-  KclContextService,
-} from '@src/contracts/kclContext'
-import { kclContextService } from '@src/contracts/kclContext'
 import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
 import {
   diagnosticsFromFailure,
@@ -69,6 +70,7 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const artifacts = signal<ArtifactMap>(new Map())
   const program = signal<ExecutedProgram | null>(null)
+  const operations = signal<OperationsByModule>({ map: {} })
   /** Whether a context exists, for anything that must not create one. */
   const contextReady = signal(false)
 
@@ -203,6 +205,7 @@ export default defineRegistryItemFactory((ctx) => {
         // Published as it arrives: this is the only place the graph exists, and
         // selection cannot name what was clicked without it.
         artifacts.value = artifactsFrom(outcome.artifactGraph)
+        operations.value = outcome.operations ?? { map: {} }
 
         return {
           requestId: request.requestId,
@@ -232,6 +235,7 @@ export default defineRegistryItemFactory((ctx) => {
     artifactFor: (entityId) => artifacts.value.get(entityId),
     sourceRangeFor: (entityId) => sourceRangeFor(artifacts.value, entityId),
     program: computed(() => program.value),
+    operations: computed(() => operations.value),
   }
 
   return {

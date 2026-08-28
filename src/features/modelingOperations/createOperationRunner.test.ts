@@ -679,6 +679,7 @@ describe('answering from the scene', () => {
     // Nothing here asks what the last run read; the resolver works from the
     // program it was handed.
     program: computed(() => null),
+    operations: computed(() => ({ map: {} })),
   })
 
   const resolverFor = (

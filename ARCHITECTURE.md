@@ -1153,6 +1153,35 @@ shrunk to one command becomes a plain button, because a caret asking a question
 with one answer is a worse button. Both live in `resolveToolbar`, so the
 component holds no policy and the awkward cases are unit tests.
 
+### The executing buffer's outline is a scene HUD
+
+The start edge contains one **outline HUD**, and that HUD has its own contributed
+sections. `sceneHudSectionsValueSpec` is deliberately finer than the four scene
+zones: the scene decides where the outline belongs, while features decide what
+views of the executing buffer stack inside it. The feature tree contributes the
+first section; a bodies list can contribute the next one without either feature
+importing or arranging the other.
+
+This is not a layout pane. The engine scene is the GUI point of contact for the
+executing buffer, and the operation timeline is another representation of that
+same buffer, so separating them in the app layout would make one scene look like
+two unrelated documents. The translucent, bounded surface overlays the geometry
+like a heads-up display. Pointer events belong only to the HUD itself; the rest
+of the start zone remains transparent to orbit and selection.
+
+The KCL scene service publishes typed `OperationsByModule` beside its artifact
+graph and last executed program. That keeps executor-specific output out of the
+generic execution coordinator and makes an important ownership statement: the
+tree describes the buffer that produced the scene, not whichever editor happens
+to be active. Clicking a root-module row activates that executing buffer and
+selects the operation's source. kcl-lib reports UTF-8 byte offsets and CodeMirror
+uses UTF-16 positions, so the conversion happens explicitly at this boundary.
+
+Sketch and function groups become nested disclosures, imported modules expand at
+most once, cycles terminate, and `hide` calls stay implementation detail rather
+than features. Imported-module rows are visible but do not navigate yet because
+the executor does not currently publish the source text for every module.
+
 ### Sketching is a place
 
 `sketchMode` derives "am I in a sketch" from the file: the executor publishes the
@@ -1344,8 +1373,9 @@ readers wrong.
 - Watching is desktop-only, and a project folder moved or deleted underneath the
   app is reported as a change to each file rather than as the project going away
 - An engine-idle signal, so the view can be framed automatically after execution
-- Selection and the feature tree. Camera controls are in; clicking the model to
-  select something is not, and it plugs into the same interaction seam
+- Feature-tree editing, visibility controls and imported-module navigation. The
+  scene HUD and operation outline are in; rows currently navigate root-module
+  source and leave mutations to the code and modeling-operation surfaces
 - Network library types. The type contribution is the seam; nothing in the
   service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a

@@ -1,0 +1,95 @@
+.zds-scene-hud {
+  display: flex;
+  flex-direction: column;
+  inline-size: clamp(15rem, 22vw, 21rem);
+  max-block-size: min(68vh, 40rem);
+  overflow: hidden;
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content-lg);
+  background: color-mix(in oklch, var(--zds-surface-overlay) 78%, transparent);
+  box-shadow: var(--zds-shadow-overlay);
+  backdrop-filter: blur(0.5rem);
+  color: var(--zds-text-primary);
+}
+
+.zds-scene-hud__section {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
+.zds-scene-hud__section + .zds-scene-hud__section {
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-scene-hud__section[data-open="true"] {
+  flex: 1 1 auto;
+}
+
+.zds-scene-hud__heading {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--zds-size-statusbar);
+  color: var(--zds-text-secondary);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  text-transform: uppercase;
+  letter-spacing: var(--zds-tracking-label);
+  user-select: none;
+}
+
+.zds-scene-hud__toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--zds-space-1);
+  min-inline-size: 0;
+  min-block-size: var(--zds-size-statusbar);
+  margin: 0;
+  padding: 0 var(--zds-space-2);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: default;
+}
+
+.zds-scene-hud__toggle:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-scene-hud__toggle > .zds-icon:first-child {
+  transition: transform var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-scene-hud__section[data-open="true"]
+  .zds-scene-hud__toggle
+  > .zds-icon:first-child {
+  transform: rotate(90deg);
+}
+
+.zds-scene-hud__title {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-scene-hud__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-025);
+  padding-inline-end: var(--zds-space-1);
+}
+
+.zds-scene-hud__section-body {
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}

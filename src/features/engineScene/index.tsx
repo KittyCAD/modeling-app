@@ -7,21 +7,22 @@ import {
 import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
-import { cameraDriverService } from '@src/contracts/scene'
+import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
-import {
-  HIGHLIGHT_COLOR,
-  SELECTION_COLOR,
-  backgroundColorFor,
-  parseHexColor,
-  systemColorFor,
-} from '@src/features/engineScene/engineColors'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
+import {
+  backgroundColorFor,
+  HIGHLIGHT_COLOR,
+  parseHexColor,
+  SELECTION_COLOR,
+  systemColorFor,
+} from '@src/features/engineScene/engineColors'
+import { SceneHud } from '@src/features/engineScene/SceneHud'
 import {
   backfaceColorSetting,
   enableSsaoSetting,
@@ -146,6 +147,18 @@ export default defineRegistryItemFactory((ctx) => {
       ],
       provides: [
         ...sceneSettings.map((setting) => provide(settingsValueSpec, setting)),
+
+        /**
+         * One start-side HUD, with its contents contributed through their own
+         * value spec. The scene owns the placement; feature and body trees only
+         * know that they are outline sections ordered inside it.
+         */
+        provide(sceneItemsValueSpec, {
+          id: 'scene.outlineHud',
+          zone: 'start',
+          order: -100,
+          render: () => <SceneHud />,
+        }),
 
         /**
          * Chosen when the socket opens, so they travel in the URL.

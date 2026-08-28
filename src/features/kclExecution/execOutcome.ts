@@ -1,13 +1,14 @@
+import type { OperationsByModule } from '@rust/kcl-lib/bindings/OperationsByModule'
 import type { ExecutionDiagnostic } from '@src/contracts/execution'
 import {
-  type KclCompilationIssue,
   issuesToDiagnostics,
+  type KclCompilationIssue,
 } from '@src/features/kclAnalysis/diagnostics'
 
 /** The parts of `ExecOutcome` this app reads. */
 export interface KclExecOutcome {
   issues?: KclCompilationIssue[]
-  operations?: unknown
+  operations?: OperationsByModule
   artifactGraph?: unknown
   variables?: Record<string, unknown>
   defaultPlanes?: unknown
@@ -43,7 +44,7 @@ export interface KclExecutionSummary {
   variableNames: string[]
   /** Whether the engine reported default planes, i.e. a scene exists. */
   hasScene: boolean
-  operations: unknown
+  operations: OperationsByModule | undefined
   artifactGraph: unknown
 }
 
