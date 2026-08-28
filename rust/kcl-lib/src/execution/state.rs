@@ -1359,9 +1359,6 @@ impl ExecState {
     /// Gate for behaviors introduced in KCL 3.0-preview. True only when the
     /// entry-point module of this execution declared kclVersion 3.0-preview
     /// or later.
-    // TODO: Remove the expect once the first 3.0-preview-gated behavior lands.
-    // Tests already call this, so the lint only fires in non-test builds.
-    #[cfg_attr(not(test), expect(dead_code))]
     pub(crate) fn entry_point_is_v3(&self) -> bool {
         self.global
             .entry_point_kcl_version

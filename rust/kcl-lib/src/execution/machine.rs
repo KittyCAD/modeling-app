@@ -330,8 +330,17 @@ enum Control {
     /// `exit()` was called (or an edited sketch block finished): unwind every
     /// continuation -- running cleanups, and the exit flavor of call_finish on
     /// call boundaries -- out to the fresh root, which returns the carried
-    /// control-flow value.
+    /// control-flow value. Only `Exit`-kind control flow enters here; a
+    /// 3.0-preview `return` uses [`Control::Return`].
     Exit(KclValueControlFlow),
+    /// A `return` executed under a 3.0-preview entry point: unwind
+    /// continuations -- running cleanups -- to the nearest call boundary,
+    /// which absorbs the value as the function's normal result (tags and
+    /// return-type coercion apply) and resumes the machine. Reaches the fresh
+    /// root only when no boundary remains (a callback body, whose native call
+    /// frame absorbs it, or a top-level return escaping an expression, which
+    /// run_block rejects).
+    Return(KclValueControlFlow),
 }
 
 /// What a finished sub-computation produced.
@@ -646,6 +655,19 @@ pub(super) async fn run_block(
         Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
     };
     let result = run_loop(ctx, control, konts, exec_state).await?;
+    // A Return can reach a root block only by escaping an expression
+    // evaluated at the top level (e.g. an if-arm); a `return` statement here
+    // is rejected in step_block before it evaluates. Match the recursive
+    // executor: error, skipping the flush.
+    if matches!(body_type, BodyType::Root)
+        && let RootResult::Exited(cf) = &result
+        && cf.is_return()
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot return from outside a function.".to_owned(),
+            cf.source_ranges(),
+        )));
+    }
     if matches!(body_type, BodyType::Root) {
         // Flush the batch queue for the root, whether it completed or was
         // terminated by an exit(): the recursive executor's flush sits after
@@ -695,7 +717,8 @@ pub(crate) async fn run_expr(
 enum RootResult {
     /// The root computation finished with this result.
     Done(Applied),
-    /// An exit() unwound all the way out (cleanups already ran).
+    /// An exit() -- or a 3.0-preview return with no call boundary left --
+    /// unwound all the way out (cleanups already ran).
     Exited(KclValueControlFlow),
 }
 
@@ -725,6 +748,11 @@ async fn run_loop(
                 let cf = unwind_exit(cf, &mut konts, exec_state)?;
                 return Ok(RootResult::Exited(cf));
             }
+            Control::Return(cf) => match unwind_return(cf, &mut konts, exec_state, ctx).await {
+                Ok(ReturnUnwind::Resume(c)) => c,
+                Ok(ReturnUnwind::Root(cf)) => return Ok(RootResult::Exited(cf)),
+                Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
+            },
         };
     }
 }
@@ -779,6 +807,78 @@ fn unwind_exit(
         }
     }
     Ok(cf)
+}
+
+/// How a `Return` unwind ended.
+// Variant sizes intentionally differ, like the machine's other frames.
+#[allow(clippy::large_enum_variant)]
+enum ReturnUnwind {
+    /// A call boundary absorbed the Return; the machine resumes with this.
+    Resume(Control),
+    /// No call boundary remained: the fresh root receives the Return (a
+    /// callback body's native call frame absorbs it; run_block rejects it
+    /// for a root block).
+    Root(KclValueControlFlow),
+}
+
+/// Unwind continuations for a 3.0-preview `return`: cleanups on
+/// non-boundaries, the balancing sketch cleanup (including its feature-tree
+/// `GroupEnd`) on sketch bodies, and then -- unlike unwind_exit -- stop at
+/// the nearest call boundary, which absorbs the value as the function's
+/// normal result via call_finish (tags and return-type coercion apply) and
+/// resumes the machine from the boundary's completion. Errors propagate to
+/// the caller, which unwinds the remaining continuations.
+async fn unwind_return(
+    cf: KclValueControlFlow,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<ReturnUnwind, KclError> {
+    while let Some(kont) = konts.pop() {
+        match kont {
+            Kont::CallBoundary(boundary) => {
+                exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
+                let BoundaryState {
+                    state,
+                    fn_src,
+                    fn_name,
+                    callsite,
+                    expects: _,
+                    completion,
+                } = *boundary;
+                return match completion {
+                    BoundaryCompletion::CallExpr { fn_meta } => {
+                        let finished = fn_src
+                            .call_finish(state, Ok(Some(cf)), exec_state)
+                            .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
+                        Ok(ReturnUnwind::Resume(finish_call_value(
+                            finished, fn_name, callsite, fn_meta,
+                        )?))
+                    }
+                    BoundaryCompletion::Callback => {
+                        let finished = fn_src.call_finish(state, Ok(Some(cf)), exec_state)?;
+                        Ok(ReturnUnwind::Resume(match finished {
+                            // Only an Exit can pass through call_finish; the
+                            // Return was absorbed.
+                            Some(cf) if cf.is_some_return() => Control::Exit(cf),
+                            Some(cf) => {
+                                resume_drive(Feed::Callback(Some(cf.into_value())), konts, exec_state, ctx).await?
+                            }
+                            None => resume_drive(Feed::Callback(None), konts, exec_state, ctx).await?,
+                        }))
+                    }
+                };
+            }
+            Kont::SketchBody(sb) => {
+                sketch_body_cleanup(*sb, exec_state);
+                // Balance the GroupBegin operation pushed by scene_setup,
+                // matching the exit path.
+                exec_state.push_op(Operation::GroupEnd);
+            }
+            other => cleanup(other, exec_state)?,
+        }
+    }
+    Ok(ReturnUnwind::Root(cf))
 }
 
 /// Unwind every continuation for an error: cleanups on non-boundaries,
@@ -1359,6 +1459,17 @@ async fn step_apply(
     }
 }
 
+/// Route a control-flow value produced by shared (recursive-style) helper
+/// code to the matching machine unwind: a 3.0-preview `Return` unwinds to the
+/// nearest call boundary, anything else is an `Exit`.
+fn unwind_control(cf: KclValueControlFlow) -> Control {
+    if cf.is_return() {
+        Control::Return(cf)
+    } else {
+        Control::Exit(cf)
+    }
+}
+
 /// Push a block-sequencing continuation.
 fn push_block(block: BlockRef, body_type: BodyType, konts: &mut Vec<Kont>) {
     konts.push(Kont::BlockSeq {
@@ -1450,6 +1561,13 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
+                if exec_state.entry_point_is_v3() {
+                    // 3.0-preview: early return. The rest of this block is
+                    // abandoned (this continuation is already popped and
+                    // holds no ambient state); unwind_return absorbs the
+                    // value at the nearest call boundary.
+                    return Ok(Control::Return(value.return_()));
+                }
                 crate::execution::ExecutorContext::bind_return_value(return_statement, value, exec_state)?;
                 last = None;
                 index += 1;
@@ -2229,6 +2347,8 @@ fn finish_call_value(
     fn_meta: Vec<Metadata>,
 ) -> Result<Control, KclError> {
     match finished {
+        // Only an Exit can pass through call_finish; a 3.0-preview Return is
+        // absorbed there and arrives here as a Continue.
         Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
         Some(cf) => Ok(Control::Apply(Applied::Value(cf.into_value()))),
         None => {
@@ -2268,7 +2388,7 @@ async fn start_sketch_block(
     if exec_state.sketch_mode() {
         let (sketch_id, sketch_surface) = match node.arguments_from_cache(exec_state) {
             Ok(x) => x,
-            Err(crate::execution::EarlyReturn::Value(cf)) => return Ok(Control::Exit(cf)),
+            Err(crate::execution::EarlyReturn::Value(cf)) => return Ok(unwind_control(cf)),
             Err(crate::execution::EarlyReturn::Error(e)) => return Err(e),
         };
         return sketch_block_body_setup(node, sketch_id, sketch_surface, konts, exec_state, ctx).await;
@@ -2336,7 +2456,7 @@ async fn sketch_args_finish(
     let SketchArgsState { node, labeled, .. } = state;
     let (sketch_id, sketch_surface) = match node.finish_arguments_after_eval(labeled, exec_state, ctx).await {
         Ok(x) => x,
-        Err(crate::execution::EarlyReturn::Value(cf)) => return Ok(Control::Exit(cf)),
+        Err(crate::execution::EarlyReturn::Value(cf)) => return Ok(unwind_control(cf)),
         Err(crate::execution::EarlyReturn::Error(e)) => return Err(e),
     };
     sketch_block_body_setup(node, sketch_id, sketch_surface, konts, exec_state, ctx).await

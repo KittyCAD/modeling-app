@@ -214,7 +214,15 @@ pub(crate) use early_return;
 pub enum ControlFlowKind {
     #[default]
     Continue,
+    /// `exit()` was called: unwind all the way to the program root, bypassing
+    /// function-call boundaries.
     Exit,
+    /// A `return` statement executed under a 3.0-preview entry point: unwind
+    /// to the nearest function-call boundary, which absorbs it as the
+    /// function's result. Never constructed under older entry points, whose
+    /// `return` uses write-and-continue semantics instead; see
+    /// `bind_return_value`.
+    Return,
 }
 
 impl ControlFlowKind {
@@ -222,7 +230,7 @@ impl ControlFlowKind {
     pub fn is_some_return(&self) -> bool {
         match self {
             ControlFlowKind::Continue => false,
-            ControlFlowKind::Exit => true,
+            ControlFlowKind::Exit | ControlFlowKind::Return => true,
         }
     }
 }
@@ -249,12 +257,32 @@ impl KclValue {
             control: ControlFlowKind::Exit,
         }
     }
+
+    pub(crate) fn return_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: Box::new(self),
+            control: ControlFlowKind::Return,
+        }
+    }
 }
 
 impl KclValueControlFlow {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
         self.control.is_some_return()
+    }
+
+    pub(crate) fn is_exit(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Exit)
+    }
+
+    pub(crate) fn is_return(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Return)
+    }
+
+    /// The source ranges of the wrapped value, for error reporting.
+    pub(crate) fn source_ranges(&self) -> Vec<SourceRange> {
+        self.value.metadata().iter().map(|m| m.source_range).collect()
     }
 
     pub(crate) fn into_value(self) -> KclValue {
@@ -5089,6 +5117,372 @@ box = filletedBox()
 "#;
         let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
+    }
+
+    /// Runs `code` under both executors and returns the per-executor results,
+    /// so early-return semantics are pinned on each regardless of the local
+    /// `KCL_EXECUTOR` setting.
+    async fn parse_execute_each_executor(
+        code: &str,
+    ) -> Vec<(machine::ExecutorKind, Result<ExecTestResults, KclError>)> {
+        let mut results = Vec::new();
+        for kind in [machine::ExecutorKind::Recursive, machine::ExecutorKind::Machine] {
+            results.push((kind, parse_execute_with_executor_kind(code, None, kind).await));
+        }
+        results
+    }
+
+    #[track_caller]
+    fn variable_f64(result: &ExecTestResults, name: &str) -> f64 {
+        mem_get_json(result.exec_state.stack(), result.mem_env, name)
+            .as_f64()
+            .unwrap()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_terminates_function_early_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn second_return_is_unreachable_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_if_arm_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  dummy = if b {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f(true)
+y = f(false)
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
+            assert_eq!(variable_f64(&result, "y"), 2.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_nested_if_returns_from_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@a, b) {
+  dummy = if a {
+    inner = if b {
+      return 10
+      0
+    } else {
+      1
+    }
+    inner + 1
+  } else {
+    2
+  }
+  return dummy * 100
+}
+x = f(true, b = true)
+y = f(true, b = false)
+z = f(false, b = false)
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 10.0, "{kind}");
+            assert_eq!(variable_f64(&result, "y"), 200.0, "{kind}");
+            assert_eq!(variable_f64(&result, "z"), 200.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_closure_returns_only_from_closure_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn outer() {
+  inner = fn() {
+    return 5
+    assert(1, isEqualTo = 2, error = "code after inner return ran")
+  }
+  v = inner()
+  return v + 1
+}
+x = outer()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 6.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_type_coercion_applies_to_early_return_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
+        }
+
+        // A coercion failure surfaces as an error (on the machine, this
+        // exercises unwind_return's error path).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(): number(mm) {
+  return "nope"
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let err = result.expect_err(&format!("{kind}: coercion failure should error"));
+            assert!(
+                err.message().contains("type"),
+                "{kind}: unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_at_top_level_errors() {
+        // A return statement at the top level is rejected in all versions.
+        for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
+            let code = format!("{header}return 1\n");
+            for (kind, result) in parse_execute_each_executor(&code).await {
+                assert_eq!(
+                    result.expect_err(&format!("{kind}: should error")).message(),
+                    "Cannot return from outside a function.",
+                    "{kind}"
+                );
+            }
+        }
+
+        // Under 3.0-preview, a return escaping a top-level if-arm is also
+        // rejected (without the setting it is silently ignored; see
+        // top_level_if_arm_return_ignored_without_v3).
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            assert_eq!(
+                result.expect_err(&format!("{kind}: should error")).message(),
+                "Cannot return from outside a function.",
+                "{kind}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_function_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  exit()
+  return 1
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_terminates_function_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 42.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_sketch_block_ignored_without_v3() {
+        // Pins the pre-3.0-preview behavior: `__return` binds in the sketch
+        // block's child environment and is lost when it pops.
+        let code = r#"@settings(experimentalFeatures = allow)
+fn f() {
+  sketch(on = XY) {
+    l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+    return 42
+  }
+  return 0
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 0.0, "{kind}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn code_after_return_still_runs_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let err = result.expect_err(&format!("{kind}: should error"));
+            assert!(
+                err.message().contains("ran past return"),
+                "{kind}: unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_returns_error_without_v3() {
+        let code = r#"fn f() {
+  return 1
+  return 2
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            assert_eq!(
+                result.expect_err(&format!("{kind}: should error")).message(),
+                "Multiple returns from a single function.",
+                "{kind}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_return_plus_function_return_errors_without_v3() {
+        // Pins the pre-3.0-preview behavior: the if-arm's `return` writes
+        // `__return` into the function's environment, so the function-level
+        // `return` is a second return.
+        let code = r#"fn f() {
+  dummy = if true {
+    return 1
+    0
+  } else {
+    0
+  }
+  return 2
+}
+x = f()
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            assert_eq!(
+                result.expect_err(&format!("{kind}: should error")).message(),
+                "Multiple returns from a single function.",
+                "{kind}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn top_level_if_arm_return_ignored_without_v3() {
+        // Pins the pre-3.0-preview behavior: the return silently binds
+        // `__return` in the root environment and the arm yields its trailing
+        // expression.
+        let code = r#"x = if true {
+  return 1
+  0
+} else {
+  0
+}
+"#;
+        for (kind, result) in parse_execute_each_executor(code).await {
+            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
+            assert_eq!(variable_f64(&result, "x"), 0.0, "{kind}");
+            assert_eq!(variable_f64(&result, memory::RETURN_NAME), 1.0, "{kind}");
+        }
+    }
+
+    /// Early return is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_semantics_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps write-and-continue everywhere, even inside
+        // an imported 3.0-preview module: its function still runs code after
+        // return, and a return escaping its module-level if-arm is still
+        // silently ignored.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  return 1
+  0
+} else {
+  0
+}
+
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import f from "dep.kcl"
+x = f()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A 3.0-preview entry point applies early return everywhere,
+        // including inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+export fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "ran past return")
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import f from "dep.kcl"
+x = f()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
