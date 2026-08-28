@@ -18,7 +18,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
-describe('Boolean Split edit input preservation', () => {
+describe('Boolean split edit input preservation', () => {
   it('preserves target and tool inputs when editing an upstream split with a downstream composite child', () => {
     const wasmInstance = {} as ModuleType
     const targetPath: PathToNode = [

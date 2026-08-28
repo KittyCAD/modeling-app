@@ -108,14 +108,14 @@ function preserveSplitInputsOnEdit({
   }
 
   const existingToolsArg = existingCall.node.arguments.find(
-    (arg) => arg.label.name === 'tools'
+    (arg) => arg.label?.name === 'tools'
   )
   if (!existingToolsArg) {
     return
   }
 
   const replacementToolsIndex = call.arguments.findIndex(
-    (arg) => arg.label.name === 'tools'
+    (arg) => arg.label?.name === 'tools'
   )
   if (replacementToolsIndex === -1) {
     call.arguments.unshift(structuredClone(existingToolsArg))
