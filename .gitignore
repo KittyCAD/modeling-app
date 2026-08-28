@@ -93,3 +93,7 @@ $RECYCLE.BIN/
 .vscode/
 *.swp
 *.swo
+
+# Claude Code scratch space: agent worktrees and local session state, which
+# are per-checkout and per-machine.
+.claude/

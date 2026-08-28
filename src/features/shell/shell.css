@@ -156,8 +156,8 @@
 
 /*
  * The centre of the top bar names what is open, project then file, in mono.
- * It is a readout, not navigation — clicking the project name is the only
- * action, and it goes home.
+ * The project name goes home; the file name opens a chooser for what the engine
+ * executes, so it gets a hover surface and the project name does not.
  */
 .zds-crumbs {
   display: flex;
@@ -185,10 +185,24 @@
 }
 
 .zds-crumbs__file {
+  /* Chassis geometry: square corners, so the hover surface reads as part of
+   * the strip rather than as a control floating on it. */
+  padding-inline: var(--zds-space-1);
+  border-radius: var(--zds-radius-chassis);
   color: var(--zds-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.zds-crumbs__file:hover,
+.zds-crumbs__file[aria-expanded="true"] {
+  background: var(--zds-surface-raised);
+}
+
+/* The menu wrapper is a flex box of its own; keep it on the crumb baseline. */
+.zds-crumbs .zds-menu {
+  align-items: baseline;
 }
 
 .zds-crumbs__dirty {
