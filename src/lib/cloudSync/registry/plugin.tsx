@@ -49,7 +49,10 @@ import {
   classifyCloudProjectDuplicateRisk,
   deriveCloudProjectRelationships,
 } from '@src/lib/cloudSync/relationships'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  OPFS_CLOUD_FEATURE_FLAG,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
@@ -66,6 +69,8 @@ import {
 } from '@src/lib/projectLibraries/operations'
 import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
 import { invalidateProjectLibraryRealizations } from '@src/lib/projectLibraries/registry/invalidation'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import {
   canRevealInFileExplorer,
   revealInFileExplorer,
@@ -1483,11 +1488,24 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
       },
       moveProjectTo: {
         run: async ({ library, source }) => {
+          const projectToml = await fsZds
+            .readFile(
+              fsZds.join(source.localProjectPath, PROJECT_SETTINGS_FILE_NAME),
+              { encoding: 'utf-8' }
+            )
+            .catch(() => '')
+          const projectTitle =
+            getProjectTitleFromProjectTomlContents(projectToml)
           const result = await moveProjectIntoLocalDirectory({
             projectDirectoryPath:
               await getCloudProjectLibraryMaterializationDirectoryPath(library),
             sourceProjectPath: source.localProjectPath,
-            sourceProjectName: source.localProjectName,
+            sourceProjectName: projectTitle
+              ? getProjectDirectoryNameFromTitle(
+                  projectTitle,
+                  source.localProjectName
+                )
+              : source.localProjectName,
             defaultFile: source.defaultFile,
           })
 
