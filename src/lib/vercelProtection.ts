@@ -8,7 +8,12 @@ function isVercelPreviewUrl(url: string | undefined) {
   }
 
   try {
-    return new URL(url).hostname.endsWith('vercel.dev.zoo.dev')
+    const hostname = new URL(url).hostname
+    return (
+      hostname.endsWith('vercel.dev.zoo.dev') ||
+      hostname === 'dev.zoo.dev' ||
+      hostname.endsWith('.dev.zoo.dev')
+    )
   } catch {
     return false
   }

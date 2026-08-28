@@ -37,19 +37,21 @@ describe('Vercel visitor-password fallback', () => {
     ).toBe(false)
   })
 
-  it('does not use the visitor-password fallback for production or staging app targets', () => {
+  it('does not use the visitor-password fallback for production app targets', () => {
     expect(
       shouldUseVercelVisitorPasswordFallback({
         VERCEL_BASE_URL: 'https://app.zoo.dev',
         VERCEL_VISITOR_PASSWORD: 'visitor-password',
       })
     ).toBe(false)
+  })
 
+  it('uses the visitor-password fallback for protected dev app targets', () => {
     expect(
       shouldUseVercelVisitorPasswordFallback({
         VERCEL_BASE_URL: 'https://app.dev.zoo.dev',
         VERCEL_VISITOR_PASSWORD: 'visitor-password',
       })
-    ).toBe(false)
+    ).toBe(true)
   })
 })

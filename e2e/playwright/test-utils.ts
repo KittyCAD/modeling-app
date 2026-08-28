@@ -132,23 +132,26 @@ async function unlockVercelVisitorPasswordIfNeeded(page: Page) {
     return
   }
 
-  const passwordInput = page.getByPlaceholder('Visitor password').first()
-  const isVisitorPasswordPage = await passwordInput
-    .isVisible()
-    .catch(() => false)
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const passwordInput = page.getByPlaceholder('Visitor password').first()
+    const isVisitorPasswordPage = await passwordInput
+      .waitFor({ state: 'visible', timeout: 5_000 })
+      .then(() => true)
+      .catch(() => false)
 
-  if (!isVisitorPasswordPage) {
-    return
+    if (!isVisitorPasswordPage) {
+      return
+    }
+
+    await passwordInput.fill(visitorPassword)
+    await Promise.all([
+      page.waitForLoadState('domcontentloaded').catch(() => undefined),
+      page.getByRole('button', { name: /^Unlock$/ }).click(),
+    ])
+    await expect(page.getByPlaceholder('Visitor password')).toBeHidden({
+      timeout: 10_000,
+    })
   }
-
-  await passwordInput.fill(visitorPassword)
-  await Promise.all([
-    page.waitForLoadState('domcontentloaded').catch(() => undefined),
-    page.getByRole('button', { name: /^Unlock$/ }).click(),
-  ])
-  await expect(page.getByPlaceholder('Visitor password')).toBeHidden({
-    timeout: 10_000,
-  })
 }
 
 async function removeCurrentCode(page: Page) {
@@ -447,6 +450,10 @@ async function waitForAuthAndLsp(page: Page) {
     if (useVisitorPasswordFallback) {
       await page.goto(vercelStartupPath)
       await unlockVercelVisitorPasswordIfNeeded(page)
+      if (page.url().includes('/signin')) {
+        await page.goto(vercelStartupPath)
+        await unlockVercelVisitorPasswordIfNeeded(page)
+      }
       didNavigateWithToken = Boolean(token)
     }
 
