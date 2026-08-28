@@ -414,7 +414,7 @@ writes to a lower layer, so "why is this value what it is" always has a
 three-line answer — which the dialog prints under every row.
 
 A setting is **data contributed by the feature whose behaviour it changes**
-(`src/contracts/settings.ts`). The engine owns the camera settings, the theme
+(`src/contracts/settings.ts`). The camera owns the camera settings, the theme
 owns the theme; the settings feature owns no setting at all, only the cascade and
 the surface that draws it. Adding a preference never touches
 `src/features/settings/`.

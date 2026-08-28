@@ -17,7 +17,7 @@ const platformGuards = () =>
   cameraMouseGuards(typeof navigator === 'undefined' ? '' : navigator.platform)
 
 /**
- * The camera's own preferences, owned by the sub-feature that acts on them.
+ * The camera's own preferences, owned by the feature that acts on them.
  *
  * All three are user-level: `ProjectModelingSettings` in the Rust schema has no
  * camera fields, and rightly so — how someone likes to orbit is a property of

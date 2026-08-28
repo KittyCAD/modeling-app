@@ -35,9 +35,11 @@ import {
  * — and the engine starts each scene at its own defaults, so all of it has to be
  * stated and then restated.
  *
- * Camera behaviour is a sub-feature rather than more code in this file: it owns
- * three settings and all of the pointer handling, and none of that needs to be
- * near the background colour.
+ * The camera is not here at all. It is its own feature, because which gesture a
+ * button means and how someone likes to orbit stay true when the renderer
+ * changes; all this file contributes is the driver on the other side of
+ * `cameraDriverService` — the command envelope, the pixel space, and the rate
+ * limit, none of which survive that change.
  */
 export default defineRegistryItemFactory((ctx) => {
   const engine = () => ctx.services.get(engineConnectionService)
