@@ -120,6 +120,7 @@
     "test": "vitest --mode=development",
     "test:unit": "vitest run --mode=development --project=unit --sequence.shuffle",
     "test:integration": "vitest run --mode=development --project=integration --sequence.shuffle",
+    "test:properties": "vitest run --mode=development --project=unit .properties.test",
     "test:e2e:kcl": "(cd rust && just test && just lint)"
   },
   "browserslist": {
@@ -180,6 +181,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-vitest": "^0.5.4",
     "fake-indexeddb": "^6.2.5",
+    "fast-check": "^4.9.0",
     "happy-dom": "^20.9.0",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
