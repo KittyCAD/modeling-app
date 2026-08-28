@@ -4214,7 +4214,7 @@ description: Result of parsing golf-tee.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Toys, Games, & Recreation; 3D Printable; Parametric",
             "style": "line"
           }
         },

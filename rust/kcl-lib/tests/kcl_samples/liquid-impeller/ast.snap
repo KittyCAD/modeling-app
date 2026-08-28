@@ -9553,7 +9553,7 @@ description: Result of parsing liquid-impeller.kcl
         "preComments": [
           "// Liquid Impeller",
           "// An open-style impeller for use with incompressible fluid in a centrifugal pump",
-          "// Categories: Aerospace, Manufacturing",
+          "// Categories: Industrial & Manufacturing; Mechanical Components",
           "",
           "",
           "// Set units"

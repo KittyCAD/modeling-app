@@ -80,7 +80,7 @@ export async function publishCurrentProject(
     project: args.project,
   })
   if (err(uploadedProject)) {
-    toast.error(uploadedProject.message, {
+    toast.error(getPublishErrorMessage(uploadedProject), {
       duration: 5000,
     })
     return false
@@ -93,7 +93,7 @@ export async function publishCurrentProject(
     })
   )
   if (err(publishedProject)) {
-    toast.error(publishedProject.message, {
+    toast.error(getPublishErrorMessage(publishedProject), {
       duration: 5000,
     })
     return false
@@ -109,6 +109,17 @@ export async function publishCurrentProject(
   )
 
   return true
+}
+
+function getPublishErrorMessage(error: Error) {
+  if (
+    /(?:category|categories)/i.test(error.message) &&
+    /not active|inactive|does not exist|invalid/i.test(error.message)
+  ) {
+    return 'One or more selected categories are no longer available. Choose an active category and try again.'
+  }
+
+  return error.message
 }
 
 export async function getCurrentProjectPublicationDetails({
