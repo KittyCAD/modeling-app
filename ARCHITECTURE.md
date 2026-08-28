@@ -1282,6 +1282,50 @@ The trust boundary:
 The desktop app reads and writes real project folders through this, and the KCL
 standard library reads imported files through the same service.
 
+## Property tests
+
+`fast-check` on the `unit` project, in files named `*.properties.test.ts`
+alongside the examples they complement. `npm run test:properties` runs just
+those; `npm run test:unit` runs them with everything else.
+
+An example test says what a function is *for*. A property test says what is true
+of it for every input, which is a different job and worth having both:
+
+- `src/lib/buffers/minimalChange.properties.test.ts` — applying the change
+  reaches the new text, the span is inside the old document, and a one-line edit
+  costs no more than that line. The undo history, the selection, and the payload
+  sent to the engine all depend on that last one.
+- `src/features/kclLsp/framing.properties.test.ts` — every message survives every
+  chunking of the stream, including one byte at a time and a body that looks like
+  a frame header. `framing.ts` already said these bugs "are only findable in a
+  test"; the variable is where the boundaries fall, and there are as many answers
+  as bytes.
+- `src/features/kclLsp/uris.properties.test.ts` — path to URI and back is exact,
+  and never gives two paths one URI.
+- `src/features/keybindings/keymap.properties.test.ts` — every spelling of a
+  chord has one normal form, `Mod` resolves to the same chord on both platforms,
+  and the strongest active scope takes a contested sequence.
+- `src/features/keybindings/persistedKeymap.properties.test.ts` — the two rules
+  the keymap file claims, over arbitrary pairs of keymaps.
+
+Two things worth knowing before adding more:
+
+- **The generator is the test.** Most of the thought goes into drawing inputs
+  that can actually fail — text over a three-character alphabet, because repeats
+  are what break a prefix scan; paths holding `..`; chords written in the wrong
+  order. Shared generators live in `src/test/properties.ts` with the reasoning
+  attached. A generator that never produces the interesting case makes a test
+  that passes for the wrong reason.
+- **A property has to be able to fail.** "Applying the change reaches the new
+  text" is satisfied by replacing the whole document, so the cost bound is what
+  makes the file mean something. Each of these files carries at least one
+  property whose job is to rule out the trivial implementation.
+
+Case count is one number for the whole suite, set in `src/test/setup.ts`. Raise
+it to hunt something: `FC_NUM_RUNS=20000 npm run test:properties`. A failure
+prints the shrunk counterexample and the seed that found it, and that seed
+replays the run exactly.
+
 ## Running it
 
 ```
@@ -1290,6 +1334,7 @@ make run-desktop     # wasm + desktop bundles + electron
 npm run build:wasm   # just the wasm bundle
 npx tsc --noEmit     # typecheck
 npx vitest run       # unit + integration
+npm run test:properties  # just the property tests
 npm run fmt          # biome
 ```
 
