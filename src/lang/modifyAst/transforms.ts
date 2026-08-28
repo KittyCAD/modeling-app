@@ -445,6 +445,12 @@ export function addAppearance({
     objectsExpr,
     [...colorExpr, ...metalnessExpr, ...roughnessExpr, ...opacityExpr]
   )
+  if (mNodeToEdit) {
+    // The selected object can resolve to a downstream child through
+    // last-child lookup. The object input is hidden while editing, so preserve
+    // the existing input and apply only the editable Appearance arguments.
+    call.unlabeled = null
+  }
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
     insertVariableAndOffsetPathToNode(metalness, modifiedAst, mNodeToEdit)
