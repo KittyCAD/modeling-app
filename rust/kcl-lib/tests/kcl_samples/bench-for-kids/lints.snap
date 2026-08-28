@@ -13,8 +13,8 @@ description: Lints bench-for-kids.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2486,
-      2604,
+      2542,
+      2660,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints bench-for-kids.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3721,
-      3820,
+      3777,
+      3876,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints bench-for-kids.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4746,
-      4850,
+      4802,
+      4906,
       0
     ],
     "overridden": false,

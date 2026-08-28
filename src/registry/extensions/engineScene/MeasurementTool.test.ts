@@ -1,3 +1,4 @@
+import type { UnitArea, UnitVolume } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
@@ -17,7 +18,10 @@ import {
   getMeasurementEntities,
   getMeasurementEntityIds,
   getVolumeUnit,
+  graphSelectionsReferenceCurrentArtifacts,
   type MeasurementEntity,
+  unitAreaLabels,
+  unitVolumeLabels,
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
@@ -191,6 +195,51 @@ describe('MeasurementTool helpers', () => {
     ])
   })
 
+  it('detects graph selections whose artifacts were replaced after regeneration', () => {
+    const currentBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const staleBody = artifact({
+      id: 'body-id',
+      type: 'sweep',
+    })
+    const currentArtifactGraph = new Map([[currentBody.id, currentBody]])
+    const codeRef = {
+      range: [0, 1, 0] as [number, number, number],
+      pathToNode: [],
+    }
+
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: currentBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(true)
+    expect(
+      graphSelectionsReferenceCurrentArtifacts(
+        {
+          graphSelections: [
+            {
+              artifact: staleBody,
+              codeRef,
+            },
+          ],
+          otherSelections: [],
+        },
+        currentArtifactGraph
+      )
+    ).toBe(false)
+  })
+
   it('classifies non-code faces and bodies', () => {
     const selections: Selections = {
       graphSelections: [],
@@ -323,5 +372,52 @@ describe('MeasurementTool helpers', () => {
     expect(formatPoint3d({ x: 1.23456, y: 0.00000012, z: Number.NaN })).toBe(
       '1.2346, 1.200e-7, -'
     )
+  })
+})
+
+describe('unit display labels', () => {
+  it('labels every area and volume unit', () => {
+    const areaUnits: UnitArea[] = [
+      'mm2',
+      'cm2',
+      'dm2',
+      'm2',
+      'km2',
+      'in2',
+      'ft2',
+      'yd2',
+    ]
+    const volumeUnits: UnitVolume[] = [
+      'mm3',
+      'cm3',
+      'm3',
+      'in3',
+      'ft3',
+      'yd3',
+      'ml',
+      'l',
+      'usfloz',
+      'usgal',
+    ]
+
+    for (const unit of areaUnits) {
+      expect(unitAreaLabels[unit]).toBeTruthy()
+    }
+    for (const unit of volumeUnits) {
+      expect(unitVolumeLabels[unit]).toBeTruthy()
+    }
+  })
+
+  it('renders squared and cubed units as superscripts', () => {
+    expect(unitAreaLabels.mm2).toBe('mm\u00b2')
+    expect(unitVolumeLabels.mm3).toBe('mm\u00b3')
+
+    // A label must never fall back to a trailing ASCII 2 or 3.
+    for (const label of [
+      ...Object.values(unitAreaLabels),
+      ...Object.values(unitVolumeLabels),
+    ]) {
+      expect(label).not.toMatch(/[23]$/)
+    }
   })
 })

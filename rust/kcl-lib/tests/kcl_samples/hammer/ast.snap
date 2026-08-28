@@ -19216,7 +19216,7 @@ description: Result of parsing hammer.kcl
         "preComments": [
           "// Claw Hammer",
           "// Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails",
-          "// Categories: Construction",
+          "// Categories: Tools; Architecture & Construction",
           "",
           "",
           "// Set units"
@@ -19253,6 +19253,34 @@ description: Result of parsing hammer.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

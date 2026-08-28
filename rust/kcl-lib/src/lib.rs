@@ -65,6 +65,7 @@ mod fmt;
 mod frontend;
 mod fs;
 pub(crate) mod id;
+mod import_format;
 pub mod lint;
 mod log;
 mod lsp;
@@ -94,6 +95,7 @@ pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
 pub use engine::EngineStats;
 pub use errors::BacktraceItem;
+pub use errors::BacktraceItemKind;
 pub use errors::CompilationIssue;
 pub use errors::CompilationIssueReport;
 pub use errors::ConnectionError;
@@ -106,6 +108,7 @@ pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
+pub use execution::EnvironmentRef;
 pub use execution::ExecOutcome;
 pub use execution::ExecState;
 pub use execution::ExecutionCallbacks;
@@ -217,7 +220,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
-        EditAngleConstraintOptions,
+        EditConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
@@ -239,15 +242,13 @@ pub mod front {
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
             TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, execute_trim_loop_with_context,
-            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc,
-            get_trim_spawn_terminations, is_point_on_line_segment, line_segment_intersection,
-            perpendicular_distance_to_segment, project_point_onto_arc, project_point_onto_segment,
+            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc, is_point_on_line_segment,
+            line_segment_intersection, perpendicular_distance_to_segment, project_point_onto_arc,
+            project_point_onto_segment,
         },
     };
 }
 
-#[cfg(feature = "cli")]
-use clap::ValueEnum;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -260,17 +261,10 @@ use crate::log::logln;
 lazy_static::lazy_static! {
 
     pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
-        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
-        #[cfg(feature = "cli")]
-        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+        import_format::IMPORT_FILE_EXTENSION_FORMATS
             .iter()
-            .map(|x| format!("{x}"))
-            .collect::<Vec<String>>();
-        #[cfg(not(feature = "cli"))]
-        let named_extensions = vec![]; // We don't really need this outside of the CLI.
-        // Add all the default import formats.
-        import_file_extensions.extend_from_slice(&named_extensions);
-        import_file_extensions
+            .map(|(extension, _)| (*extension).to_owned())
+            .collect()
     };
 
     pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
@@ -437,6 +431,13 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn proprietary_file_extensions_use_real_suffixes() {
+        for extension in ["sat", "sab", "catpart", "prt", "ipt", "x_t", "x_b", "sldprt"] {
+            assert!(IMPORT_FILE_EXTENSIONS.iter().any(|candidate| candidate == extension));
+        }
+    }
 
     #[test]
     fn convert_int() {

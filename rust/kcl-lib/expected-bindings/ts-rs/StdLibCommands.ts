@@ -6698,7 +6698,7 @@ export default {
       {
         "name": "roll",
         "ty": "number(Angle)",
-        "docs": "The roll angle. Must be between -360deg and 360deg.",
+        "docs": "The roll angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6708,7 +6708,7 @@ export default {
       {
         "name": "pitch",
         "ty": "number(Angle)",
-        "docs": "The pitch angle. Must be between -360deg and 360deg.",
+        "docs": "The pitch angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6718,7 +6718,7 @@ export default {
       {
         "name": "yaw",
         "ty": "number(Angle)",
-        "docs": "The yaw angle. Must be between -360deg and 360deg.",
+        "docs": "The yaw angle.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -6738,7 +6738,7 @@ export default {
       {
         "name": "angle",
         "ty": "number(Angle)",
-        "docs": "The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.",
+        "docs": "The angle to rotate. Must be used with `axis`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -7498,6 +7498,29 @@ export default {
         "name": "input",
         "ty": "[Segment; 2+]",
         "docs": "Two or more arc or circle segments that should share the same radius.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "solver::fixed": {
+    "name": "fixed",
+    "preferredName": "solver::fixed",
+    "qualName": "std::solver::fixed",
+    "moduleName": "solver",
+    "returnType": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "points",
+        "ty": "[Segment | Point2d; 2+]",
+        "docs": "Two or more sketch entities that should be coincident. When more than two inputs are provided, each item must be a point or `ORIGIN`.",
         "required": true,
         "special": true,
         "experimental": false,

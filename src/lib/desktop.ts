@@ -139,20 +139,24 @@ async function ensureProjectTomlTitle({
   projectPath,
   title,
   defaultFile,
+  readExistingProjectToml = true,
 }: {
   projectPath: string
   title: string
   defaultFile: string
+  readExistingProjectToml?: boolean
 }) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   let projectToml = ''
-  try {
-    projectToml = await fsZds.readFile(projectTomlPath, {
-      encoding: 'utf-8',
-    })
-  } catch (error) {
-    if (!isPathNotFoundError(error)) {
-      return Promise.reject(error)
+  if (readExistingProjectToml) {
+    try {
+      projectToml = await fsZds.readFile(projectTomlPath, {
+        encoding: 'utf-8',
+      })
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
     }
   }
 
@@ -272,11 +276,13 @@ export async function createNewProjectDirectory(
   }
   const projectDir = fsZds.join(mainDir, projectName)
 
+  let projectDirectoryCreated = false
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
     if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
+      projectDirectoryCreated = true
     }
   }
 
@@ -303,6 +309,7 @@ export async function createNewProjectDirectory(
     projectPath: projectDir,
     title: projectTitle,
     defaultFile: kclFileName,
+    readExistingProjectToml: !projectDirectoryCreated,
   })
   let metadata: FileMetadata | null = null
   try {

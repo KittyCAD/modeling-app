@@ -1,4 +1,8 @@
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
+import type {
+  ModelingCmdReq,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -40,6 +44,7 @@ import {
   EngineConnectionManagerEvents,
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+  validateStreamDimensions,
 } from '@src/lib/engineConnection/utils'
 import {
   isExportResponse,
@@ -100,6 +105,15 @@ export class ConnectionManager extends EventTarget {
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
+  }
+
+  /** True when a scene command sent now reaches the engine. */
+  get isReady(): boolean {
+    return (
+      this.connection !== undefined &&
+      this.started &&
+      this.connection.websocket?.readyState === WebSocket.OPEN
+    )
   }
   private readonly systemDeps: ConnectionSystemDeps
 
@@ -183,8 +197,6 @@ export class ConnectionManager extends EventTarget {
         )
       )
     }
-    this.started = true
-    this.rejectAllPendingCommands()
 
     if (this.connection) {
       return Promise.reject(
@@ -192,13 +204,13 @@ export class ConnectionManager extends EventTarget {
       )
     }
 
-    if (width <= 0) {
-      return Promise.reject(new Error(`width is <=0, ${width}`))
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
     }
 
-    if (height <= 0) {
-      return Promise.reject(new Error(`height is <=0, ${height}`))
-    }
+    this.started = true
+    this.rejectAllPendingCommands()
 
     this.streamDimensions = {
       width,
@@ -216,6 +228,9 @@ export class ConnectionManager extends EventTarget {
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       handleMessage,
+      getCloudProjectId: () =>
+        this.systemDeps.settingsActor.getSnapshot().context.currentProject
+          ?.cloudProjectId,
     })
 
     // Nothing more to do when using a lite engine initialization
@@ -380,7 +395,7 @@ export class ConnectionManager extends EventTarget {
 
   // Set the engine's theme
   async setTheme(theme: Themes) {
-    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+    if (!this.isReady) {
       EngineDebugger.addLog({
         label: 'connectionManager',
         message: 'setTheme, websocket is not ready',
@@ -391,7 +406,7 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
-    await this.connection.deferredConnection?.promise
+    await this.connection?.deferredConnection?.promise
 
     // Set the stream background color
     // This takes RGBA values from 0-1
@@ -999,6 +1014,11 @@ export class ConnectionManager extends EventTarget {
       return
     }
 
+    const invalidStreamDimensions = validateStreamDimensions({ width, height })
+    if (invalidStreamDimensions) {
+      return Promise.reject(invalidStreamDimensions)
+    }
+
     // Make sure the connection is ready otherwise you are sending the events too early.
     await this.connection.deferredConnection?.promise
 
@@ -1417,6 +1437,34 @@ export class ConnectionManager extends EventTarget {
         object_id: id,
         hidden: hidden,
       },
+    })
+  }
+
+  /**
+   * Hides the engine objects whose flag is true, shows the ones whose flag is
+   * false, and sends them as one request.
+   */
+  async setObjectsHidden(hiddenByObjectId: ReadonlyMap<string, boolean>) {
+    if (hiddenByObjectId.size === 0) {
+      return
+    }
+
+    const requests: ModelingCmdReq[] = [...hiddenByObjectId].map(
+      ([objectId, hidden]) => ({
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'object_visible',
+          object_id: objectId,
+          hidden,
+        },
+      })
+    )
+
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests,
+      responses: false,
     })
   }
 }

@@ -5,7 +5,7 @@ use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::Program;
 use kcl_lib::SegmentDragAnchor;
 use kcl_lib::front::ConstraintLabelPositionEdit;
-use kcl_lib::front::EditAngleConstraintOptions;
+use kcl_lib::front::EditConstraintOptions;
 use kcl_lib::front::EditDistanceConstraintLabelPositionOptions;
 use kcl_lib::front::EditSegmentsOptions;
 use kcl_lib::front::Error;
@@ -580,9 +580,9 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Edit a constraint in a sketch.
+    /// Edit a constraint value in a sketch.
     #[wasm_bindgen]
-    pub async fn edit_constraint(
+    pub async fn edit_constraint_value(
         &self,
         version_json: &str,
         sketch_json: &str,
@@ -601,13 +601,13 @@ impl Context {
             serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for edit constraint. {TRUE_BUG} Details: {e}")
+            format!("Could not create KCL executor context for edit constraint value. {TRUE_BUG} Details: {e}")
         })?;
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let (source_delta, scene_graph_delta) = guard
-            .edit_constraint(&ctx, version, sketch, constraint_id, value_expression.to_string())
+            .edit_constraint_value(&ctx, version, sketch, constraint_id, value_expression.to_string())
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = if create_checkpoint {
@@ -627,7 +627,7 @@ impl Context {
         };
 
         Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize edit constraint result. {TRUE_BUG} Details: {e}"))?)
+            .map_err(|e| format!("Could not serialize edit constraint value result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Edit an angle constraint in a sketch.
@@ -674,7 +674,7 @@ impl Context {
                 sketch,
                 constraint_id,
                 angle,
-                EditAngleConstraintOptions {
+                EditConstraintOptions {
                     commit_solved_initial_guesses: commit_solver_results,
                 },
             )
@@ -698,6 +698,81 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit angle constraint result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Edit a distance constraint in a sketch.
+    #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
+    pub async fn edit_distance_constraint(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraint_id_json: &str,
+        constraint_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+        commit_solver_results: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        if !commit_solver_results && create_checkpoint {
+            return Err("Preview distance edits cannot create sketch checkpoints".into());
+        }
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(constraint_id_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint: kcl_lib::front::Constraint =
+            serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize Constraint: {e}"))?;
+        if !matches!(
+            &constraint,
+            kcl_lib::front::Constraint::Distance(_)
+                | kcl_lib::front::Constraint::HorizontalDistance(_)
+                | kcl_lib::front::Constraint::VerticalDistance(_)
+        ) {
+            return Err("edit_distance_constraint requires a distance constraint".into());
+        }
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for edit distance constraint. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .edit_distance_constraint_with_options(
+                &ctx,
+                version,
+                sketch,
+                constraint_id,
+                constraint,
+                EditConstraintOptions {
+                    commit_solved_initial_guesses: commit_solver_results,
+                },
+            )
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit distance constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Edit a constraint label position in a sketch.
@@ -788,12 +863,12 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
-        if !points.len().is_multiple_of(2) {
+        let (points, leftovers) = points.as_chunks::<2>();
+        if !leftovers.is_empty() {
             return Err(JsValue::from_str(
                 "Points array must have even length (pairs of x, y coordinates)",
             ));
         }
-        let points: Vec<[f64; 2]> = points.chunks_exact(2).map(|chunk| [chunk[0], chunk[1]]).collect();
 
         let ctx = self
             .create_executor_ctx(settings, None, true)

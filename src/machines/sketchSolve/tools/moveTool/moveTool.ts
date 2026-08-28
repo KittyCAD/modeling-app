@@ -482,15 +482,18 @@ function buildDistanceLabelEditsForMovedSegments({
   objectsAfterDrag: ApiObject[]
   units: NumericSuffix
 }): ConstraintLabelPositionEdit[] {
-  const { points, labelPosition } = obj.kind.constraint
+  const { segments, labelPosition } = obj.kind.constraint
   if (!labelPosition) {
     return []
   }
 
   const pointPairs: Array<{ before: Vector2; after: Vector2 }> = []
-  for (const point of points) {
-    const before = getDistanceConstraintPointPosition(point, objectsBeforeDrag)
-    const after = getDistanceConstraintPointPosition(point, objectsAfterDrag)
+  for (const segment of segments) {
+    const before = getDistanceConstraintPointPosition(
+      segment,
+      objectsBeforeDrag
+    )
+    const after = getDistanceConstraintPointPosition(segment, objectsAfterDrag)
     if (!before || !after) {
       return []
     }

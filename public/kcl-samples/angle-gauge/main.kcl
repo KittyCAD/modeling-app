@@ -1,9 +1,9 @@
 // Angle Gauge
 // Simple angle gauge function to generate a gauge given an angle
-// Categories: Construction
+// Categories: Tools; Parametric
 
 // Set units in inches (in)
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define parameters
 gaugeWidth = 1.25

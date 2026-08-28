@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_nested_runtime_error.kcl
+---
+// A runtime error inside a nested import must surface with its original
+// message and a backtrace through each import site.
+import assemblyValue from "assembly.kcl"
+
+assemblyValue
