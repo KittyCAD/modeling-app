@@ -117,6 +117,18 @@ describe('readDirectoryLibraryRealizations', () => {
     expect(found.title).toBe('Mounting Bracket')
   })
 
+  /**
+   * The common case: a project's settings file is not written until something is
+   * set, so most folders do not have one. Asking for it as an optional read is
+   * what keeps the main process from logging an ENOENT per project per scan.
+   */
+  it('has no title, and no complaint, when there is no project.toml', async () => {
+    const [found] = await scan({ '/projects/bracket/main.kcl': '' })
+
+    expect(found.title).toBeUndefined()
+    expect(found.name).toBe('bracket')
+  })
+
   it('falls back to the folder name when metadata is unusable', async () => {
     const [found] = await scan({
       '/projects/bracket/main.kcl': '',

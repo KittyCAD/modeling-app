@@ -58,11 +58,12 @@ async function writeProjectTitle(
    */
   let existing: Record<string, unknown> = {}
   try {
-    if (await fileSystem.exists(target)) {
-      existing = (parse(await fileSystem.readTextFile(target)) ?? {}) as Record<
-        string,
-        unknown
-      >
+    // Absent is the ordinary case — the file is not written until something is
+    // set — and asking for it as optional is what keeps a rename from logging a
+    // failed read for every project that has no settings yet.
+    const text = await fileSystem.readTextFileIfPresent(target)
+    if (text !== null) {
+      existing = (parse(text) ?? {}) as Record<string, unknown>
     }
   } catch {
     // An unparseable file is replaced rather than blocking the rename: the

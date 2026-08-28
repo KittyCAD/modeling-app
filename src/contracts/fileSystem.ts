@@ -41,6 +41,20 @@ export interface FileSystem {
   exists(path: string): Promise<boolean>
   readDirectory(path: string): Promise<readonly DirectoryEntry[]>
   readTextFile(path: string): Promise<string>
+  /**
+   * Read a file that is allowed not to exist.
+   *
+   * `null` for a missing file rather than a rejection, because "not there yet" is
+   * an ordinary answer for the files this app treats as optional — a project's
+   * settings are not written until something is set. Every other failure still
+   * rejects: unreadable is not the same as absent.
+   *
+   * Its own method rather than `exists` followed by `readTextFile`, which asks
+   * two questions to answer one and leaves a gap between them. On desktop it also
+   * keeps the main process from logging a failed handler for a file nobody
+   * expected to find.
+   */
+  readTextFileIfPresent(path: string): Promise<string | null>
   readFile(path: string): Promise<Uint8Array>
   writeTextFile(path: string, contents: string): Promise<void>
   makeDirectory(path: string): Promise<void>

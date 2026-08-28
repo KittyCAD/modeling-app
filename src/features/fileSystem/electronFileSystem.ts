@@ -34,6 +34,7 @@ export function createElectronFileSystem(bridge: DesktopBridge): FileSystem {
     exists: (path) => bridge.exists(path),
     readDirectory: (path) => bridge.readDirectory(path),
     readTextFile: (path) => bridge.readTextFile(path),
+    readTextFileIfPresent: (path) => bridge.readTextFileIfPresent(path),
     readFile: (path) => bridge.readFile(path),
     writeTextFile: (path, contents) => bridge.writeTextFile(path, contents),
     makeDirectory: (path) => bridge.makeDirectory(path),

@@ -19,6 +19,14 @@ export const channels = {
   stat: 'fs:stat',
   readFile: 'fs:readFile',
   readTextFile: 'fs:readTextFile',
+  /**
+   * Read a file that may not exist, resolving with null when it does not.
+   *
+   * Separate from `readTextFile` because a rejected handler is logged by the main
+   * process before the renderer can catch it, so "optional" has to be expressed
+   * in the call rather than in the caller.
+   */
+  readTextFileIfPresent: 'fs:readTextFileIfPresent',
   writeTextFile: 'fs:writeTextFile',
   exists: 'fs:exists',
   /** Immediate children of a directory, with their kind. */

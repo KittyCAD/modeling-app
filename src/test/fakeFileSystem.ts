@@ -117,6 +117,10 @@ export function createFakeFileSystem(
       return contents
     },
 
+    async readTextFileIfPresent(path) {
+      return files.get(normalizePath(path)) ?? null
+    },
+
     async readFile(path) {
       return new TextEncoder().encode(await this.readTextFile(path))
     },

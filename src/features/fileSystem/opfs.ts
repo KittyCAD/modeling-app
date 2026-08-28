@@ -124,6 +124,20 @@ export function createOpfsFileSystem(): FileSystem {
       return (await handle.getFile()).text()
     },
 
+    async readTextFileIfPresent(path) {
+      try {
+        const handle = await fileHandle(path)
+        return await (await handle.getFile()).text()
+      } catch (error) {
+        // The only absence the API reports is `NotFoundError`; everything else
+        // is a real failure and keeps its own message.
+        if (error instanceof DOMException && error.name === 'NotFoundError') {
+          return null
+        }
+        throw error
+      }
+    },
+
     async readFile(path) {
       const handle = await fileHandle(path)
       const buffer = await (await handle.getFile()).arrayBuffer()

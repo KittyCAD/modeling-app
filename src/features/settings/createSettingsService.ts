@@ -217,12 +217,13 @@ export function createSettingsService(
       return
     }
     try {
-      const exists = await fileSystem().exists(path)
-      if (!exists) {
+      // One question rather than `exists` then read, which leaves a gap between
+      // the two answers and costs a second round trip to the main process.
+      const text = await fileSystem().readTextFileIfPresent(path)
+      if (text === null) {
         overrides.project.value = {}
         return
       }
-      const text = await fileSystem().readTextFile(path)
       const decoded = decodeSettingsToml(text, definitions.value)
       applyDecoded('project', decoded.overrides, 'hydrate')
       reportRejected(PROJECT_SETTINGS_FILE, decoded.rejected)
@@ -319,9 +320,9 @@ export function createSettingsService(
     // is renamed, and recording the content is what stops the watcher reading
     // our own write back as somebody else's edit.
     await queue().enqueue(path, async () => {
-      const existing = (await fs.exists(path))
-        ? await fs.readTextFile(path)
-        : null
+      // The first write to a project has nothing to merge into, which is the
+      // ordinary case rather than a failure.
+      const existing = await fs.readTextFileIfPresent(path)
       const next = encodeSettingsToml(
         existing,
         definitions.value,

@@ -48,6 +48,9 @@ const desktop = {
   readTextFile: (path: string): Promise<string> =>
     ipcRenderer.invoke(channels.readTextFile, path),
 
+  readTextFileIfPresent: (path: string): Promise<string | null> =>
+    ipcRenderer.invoke(channels.readTextFileIfPresent, path),
+
   writeTextFile: (path: string, contents: string): Promise<void> =>
     ipcRenderer.invoke(channels.writeTextFile, path, contents),
 

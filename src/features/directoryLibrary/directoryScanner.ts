@@ -152,9 +152,17 @@ export async function readDirectoryLibraryRealizations({
 
     const [stat, title] = await Promise.all([
       fileSystem.stat(path).catch(() => undefined),
+      /*
+       * Optional, and asked for as such.
+       *
+       * A project's settings file is not written until something is set, so most
+       * folders do not have one — and catching the rejection here was not enough:
+       * the main process logs a failed handler before the renderer ever sees it,
+       * so every scan printed an ENOENT for every project.
+       */
       fileSystem
-        .readTextFile(joinPath(path, PROJECT_FILE))
-        .then(parseProjectTitle)
+        .readTextFileIfPresent(joinPath(path, PROJECT_FILE))
+        .then((text) => (text === null ? undefined : parseProjectTitle(text)))
         .catch(() => undefined),
     ])
 

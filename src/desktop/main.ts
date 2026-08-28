@@ -471,6 +471,21 @@ function registerIpcHandlers() {
   )
 
   ipcMain.handle(
+    channels.readTextFileIfPresent,
+    async (_event, target: string) => {
+      const file = await resolveGranted(target)
+      try {
+        return await fs.readFile(file, 'utf8')
+      } catch (error) {
+        // Absent is an answer, not a failure. Anything else still throws:
+        // a file we may not read is not a file that is not there.
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null
+        throw error
+      }
+    }
+  )
+
+  ipcMain.handle(
     channels.writeTextFile,
     async (_event, target: string, contents: string) => {
       const file = await resolveGranted(target)
