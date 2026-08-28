@@ -430,6 +430,47 @@ Three flows, contributed, because which are possible depends on the platform:
 | Web redirect | browser | A full navigation, since that is what makes the site's cookie readable here. |
 | Paste a token | everywhere | The fallback. Ordered last: it asks the most of the user. |
 
+## User features
+
+Which company-administered features an account has, fetched from the API and
+followed from the auth token. `users.user_features_get` returns *only* the
+features resolved true for the caller, so presence is the whole answer and
+absence means off — there is no third state to model.
+
+Its own feature rather than part of auth, because the two fail separately: auth
+says who you are, this says what the account may see, and a features fetch that
+fails must not make anyone look signed out. A failure is empty features and a
+reason, which is the same behaviour as an account that simply does not have them.
+
+Three properties worth keeping:
+
+- **Signed out is settled, not pending.** There is nothing to fetch without a
+  token, so a caller gating on a feature proceeds immediately instead of stalling
+  on a request that will never be made.
+- **`has(feature, fallback)` takes the fallback as a required argument.** Every
+  call site has to say what it does before the answer arrives; a gate that
+  silently reads false while loading flashes the ungated UI and then hides it.
+- **A late answer for a previous token is dropped**, so signing out and back in
+  as someone else cannot leave the last account's features in place.
+
+`whenSettled()` is for the callers that genuinely cannot proceed — a language
+server whose executor is built once, at construction, from these flags. It is
+bounded, because a hung request must not be able to stop the app starting.
+
+### Nothing here knows what a feature means
+
+The service holds ids. A feature that gates KCL's parser is projected into
+`KclRuntimeFlags` by `kclAnalysis`; one that gates an agent would be read by the
+agent. That projection is a real thing — the generated binding says
+`KclRuntimeFlags` "maps 1-1 to the KCL related flags added to the Admin portal" —
+so KCL's flags are the KCL-shaped view of this same set, and the view belongs
+with KCL.
+
+Saying nothing is a supported answer: a field missing from the payload
+deserialises to `RuntimeFlag::Unset` on the Rust side and falls back to Rust's own
+defaults. So with no features service resolved, `set_kcl_runtime_flags` is never
+called at all — which is exactly what the app did before this existed.
+
 ## The app menu
 
 Deliberately not "the user menu". It is useful signed out — theme, commands,
