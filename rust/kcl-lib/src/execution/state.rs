@@ -7,6 +7,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kittycad_modeling_cmds::ModelingCmd;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -614,6 +615,56 @@ impl ExecState {
 
     pub fn issues(&self) -> &[CompilationIssue] {
         &self.global.issues
+    }
+
+    /// Return the explicit Engine solid ids that represent the complete visible
+    /// procedural model for physical-property measurements.
+    ///
+    /// `None` means the execution contains geometry that cannot yet be mapped
+    /// conservatively to explicit solid ids, such as foreign imported geometry
+    /// or an unbound body. Callers should retain their legacy Engine selection
+    /// in that case rather than risk measuring an incomplete model.
+    pub fn physical_property_entity_ids(&self, main_ref: EnvironmentRef) -> Result<Option<Vec<Uuid>>, KclError> {
+        let graph = &self.global.artifacts.graph;
+        let candidate_artifact_ids = graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::Sweep(sweep) if !sweep.consumed => Some(sweep.id),
+                Artifact::CompositeSolid(composite) if !composite.consumed => Some(composite.id),
+                _ => None,
+            })
+            .collect::<AhashIndexSet<_>>();
+
+        let mut visibility_by_engine_id = AHashMap::new();
+        for artifact_command in &self.global.root_module_artifacts.commands {
+            if let ModelingCmd::ObjectVisible(visibility) = &artifact_command.command {
+                visibility_by_engine_id.insert(visibility.object_id, visibility.hidden);
+            }
+        }
+
+        let variables = self.mod_local.variables(main_ref)?;
+        let mut mapped_artifact_ids = AhashIndexSet::default();
+        let mut entity_ids = AhashIndexSet::default();
+        let mut unsupported_geometry = false;
+        for value in variables.into_values().map(KclValueView::from) {
+            collect_physical_property_entity_ids(
+                &value,
+                graph,
+                &visibility_by_engine_id,
+                &mut mapped_artifact_ids,
+                &mut entity_ids,
+                &mut unsupported_geometry,
+            );
+        }
+
+        let all_candidates_mapped = candidate_artifact_ids
+            .iter()
+            .all(|artifact_id| mapped_artifact_ids.contains(artifact_id));
+        if unsupported_geometry || !all_candidates_mapped {
+            return Ok(None);
+        }
+
+        Ok(Some(entity_ids.into_iter().collect()))
     }
 
     pub(crate) fn deprecation_version(&self) -> &str {
@@ -1329,6 +1380,65 @@ impl ExecState {
     }
 }
 
+fn collect_physical_property_entity_ids(
+    value: &KclValueView,
+    graph: &ArtifactGraph,
+    visibility_by_engine_id: &AHashMap<Uuid, bool>,
+    mapped_artifact_ids: &mut AhashIndexSet<ArtifactId>,
+    entity_ids: &mut AhashIndexSet<Uuid>,
+    unsupported_geometry: &mut bool,
+) {
+    match value {
+        KclValueView::Solid { value } => match graph.get(&value.artifact_id) {
+            Some(Artifact::Sweep(sweep)) if !sweep.consumed => {
+                mapped_artifact_ids.insert(value.artifact_id);
+                if !visibility_by_engine_id.get(&value.id).copied().unwrap_or(false) {
+                    entity_ids.insert(value.id);
+                }
+            }
+            Some(Artifact::CompositeSolid(composite)) if !composite.consumed => {
+                mapped_artifact_ids.insert(value.artifact_id);
+                if !visibility_by_engine_id.get(&value.id).copied().unwrap_or(false) {
+                    entity_ids.insert(value.id);
+                }
+            }
+            Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_)) => {
+                // Consumed solids remain in KCL memory but no longer represent
+                // measurable Engine bodies.
+            }
+            _ => *unsupported_geometry = true,
+        },
+        KclValueView::Tuple { value } | KclValueView::HomArray { value } => {
+            for value in value {
+                collect_physical_property_entity_ids(
+                    value,
+                    graph,
+                    visibility_by_engine_id,
+                    mapped_artifact_ids,
+                    entity_ids,
+                    unsupported_geometry,
+                );
+            }
+        }
+        KclValueView::Object { value, .. } => {
+            let mut keys = value.keys().collect::<Vec<_>>();
+            keys.sort();
+            for key in keys {
+                collect_physical_property_entity_ids(
+                    &value[key],
+                    graph,
+                    visibility_by_engine_id,
+                    mapped_artifact_ids,
+                    entity_ids,
+                    unsupported_geometry,
+                );
+            }
+        }
+        KclValueView::ImportedGeometry(_) => *unsupported_geometry = true,
+        _ => {}
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Ord, PartialOrd)]
 #[ts(export)]
 pub enum KclVersion {
@@ -1714,6 +1824,7 @@ mod tests {
 
     use uuid::Uuid;
 
+    use super::ExecState;
     use super::KclVersion;
     use super::ModuleArtifactState;
     use crate::NodePath;
@@ -1725,6 +1836,134 @@ mod tests {
     use crate::front::ObjectKind;
     use crate::front::Plane;
     use crate::front::SourceRef;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn physical_property_entity_ids_select_only_visible_procedural_solids() {
+        let code = r#"
+finalSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+finalSolid = extrude(finalSketch, length = 10)
+
+constructionSketch = startSketchOn(XY)
+  |> startProfile(at = [1000, 0])
+  |> xLine(length = 100)
+  |> yLine(length = 100)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+
+hiddenSketch = startSketchOn(XY)
+  |> startProfile(at = [2000, 0])
+  |> xLine(length = 20)
+  |> yLine(length = 20)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+hiddenSolid = extrude(hiddenSketch, length = 20)
+hide(hiddenSolid)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut state = ExecState::new(&ctx);
+        let (env_ref, _) = ctx.run(&program, &mut state).await.unwrap();
+
+        let variables = state.mod_local.variables(env_ref).unwrap();
+        let crate::execution::KclValue::Solid { value: final_solid } = &variables["finalSolid"] else {
+            panic!("finalSolid should be a solid");
+        };
+        let entity_ids = state
+            .physical_property_entity_ids(env_ref)
+            .unwrap()
+            .expect("procedural solids should have a complete explicit selection");
+
+        assert_eq!(entity_ids, vec![final_solid.id]);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn physical_property_entity_ids_exclude_consumed_boolean_operands() {
+        let code = r#"
+targetSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+target = extrude(targetSketch, length = 10)
+
+toolSketch = startSketchOn(XY)
+  |> startProfile(at = [5, -100])
+  |> xLine(length = 100)
+  |> yLine(length = 200)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+tool = extrude(toolSketch, length = 20)
+
+result = subtract(target, tools = [tool])
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut state = ExecState::new(&ctx);
+        let (env_ref, _) = ctx.run(&program, &mut state).await.unwrap();
+
+        let variables = state.mod_local.variables(env_ref).unwrap();
+        let crate::execution::KclValue::Solid { value: target } = &variables["target"] else {
+            panic!("target should be a solid");
+        };
+        let crate::execution::KclValue::Solid { value: tool } = &variables["tool"] else {
+            panic!("tool should be a solid");
+        };
+        let crate::execution::KclValue::Solid { value: result } = &variables["result"] else {
+            panic!("result should be a solid");
+        };
+        let target_artifact_id = target.artifact_id;
+        let tool_artifact_id = tool.artifact_id;
+        let result_artifact_id = result.artifact_id;
+        let result_id = result.id;
+        drop(variables);
+
+        // Mock execution does not receive the Engine responses that turn the
+        // source sweeps into a composite artifact, so model that final graph
+        // state directly for the selector regression.
+        let item_count = state.global.artifacts.graph.item_count();
+        let (mut graph, _) = std::mem::take(&mut state.global.artifacts.graph).into_parts();
+        let crate::execution::Artifact::Sweep(target_sweep) =
+            graph.get_mut(&target_artifact_id).expect("target sweep artifact")
+        else {
+            panic!("target artifact should be a sweep");
+        };
+        target_sweep.consumed = true;
+        let crate::execution::Artifact::Sweep(tool_sweep) =
+            graph.get_mut(&tool_artifact_id).expect("tool sweep artifact")
+        else {
+            panic!("tool artifact should be a sweep");
+        };
+        tool_sweep.consumed = true;
+        graph.insert(
+            result_artifact_id,
+            crate::execution::Artifact::CompositeSolid(kcl_api::artifact::CompositeSolid {
+                id: result_artifact_id,
+                consumed: false,
+                sub_type: kcl_api::artifact::CompositeSolidSubType::Subtract,
+                output_index: None,
+                solid_ids: vec![target_artifact_id],
+                tool_ids: vec![tool_artifact_id],
+                code_ref: crate::execution::CodeRef::placeholder(SourceRange::synthetic()),
+                composite_solid_id: None,
+                pattern_ids: Vec::new(),
+            }),
+        );
+        state.global.artifacts.graph = crate::execution::ArtifactGraph::from_parts(graph, item_count);
+        let entity_ids = state
+            .physical_property_entity_ids(env_ref)
+            .unwrap()
+            .expect("procedural solids should have a complete explicit selection");
+
+        assert_eq!(entity_ids, vec![result_id]);
+        ctx.close().await;
+    }
 
     #[test]
     fn kcl_version_parses_supported_spellings() {

@@ -45,6 +45,42 @@ box_sketch = startSketchOn(XY)
 box3D = extrude(box_sketch, length = box_height)
 """
 
+box_with_construction_sketch_code = f"""
+{box_code}
+
+construction_sketch = startSketchOn(XY)
+  |> startProfile(at = [1000, 0])
+  |> xLine(length = 100)
+  |> yLine(length = 100)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+"""
+
+box_with_hidden_solid_code = f"""
+{box_code}
+
+hidden_sketch = startSketchOn(XY)
+  |> startProfile(at = [1000, 0])
+  |> xLine(length = 100)
+  |> yLine(length = 100)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+hidden_solid = extrude(hidden_sketch, length = 100)
+hide(hidden_solid)
+"""
+
+two_visible_boxes_code = f"""
+{box_code}
+
+second_sketch = startSketchOn(XY)
+  |> startProfile(at = [100, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+second_solid = extrude(second_sketch, length = 10)
+"""
+
 requires_engine = pytest.mark.skipif(
     "ZOO_API_TOKEN" not in os.environ, reason="requires ZOO_API_TOKEN"
 )
@@ -452,6 +488,86 @@ async def test_kcl_execute_code_and_measure_bounding_box_mm():
     assert dimensions.x == pytest.approx(25, rel=0, abs=1e-5)
     assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
     assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_measure_ignores_unextruded_construction_sketch():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicMillimeters)
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+    response = await execute_with_retries(
+        kcl.execute_code_and_measure, box_with_construction_sketch_code, request
+    )
+
+    assert response.get_volume() == pytest.approx(31250, rel=0, abs=1e-2)
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.x == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_measure_ignores_hidden_solid():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicMillimeters)
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+    response = await execute_with_retries(
+        kcl.execute_code_and_measure, box_with_hidden_solid_code, request
+    )
+
+    assert response.get_volume() == pytest.approx(31250, rel=0, abs=1e-2)
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+    assert center.x == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.x == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_measure_includes_multiple_visible_solids():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_volume(kcl.UnitVolume.CubicMillimeters)
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+    response = await execute_with_retries(
+        kcl.execute_code_and_measure, two_visible_boxes_code, request
+    )
+
+    assert response.get_volume() == pytest.approx(32250, rel=0, abs=1e-2)
+    bounding_box = response.get_bounding_box()
+    center = bounding_box.get_center()
+    dimensions = bounding_box.get_dimensions()
+    assert center.x == pytest.approx(55, rel=0, abs=1e-5)
+    assert center.y == pytest.approx(12.5, rel=0, abs=1e-5)
+    assert center.z == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.x == pytest.approx(110, rel=0, abs=1e-5)
+    assert dimensions.y == pytest.approx(25, rel=0, abs=1e-5)
+    assert dimensions.z == pytest.approx(50, rel=0, abs=1e-5)
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_kcl_measure_requires_a_visible_solid():
+    request = kcl.PhysicalPropertiesRequest()
+    request.set_bounding_box(kcl.UnitLength.Millimeters)
+
+    with pytest.raises(Exception, match="no visible solid bodies"):
+        await execute_with_retries(
+            kcl.execute_code_and_measure,
+            "startSketchOn(XY) |> startProfile(at = [0, 0]) |> xLine(length = 10)",
+            request,
+        )
 
 
 @requires_engine
