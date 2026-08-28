@@ -62,6 +62,68 @@ export function createEngineScenePicker(
     },
 
     /**
+     * Which curve made each face of a swept solid.
+     *
+     * The response is one entry per face: the face's own id, the curve it was
+     * swept from, and whether it is a cap. kcl-lib builds wall artifacts from
+     * exactly this, setting each wall's segment to the curve reported here — so
+     * this is the engine's version of something the graph usually already knows,
+     * and worth asking only when the graph's answer is unusable.
+     */
+    async sweptFaces(solidId: string) {
+      if (!ready.peek()) return []
+
+      try {
+        const bytes = await getConnection().sendCommand({
+          type: 'solid3d_get_extrusion_face_info',
+          object_id: solidId,
+        })
+
+        const message = msgpackDecode(bytes) as {
+          resp?: {
+            data?: {
+              modeling_response?: {
+                type?: string
+                data?: {
+                  faces?: {
+                    face_id?: string | null
+                    curve_id?: string | null
+                    cap?: string
+                  }[]
+                }
+              }
+            }
+          }
+        }
+
+        const response = message.resp?.data?.modeling_response
+        if (response?.type !== 'solid3d_get_extrusion_face_info') return []
+
+        return (response.data?.faces ?? []).flatMap((face) =>
+          face.face_id
+            ? [
+                {
+                  face: face.face_id,
+                  curve: face.curve_id ?? null,
+                  // Normalised here rather than trusted: the engine's enum is
+                  // its own, and a value we do not know means "not an end".
+                  cap: (['top', 'bottom', 'both'] as const).includes(
+                    face.cap as 'top'
+                  )
+                    ? (face.cap as 'top' | 'bottom' | 'both')
+                    : ('none' as const),
+                },
+              ]
+            : []
+        )
+      } catch {
+        // Not a swept solid, or a solid the engine has forgotten. Either way the
+        // question does not apply.
+        return []
+      }
+    },
+
+    /**
      * Ask the engine how an area would be written as a region.
      *
      * `region_get_resolvable_intersection_info` answers with the two curves that

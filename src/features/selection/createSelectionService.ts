@@ -8,6 +8,7 @@ import type {
   SelectionMode,
   SelectionService,
 } from '@src/contracts/selection'
+import { faceReference, sweptPathFor } from '@src/lib/kcl/faceReferences'
 
 export interface SelectionServiceDependencies {
   /** Absent until something is rendering. */
@@ -39,7 +40,8 @@ export function createSelectionService(
 
   const describe = (
     entityId: string,
-    region: PickedRegion | null = null
+    region: PickedRegion | null = null,
+    originCurve: string | null = null
   ): SelectedEntity => {
     const graph = scene()
     return {
@@ -47,7 +49,62 @@ export function createSelectionService(
       kind: graph?.artifactFor(entityId)?.type ?? null,
       sourceRange: graph?.sourceRangeFor(entityId) ?? null,
       region,
+      originCurve,
     }
+  }
+
+  /**
+   * Ask the engine which curve made a face, when the file cannot say.
+   *
+   * Only for a face whose reference cannot be derived — which today means a wall
+   * of a swept region, where every segment of the region carries the range of the
+   * `region(…)` call and none of them is a line anybody could name. The engine
+   * may know an origin the graph flattened; usually it does not, because the
+   * graph was built from this very answer.
+   *
+   * Asked at selection time, alongside the region question and for the same
+   * reason: the click is where the engine is available, and turning a selection
+   * into KCL afterwards has to be able to happen without waiting.
+   */
+  const originCurveFor = async (
+    entityId: string,
+    picker: ScenePicker
+  ): Promise<string | null> => {
+    const graph = scene()
+    const executed = graph?.program.value
+    if (!graph || !executed) return null
+
+    const context = {
+      artifacts: graph.artifacts.value,
+      program: executed.ast,
+      source: executed.source,
+    }
+
+    // A face the file can already name needs nothing from the engine.
+    if (faceReference(entityId, context)?.kind !== 'unavailable') return null
+
+    const path = sweptPathFor(entityId, context)
+    if (!path) return null
+
+    const faces = await picker.sweptFaces(path)
+    const curve = faces.find((face) => face.face === entityId)?.curve ?? null
+
+    /*
+     * Worth reporting when it differs. kcl-lib sets a wall's segment to this
+     * curve, so the two agreeing is the expected case and tells us the engine has
+     * nothing more to offer; the two differing is the case this call exists for,
+     * and it should be visible when it happens.
+     */
+    const held = graph.artifactFor(entityId)
+    const known = held?.type === 'wall' ? held.segId : null
+    if (curve && curve !== known) {
+      console.info(
+        `selection: engine names a different curve for face ${entityId}`,
+        { graph: known, engine: curve }
+      )
+    }
+
+    return curve && curve !== known ? curve : null
   }
 
   const select = (
@@ -114,6 +171,15 @@ export function createSelectionService(
           ? null
           : await available.describeRegion(entityId).catch(() => null)
 
+        /*
+         * A face the file cannot name is the one case worth a second question.
+         * Failure is an answer here too: an engine that will not say leaves the
+         * selection exactly as it would have been.
+         */
+        const originCurve = known
+          ? await originCurveFor(entityId, available).catch(() => null)
+          : null
+
         if (mode === 'remove') {
           entities.value = entities.value.filter(
             (candidate) => candidate.entityId !== entityId
@@ -121,7 +187,7 @@ export function createSelectionService(
           return entityId
         }
 
-        const entity = describe(entityId, region)
+        const entity = describe(entityId, region, originCurve)
 
         if (mode === 'add') {
           const held = entities.value.some(

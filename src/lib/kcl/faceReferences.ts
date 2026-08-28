@@ -129,13 +129,24 @@ export function solidReference(
  */
 export function faceReference(
   entityId: string,
-  context: KclReferenceContext
+  context: KclReferenceContext,
+  /**
+   * The curve the engine says made this face, when the graph's own answer was
+   * unusable and somebody went and asked.
+   *
+   * Tried only after the graph's, and only for a wall. It is the same value in
+   * the ordinary case — kcl-lib builds a wall's segment *from* this curve — so it
+   * matters exactly where the two disagree.
+   */
+  originCurve?: string | null
 ): FaceLookup | null {
   const artifact = context.artifacts.get(entityId)
   if (!artifact) return null
 
   if (artifact.type === 'cap') return capReference(artifact, context)
-  if (artifact.type === 'wall') return wallReference(artifact, context)
+  if (artifact.type === 'wall') {
+    return wallReference(artifact, context, originCurve)
+  }
 
   /*
    * A face with nothing but an engine index. `faceId(solid, index = 3)` would
@@ -202,17 +213,20 @@ function capReference(
  */
 function wallReference(
   wall: Extract<Artifact, { type: 'wall' }>,
-  context: KclReferenceContext
+  context: KclReferenceContext,
+  originCurve?: string | null
 ): FaceLookup {
   const solid = solidReference(wall.sweepId, context)
   if (!solid) return unavailable(NO_SOLID)
 
-  const segment = context.artifacts.get(wall.segId)
-  if (!segment || !('codeRef' in segment)) {
-    return unavailable('The engine did not say which segment made that face.')
-  }
-
-  const parts = referencePartsAt(context.program, segment.codeRef.range[0])
+  /*
+   * The graph's segment first, then the engine's curve if that one has no name.
+   * They are usually the same artifact; where they are not, the engine's is the
+   * one that might still be a line in the file.
+   */
+  const parts =
+    segmentParts(wall.segId, context) ??
+    (originCurve ? segmentParts(originCurve, context) : null)
 
   /*
    * A segment has a name only inside a sketch block. Anywhere else — and a
@@ -226,7 +240,7 @@ function wallReference(
       ? sweptRegionName(context.program, sweep.codeRef.range[0])
       : null
 
-  if (!parts?.inner) {
+  if (!parts) {
     return unavailable(
       `That face came from sweeping a region, and the artifact graph does not say which segment made it. ${suggestion(solid, region, context)}`
     )
@@ -248,4 +262,43 @@ function wallReference(
         source: `faceOf(${solid}, face = ${parts.outer}.${parts.inner})`,
         via: 'wall.segment',
       }
+}
+
+/**
+ * A curve's name, but only when it has one.
+ *
+ * A segment is named only inside a sketch block. Anywhere else — and a region's
+ * segments point at the `region(…)` call — there is nothing to write, and the
+ * enclosing name must not stand in for it: it names the region, and
+ * `region001.tags.region001` is not a face.
+ */
+function segmentParts(
+  curveId: string,
+  context: KclReferenceContext
+): { outer: string; inner: string } | null {
+  const segment = context.artifacts.get(curveId)
+  if (!segment || !('codeRef' in segment)) return null
+
+  const parts = referencePartsAt(context.program, segment.codeRef.range[0])
+  return parts?.inner ? { outer: parts.outer, inner: parts.inner } : null
+}
+
+/**
+ * The path whose faces the engine can be asked about.
+ *
+ * `solid3d_get_extrusion_face_info` takes the *path* that was swept, which is
+ * what kcl-lib passes it. A wall does not hold one, so it comes from the segment:
+ * the curve knows the path it belongs to.
+ */
+export function sweptPathFor(
+  entityId: string,
+  context: KclReferenceContext
+): string | null {
+  const artifact = context.artifacts.get(entityId)
+  if (artifact?.type !== 'wall') return null
+
+  const segment = context.artifacts.get(artifact.segId)
+  if (!segment || !('pathId' in segment)) return null
+  // `pathId` is optional on some variants; absent means the graph cannot say.
+  return segment.pathId ?? null
 }

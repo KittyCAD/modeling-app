@@ -27,6 +27,16 @@ export interface SelectedEntity {
    * carrying what it would take to write it.
    */
   region: PickedRegion | null
+  /**
+   * The curve the engine says made this face, when the file could not say.
+   *
+   * Asked at selection time and only when needed, because it is a round trip and
+   * usually restates what the graph already holds: kcl-lib builds a wall's
+   * segment from this very curve. Kept on the selection rather than fetched later
+   * so that turning a selection into KCL stays synchronous — the click is where
+   * the engine is available and the waiting is already happening.
+   */
+  originCurve?: string | null
 }
 
 /** What the engine knows about an area that is not in the file yet. */
@@ -53,6 +63,21 @@ export type SelectionMode = 'replace' | 'add' | 'remove'
  * Optional, and absent until something is rendering. A viewport you cannot pick
  * in is not broken; it is a viewport with nothing in it.
  */
+/**
+ * One face of a swept solid, as the engine sees it.
+ *
+ * `curve` is the curve the face was swept from — the engine's own answer to the
+ * question the artifact graph loses when a region is involved. `cap` says whether
+ * the face is an end rather than a side, in the engine's vocabulary rather than
+ * ours.
+ */
+export interface SweptFace {
+  face: string
+  curve: string | null
+  /** `none` for a side face; the ends say which end. */
+  cap: 'none' | 'top' | 'bottom' | 'both'
+}
+
 export interface ScenePicker {
   /** `engine`, for diagnostics. */
   readonly id: string
@@ -67,6 +92,20 @@ export interface ScenePicker {
    * not a region, which includes every entity the graph *could* name.
    */
   describeRegion(entityId: string): Promise<PickedRegion | null>
+  /**
+   * Which curve made each face of a swept solid.
+   *
+   * `solid3d_get_extrusion_face_info` in engine terms, and the same command
+   * kcl-lib uses to *build* wall artifacts — it sets a wall's segment to the
+   * curve reported here. So for a graph built from a successful run the two
+   * agree, and this earns its round trip only where they do not: a run that
+   * failed after sweeping, a solid the graph never described, or an engine that
+   * knows an origin the graph flattened.
+   *
+   * Empty rather than throwing for a solid that was not swept. Asking is how you
+   * find out, and "no faces" is an answer.
+   */
+  sweptFaces(solidId: string): Promise<readonly SweptFace[]>
 }
 
 /**

@@ -156,11 +156,17 @@ export function createSelectionResolver(
          * does not.
          */
         if (asFace) {
-          const face = faceReference(entityId, {
-            artifacts: graph?.artifacts.value ?? new Map(),
-            program: program.ast,
-            source: program.source,
-          })
+          const face = faceReference(
+            entityId,
+            {
+              artifacts: graph?.artifacts.value ?? new Map(),
+              program: program.ast,
+              source: program.source,
+            },
+            // Gathered when the face was clicked, because that is when the
+            // engine was there to ask.
+            entity.originCurve
+          )
 
           if (face?.kind === 'reference') {
             if (!references.includes(face.source)) references.push(face.source)

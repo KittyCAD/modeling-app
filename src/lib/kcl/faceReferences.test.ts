@@ -1,7 +1,11 @@
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { describe, expect, it } from 'vitest'
 import { artifactsFrom } from '@src/lib/kcl/artifacts'
-import { faceReference, solidReference } from '@src/lib/kcl/faceReferences'
+import {
+  faceReference,
+  solidReference,
+  sweptPathFor,
+} from '@src/lib/kcl/faceReferences'
 
 /** The source of a lookup that produced one, or the reason it did not. */
 const sourceOf = (lookup: ReturnType<typeof faceReference>) =>
@@ -367,5 +371,76 @@ extrude001 = extrude(region001, length = 10)
     expect(sourceOf(faceReference('cap', sweptRegion))).toBe(
       'faceOf(extrude001, face = END)'
     )
+  })
+})
+
+/*
+ * When the engine names a curve the graph flattened, that curve is the one worth
+ * writing — it may still be a line somebody can point at in the file.
+ */
+describe('a face named from the engine curve', () => {
+  const withSketchSegment = {
+    artifacts: artifactsFrom({
+      map: {
+        regionSeg: {
+          type: 'segment',
+          id: 'regionSeg',
+          pathId: 'regionPath',
+          codeRef: codeRef(309, 367),
+        },
+        sketchSeg: {
+          type: 'segment',
+          id: 'sketchSeg',
+          pathId: 'sketchPath',
+          codeRef: codeRef(70, 90),
+        },
+        sweep: {
+          type: 'sweep',
+          id: 'sweep',
+          subType: 'extrusion',
+          pathId: 'regionPath',
+          surfaceIds: [],
+          edgeIds: [],
+          codeRef: codeRef(382, 413),
+        },
+        wall: {
+          type: 'wall',
+          id: 'wall',
+          segId: 'regionSeg',
+          sweepId: 'sweep',
+          edgeCutEdgeIds: [],
+          pathIds: [],
+          faceCodeRef: codeRef(0, 0),
+          cmdId: 'c1',
+        },
+      },
+    }),
+    program: program(
+      sketchWithSegment('s', 'l1', [41, 308], [63, 99]),
+      declare('region001', regionCall(), [309, 368]),
+      declare('extrude001', call('extrude', name('region001')), [369, 413])
+    ),
+  }
+
+  it('uses the engine curve when the graph segment has no name', () => {
+    expect(
+      sourceOf(faceReference('wall', withSketchSegment, 'sketchSeg'))
+    ).toBe('faceOf(extrude001, face = region001.tags.l1)')
+  })
+
+  it('still cannot name it when the engine offers nothing', () => {
+    expect(faceReference('wall', withSketchSegment)?.kind).toBe('unavailable')
+  })
+
+  it('ignores an engine curve that is no more nameable', () => {
+    expect(faceReference('wall', withSketchSegment, 'regionSeg')?.kind).toBe(
+      'unavailable'
+    )
+  })
+
+  /** The path the engine has to be asked about is the segment's own. */
+  it('finds the path a face belongs to', () => {
+    expect(sweptPathFor('wall', withSketchSegment)).toBe('regionPath')
+    expect(sweptPathFor('sweep', withSketchSegment)).toBeNull()
   })
 })
