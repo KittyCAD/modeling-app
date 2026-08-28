@@ -468,15 +468,13 @@ readers wrong.
 
 ## What is not built yet
 
-- CodeMirror buffers, the dispatch boundary, and editor capabilities (#6836)
-- The modelling engine connection and the 3D scene
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
 - Cloud sync
 - Token storage on desktop uses browser storage; the existing app uses a
   per-environment config file, which survives a cleared profile and supports
   environment switching. Settings already write one, so the mechanism exists
-- Settings are re-read only when a project opens; nothing watches `user.toml` or
-  `project.toml`, so an external edit needs a reload
+- Watching is desktop-only, and a project folder moved or deleted underneath the
+  app is reported as a change to each file rather than as the project going away
 - An engine-idle signal, so the view can be framed automatically after execution
 - Selection, camera controls, and the feature tree: the viewport is a video
   stream with no interaction wired to it yet
@@ -522,6 +520,66 @@ both platforms:
   process to a **granted root** — the default projects directory plus anything
   the user picked in an OS dialog. Picking is the grant; grants persist.
 
+## Watching for external changes
+
+Files change underneath a desktop app: a formatter runs, a branch is checked
+out, someone edits `user.toml` in vim. `FileWatcher` (`src/contracts/`) is how
+the app finds out, and it is deliberately not part of `FileSystem` — that is
+*how* to read and write, this is *when something else did*.
+
+The web build contributes **no watcher at all**, not a no-op. The
+origin-private filesystem is reachable only by this app, so there is no external
+editor to notice and a watcher there would be a promise the platform cannot
+keep. Every consumer resolves the service with `optional` and works without it.
+That is also why the settings store carries its own `watch?` rather than being
+watched through the filesystem: on the web, another tab *is* a real external
+editor, and the `storage` event is how you hear about it.
+
+### Coalescing, and telling your own writes apart
+
+Two things make this safe, and skipping either produces a feature that is worse
+than not having one.
+
+**Coalescing.** One save from another editor can produce a create, a rename and
+two writes, and the file is not readable at every point in between. The main
+process gathers raw events for 120ms and then stats each path once, which is
+also how it decides between created, changed and removed — `fs.watch` says
+'rename' for both creation and deletion, so only the file's state afterwards can
+answer.
+
+**Provenance.** Autosave writes while someone keeps typing. Left alone, that
+write comes back as an incoming change, and the buffer would be told that
+content it produced itself is a conflict — the divergence bar appearing
+mid-sentence. `FsOperationQueue.recordWrite` already existed for exactly this;
+`readExternalChange` is what finally consults it, and it matches on **content**,
+not on the path or the clock, so a genuine edit that lands inside the window
+still gets through. For `user.toml` the check happens in the main process
+instead, because that is where the write happens: it knows what it last wrote,
+so the renderer only ever hears about edits it did not cause.
+
+### What each consumer does with it
+
+The session watches its project folder and does two separate jobs, only one of
+which is about content: a file with a buffer open on it is reconciled, and a
+file appearing or disappearing refreshes the tree. A plain write to a file
+nobody has open changes neither, so it deliberately does not re-walk the
+project.
+
+Reconciliation itself is unchanged — the buffer already knew how to adopt a
+change silently when it is clean and surface a conflict when it is not. The
+watcher only supplies the input that policy was written for.
+
+Settings re-read the file that changed. An external edit **wins outright**,
+unlike the first read at startup: that one races a click and keeps what the
+person just did, whereas a file edited while the app is open is newer than
+anything the app knows. A line deleted by hand becomes inherited again, which is
+the whole point of editing the file yourself.
+
+A watch is shared: one operating-system watch per directory however many
+features ask for it, released when the last of them stops listening. The session
+and the settings service both want the project folder and neither has to know
+the other asked.
+
 ## The WASM boundary
 
 `kcl-lib` names two TypeScript modules by path — see `src/wasm/`. wasm-bindgen
@@ -552,6 +610,8 @@ The trust boundary:
 - the settings channels are the exception, and deliberately so: they serve one
   pinned path in the app's configuration directory, which is not a granted root.
   The renderer cannot name the file, only ask for the one file it is allowed
+- watches are confined to granted roots too, and a renderer may only stop a
+  watch it started; every watch dies with the window that asked for it
 - `user.toml` is written to a temporary file and renamed, so a crash mid-write
   leaves the previous settings intact rather than a truncated file
 - `openExternal` accepts only http(s)
