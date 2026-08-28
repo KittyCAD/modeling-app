@@ -522,12 +522,16 @@ export function addSweep({
     if (err(bodyIndex)) {
       return bodyIndex
     }
+    const sourceStatement = modifiedAst.body[bodyIndex]
+    if (!sourceStatement) {
+      return new Error('Could not retrieve the source pipe statement')
+    }
     const variableName = findUniqueName(modifiedAst, 'path')
     const declaration = createVariableDeclaration(
       variableName,
       expression.node.expression
     )
-    declaration.preComments = expression.node.preComments
+    declaration.preComments = sourceStatement.preComments
     modifiedAst.body[bodyIndex] = declaration
     pathExpr = createLocalName(variableName)
   }
