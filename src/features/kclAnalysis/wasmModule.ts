@@ -15,28 +15,26 @@ export type KclWasmModule =
 
 let loading: Promise<KclWasmModule> | null = null
 
-/**
- * Where the `.wasm` binary lives.
- *
- * Over http it is served from the origin. Under `file://` — the packaged
- * desktop app — a root-relative URL would resolve to the filesystem root, so the
- * path has to be derived from the document's own location.
- */
-export function wasmBinaryUrl(): string {
-  const file = 'kcl_wasm_lib_bg.wasm'
-
-  if (document.location.protocol.startsWith('http')) {
-    return `${document.location.origin}/${file}`
-  }
-
-  const directory = document.location.pathname.split('/').slice(0, -1).join('/')
-  return `${document.location.protocol}//${directory}/${file}`
-}
-
 export function loadKclWasm(): Promise<KclWasmModule> {
   loading ??= (async () => {
     const module = await import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js')
-    await module.default({ module_or_path: wasmBinaryUrl() })
+
+    /**
+     * Initialised with no path on purpose.
+     *
+     * `wasm-bindgen`'s glue falls back to `new URL('kcl_wasm_lib_bg.wasm',
+     * import.meta.url)`, which the bundler rewrites to the emitted asset next to
+     * the glue chunk. That is the one form of the URL that stays correct
+     * everywhere: it is relative to the *module*, so it survives a relative base
+     * under `file://`, and it carries a content hash so a deployed build cannot
+     * be served a stale 15MB binary from cache.
+     *
+     * Passing a path here is what broke the desktop app. Any URL derived from
+     * `document.location` is derived from whatever the router last pushed, so
+     * opening a project moved the binary to `file:///project/`, and KCL stopped
+     * loading with "Failed to fetch" the moment there was anything to run.
+     */
+    await module.default()
     return module
   })().catch((error) => {
     // Cleared so a transient failure — a slow first load, a dropped request —
