@@ -238,7 +238,7 @@ impl KclErrorWithOutputs {
             refactor_metadata: outcome.refactor_metadata,
             scene_graph: Default::default(),
             filenames: outcome.filenames,
-            source_files: Default::default(),
+            source_files: outcome.source_files,
             default_planes: outcome.default_planes,
         }
     }
@@ -587,6 +587,32 @@ pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: Comp
     };
     let report = miette::Report::new(report);
     format!("{report:?}")
+}
+
+/// Render a [`CompilationIssue`] as a miette report string against the module
+/// its source range points into. Issues from imported modules are rendered
+/// with the imported module's filename and source; the top-level filename and
+/// source are used for top-level issues and as a fallback when the module is
+/// missing from `source_files`.
+pub fn render_compilation_issue_miette_with_sources(
+    top_level_filename: &str,
+    top_level_source: &str,
+    source_files: &IndexMap<ModuleId, ModuleSource>,
+    issue: CompilationIssue,
+) -> String {
+    let module_id = issue.source_range.module_id();
+    // Callers know the real top-level filename (e.g. an absolute path), while
+    // `source_files` only records the module path, so prefer the caller's
+    // top-level pair.
+    let module_source = (!module_id.is_top_level())
+        .then(|| source_files.get(&module_id))
+        .flatten();
+    match module_source {
+        Some(module_source) => {
+            render_compilation_issue_miette(&module_source.path.to_string(), &module_source.source, issue)
+        }
+        None => render_compilation_issue_miette(top_level_filename, top_level_source, issue),
+    }
 }
 
 impl IntoDiagnostic for KclError {

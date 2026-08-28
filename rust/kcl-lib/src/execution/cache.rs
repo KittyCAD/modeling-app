@@ -135,6 +135,7 @@ impl GlobalState {
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             refactor_metadata: self.exec_state.root_module_artifacts.refactor_metadata.clone(),
             issues: self.exec_state.issues,
+            source_files: self.exec_state.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         })
     }
