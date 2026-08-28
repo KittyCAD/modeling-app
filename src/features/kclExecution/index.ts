@@ -21,6 +21,11 @@ import {
   showScaleGridSetting,
 } from '@src/features/engineScene/settings'
 import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
+import type {
+  KclContextHandle,
+  KclContextService,
+} from '@src/contracts/kclContext'
+import { kclContextService } from '@src/contracts/kclContext'
 import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
 import {
   diagnosticsFromFailure,
@@ -64,10 +69,29 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const artifacts = signal<ArtifactMap>(new Map())
   const program = signal<ExecutedProgram | null>(null)
+  /** Whether a context exists, for anything that must not create one. */
+  const contextReady = signal(false)
 
   const contextOwner = () => {
     owner ??= createKclContextOwner(engine())
     return owner
+  }
+
+  /**
+   * The context, lent out.
+   *
+   * One object in kcl-lib carries both `execute` and the sketch frontend, and
+   * they share the program and the cached execution state — so sketching borrows
+   * this one rather than making its own. Ownership stays here, where the
+   * connection's lifetime already is.
+   */
+  const contextAccess: KclContextService = {
+    available: computed(() => contextReady.value),
+    get: async () => {
+      const handle = await contextOwner().get()
+      contextReady.value = true
+      return handle as unknown as KclContextHandle
+    },
   }
 
   /**
@@ -217,8 +241,12 @@ export default defineRegistryItemFactory((ctx) => {
         disposed = true
         stopWatching?.()
         owner?.reset()
+        contextReady.value = false
       },
-      providesServices: [provideService(kclSceneService, scene)],
+      providesServices: [
+        provideService(kclSceneService, scene),
+        provideService(kclContextService, contextAccess),
+      ],
       provides: [provide(executorsValueSpec, executor)],
     }),
   }
