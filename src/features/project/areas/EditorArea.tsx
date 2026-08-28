@@ -104,7 +104,8 @@ function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
         <div class="zds-editor__divergence" role="alert">
           <Icon name="warning" size="small" />
           <span class="zds-editor__divergence-text">
-            This file changed on disk while you had unsaved edits.
+            This file changed on disk while you had unsaved edits. Saving is
+            paused until you choose.
           </span>
           <Button
             size="small"
