@@ -5,6 +5,10 @@ export default defineConfig({
     alias: [
       { find: '@kittycad/registry', replacement: '/packages/registry/src' },
       { find: '@kittycad/ui-kit', replacement: '/packages/ui-kit/src' },
+      // Generated kcl-lib bindings. Every other `@rust` import in the app is
+      // type-only and so never had to resolve at runtime; the stdlib shapes are
+      // the first that do.
+      { find: '@rust', replacement: '/rust' },
       { find: '@src', replacement: '/src' },
       { find: '@root', replacement: '/' },
     ],
