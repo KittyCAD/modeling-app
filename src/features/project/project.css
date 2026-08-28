@@ -229,20 +229,6 @@
 /* The engine stream ------------------------------------------------- */
 
 /*
- * `contain` rather than `cover`: the engine renders at the size it was asked
- * for, and cropping the scene to fill the panel would hide geometry the user
- * placed near the edge.
- */
-.zds-viewport__stream {
-  position: absolute;
-  inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-  background: var(--zds-surface-viewport);
-}
-
-/*
  * A message over a live viewport, not instead of it. Anchored to the bottom so
  * it never covers the middle of the scene, where the model is.
  */

@@ -1,0 +1,30 @@
+/*
+ * The engine's video stream.
+ *
+ * `contain` rather than `cover`: the engine renders at the size it was asked
+ * for, and cropping the scene to fill the panel would hide geometry the user
+ * placed near the edge.
+ */
+.zds-viewport__stream {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  background: var(--zds-surface-viewport);
+  /*
+   * The stream is a control surface, not a picture.
+   *
+   * Dragging it orbits the camera, so the browser's own image-drag and
+   * text-selection behaviours have to be out of the way — otherwise a rotate
+   * gesture picks the video up and drops it somewhere.
+   */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* A cursor that says the surface can be grabbed, only while it can be. */
+.zds-viewport__stream:active {
+  cursor: grabbing;
+}

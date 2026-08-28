@@ -9,7 +9,7 @@ import { engineConnectionService } from '@src/contracts/engine'
 import { executionCoordinatorService } from '@src/contracts/execution'
 import { idleExecutionState } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
-import { EngineStream } from '@src/features/project/areas/EngineStream'
+import { EngineStream } from '@src/features/engineScene/EngineStream'
 import '../project.css'
 
 /**

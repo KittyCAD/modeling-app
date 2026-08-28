@@ -12,7 +12,7 @@ import {
   enableSsaoSetting,
   highlightEdgesSetting,
   showScaleGridSetting,
-} from '@src/features/engine/settings'
+} from '@src/features/engineScene/settings'
 import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
 import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
 import {

@@ -1,8 +1,7 @@
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import { booleanSetting, optionsSetting } from '@src/contracts/settings'
+import { booleanSetting, textSetting } from '@src/contracts/settings'
 
 /**
- * The modelling settings, owned by the feature that acts on them.
+ * How the engine draws the scene, owned by the feature that tells it to.
  *
  * Exported as handles rather than read through a string key, so a consumer gets
  * the value's type from the declaration and a rename is a compile error. KCL
@@ -16,24 +15,6 @@ import { booleanSetting, optionsSetting } from '@src/contracts/settings'
  * fields, so offering a per-project camera override would write a key nothing
  * reads.
  */
-
-export const cameraProjectionSetting = optionsSetting<CameraProjectionType>({
-  id: 'modeling.cameraProjection',
-  section: 'modeling',
-  title: 'Camera projection',
-  description:
-    'Orthographic keeps parallel edges parallel, which is what you want for drawings. Perspective looks like a photograph.',
-  order: 0,
-  defaultValue: 'orthographic',
-  // No per-project meaning: this is how someone prefers to see geometry, not a
-  // property of the geometry.
-  levels: ['user'],
-  toml: ['settings', 'modeling', 'camera_projection'],
-  options: [
-    { value: 'orthographic', label: 'Orthographic' },
-    { value: 'perspective', label: 'Perspective' },
-  ],
-})
 
 export const highlightEdgesSetting = booleanSetting({
   id: 'modeling.highlightEdges',
@@ -54,6 +35,7 @@ export const enableSsaoSetting = booleanSetting({
   order: 20,
   defaultValue: true,
   toml: ['settings', 'modeling', 'enable_ssao'],
+  detail: () => [{ label: 'Applies', value: 'on the next connection' }],
 })
 
 export const showScaleGridSetting = booleanSetting({
@@ -66,11 +48,27 @@ export const showScaleGridSetting = booleanSetting({
   // The Rust project schema has no field for this, so a project cannot set it.
   levels: ['user'],
   toml: ['settings', 'modeling', 'show_scale_grid'],
+  // Like ambient occlusion, chosen when the socket opens.
+  detail: () => [{ label: 'Applies', value: 'on the next connection' }],
 })
 
-export const modelingSettings = [
-  cameraProjectionSetting,
+export const backfaceColorSetting = textSetting({
+  id: 'modeling.backfaceColor',
+  section: 'modeling',
+  title: 'Backface colour',
+  description:
+    'The colour of a surface seen from behind, which is how an inside-out face gives itself away.',
+  order: 40,
+  defaultValue: '#00D5FF',
+  levels: ['user'],
+  toml: ['settings', 'modeling', 'backface_color'],
+  placeholder: '#00D5FF',
+  validate: (value) => /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value.trim()),
+})
+
+export const sceneSettings = [
   highlightEdgesSetting,
   enableSsaoSetting,
   showScaleGridSetting,
+  backfaceColorSetting,
 ]

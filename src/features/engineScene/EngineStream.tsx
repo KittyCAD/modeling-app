@@ -1,7 +1,9 @@
 import { useSignalEffect } from '@preact/signals'
-import { useRef } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
+import { useValueSpec } from '@src/app/context'
 import type { EngineConnection } from '@src/contracts/engine'
-import '../project.css'
+import { sceneInteractionsValueSpec } from '@src/contracts/engineScene'
+import './engineScene.css'
 
 /**
  * The engine's video stream.
@@ -14,9 +16,15 @@ import '../project.css'
  * `muted` and `playsInline` are what let autoplay work at all without a user
  * gesture, and `play()` is still called explicitly because some browsers ignore
  * `autoplay` on a stream attached after mount.
+ *
+ * Interaction is contributed rather than written here. The element is the only
+ * surface the model can be touched through, so the camera wants drags, selection
+ * will want clicks, and a measurement tool will want hovers — and none of them
+ * belong in a component whose job is a video with a size.
  */
 export function EngineStream({ engine }: { engine: EngineConnection }) {
   const video = useRef<HTMLVideoElement>(null)
+  const interactions = useValueSpec(sceneInteractionsValueSpec)
 
   useSignalEffect(() => {
     const element = video.current
@@ -29,6 +37,25 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
     // A rejection here is normal when the element is detached mid-negotiation.
     void element.play().catch(() => {})
   })
+
+  // Keyed on the contribution list, not on the signal: a new interaction being
+  // installed has to reach an element that is already mounted.
+  const installed = interactions.value
+
+  useEffect(() => {
+    const element = video.current
+    if (!element) return
+
+    const disposers = [...installed]
+      .sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.id.localeCompare(b.id)
+      )
+      .map((interaction) => interaction.attach(element))
+
+    return () => {
+      for (const dispose of disposers) dispose?.()
+    }
+  }, [installed])
 
   return (
     <video
