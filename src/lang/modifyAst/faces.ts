@@ -991,6 +991,10 @@ export function getPlaneExprFromSelection({
           if (err(bodyIndex)) {
             return bodyIndex
           }
+          const sourceStatement = modifiedAst.body[bodyIndex]
+          if (!sourceStatement) {
+            return new Error('Could not find source statement for the plane')
+          }
           const planeVariableName = findUniqueName(
             modifiedAst,
             KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
@@ -999,7 +1003,7 @@ export function getPlaneExprFromSelection({
             planeVariableName,
             expression.node.expression
           )
-          declaration.preComments = expression.node.preComments
+          declaration.preComments = sourceStatement.preComments
           modifiedAst.body[bodyIndex] = declaration
           planeExpr = createLocalName(planeVariableName)
         }
