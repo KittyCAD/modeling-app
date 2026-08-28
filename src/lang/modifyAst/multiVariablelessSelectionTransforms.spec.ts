@@ -1,5 +1,6 @@
 import {
   addAppearance,
+  addMirror3D,
   addRotate,
   addScale,
   addTranslate,
@@ -53,14 +54,26 @@ startSketchOn(XY)
   |> extrude(length = 2)
 startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 2)
-  |> extrude(length = 2)`
+  |> extrude(length = 2)
+plane001 = offsetPlane(YZ, offset = 1)`
     const ast = assertParse(code, instance)
-    const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+    const { artifactGraph, variables } = await enginelessExecutor(
+      ast,
+      rustContext
+    )
     const sweeps = [...artifactGraph.values()].filter(
       (artifact) => artifact.type === 'sweep'
     )
     expect(sweeps).toHaveLength(2)
     const objects = createSelectionFromArtifacts(sweeps, artifactGraph)
+    const planes = [...artifactGraph.values()].filter(
+      (artifact) => artifact.type === 'plane'
+    )
+    const plane = planes.at(-1)
+    if (!plane) {
+      throw new Error('Expected an offset plane for mirror3d')
+    }
+    const across = createSelectionFromArtifacts([plane], artifactGraph)
 
     await expectValidTransformOutput(
       addTranslate({
@@ -110,6 +123,20 @@ startSketchOn(XZ)
         wasmInstance: instance,
       }),
       'appearance([solid001, solid002], color = "#ff0000")',
+      instance,
+      rustContext
+    )
+
+    await expectValidTransformOutput(
+      addMirror3D({
+        ast,
+        artifactGraph,
+        variables,
+        bodies: objects,
+        across,
+        wasmInstance: instance,
+      }),
+      'solid003 = mirror3d([solid001, solid002], across = plane001)',
       instance,
       rustContext
     )
