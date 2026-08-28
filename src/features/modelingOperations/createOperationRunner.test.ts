@@ -600,7 +600,7 @@ describe('answering from the scene', () => {
     entities: computed(() => entities),
     picking: computed(() => false),
     select: () => {},
-    selectAt: async () => {},
+    selectAt: async () => null,
     clear: () => {},
   })
 

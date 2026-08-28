@@ -277,3 +277,48 @@ describe('gating a mode', () => {
     expect(app.availability('welding')).toEqual({ available: false })
   })
 })
+
+/*
+ * Entering a mode is inferred, so leaving has to be sayable — otherwise the
+ * condition that entered it is still true and nothing takes you out.
+ */
+describe('leaving a mode', () => {
+  it('lands back on the first mode', () => {
+    const app = service([mode('modeling'), mode('sketching')])
+    app.enter('sketching')
+
+    app.reset()
+
+    expect(app.active.value?.id).toBe('modeling')
+  })
+
+  it('forgets the request rather than naming a mode to enter', () => {
+    const later = signal<readonly SceneMode[]>([mode('modeling')])
+    const app = createSceneModeService({ modes: later, gates: signal([]) })
+    app.enter('modeling')
+    app.reset()
+
+    // A mode contributed later becomes where you land, without `reset` knowing.
+    later.value = [mode('inspecting'), mode('modeling')]
+
+    expect(app.active.value?.id).toBe('inspecting')
+  })
+
+  it('can be entered again afterwards', () => {
+    const app = service([mode('modeling'), mode('sketching')])
+    app.enter('sketching')
+    app.reset()
+
+    app.enter('sketching')
+
+    expect(app.active.value?.id).toBe('sketching')
+  })
+
+  it('does nothing when nothing was asked for', () => {
+    const app = service([mode('modeling'), mode('sketching')])
+
+    app.reset()
+
+    expect(app.active.value?.id).toBe('modeling')
+  })
+})

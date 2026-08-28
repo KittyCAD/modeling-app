@@ -4,26 +4,23 @@ import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
 import { sketchBlockAt } from '@src/lib/kclStdlib/program'
 
 /**
- * Where the text cursor is, and whether it speaks for the user.
+ * Where the text cursor is, and which program it addresses.
  *
- * Both conditions matter and they fail differently.
+ * `executing` is the only condition on it. An offset from another buffer
+ * addresses this program's text by coincidence, and a cursor in `bracket.kcl`
+ * must not put you inside a sketch in `main.kcl`.
  *
- * `focused` is what makes this escapable. A cursor is persistent — it sits in a
- * sketch block long after somebody has moved on — so without it, opening a
- * sketch would put the app in sketch mode for the rest of the session: clicking
- * the scene would not change it, closing the code panel would not change it, and
- * nothing short of moving the cursor would.
- *
- * `executing` is about which program the offset belongs to. An offset from
- * another buffer addresses this program's text by coincidence, and a cursor in
- * `bracket.kcl` must not put you inside a sketch in `main.kcl`.
+ * Focus deliberately does *not* gate this. It was tried, to make sketch mode
+ * escapable, and it took the mode away from the case that needs it most: Start
+ * sketch writes a block with the code panel closed, so there is no view to hold
+ * focus and the sketch it just made would not count. Leaving is now something the
+ * user says — a click on nothing, or Escape — rather than something inferred from
+ * where the keyboard is.
  */
 export interface SketchCursor {
   offset: number
   /** Whether the buffer holding it is the one being executed. */
   executing: boolean
-  /** Whether the editor has the keyboard. */
-  focused: boolean
 }
 
 /**
@@ -55,7 +52,7 @@ export function sketchContextAt(
     if (found) return found
   }
 
-  if (!cursor || !cursor.focused || !cursor.executing) return null
+  if (!cursor || !cursor.executing) return null
 
   /*
    * A cursor past the end of what was executed says nothing.

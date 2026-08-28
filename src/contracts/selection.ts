@@ -83,8 +83,14 @@ export interface SelectionService {
   readonly picking: ReadonlySignal<boolean>
   /** Select by entity id, resolving what the graph knows about each. */
   select(entityIds: readonly string[], mode?: SelectionMode): void
-  /** Ask what is at a point and select it. Empty space clears. */
-  selectAt(at: ScenePoint, mode?: SelectionMode): Promise<void>
+  /**
+   * Ask what is at a point and select it. Empty space clears.
+   *
+   * Answers with the entity it selected, or null for a click on nothing — which
+   * the caller needs, because a click on nothing is a *statement* rather than a
+   * failed selection, and only the click knows what to do about it.
+   */
+  selectAt(at: ScenePoint, mode?: SelectionMode): Promise<string | null>
   clear(): void
 }
 

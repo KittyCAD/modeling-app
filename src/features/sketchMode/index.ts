@@ -6,14 +6,12 @@ import {
 import { computed } from '@preact/signals'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { kclSceneService } from '@src/contracts/kclScene'
-import { keybindingService } from '@src/contracts/keybindings'
 import { projectSessionService } from '@src/contracts/projectSession'
 import {
   sceneModeGatesValueSpec,
   sceneModeService,
 } from '@src/contracts/sceneModes'
 import { selectionService } from '@src/contracts/selection'
-import { editorHasFocus } from '@src/features/editorCapabilities/keymapScope'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
 import {
   autoEnterSketchMode,
@@ -53,14 +51,10 @@ export default defineRegistryItemFactory((ctx) => {
       .filter((range): range is SourceRange => range !== null)
 
     /*
-     * The cursor's facts, gathered here and judged there.
-     *
-     * Which of them disqualify a cursor is a rule worth testing, so it lives in
-     * `sketchContextAt`; reading the keymap's own focus scope means the answer is
-     * the one the keyboard uses rather than a second opinion about where the user
-     * is.
+     * The cursor's facts, gathered here and judged there: which of them
+     * disqualify a cursor is a rule worth testing, so it lives in
+     * `sketchContextAt`.
      */
-    const keys = ctx.services.optional(keybindingService)
     const session = ctx.services.optional(projectSessionService)?.current.value
     const executing = session?.executingBuffer.value ?? null
     const active = session?.activeBuffer.value ?? null
@@ -69,7 +63,6 @@ export default defineRegistryItemFactory((ctx) => {
       ? {
           offset: active.state.value.selection.main.head,
           executing: active.id === executing?.id,
-          focused: keys ? editorHasFocus(keys) : false,
         }
       : null
 

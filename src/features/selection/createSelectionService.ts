@@ -81,7 +81,7 @@ export function createSelectionService(
 
     async selectAt(at: ScenePoint, mode: SelectionMode = 'replace') {
       const available = picker()
-      if (!available?.ready.peek()) return
+      if (!available?.ready.peek()) return null
 
       picking.value = true
       try {
@@ -96,7 +96,7 @@ export function createSelectionService(
          */
         if (entityId === null) {
           if (mode === 'replace') entities.value = []
-          return
+          return null
         }
 
         /*
@@ -118,7 +118,7 @@ export function createSelectionService(
           entities.value = entities.value.filter(
             (candidate) => candidate.entityId !== entityId
           )
-          return
+          return entityId
         }
 
         const entity = describe(entityId, region)
@@ -128,14 +128,16 @@ export function createSelectionService(
             (candidate) => candidate.entityId === entityId
           )
           if (!held) entities.value = [...entities.value, entity]
-          return
+          return entityId
         }
 
         entities.value = [entity]
+        return entityId
       } catch (error) {
         // A pick that failed is not a selection change. The engine may have gone
         // away mid-click, which the connection already reports.
         console.warn('selection: could not ask what was clicked', error)
+        return null
       } finally {
         picking.value = false
       }

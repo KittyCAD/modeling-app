@@ -220,3 +220,39 @@ describe('selecting by clicking', () => {
     expect(selection.entities.value).toEqual([])
   })
 })
+
+/*
+ * A click on nothing is a statement — "nothing, thanks" — and the caller acts on
+ * it, so it has to be distinguishable from a pick that simply did not happen.
+ */
+describe('what a click reports back', () => {
+  it('answers with the entity it selected', async () => {
+    const { selection } = setup({ picks: ['wall'] })
+
+    expect(await selection.selectAt(at)).toBe('wall')
+  })
+
+  it('answers null for a click on nothing', async () => {
+    const { selection } = setup({ picks: [null] })
+
+    expect(await selection.selectAt(at)).toBeNull()
+  })
+
+  it('answers null when there is nothing to pick with', async () => {
+    const { selection } = setup({ ready: false })
+
+    expect(await selection.selectAt(at)).toBeNull()
+  })
+
+  it('answers null when the pick fails', async () => {
+    const { selection } = setup({ fail: true })
+
+    expect(await selection.selectAt(at)).toBeNull()
+  })
+
+  it('still answers with the entity when removing it', async () => {
+    const { selection } = setup({ picks: ['wall'] })
+
+    expect(await selection.selectAt(at, 'remove')).toBe('wall')
+  })
+})

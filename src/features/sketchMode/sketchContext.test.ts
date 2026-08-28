@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import type { ExecutedProgram } from '@src/contracts/kclScene'
 import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
 
-/** A cursor that counts: in the executing buffer, with the keyboard. */
-const at = (offset: number) => ({ offset, executing: true, focused: true })
+/** A cursor that counts: one in the buffer being executed. */
+const at = (offset: number) => ({ offset, executing: true })
 
 const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
 
@@ -91,50 +91,26 @@ describe('finding the sketch the user is in', () => {
 })
 
 /*
- * The bug this was written for: a cursor sits in a sketch block forever, so
- * without these two conditions the app could not be got out of sketch mode by
- * clicking the scene, closing the code panel, or anything else short of moving
- * the cursor.
+ * Leaving is said, not inferred. Focus was tried as the condition and took the
+ * mode away from the case that needs it most — Start sketch with the code panel
+ * closed, where there is no view to hold focus at all.
  */
-describe('when the cursor stops speaking for the user', () => {
-  it('ignores the cursor once the editor loses the keyboard', () => {
-    expect(
-      sketchContextAt(program, [], {
-        offset: 50,
-        executing: true,
-        focused: false,
-      })
-    ).toBeNull()
+describe('which cursors count', () => {
+  it('counts a cursor whether or not anything has focus', () => {
+    expect(sketchContextAt(program, [], at(50))?.name).toBe('triangle')
   })
 
   it('ignores a cursor in a buffer that is not the one being executed', () => {
     expect(
-      sketchContextAt(program, [], {
-        offset: 50,
-        executing: false,
-        focused: true,
-      })
+      sketchContextAt(program, [], { offset: 50, executing: false })
     ).toBeNull()
   })
 
-  /* A scene selection is not the editor's, so blurring it changes nothing. */
-  it('keeps a scene selection when the editor is not focused', () => {
+  /* A scene selection is not the cursor's, and outlives it. */
+  it('keeps a scene selection when the cursor does not count', () => {
     expect(
-      sketchContextAt(program, [[50, 60, 0]], {
-        offset: 130,
-        executing: true,
-        focused: false,
-      })?.name
+      sketchContextAt(program, [[50, 60, 0]], { offset: 130, executing: false })
+        ?.name
     ).toBe('triangle')
-  })
-
-  it('finds nothing with the editor blurred and nothing selected', () => {
-    expect(
-      sketchContextAt(program, [], {
-        offset: 50,
-        executing: true,
-        focused: false,
-      })
-    ).toBeNull()
   })
 })
