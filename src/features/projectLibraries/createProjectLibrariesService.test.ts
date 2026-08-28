@@ -262,6 +262,26 @@ describe('project libraries service', () => {
     ).toContain('enclosure')
   })
 
+  it('keeps a project’s settings when it is renamed', async () => {
+    const { service, fileSystem } = harness
+    await fileSystem.writeTextFile(
+      '/projects/bracket/project.toml',
+      '[settings.modeling]\nhighlight_edges = false\n'
+    )
+    await service.refresh()
+
+    const bracket = service.realizations.value.find((r) => r.name === 'bracket')
+    await service.renameProject(bracket?.id ?? '', 'Big Bracket')
+
+    // The title write shares the file with the settings cascade, so replacing
+    // the file would silently reset the project's preferences.
+    const written = await fileSystem.readTextFile(
+      '/projects/big-bracket/project.toml'
+    )
+    expect(written).toContain('title = "Big Bracket"')
+    expect(written).toContain('highlight_edges = false')
+  })
+
   it('deletes a project', async () => {
     const { service, fileSystem } = harness
     await service.refresh()

@@ -1,3 +1,4 @@
+import { parse, stringify } from 'smol-toml'
 import type { FileSystem } from '@src/contracts/fileSystem'
 import type {
   CreateProjectInput,
@@ -46,13 +47,31 @@ async function writeProjectTitle(
   projectPath: string,
   title: string
 ): Promise<void> {
-  // Quotes in a title would break the file, and a title is not worth a TOML
-  // serializer here.
-  const safeTitle = title.replaceAll('"', "'")
-  await fileSystem.writeTextFile(
-    joinPath(projectPath, 'project.toml'),
-    `title = "${safeTitle}"\n`
-  )
+  const target = joinPath(projectPath, 'project.toml')
+
+  /**
+   * Merge, do not replace.
+   *
+   * `project.toml` also carries the project's settings overrides, so writing
+   * the title as the whole file would silently discard them — a rename would
+   * quietly reset the project's preferences.
+   */
+  let existing: Record<string, unknown> = {}
+  try {
+    if (await fileSystem.exists(target)) {
+      existing = (parse(await fileSystem.readTextFile(target)) ?? {}) as Record<
+        string,
+        unknown
+      >
+    }
+  } catch {
+    // An unparseable file is replaced rather than blocking the rename: the
+    // title is what the user just asked for, and there is nothing to preserve
+    // out of a file nothing can read.
+  }
+
+  existing.title = title
+  await fileSystem.writeTextFile(target, stringify(existing))
 }
 
 /** Recursively copy a folder. Used when a rename cannot cross the boundary. */
