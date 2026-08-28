@@ -32,7 +32,7 @@ Preact, so the common case patches one attribute without re-rendering.
 packages/
   registry/          Capability container: value specs, services, slots, plugins
   ui-kit/            Design system + components. Publishable, brand-overridable
-  codemirror-*/      KCL language and LSP client, for when buffers land
+  codemirror-lang-kcl/  KCL syntax, as a CodeMirror language
   ui-components/     Legacy React components, superseded by ui-kit
 src/
   app/               Composition root, app context hooks
@@ -429,6 +429,82 @@ Three flows, contributed, because which are possible depends on the platform:
 | Device flow | desktop | Token exchange runs in the **main process**; the renderer only sees the code and the final token. Endpoints are on the **API** host, not the site. |
 | Web redirect | browser | A full navigation, since that is what makes the site's cookie readable here. |
 | Paste a token | everywhere | The fallback. Ordered last: it asks the most of the user. |
+
+## The KCL language server
+
+The server is already in the WASM lib the analysis executor loads —
+`lsp_run_kcl(config, token, baseUrl)` — and the client is
+`@codemirror/lsp-client`, which Zoo commissioned. What had to be written is the
+join between them.
+
+It runs in a worker, because it is a real parser: on the main thread a completion
+request on a large file competes with the frame drawing the cursor. The renderer
+holds a `Transport`, which is three methods over strings.
+
+Four pieces, and only one of them is interesting:
+
+- **`framing.ts`** — the protocol frames messages with `Content-Length`; the
+  client's transport carries bare JSON. Pure, and tested for the three framing
+  bugs that always happen: a split across chunks, several messages in one chunk,
+  and a split inside a multi-byte character.
+- **`worker.ts`** — hosts the server. `LspServerConfig` takes an `AsyncIterator`,
+  a `WritableStream` and a filesystem, all plain web primitives, so no vendored
+  client is involved. The 3,151-line `packages/codemirror-lsp-client` it replaces
+  is deleted.
+- **`filesystemRequests.ts`** — the server resolves KCL imports, so it reads
+  files the editor never opened, and it cannot: the filesystem is behind granted
+  roots in the main process on desktop and is the renderer's OPFS on the web. So
+  the worker asks. Every path is resolved against the project and refused if it
+  points outside — the server is a WASM blob that talks to an API, and "read this
+  absolute path" is not a question it gets to ask.
+- **`createBufferWorkspace.ts`** — the part with no precedent.
+
+### The workspace is the buffer collection
+
+The client's default workspace "only opens files that have an active editor, and
+only allows one editor per file", which is exactly the assumption this app is
+built to violate. Here the file set is the session's KCL **buffers**, and a view
+is an optional extra some of them have:
+
+- Closing a pane does not close the file. `didClose` happens when the *buffer* is
+  gone, so a file still being edited with no tab on screen is still what an
+  import resolves to. `main` needed a headless second `EditorView` and a family
+  of synchronise methods to fake this.
+- Changes are **composed, not diffed**. Every edit arrives as a `ChangeSet`
+  through the buffer's one dispatch boundary, so `syncFiles` reports what
+  happened instead of comparing documents and inventing a change that fits.
+- A server-initiated edit — a rename, a format — is dispatched **through the
+  buffer**, so it lands in a file whose pane is closed and lands in its undo
+  history, exactly as a local edit would.
+
+`displayFile` only brings forward a file the session already has. Opening one as
+a side effect of a hover would move someone where they did not ask to go.
+
+### Diagnostics have one owner
+
+Both the server and the analysis executor produce diagnostics for KCL, and
+CodeMirror's lint state has room for one writer — two means whichever ran last
+wins, silently. So the server *states* that it owns the gutter
+(`ownsDiagnosticsFor`) and the execution adapter asks before writing. The
+coordinator's diagnostics are still produced; they are what a headless caller
+reads. They just do not reach the view while a server is serving that language.
+
+### Lifecycle, and what forces a restart
+
+`lsp_run_kcl` consumes its config, so a server cannot be reconfigured: every
+input change is a new worker. The inputs are the project it resolves against, the
+token it authenticates with, and the KCL runtime flags — which are read once,
+when KCL builds its executor context, which is why they are *waited for* rather
+than watched.
+
+No project or no token means no server, which matches the engine: this one talks
+to the API too.
+
+Hover content is sanitized. The client renders the server's Markdown to HTML and
+inserts it, and KCL doc comments end up in hovers — so a KCL file from anywhere
+is a path to markup in the document. The platform sanitizer is used where there
+is one and the markup is reduced to text where there is not; a vetted library is
+the eventual answer for the web build.
 
 ## User features
 

@@ -22,6 +22,14 @@ export type ToWorker =
       apiBaseUrl: string
       /** Absolute path of the open project, which the server resolves against. */
       projectPath: string
+      /**
+       * Serialised `KclRuntimeFlags`, or null to leave Rust on its own defaults.
+       *
+       * Sent rather than fetched here, because the worker has no auth and no
+       * business knowing what a feature flag is. Applied before the server is
+       * constructed: KCL resolves its executor from these at that moment.
+       */
+      runtimeFlags: string | null
     }
   | { kind: 'message'; json: string }
   | { kind: 'fsResult'; id: number; value: unknown }

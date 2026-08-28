@@ -41,10 +41,6 @@ export default defineConfig((env) => {
         { find: '@kittycad/registry', replacement: '/packages/registry/src' },
         { find: '@kittycad/ui-kit', replacement: '/packages/ui-kit/src' },
         {
-          find: '@kittycad/codemirror-lsp-client',
-          replacement: '/packages/codemirror-lsp-client/src',
-        },
-        {
           find: '@kittycad/codemirror-lang-kcl',
           replacement: '/packages/codemirror-lang-kcl/src',
         },

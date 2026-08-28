@@ -1,6 +1,0 @@
-node_modules
-build
-dist
-tsconfig.tsbuildinfo
-*.d.ts
-*.js

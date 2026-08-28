@@ -17,6 +17,17 @@ export interface ExecutionAdapterDependencies {
   coordinator: () => ExecutionCoordinator
   /** The project as it stands, for executors that resolve imports. */
   captureSnapshot: () => ProjectSnapshot | null
+  /**
+   * Whether something else is publishing diagnostics for a language.
+   *
+   * CodeMirror's lint state holds one writer's worth of diagnostics, so two
+   * writers means whichever ran last wins and the other's disappear without a
+   * trace. When a language server is serving a language it owns the gutter,
+   * because it answers per keystroke rather than per execution and it knows about
+   * more than one file. The coordinator's diagnostics are still produced — they
+   * are what a headless caller reads — they just do not reach the view.
+   */
+  diagnosticsOwnedElsewhere?: (languageId: string) => boolean
 }
 
 const toCodeMirrorDiagnostic = (
@@ -122,6 +133,14 @@ export function createExecutionAdapterCapability(
         const state = dependencies.coordinator().stateFor(buffer.id).value
         if (state.resultVersion === null) return
         if (state.resultVersion !== buffer.version.peek()) return
+
+        // Read inside the effect so it follows a server starting or stopping
+        // mid-session rather than whatever was true when the buffer opened.
+        if (
+          dependencies.diagnosticsOwnedElsewhere?.(buffer.languageId.peek())
+        ) {
+          return
+        }
 
         buffer.dispatch({
           ...setDiagnostics(

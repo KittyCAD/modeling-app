@@ -177,7 +177,13 @@ async function start(message: Extract<ToWorker, { kind: 'start' }>) {
 
   // The same lazy loader the analysis executor uses, so a build has one copy of
   // the module and one story about where its binary comes from.
-  await loadKclWasm()
+  const wasm = await loadKclWasm()
+
+  // Before the server exists, because that is when KCL resolves its executor
+  // from them. Null means nobody knows, which Rust reads as its own defaults.
+  if (message.runtimeFlags) {
+    wasm.set_kcl_runtime_flags(message.runtimeFlags)
+  }
 
   post({ kind: 'ready' })
 

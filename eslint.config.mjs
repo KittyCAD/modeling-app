@@ -22,7 +22,6 @@ export default defineConfig([
     'rust/**/*.ts',
     '!rust/kcl-language-server/client/src/**/*.ts',
     '**/*.typegen.ts',
-    'packages/codemirror-lsp-client/dist/*',
     '**/.vscode-test',
   ]),
   {

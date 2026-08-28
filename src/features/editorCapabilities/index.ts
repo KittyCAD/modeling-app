@@ -10,6 +10,7 @@ import {
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { executionCoordinatorService } from '@src/contracts/execution'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
+import { kclLanguageServerService } from '@src/contracts/kclLsp'
 import {
   keybindingScopesValueSpec,
   keybindingService,
@@ -44,6 +45,12 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   const executionAdapter = createExecutionAdapterCapability({
+    // Optional, and asked per result: a build without a language server keeps
+    // the gutter, and one with a server that is not running keeps it too.
+    diagnosticsOwnedElsewhere: (languageId) =>
+      ctx.services
+        .optional(kclLanguageServerService)
+        ?.ownsDiagnosticsFor(languageId) ?? false,
     coordinator: () => ctx.services.get(executionCoordinatorService),
     captureSnapshot: () =>
       ctx.services
