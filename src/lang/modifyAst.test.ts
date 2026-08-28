@@ -1,11 +1,27 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
+  createVariableDeclaration,
+  nonCodeMetaEmpty,
 } from '@src/lang/create'
 import { pathsReferToSamePipe, replaceCallInPlace } from '@src/lang/modifyAst'
-import type { PathToNode } from '@src/lang/wasm'
-import { describe, expect, it } from 'vitest'
+import { addClone } from '@src/lang/modifyAst/transforms'
+import type {
+  Artifact,
+  ArtifactGraph,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/commandBarConfigs/modelingCommandStdLibCommands', () => ({
+  STD_LIB_COMMANDS: {},
+}))
 
 describe('editing calls in place', () => {
   it('preserves an existing unlabeled argument when reconstruction fails', () => {
@@ -92,5 +108,96 @@ describe('editing calls in place', () => {
     ]
 
     expect(pathsReferToSamePipe(path, path)).toBe(false)
+  })
+
+  it('edits clone calls in place instead of appending a duplicate declaration', () => {
+    const sourceBodyPath: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+    ]
+    const cloneCallPath: PathToNode = [
+      ['body', ''],
+      [2, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+    ]
+    const ast: Node<Program> = {
+      start: 0,
+      end: 0,
+      moduleId: 0,
+      outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
+      body: [
+        createVariableDeclaration('extrude001', createLocalName('sourceBody')),
+        createVariableDeclaration(
+          'pattern001',
+          createCallExpressionStdLibKw(
+            'patternLinear3d',
+            createLocalName('extrude001'),
+            []
+          )
+        ),
+        createVariableDeclaration(
+          'clone001',
+          createCallExpressionStdLibKw(
+            'clone',
+            createLocalName('originalInput'),
+            []
+          )
+        ),
+      ],
+      nonCodeMeta: nonCodeMetaEmpty(),
+    }
+    const sourceSweep: Artifact = {
+      type: 'sweep',
+      id: 'source-sweep',
+      subType: 'extrusion',
+      pathId: 'source-path',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: [0, 10, 0],
+        nodePath: { steps: [] },
+        pathToNode: sourceBodyPath,
+      },
+      sourceSweepId: null,
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [sourceSweep.id, sourceSweep],
+    ])
+
+    const result = addClone({
+      ast,
+      artifactGraph,
+      objects: {
+        graphSelections: [
+          { artifact: sourceSweep, codeRef: sourceSweep.codeRef },
+        ],
+        otherSelections: [],
+      },
+      variableName: 'clone001',
+      nodeToEdit: cloneCallPath,
+      wasmInstance: {} as ModuleType,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    expect(result.pathToNode).toEqual(cloneCallPath)
+    expect(result.modifiedAst.body).toHaveLength(ast.body.length)
+    const cloneDeclaration = result.modifiedAst.body[2]
+    expect(cloneDeclaration.type).toBe('VariableDeclaration')
+    if (cloneDeclaration.type !== 'VariableDeclaration') {
+      throw new Error('Expected clone declaration')
+    }
+    expect(cloneDeclaration.declaration.init).toMatchObject(
+      createCallExpressionStdLibKw('clone', createLocalName('extrude001'), [])
+    )
   })
 })
