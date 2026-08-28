@@ -42,12 +42,125 @@
 
 .zds-tree__row--directory {
   color: var(--zds-text-tertiary);
-  cursor: default;
 }
 
-.zds-tree__row--directory:hover {
-  background: transparent;
+/*
+ * The selected row, as distinct from the open one.
+ *
+ * `aria-current` means "this is the file on screen"; selection means "this is
+ * what an action would act on". They are usually the same row and occasionally
+ * not, so selection is the quieter of the two.
+ */
+.zds-tree__row[data-selected="true"] {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-tree__twisty {
+  flex: none;
   color: var(--zds-text-tertiary);
+}
+
+/* A row and the controls that belong to it ------------------------- */
+
+.zds-tree__line {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+.zds-tree__line > .zds-tree__row {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/*
+ * Row actions appear on hover or focus.
+ *
+ * Always-visible controls on every row would turn a file tree into a wall of
+ * icons, and the names are what you came to read. Focus counts as well as hover,
+ * so they are reachable by tab rather than only by pointer.
+ */
+.zds-tree__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-px);
+  flex: none;
+  padding-inline-end: var(--zds-space-1);
+  opacity: 0;
+  transition: opacity var(--zds-motion-instant) var(--zds-motion-ease);
+}
+
+.zds-tree__line:hover .zds-tree__actions,
+.zds-tree__line:focus-within .zds-tree__actions {
+  opacity: 1;
+}
+
+/* Naming a new entry, or renaming one ------------------------------ */
+
+.zds-tree__draft {
+  --zds-tree-depth: 0;
+
+  padding-block: var(--zds-space-px);
+  padding-inline: calc(
+      var(--zds-space-2) +
+      var(--zds-tree-depth) *
+      var(--zds-space-3)
+    )
+    var(--zds-space-2);
+}
+
+.zds-tree__draft-field {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  min-inline-size: 0;
+}
+
+.zds-tree__draft-field .zds-field {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.zds-tree__draft-field .zds-field__input {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-tree__error {
+  margin-block-start: var(--zds-space-1);
+  color: var(--zds-text-fault);
+  font-size: var(--zds-font-size-mini);
+}
+
+/* Confirming a delete, in the row rather than over it -------------- */
+
+.zds-tree__confirm {
+  --zds-tree-depth: 0;
+
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  flex-wrap: wrap;
+  padding-block: var(--zds-space-2);
+  padding-inline: calc(
+      var(--zds-space-3) +
+      var(--zds-tree-depth) *
+      var(--zds-space-3)
+    )
+    var(--zds-space-2);
+  background: oklch(from var(--zds-status-warn) l c h / 0.12);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-flag);
+}
+
+.zds-tree__confirm-text {
+  flex: 1;
+  min-inline-size: 6rem;
+}
+
+.zds-tree__confirm .zds-tree__error {
+  flex-basis: 100%;
 }
 
 .zds-tree__name {

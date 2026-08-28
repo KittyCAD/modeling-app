@@ -26,19 +26,26 @@ export function AreaHost({ area, nodeId, onClose }: AreaHostProps) {
     return <div class="zds-layout__bare">{content}</div>
   }
 
+  const actions = area.headerActions?.({ nodeId })
+
   return (
     <Panel
       heading={area.title}
       headerActions={
-        onClose ? (
-          <Button
-            variant="ghost"
-            size="small"
-            iconOnly
-            icon="close"
-            label={`Close ${area.title}`}
-            onClick={onClose}
-          />
+        actions || onClose ? (
+          <>
+            {actions}
+            {onClose ? (
+              <Button
+                variant="ghost"
+                size="small"
+                iconOnly
+                icon="close"
+                label={`Close ${area.title}`}
+                onClick={onClose}
+              />
+            ) : null}
+          </>
         ) : undefined
       }
     >

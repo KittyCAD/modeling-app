@@ -13,11 +13,15 @@ import {
   layoutPresetsValueSpec,
   layoutService,
 } from '@src/contracts/layout'
-import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import {
+  keybindingScopesValueSpec,
+  keybindingsValueSpec,
+} from '@src/contracts/keybindings'
 import {
   locationSourcesValueSpec,
   urlRoutesValueSpec,
 } from '@src/contracts/navigation'
+import type { ProjectSession } from '@src/contracts/projectSession'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { screensValueSpec, statusBarItemsValueSpec } from '@src/contracts/shell'
 import { ProjectScreen } from '@src/features/project/ProjectScreen'
@@ -29,7 +33,20 @@ import {
   VIEWPORT_AREA_ID,
 } from '@src/features/project/areaIds'
 import { CodeArea } from '@src/features/project/areas/CodeArea'
-import { FileExplorer } from '@src/features/project/areas/FileExplorer'
+import {
+  FileExplorer,
+  FileExplorerActions,
+  PROJECT_EXPLORER_SCOPE,
+} from '@src/features/project/areas/FileExplorer'
+import {
+  collapseAll,
+  directoryFor,
+  namesIn,
+  requestDelete,
+  selectedPath,
+  startCreate,
+  startRename,
+} from '@src/features/project/areas/fileExplorerState'
 import { ProjectInfo } from '@src/features/project/areas/ProjectInfo'
 import { ViewportArea } from '@src/features/project/areas/ViewportArea'
 
@@ -152,6 +169,54 @@ export default defineRegistryItemFactory((ctx) => {
       run: () => ctx.services.get(layoutService).toggleArea(areaId),
     })
 
+  /**
+   * Reveal the tree, then act on it.
+   *
+   * A file command run from the palette has to bring the panel with it: the
+   * name is typed in the tree, so starting a draft in a panel nobody can see
+   * would look like the command did nothing.
+   */
+  const revealFiles = () => {
+    const layout = ctx.services.get(layoutService)
+    layout.openArea(CODE_AREA_ID)
+    layout.openArea(EXPLORER_AREA_ID)
+  }
+
+  /** Rename and delete need a row to act on; the others act on the tree. */
+  const hasSelection = computed(
+    () => hasProject.value && selectedPath.value !== null
+  )
+
+  const fileCommand = (
+    id: string,
+    title: string,
+    icon:
+      | 'filePlus'
+      | 'folderPlus'
+      | 'pencil'
+      | 'trash'
+      | 'refresh'
+      | 'collapse',
+    run: (session: ProjectSession) => void,
+    enabled = hasProject
+  ) =>
+    provide(commandsValueSpec, {
+      id,
+      title,
+      category: 'File',
+      icon,
+      enabled,
+      run: () => {
+        const session = sessions().current.value
+        if (!session) return
+        run(session)
+      },
+    })
+
+  /** What a command with no argument acts on: the selected row, or the root. */
+  const targetDirectory = (session: ProjectSession) =>
+    directoryFor(session.files.value, selectedPath.value)
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'project',
@@ -172,6 +237,7 @@ export default defineRegistryItemFactory((ctx) => {
           // width, its open state and its toggle stay with the layout service.
           hostedBy: CODE_AREA_ID,
           render: () => <FileExplorer />,
+          headerActions: () => <FileExplorerActions />,
         }),
         provide(layoutAreasValueSpec, {
           id: CODE_AREA_ID,
@@ -259,6 +325,60 @@ export default defineRegistryItemFactory((ctx) => {
           render: () => <BufferField />,
         }),
 
+        fileCommand('files.newFile', 'New file', 'filePlus', (session) => {
+          revealFiles()
+          const directory = targetDirectory(session)
+          startCreate(
+            'file',
+            directory,
+            namesIn(session.files.value, directory)
+          )
+        }),
+        fileCommand(
+          'files.newFolder',
+          'New folder',
+          'folderPlus',
+          (session) => {
+            revealFiles()
+            const directory = targetDirectory(session)
+            startCreate(
+              'directory',
+              directory,
+              namesIn(session.files.value, directory)
+            )
+          }
+        ),
+        fileCommand(
+          'files.rename',
+          'Rename selected file',
+          'pencil',
+          () => {
+            const path = selectedPath.value
+            if (!path) return
+            revealFiles()
+            startRename(path)
+          },
+          hasSelection
+        ),
+        fileCommand(
+          'files.delete',
+          'Delete selected file',
+          'trash',
+          () => {
+            const path = selectedPath.value
+            if (!path) return
+            revealFiles()
+            requestDelete(path)
+          },
+          hasSelection
+        ),
+        fileCommand('files.refresh', 'Refresh files', 'refresh', (session) => {
+          void session.refreshFiles()
+        }),
+        fileCommand('files.collapseAll', 'Collapse folders', 'collapse', () => {
+          collapseAll()
+        }),
+
         toggleAreaCommand(CODE_AREA_ID, 'Toggle code panel', '⌘1'),
         toggleAreaCommand(INFO_AREA_ID, 'Toggle project panel', '⌘2'),
 
@@ -285,6 +405,36 @@ export default defineRegistryItemFactory((ctx) => {
             }
             layout.toggleArea(EXPLORER_AREA_ID)
           },
+        }),
+
+        /**
+         * The tree's own scope.
+         *
+         * `F2` and `Delete` are only bindings while the tree has focus: `Delete`
+         * anywhere else is either a keystroke somebody is typing or a command
+         * that has nothing to do with files. Not a `textEntry` scope — the rows
+         * are buttons, and the rename field inside one is an input, which the
+         * keymap already defers to on its own.
+         */
+        provide(keybindingScopesValueSpec, {
+          id: PROJECT_EXPLORER_SCOPE,
+          displayName: 'File tree focused',
+          priority: 500,
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['F2'],
+          commandId: 'files.rename',
+          scopes: [PROJECT_EXPLORER_SCOPE],
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Delete'],
+          commandId: 'files.delete',
+          scopes: [PROJECT_EXPLORER_SCOPE],
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Backspace'],
+          commandId: 'files.delete',
+          scopes: [PROJECT_EXPLORER_SCOPE],
         }),
 
         provide(keybindingsValueSpec, {

@@ -200,6 +200,24 @@ Two orderings are load-bearing, and both are invisible until they bite:
 Removal goes to the OS trash where the platform has one, which is what makes a
 single inline confirmation enough.
 
+### What the tree owns
+
+Only its own state: which folders are open, which row is selected, and what is
+being typed. That lives in `fileExplorerState` beside the component rather than
+inside it, because the panel unmounts every time the code panel is toggled shut —
+a tree that forgot its open folders each time you glanced at the model would be
+worse than no memory — and because the same state is driven from the rows, the
+panel's header actions, and the commands in the palette.
+
+A draft row is placed by the tree, not injected into the file list. `main` adds
+placeholder entries with magic names for this; a fake entry has to be filtered
+back out of everything that reads the files — the buffers, the URL, the executing
+file — and one of those eventually forgets.
+
+Every operation is also a command (`files.newFile`, `files.rename`, …), so the
+palette reaches them, and `F2`/`Delete` are bindings scoped to
+`projectExplorer.focused` — the scope the tree holds while focus is inside it.
+
 ## The engine connection
 
 The scene is rendered on the engine and streamed back, so this owns a websocket

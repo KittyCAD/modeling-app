@@ -120,6 +120,15 @@ export interface AreaDefinition {
    */
   hostedBy?: string
   render: (context: AreaContext) => ComponentChildren
+  /**
+   * Controls for the area's own heading strip.
+   *
+   * The area owns its actions for the same reason it owns its body: "new file"
+   * belongs to the file tree, and the shell has no business knowing the panel
+   * has one. Drawn before the close button, and only for `panel` chrome — a
+   * `bare` area has no strip to put them in and draws its own.
+   */
+  headerActions?: (context: AreaContext) => ComponentChildren
 }
 
 /** A named starting layout, e.g. `modeling`, `review`. */
