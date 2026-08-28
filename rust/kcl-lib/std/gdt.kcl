@@ -4,7 +4,7 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-import Edge, Face, GdtAnnotation, Plane, Point2d, TaggedFace from "std::types"
+import Edge, Face, GdtAnnotation, Plane, Point2d, Segment, TaggedFace from "std::types"
 
 /// GD&T datum feature.
 ///
@@ -1210,7 +1210,7 @@ export fn note(
   fontSize?: number(Length),
 ): GdtAnnotation {}
 
-/// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
+/// GD&T dimension annotation for displaying edge lengths, circular sizes, or distances between two entities.
 ///
 /// This is part of model-based definition (MBD).
 ///
@@ -1250,6 +1250,17 @@ export fn note(
 /// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// cylinderProfile = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// cylinderRegion = region(segments = [cylinderProfile.perimeter])
+/// cylinder = extrude(cylinderRegion, length = 10mm, tagEnd = $top)
+/// circularEdge = getCommonEdge(faces = [cylinderRegion.tags.perimeter, top])
+/// gdt::distance(edges = [circularEdge], diameter = cylinderProfile.perimeter, tolerance = 0.05mm, framePlane = XY)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn distance(
   /// The acceptable distance tolerance.
@@ -1262,6 +1273,12 @@ export fn distance(
   /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
   edges?: [Edge | any; 1+],
+  /// The circular face targeted by a diameter or radius dimension. Exactly one face or edge must be supplied when using `diameter` or `radius`.
+  faces?: [TaggedFace; 1],
+  /// A circular sketch segment whose diameter should be displayed. Cannot be combined with `radius`.
+  diameter?: Segment,
+  /// A circular sketch segment whose radius should be displayed. Cannot be combined with `diameter`.
+  radius?: Segment,
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),

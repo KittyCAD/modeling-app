@@ -26,6 +26,8 @@ use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
@@ -933,6 +935,13 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let from = parse_distance_entity_arg("from", exec_state, &args).await?;
     let to = parse_distance_entity_arg("to", exec_state, &args).await?;
     let edges = parse_gdt_edges_arg(exec_state, &args).await?;
+    let faces: Option<Vec<TagIdentifier>> = args.get_kw_arg_opt(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Known(1)),
+        exec_state,
+    )?;
+    let diameter: Option<Segment> = args.get_kw_arg_opt("diameter", &RuntimeType::segment(), exec_state)?;
+    let radius: Option<Segment> = args.get_kw_arg_opt("radius", &RuntimeType::segment(), exec_state)?;
     let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
@@ -945,6 +954,9 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         from,
         to,
         edges,
+        faces.unwrap_or_default(),
+        diameter,
+        radius,
         tolerance,
         precision,
         frame_position,
@@ -963,6 +975,9 @@ async fn inner_distance(
     from: Option<DistanceEntity>,
     to: Option<DistanceEntity>,
     edges: Vec<GdtEdgeReference>,
+    faces: Vec<TagIdentifier>,
+    diameter: Option<Segment>,
+    radius: Option<Segment>,
     tolerance: TyF64,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
@@ -986,6 +1001,84 @@ async fn inner_distance(
         args.node_path.clone(),
     )
     .await?;
+
+    let circular_dimension = match (diameter, radius) {
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Dimension cannot combine `diameter` and `radius`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(segment), None) => Some((segment, MbdSymbol::Diameter, 2.0)),
+        (None, Some(segment)) => Some((segment, MbdSymbol::Radius, 1.0)),
+        (None, None) => None,
+    };
+
+    if let Some((segment, symbol, radius_multiplier)) = circular_dimension {
+        if from.is_some() || to.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Circular dimensions cannot combine `diameter` or `radius` with `from`/`to`.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        if faces.len() + edges.len() != 1 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "A circular dimension requires exactly one face or edge.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+
+        let dimension_value = circular_dimension_value(&segment, radius_multiplier, exec_state.length_unit(), args)?;
+        let target = if let Some(face) = faces.first() {
+            DistanceEndpoint {
+                entity_id: Some(args.get_adjacent_face_to_tag(exec_state, face, false).await?),
+                edge_reference: None,
+                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+            }
+        } else if let Some(edge) = edges.first() {
+            match edge {
+                GdtEdgeReference::Entity(edge) => DistanceEndpoint {
+                    entity_id: Some(edge.get_engine_id(exec_state, args)?),
+                    edge_reference: None,
+                    entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                },
+                GdtEdgeReference::Specifier(edge_reference) => DistanceEndpoint {
+                    entity_id: None,
+                    edge_reference: Some(edge_reference.clone()),
+                    entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                },
+            }
+        } else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Circular dimension target was not resolved.".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        let mut annotations = Vec::with_capacity(1);
+        create_circular_dimension_annotation(
+            target,
+            symbol,
+            dimension_value,
+            &tolerance,
+            precision,
+            frame_position.as_ref(),
+            frame_plane.id,
+            leader_scale.as_ref(),
+            font_size.as_ref(),
+            exec_state,
+            args,
+            &mut annotations,
+        )
+        .await?;
+        return Ok(annotations);
+    }
+
+    if !faces.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "A face can only be used with a `diameter` or `radius` dimension.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
 
     if from.is_some() || to.is_some() {
         if !edges.is_empty() {
@@ -1059,6 +1152,92 @@ async fn inner_distance(
         .await?;
     }
     Ok(annotations)
+}
+
+fn circular_dimension_value(
+    segment: &Segment,
+    radius_multiplier: f64,
+    display_units: kcl_api::UnitLength,
+    args: &Args,
+) -> Result<f64, KclError> {
+    let (start, center) = match &segment.kind {
+        SegmentKind::Arc { start, center, .. } | SegmentKind::Circle { start, center, .. } => (start, center),
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "The `diameter` and `radius` arguments require a circular sketch segment.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    };
+    let dx = start[0].to_length_units(display_units) - center[0].to_length_units(display_units);
+    let dy = start[1].to_length_units(display_units) - center[1].to_length_units(display_units);
+    Ok(dx.hypot(dy) * radius_multiplier)
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn create_circular_dimension_annotation(
+    target: DistanceEndpoint,
+    symbol: MbdSymbol,
+    dimension_value: f64,
+    tolerance: &TyF64,
+    precision: u32,
+    frame_position: Option<&[TyF64; 2]>,
+    frame_plane_id: uuid::Uuid,
+    leader_scale: Option<&TyF64>,
+    font_size: Option<&TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+    annotations: &mut Vec<GdtAnnotation>,
+) -> Result<(), KclError> {
+    let annotation_id = exec_state.next_uuid();
+    let display_units = exec_state.length_unit();
+    let dimension = AnnotationMbdBasicDimension::builder()
+        .symbol(symbol)
+        .dimension(dimension_value)
+        .tolerance(tolerance.to_length_units(display_units))
+        .build();
+    let feature_control = AnnotationFeatureControl::builder()
+        .maybe_entity_id(target.entity_id)
+        .maybe_edge_reference(target.edge_reference)
+        .entity_pos(target.entity_pos)
+        .leader_type(AnnotationLineEnd::Dot)
+        .dimension(dimension)
+        .plane_id(frame_plane_id)
+        .offset(if let Some(offset) = frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .precision(precision)
+        .font_scale(gdt_font_scale(font_size, args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
+        .leader_scale(gdt_dot_leader_scale(leader_scale, font_size, args)?)
+        .build();
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .units(display_units.to_kcmc())
+        .build();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+            ModelingCmd::from(
+                mcmd::NewAnnotation::builder()
+                    .options(options)
+                    .clobber(false)
+                    .annotation_type(AnnotationType::T3D)
+                    .build(),
+            ),
+        )
+        .await?;
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
+    annotations.push(GdtAnnotation {
+        id: annotation_id,
+        meta: vec![Metadata::from(args.source_range)],
+    });
+    Ok(())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2080,6 +2259,70 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
+    }
+
+    const GDT_CIRCULAR_DIMENSION_KCL_TEMPLATE: &str = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 2)
+
+profile = sketch(on = XY) {
+  perimeter = __SEGMENT__
+}
+region001 = region(segments = [profile.perimeter])
+solid = extrude(region001, length = 10mm, tagEnd = $top)
+circularEdge = getCommonEdge(faces = [region001.tags.perimeter, top])
+gdt::distance(
+  edges = [circularEdge],
+  __DIMENSION__ = profile.perimeter,
+  tolerance = 0.1mm,
+)
+"#;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_creates_diameter_for_circle() -> Result<(), KclError> {
+        let code = GDT_CIRCULAR_DIMENSION_KCL_TEMPLATE
+            .replace(
+                "__SEGMENT__",
+                "circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])",
+            )
+            .replace("__DIMENSION__", "diameter");
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let feature_control = feature_control(&commands[annotation_index])?;
+        let dimension = feature_control.dimension.as_ref().ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "expected circular annotation to have a dimension".to_owned(),
+                vec![SourceRange::default()],
+            ))
+        })?;
+
+        assert_eq!(dimension.symbol, Some(MbdSymbol::Diameter));
+        assert_close(dimension.dimension.unwrap_or_default(), 10.0);
+        assert_close(dimension.tolerance, 0.1);
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_creates_radius_for_arc() -> Result<(), KclError> {
+        let code = GDT_CIRCULAR_DIMENSION_KCL_TEMPLATE
+            .replace(
+                "__SEGMENT__",
+                "arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])",
+            )
+            .replace("__DIMENSION__", "radius");
+        let commands = gdt_commands(&code).await;
+        let annotation_index = new_annotation_command_index(&commands)?;
+        let feature_control = feature_control(&commands[annotation_index])?;
+        let dimension = feature_control.dimension.as_ref().ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "expected circular annotation to have a dimension".to_owned(),
+                vec![SourceRange::default()],
+            ))
+        })?;
+
+        assert_eq!(dimension.symbol, Some(MbdSymbol::Radius));
+        assert_close(dimension.dimension.unwrap_or_default(), 5.0);
+        assert_close(dimension.tolerance, 0.1);
         Ok(())
     }
 

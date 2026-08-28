@@ -214,7 +214,10 @@ export type GdtProfileCommandArgs = Override<
   } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
+  Omit<
+    StdLibCommandArgs<'gdt::distance'>,
+    'from' | 'to' | 'edges' | 'faces' | 'diameter' | 'radius'
+  >,
   { objects: Selections } & GdtFrameArgs
 >
 export type GdtPerpendicularityCommandArgs =

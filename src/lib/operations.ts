@@ -2580,6 +2580,15 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     )
   }
 
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
   if (graphSelections.length === 0) {
     return { reason: 'Missing or invalid distance target argument' }
   }
@@ -3444,7 +3453,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     prepareToEdit: prepareToEditGdtNote,
   },
   'gdt::distance': {
-    label: 'Distance',
+    label: 'Dimension',
     icon: 'dimension',
     prepareToEdit: prepareToEditGdtDistance,
   },

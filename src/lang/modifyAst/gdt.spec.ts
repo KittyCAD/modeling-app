@@ -129,6 +129,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 10)`
 
+  const sketchBlockCylinder = `profile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [profile.perimeter])
+extrude001 = extrude(region001, length = 10mm)`
+
   const box = `sketch002 = startSketchOn(XY)
 profile002 = startProfile(sketch002, at = [0, 0])
   |> xLine(length = 10)
@@ -1396,6 +1402,163 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
+    it('should add a diameter annotation to a circular edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        sketchBlockCylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a circular sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('diameter = profile.perimeter')
+      expect(newCode).toMatch(
+        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a diameter annotation to a circular face', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        sketchBlockCylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: getCapFromCylinder(artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('faces = [')
+      expect(newCode).toContain('diameter = profile.perimeter')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should preserve edge-length dimensions for legacy circle sketches', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a circular sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('edges = [')
+      expect(newCode).not.toContain('diameter =')
+      expect(newCode).not.toContain('radius =')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a radius annotation to an arc edge', async () => {
+      const arcProfile = `profile = sketch(on = XY) {
+  perimeter = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
+  base = line(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([perimeter.end, base.start])
+  coincident([base.end, perimeter.start])
+}
+arcRegion = region(segments = [profile.perimeter, profile.base])
+arcSolid = extrude(arcRegion, length = 10mm)`
+      const { artifactGraph, ast } = await executeCode(
+        arcProfile,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const arcSegment = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'segment' &&
+          arcProfile
+            .slice(artifact.codeRef.range[0], artifact.codeRef.range[1])
+            .includes('arc(')
+      )
+      const regionArcSegment = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'segment' &&
+          artifact.originalSegId === arcSegment?.id
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' &&
+          artifact.segId === regionArcSegment?.id
+      )
+      if (!edge) {
+        throw new Error('Expected an arc sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain('radius = profile.perimeter')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a distance annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
