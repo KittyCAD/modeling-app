@@ -46,7 +46,7 @@ export default defineRegistryItemFactory((ctx) => {
           isAvailable: ({ isDesktop, isAuthenticated }) =>
             isDesktop || isAuthenticated,
           maximumInstances: { web: 1 },
-          removable: false,
+          removable: ({ isWeb }) => !isWeb,
           userCreatable: false,
           newLibrarySetting: ({ defaultCloudRoot }) => ({
             title: PERSONAL_CLOUD_LIBRARY_TITLE,

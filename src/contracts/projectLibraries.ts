@@ -137,8 +137,8 @@ export interface ProjectLibraryTypeContribution {
     setting: ProjectLibrarySetting,
     context: ProjectLibraryContext
   ) => ProjectLibrarySetting
-  /** False for types the user cannot remove, like a mandatory cloud library. */
-  removable?: boolean
+  /** Whether a configured instance may be removed. Defaults to true. */
+  removable?: boolean | ((context: ProjectLibraryContext) => boolean)
   /** Type-specific fields rendered in the common library settings row. */
   settingsDetails?: (
     props: ProjectLibrarySettingsDetailsProps
@@ -159,6 +159,19 @@ export interface ProjectLibraryTypeContribution {
     signal: AbortSignal
     excludePaths: readonly string[]
   }) => Promise<ProjectLibraryRealizationContribution[]>
+}
+
+/** Resolve a provider's platform-aware removal policy. */
+export function projectLibraryTypeIsRemovable(
+  contribution: ProjectLibraryTypeContribution | undefined,
+  context: ProjectLibraryContext
+): boolean {
+  if (!contribution || contribution.removable === undefined) {
+    return true
+  }
+  return typeof contribution.removable === 'function'
+    ? contribution.removable(context)
+    : contribution.removable
 }
 
 export interface ProjectLibrariesService {

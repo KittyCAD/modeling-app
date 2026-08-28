@@ -154,6 +154,59 @@ function createBrowserHarness(
   }
 }
 
+function createDesktopCloudOnlyHarness() {
+  localStorage.setItem(
+    'zds.libraries',
+    JSON.stringify([
+      {
+        title: 'Personal Cloud',
+        path: '/cloud',
+        type: CLOUD_LIBRARY_TYPE,
+      },
+    ])
+  )
+  const fileSystem = createFakeFileSystem() as FakeFileSystem & {
+    defaultRoot: ReturnType<typeof computed<string>>
+    defaultCloudRoot: ReturnType<typeof computed<string>>
+  }
+  Object.defineProperties(fileSystem, {
+    defaultRoot: { value: computed(() => DEFAULT_ROOT) },
+    defaultCloudRoot: { value: computed(() => '/cloud') },
+  })
+  const directoryType: ProjectLibraryTypeContribution = {
+    type: DIRECTORY_LIBRARY_TYPE,
+    title: 'Folder',
+    icon: 'folder',
+    description: 'On this device.',
+    locationLabel: 'Folder',
+  }
+  const cloudType: ProjectLibraryTypeContribution = {
+    type: CLOUD_LIBRARY_TYPE,
+    title: 'Cloud',
+    icon: 'cloud',
+    description: 'Personal Cloud.',
+    locationLabel: 'Local storage',
+    removable: ({ isWeb }) => !isWeb,
+  }
+  const types = computed(
+    () =>
+      new Map([
+        [DIRECTORY_LIBRARY_TYPE, directoryType],
+        [CLOUD_LIBRARY_TYPE, cloudType],
+      ])
+  )
+  const defaults = computed(() => [
+    () => [
+      {
+        title: 'Local Projects',
+        path: DEFAULT_ROOT,
+        type: DIRECTORY_LIBRARY_TYPE,
+      },
+    ],
+  ])
+  return createProjectLibrariesService(fileSystem, types, defaults, 'desktop')
+}
+
 describe('project libraries service', () => {
   let harness: ReturnType<typeof createHarness>
 
@@ -326,6 +379,7 @@ describe('project libraries service', () => {
 
     expect(service.libraries.value).toHaveLength(1)
     expect(service.libraries.value[0].path).toBe(BROWSER_ROOT)
+    expect(service.canRemoveLibrary(service.libraries.value[0].id)).toBe(false)
     expect(
       service.addLibrary({
         title: 'Folder',
@@ -340,6 +394,23 @@ describe('project libraries service', () => {
         type: CLOUD_LIBRARY_TYPE,
       })
     ).toBeUndefined()
+    service.dispose()
+  })
+
+  it('replaces a removed lone desktop Cloud library with the default Folder', () => {
+    const service = createDesktopCloudOnlyHarness()
+    const cloud = service.libraries.value[0]
+
+    expect(service.canRemoveLibrary(cloud.id)).toBe(true)
+    service.removeLibrary(cloud.id)
+
+    expect(service.settings.value).toEqual([
+      {
+        title: 'Local Projects',
+        path: DEFAULT_ROOT,
+        type: DIRECTORY_LIBRARY_TYPE,
+      },
+    ])
     service.dispose()
   })
 

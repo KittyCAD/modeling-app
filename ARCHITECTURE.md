@@ -1427,6 +1427,13 @@ authentication. It starts at `Documents/zoo-design-studio-projects`; Personal
 Cloud materializes at `~/Library/CloudStorage/Zoo/personal` on macOS and
 `~/Zoo/personal` elsewhere.
 
+Cloud removal follows the same platform policy. It is mandatory on authenticated
+web, but removable on desktop. Desktop plugin activation materializes Personal
+Cloud once; removing that entry disables the persisted Cloud sync setting rather
+than immediately recreating it. If Cloud was the last configured library, the
+service replaces it atomically with the contributed default Folder so the app
+never reaches an unusable zero-library state.
+
 ## Filesystem
 
 One `FileSystem` service, two implementations, so local materializations work on

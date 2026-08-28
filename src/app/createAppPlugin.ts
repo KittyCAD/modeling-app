@@ -9,7 +9,11 @@ import {
   type PluginActivationContribution,
   pluginActivationsValueSpec,
 } from '@src/contracts/plugins'
-import { booleanSetting, settingsValueSpec } from '@src/contracts/settings'
+import {
+  booleanSetting,
+  type SettingDefinition,
+  settingsValueSpec,
+} from '@src/contracts/settings'
 
 interface AppPluginSpec {
   id: string
@@ -20,6 +24,7 @@ interface AppPluginSpec {
   activation?: Partial<
     Omit<PluginActivationContribution, 'pluginId' | 'setting'>
   > & {
+    settingDefinition?: SettingDefinition<boolean>
     setting?: Partial<
       Pick<
         PluginActivationContribution['setting'],
@@ -41,17 +46,19 @@ export function createAppPlugin({
   activation,
   ...plugin
 }: AppPluginSpec): RegistryItemDefinition {
-  const setting = booleanSetting({
-    id: `plugins.${plugin.id}`,
-    section: 'plugins',
-    title: activation?.setting?.title ?? plugin.title,
-    description: activation?.setting?.description ?? plugin.description,
-    order: 0,
-    defaultValue: enabledByDefault,
-    levels: ['user'],
-    platforms: activation?.setting?.platforms,
-    toml: activation?.setting?.toml ?? ['settings', 'plugins', plugin.id],
-  })
+  const setting =
+    activation?.settingDefinition ??
+    booleanSetting({
+      id: `plugins.${plugin.id}`,
+      section: 'plugins',
+      title: activation?.setting?.title ?? plugin.title,
+      description: activation?.setting?.description ?? plugin.description,
+      order: 0,
+      defaultValue: enabledByDefault,
+      levels: ['user'],
+      platforms: activation?.setting?.platforms,
+      toml: activation?.setting?.toml ?? ['settings', 'plugins', plugin.id],
+    })
 
   return defineRegistryItem({
     id: `${plugin.id}.appPlugin`,

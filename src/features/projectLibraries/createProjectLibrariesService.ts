@@ -7,7 +7,10 @@ import type {
   ProjectLibraryContext,
   ProjectLibraryTypeContribution,
 } from '@src/contracts/projectLibraries'
-import { resolveLibraryDefaults } from '@src/contracts/projectLibraries'
+import {
+  projectLibraryTypeIsRemovable,
+  resolveLibraryDefaults,
+} from '@src/contracts/projectLibraries'
 import type { RuntimeTarget } from '@src/contracts/runtime'
 import { isPathInside, normalizePath } from '@src/lib/paths'
 import {
@@ -175,6 +178,11 @@ export function createProjectLibrariesService(
 
   /** Take the currently effective settings, seeded or not, as a base to edit. */
   const currentSettings = () => [...settings.value]
+
+  const alternativeDefaultsFor = (libraryType: ProjectLibraryType) =>
+    normalizeSettings(
+      resolveLibraryDefaults(defaultsSignal.value, context.peek())
+    ).filter((setting) => setting.type !== libraryType)
 
   const canUseType = (
     libraryType: ProjectLibraryType,
@@ -380,11 +388,17 @@ export function createProjectLibrariesService(
       const target = library(libraryId)
       if (!target || !this.canRemoveLibrary(libraryId)) return
 
-      commit(currentSettings().filter((_, index) => index !== target.order))
+      const remaining = currentSettings().filter(
+        (_, index) => index !== target.order
+      )
+      commit(
+        remaining.length > 0 ? remaining : alternativeDefaultsFor(target.type)
+      )
 
       const next = new Map(discovered.value)
       next.delete(libraryId)
       discovered.value = next
+      if (remaining.length === 0) void refresh()
     },
 
     reorderLibrary(fromIndex, toIndex) {
@@ -394,10 +408,16 @@ export function createProjectLibrariesService(
     canRemoveLibrary(libraryId) {
       const target = library(libraryId)
       if (!target) return false
-      if (type(target.type)?.removable === false) return false
+      if (!projectLibraryTypeIsRemovable(type(target.type), context.peek())) {
+        return false
+      }
       // The last library is not removable: with none, there is nowhere for a
-      // new project to go and no way back except editing storage.
-      return libraries.value.length > 1
+      // new project to go. A different contributed default is an atomic
+      // replacement, so removing a lone optional provider stays safe.
+      return (
+        libraries.value.length > 1 ||
+        alternativeDefaultsFor(target.type).length > 0
+      )
     },
 
     async createProject(libraryId, requestedTitle) {

@@ -6,7 +6,7 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, effect } from '@preact/signals'
+import { computed } from '@preact/signals'
 import { createAppPlugin } from '@src/app/createAppPlugin'
 import { authService } from '@src/contracts/auth'
 import { cloudSyncService } from '@src/contracts/cloudSync'
@@ -14,11 +14,25 @@ import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { runtimeService } from '@src/contracts/runtime'
+import { booleanSetting, settingsService } from '@src/contracts/settings'
 import { createCloudApi } from '@src/features/cloudSync/cloudApi'
+import { installCloudLibraryActivationPolicy } from '@src/features/cloudSync/cloudLibraryActivationPolicy'
 import { createCloudSyncService } from '@src/features/cloudSync/createCloudSyncService'
 import { CLOUD_LIBRARY_TYPE } from '@src/lib/projectLibraries'
 
 export const CLOUD_SYNC_PLUGIN_ID = 'cloudSync'
+
+export const cloudSyncPluginSetting = booleanSetting({
+  id: `plugins.${CLOUD_SYNC_PLUGIN_ID}`,
+  section: 'plugins',
+  title: 'Cloud sync',
+  description: 'Synchronize projects in Personal Cloud with your Zoo account.',
+  order: 0,
+  defaultValue: false,
+  levels: ['user'],
+  platforms: ['desktop'],
+  toml: ['settings', 'plugins', 'cloud_sync'],
+})
 
 /** Always-on service extension containing the synchronization engine itself. */
 const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
@@ -92,24 +106,14 @@ const cloudSyncBehavior = defineRegistryItemFactory((ctx) => {
     const fileSystem = ctx.services.get(fileSystemService)
     const runtime = ctx.services.get(runtimeService)
     const auth = ctx.services.get(authService)
-    stop = effect(() => {
-      if (
-        libraries.libraries.value.some(
-          (library) => library.type === CLOUD_LIBRARY_TYPE
-        )
-      )
-        return
-
-      const cloud = libraries.type(CLOUD_LIBRARY_TYPE)
-      const setting = cloud?.newLibrarySetting?.({
-        defaultRoot: fileSystem.defaultRoot.value,
-        defaultCloudRoot: fileSystem.defaultCloudRoot.value,
-        authStatus: auth.status.value,
-        isAuthenticated: auth.status.value === 'signedIn',
-        ...runtime.info.value,
-      })
-      if (!setting?.path) return
-      libraries.addLibrary(setting)
+    const settings = ctx.services.get(settingsService)
+    stop = installCloudLibraryActivationPolicy({
+      libraries,
+      fileSystem,
+      runtime,
+      auth,
+      settings,
+      activationSetting: cloudSyncPluginSetting,
     })
   })
 
@@ -150,10 +154,7 @@ const cloudSyncPlugin = createAppPlugin({
   enabledByDefault: false,
   activation: {
     forceEnabledOn: ['web'],
-    setting: {
-      platforms: ['desktop'],
-      toml: ['settings', 'plugins', 'cloud_sync'],
-    },
+    settingDefinition: cloudSyncPluginSetting,
   },
 })
 

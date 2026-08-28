@@ -3,7 +3,10 @@ import { useComputed, useSignal } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
-import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import {
+  projectLibrariesService,
+  projectLibraryTypeIsRemovable,
+} from '@src/contracts/projectLibraries'
 import { runtimeService } from '@src/contracts/runtime'
 import { libraryIcon } from '@src/features/home/libraryIcon'
 import { joinPath, uniqueName } from '@src/lib/paths'
@@ -237,7 +240,15 @@ function LibrarySettingsRow({
           label="Type"
           value={library.type}
           options={typeOptions}
-          disabled={type?.removable === false}
+          disabled={
+            !projectLibraryTypeIsRemovable(type, {
+              defaultRoot: fileSystem.defaultRoot.value,
+              defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+              authStatus: auth.status.value,
+              isAuthenticated: auth.status.value === 'signedIn',
+              ...runtime.info.value,
+            })
+          }
           onValueChange={changeType}
         />
         <p class="zds-library-settings__description">
