@@ -12,3 +12,177 @@
 .zds-pending-chord__caret {
   color: var(--zds-text-tertiary);
 }
+
+/* The keybindings table -------------------------------------------- */
+
+.zds-keys {
+  display: grid;
+  gap: var(--zds-space-3);
+}
+
+.zds-keys__search {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  padding-block-end: var(--zds-space-1);
+  background: var(--zds-surface-panel);
+}
+
+.zds-keys__rows {
+  display: grid;
+  gap: var(--zds-space-px);
+}
+
+.zds-keys__row {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-3);
+  min-block-size: var(--zds-size-control-md, 2rem);
+  padding: var(--zds-space-1) var(--zds-space-2);
+  border-radius: var(--zds-radius-content);
+}
+
+.zds-keys__row:hover {
+  background: var(--zds-surface-hover);
+}
+
+.zds-keys__row[data-recording="true"] {
+  background: var(--zds-surface-active);
+  /* The datum stripe again: this row is the one taking your keystrokes. */
+  box-shadow: inset var(--zds-size-datum-stripe) 0 0 0 var(--zds-accent);
+}
+
+.zds-keys__what {
+  display: flex;
+  align-items: baseline;
+  gap: var(--zds-space-2);
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.zds-keys__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--zds-text-primary);
+}
+
+.zds-keys__category {
+  flex: none;
+  color: var(--zds-text-tertiary);
+}
+
+.zds-keys__keys,
+.zds-keys__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  flex: none;
+}
+
+/* A key looks like a key: mono, boxed, and never wrapped mid-chord. */
+.zds-keys__chord {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  padding: 1px var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-primary);
+  white-space: nowrap;
+}
+
+.zds-keys__scope,
+.zds-keys__source {
+  color: var(--zds-text-tertiary);
+}
+
+.zds-keys__unbound {
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+}
+
+/* Recording ------------------------------------------------------- */
+
+.zds-keys__capture {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  flex-wrap: wrap;
+  flex: none;
+}
+
+.zds-keys__captured {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  min-inline-size: 8rem;
+  color: var(--zds-accent);
+}
+
+.zds-keys__prompt {
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-keys__conflict {
+  flex-basis: 100%;
+  color: var(--zds-text-flag);
+  font-size: var(--zds-font-size-mini);
+}
+
+/* Scopes ---------------------------------------------------------- */
+
+.zds-keys__scopes {
+  padding-block-start: var(--zds-space-3);
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-keys__heading {
+  color: var(--zds-text-secondary);
+}
+
+.zds-keys__note,
+.zds-keys__empty {
+  margin-block: var(--zds-space-1) var(--zds-space-2);
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-keys__scope-list {
+  display: grid;
+  gap: var(--zds-space-px);
+}
+
+.zds-keys__scope-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 3rem auto;
+  align-items: baseline;
+  gap: var(--zds-space-2);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-keys__scope-name {
+  color: var(--zds-text-secondary);
+}
+
+.zds-keys__scope-id {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-keys__scope-active {
+  color: var(--zds-accent);
+}
+
+.zds-keys__location {
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

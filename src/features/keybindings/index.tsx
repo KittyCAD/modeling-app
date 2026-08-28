@@ -15,7 +15,9 @@ import {
   keybindingService,
   keybindingsValueSpec,
 } from '@src/contracts/keybindings'
+import { settingsSectionsValueSpec } from '@src/contracts/settings'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
+import { KeybindingsTable } from '@src/features/keybindings/KeybindingsTable'
 import { createKeymapDispatcher } from '@src/features/keybindings/createKeymapDispatcher'
 import {
   createBrowserKeymapStore,
@@ -32,7 +34,7 @@ import {
   serialiseKeymap,
   withRebind,
   withUnbind,
-  withoutLine,
+  withoutCommand,
 } from '@src/features/keybindings/persistedKeymap'
 import './keybindings.css'
 
@@ -159,7 +161,7 @@ export default defineRegistryItemFactory((ctx) => {
     rebind: (commandId, keystrokes, scopeIds) =>
       save(withRebind(persisted.value, commandId, keystrokes, scopeIds)),
     unbind: (commandId) => save(withUnbind(persisted.value, commandId)),
-    removePersisted: (index) => save(withoutLine(persisted.value, index)),
+    restore: (commandId) => save(withoutCommand(persisted.value, commandId)),
   }
 
   return {
@@ -181,6 +183,25 @@ export default defineRegistryItemFactory((ctx) => {
           id: BASE_SCOPE,
           displayName: 'Everywhere',
           priority: 0,
+        }),
+
+        /**
+         * The keyboard, in the settings dialog.
+         *
+         * A section with a body and no rows: eighty bindings are not eighty
+         * settings, and pretending otherwise would make the three-level cascade
+         * lie about what it holds. User level only — a keymap is a property of
+         * the person, and a project has no business rebinding anyone's keys.
+         */
+        provide(settingsSectionsValueSpec, {
+          id: 'keybindings',
+          title: 'Keyboard',
+          description:
+            'Every command, and the keys that reach it. Changes are written to your own keymap; the app’s defaults stay where they are.',
+          icon: 'command',
+          order: 40,
+          levels: ['user'],
+          render: () => <KeybindingsTable />,
         }),
 
         provide(statusBarItemsValueSpec, {

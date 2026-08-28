@@ -164,8 +164,8 @@ export interface KeybindingService {
   ): Promise<void>
   /** Take a command's keys away, leaving it reachable only from the palette. */
   unbind(commandId: string): Promise<void>
-  /** Drop one line from the user's keymap, restoring what the app said. */
-  removePersisted(index: number): Promise<void>
+  /** Forget what the user stored about a command, restoring the app's answer. */
+  restore(commandId: string): Promise<void>
 }
 
 /**

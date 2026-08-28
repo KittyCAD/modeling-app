@@ -118,6 +118,19 @@ export function withUnbind(
   }
 }
 
+/** Forget everything stored about a command, restoring what the app said. */
+export function withoutCommand(
+  keymap: PersistedKeymap,
+  commandId: string
+): PersistedKeymap {
+  return {
+    version: KEYMAP_VERSION,
+    bindings: keymap.bindings.filter(
+      (binding) => boundCommand(binding.command) !== commandId
+    ),
+  }
+}
+
 export function withoutLine(
   keymap: PersistedKeymap,
   index: number

@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import type { IconName } from '@kittycad/ui-kit'
 import type { ReadonlySignal } from '@preact/signals'
+import type { ComponentChildren } from 'preact'
 import type { RuntimeTarget } from '@src/contracts/runtime'
 
 /**
@@ -114,6 +115,23 @@ export interface SettingsSection {
   icon?: IconName
   /** Lower sorts earlier. */
   order?: number
+  /**
+   * Content below the rows, for a group that is not a list of settings.
+   *
+   * The keybindings table is the case: it belongs in this dialog, it is not a
+   * cascade of values, and modelling eighty bindings as eighty settings would
+   * make the cascade lie about what it holds. A section may have both — rows for
+   * what is a setting, and a body for what is not.
+   */
+  render?: (context: { level: SettingsLevel }) => ComponentChildren
+  /**
+   * Levels a body-only section appears at. Defaults to `user`.
+   *
+   * Only consulted when the section has no settings of its own: with settings,
+   * the rows already decide, since a section is dropped when none of them apply
+   * at the level being edited.
+   */
+  levels?: readonly SettingsLevel[]
 }
 
 /** A section with the settings that landed in it, ready to render. */

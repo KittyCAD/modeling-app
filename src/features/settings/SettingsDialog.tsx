@@ -56,7 +56,15 @@ export function SettingsDialog({ level }: SettingsDialogProps) {
         settings.supportsLevel(setting, currentLevel)
       ),
     }))
-    .filter((section) => section.settings.length > 0)
+    .filter(
+      (section) =>
+        section.settings.length > 0 ||
+        // A section can also be a body with no rows — the keybindings table.
+        // Which levels it belongs at is its own to say, since it has no
+        // settings to answer for it.
+        (section.render !== undefined &&
+          (section.levels ?? ['user']).includes(currentLevel))
+    )
 
   const active =
     sections.find((section) => section.id === openSection) ?? sections.at(0)
@@ -201,6 +209,8 @@ export function SettingsDialog({ level }: SettingsDialogProps) {
                     />
                   ))}
                 </div>
+
+                {active.render?.({ level: currentLevel })}
               </>
             ) : (
               <EmptyState

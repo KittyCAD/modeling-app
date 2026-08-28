@@ -693,21 +693,60 @@ This replaced a blanket "ignore everything while focus is in a text field", whic
 silently killed every binding that had not opted out — `⌘1` included — the moment
 the code editor had focus, because CodeMirror's content *is* a content-editable.
 
+### The user's keymap
+
+The bindings features contribute are defaults. A stored keymap overrides them,
+and it is its own TOML document with its own version — deliberately outside the
+settings cascade, because an override is a patch against what the app shipped
+rather than an answer to "for me or for this project". `keybindings.toml` beside
+`user.toml` on desktop, browser storage on the web.
+
+Two rules, both chosen to be explainable:
+
+- **A stored line for a command replaces every contributed binding for it.** Per
+  command rather than per binding: someone is answering "I want this action on
+  these keys" and neither knows nor cares how many bindings shipped for it.
+- **`-command` unbinds**, VS Code style, because a keymap has to be able to say
+  "not this".
+
+The user's lines sort first in the resolved list, so taking a chord the app was
+using means theirs fires — and both stay in the list, so the dialog can point at
+the collision instead of the app quietly losing.
+
+A file that cannot be parsed is an empty keymap, and a line that cannot be parsed
+costs that line: a broken keymap file must not be a broken app. A file claiming a
+version we do not know is left alone entirely rather than guessed at.
+
+### The table
+
+In the settings dialog, as a section with a body and no rows — `SettingsSection`
+grew a `render` for exactly this, because eighty bindings are not eighty settings
+and modelling them that way would make the cascade lie about what it holds.
+
+It lists **commands**, not bindings, which is the opposite of how the file is
+stored: the file is a list of overrides, and this is the list of things the app
+can do. A command with no keys has to appear or it can never be given any.
+
+Recording holds `suspendListening` for as long as the field is open — that is
+what the refcount exists for, since `⌘K` cannot be recorded if the palette opens
+the moment it is pressed. Each further keystroke appends a chord, so a sequence
+is entered by typing it. A conflict is reported and not refused: two commands on
+one chord in different scopes is normal, and someone mid-way through swapping two
+bindings is not making a mistake. The scope list underneath shows which scopes
+are active *right now*, which is the answer to "why did that key do something
+else".
+
 ### What is deliberately not here yet
 
-Ported from `main`'s keymap because the shape is expensive to retrofit; left out
-because nothing consumes it:
-
-- **User overrides.** A keymap file with its own schema version and an unbind
-  syntax, outside the settings cascade — a binding override is a patch against a
-  defaults document, not a user-versus-project question.
-- **The editable table.** Needs the above, plus somewhere to live: the settings
-  dialog renders setting rows and drops a section with none.
 - **Binding `arguments`.** `Command.run` takes none. When a command needs
   arguments that is a change to the command contract first.
 - **Mutually-exclusive scope groups.** `main` uses them so sketch and modelling
   modes cannot stack. There are no modes here yet, and it is one pure function to
   add when there are.
+- **Watching the keymap file.** An edit made outside the app lands on the next
+  launch. Doing it properly needs the echo-filtering the settings watcher does,
+  and a keymap changes rarely enough that the restart is a fair price for not
+  building that twice.
 
 ## Design system
 
