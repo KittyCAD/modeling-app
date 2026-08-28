@@ -1,0 +1,89 @@
+/* The identity card at the top of the menu. */
+
+.zds-menu-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  min-inline-size: 0;
+}
+
+.zds-menu-identity__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--zds-space-8);
+  block-size: var(--zds-space-8);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  /* Content material, softened — this is a person, not a panel. */
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-sunken);
+  color: var(--zds-text-tertiary);
+  overflow: hidden;
+}
+
+.zds-menu-identity__avatar img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.zds-menu-identity__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-inline-size: 0;
+}
+
+.zds-menu-identity__name {
+  font-size: var(--zds-font-size-small);
+  font-weight: var(--zds-font-weight-medium);
+  color: var(--zds-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-menu-identity__detail {
+  color: var(--zds-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+ * The avatar trigger.
+ *
+ * Square with the chassis radius, so it reads as part of the frame rather than
+ * as a floating profile picture.
+ */
+.zds-avatar-trigger {
+  display: grid;
+  place-items: center;
+  inline-size: var(--zds-size-control-md);
+  block-size: var(--zds-size-control-md);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-raised);
+  color: var(--zds-text-secondary);
+  overflow: hidden;
+  transition: border-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-avatar-trigger:hover,
+.zds-avatar-trigger[aria-expanded="true"] {
+  border-color: var(--zds-border-strong);
+}
+
+.zds-avatar-trigger img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* Initials, when there is no image. Mono, like every other identifier. */
+.zds-avatar-trigger__initials {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}

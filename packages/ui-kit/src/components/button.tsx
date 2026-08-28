@@ -36,6 +36,14 @@ export interface ButtonProps extends BaseProps {
   iconOnly?: boolean
   /** Keyboard hint shown in the tooltip, e.g. `⌘K`. */
   shortcut?: string
+  /**
+   * Access to the underlying element.
+   *
+   * A callback rather than a ref object, so a caller can forward it straight
+   * from a render prop. Needed by anything that has to focus or measure the
+   * button — a menu returning focus to its trigger, for instance.
+   */
+  elementRef?: (element: HTMLButtonElement | null) => void
   children?: ComponentChildren
 }
 
@@ -51,16 +59,24 @@ export function Button({
   onClick,
   iconOnly = false,
   shortcut,
+  elementRef,
   children,
   class: className,
   ...rest
 }: ButtonProps) {
   const accessibleName = typeof label === 'string' ? label : undefined
-  const ref = useTooltip<HTMLButtonElement>(
+  const tooltipRef = useTooltip<HTMLButtonElement>(
     accessibleName && (iconOnly || shortcut)
       ? { content: accessibleName, shortcut }
       : undefined
   )
+
+  // One callback feeding both consumers: the tooltip needs a ref object, and the
+  // caller may want the element too.
+  const ref = (element: HTMLButtonElement | null) => {
+    tooltipRef.current = element
+    elementRef?.(element)
+  }
 
   return (
     <button

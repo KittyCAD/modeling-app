@@ -1,0 +1,105 @@
+.zds-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+}
+
+/*
+ * Content material: raised surface, small radius, real shadow — the same
+ * treatment as the command palette, since both are transient panels over the
+ * chassis rather than part of it.
+ */
+.zds-menu__panel {
+  position: absolute;
+  inset-block-start: calc(100% + var(--zds-space-1));
+  z-index: var(--zds-z-popover);
+  min-inline-size: 220px;
+  max-inline-size: 320px;
+  padding: var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content-lg);
+  background: var(--zds-surface-overlay);
+  box-shadow: var(--zds-shadow-overlay);
+}
+
+.zds-menu[data-align="end"] .zds-menu__panel {
+  inset-inline-end: 0;
+}
+
+.zds-menu[data-align="start"] .zds-menu__panel {
+  inset-inline-start: 0;
+}
+
+/* Groups are ruled off from each other, like status bar fields. */
+.zds-menu__section[data-first="false"] {
+  margin-block-start: var(--zds-space-1);
+  padding-block-start: var(--zds-space-1);
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-menu__section-label {
+  padding: var(--zds-space-1) var(--zds-space-2);
+  color: var(--zds-text-disabled);
+}
+
+.zds-menu__content {
+  padding: var(--zds-space-1) var(--zds-space-2) var(--zds-space-2);
+}
+
+.zds-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  inline-size: 100%;
+  block-size: var(--zds-size-control-md);
+  padding-inline: var(--zds-space-2);
+  border-radius: var(--zds-radius-content);
+  color: var(--zds-text-secondary);
+  font-size: var(--zds-font-size-small);
+  text-align: start;
+}
+
+.zds-menu__item:hover:not(:disabled),
+.zds-menu__item[aria-current="true"] {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-menu__item:disabled {
+  color: var(--zds-text-disabled);
+}
+
+.zds-menu__item[data-destructive="true"] {
+  color: var(--zds-text-fault);
+}
+
+.zds-menu__item[data-destructive="true"]:hover:not(:disabled),
+.zds-menu__item[data-destructive="true"][aria-current="true"] {
+  background: oklch(from var(--zds-status-fault) l c h / 0.14);
+  color: var(--zds-text-fault);
+}
+
+/* Keeps labels aligned whether or not an item has an icon. */
+.zds-menu__no-icon {
+  inline-size: var(--zds-size-icon-sm);
+  flex: none;
+}
+
+.zds-menu__label {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-menu__shortcut {
+  flex: none;
+  padding: 1px var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+}

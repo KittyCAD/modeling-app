@@ -21,6 +21,12 @@ export {
   type EmptyStateProps,
 } from './components/emptyState'
 export { Icon, type IconProps } from './components/icon'
+export {
+  Menu,
+  type MenuItem,
+  type MenuProps,
+  type MenuSection,
+} from './components/menu'
 export { Panel, type PanelProps } from './components/panel'
 export {
   SheetCard,

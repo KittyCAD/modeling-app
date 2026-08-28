@@ -10,39 +10,8 @@ import {
   themeAttribute,
   themeNames,
 } from '@kittycad/ui-kit/tokens'
-import { Icon } from '@kittycad/ui-kit'
-import { useService } from '@src/app/context'
 import { commandsValueSpec } from '@src/contracts/commands'
-import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import { type ThemeSetting, themeService } from '@src/contracts/theme'
-
-const settingIcons = {
-  dark: 'moon',
-  light: 'sun',
-  system: 'monitor',
-} as const
-
-/**
- * Current theme, as a status field.
- *
- * Shows the *setting* rather than the resolved theme, because `system` is the
- * interesting answer — someone who picked it wants to see that they did.
- */
-function ThemeField() {
-  const theme = useService(themeService)
-
-  return (
-    <button
-      type="button"
-      class="zds-status-button"
-      onClick={() => theme.cycle()}
-      title="Switch theme"
-    >
-      <Icon name={settingIcons[theme.setting.value]} size="small" />
-      <span>{theme.setting.value}</span>
-    </button>
-  )
-}
 
 const STORAGE_KEY = 'zds.theme'
 
@@ -120,12 +89,6 @@ export default defineRegistryItemFactory(() => {
         }),
       ],
       provides: [
-        provide(statusBarItemsValueSpec, {
-          id: 'theme',
-          zone: 'end',
-          order: 0,
-          render: () => <ThemeField />,
-        }),
         provide(commandsValueSpec, {
           id: 'theme.cycle',
           title: 'Switch theme',
