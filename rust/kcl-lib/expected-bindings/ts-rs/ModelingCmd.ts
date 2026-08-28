@@ -466,9 +466,26 @@ use_legacy?: boolean,
 tolerance: LengthUnit, };
 
 /**
- * Create a new solid from subtracting several other solids.
- * The 'target' is what will be cut from.
- * The 'tool' is what will be cut out from 'target'.
+ * Given a target solid, subtract a set of "tool solids" to create a new solid.
+ *
+ * Most successful subtracts come from solids who's faces do not overlap
+ * aka non-coplanar.
+ *
+ * Prefer one `tool` over multiple when calling this feature.
+ * 
+ * Failure cases:
+ * * A common failure is unsupported coplanar faces try to be unioned.
+ *
+ * Warning cases:
+ *
+ * Notable behaviors:
+ * If two tools occupy the same vertical range and overlap, like two cubes of the same height,
+ * the subtract of the first will cause the second tool to fail because the first leaves behind
+ * coplanar faces, causing an aforementioned failure case.
+ *
+ * Unlike `boolean_union`, if one tool in the set overlaps, any OTHER tool in the set
+ * that doesn't WILL NOT signal a non-overlap warning.
+ *
  */
 export type BooleanSubtract = { 
 /**
@@ -493,8 +510,22 @@ use_legacy?: boolean,
 tolerance: LengthUnit, };
 
 /**
- * Create a new solid from combining other smaller solids.
- * In other words, every part of the input solids will be included in the output solid.
+ * Given a set of overlapping solids, create a new single solid.
+ *
+ * Most successful unions come from solids who's faces do not overlap
+ * aka non-coplanar.
+ * 
+ * Failure cases:
+ * * A common failure is unsupported coincident faces try to be unioned.
+ *
+ * Warning cases:
+ * * When an element of the set doesn't overlap.
+ *
+ * Notable behaviors:
+ * * What appear to be coincident points will succeed and not give a "no overlap" warning, even if they're not.
+ * * Elements' top or bottom faces may not combine into one new face, which can seem like the union failed. You can tell they succeeded from side faces not extending into the original solids.
+ * * When exporting to STEP, if the above behavior is observed, will merged the faces.
+ *
  */
 export type BooleanUnion = { 
 /**
@@ -990,7 +1021,7 @@ view: CameraViewState, };
 export type DefaultCameraZoom = { 
 /**
  * Move the camera forward along the vector it's looking at,
- * by this magnitudedefaultCameraZoom.
+ * by this magnitude.
  * Basically, how much should the camera move forward by.
  */
 magnitude: number, };
@@ -1609,6 +1640,8 @@ export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "s
 
 /**
  * Export the scene to a file.
+ *
+ * The response is a MsgPack-encoded message in a WebSocket binary frame.
  */
 export type Export = { 
 /**
@@ -1635,6 +1668,8 @@ format: OutputFormat2d, };
 
 /**
  * Export the scene to a file.
+ *
+ * The response is a MsgPack-encoded message in a WebSocket binary frame.
  */
 export type Export3d = { 
 /**
@@ -1680,6 +1715,8 @@ target?: ModelingCmdId | null,
 target_reference?: EdgeSpecifier | null, 
 /**
  * How far off the plane to extrude
+ * This distance is relative to the target's plane, not an absolute coordinate.
+ * Symmetric extrusions will extrude outwards from both sides of the sketch to the length specified.
  */
 distance: LengthUnit, 
 /**
@@ -2019,9 +2056,7 @@ sequence: number | null, };
 export type ImageFormat = "png" | "jpeg";
 
 /**
- * File to import into the current model.
- * If you are sending binary data for a file, be sure to send the WebSocketRequest as
- * binary/bson, not text/json.
+ * File to import into the current scene.
  */
 export type ImportFile = { 
 /**
@@ -2034,7 +2069,13 @@ path: string,
 data: Array<number>, };
 
 /**
- * Import files to the current model.
+ * Import CAD files to the current scene.
+ *
+ * Send a request containing binary file data as a MsgPack-encoded message in a WebSocket binary frame.
+ *
+ * Note: These imports are non-editable. In the future we may expose a proprietary-to-KCL function
+ * to resolve this. The main intention today is to use imports as design references.
+ *
  */
 export type ImportFiles = { 
 /**
@@ -2474,7 +2515,7 @@ export type OutputFormat2d = { "type": "dxf" } & DxfExportOptions;
 /**
  * Output 3D format specifier.
  */
-export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
+export type OutputFormat3d = { "type": "fbx" } & FbxExportOptions | { "type": "gltf" } & GltfExportOptions | { "type": "obj" } & ObjExportOptions | { "type": "ply" } & PlyExportOptions | { "type": "render_packet" } & RenderPacketExportOptions | { "type": "step" } & StepExportOptions | { "type": "stl" } & StlExportOptions;
 
 /**
  *Options for importing Parasolid part format.
@@ -2601,6 +2642,23 @@ control2: Point3d<LengthUnit>,
 end: Point3d<LengthUnit>, 
 /**
  *Whether or not this bezier is a relative offset
+ */
+relative: boolean, } | { "type": "curve", 
+/**
+ * Degree of the curve.
+ */
+degree: number, 
+/**
+ * Whether to use the homogeneous `w` component as a rational weight.
+ */
+rational: boolean, 
+/**
+ * Ordered control points for the curve.
+ * The final 3D point becomes the new path "pen" position.
+ */
+points: Array<Point4d<LengthUnit>>, 
+/**
+ *Whether or not this curve is a relative offset
  */
 relative: boolean, } | { "type": "tangential_arc", 
 /**
@@ -2958,6 +3016,310 @@ export type RemoveSceneObjects = {
  * Objects to remove.
  */
 object_ids: Array<string>, };
+
+/**
+ * Metadata for a binary render packet consumed by the browser renderer.
+ */
+export type RenderPacket = { 
+/**
+ * Binary render packet format version.
+ */
+version: number, 
+/**
+ * Layout of the interleaved surface vertex buffer.
+ */
+vertexLayout: RenderPacketVertexLayout, 
+/**
+ * Byte ranges relative to the beginning of the packet's binary payload.
+ */
+sections: RenderPacketBinarySections, 
+/**
+ * PBR materials keyed by the body IDs referenced by renderable primitives.
+ */
+bodyMaterials: Array<RenderPacketBodyMaterial>, 
+/**
+ * Individual renderable face primitives with stable engine metadata.
+ */
+primitives: Array<RenderPacketPrimitive>, 
+/**
+ * Explicit engine-authored edge polylines with stable engine metadata.
+ */
+edges: Array<RenderPacketEdge>, 
+/**
+ * Explicit engine-authored sketch/wire polylines with sketch-local metadata.
+ */
+sketches: Array<RenderPacketSketchSegment>, 
+/**
+ * Explicit engine-authored sketch regions with stable engine metadata.
+ */
+regions: Array<RenderPacketRegion>, };
+
+/**
+ * A byte range within the binary payload following the JSON metadata.
+ */
+export type RenderPacketBinarySection = { 
+/**
+ * Byte offset relative to the beginning of the binary payload.
+ */
+byteOffset: number, 
+/**
+ * Length of the section in bytes.
+ */
+byteLength: number, };
+
+/**
+ * Packed numerical sections stored after the JSON metadata.
+ */
+export type RenderPacketBinarySections = { 
+/**
+ * Interleaved surface vertices.
+ */
+vertices: RenderPacketBinarySection, 
+/**
+ * Packet-wide uint32 primitive index for each surface vertex.
+ */
+primitiveIndices: RenderPacketBinarySection, 
+/**
+ * Global uint32 triangle indices.
+ */
+indices: RenderPacketBinarySection, 
+/**
+ * Packed float32x2 trim-loop points.
+ */
+trimPoints: RenderPacketBinarySection, 
+/**
+ * Packed float32x3 edge-polyline points.
+ */
+edgePoints: RenderPacketBinarySection, 
+/**
+ * Packed float32x3 sketch-segment points.
+ */
+sketchPoints: RenderPacketBinarySection, 
+/**
+ * Packed float32x2 sketch-region points.
+ */
+regionPoints: RenderPacketBinarySection, };
+
+/**
+ * The PBR material assigned to a body in a render packet.
+ */
+export type RenderPacketBodyMaterial = { 
+/**
+ * Stable engine body UUID used by renderable primitives.
+ */
+bodyId: string, 
+/**
+ * Front-face PBR base color, including opacity in the alpha channel.
+ */
+baseColor: Color, 
+/**
+ * PBR metallic factor in the range 0 to 1.
+ */
+metalness: number, 
+/**
+ * PBR roughness factor in the range 0 to 1.
+ */
+roughness: number, };
+
+/**
+ * A single renderable edge polyline in a render packet.
+ */
+export type RenderPacketEdge = { 
+/**
+ * First float32x3 point in the packet-wide edge-point section.
+ */
+firstPoint: number, 
+/**
+ * Number of points in this edge polyline.
+ */
+pointCount: number, 
+/**
+ * Stable engine object UUID for the parent solid.
+ */
+objectId: string, 
+/**
+ * Stable engine body UUID for the parent solid.
+ */
+bodyId: string, 
+/**
+ * Stable engine edge UUID.
+ */
+edgeId: string, 
+/**
+ * The edge index within the solid at export time.
+ */
+edgeIndex: number, };
+
+/**
+ * Options for exporting a render packet.
+ */
+export type RenderPacketExportOptions = Record<symbol, never>;
+
+/**
+ * A single renderable face range in a render packet.
+ */
+export type RenderPacketPrimitive = { 
+/**
+ * First vertex in the packet-wide interleaved vertex section.
+ */
+firstVertex: number, 
+/**
+ * Number of vertices belonging to this face.
+ */
+vertexCount: number, 
+/**
+ * First index in the packet-wide index section.
+ */
+firstIndex: number, 
+/**
+ * Number of indices belonging to this face.
+ */
+indexCount: number, 
+/**
+ * Trim loops in the same normalized face-local uv space as `uvs`.
+ */
+trimLoops: Array<RenderPacketTrimLoop>, 
+/**
+ * Stable engine object UUID for the parent solid.
+ */
+objectId: string, 
+/**
+ * Stable engine body UUID for the parent solid.
+ */
+bodyId: string, 
+/**
+ * Stable engine face UUID.
+ */
+faceId: string, 
+/**
+ * The face index within the solid at export time.
+ */
+faceIndex: number, 
+/**
+ * The primitive index within the generated packet.
+ */
+primitiveIndex: number, };
+
+/**
+ * A single implicit sketch region in a render packet.
+ */
+export type RenderPacketRegion = { 
+/**
+ * The sketch plane origin in OpenGL/glTF world coordinates and meters.
+ */
+planeOrigin: Point3d<number>, 
+/**
+ * The sketch plane x axis in OpenGL/glTF world coordinates.
+ */
+planeXAxis: Point3d<number>, 
+/**
+ * The sketch plane y axis in OpenGL/glTF world coordinates.
+ */
+planeYAxis: Point3d<number>, 
+/**
+ * The explicit outer loop for this region in sketch-plane local meters.
+ */
+outerLoop: RenderPacketRegionLoop, 
+/**
+ * Hole loops for this region in sketch-plane local meters.
+ */
+holeLoops: Array<RenderPacketRegionLoop>, 
+/**
+ * Stable engine scene object UUID for the sketch owner.
+ */
+sketchId: string, 
+/**
+ * Stable engine region UUID.
+ */
+regionId: string, 
+/**
+ * Stable engine parent path UUID. This mirrors `entity_get_parent_id`.
+ */
+parentId: string, 
+/**
+ * A point guaranteed to be inside the region, in engine millimeters.
+ */
+queryPoint: Point2d<number>, };
+
+/**
+ * A single 2D loop in sketch-plane local meters.
+ */
+export type RenderPacketRegionLoop = { 
+/**
+ * First float32x2 point in the packet-wide region-point section.
+ */
+firstPoint: number, 
+/**
+ * Number of points in this loop.
+ */
+pointCount: number, };
+
+/**
+ * A single renderable sketch/wire polyline in a render packet.
+ */
+export type RenderPacketSketchSegment = { 
+/**
+ * First float32x3 point in the packet-wide sketch-point section.
+ */
+firstPoint: number, 
+/**
+ * Number of points in this sketch segment.
+ */
+pointCount: number, 
+/**
+ * Stable engine scene object UUID for the sketch owner.
+ */
+sketchId: string, 
+/**
+ * Stable artifact/entity UUID for the underlying sketch segment, when available.
+ */
+segmentId: string | null, 
+/**
+ * Curve index within the sketch path or hole loop.
+ */
+segmentIndex: number, 
+/**
+ * Hole index when this segment belongs to a hole loop.
+ */
+holeIndex: number | null, 
+/**
+ * Whether the underlying curve is closed.
+ */
+closed: boolean, };
+
+/**
+ * A single trim loop in normalized face-local uv space.
+ */
+export type RenderPacketTrimLoop = { 
+/**
+ * First float32x2 point in the packet-wide trim-point section.
+ */
+firstPoint: number, 
+/**
+ * Number of points in this closed trim loop.
+ */
+pointCount: number, };
+
+/**
+ * Layout of a surface vertex in the interleaved vertex section.
+ */
+export type RenderPacketVertexLayout = { 
+/**
+ * Distance in bytes between consecutive vertices.
+ */
+stride: number, 
+/**
+ * Byte offset of the float32x3 position.
+ */
+positionOffset: number, 
+/**
+ * Byte offset of the float32x3 normal.
+ */
+normalOffset: number, 
+/**
+ * Byte offset of the float32x2 UV coordinate.
+ */
+uvOffset: number, };
 
 /**
  * Command for revolving a solid 2d.
@@ -3667,7 +4029,7 @@ export type Solid3dGetNextAdjacentEdge = {
  */
 object_id: string, 
 /**
- * Which edge you want the opposite of.
+ * Which edge you want the next edge of.
  */
 edge_id: string, 
 /**
@@ -3701,7 +4063,7 @@ export type Solid3dGetPrevAdjacentEdge = {
  */
 object_id: string, 
 /**
- * Which edge you want the opposite of.
+ * Which edge you want the previous edge of.
  */
 edge_id: string, 
 /**

@@ -13,13 +13,18 @@ use kcl_lib::OperationCallbackArgs;
 use kcl_lib::Program;
 use kcl_lib::ProjectManager;
 use kcl_lib::SourceRange;
-use kcl_lib::front::FrontendRenderPacket;
+use kcl_lib::front::FrontendRenderPacketMetadata;
 use kcl_lib::front::FrontendRenderPacketSketchSegment;
 use kcl_lib::front::FrontendState;
 use kcl_lib::front::ObjectKind;
 use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::front::SourceRef;
 use kcl_lib::wasm_engine::FileManager;
+use kittycad_modeling_cmds::format::render_packet::RENDER_PACKET_HEADER_SIZE;
+use kittycad_modeling_cmds::format::render_packet::RENDER_PACKET_MAGIC;
+use kittycad_modeling_cmds::format::render_packet::RENDER_PACKET_VERSION;
+use kittycad_modeling_cmds::format::render_packet::RenderPacket;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketBinarySection;
 use wasm_bindgen::prelude::*;
 
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
@@ -279,18 +284,102 @@ impl Context {
 
         let packet_file = files
             .iter()
-            .find(|file| file.name.ends_with(".render_packet.json"))
+            .find(|file| file.name.ends_with(".render_packet.bin"))
             .or_else(|| files.first())
             .ok_or_else(|| "render packet export returned no files".to_owned())?;
 
-        let packet: kittycad_modeling_cmds::format::render_packet::RenderPacket =
-            serde_json::from_slice(&packet_file.contents).map_err(|error| error.to_string())?;
+        let (packet, binary_data) = decode_render_packet(&packet_file.contents)?;
 
         let frontend = self.frontend.read().await;
-        let packet = enrich_render_packet(packet, frontend.scene_graph());
+        let metadata = enrich_render_packet(packet, frontend.scene_graph());
 
-        JsValue::from_serde(&packet).map_err(|error| error.to_string())
+        let result = js_sys::Object::new();
+        let metadata = JsValue::from_serde(&metadata).map_err(|error| error.to_string())?;
+        js_sys::Reflect::set(&result, &JsValue::from_str("metadata"), &metadata)
+            .map_err(|_| "failed to attach render packet metadata".to_owned())?;
+        let data = js_sys::Uint8Array::from(binary_data);
+        js_sys::Reflect::set(&result, &JsValue::from_str("data"), &data)
+            .map_err(|_| "failed to attach render packet binary data".to_owned())?;
+
+        Ok(result.into())
     }
+}
+
+fn align_to_four(value: usize) -> usize {
+    (value + 3) & !3
+}
+
+fn validate_render_packet_section(
+    name: &str,
+    section: &RenderPacketBinarySection,
+    binary_len: usize,
+) -> Result<(), String> {
+    if section.byte_offset % 4 != 0 {
+        return Err(format!("render packet section {name} is not 4-byte aligned"));
+    }
+    let end = (section.byte_offset as usize)
+        .checked_add(section.byte_length as usize)
+        .ok_or_else(|| format!("render packet section {name} range overflowed"))?;
+    if end > binary_len {
+        return Err(format!("render packet section {name} exceeds the binary payload"));
+    }
+    Ok(())
+}
+
+fn decode_render_packet(bytes: &[u8]) -> Result<(RenderPacket, &[u8]), String> {
+    if bytes.len() < RENDER_PACKET_HEADER_SIZE {
+        return Err("render packet is shorter than its fixed header".to_owned());
+    }
+    if bytes[..RENDER_PACKET_MAGIC.len()] != RENDER_PACKET_MAGIC {
+        return Err("render packet has an invalid magic value".to_owned());
+    }
+
+    let version = u32::from_le_bytes(
+        bytes[8..12]
+            .try_into()
+            .map_err(|_| "render packet version is truncated".to_owned())?,
+    );
+    if version != RENDER_PACKET_VERSION {
+        return Err(format!(
+            "unsupported render packet version {version}; expected {RENDER_PACKET_VERSION}"
+        ));
+    }
+    let metadata_len = u32::from_le_bytes(
+        bytes[12..16]
+            .try_into()
+            .map_err(|_| "render packet metadata length is truncated".to_owned())?,
+    ) as usize;
+    let metadata_end = RENDER_PACKET_HEADER_SIZE
+        .checked_add(metadata_len)
+        .ok_or_else(|| "render packet metadata range overflowed".to_owned())?;
+    let binary_offset = align_to_four(metadata_end);
+    if binary_offset > bytes.len() {
+        return Err("render packet metadata exceeds the packet length".to_owned());
+    }
+
+    let packet: RenderPacket =
+        serde_json::from_slice(&bytes[RENDER_PACKET_HEADER_SIZE..metadata_end]).map_err(|error| error.to_string())?;
+    if packet.version != version {
+        return Err(format!(
+            "render packet header version {version} does not match metadata version {}",
+            packet.version
+        ));
+    }
+
+    let binary_data = &bytes[binary_offset..];
+    for (name, section) in [
+        ("vertices", &packet.sections.vertices),
+        ("primitiveIndices", &packet.sections.primitive_indices),
+        ("indices", &packet.sections.indices),
+        ("trimPoints", &packet.sections.trim_points),
+        ("edgePoints", &packet.sections.edge_points),
+        ("sketchPoints", &packet.sections.sketch_points),
+        ("regionPoints", &packet.sections.region_points),
+    ] {
+        validate_render_packet_section(name, section, binary_data.len())?;
+    }
+
+    Ok((packet, binary_data))
 }
 
 #[derive(Clone)]
@@ -380,9 +469,9 @@ fn group_packet_sketch_indices(
 }
 
 fn enrich_render_packet(
-    packet: kittycad_modeling_cmds::format::render_packet::RenderPacket,
+    packet: RenderPacket,
     scene_graph: &kcl_lib::front::SceneGraph,
-) -> FrontendRenderPacket {
+) -> FrontendRenderPacketMetadata {
     let packet_groups = group_packet_sketch_indices(&packet);
     let scene_graph_groups = collect_scene_graph_sketch_segments(scene_graph);
     let packet_sketch_ids = packet
@@ -395,7 +484,8 @@ fn enrich_render_packet(
         .sketches
         .into_iter()
         .map(|segment| FrontendRenderPacketSketchSegment {
-            positions: segment.positions,
+            first_point: segment.first_point,
+            point_count: segment.point_count,
             sketch_id: segment.sketch_id,
             segment_id: segment.segment_id,
             segment_index: segment.segment_index,
@@ -429,7 +519,10 @@ fn enrich_render_packet(
         })
         .collect();
 
-    FrontendRenderPacket {
+    FrontendRenderPacketMetadata {
+        version: packet.version,
+        vertex_layout: packet.vertex_layout,
+        sections: packet.sections,
         body_materials: packet.body_materials,
         primitives: packet.primitives,
         edges: packet.edges,

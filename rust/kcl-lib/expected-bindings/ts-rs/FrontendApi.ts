@@ -3,6 +3,7 @@ import type { ArtifactId } from "./ArtifactId";
 import type { ExecOutcome } from "./ExecOutcome";
 import type { ExecutorSettings } from "./ExecutorSettings";
 import type { KclErrorWithOutputs } from "./KclErrorWithOutputs";
+import type { RenderPacketBinarySections, RenderPacketBodyMaterial, RenderPacketEdge, RenderPacketPrimitive, RenderPacketRegion, RenderPacketVertexLayout } from "./ModelingCmd";
 import type { NodePath } from "./NodePath";
 import type { NumericSuffix } from "./NumericSuffix";
 import type { PlaneName } from "./PlaneName";
@@ -118,6 +119,48 @@ export type Fixed = { points: Array<FixedPoint>, };
 export type FixedPoint = { point: ApiObjectId, position: ApiPoint2d<Number>, };
 
 export type Freedom = "Free" | "Fixed" | "Conflict";
+
+export type FrontendRenderPacket = { metadata: FrontendRenderPacketMetadata, data: Uint8Array, };
+
+export type FrontendRenderPacketMetadata = { version: number, vertexLayout: RenderPacketVertexLayout, sections: RenderPacketBinarySections, bodyMaterials: Array<RenderPacketBodyMaterial>, primitives: Array<RenderPacketPrimitive>, edges: Array<RenderPacketEdge>, sketches: Array<FrontendRenderPacketSketchSegment>, regions: Array<RenderPacketRegion>, };
+
+export type FrontendRenderPacketSketchSegment = { 
+/**
+ * First float32x3 point in the packet-wide sketch-point section.
+ */
+firstPoint: number, 
+/**
+ * Number of points in this sketch segment.
+ */
+pointCount: number, 
+/**
+ * Stable engine scene object UUID for the sketch owner.
+ */
+sketchId: string, 
+/**
+ * Stable engine scene curve UUID, when available.
+ */
+segmentId: string | null, 
+/**
+ * Curve index within the sketch path or hole loop.
+ */
+segmentIndex: number, 
+/**
+ * Hole index when this segment belongs to a hole loop.
+ */
+holeIndex: number | null, 
+/**
+ * Whether the underlying curve is closed.
+ */
+closed: boolean, 
+/**
+ * Source range for the corresponding frontend sketch segment, when available.
+ */
+sourceRange: SourceRange | null, 
+/**
+ * AST node path for the corresponding frontend sketch segment, when available.
+ */
+nodePath: NodePath | null, };
 
 export type Horizontal = { line: ApiObjectId, } | { points: Array<ConstraintSegment>, };
 

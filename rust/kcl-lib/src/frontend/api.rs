@@ -5,10 +5,12 @@
 pub use kcl_api::ObjectId;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketBinarySections;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketBodyMaterial;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
 use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketVertexLayout;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -69,6 +71,18 @@ pub struct SceneGraphDelta {
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct FrontendRenderPacket {
+    pub metadata: FrontendRenderPacketMetadata,
+    #[ts(type = "Uint8Array")]
+    pub data: Vec<u8>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct FrontendRenderPacketMetadata {
+    pub version: u32,
+    pub vertex_layout: RenderPacketVertexLayout,
+    pub sections: RenderPacketBinarySections,
     pub body_materials: Vec<RenderPacketBodyMaterial>,
     pub primitives: Vec<RenderPacketPrimitive>,
     pub edges: Vec<RenderPacketEdge>,
@@ -80,8 +94,11 @@ pub struct FrontendRenderPacket {
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct FrontendRenderPacketSketchSegment {
-    /// Packed xyz positions in OpenGL/glTF coordinates and meters.
-    pub positions: Vec<f32>,
+    /// First float32x3 point in the packet-wide sketch-point section.
+    pub first_point: u32,
+
+    /// Number of points in this sketch segment.
+    pub point_count: u32,
 
     /// Stable engine scene object UUID for the sketch owner.
     pub sketch_id: uuid::Uuid,

@@ -14,6 +14,7 @@ import type {
   ConstraintLabelPositionEdit,
   ExistingSegmentCtor,
   FrontendRenderPacket,
+  FrontendRenderPacketMetadata,
   FrontendRenderPacketSketchSegment,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
@@ -26,12 +27,15 @@ import type {
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type {
   OutputFormat3d,
+  RenderPacketBinarySection,
+  RenderPacketBinarySections,
   RenderPacketBodyMaterial,
   RenderPacketEdge,
   RenderPacketPrimitive,
   RenderPacketRegion,
   RenderPacketRegionLoop,
   RenderPacketTrimLoop,
+  RenderPacketVertexLayout,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -56,6 +60,9 @@ import toast from 'react-hot-toast'
 
 export type {
   FrontendRenderPacket as RenderPacket,
+  FrontendRenderPacketMetadata as RenderPacketMetadata,
+  RenderPacketBinarySection,
+  RenderPacketBinarySections,
   RenderPacketBodyMaterial,
   RenderPacketEdge,
   RenderPacketPrimitive,
@@ -63,6 +70,7 @@ export type {
   RenderPacketRegionLoop,
   FrontendRenderPacketSketchSegment as RenderPacketSketchSegment,
   RenderPacketTrimLoop,
+  RenderPacketVertexLayout,
 }
 
 export default class RustContext {

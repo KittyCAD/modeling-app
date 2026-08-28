@@ -1,7 +1,3 @@
-import type {
-  RenderPacketPrimitive,
-  RenderPacketTrimLoop,
-} from '@src/lib/rustContext'
 import { DataTexture, NearestFilter, RedFormat, UnsignedByteType } from 'three'
 import {
   MeshStandardNodeMaterial,
@@ -55,7 +51,13 @@ type TrimTriangleRange = {
   triangleCount: number
 }
 
-type TrimPrimitive = Pick<RenderPacketPrimitive, 'trimLoops'>
+type TrimLoop = {
+  positions: ArrayLike<number>
+}
+
+type TrimPrimitive = {
+  trimLoops: TrimLoop[]
+}
 
 /**
  * Flatten each trim loop into the same triangle fan used by trimSurface.slang.
@@ -104,7 +106,7 @@ export function packTrimTriangles(primitives: TrimPrimitive[]) {
 
 function addTrimLoopsToCanvasPath(
   context: CanvasRenderingContext2D,
-  trimLoops: RenderPacketTrimLoop[]
+  trimLoops: TrimLoop[]
 ) {
   let hasValidLoop = false
 
@@ -132,7 +134,7 @@ function addTrimLoopsToCanvasPath(
   return hasValidLoop
 }
 
-function createTrimClassifierTexture(trimLoops: RenderPacketTrimLoop[]) {
+function createTrimClassifierTexture(trimLoops: TrimLoop[]) {
   const canvas = document.createElement('canvas')
   canvas.width = TRIM_MASK_SIZE
   canvas.height = TRIM_MASK_SIZE

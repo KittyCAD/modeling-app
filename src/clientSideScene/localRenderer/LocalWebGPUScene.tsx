@@ -1,6 +1,14 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
+import {
+  decodeRenderPacket,
+  type LocalRenderPacket,
+  type LocalRenderPacketEdge,
+  type LocalRenderPacketPrimitive,
+  type LocalRenderPacketRegion,
+  type LocalRenderPacketSketchSegment,
+} from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type {
   WebGpuTrimPrimitiveState,
@@ -19,10 +27,6 @@ import { EngineDebugger } from '@src/lib/debugger'
 import type {
   RenderPacket,
   RenderPacketBodyMaterial,
-  RenderPacketEdge,
-  RenderPacketPrimitive,
-  RenderPacketRegion,
-  RenderPacketSketchSegment,
 } from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
@@ -36,6 +40,8 @@ import {
   DoubleSide,
   FrontSide,
   Group,
+  InterleavedBuffer,
+  InterleavedBufferAttribute,
   Line,
   LineBasicMaterial,
   type Material,
@@ -101,36 +107,50 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
 }
 
 function buildRenderPacketModel(
-  packet: RenderPacket,
+  packet: LocalRenderPacket,
   trimResources: WebGpuTrimResources | null
 ) {
   const root = new Group()
-  const primitiveByObject = new WeakMap<Object3D, RenderPacketPrimitive>()
-  const edgeByObject = new WeakMap<Object3D, RenderPacketEdge>()
-  const sketchByObject = new WeakMap<Object3D, RenderPacketSketchSegment>()
-  const regionByObject = new WeakMap<Object3D, RenderPacketRegion>()
+  const primitiveByObject = new WeakMap<Object3D, LocalRenderPacketPrimitive>()
+  const edgeByObject = new WeakMap<Object3D, LocalRenderPacketEdge>()
+  const sketchByObject = new WeakMap<Object3D, LocalRenderPacketSketchSegment>()
+  const regionByObject = new WeakMap<Object3D, LocalRenderPacketRegion>()
+
+  const vertexStride =
+    packet.vertexLayout.stride / Float32Array.BYTES_PER_ELEMENT
+  const interleavedVertices = new InterleavedBuffer(
+    packet.vertices,
+    vertexStride
+  )
+  const positionAttribute = new InterleavedBufferAttribute(
+    interleavedVertices,
+    3,
+    packet.vertexLayout.positionOffset / Float32Array.BYTES_PER_ELEMENT
+  )
+  const normalAttribute = new InterleavedBufferAttribute(
+    interleavedVertices,
+    3,
+    packet.vertexLayout.normalOffset / Float32Array.BYTES_PER_ELEMENT
+  )
+  const uvAttribute = new InterleavedBufferAttribute(
+    interleavedVertices,
+    2,
+    packet.vertexLayout.uvOffset / Float32Array.BYTES_PER_ELEMENT
+  )
+  const primitiveIndexAttribute = new BufferAttribute(
+    packet.primitiveIndices,
+    1
+  )
+  const indexAttribute = new BufferAttribute(packet.indices, 1)
 
   packet.primitives.forEach((primitive, primitiveOffset) => {
     const geometry = new BufferGeometry()
-    geometry.setAttribute(
-      'position',
-      new BufferAttribute(new Float32Array(primitive.positions), 3)
-    )
-    if (primitive.normals.length === primitive.positions.length) {
-      geometry.setAttribute(
-        'normal',
-        new BufferAttribute(new Float32Array(primitive.normals), 3)
-      )
-    }
-    if (primitive.uvs.length / 2 === primitive.positions.length / 3) {
-      geometry.setAttribute(
-        'uv',
-        new BufferAttribute(new Float32Array(primitive.uvs), 2)
-      )
-    }
-    geometry.setIndex(
-      new BufferAttribute(new Uint32Array(primitive.indices), 1)
-    )
+    geometry.setAttribute('position', positionAttribute)
+    geometry.setAttribute('normal', normalAttribute)
+    geometry.setAttribute('uv', uvAttribute)
+    geometry.setAttribute('primitiveIndex', primitiveIndexAttribute)
+    geometry.setIndex(indexAttribute)
+    geometry.setDrawRange(primitive.firstIndex, primitive.indexCount)
 
     const mesh = new Mesh(geometry)
     mesh.name = `mesh_0_${primitive.primitiveIndex ?? primitiveOffset}`
@@ -152,16 +172,13 @@ function buildRenderPacketModel(
     root.add(mesh)
   })
 
-  packet.edges.forEach((edge: RenderPacketEdge) => {
+  packet.edges.forEach((edge) => {
     if (edge.positions.length < 6) {
       return
     }
 
     const geometry = new BufferGeometry()
-    geometry.setAttribute(
-      'position',
-      new BufferAttribute(new Float32Array(edge.positions), 3)
-    )
+    geometry.setAttribute('position', new BufferAttribute(edge.positions, 3))
 
     const line = new Line(
       geometry,
@@ -189,10 +206,7 @@ function buildRenderPacketModel(
     }
 
     const geometry = new BufferGeometry()
-    geometry.setAttribute(
-      'position',
-      new BufferAttribute(new Float32Array(segment.positions), 3)
-    )
+    geometry.setAttribute('position', new BufferAttribute(segment.positions, 3))
 
     const line = new Line(
       geometry,
@@ -402,10 +416,10 @@ type GltfParserState = {
 }
 
 type RenderPacketParserState = {
-  primitiveByObject: WeakMap<Object3D, RenderPacketPrimitive>
-  edgeByObject: WeakMap<Object3D, RenderPacketEdge>
-  sketchByObject: WeakMap<Object3D, RenderPacketSketchSegment>
-  regionByObject: WeakMap<Object3D, RenderPacketRegion>
+  primitiveByObject: WeakMap<Object3D, LocalRenderPacketPrimitive>
+  edgeByObject: WeakMap<Object3D, LocalRenderPacketEdge>
+  sketchByObject: WeakMap<Object3D, LocalRenderPacketSketchSegment>
+  regionByObject: WeakMap<Object3D, LocalRenderPacketRegion>
 }
 
 type KittycadPrimitiveExtras = {
@@ -441,7 +455,7 @@ type KittycadRegionExtras = {
 }
 
 type RenderPacketTrimLoopSummary = {
-  positions: number[]
+  positions: ArrayLike<number>
 }
 
 function pointInTrimLoop(
@@ -497,7 +511,7 @@ function isUvInsideTrimLoops(
   return inside
 }
 
-function unpackRegionLoop(loop: { positions: number[] }) {
+function unpackRegionLoop(loop: { positions: ArrayLike<number> }) {
   const points: Vector2[] = []
   for (let index = 0; index <= loop.positions.length - 2; index += 2) {
     points.push(new Vector2(loop.positions[index], loop.positions[index + 1]))
@@ -505,7 +519,7 @@ function unpackRegionLoop(loop: { positions: number[] }) {
   return points
 }
 
-function buildRegionGeometry(region: RenderPacketRegion) {
+function buildRegionGeometry(region: LocalRenderPacketRegion) {
   const contour = unpackRegionLoop(region.outerLoop)
   if (contour.length < 3) {
     return null
@@ -2488,11 +2502,30 @@ export const LocalWebGPUScene = ({
         const exportSettings = jsAppSettings(
           kclManager.rustContext.settingsActor
         )
-        let renderPacket: RenderPacket | undefined
+        let renderPacket: LocalRenderPacket | undefined
         const maxRenderPacketAttempts = 3
         for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
-          renderPacket =
+          renderPacket = undefined
+          const encodedRenderPacket: RenderPacket | undefined =
             await kclManager.rustContext.exportRenderPacket(exportSettings)
+
+          console.info(
+            `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet received`,
+            encodedRenderPacket
+          )
+
+          if (encodedRenderPacket) {
+            const decodedRenderPacket = decodeRenderPacket(encodedRenderPacket)
+            if (decodedRenderPacket instanceof Error) {
+              logLocalWebGpuPreview('render packet decoding failed', {
+                refreshId,
+                attempt,
+                error: decodedRenderPacket.message,
+              })
+            } else {
+              renderPacket = decodedRenderPacket
+            }
+          }
 
           if (disposed || refreshId !== currentRefreshId) {
             logLocalWebGpuPreview('dropping stale refresh result', {
