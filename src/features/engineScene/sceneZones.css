@@ -1,0 +1,49 @@
+/*
+ * Zones sit over the scene, and only their contents take pointer events.
+ *
+ * A zone spanning an edge would otherwise swallow drags along that edge — the
+ * camera reads the whole surface, and an invisible strip that stops an orbit is
+ * the kind of thing that gets diagnosed as "the camera is broken".
+ */
+.zds-scene-zone {
+  position: absolute;
+  display: flex;
+  gap: var(--zds-space-2);
+  z-index: var(--zds-z-rail);
+  pointer-events: none;
+}
+
+.zds-scene-zone__item {
+  pointer-events: auto;
+  min-inline-size: 0;
+}
+
+.zds-scene-zone[data-zone="top"] {
+  inset-block-start: var(--zds-space-2);
+  inset-inline: var(--zds-space-2);
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.zds-scene-zone[data-zone="bottom"] {
+  inset-block-end: var(--zds-space-2);
+  inset-inline: var(--zds-space-2);
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.zds-scene-zone[data-zone="start"] {
+  inset-inline-start: var(--zds-space-2);
+  inset-block: var(--zds-space-2);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.zds-scene-zone[data-zone="end"] {
+  inset-inline-end: var(--zds-space-2);
+  inset-block: var(--zds-space-2);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+}

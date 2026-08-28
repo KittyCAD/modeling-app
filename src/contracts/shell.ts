@@ -1,6 +1,7 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 import type { ComponentChildren } from 'preact'
+import { byOrder, dedupeById } from '@src/lib/registryOrdering'
 
 export type ShellZone = 'start' | 'center' | 'end'
 
@@ -48,22 +49,6 @@ export interface Screen {
   /** Lower wins when several screens are active at once. */
   order?: number
   render: () => ComponentChildren
-}
-
-const byOrder = <T extends { order?: number; id: string }>(
-  inputs: readonly T[]
-): T[] =>
-  [...inputs].sort(
-    (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.id.localeCompare(b.id)
-  )
-
-const dedupeById = <T extends { id: string }>(inputs: readonly T[]): T[] => {
-  const seen = new Set<string>()
-  return inputs.filter((input) => {
-    if (seen.has(input.id)) return false
-    seen.add(input.id)
-    return true
-  })
 }
 
 /**

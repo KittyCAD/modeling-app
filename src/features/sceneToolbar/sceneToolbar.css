@@ -1,0 +1,60 @@
+/*
+ * A panel floating over the scene.
+ *
+ * Overlay material rather than chassis material: it sits *above* the frame like
+ * a menu does, not inside it. Opaque, because a translucent control over a
+ * moving model is a control you cannot read.
+ */
+.zds-scene-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  max-inline-size: 100%;
+  padding: var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content-lg);
+  background: var(--zds-surface-overlay);
+  box-shadow: var(--zds-shadow-overlay);
+  overflow-x: auto;
+}
+
+.zds-scene-toolbar__modes {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+}
+
+/* A run of tools. The rule between runs is what a divider is here. */
+.zds-scene-toolbar__section {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+}
+
+.zds-scene-toolbar__modes + .zds-scene-toolbar__section,
+.zds-scene-toolbar__section + .zds-scene-toolbar__section,
+.zds-scene-toolbar__modes + .zds-scene-toolbar__empty {
+  padding-inline-start: var(--zds-space-2);
+  margin-inline-start: var(--zds-space-1);
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+/*
+ * The face and its caret read as one control, so the gap between them closes and
+ * the caret stays narrow.
+ */
+.zds-scene-toolbar__group {
+  display: flex;
+  align-items: center;
+}
+
+.zds-scene-toolbar__group .zds-button:first-child {
+  padding-inline-end: var(--zds-space-1);
+}
+
+.zds-scene-toolbar__empty {
+  padding-inline: var(--zds-space-1);
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+  white-space: nowrap;
+}

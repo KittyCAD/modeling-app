@@ -2,9 +2,12 @@ import {
   appendValueSpec,
   defineContract,
   defineService,
+  defineValueSpec,
 } from '@kittycad/registry'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ReadonlySignal } from '@preact/signals'
+import type { ComponentChildren } from 'preact'
+import { byOrder, dedupeById } from '@src/lib/registryOrdering'
 
 /**
  * Something that reacts to input over whatever surface the scene is drawn on.
@@ -114,10 +117,57 @@ export interface CameraDriver {
   zoomToFit(): void
 }
 
+/**
+ * Where in the scene something can be placed.
+ *
+ * Four edges, and nothing finer. A zone is a *region of the viewport*, not a
+ * layout: how several items share one edge is the zone's business, and an item
+ * that needs to be somewhere specific within an edge says so with `order`.
+ *
+ * Deliberately about the scene rather than about the engine. A local renderer
+ * would host the same toolbar, the same view gizmo and the same measurement
+ * readout, so none of them may know that today's frames arrive as video.
+ */
+export type SceneZone = 'top' | 'bottom' | 'start' | 'end'
+
+/**
+ * Something drawn over the scene.
+ *
+ * The same shape as a shell item, for the same reason: the surface that draws
+ * geometry should not accumulate a list of every control that hovers above it.
+ * A toolbar, a view gizmo, a units readout and a selection summary are all
+ * contributions, and the viewport knows about none of them.
+ */
+export interface SceneItem {
+  id: string
+  zone: SceneZone
+  /** Lower sorts earlier within a zone. */
+  order?: number
+  /** Omitted from the DOM entirely while false. */
+  visible?: ReadonlySignal<boolean>
+  /**
+   * Must return a component element, not JSX that calls hooks inline.
+   *
+   * Items render inside the viewport's own component, so a hook called directly
+   * in `render` would belong to the viewport — and its position in the hook
+   * order would shift whenever the item list changed.
+   */
+  render: () => ComponentChildren
+}
+
 export const sceneContract = defineContract({
   sceneInteractionsValueSpec:
     appendValueSpec<SceneInteraction>('scene.interactions'),
+  sceneItemsValueSpec: defineValueSpec<SceneItem, SceneItem[]>({
+    name: 'scene.items',
+    defaultValue: [],
+    combine: (inputs) => byOrder(dedupeById(inputs)),
+  }),
   cameraDriverService: defineService<CameraDriver>('scene.cameraDriver'),
 })
 
-export const { sceneInteractionsValueSpec, cameraDriverService } = sceneContract
+export const {
+  sceneInteractionsValueSpec,
+  sceneItemsValueSpec,
+  cameraDriverService,
+} = sceneContract

@@ -10,6 +10,7 @@ import { executionCoordinatorService } from '@src/contracts/execution'
 import { idleExecutionState } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { EngineStream } from '@src/features/engineScene/EngineStream'
+import { SceneZones } from '@src/features/engineScene/SceneZones'
 import '../project.css'
 
 /**
@@ -92,6 +93,14 @@ function ViewportFrame({
       class={grid ? 'zds-viewport zds-grid-field' : 'zds-viewport'}
     >
       {children}
+      {/*
+        Contributed controls over the scene — the toolbar, and whatever else is
+        installed. Inside the frame rather than beside the stream, so they are on
+        screen in every state the viewport has: a toolbar that appears only once
+        frames arrive vanishes exactly when someone is working out why they have
+        not.
+      */}
+      <SceneZones />
     </div>
   )
 }
