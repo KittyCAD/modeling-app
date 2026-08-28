@@ -1,24 +1,76 @@
-import { defineContract, defineService } from '@kittycad/registry'
+import {
+  appendValueSpec,
+  defineContract,
+  defineService,
+} from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
+import type { ComponentChildren } from 'preact'
 
-export type AuthStatus = 'unauthenticated' | 'authenticated'
+export type AuthStatus =
+  /** Resolving a stored token on startup. */
+  | 'checking'
+  | 'signedOut'
+  | 'signedIn'
+  /** A token existed but could not be verified. */
+  | 'error'
+
+/** The parts of the account this app actually shows. */
+export interface AuthUser {
+  id: string
+  name: string
+  email: string
+  imageUrl?: string
+}
 
 export interface AuthService {
   readonly status: ReadonlySignal<AuthStatus>
-  /**
-   * The bearer token for API and engine calls, or null.
-   *
-   * Deliberately the only thing exposed. Nothing in the app should be reading a
-   * token out of the environment or storage on its own, because then there is no
-   * single place to change when a real sign-in flow arrives.
-   */
   readonly token: ReadonlySignal<string | null>
-  /** Where the token came from, for the status bar and for support. */
+  readonly user: ReadonlySignal<AuthUser | null>
+  readonly error: ReadonlySignal<string | null>
+  /** Where the current token came from, for debugging a rejected request. */
   readonly source: ReadonlySignal<string | null>
+
+  /**
+   * Whether the sign-in screen should be showing.
+   *
+   * Separate from `status` because being signed out is not by itself a reason to
+   * demand a sign-in: local projects, editing, and KCL diagnostics all work
+   * without an account. Only the parts that need the network ask for one.
+   */
+  readonly signInRequested: ReadonlySignal<boolean>
+  requestSignIn(reason?: string): void
+  dismissSignIn(): void
+  /** Why sign-in was asked for, shown on the screen. */
+  readonly signInReason: ReadonlySignal<string | null>
+
+  /** Adopt a token and verify it. Resolves true when it was accepted. */
+  signIn(token: string, source?: string): Promise<boolean>
+  signOut(): void
+  /** Re-verify the current token. */
+  refresh(): Promise<void>
+}
+
+/**
+ * One way to sign in.
+ *
+ * Contributed rather than hard-coded, because the available methods differ by
+ * platform — a device flow needs a desktop shell, a redirect needs a browser —
+ * and the sign-in screen should not be the place that knows which.
+ */
+export interface SignInFlow {
+  id: string
+  /** Lower sorts earlier; the first available flow is the primary one. */
+  order?: number
+  title: string
+  description: string
+  /** False on platforms where this flow cannot work. */
+  available: ReadonlySignal<boolean>
+  render: (props: { onSignedIn: () => void }) => ComponentChildren
 }
 
 export const authContract = defineContract({
   authService: defineService<AuthService>('auth.service'),
+  signInFlowsValueSpec: appendValueSpec<SignInFlow>('auth.signInFlows'),
 })
 
-export const { authService } = authContract
+export const { authService, signInFlowsValueSpec } = authContract

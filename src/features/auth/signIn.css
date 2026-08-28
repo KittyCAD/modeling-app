@@ -1,0 +1,105 @@
+/*
+ * The sign-in screen.
+ *
+ * A reading surface, like the home screen: a measure, real vertical rhythm, and
+ * the chassis background rather than the viewport's.
+ */
+
+.zds-signin {
+  block-size: 100%;
+  inline-size: 100%;
+  background: var(--zds-surface-chassis);
+}
+
+.zds-signin__inner {
+  /* Narrower than home: this is a single task, not a list to scan. */
+  max-inline-size: 560px;
+  margin-inline: auto;
+  padding: var(--zds-space-16) var(--zds-space-8) var(--zds-space-16);
+}
+
+.zds-signin__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+}
+
+.zds-signin__lead {
+  max-inline-size: 46ch;
+  font-size: var(--zds-font-size-body);
+  color: var(--zds-text-secondary);
+  line-height: var(--zds-line-height-body);
+}
+
+.zds-signin__rule {
+  margin-block: var(--zds-space-6);
+}
+
+.zds-signin__primary,
+.zds-signin__alternative {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-3);
+}
+
+.zds-signin__alternatives {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-6);
+}
+
+.zds-signin__flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-3);
+}
+
+.zds-signin__flow-description {
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+  line-height: var(--zds-line-height-body);
+}
+
+.zds-signin__row {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  flex-wrap: wrap;
+}
+
+.zds-signin__field {
+  flex: 1;
+  min-inline-size: 220px;
+}
+
+/*
+ * The device code.
+ *
+ * Large, mono, and widely tracked, because it gets read off the screen and typed
+ * somewhere else — the one place in the app where legibility at a distance beats
+ * density.
+ */
+.zds-signin__code {
+  align-self: flex-start;
+  padding: var(--zds-space-2) var(--zds-space-4);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-sunken);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-title);
+  letter-spacing: 0.22em;
+  color: var(--zds-text-primary);
+}
+
+.zds-signin__error {
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border: var(--zds-size-hairline) solid var(--zds-status-fault);
+  border-radius: var(--zds-radius-content);
+  background: oklch(from var(--zds-status-fault) l c h / 0.1);
+  color: var(--zds-text-fault);
+  font-size: var(--zds-font-size-small);
+}
+
+.zds-signin__footer {
+  margin-block-start: var(--zds-space-8);
+}
