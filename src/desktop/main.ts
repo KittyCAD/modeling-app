@@ -707,9 +707,18 @@ function createWindow() {
 
   // Window-scoped work must die with the window, or polling outlives the UI
   // that started it.
+  //
+  // Both ids are read here, while the window is alive, rather than inside the
+  // handler. By the time `closed` fires the native object is gone, and
+  // `window.webContents` is a getter into it — reaching for it throws "Object
+  // has been destroyed", which on quit is an uncaught exception in the main
+  // process and so an OS error dialog on the way out.
+  const windowId = window.id
+  const webContentsId = window.webContents.id
+
   window.on('closed', () => {
-    abortDeviceFlow(window.id)
-    stopSubscriptionsFor(window.webContents.id)
+    abortDeviceFlow(windowId)
+    stopSubscriptionsFor(webContentsId)
   })
 
   // External links go to the OS browser; this window never navigates away from
