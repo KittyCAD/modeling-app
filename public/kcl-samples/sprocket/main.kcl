@@ -1,6 +1,6 @@
 // Sprocket
 // A standard hub sprocket is a toothed wheel that engages with a roller chain.
-// Categories: Manufacturing, Automotive
+// Categories: Mechanical Components; Automotive & Transportation
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 

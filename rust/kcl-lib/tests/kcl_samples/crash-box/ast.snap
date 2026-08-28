@@ -9357,7 +9357,7 @@ description: Result of parsing crash-box.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive",
+            "value": "Categories: Automotive & Transportation",
             "style": "line"
           }
         },

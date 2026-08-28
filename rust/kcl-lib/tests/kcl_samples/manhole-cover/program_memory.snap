@@ -109,10 +109,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 11.375,
           "tag": {
-            "commentStart": 490,
-            "end": 501,
+            "commentStart": 505,
+            "end": 516,
             "moduleId": 0,
-            "start": 490,
+            "start": 505,
             "type": "TagDeclarator",
             "value": "coverCircle"
           },
@@ -133,10 +133,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -8.539703
           ],
           "tag": {
-            "commentStart": 576,
-            "end": 586,
+            "commentStart": 591,
+            "end": 601,
             "moduleId": 0,
-            "start": 576,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "slot1Side1"
           },
@@ -163,10 +163,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.25000000000075273,
           "tag": {
-            "commentStart": 722,
-            "end": 731,
+            "commentStart": 737,
+            "end": 746,
             "moduleId": 0,
-            "start": 722,
+            "start": 737,
             "type": "TagDeclarator",
             "value": "slot1Cap1"
           },
@@ -187,10 +187,10 @@ description: Variables in memory after executing manhole-cover.kcl
             8.33491411502847
           ],
           "tag": {
-            "commentStart": 974,
-            "end": 984,
+            "commentStart": 989,
+            "end": 999,
             "moduleId": 0,
-            "start": 974,
+            "start": 989,
             "type": "TagDeclarator",
             "value": "slot1Side2"
           },
@@ -217,10 +217,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 1151,
-            "end": 1160,
+            "commentStart": 1166,
+            "end": 1175,
             "moduleId": 0,
-            "start": 1151,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "slot1Cap2"
           },
@@ -241,10 +241,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -9.673446
           ],
           "tag": {
-            "commentStart": 1374,
-            "end": 1384,
+            "commentStart": 1389,
+            "end": 1399,
             "moduleId": 0,
-            "start": 1374,
+            "start": 1389,
             "type": "TagDeclarator",
             "value": "slot2Side1"
           },
@@ -271,10 +271,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 1520,
-            "end": 1529,
+            "commentStart": 1535,
+            "end": 1544,
             "moduleId": 0,
-            "start": 1520,
+            "start": 1535,
             "type": "TagDeclarator",
             "value": "slot2Cap1"
           },
@@ -295,10 +295,10 @@ description: Variables in memory after executing manhole-cover.kcl
             6.753914098846
           ],
           "tag": {
-            "commentStart": 1772,
-            "end": 1782,
+            "commentStart": 1787,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1772,
+            "start": 1787,
             "type": "TagDeclarator",
             "value": "slot2Side2"
           },
@@ -325,10 +325,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 1949,
-            "end": 1958,
+            "commentStart": 1964,
+            "end": 1973,
             "moduleId": 0,
-            "start": 1949,
+            "start": 1964,
             "type": "TagDeclarator",
             "value": "slot2Cap2"
           },
@@ -349,10 +349,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -10.3082
           ],
           "tag": {
-            "commentStart": 2173,
-            "end": 2183,
+            "commentStart": 2188,
+            "end": 2198,
             "moduleId": 0,
-            "start": 2173,
+            "start": 2188,
             "type": "TagDeclarator",
             "value": "slot3Side1"
           },
@@ -379,10 +379,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999993606,
           "tag": {
-            "commentStart": 2319,
-            "end": 2328,
+            "commentStart": 2334,
+            "end": 2343,
             "moduleId": 0,
-            "start": 2319,
+            "start": 2334,
             "type": "TagDeclarator",
             "value": "slot3Cap1"
           },
@@ -403,10 +403,10 @@ description: Variables in memory after executing manhole-cover.kcl
             4.654516243656672
           ],
           "tag": {
-            "commentStart": 2572,
-            "end": 2582,
+            "commentStart": 2587,
+            "end": 2597,
             "moduleId": 0,
-            "start": 2572,
+            "start": 2587,
             "type": "TagDeclarator",
             "value": "slot3Side2"
           },
@@ -433,10 +433,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 2750,
-            "end": 2759,
+            "commentStart": 2765,
+            "end": 2774,
             "moduleId": 0,
-            "start": 2750,
+            "start": 2765,
             "type": "TagDeclarator",
             "value": "slot3Cap2"
           },
@@ -457,10 +457,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -10.266164
           ],
           "tag": {
-            "commentStart": 2975,
-            "end": 2985,
+            "commentStart": 2990,
+            "end": 3000,
             "moduleId": 0,
-            "start": 2975,
+            "start": 2990,
             "type": "TagDeclarator",
             "value": "slot4Side1"
           },
@@ -487,10 +487,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.25000000000017997,
           "tag": {
-            "commentStart": 3125,
-            "end": 3134,
+            "commentStart": 3140,
+            "end": 3149,
             "moduleId": 0,
-            "start": 3125,
+            "start": 3140,
             "type": "TagDeclarator",
             "value": "slot4Cap1"
           },
@@ -511,10 +511,10 @@ description: Variables in memory after executing manhole-cover.kcl
             1.8876798837901418
           ],
           "tag": {
-            "commentStart": 3378,
-            "end": 3388,
+            "commentStart": 3393,
+            "end": 3403,
             "moduleId": 0,
-            "start": 3378,
+            "start": 3393,
             "type": "TagDeclarator",
             "value": "slot4Side2"
           },
@@ -541,10 +541,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999337,
           "tag": {
-            "commentStart": 3555,
-            "end": 3564,
+            "commentStart": 3570,
+            "end": 3579,
             "moduleId": 0,
-            "start": 3555,
+            "start": 3570,
             "type": "TagDeclarator",
             "value": "slot4Cap2"
           },
@@ -565,10 +565,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -6.949
           ],
           "tag": {
-            "commentStart": 3784,
-            "end": 3794,
+            "commentStart": 3799,
+            "end": 3809,
             "moduleId": 0,
-            "start": 3784,
+            "start": 3799,
             "type": "TagDeclarator",
             "value": "slot5Side1"
           },
@@ -595,10 +595,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 3923,
-            "end": 3932,
+            "commentStart": 3938,
+            "end": 3947,
             "moduleId": 0,
-            "start": 3923,
+            "start": 3938,
             "type": "TagDeclarator",
             "value": "slot5Cap1"
           },
@@ -619,10 +619,10 @@ description: Variables in memory after executing manhole-cover.kcl
             9.478360098846
           ],
           "tag": {
-            "commentStart": 4175,
-            "end": 4185,
+            "commentStart": 4190,
+            "end": 4200,
             "moduleId": 0,
-            "start": 4175,
+            "start": 4190,
             "type": "TagDeclarator",
             "value": "slot5Side2"
           },
@@ -649,10 +649,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 4352,
-            "end": 4361,
+            "commentStart": 4367,
+            "end": 4376,
             "moduleId": 0,
-            "start": 4352,
+            "start": 4367,
             "type": "TagDeclarator",
             "value": "slot5Cap2"
           },
@@ -673,10 +673,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -4.8592
           ],
           "tag": {
-            "commentStart": 4569,
-            "end": 4579,
+            "commentStart": 4584,
+            "end": 4594,
             "moduleId": 0,
-            "start": 4569,
+            "start": 4584,
             "type": "TagDeclarator",
             "value": "slot6Side1"
           },
@@ -703,10 +703,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.24999999999935987,
           "tag": {
-            "commentStart": 4711,
-            "end": 4720,
+            "commentStart": 4726,
+            "end": 4735,
             "moduleId": 0,
-            "start": 4711,
+            "start": 4726,
             "type": "TagDeclarator",
             "value": "slot6Cap1"
           },
@@ -727,10 +727,10 @@ description: Variables in memory after executing manhole-cover.kcl
             10.10351624365667
           ],
           "tag": {
-            "commentStart": 4965,
-            "end": 4975,
+            "commentStart": 4980,
+            "end": 4990,
             "moduleId": 0,
-            "start": 4965,
+            "start": 4980,
             "type": "TagDeclarator",
             "value": "slot6Side2"
           },
@@ -757,10 +757,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.24999999999993425,
           "tag": {
-            "commentStart": 5143,
-            "end": 5152,
+            "commentStart": 5158,
+            "end": 5167,
             "moduleId": 0,
-            "start": 5143,
+            "start": 5158,
             "type": "TagDeclarator",
             "value": "slot6Cap2"
           },
@@ -781,10 +781,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -2.0927
           ],
           "tag": {
-            "commentStart": 5362,
-            "end": 5372,
+            "commentStart": 5377,
+            "end": 5387,
             "moduleId": 0,
-            "start": 5362,
+            "start": 5377,
             "type": "TagDeclarator",
             "value": "slot7Side1"
           },
@@ -811,10 +811,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2500000000001789,
           "tag": {
-            "commentStart": 5504,
-            "end": 5513,
+            "commentStart": 5519,
+            "end": 5528,
             "moduleId": 0,
-            "start": 5504,
+            "start": 5519,
             "type": "TagDeclarator",
             "value": "slot7Cap1"
           },
@@ -835,10 +835,10 @@ description: Variables in memory after executing manhole-cover.kcl
             10.061143883790141
           ],
           "tag": {
-            "commentStart": 5754,
-            "end": 5764,
+            "commentStart": 5769,
+            "end": 5779,
             "moduleId": 0,
-            "start": 5754,
+            "start": 5769,
             "type": "TagDeclarator",
             "value": "slot7Side2"
           },
@@ -865,10 +865,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.24999999999993436,
           "tag": {
-            "commentStart": 5931,
-            "end": 5940,
+            "commentStart": 5946,
+            "end": 5955,
             "moduleId": 0,
-            "start": 5931,
+            "start": 5946,
             "type": "TagDeclarator",
             "value": "slot7Cap2"
           },
@@ -889,10 +889,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -8.745042
           ],
           "tag": {
-            "commentStart": 6153,
-            "end": 6163,
+            "commentStart": 6168,
+            "end": 6178,
             "moduleId": 0,
-            "start": 6153,
+            "start": 6168,
             "type": "TagDeclarator",
             "value": "slot8Side1"
           },
@@ -919,10 +919,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.24999999999993278,
           "tag": {
-            "commentStart": 6303,
-            "end": 6312,
+            "commentStart": 6318,
+            "end": 6327,
             "moduleId": 0,
-            "start": 6303,
+            "start": 6318,
             "type": "TagDeclarator",
             "value": "slot8Cap1"
           },
@@ -943,10 +943,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -2.3577008471871417
           ],
           "tag": {
-            "commentStart": 6560,
-            "end": 6570,
+            "commentStart": 6575,
+            "end": 6585,
             "moduleId": 0,
-            "start": 6560,
+            "start": 6575,
             "type": "TagDeclarator",
             "value": "slot8Side2"
           },
@@ -973,10 +973,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 6739,
-            "end": 6748,
+            "commentStart": 6754,
+            "end": 6763,
             "moduleId": 0,
-            "start": 6739,
+            "start": 6754,
             "type": "TagDeclarator",
             "value": "slot8Cap2"
           },
@@ -997,10 +997,10 @@ description: Variables in memory after executing manhole-cover.kcl
             2.1529
           ],
           "tag": {
-            "commentStart": 6966,
-            "end": 6976,
+            "commentStart": 6981,
+            "end": 6991,
             "moduleId": 0,
-            "start": 6966,
+            "start": 6981,
             "type": "TagDeclarator",
             "value": "slot9Side1"
           },
@@ -1027,10 +1027,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.2499999999999335,
           "tag": {
-            "commentStart": 7107,
-            "end": 7116,
+            "commentStart": 7122,
+            "end": 7131,
             "moduleId": 0,
-            "start": 7107,
+            "start": 7122,
             "type": "TagDeclarator",
             "value": "slot9Cap1"
           },
@@ -1051,10 +1051,10 @@ description: Variables in memory after executing manhole-cover.kcl
             8.54024115281286
           ],
           "tag": {
-            "commentStart": 7357,
-            "end": 7367,
+            "commentStart": 7372,
+            "end": 7382,
             "moduleId": 0,
-            "start": 7357,
+            "start": 7372,
             "type": "TagDeclarator",
             "value": "slot9Side2"
           },
@@ -1081,10 +1081,10 @@ description: Variables in memory after executing manhole-cover.kcl
           ],
           "radius": 0.24999999999993425,
           "tag": {
-            "commentStart": 7533,
-            "end": 7542,
+            "commentStart": 7548,
+            "end": 7557,
             "moduleId": 0,
-            "start": 7533,
+            "start": 7548,
             "type": "TagDeclarator",
             "value": "slot9Cap2"
           },
@@ -1447,10 +1447,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 11.375,
                   "tag": {
-                    "commentStart": 490,
-                    "end": 501,
+                    "commentStart": 505,
+                    "end": 516,
                     "moduleId": 0,
-                    "start": 490,
+                    "start": 505,
                     "type": "TagDeclarator",
                     "value": "coverCircle"
                   },
@@ -1488,10 +1488,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -8.539703
                   ],
                   "tag": {
-                    "commentStart": 576,
-                    "end": 586,
+                    "commentStart": 591,
+                    "end": 601,
                     "moduleId": 0,
-                    "start": 576,
+                    "start": 591,
                     "type": "TagDeclarator",
                     "value": "slot1Side1"
                   },
@@ -1518,10 +1518,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.25000000000075273,
                   "tag": {
-                    "commentStart": 722,
-                    "end": 731,
+                    "commentStart": 737,
+                    "end": 746,
                     "moduleId": 0,
-                    "start": 722,
+                    "start": 737,
                     "type": "TagDeclarator",
                     "value": "slot1Cap1"
                   },
@@ -1542,10 +1542,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     8.33491411502847
                   ],
                   "tag": {
-                    "commentStart": 974,
-                    "end": 984,
+                    "commentStart": 989,
+                    "end": 999,
                     "moduleId": 0,
-                    "start": 974,
+                    "start": 989,
                     "type": "TagDeclarator",
                     "value": "slot1Side2"
                   },
@@ -1572,10 +1572,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 1151,
-                    "end": 1160,
+                    "commentStart": 1166,
+                    "end": 1175,
                     "moduleId": 0,
-                    "start": 1151,
+                    "start": 1166,
                     "type": "TagDeclarator",
                     "value": "slot1Cap2"
                   },
@@ -1613,10 +1613,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -9.673446
                   ],
                   "tag": {
-                    "commentStart": 1374,
-                    "end": 1384,
+                    "commentStart": 1389,
+                    "end": 1399,
                     "moduleId": 0,
-                    "start": 1374,
+                    "start": 1389,
                     "type": "TagDeclarator",
                     "value": "slot2Side1"
                   },
@@ -1643,10 +1643,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 1520,
-                    "end": 1529,
+                    "commentStart": 1535,
+                    "end": 1544,
                     "moduleId": 0,
-                    "start": 1520,
+                    "start": 1535,
                     "type": "TagDeclarator",
                     "value": "slot2Cap1"
                   },
@@ -1667,10 +1667,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     6.753914098846
                   ],
                   "tag": {
-                    "commentStart": 1772,
-                    "end": 1782,
+                    "commentStart": 1787,
+                    "end": 1797,
                     "moduleId": 0,
-                    "start": 1772,
+                    "start": 1787,
                     "type": "TagDeclarator",
                     "value": "slot2Side2"
                   },
@@ -1697,10 +1697,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 1949,
-                    "end": 1958,
+                    "commentStart": 1964,
+                    "end": 1973,
                     "moduleId": 0,
-                    "start": 1949,
+                    "start": 1964,
                     "type": "TagDeclarator",
                     "value": "slot2Cap2"
                   },
@@ -1738,10 +1738,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -10.3082
                   ],
                   "tag": {
-                    "commentStart": 2173,
-                    "end": 2183,
+                    "commentStart": 2188,
+                    "end": 2198,
                     "moduleId": 0,
-                    "start": 2173,
+                    "start": 2188,
                     "type": "TagDeclarator",
                     "value": "slot3Side1"
                   },
@@ -1768,10 +1768,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999993606,
                   "tag": {
-                    "commentStart": 2319,
-                    "end": 2328,
+                    "commentStart": 2334,
+                    "end": 2343,
                     "moduleId": 0,
-                    "start": 2319,
+                    "start": 2334,
                     "type": "TagDeclarator",
                     "value": "slot3Cap1"
                   },
@@ -1792,10 +1792,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     4.654516243656672
                   ],
                   "tag": {
-                    "commentStart": 2572,
-                    "end": 2582,
+                    "commentStart": 2587,
+                    "end": 2597,
                     "moduleId": 0,
-                    "start": 2572,
+                    "start": 2587,
                     "type": "TagDeclarator",
                     "value": "slot3Side2"
                   },
@@ -1822,10 +1822,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 2750,
-                    "end": 2759,
+                    "commentStart": 2765,
+                    "end": 2774,
                     "moduleId": 0,
-                    "start": 2750,
+                    "start": 2765,
                     "type": "TagDeclarator",
                     "value": "slot3Cap2"
                   },
@@ -1863,10 +1863,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -10.266164
                   ],
                   "tag": {
-                    "commentStart": 2975,
-                    "end": 2985,
+                    "commentStart": 2990,
+                    "end": 3000,
                     "moduleId": 0,
-                    "start": 2975,
+                    "start": 2990,
                     "type": "TagDeclarator",
                     "value": "slot4Side1"
                   },
@@ -1893,10 +1893,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.25000000000017997,
                   "tag": {
-                    "commentStart": 3125,
-                    "end": 3134,
+                    "commentStart": 3140,
+                    "end": 3149,
                     "moduleId": 0,
-                    "start": 3125,
+                    "start": 3140,
                     "type": "TagDeclarator",
                     "value": "slot4Cap1"
                   },
@@ -1917,10 +1917,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     1.8876798837901418
                   ],
                   "tag": {
-                    "commentStart": 3378,
-                    "end": 3388,
+                    "commentStart": 3393,
+                    "end": 3403,
                     "moduleId": 0,
-                    "start": 3378,
+                    "start": 3393,
                     "type": "TagDeclarator",
                     "value": "slot4Side2"
                   },
@@ -1947,10 +1947,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999337,
                   "tag": {
-                    "commentStart": 3555,
-                    "end": 3564,
+                    "commentStart": 3570,
+                    "end": 3579,
                     "moduleId": 0,
-                    "start": 3555,
+                    "start": 3570,
                     "type": "TagDeclarator",
                     "value": "slot4Cap2"
                   },
@@ -1988,10 +1988,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -6.949
                   ],
                   "tag": {
-                    "commentStart": 3784,
-                    "end": 3794,
+                    "commentStart": 3799,
+                    "end": 3809,
                     "moduleId": 0,
-                    "start": 3784,
+                    "start": 3799,
                     "type": "TagDeclarator",
                     "value": "slot5Side1"
                   },
@@ -2018,10 +2018,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 3923,
-                    "end": 3932,
+                    "commentStart": 3938,
+                    "end": 3947,
                     "moduleId": 0,
-                    "start": 3923,
+                    "start": 3938,
                     "type": "TagDeclarator",
                     "value": "slot5Cap1"
                   },
@@ -2042,10 +2042,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     9.478360098846
                   ],
                   "tag": {
-                    "commentStart": 4175,
-                    "end": 4185,
+                    "commentStart": 4190,
+                    "end": 4200,
                     "moduleId": 0,
-                    "start": 4175,
+                    "start": 4190,
                     "type": "TagDeclarator",
                     "value": "slot5Side2"
                   },
@@ -2072,10 +2072,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 4352,
-                    "end": 4361,
+                    "commentStart": 4367,
+                    "end": 4376,
                     "moduleId": 0,
-                    "start": 4352,
+                    "start": 4367,
                     "type": "TagDeclarator",
                     "value": "slot5Cap2"
                   },
@@ -2113,10 +2113,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -4.8592
                   ],
                   "tag": {
-                    "commentStart": 4569,
-                    "end": 4579,
+                    "commentStart": 4584,
+                    "end": 4594,
                     "moduleId": 0,
-                    "start": 4569,
+                    "start": 4584,
                     "type": "TagDeclarator",
                     "value": "slot6Side1"
                   },
@@ -2143,10 +2143,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.24999999999935987,
                   "tag": {
-                    "commentStart": 4711,
-                    "end": 4720,
+                    "commentStart": 4726,
+                    "end": 4735,
                     "moduleId": 0,
-                    "start": 4711,
+                    "start": 4726,
                     "type": "TagDeclarator",
                     "value": "slot6Cap1"
                   },
@@ -2167,10 +2167,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     10.10351624365667
                   ],
                   "tag": {
-                    "commentStart": 4965,
-                    "end": 4975,
+                    "commentStart": 4980,
+                    "end": 4990,
                     "moduleId": 0,
-                    "start": 4965,
+                    "start": 4980,
                     "type": "TagDeclarator",
                     "value": "slot6Side2"
                   },
@@ -2197,10 +2197,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.24999999999993425,
                   "tag": {
-                    "commentStart": 5143,
-                    "end": 5152,
+                    "commentStart": 5158,
+                    "end": 5167,
                     "moduleId": 0,
-                    "start": 5143,
+                    "start": 5158,
                     "type": "TagDeclarator",
                     "value": "slot6Cap2"
                   },
@@ -2238,10 +2238,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -2.0927
                   ],
                   "tag": {
-                    "commentStart": 5362,
-                    "end": 5372,
+                    "commentStart": 5377,
+                    "end": 5387,
                     "moduleId": 0,
-                    "start": 5362,
+                    "start": 5377,
                     "type": "TagDeclarator",
                     "value": "slot7Side1"
                   },
@@ -2268,10 +2268,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2500000000001789,
                   "tag": {
-                    "commentStart": 5504,
-                    "end": 5513,
+                    "commentStart": 5519,
+                    "end": 5528,
                     "moduleId": 0,
-                    "start": 5504,
+                    "start": 5519,
                     "type": "TagDeclarator",
                     "value": "slot7Cap1"
                   },
@@ -2292,10 +2292,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     10.061143883790141
                   ],
                   "tag": {
-                    "commentStart": 5754,
-                    "end": 5764,
+                    "commentStart": 5769,
+                    "end": 5779,
                     "moduleId": 0,
-                    "start": 5754,
+                    "start": 5769,
                     "type": "TagDeclarator",
                     "value": "slot7Side2"
                   },
@@ -2322,10 +2322,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.24999999999993436,
                   "tag": {
-                    "commentStart": 5931,
-                    "end": 5940,
+                    "commentStart": 5946,
+                    "end": 5955,
                     "moduleId": 0,
-                    "start": 5931,
+                    "start": 5946,
                     "type": "TagDeclarator",
                     "value": "slot7Cap2"
                   },
@@ -2363,10 +2363,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -8.745042
                   ],
                   "tag": {
-                    "commentStart": 6153,
-                    "end": 6163,
+                    "commentStart": 6168,
+                    "end": 6178,
                     "moduleId": 0,
-                    "start": 6153,
+                    "start": 6168,
                     "type": "TagDeclarator",
                     "value": "slot8Side1"
                   },
@@ -2393,10 +2393,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.24999999999993278,
                   "tag": {
-                    "commentStart": 6303,
-                    "end": 6312,
+                    "commentStart": 6318,
+                    "end": 6327,
                     "moduleId": 0,
-                    "start": 6303,
+                    "start": 6318,
                     "type": "TagDeclarator",
                     "value": "slot8Cap1"
                   },
@@ -2417,10 +2417,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -2.3577008471871417
                   ],
                   "tag": {
-                    "commentStart": 6560,
-                    "end": 6570,
+                    "commentStart": 6575,
+                    "end": 6585,
                     "moduleId": 0,
-                    "start": 6560,
+                    "start": 6575,
                     "type": "TagDeclarator",
                     "value": "slot8Side2"
                   },
@@ -2447,10 +2447,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 6739,
-                    "end": 6748,
+                    "commentStart": 6754,
+                    "end": 6763,
                     "moduleId": 0,
-                    "start": 6739,
+                    "start": 6754,
                     "type": "TagDeclarator",
                     "value": "slot8Cap2"
                   },
@@ -2488,10 +2488,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     2.1529
                   ],
                   "tag": {
-                    "commentStart": 6966,
-                    "end": 6976,
+                    "commentStart": 6981,
+                    "end": 6991,
                     "moduleId": 0,
-                    "start": 6966,
+                    "start": 6981,
                     "type": "TagDeclarator",
                     "value": "slot9Side1"
                   },
@@ -2518,10 +2518,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.2499999999999335,
                   "tag": {
-                    "commentStart": 7107,
-                    "end": 7116,
+                    "commentStart": 7122,
+                    "end": 7131,
                     "moduleId": 0,
-                    "start": 7107,
+                    "start": 7122,
                     "type": "TagDeclarator",
                     "value": "slot9Cap1"
                   },
@@ -2542,10 +2542,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     8.54024115281286
                   ],
                   "tag": {
-                    "commentStart": 7357,
-                    "end": 7367,
+                    "commentStart": 7372,
+                    "end": 7382,
                     "moduleId": 0,
-                    "start": 7357,
+                    "start": 7372,
                     "type": "TagDeclarator",
                     "value": "slot9Side2"
                   },
@@ -2572,10 +2572,10 @@ description: Variables in memory after executing manhole-cover.kcl
                   ],
                   "radius": 0.24999999999993425,
                   "tag": {
-                    "commentStart": 7533,
-                    "end": 7542,
+                    "commentStart": 7548,
+                    "end": 7557,
                     "moduleId": 0,
-                    "start": 7533,
+                    "start": 7548,
                     "type": "TagDeclarator",
                     "value": "slot9Cap2"
                   },
@@ -7718,10 +7718,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 490,
-            "end": 501,
+            "commentStart": 505,
+            "end": 516,
             "moduleId": 0,
-            "start": 490,
+            "start": 505,
             "type": "TagDeclarator",
             "value": "coverCircle"
           },
@@ -7732,10 +7732,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 576,
-            "end": 586,
+            "commentStart": 591,
+            "end": 601,
             "moduleId": 0,
-            "start": 576,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "slot1Side1"
           },
@@ -7746,10 +7746,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 722,
-            "end": 731,
+            "commentStart": 737,
+            "end": 746,
             "moduleId": 0,
-            "start": 722,
+            "start": 737,
             "type": "TagDeclarator",
             "value": "slot1Cap1"
           },
@@ -7760,10 +7760,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 974,
-            "end": 984,
+            "commentStart": 989,
+            "end": 999,
             "moduleId": 0,
-            "start": 974,
+            "start": 989,
             "type": "TagDeclarator",
             "value": "slot1Side2"
           },
@@ -7774,10 +7774,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1151,
-            "end": 1160,
+            "commentStart": 1166,
+            "end": 1175,
             "moduleId": 0,
-            "start": 1151,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "slot1Cap2"
           },
@@ -7788,10 +7788,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1374,
-            "end": 1384,
+            "commentStart": 1389,
+            "end": 1399,
             "moduleId": 0,
-            "start": 1374,
+            "start": 1389,
             "type": "TagDeclarator",
             "value": "slot2Side1"
           },
@@ -7802,10 +7802,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1520,
-            "end": 1529,
+            "commentStart": 1535,
+            "end": 1544,
             "moduleId": 0,
-            "start": 1520,
+            "start": 1535,
             "type": "TagDeclarator",
             "value": "slot2Cap1"
           },
@@ -7816,10 +7816,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1772,
-            "end": 1782,
+            "commentStart": 1787,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1772,
+            "start": 1787,
             "type": "TagDeclarator",
             "value": "slot2Side2"
           },
@@ -7830,10 +7830,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1949,
-            "end": 1958,
+            "commentStart": 1964,
+            "end": 1973,
             "moduleId": 0,
-            "start": 1949,
+            "start": 1964,
             "type": "TagDeclarator",
             "value": "slot2Cap2"
           },
@@ -7844,10 +7844,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2173,
-            "end": 2183,
+            "commentStart": 2188,
+            "end": 2198,
             "moduleId": 0,
-            "start": 2173,
+            "start": 2188,
             "type": "TagDeclarator",
             "value": "slot3Side1"
           },
@@ -7858,10 +7858,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2319,
-            "end": 2328,
+            "commentStart": 2334,
+            "end": 2343,
             "moduleId": 0,
-            "start": 2319,
+            "start": 2334,
             "type": "TagDeclarator",
             "value": "slot3Cap1"
           },
@@ -7872,10 +7872,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2572,
-            "end": 2582,
+            "commentStart": 2587,
+            "end": 2597,
             "moduleId": 0,
-            "start": 2572,
+            "start": 2587,
             "type": "TagDeclarator",
             "value": "slot3Side2"
           },
@@ -7886,10 +7886,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2750,
-            "end": 2759,
+            "commentStart": 2765,
+            "end": 2774,
             "moduleId": 0,
-            "start": 2750,
+            "start": 2765,
             "type": "TagDeclarator",
             "value": "slot3Cap2"
           },
@@ -7900,10 +7900,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2975,
-            "end": 2985,
+            "commentStart": 2990,
+            "end": 3000,
             "moduleId": 0,
-            "start": 2975,
+            "start": 2990,
             "type": "TagDeclarator",
             "value": "slot4Side1"
           },
@@ -7914,10 +7914,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3125,
-            "end": 3134,
+            "commentStart": 3140,
+            "end": 3149,
             "moduleId": 0,
-            "start": 3125,
+            "start": 3140,
             "type": "TagDeclarator",
             "value": "slot4Cap1"
           },
@@ -7928,10 +7928,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3378,
-            "end": 3388,
+            "commentStart": 3393,
+            "end": 3403,
             "moduleId": 0,
-            "start": 3378,
+            "start": 3393,
             "type": "TagDeclarator",
             "value": "slot4Side2"
           },
@@ -7942,10 +7942,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3555,
-            "end": 3564,
+            "commentStart": 3570,
+            "end": 3579,
             "moduleId": 0,
-            "start": 3555,
+            "start": 3570,
             "type": "TagDeclarator",
             "value": "slot4Cap2"
           },
@@ -7956,10 +7956,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3784,
-            "end": 3794,
+            "commentStart": 3799,
+            "end": 3809,
             "moduleId": 0,
-            "start": 3784,
+            "start": 3799,
             "type": "TagDeclarator",
             "value": "slot5Side1"
           },
@@ -7970,10 +7970,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3923,
-            "end": 3932,
+            "commentStart": 3938,
+            "end": 3947,
             "moduleId": 0,
-            "start": 3923,
+            "start": 3938,
             "type": "TagDeclarator",
             "value": "slot5Cap1"
           },
@@ -7984,10 +7984,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4175,
-            "end": 4185,
+            "commentStart": 4190,
+            "end": 4200,
             "moduleId": 0,
-            "start": 4175,
+            "start": 4190,
             "type": "TagDeclarator",
             "value": "slot5Side2"
           },
@@ -7998,10 +7998,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4352,
-            "end": 4361,
+            "commentStart": 4367,
+            "end": 4376,
             "moduleId": 0,
-            "start": 4352,
+            "start": 4367,
             "type": "TagDeclarator",
             "value": "slot5Cap2"
           },
@@ -8012,10 +8012,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4569,
-            "end": 4579,
+            "commentStart": 4584,
+            "end": 4594,
             "moduleId": 0,
-            "start": 4569,
+            "start": 4584,
             "type": "TagDeclarator",
             "value": "slot6Side1"
           },
@@ -8026,10 +8026,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4711,
-            "end": 4720,
+            "commentStart": 4726,
+            "end": 4735,
             "moduleId": 0,
-            "start": 4711,
+            "start": 4726,
             "type": "TagDeclarator",
             "value": "slot6Cap1"
           },
@@ -8040,10 +8040,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4965,
-            "end": 4975,
+            "commentStart": 4980,
+            "end": 4990,
             "moduleId": 0,
-            "start": 4965,
+            "start": 4980,
             "type": "TagDeclarator",
             "value": "slot6Side2"
           },
@@ -8054,10 +8054,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5143,
-            "end": 5152,
+            "commentStart": 5158,
+            "end": 5167,
             "moduleId": 0,
-            "start": 5143,
+            "start": 5158,
             "type": "TagDeclarator",
             "value": "slot6Cap2"
           },
@@ -8068,10 +8068,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5362,
-            "end": 5372,
+            "commentStart": 5377,
+            "end": 5387,
             "moduleId": 0,
-            "start": 5362,
+            "start": 5377,
             "type": "TagDeclarator",
             "value": "slot7Side1"
           },
@@ -8082,10 +8082,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5504,
-            "end": 5513,
+            "commentStart": 5519,
+            "end": 5528,
             "moduleId": 0,
-            "start": 5504,
+            "start": 5519,
             "type": "TagDeclarator",
             "value": "slot7Cap1"
           },
@@ -8096,10 +8096,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5754,
-            "end": 5764,
+            "commentStart": 5769,
+            "end": 5779,
             "moduleId": 0,
-            "start": 5754,
+            "start": 5769,
             "type": "TagDeclarator",
             "value": "slot7Side2"
           },
@@ -8110,10 +8110,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5931,
-            "end": 5940,
+            "commentStart": 5946,
+            "end": 5955,
             "moduleId": 0,
-            "start": 5931,
+            "start": 5946,
             "type": "TagDeclarator",
             "value": "slot7Cap2"
           },
@@ -8124,10 +8124,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6153,
-            "end": 6163,
+            "commentStart": 6168,
+            "end": 6178,
             "moduleId": 0,
-            "start": 6153,
+            "start": 6168,
             "type": "TagDeclarator",
             "value": "slot8Side1"
           },
@@ -8138,10 +8138,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6303,
-            "end": 6312,
+            "commentStart": 6318,
+            "end": 6327,
             "moduleId": 0,
-            "start": 6303,
+            "start": 6318,
             "type": "TagDeclarator",
             "value": "slot8Cap1"
           },
@@ -8152,10 +8152,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6560,
-            "end": 6570,
+            "commentStart": 6575,
+            "end": 6585,
             "moduleId": 0,
-            "start": 6560,
+            "start": 6575,
             "type": "TagDeclarator",
             "value": "slot8Side2"
           },
@@ -8166,10 +8166,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6739,
-            "end": 6748,
+            "commentStart": 6754,
+            "end": 6763,
             "moduleId": 0,
-            "start": 6739,
+            "start": 6754,
             "type": "TagDeclarator",
             "value": "slot8Cap2"
           },
@@ -8180,10 +8180,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6966,
-            "end": 6976,
+            "commentStart": 6981,
+            "end": 6991,
             "moduleId": 0,
-            "start": 6966,
+            "start": 6981,
             "type": "TagDeclarator",
             "value": "slot9Side1"
           },
@@ -8194,10 +8194,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7107,
-            "end": 7116,
+            "commentStart": 7122,
+            "end": 7131,
             "moduleId": 0,
-            "start": 7107,
+            "start": 7122,
             "type": "TagDeclarator",
             "value": "slot9Cap1"
           },
@@ -8208,10 +8208,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7357,
-            "end": 7367,
+            "commentStart": 7372,
+            "end": 7382,
             "moduleId": 0,
-            "start": 7357,
+            "start": 7372,
             "type": "TagDeclarator",
             "value": "slot9Side2"
           },
@@ -8222,10 +8222,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7533,
-            "end": 7542,
+            "commentStart": 7548,
+            "end": 7557,
             "moduleId": 0,
-            "start": 7533,
+            "start": 7548,
             "type": "TagDeclarator",
             "value": "slot9Cap2"
           },
@@ -8253,10 +8253,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 11.375,
             "tag": {
-              "commentStart": 490,
-              "end": 501,
+              "commentStart": 505,
+              "end": 516,
               "moduleId": 0,
-              "start": 490,
+              "start": 505,
               "type": "TagDeclarator",
               "value": "coverCircle"
             },
@@ -8277,10 +8277,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.539703
             ],
             "tag": {
-              "commentStart": 576,
-              "end": 586,
+              "commentStart": 591,
+              "end": 601,
               "moduleId": 0,
-              "start": 576,
+              "start": 591,
               "type": "TagDeclarator",
               "value": "slot1Side1"
             },
@@ -8307,10 +8307,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.25000000000075273,
             "tag": {
-              "commentStart": 722,
-              "end": 731,
+              "commentStart": 737,
+              "end": 746,
               "moduleId": 0,
-              "start": 722,
+              "start": 737,
               "type": "TagDeclarator",
               "value": "slot1Cap1"
             },
@@ -8331,10 +8331,10 @@ description: Variables in memory after executing manhole-cover.kcl
               8.33491411502847
             ],
             "tag": {
-              "commentStart": 974,
-              "end": 984,
+              "commentStart": 989,
+              "end": 999,
               "moduleId": 0,
-              "start": 974,
+              "start": 989,
               "type": "TagDeclarator",
               "value": "slot1Side2"
             },
@@ -8361,10 +8361,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1151,
-              "end": 1160,
+              "commentStart": 1166,
+              "end": 1175,
               "moduleId": 0,
-              "start": 1151,
+              "start": 1166,
               "type": "TagDeclarator",
               "value": "slot1Cap2"
             },
@@ -8385,10 +8385,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -9.673446
             ],
             "tag": {
-              "commentStart": 1374,
-              "end": 1384,
+              "commentStart": 1389,
+              "end": 1399,
               "moduleId": 0,
-              "start": 1374,
+              "start": 1389,
               "type": "TagDeclarator",
               "value": "slot2Side1"
             },
@@ -8415,10 +8415,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1520,
-              "end": 1529,
+              "commentStart": 1535,
+              "end": 1544,
               "moduleId": 0,
-              "start": 1520,
+              "start": 1535,
               "type": "TagDeclarator",
               "value": "slot2Cap1"
             },
@@ -8439,10 +8439,10 @@ description: Variables in memory after executing manhole-cover.kcl
               6.753914098846
             ],
             "tag": {
-              "commentStart": 1772,
-              "end": 1782,
+              "commentStart": 1787,
+              "end": 1797,
               "moduleId": 0,
-              "start": 1772,
+              "start": 1787,
               "type": "TagDeclarator",
               "value": "slot2Side2"
             },
@@ -8469,10 +8469,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1949,
-              "end": 1958,
+              "commentStart": 1964,
+              "end": 1973,
               "moduleId": 0,
-              "start": 1949,
+              "start": 1964,
               "type": "TagDeclarator",
               "value": "slot2Cap2"
             },
@@ -8493,10 +8493,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.3082
             ],
             "tag": {
-              "commentStart": 2173,
-              "end": 2183,
+              "commentStart": 2188,
+              "end": 2198,
               "moduleId": 0,
-              "start": 2173,
+              "start": 2188,
               "type": "TagDeclarator",
               "value": "slot3Side1"
             },
@@ -8523,10 +8523,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999993606,
             "tag": {
-              "commentStart": 2319,
-              "end": 2328,
+              "commentStart": 2334,
+              "end": 2343,
               "moduleId": 0,
-              "start": 2319,
+              "start": 2334,
               "type": "TagDeclarator",
               "value": "slot3Cap1"
             },
@@ -8547,10 +8547,10 @@ description: Variables in memory after executing manhole-cover.kcl
               4.654516243656672
             ],
             "tag": {
-              "commentStart": 2572,
-              "end": 2582,
+              "commentStart": 2587,
+              "end": 2597,
               "moduleId": 0,
-              "start": 2572,
+              "start": 2587,
               "type": "TagDeclarator",
               "value": "slot3Side2"
             },
@@ -8577,10 +8577,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 2750,
-              "end": 2759,
+              "commentStart": 2765,
+              "end": 2774,
               "moduleId": 0,
-              "start": 2750,
+              "start": 2765,
               "type": "TagDeclarator",
               "value": "slot3Cap2"
             },
@@ -8601,10 +8601,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.266164
             ],
             "tag": {
-              "commentStart": 2975,
-              "end": 2985,
+              "commentStart": 2990,
+              "end": 3000,
               "moduleId": 0,
-              "start": 2975,
+              "start": 2990,
               "type": "TagDeclarator",
               "value": "slot4Side1"
             },
@@ -8631,10 +8631,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.25000000000017997,
             "tag": {
-              "commentStart": 3125,
-              "end": 3134,
+              "commentStart": 3140,
+              "end": 3149,
               "moduleId": 0,
-              "start": 3125,
+              "start": 3140,
               "type": "TagDeclarator",
               "value": "slot4Cap1"
             },
@@ -8655,10 +8655,10 @@ description: Variables in memory after executing manhole-cover.kcl
               1.8876798837901418
             ],
             "tag": {
-              "commentStart": 3378,
-              "end": 3388,
+              "commentStart": 3393,
+              "end": 3403,
               "moduleId": 0,
-              "start": 3378,
+              "start": 3393,
               "type": "TagDeclarator",
               "value": "slot4Side2"
             },
@@ -8685,10 +8685,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999337,
             "tag": {
-              "commentStart": 3555,
-              "end": 3564,
+              "commentStart": 3570,
+              "end": 3579,
               "moduleId": 0,
-              "start": 3555,
+              "start": 3570,
               "type": "TagDeclarator",
               "value": "slot4Cap2"
             },
@@ -8709,10 +8709,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -6.949
             ],
             "tag": {
-              "commentStart": 3784,
-              "end": 3794,
+              "commentStart": 3799,
+              "end": 3809,
               "moduleId": 0,
-              "start": 3784,
+              "start": 3799,
               "type": "TagDeclarator",
               "value": "slot5Side1"
             },
@@ -8739,10 +8739,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 3923,
-              "end": 3932,
+              "commentStart": 3938,
+              "end": 3947,
               "moduleId": 0,
-              "start": 3923,
+              "start": 3938,
               "type": "TagDeclarator",
               "value": "slot5Cap1"
             },
@@ -8763,10 +8763,10 @@ description: Variables in memory after executing manhole-cover.kcl
               9.478360098846
             ],
             "tag": {
-              "commentStart": 4175,
-              "end": 4185,
+              "commentStart": 4190,
+              "end": 4200,
               "moduleId": 0,
-              "start": 4175,
+              "start": 4190,
               "type": "TagDeclarator",
               "value": "slot5Side2"
             },
@@ -8793,10 +8793,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 4352,
-              "end": 4361,
+              "commentStart": 4367,
+              "end": 4376,
               "moduleId": 0,
-              "start": 4352,
+              "start": 4367,
               "type": "TagDeclarator",
               "value": "slot5Cap2"
             },
@@ -8817,10 +8817,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -4.8592
             ],
             "tag": {
-              "commentStart": 4569,
-              "end": 4579,
+              "commentStart": 4584,
+              "end": 4594,
               "moduleId": 0,
-              "start": 4569,
+              "start": 4584,
               "type": "TagDeclarator",
               "value": "slot6Side1"
             },
@@ -8847,10 +8847,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999935987,
             "tag": {
-              "commentStart": 4711,
-              "end": 4720,
+              "commentStart": 4726,
+              "end": 4735,
               "moduleId": 0,
-              "start": 4711,
+              "start": 4726,
               "type": "TagDeclarator",
               "value": "slot6Cap1"
             },
@@ -8871,10 +8871,10 @@ description: Variables in memory after executing manhole-cover.kcl
               10.10351624365667
             ],
             "tag": {
-              "commentStart": 4965,
-              "end": 4975,
+              "commentStart": 4980,
+              "end": 4990,
               "moduleId": 0,
-              "start": 4965,
+              "start": 4980,
               "type": "TagDeclarator",
               "value": "slot6Side2"
             },
@@ -8901,10 +8901,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993425,
             "tag": {
-              "commentStart": 5143,
-              "end": 5152,
+              "commentStart": 5158,
+              "end": 5167,
               "moduleId": 0,
-              "start": 5143,
+              "start": 5158,
               "type": "TagDeclarator",
               "value": "slot6Cap2"
             },
@@ -8925,10 +8925,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -2.0927
             ],
             "tag": {
-              "commentStart": 5362,
-              "end": 5372,
+              "commentStart": 5377,
+              "end": 5387,
               "moduleId": 0,
-              "start": 5362,
+              "start": 5377,
               "type": "TagDeclarator",
               "value": "slot7Side1"
             },
@@ -8955,10 +8955,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2500000000001789,
             "tag": {
-              "commentStart": 5504,
-              "end": 5513,
+              "commentStart": 5519,
+              "end": 5528,
               "moduleId": 0,
-              "start": 5504,
+              "start": 5519,
               "type": "TagDeclarator",
               "value": "slot7Cap1"
             },
@@ -8979,10 +8979,10 @@ description: Variables in memory after executing manhole-cover.kcl
               10.061143883790141
             ],
             "tag": {
-              "commentStart": 5754,
-              "end": 5764,
+              "commentStart": 5769,
+              "end": 5779,
               "moduleId": 0,
-              "start": 5754,
+              "start": 5769,
               "type": "TagDeclarator",
               "value": "slot7Side2"
             },
@@ -9009,10 +9009,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993436,
             "tag": {
-              "commentStart": 5931,
-              "end": 5940,
+              "commentStart": 5946,
+              "end": 5955,
               "moduleId": 0,
-              "start": 5931,
+              "start": 5946,
               "type": "TagDeclarator",
               "value": "slot7Cap2"
             },
@@ -9033,10 +9033,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.745042
             ],
             "tag": {
-              "commentStart": 6153,
-              "end": 6163,
+              "commentStart": 6168,
+              "end": 6178,
               "moduleId": 0,
-              "start": 6153,
+              "start": 6168,
               "type": "TagDeclarator",
               "value": "slot8Side1"
             },
@@ -9063,10 +9063,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993278,
             "tag": {
-              "commentStart": 6303,
-              "end": 6312,
+              "commentStart": 6318,
+              "end": 6327,
               "moduleId": 0,
-              "start": 6303,
+              "start": 6318,
               "type": "TagDeclarator",
               "value": "slot8Cap1"
             },
@@ -9087,10 +9087,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -2.3577008471871417
             ],
             "tag": {
-              "commentStart": 6560,
-              "end": 6570,
+              "commentStart": 6575,
+              "end": 6585,
               "moduleId": 0,
-              "start": 6560,
+              "start": 6575,
               "type": "TagDeclarator",
               "value": "slot8Side2"
             },
@@ -9117,10 +9117,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 6739,
-              "end": 6748,
+              "commentStart": 6754,
+              "end": 6763,
               "moduleId": 0,
-              "start": 6739,
+              "start": 6754,
               "type": "TagDeclarator",
               "value": "slot8Cap2"
             },
@@ -9141,10 +9141,10 @@ description: Variables in memory after executing manhole-cover.kcl
               2.1529
             ],
             "tag": {
-              "commentStart": 6966,
-              "end": 6976,
+              "commentStart": 6981,
+              "end": 6991,
               "moduleId": 0,
-              "start": 6966,
+              "start": 6981,
               "type": "TagDeclarator",
               "value": "slot9Side1"
             },
@@ -9171,10 +9171,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 7107,
-              "end": 7116,
+              "commentStart": 7122,
+              "end": 7131,
               "moduleId": 0,
-              "start": 7107,
+              "start": 7122,
               "type": "TagDeclarator",
               "value": "slot9Cap1"
             },
@@ -9195,10 +9195,10 @@ description: Variables in memory after executing manhole-cover.kcl
               8.54024115281286
             ],
             "tag": {
-              "commentStart": 7357,
-              "end": 7367,
+              "commentStart": 7372,
+              "end": 7382,
               "moduleId": 0,
-              "start": 7357,
+              "start": 7372,
               "type": "TagDeclarator",
               "value": "slot9Side2"
             },
@@ -9225,10 +9225,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993425,
             "tag": {
-              "commentStart": 7533,
-              "end": 7542,
+              "commentStart": 7548,
+              "end": 7557,
               "moduleId": 0,
-              "start": 7533,
+              "start": 7548,
               "type": "TagDeclarator",
               "value": "slot9Cap2"
             },
@@ -9460,10 +9460,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7965,
-            "end": 7972,
+            "commentStart": 7980,
+            "end": 7987,
             "moduleId": 0,
-            "start": 7965,
+            "start": 7980,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -9474,10 +9474,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8045,
-            "end": 8054,
+            "commentStart": 8060,
+            "end": 8069,
             "moduleId": 0,
-            "start": 8045,
+            "start": 8060,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -9488,10 +9488,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8126,
-            "end": 8136,
+            "commentStart": 8141,
+            "end": 8151,
             "moduleId": 0,
-            "start": 8126,
+            "start": 8141,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -9502,10 +9502,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8209,
-            "end": 8217,
+            "commentStart": 8224,
+            "end": 8232,
             "moduleId": 0,
-            "start": 8209,
+            "start": 8224,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -9527,10 +9527,10 @@ description: Variables in memory after executing manhole-cover.kcl
               0.975
             ],
             "tag": {
-              "commentStart": 7965,
-              "end": 7972,
+              "commentStart": 7980,
+              "end": 7987,
               "moduleId": 0,
-              "start": 7965,
+              "start": 7980,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -9551,10 +9551,10 @@ description: Variables in memory after executing manhole-cover.kcl
               0.975
             ],
             "tag": {
-              "commentStart": 8045,
-              "end": 8054,
+              "commentStart": 8060,
+              "end": 8069,
               "moduleId": 0,
-              "start": 8045,
+              "start": 8060,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -9575,10 +9575,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -0.15
             ],
             "tag": {
-              "commentStart": 8126,
-              "end": 8136,
+              "commentStart": 8141,
+              "end": 8151,
               "moduleId": 0,
-              "start": 8126,
+              "start": 8141,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -9599,10 +9599,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -0.15
             ],
             "tag": {
-              "commentStart": 8209,
-              "end": 8217,
+              "commentStart": 8224,
+              "end": 8232,
               "moduleId": 0,
-              "start": 8209,
+              "start": 8224,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -9724,10 +9724,10 @@ description: Variables in memory after executing manhole-cover.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 7965,
-            "end": 7972,
+            "commentStart": 7980,
+            "end": 7987,
             "moduleId": 0,
-            "start": 7965,
+            "start": 7980,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -9748,10 +9748,10 @@ description: Variables in memory after executing manhole-cover.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 8045,
-            "end": 8054,
+            "commentStart": 8060,
+            "end": 8069,
             "moduleId": 0,
-            "start": 8045,
+            "start": 8060,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -9772,10 +9772,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -0.15
           ],
           "tag": {
-            "commentStart": 8126,
-            "end": 8136,
+            "commentStart": 8141,
+            "end": 8151,
             "moduleId": 0,
-            "start": 8126,
+            "start": 8141,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -9796,10 +9796,10 @@ description: Variables in memory after executing manhole-cover.kcl
             -0.15
           ],
           "tag": {
-            "commentStart": 8209,
-            "end": 8217,
+            "commentStart": 8224,
+            "end": 8232,
             "moduleId": 0,
-            "start": 8209,
+            "start": 8224,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -10144,10 +10144,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 7965,
-                    "end": 7972,
+                    "commentStart": 7980,
+                    "end": 7987,
                     "moduleId": 0,
-                    "start": 7965,
+                    "start": 7980,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -10168,10 +10168,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 8045,
-                    "end": 8054,
+                    "commentStart": 8060,
+                    "end": 8069,
                     "moduleId": 0,
-                    "start": 8045,
+                    "start": 8060,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -10192,10 +10192,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -0.15
                   ],
                   "tag": {
-                    "commentStart": 8126,
-                    "end": 8136,
+                    "commentStart": 8141,
+                    "end": 8151,
                     "moduleId": 0,
-                    "start": 8126,
+                    "start": 8141,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },
@@ -10216,10 +10216,10 @@ description: Variables in memory after executing manhole-cover.kcl
                     -0.15
                   ],
                   "tag": {
-                    "commentStart": 8209,
-                    "end": 8217,
+                    "commentStart": 8224,
+                    "end": 8232,
                     "moduleId": 0,
-                    "start": 8209,
+                    "start": 8224,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -10759,10 +10759,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 490,
-            "end": 501,
+            "commentStart": 505,
+            "end": 516,
             "moduleId": 0,
-            "start": 490,
+            "start": 505,
             "type": "TagDeclarator",
             "value": "coverCircle"
           },
@@ -10773,10 +10773,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 576,
-            "end": 586,
+            "commentStart": 591,
+            "end": 601,
             "moduleId": 0,
-            "start": 576,
+            "start": 591,
             "type": "TagDeclarator",
             "value": "slot1Side1"
           },
@@ -10787,10 +10787,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 722,
-            "end": 731,
+            "commentStart": 737,
+            "end": 746,
             "moduleId": 0,
-            "start": 722,
+            "start": 737,
             "type": "TagDeclarator",
             "value": "slot1Cap1"
           },
@@ -10801,10 +10801,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 974,
-            "end": 984,
+            "commentStart": 989,
+            "end": 999,
             "moduleId": 0,
-            "start": 974,
+            "start": 989,
             "type": "TagDeclarator",
             "value": "slot1Side2"
           },
@@ -10815,10 +10815,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1151,
-            "end": 1160,
+            "commentStart": 1166,
+            "end": 1175,
             "moduleId": 0,
-            "start": 1151,
+            "start": 1166,
             "type": "TagDeclarator",
             "value": "slot1Cap2"
           },
@@ -10829,10 +10829,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1374,
-            "end": 1384,
+            "commentStart": 1389,
+            "end": 1399,
             "moduleId": 0,
-            "start": 1374,
+            "start": 1389,
             "type": "TagDeclarator",
             "value": "slot2Side1"
           },
@@ -10843,10 +10843,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1520,
-            "end": 1529,
+            "commentStart": 1535,
+            "end": 1544,
             "moduleId": 0,
-            "start": 1520,
+            "start": 1535,
             "type": "TagDeclarator",
             "value": "slot2Cap1"
           },
@@ -10857,10 +10857,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1772,
-            "end": 1782,
+            "commentStart": 1787,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1772,
+            "start": 1787,
             "type": "TagDeclarator",
             "value": "slot2Side2"
           },
@@ -10871,10 +10871,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1949,
-            "end": 1958,
+            "commentStart": 1964,
+            "end": 1973,
             "moduleId": 0,
-            "start": 1949,
+            "start": 1964,
             "type": "TagDeclarator",
             "value": "slot2Cap2"
           },
@@ -10885,10 +10885,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2173,
-            "end": 2183,
+            "commentStart": 2188,
+            "end": 2198,
             "moduleId": 0,
-            "start": 2173,
+            "start": 2188,
             "type": "TagDeclarator",
             "value": "slot3Side1"
           },
@@ -10899,10 +10899,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2319,
-            "end": 2328,
+            "commentStart": 2334,
+            "end": 2343,
             "moduleId": 0,
-            "start": 2319,
+            "start": 2334,
             "type": "TagDeclarator",
             "value": "slot3Cap1"
           },
@@ -10913,10 +10913,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2572,
-            "end": 2582,
+            "commentStart": 2587,
+            "end": 2597,
             "moduleId": 0,
-            "start": 2572,
+            "start": 2587,
             "type": "TagDeclarator",
             "value": "slot3Side2"
           },
@@ -10927,10 +10927,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2750,
-            "end": 2759,
+            "commentStart": 2765,
+            "end": 2774,
             "moduleId": 0,
-            "start": 2750,
+            "start": 2765,
             "type": "TagDeclarator",
             "value": "slot3Cap2"
           },
@@ -10941,10 +10941,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2975,
-            "end": 2985,
+            "commentStart": 2990,
+            "end": 3000,
             "moduleId": 0,
-            "start": 2975,
+            "start": 2990,
             "type": "TagDeclarator",
             "value": "slot4Side1"
           },
@@ -10955,10 +10955,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3125,
-            "end": 3134,
+            "commentStart": 3140,
+            "end": 3149,
             "moduleId": 0,
-            "start": 3125,
+            "start": 3140,
             "type": "TagDeclarator",
             "value": "slot4Cap1"
           },
@@ -10969,10 +10969,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3378,
-            "end": 3388,
+            "commentStart": 3393,
+            "end": 3403,
             "moduleId": 0,
-            "start": 3378,
+            "start": 3393,
             "type": "TagDeclarator",
             "value": "slot4Side2"
           },
@@ -10983,10 +10983,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3555,
-            "end": 3564,
+            "commentStart": 3570,
+            "end": 3579,
             "moduleId": 0,
-            "start": 3555,
+            "start": 3570,
             "type": "TagDeclarator",
             "value": "slot4Cap2"
           },
@@ -10997,10 +10997,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3784,
-            "end": 3794,
+            "commentStart": 3799,
+            "end": 3809,
             "moduleId": 0,
-            "start": 3784,
+            "start": 3799,
             "type": "TagDeclarator",
             "value": "slot5Side1"
           },
@@ -11011,10 +11011,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3923,
-            "end": 3932,
+            "commentStart": 3938,
+            "end": 3947,
             "moduleId": 0,
-            "start": 3923,
+            "start": 3938,
             "type": "TagDeclarator",
             "value": "slot5Cap1"
           },
@@ -11025,10 +11025,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4175,
-            "end": 4185,
+            "commentStart": 4190,
+            "end": 4200,
             "moduleId": 0,
-            "start": 4175,
+            "start": 4190,
             "type": "TagDeclarator",
             "value": "slot5Side2"
           },
@@ -11039,10 +11039,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4352,
-            "end": 4361,
+            "commentStart": 4367,
+            "end": 4376,
             "moduleId": 0,
-            "start": 4352,
+            "start": 4367,
             "type": "TagDeclarator",
             "value": "slot5Cap2"
           },
@@ -11053,10 +11053,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4569,
-            "end": 4579,
+            "commentStart": 4584,
+            "end": 4594,
             "moduleId": 0,
-            "start": 4569,
+            "start": 4584,
             "type": "TagDeclarator",
             "value": "slot6Side1"
           },
@@ -11067,10 +11067,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4711,
-            "end": 4720,
+            "commentStart": 4726,
+            "end": 4735,
             "moduleId": 0,
-            "start": 4711,
+            "start": 4726,
             "type": "TagDeclarator",
             "value": "slot6Cap1"
           },
@@ -11081,10 +11081,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4965,
-            "end": 4975,
+            "commentStart": 4980,
+            "end": 4990,
             "moduleId": 0,
-            "start": 4965,
+            "start": 4980,
             "type": "TagDeclarator",
             "value": "slot6Side2"
           },
@@ -11095,10 +11095,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5143,
-            "end": 5152,
+            "commentStart": 5158,
+            "end": 5167,
             "moduleId": 0,
-            "start": 5143,
+            "start": 5158,
             "type": "TagDeclarator",
             "value": "slot6Cap2"
           },
@@ -11109,10 +11109,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5362,
-            "end": 5372,
+            "commentStart": 5377,
+            "end": 5387,
             "moduleId": 0,
-            "start": 5362,
+            "start": 5377,
             "type": "TagDeclarator",
             "value": "slot7Side1"
           },
@@ -11123,10 +11123,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5504,
-            "end": 5513,
+            "commentStart": 5519,
+            "end": 5528,
             "moduleId": 0,
-            "start": 5504,
+            "start": 5519,
             "type": "TagDeclarator",
             "value": "slot7Cap1"
           },
@@ -11137,10 +11137,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5754,
-            "end": 5764,
+            "commentStart": 5769,
+            "end": 5779,
             "moduleId": 0,
-            "start": 5754,
+            "start": 5769,
             "type": "TagDeclarator",
             "value": "slot7Side2"
           },
@@ -11151,10 +11151,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5931,
-            "end": 5940,
+            "commentStart": 5946,
+            "end": 5955,
             "moduleId": 0,
-            "start": 5931,
+            "start": 5946,
             "type": "TagDeclarator",
             "value": "slot7Cap2"
           },
@@ -11165,10 +11165,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6153,
-            "end": 6163,
+            "commentStart": 6168,
+            "end": 6178,
             "moduleId": 0,
-            "start": 6153,
+            "start": 6168,
             "type": "TagDeclarator",
             "value": "slot8Side1"
           },
@@ -11179,10 +11179,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6303,
-            "end": 6312,
+            "commentStart": 6318,
+            "end": 6327,
             "moduleId": 0,
-            "start": 6303,
+            "start": 6318,
             "type": "TagDeclarator",
             "value": "slot8Cap1"
           },
@@ -11193,10 +11193,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6560,
-            "end": 6570,
+            "commentStart": 6575,
+            "end": 6585,
             "moduleId": 0,
-            "start": 6560,
+            "start": 6575,
             "type": "TagDeclarator",
             "value": "slot8Side2"
           },
@@ -11207,10 +11207,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6739,
-            "end": 6748,
+            "commentStart": 6754,
+            "end": 6763,
             "moduleId": 0,
-            "start": 6739,
+            "start": 6754,
             "type": "TagDeclarator",
             "value": "slot8Cap2"
           },
@@ -11221,10 +11221,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6966,
-            "end": 6976,
+            "commentStart": 6981,
+            "end": 6991,
             "moduleId": 0,
-            "start": 6966,
+            "start": 6981,
             "type": "TagDeclarator",
             "value": "slot9Side1"
           },
@@ -11235,10 +11235,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7107,
-            "end": 7116,
+            "commentStart": 7122,
+            "end": 7131,
             "moduleId": 0,
-            "start": 7107,
+            "start": 7122,
             "type": "TagDeclarator",
             "value": "slot9Cap1"
           },
@@ -11249,10 +11249,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7357,
-            "end": 7367,
+            "commentStart": 7372,
+            "end": 7382,
             "moduleId": 0,
-            "start": 7357,
+            "start": 7372,
             "type": "TagDeclarator",
             "value": "slot9Side2"
           },
@@ -11263,10 +11263,10 @@ description: Variables in memory after executing manhole-cover.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7533,
-            "end": 7542,
+            "commentStart": 7548,
+            "end": 7557,
             "moduleId": 0,
-            "start": 7533,
+            "start": 7548,
             "type": "TagDeclarator",
             "value": "slot9Cap2"
           },
@@ -11294,10 +11294,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 11.375,
             "tag": {
-              "commentStart": 490,
-              "end": 501,
+              "commentStart": 505,
+              "end": 516,
               "moduleId": 0,
-              "start": 490,
+              "start": 505,
               "type": "TagDeclarator",
               "value": "coverCircle"
             },
@@ -11318,10 +11318,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.539703
             ],
             "tag": {
-              "commentStart": 576,
-              "end": 586,
+              "commentStart": 591,
+              "end": 601,
               "moduleId": 0,
-              "start": 576,
+              "start": 591,
               "type": "TagDeclarator",
               "value": "slot1Side1"
             },
@@ -11348,10 +11348,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.25000000000075273,
             "tag": {
-              "commentStart": 722,
-              "end": 731,
+              "commentStart": 737,
+              "end": 746,
               "moduleId": 0,
-              "start": 722,
+              "start": 737,
               "type": "TagDeclarator",
               "value": "slot1Cap1"
             },
@@ -11372,10 +11372,10 @@ description: Variables in memory after executing manhole-cover.kcl
               8.33491411502847
             ],
             "tag": {
-              "commentStart": 974,
-              "end": 984,
+              "commentStart": 989,
+              "end": 999,
               "moduleId": 0,
-              "start": 974,
+              "start": 989,
               "type": "TagDeclarator",
               "value": "slot1Side2"
             },
@@ -11402,10 +11402,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1151,
-              "end": 1160,
+              "commentStart": 1166,
+              "end": 1175,
               "moduleId": 0,
-              "start": 1151,
+              "start": 1166,
               "type": "TagDeclarator",
               "value": "slot1Cap2"
             },
@@ -11426,10 +11426,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -9.673446
             ],
             "tag": {
-              "commentStart": 1374,
-              "end": 1384,
+              "commentStart": 1389,
+              "end": 1399,
               "moduleId": 0,
-              "start": 1374,
+              "start": 1389,
               "type": "TagDeclarator",
               "value": "slot2Side1"
             },
@@ -11456,10 +11456,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1520,
-              "end": 1529,
+              "commentStart": 1535,
+              "end": 1544,
               "moduleId": 0,
-              "start": 1520,
+              "start": 1535,
               "type": "TagDeclarator",
               "value": "slot2Cap1"
             },
@@ -11480,10 +11480,10 @@ description: Variables in memory after executing manhole-cover.kcl
               6.753914098846
             ],
             "tag": {
-              "commentStart": 1772,
-              "end": 1782,
+              "commentStart": 1787,
+              "end": 1797,
               "moduleId": 0,
-              "start": 1772,
+              "start": 1787,
               "type": "TagDeclarator",
               "value": "slot2Side2"
             },
@@ -11510,10 +11510,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 1949,
-              "end": 1958,
+              "commentStart": 1964,
+              "end": 1973,
               "moduleId": 0,
-              "start": 1949,
+              "start": 1964,
               "type": "TagDeclarator",
               "value": "slot2Cap2"
             },
@@ -11534,10 +11534,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.3082
             ],
             "tag": {
-              "commentStart": 2173,
-              "end": 2183,
+              "commentStart": 2188,
+              "end": 2198,
               "moduleId": 0,
-              "start": 2173,
+              "start": 2188,
               "type": "TagDeclarator",
               "value": "slot3Side1"
             },
@@ -11564,10 +11564,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999993606,
             "tag": {
-              "commentStart": 2319,
-              "end": 2328,
+              "commentStart": 2334,
+              "end": 2343,
               "moduleId": 0,
-              "start": 2319,
+              "start": 2334,
               "type": "TagDeclarator",
               "value": "slot3Cap1"
             },
@@ -11588,10 +11588,10 @@ description: Variables in memory after executing manhole-cover.kcl
               4.654516243656672
             ],
             "tag": {
-              "commentStart": 2572,
-              "end": 2582,
+              "commentStart": 2587,
+              "end": 2597,
               "moduleId": 0,
-              "start": 2572,
+              "start": 2587,
               "type": "TagDeclarator",
               "value": "slot3Side2"
             },
@@ -11618,10 +11618,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 2750,
-              "end": 2759,
+              "commentStart": 2765,
+              "end": 2774,
               "moduleId": 0,
-              "start": 2750,
+              "start": 2765,
               "type": "TagDeclarator",
               "value": "slot3Cap2"
             },
@@ -11642,10 +11642,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -10.266164
             ],
             "tag": {
-              "commentStart": 2975,
-              "end": 2985,
+              "commentStart": 2990,
+              "end": 3000,
               "moduleId": 0,
-              "start": 2975,
+              "start": 2990,
               "type": "TagDeclarator",
               "value": "slot4Side1"
             },
@@ -11672,10 +11672,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.25000000000017997,
             "tag": {
-              "commentStart": 3125,
-              "end": 3134,
+              "commentStart": 3140,
+              "end": 3149,
               "moduleId": 0,
-              "start": 3125,
+              "start": 3140,
               "type": "TagDeclarator",
               "value": "slot4Cap1"
             },
@@ -11696,10 +11696,10 @@ description: Variables in memory after executing manhole-cover.kcl
               1.8876798837901418
             ],
             "tag": {
-              "commentStart": 3378,
-              "end": 3388,
+              "commentStart": 3393,
+              "end": 3403,
               "moduleId": 0,
-              "start": 3378,
+              "start": 3393,
               "type": "TagDeclarator",
               "value": "slot4Side2"
             },
@@ -11726,10 +11726,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999337,
             "tag": {
-              "commentStart": 3555,
-              "end": 3564,
+              "commentStart": 3570,
+              "end": 3579,
               "moduleId": 0,
-              "start": 3555,
+              "start": 3570,
               "type": "TagDeclarator",
               "value": "slot4Cap2"
             },
@@ -11750,10 +11750,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -6.949
             ],
             "tag": {
-              "commentStart": 3784,
-              "end": 3794,
+              "commentStart": 3799,
+              "end": 3809,
               "moduleId": 0,
-              "start": 3784,
+              "start": 3799,
               "type": "TagDeclarator",
               "value": "slot5Side1"
             },
@@ -11780,10 +11780,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 3923,
-              "end": 3932,
+              "commentStart": 3938,
+              "end": 3947,
               "moduleId": 0,
-              "start": 3923,
+              "start": 3938,
               "type": "TagDeclarator",
               "value": "slot5Cap1"
             },
@@ -11804,10 +11804,10 @@ description: Variables in memory after executing manhole-cover.kcl
               9.478360098846
             ],
             "tag": {
-              "commentStart": 4175,
-              "end": 4185,
+              "commentStart": 4190,
+              "end": 4200,
               "moduleId": 0,
-              "start": 4175,
+              "start": 4190,
               "type": "TagDeclarator",
               "value": "slot5Side2"
             },
@@ -11834,10 +11834,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 4352,
-              "end": 4361,
+              "commentStart": 4367,
+              "end": 4376,
               "moduleId": 0,
-              "start": 4352,
+              "start": 4367,
               "type": "TagDeclarator",
               "value": "slot5Cap2"
             },
@@ -11858,10 +11858,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -4.8592
             ],
             "tag": {
-              "commentStart": 4569,
-              "end": 4579,
+              "commentStart": 4584,
+              "end": 4594,
               "moduleId": 0,
-              "start": 4569,
+              "start": 4584,
               "type": "TagDeclarator",
               "value": "slot6Side1"
             },
@@ -11888,10 +11888,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999935987,
             "tag": {
-              "commentStart": 4711,
-              "end": 4720,
+              "commentStart": 4726,
+              "end": 4735,
               "moduleId": 0,
-              "start": 4711,
+              "start": 4726,
               "type": "TagDeclarator",
               "value": "slot6Cap1"
             },
@@ -11912,10 +11912,10 @@ description: Variables in memory after executing manhole-cover.kcl
               10.10351624365667
             ],
             "tag": {
-              "commentStart": 4965,
-              "end": 4975,
+              "commentStart": 4980,
+              "end": 4990,
               "moduleId": 0,
-              "start": 4965,
+              "start": 4980,
               "type": "TagDeclarator",
               "value": "slot6Side2"
             },
@@ -11942,10 +11942,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993425,
             "tag": {
-              "commentStart": 5143,
-              "end": 5152,
+              "commentStart": 5158,
+              "end": 5167,
               "moduleId": 0,
-              "start": 5143,
+              "start": 5158,
               "type": "TagDeclarator",
               "value": "slot6Cap2"
             },
@@ -11966,10 +11966,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -2.0927
             ],
             "tag": {
-              "commentStart": 5362,
-              "end": 5372,
+              "commentStart": 5377,
+              "end": 5387,
               "moduleId": 0,
-              "start": 5362,
+              "start": 5377,
               "type": "TagDeclarator",
               "value": "slot7Side1"
             },
@@ -11996,10 +11996,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2500000000001789,
             "tag": {
-              "commentStart": 5504,
-              "end": 5513,
+              "commentStart": 5519,
+              "end": 5528,
               "moduleId": 0,
-              "start": 5504,
+              "start": 5519,
               "type": "TagDeclarator",
               "value": "slot7Cap1"
             },
@@ -12020,10 +12020,10 @@ description: Variables in memory after executing manhole-cover.kcl
               10.061143883790141
             ],
             "tag": {
-              "commentStart": 5754,
-              "end": 5764,
+              "commentStart": 5769,
+              "end": 5779,
               "moduleId": 0,
-              "start": 5754,
+              "start": 5769,
               "type": "TagDeclarator",
               "value": "slot7Side2"
             },
@@ -12050,10 +12050,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993436,
             "tag": {
-              "commentStart": 5931,
-              "end": 5940,
+              "commentStart": 5946,
+              "end": 5955,
               "moduleId": 0,
-              "start": 5931,
+              "start": 5946,
               "type": "TagDeclarator",
               "value": "slot7Cap2"
             },
@@ -12074,10 +12074,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -8.745042
             ],
             "tag": {
-              "commentStart": 6153,
-              "end": 6163,
+              "commentStart": 6168,
+              "end": 6178,
               "moduleId": 0,
-              "start": 6153,
+              "start": 6168,
               "type": "TagDeclarator",
               "value": "slot8Side1"
             },
@@ -12104,10 +12104,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993278,
             "tag": {
-              "commentStart": 6303,
-              "end": 6312,
+              "commentStart": 6318,
+              "end": 6327,
               "moduleId": 0,
-              "start": 6303,
+              "start": 6318,
               "type": "TagDeclarator",
               "value": "slot8Cap1"
             },
@@ -12128,10 +12128,10 @@ description: Variables in memory after executing manhole-cover.kcl
               -2.3577008471871417
             ],
             "tag": {
-              "commentStart": 6560,
-              "end": 6570,
+              "commentStart": 6575,
+              "end": 6585,
               "moduleId": 0,
-              "start": 6560,
+              "start": 6575,
               "type": "TagDeclarator",
               "value": "slot8Side2"
             },
@@ -12158,10 +12158,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 6739,
-              "end": 6748,
+              "commentStart": 6754,
+              "end": 6763,
               "moduleId": 0,
-              "start": 6739,
+              "start": 6754,
               "type": "TagDeclarator",
               "value": "slot8Cap2"
             },
@@ -12182,10 +12182,10 @@ description: Variables in memory after executing manhole-cover.kcl
               2.1529
             ],
             "tag": {
-              "commentStart": 6966,
-              "end": 6976,
+              "commentStart": 6981,
+              "end": 6991,
               "moduleId": 0,
-              "start": 6966,
+              "start": 6981,
               "type": "TagDeclarator",
               "value": "slot9Side1"
             },
@@ -12212,10 +12212,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.2499999999999335,
             "tag": {
-              "commentStart": 7107,
-              "end": 7116,
+              "commentStart": 7122,
+              "end": 7131,
               "moduleId": 0,
-              "start": 7107,
+              "start": 7122,
               "type": "TagDeclarator",
               "value": "slot9Cap1"
             },
@@ -12236,10 +12236,10 @@ description: Variables in memory after executing manhole-cover.kcl
               8.54024115281286
             ],
             "tag": {
-              "commentStart": 7357,
-              "end": 7367,
+              "commentStart": 7372,
+              "end": 7382,
               "moduleId": 0,
-              "start": 7357,
+              "start": 7372,
               "type": "TagDeclarator",
               "value": "slot9Side2"
             },
@@ -12266,10 +12266,10 @@ description: Variables in memory after executing manhole-cover.kcl
             ],
             "radius": 0.24999999999993425,
             "tag": {
-              "commentStart": 7533,
-              "end": 7542,
+              "commentStart": 7548,
+              "end": 7557,
               "moduleId": 0,
-              "start": 7533,
+              "start": 7548,
               "type": "TagDeclarator",
               "value": "slot9Cap2"
             },

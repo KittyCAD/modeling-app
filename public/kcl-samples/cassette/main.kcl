@@ -1,6 +1,6 @@
 // Sprocket Cassette
 // A sprocket cassette is a stack of sprockets on a splined hub for multiple gear ratios.
-// Categories: Automotive
+// Categories: Automotive & Transportation; Mechanical Components
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 
