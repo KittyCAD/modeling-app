@@ -1,0 +1,69 @@
+/*
+ * The sketch drawn over the scene.
+ *
+ * Colour says how constrained something is, which is the one thing a sketch
+ * cannot show by its shape: free geometry is the ordinary state, fixed geometry
+ * is finished, and a conflict is the thing to look at. Everything is a token, so
+ * a theme that changes the accent changes the sketch with it.
+ */
+.zds-sketch {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.zds-sketch__segment {
+  fill: none;
+  stroke: var(--zds-text-accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drawn over a live video, which can be any colour behind any pixel. */
+  paint-order: stroke;
+}
+
+.zds-sketch__segment[data-freedom="Fixed"] {
+  stroke: var(--zds-status-ok);
+}
+
+.zds-sketch__segment[data-freedom="Conflict"] {
+  stroke: var(--zds-status-fault);
+}
+
+.zds-sketch__segment[data-construction="true"] {
+  stroke: var(--zds-text-tertiary);
+  stroke-dasharray: 4 4;
+}
+
+/* The rubber band: the same line, said tentatively. */
+.zds-sketch__segment[data-kind="preview"] {
+  stroke-dasharray: 6 4;
+  opacity: 0.8;
+}
+
+.zds-sketch__segment[data-hovered="true"] {
+  stroke-width: 3;
+}
+
+.zds-sketch__vertex {
+  r: 3.5;
+  fill: var(--zds-surface-panel);
+  stroke: var(--zds-text-accent);
+  stroke-width: 1.5;
+}
+
+.zds-sketch__vertex[data-freedom="Fixed"] {
+  stroke: var(--zds-status-ok);
+}
+
+.zds-sketch__vertex[data-freedom="Conflict"] {
+  stroke: var(--zds-status-fault);
+}
+
+.zds-sketch__vertex[data-hovered="true"] {
+  r: 5;
+  fill: var(--zds-text-accent);
+}

@@ -3,7 +3,8 @@ import type { SceneItem, SceneZone } from '@src/contracts/scene'
 import { sceneItemsValueSpec } from '@src/contracts/scene'
 import './sceneZones.css'
 
-const ZONES: readonly SceneZone[] = ['top', 'start', 'end', 'bottom']
+// `fill` first, so the edges stack above whatever is drawn over the geometry.
+const ZONES: readonly SceneZone[] = ['fill', 'top', 'start', 'end', 'bottom']
 
 function Zone({ items, zone }: { items: SceneItem[]; zone: SceneZone }) {
   const visible = items.filter(

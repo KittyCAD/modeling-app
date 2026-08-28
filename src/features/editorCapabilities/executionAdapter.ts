@@ -7,7 +7,11 @@ import type {
   ExecutionDiagnostic,
 } from '@src/contracts/execution'
 import type { ProjectSnapshot } from '@src/contracts/projectSession'
-import { bufferOrigin, requestExecution } from '@src/lib/buffers/annotations'
+import {
+  bufferOrigin,
+  requestExecution,
+  suppressExecution,
+} from '@src/lib/buffers/annotations'
 import { hashString } from '@src/lib/hash'
 
 /** Quiet period before submitting. Long enough to not execute mid-word. */
@@ -119,6 +123,19 @@ export function createExecutionAdapterCapability(
         if (!change.docChanged) return
         // A reconfiguration is not a content change.
         if (change.origin === 'capability') return
+        /*
+         * An edit that said not to run. A sketch writes a segment per click and
+         * is solved without the engine; running the file each time would spend
+         * exactly what sketch mode exists to save. The run comes when it is
+         * finished.
+         */
+        if (
+          change.transactions.some((transaction) =>
+            transaction.annotation(suppressExecution)
+          )
+        ) {
+          return
+        }
         schedule()
       })
 

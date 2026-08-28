@@ -19,7 +19,7 @@ const at = (id: number, kind: ApiObject['kind']): ApiObject => ({
   kind,
   label: `object${id}`,
   comments: '',
-  artifact_id: `artifact-${id}` as never,
+  artifact_id: `artifact-${id}`,
   source: { type: 'Simple', range: [0, 0, 0], node_path: null } as never,
 })
 

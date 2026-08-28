@@ -53,3 +53,23 @@
   justify-content: center;
   align-items: flex-end;
 }
+
+/*
+ * The whole surface, for things drawn over the geometry.
+ *
+ * Its items keep `pointer-events: none` rather than taking them back, which is
+ * the opposite of every other zone: a sheet across the viewport that accepted
+ * clicks would swallow every orbit. Anything in here that needs a click asks for
+ * it on the element that needs it — a constraint badge is a button, and the rest
+ * is a picture.
+ */
+.zds-scene-zone[data-zone="fill"] {
+  inset: 0;
+  display: block;
+}
+
+.zds-scene-zone[data-zone="fill"] .zds-scene-zone__item {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

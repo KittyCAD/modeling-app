@@ -6,8 +6,7 @@ import type { SceneMode } from '@src/contracts/sceneModes'
  * Data, not code, because none of them does anything: a mode names a way of
  * working and the keymap scope that is live inside it. Which tools appear is
  * contributed separately, by whoever owns them — the modelling operations fill
- * two of these, and Sketching is deliberately empty until sketch V2 tooling
- * exists.
+ * two of these, and the sketch overlay fills the third.
  *
  * Shipped by this feature rather than contributed by three others because they
  * are the vocabulary, not extensions of it. The value spec is still the way in:
@@ -46,7 +45,7 @@ export const builtInModes: readonly SceneMode[] = [
      * applies is a fact about the KCL file, contributed by the feature that knows
      * what a sketch is. This file would otherwise have to learn.
      */
-    empty: 'Sketch tools are not built yet — sketch V2 edits inside a block.',
+    empty: 'Open a sketch to draw in it.',
   },
   {
     id: ANNOTATING_MODE,

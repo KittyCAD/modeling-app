@@ -15,6 +15,7 @@ import {
   sceneModeService,
   toolbarItemsValueSpec,
 } from '@src/contracts/sceneModes'
+import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { sketchSessionService } from '@src/contracts/sketchSession'
 import { selectionService } from '@src/contracts/selection'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
@@ -116,6 +117,9 @@ export default defineRegistryItemFactory((ctx) => {
     },
     program: () =>
       ctx.services.optional(kclSceneService)?.program.value?.ast ?? null,
+    artifacts: () =>
+      ctx.services.optional(kclSceneService)?.artifacts.value ?? new Map(),
+    projection: () => ctx.services.optional(sceneProjectionService),
   })
 
   return {

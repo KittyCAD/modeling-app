@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, effect, signal } from '@preact/signals'
+import { computed, effect, signal } from '@preact/signals'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { EngineConnection } from '@src/contracts/engine'
 import type { ScenePoint } from '@src/contracts/scene'
@@ -161,7 +161,7 @@ export function createEngineProjection(
 
   return {
     id: 'engine',
-    ready: computed(() => camera.value !== null) as ReadonlySignal<boolean>,
+    ready: computed(() => camera.value !== null),
     epoch: computed(() => epoch.value),
 
     project(point: Vector3, viewport: ViewportSize) {

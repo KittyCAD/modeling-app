@@ -10,14 +10,13 @@ const graph = (...artifacts: Artifact[]): ArtifactMap =>
 
 const sketchBlock = (
   extra: Partial<Extract<Artifact, { type: 'sketchBlock' }>>
-): Artifact =>
-  ({
-    type: 'sketchBlock',
-    id: 'block',
-    codeRef,
-    sketchId: 7,
-    ...extra,
-  }) as Artifact
+): Artifact => ({
+  type: 'sketchBlock',
+  id: 'block',
+  codeRef,
+  sketchId: 7,
+  ...extra,
+})
 
 describe('sketchPlaneSource', () => {
   it('reads the frame straight out of the graph, converted to millimetres', () => {
@@ -73,7 +72,7 @@ describe('sketchPlaneSource', () => {
         id: 'plane-of-face',
         faceId: 'the-wall',
         codeRef,
-      } as Artifact),
+      }),
       7
     )
 

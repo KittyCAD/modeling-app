@@ -126,15 +126,22 @@ export interface CameraDriver {
 /**
  * Where in the scene something can be placed.
  *
- * Four edges, and nothing finer. A zone is a *region of the viewport*, not a
+ * Four edges and the whole surface. A zone is a *region of the viewport*, not a
  * layout: how several items share one edge is the zone's business, and an item
  * that needs to be somewhere specific within an edge says so with `order`.
+ *
+ * `fill` is for things drawn *over the geometry* rather than beside it — a
+ * sketch overlay, a measurement annotation, a selection marquee. It differs from
+ * the edges in one way that matters: its items do not take pointer events, and
+ * anything in one that wants a click has to ask for it. An invisible sheet over
+ * the whole viewport would otherwise swallow every orbit, which gets diagnosed
+ * as "the camera is broken" rather than as a stacking order.
  *
  * Deliberately about the scene rather than about the engine. A local renderer
  * would host the same toolbar, the same view gizmo and the same measurement
  * readout, so none of them may know that today's frames arrive as video.
  */
-export type SceneZone = 'top' | 'bottom' | 'start' | 'end'
+export type SceneZone = 'top' | 'bottom' | 'start' | 'end' | 'fill'
 
 /**
  * Something drawn over the scene.

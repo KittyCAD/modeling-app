@@ -36,6 +36,22 @@ export type BufferOrigin =
 export const requestExecution = Annotation.define<boolean>()
 
 /**
+ * An edit that must not be executed.
+ *
+ * The opposite of `requestExecution`, and needed for the same reason: what a
+ * change *means* travels with it rather than being inferred from its contents.
+ * A sketch being drawn writes a segment into the file on every click, and each
+ * of those is a real edit the user can undo — but running the file per click is
+ * precisely the expense sketch mode exists to avoid, since the sketch is being
+ * solved without the engine and the model on screen is deliberately the last
+ * one that was built.
+ *
+ * The execution that matters happens when the sketch is finished, which is an
+ * ordinary edit and says nothing.
+ */
+export const suppressExecution = Annotation.define<boolean>()
+
+/**
  * An explicit request for the keyboard.
  *
  * Travels with the transaction for the same reason `requestExecution` does: it

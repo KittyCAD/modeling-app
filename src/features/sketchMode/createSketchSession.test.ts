@@ -3,6 +3,9 @@ import { signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
 import type { KclFrontendService } from '@src/contracts/kclFrontend'
+import type { SceneProjection } from '@src/contracts/sceneProjection'
+import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
+import type { ArtifactMap } from '@src/lib/kcl/artifacts'
 import { createSketchSession } from '@src/features/sketchMode/createSketchSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
@@ -31,6 +34,25 @@ const graph = (): SceneGraph =>
     sketch_mode: null,
   }) as unknown as SceneGraph
 
+/** The XY plane, as a run that succeeded reports it. */
+const onXY: ArtifactMap = new Map<string, Artifact>([
+  [
+    'block',
+    {
+      type: 'sketchBlock',
+      id: 'block',
+      sketchId: 0,
+      codeRef: { range: [0, 23, 0] },
+      planeInfo: {
+        origin: { x: 0, y: 0, z: 0, units: 'mm' },
+        xAxis: { x: 1, y: 0, z: 0, units: null },
+        yAxis: { x: 0, y: 1, z: 0, units: null },
+        zAxis: { x: 0, y: 0, z: 1, units: null },
+      },
+    } as unknown as Artifact,
+  ],
+])
+
 const setup = (
   options: {
     sketch?: SketchBlockRange | null
@@ -38,6 +60,9 @@ const setup = (
     setProgram?: () => Promise<SceneGraph | null>
     exitText?: string
     exitThrows?: boolean
+    artifacts?: ArtifactMap
+    projection?: SceneProjection
+    addSegment?: (calls: string[]) => Promise<unknown>
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -68,6 +93,11 @@ const setup = (
       if (options.exitThrows) throw new Error('the frontend gave up')
       return { text: options.exitText ?? SOURCE } as never
     }),
+    addSegment: vi.fn(async () => {
+      calls.push('addSegment')
+      return (await (options.addSegment?.(calls) ??
+        Promise.resolve({ text: SOURCE }))) as never
+    }),
   } as unknown as KclFrontendService
 
   const session = createSketchSession({
@@ -81,6 +111,8 @@ const setup = (
     path: () => 'main.kcl',
     program: () =>
       options.program === undefined ? { body: [] } : options.program,
+    artifacts: () => options.artifacts ?? onXY,
+    projection: () => options.projection,
   })
 
   return { session, buffer, frontend, calls }
@@ -98,7 +130,7 @@ describe('opening a sketch', () => {
     await app.session.enter()
 
     expect(app.calls).toEqual(['sync', 'setProgram', 'editSketch'])
-    expect(app.session.open.value).toEqual({ sketchId: 0, name: 's' })
+    expect(app.session.open.value).toMatchObject({ sketchId: 0, name: 's' })
   })
 
   it('addresses the sketch the cursor is in', async () => {
@@ -215,5 +247,179 @@ describe('leaving a sketch', () => {
     await app.session.exit()
 
     expect(app.frontend.exitSketch).not.toHaveBeenCalled()
+  })
+})
+
+describe('where the sketch is', () => {
+  it('takes the plane from the last run, for free', async () => {
+    const app = setup()
+
+    await app.session.enter()
+
+    expect(app.session.open.value?.plane).toEqual({
+      origin: { x: 0, y: 0, z: 0 },
+      xAxis: { x: 1, y: 0, z: 0, units: null },
+      yAxis: { x: 0, y: 1, z: 0, units: null },
+      zAxis: { x: 0, y: 0, z: 1, units: null },
+    })
+  })
+
+  it('asks the renderer where a face is, since only it knows', async () => {
+    const frame = {
+      origin: { x: 0, y: 0, z: 10 },
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      zAxis: { x: 0, y: 0, z: 1 },
+    }
+    const frameOf = vi.fn(async () => frame)
+    const app = setup({
+      artifacts: new Map<string, Artifact>([
+        [
+          'block',
+          {
+            type: 'sketchBlock',
+            id: 'block',
+            sketchId: 0,
+            codeRef: { range: [0, 23, 0] },
+            planeId: 'plane-of-face',
+          } as unknown as Artifact,
+        ],
+        [
+          'plane-of-face',
+          {
+            type: 'planeOfFace',
+            id: 'plane-of-face',
+            faceId: 'the-wall',
+            codeRef: { range: [0, 0, 0] },
+          } as unknown as Artifact,
+        ],
+      ]),
+      projection: { frameOf } as unknown as SceneProjection,
+    })
+
+    await app.session.enter()
+
+    expect(frameOf).toHaveBeenCalledWith('the-wall')
+    expect(app.session.open.value?.plane).toEqual(frame)
+  })
+
+  /*
+   * Editing the KCL is worth doing without an overlay, so a sketch nobody can
+   * place still opens — and says why it will be blank.
+   */
+  it('opens anyway when nothing can place the sketch, and says why', async () => {
+    const app = setup({ artifacts: new Map() })
+
+    await app.session.enter()
+
+    expect(app.session.open.value?.plane).toBeNull()
+    expect(app.session.open.value?.planeProblem).toMatch(/last run/)
+  })
+})
+
+describe('drawing in a sketch', () => {
+  const enterWithLine = async (options: Parameters<typeof setup>[0] = {}) => {
+    const app = setup(options)
+    await app.session.enter()
+    app.session.equip('line')
+    return app
+  }
+
+  it('collects the first click without asking the frontend for anything', async () => {
+    const app = await enterWithLine()
+
+    app.session.place({ x: 0, y: 0 })
+
+    expect(app.frontend.addSegment).not.toHaveBeenCalled()
+    expect(app.session.tool.value?.points).toHaveLength(1)
+  })
+
+  it('draws the segment on the second click', async () => {
+    const app = await enterWithLine()
+
+    app.session.place({ x: 0, y: 0 })
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(0, {
+      type: 'Line',
+      start: {
+        x: { type: 'Number', value: 0, units: 'Mm' },
+        y: { type: 'Number', value: 0, units: 'Mm' },
+      },
+      end: {
+        x: { type: 'Number', value: 10, units: 'Mm' },
+        y: { type: 'Number', value: 0, units: 'Mm' },
+      },
+    })
+  })
+
+  /*
+   * The whole point of a session: the file is the model and it updates as you
+   * draw, but nothing is rebuilt until you are finished.
+   */
+  it('writes each segment into the file without running it', async () => {
+    const DRAWN = 's = sketch(on = XY) {\n  l1 = line()\n}\n'
+    const app = await enterWithLine({
+      addSegment: async () => ({ text: DRAWN }),
+    })
+
+    app.session.place({ x: 0, y: 0 })
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() => expect(app.buffer.text.value).toBe(DRAWN))
+  })
+
+  it('runs the mutations in the order they were asked for', async () => {
+    // Two overlapping solves would each answer with text missing the other's
+    // segment, and the second to land would erase the first.
+    const app = await enterWithLine({
+      addSegment: async (calls) => {
+        await new Promise((resolve) => setTimeout(resolve, 5))
+        calls.push('solved')
+        return { text: SOURCE }
+      },
+    })
+
+    app.session.place({ x: 0, y: 0 })
+    app.session.place({ x: 1, y: 0 })
+    app.session.place({ x: 2, y: 0 })
+    app.session.place({ x: 3, y: 0 })
+
+    await vi.waitFor(() =>
+      expect(app.calls.filter((call) => call === 'solved')).toHaveLength(2)
+    )
+    expect(app.calls.slice(-4)).toEqual([
+      'addSegment',
+      'solved',
+      'addSegment',
+      'solved',
+    ])
+  })
+
+  it('keeps the tool but forgets the half-drawn line when cancelled', async () => {
+    const app = await enterWithLine()
+    app.session.place({ x: 0, y: 0 })
+
+    app.session.cancelTool()
+
+    expect(app.session.tool.value).toEqual({ tool: 'line', points: [] })
+  })
+
+  it('cannot equip a tool with no sketch open', () => {
+    const app = setup()
+
+    app.session.equip('line')
+
+    expect(app.session.tool.value).toBeNull()
+  })
+
+  it('puts the tool down on the way out', async () => {
+    const app = await enterWithLine()
+
+    await app.session.exit()
+
+    expect(app.session.tool.value).toBeNull()
   })
 })
