@@ -37,7 +37,9 @@ packages/
 src/
   app/               Composition root, app context hooks
   contracts/         ValueSpecs and Services only. No implementations
-  features/          One directory per capability, discovered by glob
+  features/          One directory per capability, discovered by glob.
+                     One level of nesting is also discovered, for a sub-feature
+                     owned by another feature (engineScene/camera)
   lib/               Small shared helpers
 ```
 
@@ -179,6 +181,84 @@ handle anyway, so it is where you land.
 
 The scene is rendered on the engine and streamed back, so this owns a websocket
 (commands and WebRTC signalling) and a peer connection (the video track).
+
+### The scene, and its camera
+
+The connection owns a socket; `engineScene` owns what is on the other end of it.
+The split matters because the engine starts every scene at its own defaults, so
+the app's preferences are not configuration passed once — they are statements
+that have to be made again on each new scene.
+
+`sceneEpoch` on the connection is what makes that expressible. It increments
+whenever the engine begins a fresh scene, and each feature keeps one effect keyed
+on it plus the values it cares about. Nothing has to know about anyone else's
+triggers, and reconnecting restates everything.
+
+The effects are deliberately narrow about what they read. Keying on the whole
+connection state re-ran them on every ping, which meant re-sending every scene
+command every few seconds forever; they read a `connected` computed instead.
+
+**The camera is a sub-feature**, at `features/engineScene/camera/`. It owns three
+settings and every pointer event that reaches the viewport, and nothing else in
+the app wants either. It is separate from the scene because the scene's job is
+finished once the engine knows how to draw, while the camera's is a live
+translation of input — no shared state, and one of them is worth testing without
+the other.
+
+There is no local camera. A drag is a message and the answer is a video frame, so
+this is much smaller than a client-side orbit control — no matrix maths at all —
+but every gesture has to be mapped into the engine's coordinate space, which is
+the *stream's* pixels rather than the element's. The panel is almost never the
+size the engine renders at.
+
+Two details that are not obvious:
+
+- **Throttled to 15 moves a second.** The engine re-renders and re-streams a
+  frame per move, so sending every pointer event buys nothing a viewer can see
+  and costs a queue that runs behind the pointer. The trailing edge still fires,
+  so a gesture ends where the pointer actually stopped.
+- **The guard table is the preference.** "Camera controls" is a choice between
+  seven other CAD packages' conventions, and the table of predicates is its
+  entire content. Someone switching to this app wants the muscle memory they
+  have, not our idea of a better default.
+
+The system is named by its stored id (`trackpad_friendly`) with the display name
+in the table. The existing app keeps the display name as the value and converts
+at the file boundary, which needs two mapping functions and a comment about where
+the underscores went.
+
+### Interaction is contributed
+
+The stream element is the only surface the model can be touched through: the
+camera wants drags and the wheel, selection will want clicks, a measurement tool
+will want hovers. `sceneInteractionsValueSpec` is that seam, so each of those can
+be built, tested, and turned off on its own — and the stream component stays what
+it is, which is a video with a size.
+
+### Which settings reach the engine, and how
+
+Not one mechanism but three, and the difference is visible to the user:
+
+| Preference | How it travels | When |
+| --- | --- | --- |
+| Ambient occlusion, scale grid | stream URL parameter | next connection |
+| Highlight edges, backface colour, theme | scene command | immediately |
+| Projection, orbit | scene command / interaction type | immediately |
+| Camera controls | never sent; decides what a gesture means | immediately |
+
+The first row is why those two settings say they wait for the next connection:
+the engine builds its render pipeline when the socket opens. They are
+*contributed* into the URL rather than read by the connection, which has no
+business knowing what a preference is — and the stream dimensions are written
+last, so a contribution cannot overwrite them. A dimension the engine refuses
+closes the socket with no explanation.
+
+The theme is a scene command too. The background matches the app's, and the
+engine's overlay geometry — grid lines, axes — takes the *opposite* theme's
+colour, because it is drawn on the background and has to contrast with it. All
+four system colours go in one `set_default_system_properties`: the engine takes
+them together, so sending the theme's line colour and the backface colour as two
+commands has the second drop what the first set.
 
 ### The wire format
 
@@ -476,8 +556,8 @@ readers wrong.
 - Watching is desktop-only, and a project folder moved or deleted underneath the
   app is reported as a change to each file rather than as the project going away
 - An engine-idle signal, so the view can be framed automatically after execution
-- Selection, camera controls, and the feature tree: the viewport is a video
-  stream with no interaction wired to it yet
+- Selection and the feature tree. Camera controls are in; clicking the model to
+  select something is not, and it plugs into the same interaction seam
 - Cloud and network library types. The type contribution is the seam; nothing in
   the service, Home, or routing should need to change
 - Drag-and-drop between libraries, which `main` has and this does not: moving a
