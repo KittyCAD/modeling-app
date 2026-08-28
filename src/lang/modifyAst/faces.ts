@@ -19,6 +19,7 @@ import {
 } from '@src/lang/modifyAst'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  getBodyIndex,
   getNodeFromPath,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
@@ -37,6 +38,7 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type Expr,
+  type ExpressionStatement,
   type PathToNode,
   type Program,
   type VariableDeclaration,
@@ -974,6 +976,33 @@ export function getPlaneExprFromSelection({
       const [planeVar] = planeVars.exprs
       if (planeVar.type !== 'PipeSubstitution') {
         planeExpr = planeVar
+      } else if (planeVars.pathIfPipe) {
+        const expression = getNodeFromPath<ExpressionStatement>(
+          modifiedAst,
+          planeVars.pathIfPipe,
+          wasmInstance,
+          'ExpressionStatement'
+        )
+        if (
+          !err(expression) &&
+          expression.node.type === 'ExpressionStatement'
+        ) {
+          const bodyIndex = getBodyIndex(expression.shallowPath)
+          if (err(bodyIndex)) {
+            return bodyIndex
+          }
+          const planeVariableName = findUniqueName(
+            modifiedAst,
+            KCL_DEFAULT_CONSTANT_PREFIXES.PLANE
+          )
+          const declaration = createVariableDeclaration(
+            planeVariableName,
+            expression.node.expression
+          )
+          declaration.preComments = expression.node.preComments
+          modifiedAst.body[bodyIndex] = declaration
+          planeExpr = createLocalName(planeVariableName)
+        }
       }
     }
   }
