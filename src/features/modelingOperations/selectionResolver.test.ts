@@ -211,3 +211,40 @@ describe('answering a face argument by clicking', () => {
     expect(answer(['mystery'], 'Face')?.source).toBe('')
   })
 })
+
+/*
+ * How many entities an argument takes is read from its type, so the prompt is
+ * told the truth without anybody declaring it per operation.
+ */
+describe('how many entities a selection argument takes', () => {
+  const promptFor = async (type: string) => {
+    const prompt = await resolver([]).prompt({
+      input: input(type),
+      program: { source: '', ast } as unknown as ParsedProgram,
+      resolved: {},
+    })
+    if (prompt.kind !== 'selection') throw new Error('expected a selection')
+    return prompt
+  }
+
+  it('takes several when the type is a list', async () => {
+    expect((await promptFor('[TaggedFace; 1+]')).multiple).toBe(true)
+  })
+
+  it('takes one when the type is not', async () => {
+    expect((await promptFor('Solid')).multiple).toBeUndefined()
+  })
+
+  it('takes one when the list holds exactly one', async () => {
+    expect((await promptFor('[Solid; 1]')).multiple).toBeUndefined()
+  })
+
+  it('says which types would answer', async () => {
+    // In the order the type declares them, which is the order KCL's docs use.
+    expect((await promptFor('Plane | Face | TaggedFace')).accepts).toEqual([
+      'Plane',
+      'Face',
+      'TaggedFace',
+    ])
+  })
+})

@@ -7,7 +7,7 @@ import type { SelectionService } from '@src/contracts/selection'
 import { faceReference } from '@src/lib/kcl/faceReferences'
 import { regionExpression } from '@src/lib/kcl/regionExpression'
 import { boundNames, referenceAt } from '@src/lib/kclStdlib/program'
-import { namedTypesIn } from '@src/lib/kclStdlib/types'
+import { arityOf, namedTypesIn } from '@src/lib/kclStdlib/types'
 
 /**
  * The types that mean "a face", as opposed to the thing that made one.
@@ -67,12 +67,26 @@ export function createSelectionResolver(
      */
     ready: () => (selection()?.entities.value.length ?? 0) > 0,
 
-    prompt: ({ input }) => ({
-      kind: 'selection',
-      accepts: namedTypesIn(input.type).filter((name) =>
-        GEOMETRIC.includes(name)
-      ),
-    }),
+    prompt: ({ input }) => {
+      /*
+       * How many entities the argument takes is a fact about its *type*.
+       *
+       * `[TaggedFace; 1+]` on `shell` wants several faces; `Solid` on `fillet`
+       * wants one. Reading the arity means the prompt is told the truth without
+       * anybody declaring it per operation, and an argument that grows a plural
+       * type in kcl-lib grows a plural prompt with no change here.
+       */
+      const arity = arityOf(input.type)
+      const multiple = arity !== null && (arity.max === null || arity.max > 1)
+
+      return {
+        kind: 'selection',
+        accepts: namedTypesIn(input.type).filter((name) =>
+          GEOMETRIC.includes(name)
+        ),
+        ...(multiple ? { multiple: true } : {}),
+      }
+    },
 
     /**
      * Entity ids in, KCL source out — and the edits that make it valid.

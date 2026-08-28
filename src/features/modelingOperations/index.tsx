@@ -16,6 +16,7 @@ import {
   modelingOperationsValueSpec,
 } from '@src/contracts/modelingOperations'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
+import { operationPresentationValueSpec } from '@src/contracts/operationPresentation'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { selectionService } from '@src/contracts/selection'
@@ -23,6 +24,7 @@ import { overlaysValueSpec } from '@src/contracts/shell'
 import { loadKclWasm } from '@src/features/kclAnalysis/wasmModule'
 import { OperationPrompt } from '@src/features/modelingOperations/OperationPrompt'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
+import { layoutFor } from '@src/features/modelingOperations/presentation'
 import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
 import {
   MODELING_TOOLS,
@@ -61,6 +63,18 @@ export default defineRegistryItemFactory((ctx) => {
     ctx.valueSpecs.get(argumentResolversValueSpec)
   )
 
+  /**
+   * Layouts, contributed separately from the operations they lay out.
+   *
+   * Read here and handed to whoever asks, so the runner never sees it: an
+   * argument's presentation must not be able to change whether it is answered,
+   * and the surest way to guarantee that is for the thing gathering answers to
+   * have no access to it.
+   */
+  const presentation = computed(() =>
+    ctx.valueSpecs.get(operationPresentationValueSpec)
+  )
+
   const runner = createOperationRunner({
     operations,
     resolvers,
@@ -79,11 +93,17 @@ export default defineRegistryItemFactory((ctx) => {
     },
   })
 
+  const service = {
+    ...runner,
+    layoutFor: (operationId: string) =>
+      layoutFor(presentation.value, operationId),
+  }
+
   return {
     model: runner,
     item: defineRuntimeRegistryItem({
       id: 'modelingOperations',
-      providesServices: [provideService(modelingOperationsService, runner)],
+      providesServices: [provideService(modelingOperationsService, service)],
       provides: [
         ...modelingOperations.map((operation) =>
           provide(modelingOperationsValueSpec, operation)

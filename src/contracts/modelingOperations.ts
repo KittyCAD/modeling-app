@@ -109,7 +109,27 @@ export type ArgumentPrompt =
    * clicking the model, so the sheet cannot cover it. `accepts` is the KCL types
    * that would satisfy the argument, for saying what to click.
    */
-  | { kind: 'selection'; accepts: readonly string[] }
+  | {
+      kind: 'selection'
+      accepts: readonly string[]
+      /**
+       * More than one entity answers the argument.
+       *
+       * A fact about the argument rather than about the surface showing it: a
+       * sequential prompt collects picks until told to stop, a dialog field
+       * lists them, and neither decides the multiplicity.
+       */
+      multiple?: boolean
+      /**
+       * The order the entities were picked in is part of the answer.
+       *
+       * Sweep's path and loft's profiles mean different things reordered, so the
+       * answer is a sequence rather than a set — which is why this is here and
+       * not in the presentation: reordering is editing the value, not choosing
+       * how to look at it. Implies `multiple`.
+       */
+      ordered?: boolean
+    }
 
 export interface ResolveRequest {
   input: DerivedInput
