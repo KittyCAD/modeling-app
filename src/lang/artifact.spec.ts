@@ -113,6 +113,8 @@ mySketch001 = startSketchOn(XY)
       value: {
         type: 'Solid',
         id: expect.any(String),
+        originalId: expect.any(String),
+        topologyId: expect.any(String),
         artifactId: expect.any(String),
         value: [
           {
@@ -143,6 +145,7 @@ mySketch001 = startSketchOn(XY)
           artifactId: expect.any(String),
           creatorType: 'sketch',
           units: 'mm',
+          isClosed: 'explicitly',
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'Sketch',
@@ -227,6 +230,8 @@ sk2 = startSketchOn(XY)
         value: {
           type: 'Solid',
           id: expect.any(String),
+          originalId: expect.any(String),
+          topologyId: expect.any(String),
           artifactId: expect.any(String),
           value: [
             {
@@ -274,6 +279,7 @@ sk2 = startSketchOn(XY)
             start: expect.any(Object),
             type: 'Sketch',
             units: 'mm',
+            isClosed: 'explicitly',
             tags: {
               p: {
                 type: 'TagIdentifier',
@@ -345,6 +351,8 @@ sk2 = startSketchOn(XY)
         value: {
           type: 'Solid',
           id: expect.any(String),
+          originalId: expect.any(String),
+          topologyId: expect.any(String),
           artifactId: expect.any(String),
           value: [
             {
@@ -389,6 +397,7 @@ sk2 = startSketchOn(XY)
             artifactId: expect.any(String),
             creatorType: 'sketch',
             units: 'mm',
+            isClosed: 'explicitly',
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
