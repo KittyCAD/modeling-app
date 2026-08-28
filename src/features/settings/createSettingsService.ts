@@ -445,18 +445,29 @@ export function createSettingsService(
       else grouped.set(setting.section, [setting])
     }
 
-    return [...grouped.entries()]
-      .map(([id, settingsInSection]) => {
-        // A setting whose section nobody declared still gets a home, named
-        // after its id. Losing a setting because a section contribution is
-        // missing would be the worse failure.
-        const section = declared.get(id) ?? { id, title: titleCase(id) }
-        return { ...section, settings: settingsInSection }
-      })
-      .sort(
-        (a, b) =>
-          (a.order ?? 0) - (b.order ?? 0) || a.title.localeCompare(b.title)
-      )
+    // Declared sections as well as grouped ones: a section can be a body with no
+    // rows — the keybindings table — and grouping alone would never see it. The
+    // dialog drops an empty section that has nothing to draw either way.
+    const ids = [...new Set([...grouped.keys(), ...declared.keys()])]
+
+    return (
+      ids
+        .map((id) => {
+          // A setting whose section nobody declared still gets a home, named
+          // after its id. Losing a setting because a section contribution is
+          // missing would be the worse failure.
+          const section = declared.get(id) ?? { id, title: titleCase(id) }
+          return { ...section, settings: grouped.get(id) ?? [] }
+        })
+        // A section with neither rows nor a body has nothing to draw. That is the
+        // ordinary case for a section whose settings are all desktop-only, seen
+        // from the web.
+        .filter((section) => section.settings.length > 0 || section.render)
+        .sort(
+          (a, b) =>
+            (a.order ?? 0) - (b.order ?? 0) || a.title.localeCompare(b.title)
+        )
+    )
   })
 
   const levels: readonly SettingsLevelInfo[] = [

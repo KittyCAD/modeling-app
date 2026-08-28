@@ -170,6 +170,7 @@ function harness(
     target?: 'desktop' | 'web'
     /** No file watcher, as on the web. */
     unwatched?: boolean
+    sections?: SettingsSection[]
   } = {}
 ): Harness {
   const { store, text, editExternally } = createFakeStore(
@@ -184,7 +185,7 @@ function harness(
     definitions: computed(
       () => options.definitions ?? [theme, highlightEdges, desktopOnly]
     ),
-    sections: computed(() => sections),
+    sections: computed(() => options.sections ?? sections),
     userStore: () => store,
     sessions: () => sessions.service,
     fileSystem: () => fileSystem,
@@ -495,6 +496,27 @@ theme = "solarized"
 
     expect(sectionIds(desktop)).toContain('editor')
     expect(sectionIds(web)).not.toContain('editor')
+  })
+
+  /**
+   * A section can be a body with no rows — the keybindings table. Grouping
+   * settings alone would never see one, which is exactly the bug that kept the
+   * keyboard out of the dialog.
+   */
+  it('keeps a declared section that draws its own body', () => {
+    const withBody = harness({
+      definitions: [theme],
+      sections: [
+        { id: 'appearance', title: 'Appearance', order: 0 },
+        { id: 'keybindings', title: 'Keyboard', order: 40, render: () => null },
+        { id: 'nothing', title: 'Nothing', order: 50 },
+      ],
+    })
+
+    const ids = withBody.settings.sections.value.map((section) => section.id)
+    expect(ids).toContain('keybindings')
+    // And a section with neither rows nor a body still has nothing to draw.
+    expect(ids).not.toContain('nothing')
   })
 
   it('orders sections and their settings as declared', () => {
