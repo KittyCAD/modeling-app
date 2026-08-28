@@ -72,8 +72,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 64,
+      "kind": "Custom",
       "origin": {
         "x": -210.0,
         "y": 0.0,
@@ -114,6 +114,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -314,17 +316,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 38,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -388,8 +390,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -397,29 +399,13 @@ description: Variables in memory after executing crash-box.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 80.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 80.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -437,33 +423,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 48,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 873.9799999999998,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -864.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -304.0
                         }
                       },
-                      {
-                        "n": -300.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 872.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -298.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -870.13,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -471,76 +464,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -300.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 872.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -298.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 47,
+                    "start": [
+                      {
+                        "n": 873.9799999999998,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -864.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -304.0,
-                          "units": "Mm"
+                      {
+                        "n": -300.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 46,
-                    "end_object_id": 47,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 46
                   }
                 },
+                "objectId": 48,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -557,33 +539,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 51,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -870.13,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -868.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 4.0
                         }
                       },
-                      {
-                        "n": -300.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -871.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -292.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -870.13,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -591,76 +580,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": 0.000000000000000002799998101685873,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -871.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -292.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 50,
+                    "start": [
+                      {
+                        "n": -870.13,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -868.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 4.0,
-                          "units": "Mm"
+                      {
+                        "n": -300.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 49,
-                    "end_object_id": 50,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 49
                   }
                 },
+                "objectId": 51,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -777,17 +755,17 @@ description: Variables in memory after executing crash-box.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 38,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": -1.0,
@@ -857,33 +835,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 45,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 873.9799999999998,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 879.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -307.0
                         }
                       },
-                      {
-                        "n": 0.0000000000000000037999949421747045,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 874.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -1.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 873.9799999999998,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -891,76 +876,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -300.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 874.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 44,
+                    "start": [
+                      {
+                        "n": 873.9799999999998,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 879.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -307.0,
-                          "units": "Mm"
+                      {
+                        "n": 0.0000000000000000037999949421747045,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 43,
-                    "end_object_id": 44,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 43
                   }
                 },
+                "objectId": 45,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -977,33 +951,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 42,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -870.13,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 882.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -4.0
                         }
                       },
-                      {
-                        "n": 0.0000000000000000019999978168807254,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -861.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 6.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 873.9799999999998,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1011,76 +992,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": 0.0000000000000000027999956201440355,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -861.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 6.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 41,
+                    "start": [
+                      {
+                        "n": -870.13,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 882.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -4.0,
-                          "units": "Mm"
+                      {
+                        "n": 0.0000000000000000019999978168807254,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 40,
-                    "end_object_id": 41,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 40
                   }
                 },
+                "objectId": 42,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -1197,17 +1167,17 @@ description: Variables in memory after executing crash-box.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 38,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -1271,8 +1241,8 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "beamSolid": {
@@ -1280,6 +1250,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1480,17 +1452,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 38,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -1554,8 +1526,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1592,6 +1564,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1754,17 +1728,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1820,8 +1794,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1829,57 +1803,25 @@ description: Variables in memory after executing crash-box.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -1892,6 +1834,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2054,17 +1998,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2120,8 +2064,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2129,57 +2073,25 @@ description: Variables in memory after executing crash-box.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -2206,33 +2118,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -199.99999999992593,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 193.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -205.0
                         }
                       },
-                      {
-                        "n": -200.00000000025676,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -205.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -198.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 200.00000000006747,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2240,76 +2159,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -200.0000000002362,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -205.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -198.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -199.99999999992593,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 193.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -205.0,
-                          "units": "Mm"
+                      {
+                        "n": -200.00000000025676,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -2326,33 +2234,41 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 19,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.000000000026393474782940177,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 193.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": -0.00000000008219289590512571,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 200.0000000000396,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2360,77 +2276,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -0.00000000008219289370124194,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 193.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 17,
-                    "end_object_id": 18,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 18,
+                    "start": [
+                      {
+                        "n": 0.000000000026393474782940177,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.00000000008219289590512571,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 17
                   }
                 },
+                "objectId": 19,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "horizontalCenterGuide"
@@ -2447,33 +2351,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -199.9999999999177,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -206.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -201.0
                         }
                       },
-                      {
-                        "n": 199.99999999965075,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -214.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 197.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -199.999999999921,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2481,76 +2392,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -200.00000000030815,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -214.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 197.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": -199.9999999999177,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -206.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -201.0,
-                          "units": "Mm"
+                      {
+                        "n": 199.99999999965075,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -2667,17 +2567,17 @@ description: Variables in memory after executing crash-box.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2747,33 +2647,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 200.00000000005923,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 212.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 188.0
                         }
                       },
-                      {
-                        "n": -200.0000000002465,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 207.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -191.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 200.00000000005593,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2781,76 +2688,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": 199.9999999995891,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 207.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -191.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 200.00000000005923,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 212.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 188.0,
-                          "units": "Mm"
+                      {
+                        "n": -200.0000000002465,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -2867,33 +2763,40 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 200.00000000005758,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -196.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 212.0
                         }
                       },
-                      {
-                        "n": 199.9999999995994,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 204.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 209.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -199.999999999916,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2901,76 +2804,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": 199.99999999961994,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 204.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 209.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 200.00000000005758,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -196.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 212.0,
-                          "units": "Mm"
+                      {
+                        "n": 199.9999999995994,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -2987,33 +2879,41 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.000000000013196736239219076,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -190.0
                         }
                       },
-                      {
-                        "n": -0.00000000008219290030646442,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.000000000013196735149226639,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3021,77 +2921,65 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -200.0000000001644,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -190.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 15,
+                    "start": [
+                      {
+                        "n": 0.000000000013196736239219076,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.00000000008219290030646442,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 14
                   }
                 },
+                "objectId": 16,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "verticalCenterGuide"
@@ -3208,17 +3096,17 @@ description: Variables in memory after executing crash-box.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3274,8 +3162,8 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "crashBoxShelled": {
@@ -3283,6 +3171,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3445,17 +3335,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3511,8 +3401,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3520,57 +3410,25 @@ description: Variables in memory after executing crash-box.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -3583,6 +3441,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3745,17 +3605,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3811,8 +3671,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3825,6 +3685,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3987,17 +3849,17 @@ description: Variables in memory after executing crash-box.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4053,8 +3915,8 @@ description: Variables in memory after executing crash-box.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4062,57 +3924,25 @@ description: Variables in memory after executing crash-box.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 60.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -4128,6 +3958,8 @@ description: Variables in memory after executing crash-box.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4182,17 +4014,17 @@ description: Variables in memory after executing crash-box.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 64,
+              "kind": "Custom",
               "origin": {
                 "x": -210.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4240,8 +4072,8 @@ description: Variables in memory after executing crash-box.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4254,6 +4086,8 @@ description: Variables in memory after executing crash-box.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4308,17 +4142,17 @@ description: Variables in memory after executing crash-box.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 64,
+              "kind": "Custom",
               "origin": {
                 "x": -210.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4366,8 +4200,8 @@ description: Variables in memory after executing crash-box.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4382,8 +4216,8 @@ description: Variables in memory after executing crash-box.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 64,
+      "kind": "Custom",
       "origin": {
         "x": -210.0,
         "y": 0.0,
@@ -4420,33 +4254,13 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 68,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": -84.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -150.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -100.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4454,76 +4268,92 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -150.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 67,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": -84.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": -150.0,
-                          "units": "None"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Number",
-                          "value": -100.0,
-                          "units": "None"
+                          "units": "None",
+                          "value": -100.0
                         },
                         "y": {
                           "type": "Number",
-                          "value": -150.0,
-                          "units": "None"
+                          "units": "None",
+                          "value": -150.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -84.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -150.0
                         }
                       }
                     },
-                    "start_object_id": 66,
-                    "center_object_id": 67,
+                    "start": [
+                      {
+                        "n": -84.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 66
                   }
                 },
+                "objectId": 68,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 64,
                   "origin": {
+                    "units": "mm",
                     "x": -210.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftHole"
@@ -4621,17 +4451,17 @@ description: Variables in memory after executing crash-box.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 64,
+                "kind": "Custom",
                 "origin": {
                   "x": -210.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4693,33 +4523,13 @@ description: Variables in memory after executing crash-box.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 71,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 116.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -150.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 100.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4727,76 +4537,92 @@ description: Variables in memory after executing crash-box.kcl
                         "n": -150.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 70,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 116.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": -150.0,
-                          "units": "None"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Number",
-                          "value": 100.0,
-                          "units": "None"
+                          "units": "None",
+                          "value": 100.0
                         },
                         "y": {
                           "type": "Number",
-                          "value": -150.0,
-                          "units": "None"
+                          "units": "None",
+                          "value": -150.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 116.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -150.0
                         }
                       }
                     },
-                    "start_object_id": 69,
-                    "center_object_id": 70,
+                    "start": [
+                      {
+                        "n": 116.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -150.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 69
                   }
                 },
+                "objectId": 71,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 64,
                   "origin": {
+                    "units": "mm",
                     "x": -210.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightHole"
@@ -4857,17 +4683,17 @@ description: Variables in memory after executing crash-box.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 64,
+        "kind": "Custom",
         "origin": {
           "x": -210.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -4915,8 +4741,8 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "mountHoleOffsetFromTop": {
@@ -4994,17 +4820,17 @@ description: Variables in memory after executing crash-box.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 64,
+        "kind": "Custom",
         "origin": {
           "x": -210.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5052,8 +4878,8 @@ description: Variables in memory after executing crash-box.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "topEdge": {

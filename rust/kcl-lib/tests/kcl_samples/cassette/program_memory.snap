@@ -8,8 +8,8 @@ description: Variables in memory after executing cassette.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 16.66875,
@@ -121,6 +121,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -307,17 +309,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 16,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 2.3812499999999996,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -373,8 +375,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -387,6 +389,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -485,17 +489,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 34,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 1.1906249999999998,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -543,8 +547,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -562,6 +566,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -748,17 +754,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 42,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 4.762499999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -814,8 +820,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -828,6 +834,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -926,17 +934,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 60,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 3.571875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -984,8 +992,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1003,6 +1011,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1189,17 +1199,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 68,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 7.14375,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1255,8 +1265,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1269,6 +1279,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1367,17 +1379,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 86,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 5.953125,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1425,8 +1437,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1444,6 +1456,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1630,17 +1644,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 94,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 9.524999999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1696,8 +1710,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1710,6 +1724,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1808,17 +1824,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 112,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 8.334375,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1866,8 +1882,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1885,6 +1901,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2071,17 +2089,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 120,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 11.90625,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2137,8 +2155,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2151,6 +2169,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2249,17 +2269,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 138,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 10.715625,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2307,8 +2327,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2326,6 +2346,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2512,17 +2534,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 146,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 14.2875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2578,8 +2600,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2592,6 +2614,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2690,17 +2714,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 164,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 13.096874999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2748,8 +2772,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2767,6 +2791,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2953,17 +2979,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 172,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 16.66875,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3019,8 +3045,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3033,6 +3059,8 @@ description: Variables in memory after executing cassette.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3131,17 +3159,17 @@ description: Variables in memory after executing cassette.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 190,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 15.478124999999999,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3189,8 +3217,8 @@ description: Variables in memory after executing cassette.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3214,6 +3242,8 @@ description: Variables in memory after executing cassette.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3388,17 +3418,17 @@ description: Variables in memory after executing cassette.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 16.66875,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3454,8 +3484,8 @@ description: Variables in memory after executing cassette.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3588,17 +3618,17 @@ description: Variables in memory after executing cassette.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 16.66875,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3774,17 +3804,17 @@ description: Variables in memory after executing cassette.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 16.66875,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3840,8 +3870,8 @@ description: Variables in memory after executing cassette.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "splineSeed": {
@@ -3854,33 +3884,70 @@ description: Variables in memory after executing cassette.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
                 "kind": {
                   "arc": {
-                    "start": [
+                    "center": [
                       {
-                        "n": 0.2227836751499271,
+                        "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
                       {
-                        "n": 0.03928277279032212,
+                        "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 11,
+                    "construction": false,
+                    "ctor": {
+                      "center": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.39947379903583
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 1.9652477435492925
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.658705348808148
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.9977824288741818
+                        }
+                      }
+                    },
                     "end": [
                       {
                         "n": 0.21257770862345787,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3888,108 +3955,65 @@ description: Variables in memory after executing cassette.kcl
                         "n": 0.07737195840745247,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.658705348808148,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.9977824288741818,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.39947379903583,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 1.9652477435492925,
-                          "units": "Mm"
-                        }
-                      },
-                      "center": {
-                        "x": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "start_object_id": 9,
-                    "end_object_id": 10,
-                    "center_object_id": 11,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 10,
+                    "start": [
+                      {
+                        "n": 0.2227836751499271,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.03928277279032212,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 9
                   }
                 },
+                "objectId": 12,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 16.66875,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerArc"
@@ -4118,17 +4142,17 @@ description: Variables in memory after executing cassette.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 16.66875,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4198,15 +4222,13 @@ description: Variables in memory after executing cassette.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
                 "kind": {
                   "arc": {
-                    "start": [
+                    "center": [
                       {
-                        "n": 0.2362204724409449,
+                        "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4214,17 +4236,56 @@ description: Variables in memory after executing cassette.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 4,
+                    "construction": false,
+                    "ctor": {
+                      "center": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.908846518073248
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 1.041889066001582
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 6.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      }
+                    },
                     "end": [
                       {
                         "n": 0.23263175268004915,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4232,108 +4293,65 @@ description: Variables in memory after executing cassette.kcl
                         "n": 0.041019254566991424,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 6.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.908846518073248,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 1.041889066001582,
-                          "units": "Mm"
-                        }
-                      },
-                      "center": {
-                        "x": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
-                    "center_object_id": 4,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 0.2362204724409449,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 5,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 16.66875,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerArc"
@@ -4350,33 +4368,40 @@ description: Variables in memory after executing cassette.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 8,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 5.908846518073248,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.658705348808148
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 0.9977824288741818
                         }
                       },
-                      {
-                        "n": 1.041889066001582,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.908846518073248
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 1.041889066001582
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 5.658705348808148,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4384,76 +4409,65 @@ description: Variables in memory after executing cassette.kcl
                         "n": 0.9977824288741818,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.908846518073248,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 1.041889066001582,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 7,
+                    "start": [
+                      {
+                        "n": 5.908846518073248,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.658705348808148,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.9977824288741818,
-                          "units": "Mm"
+                      {
+                        "n": 1.041889066001582,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 6,
-                    "end_object_id": 7,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 6
                   }
                 },
+                "objectId": 8,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 16.66875,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radialIn"
@@ -4470,33 +4484,40 @@ description: Variables in memory after executing cassette.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 15,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 5.39947379903583,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.638155724715451
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 2.0521208599540124
                         }
                       },
-                      {
-                        "n": 1.9652477435492925,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 5.39947379903583
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 1.9652477435492925
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 5.638155724715451,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4504,76 +4525,65 @@ description: Variables in memory after executing cassette.kcl
                         "n": 2.0521208599540124,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.39947379903583,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 1.9652477435492925,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 14,
+                    "start": [
+                      {
+                        "n": 5.39947379903583,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 5.638155724715451,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 2.0521208599540124,
-                          "units": "Mm"
+                      {
+                        "n": 1.9652477435492925,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 13,
-                    "end_object_id": 14,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 13
                   }
                 },
+                "objectId": 15,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 16.66875,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radialOut"

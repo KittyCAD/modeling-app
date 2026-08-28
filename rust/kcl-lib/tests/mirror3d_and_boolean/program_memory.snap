@@ -7,27 +7,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 32,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "mm"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_17_on": {
@@ -130,27 +110,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 32,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "mm"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_98_on": {
@@ -237,6 +197,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -401,27 +363,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 32,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -459,8 +401,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -476,6 +418,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -530,17 +474,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 97,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -588,8 +532,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -602,6 +546,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -656,17 +602,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 97,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -714,8 +660,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -730,6 +676,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -801,27 +749,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 32,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -851,8 +779,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,
@@ -864,27 +792,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 32,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "mm"
+      "artifactId": "[uuid]"
     }
   },
   "flangeBlank": {
@@ -892,6 +800,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -946,17 +856,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1000,8 +910,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1053,17 +963,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1121,33 +1031,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 55.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1155,76 +1045,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 3,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 55.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 55.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 2,
-                    "center_object_id": 3,
+                    "start": [
+                      {
+                        "n": 55.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerProfile"
@@ -1275,17 +1181,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1356,6 +1262,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1410,17 +1318,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1464,8 +1372,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1478,6 +1386,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1532,17 +1442,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1586,8 +1496,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1600,6 +1510,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1654,17 +1566,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1708,8 +1620,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1823,27 +1735,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 32,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1970,17 +1862,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 97,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2119,27 +2011,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 32,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2183,6 +2055,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2237,17 +2111,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 8,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2291,8 +2165,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2319,33 +2193,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 27.500000004,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0000000010000000787403704,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2353,76 +2207,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 11,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 28.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 10,
-                    "center_object_id": 11,
+                    "start": [
+                      {
+                        "n": 27.500000004,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 10
                   }
                 },
+                "objectId": 12,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 8,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boreProfile"
@@ -2473,17 +2343,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 8,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2575,17 +2445,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 8,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2769,27 +2639,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 32,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2827,8 +2677,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -2869,17 +2719,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 97,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2927,8 +2777,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -2969,17 +2819,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 97,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3027,8 +2877,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region004": {
@@ -3101,27 +2951,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 32,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -3151,8 +2981,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "robotBoltCircleDiameter": {
@@ -3190,6 +3020,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3244,17 +3076,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3298,8 +3130,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3312,6 +3144,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3366,17 +3200,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3420,8 +3254,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3434,6 +3268,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3488,17 +3324,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3542,8 +3378,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3556,6 +3392,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3610,17 +3448,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3664,8 +3502,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3678,6 +3516,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3732,17 +3572,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3786,8 +3626,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3800,6 +3640,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3854,17 +3696,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3908,8 +3750,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3922,6 +3764,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3976,17 +3820,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4030,8 +3874,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4044,6 +3888,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4098,17 +3944,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 24,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4152,8 +3998,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4177,6 +4023,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4231,17 +4079,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 24,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4285,8 +4133,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4304,33 +4152,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 2.25,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4338,76 +4166,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 27,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.25,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.25
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 26,
-                    "center_object_id": 27,
+                    "start": [
+                      {
+                        "n": 2.25,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 24,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "holeProfile"
@@ -4458,17 +4302,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 24,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4560,17 +4404,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 24,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4650,6 +4494,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4704,17 +4550,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 16,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4758,8 +4604,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4811,17 +4657,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 16,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4879,33 +4725,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 35.525,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4913,76 +4739,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 19,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.525,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.525
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 18,
-                    "center_object_id": 19,
+                    "start": [
+                      {
+                        "n": 35.525,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 18
                   }
                 },
+                "objectId": 20,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 16,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "recessProfile"
@@ -5033,17 +4875,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 16,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5101,33 +4943,40 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 36,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -38.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -38.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.5
                         }
                       },
-                      {
-                        "n": 47.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -38.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -38.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5135,70 +4984,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 17.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -38.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 35,
+                    "start": [
+                      {
+                        "n": -38.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -38.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 17.5,
-                          "units": "Mm"
+                      {
+                        "n": 47.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 34,
-                    "end_object_id": 35,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 34
                   }
                 },
+                "objectId": 36,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5215,33 +5053,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 86,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5249,71 +5095,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 47.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 84,
-                    "end_object_id": 85,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 85,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 84
                   }
                 },
+                "objectId": 86,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -5330,33 +5164,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 91,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       },
-                      {
-                        "n": 47.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5364,71 +5206,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 47.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 89,
-                    "end_object_id": 90,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 90,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 47.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 89
                   }
                 },
+                "objectId": 91,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -5445,33 +5275,40 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 39,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -38.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.5
                         }
                       },
-                      {
-                        "n": 17.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -38.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5479,70 +5316,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 17.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -38.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 17.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 38,
+                    "start": [
+                      {
+                        "n": -38.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 17.5,
-                          "units": "Mm"
+                      {
+                        "n": 17.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 37,
-                    "end_object_id": 38,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 37
                   }
                 },
+                "objectId": 39,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5559,33 +5385,40 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 43,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -28.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       },
-                      {
-                        "n": 17.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5593,70 +5426,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 47.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 17.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 42,
+                    "start": [
+                      {
+                        "n": -28.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
+                      {
+                        "n": 17.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 41,
-                    "end_object_id": 42,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 41
                   }
                 },
+                "objectId": 43,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5673,33 +5495,40 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 47,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -28.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -38.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       },
-                      {
-                        "n": 47.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -38.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5707,70 +5536,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 47.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 46,
+                    "start": [
+                      {
+                        "n": -28.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -38.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
+                      {
+                        "n": 47.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 45,
-                    "end_object_id": 46,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 45
                   }
                 },
+                "objectId": 47,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5787,33 +5605,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 56,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -28.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 17.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5821,71 +5647,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 17.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 54,
-                    "end_object_id": 55,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 55,
+                    "start": [
+                      {
+                        "n": -28.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 17.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 54
                   }
                 },
+                "objectId": 56,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -5902,33 +5716,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 60,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -28.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5936,71 +5758,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 58,
-                    "end_object_id": 59,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 59,
+                    "start": [
+                      {
+                        "n": -28.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 58
                   }
                 },
+                "objectId": 60,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -6017,33 +5827,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 69,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -37.5
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6051,71 +5869,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": -37.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -37.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 67,
-                    "end_object_id": 68,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 68,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 67
                   }
                 },
+                "objectId": 69,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -6132,33 +5938,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 74,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -37.5
                         }
                       },
-                      {
-                        "n": -37.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -37.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6166,71 +5980,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": -37.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -37.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -37.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 72,
-                    "end_object_id": 73,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 73,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -37.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 72
                   }
                 },
+                "objectId": 74,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -6247,33 +6049,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 79,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -28.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": -37.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -28.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -37.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -28.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6281,71 +6091,59 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -37.5,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -28.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 77,
-                    "end_object_id": 78,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 78,
+                    "start": [
+                      {
+                        "n": -28.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -37.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 77
                   }
                 },
+                "objectId": 79,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -6464,27 +6262,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 32,
-                "value": "end",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "mm"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -6542,33 +6320,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 131,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 36.94729125485455,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 53.56781911231327,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 35.00000000001842,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6576,76 +6334,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 52.000000000031235,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 130,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 36.95,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 53.57,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 35.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 52.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 52.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 36.95
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 53.57
                         }
                       }
                     },
-                    "start_object_id": 129,
-                    "center_object_id": 130,
+                    "start": [
+                      {
+                        "n": 36.94729125485455,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 53.56781911231327,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 129
                   }
                 },
+                "objectId": 131,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -6662,33 +6436,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 135,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 35.43046515369339,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 26.537338888264006,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 35.00000000001477,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6696,76 +6450,92 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 29.000000000034373,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 134,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.43,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 26.54,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 35.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 29.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 29.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.43
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 26.54
                         }
                       }
                     },
-                    "start_object_id": 133,
-                    "center_object_id": 134,
+                    "start": [
+                      {
+                        "n": 35.43046515369339,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 26.537338888264006,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 133
                   }
                 },
+                "objectId": 135,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -6782,33 +6552,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 101,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.000000000002243591484256174,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 47.50000000000449,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6816,77 +6594,65 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 0.000000000004841999265473958,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 99,
-                    "end_object_id": 100,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 100,
+                    "start": [
+                      {
+                        "n": 0.000000000002243591484256174,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 99
                   }
                 },
+                "objectId": 101,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6903,33 +6669,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 107,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 47.50000000000673,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 52.0
                         }
                       },
-                      {
-                        "n": 0.000000000009683998535789916,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 47.500000000008974,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6937,77 +6711,65 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 52.00000000001452,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 52.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 105,
-                    "end_object_id": 106,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 106,
+                    "start": [
+                      {
+                        "n": 47.50000000000673,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000009683998535789916,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 105
                   }
                 },
+                "objectId": 107,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7024,33 +6786,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 112,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 47.50000000001122,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 52.0
                         }
                       },
-                      {
-                        "n": 52.00000000001937,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 52.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 35.000000000013465,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7058,77 +6828,65 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 52.00000000002421,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 52.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 52.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 110,
-                    "end_object_id": 111,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 111,
+                    "start": [
+                      {
+                        "n": 47.50000000001122,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 52.00000000001937,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 110
                   }
                 },
+                "objectId": 112,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7145,33 +6903,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 116,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 47.50000000000798,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 29.0
                         }
                       },
-                      {
-                        "n": 29.00000000003171,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 29.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 35.00000000001524,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7179,77 +6945,65 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 29.00000000003171,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 47.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 29.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 29.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 114,
-                    "end_object_id": 115,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 115,
+                    "start": [
+                      {
+                        "n": 47.50000000000798,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 29.00000000003171,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 114
                   }
                 },
+                "objectId": 116,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7266,33 +7020,41 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 122,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 35.00000000001524,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 52.0
                         }
                       },
-                      {
-                        "n": 29.00000000003171,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 35.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 29.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 35.0000000000157,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7300,77 +7062,65 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": 52.000000000029054,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 29.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 35.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 52.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 120,
-                    "end_object_id": 121,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 121,
+                    "start": [
+                      {
+                        "n": 35.00000000001524,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 29.00000000003171,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 120
                   }
                 },
+                "objectId": 122,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -7468,17 +7218,17 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 97,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -7546,33 +7296,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 142,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 37.14311155648217,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 40.56339808128199,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.0000000000040491874106296305,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7580,70 +7310,86 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": -0.0000000000042938384879294345,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 141,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 37.14,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 40.56,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 37.14
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 40.56
                         }
                       }
                     },
-                    "start_object_id": 140,
-                    "center_object_id": 141,
+                    "start": [
+                      {
+                        "n": 37.14311155648217,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 40.56339808128199,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 140
                   }
                 },
+                "objectId": 142,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -7660,33 +7406,13 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 146,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 49.710937631158814,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 47.49089575728714,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.0000000000049868184560574685,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7694,70 +7420,86 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
                         "n": -0.000000000005189595794271248,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 145,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 49.71,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 47.49,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 49.71
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 47.49
                         }
                       }
                     },
-                    "start_object_id": 144,
-                    "center_object_id": 145,
+                    "start": [
+                      {
+                        "n": 49.710937631158814,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 47.49089575728714,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 144
                   }
                 },
+                "objectId": 146,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 32,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -7857,27 +7599,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 32,
-                "value": "end",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "mm"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -7922,6 +7644,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8086,27 +7810,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 32,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -8144,8 +7848,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8158,6 +7862,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -8322,27 +8028,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 32,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -8380,8 +8066,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -8394,6 +8080,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -8501,27 +8189,7 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 32,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -8559,8 +8227,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": null,

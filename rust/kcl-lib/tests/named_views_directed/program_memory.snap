@@ -6,59 +6,58 @@ description: Variables in memory after executing named_views_directed.kcl
   "full": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "directed",
-        "direction": {
-          "x": -0.6917144638660746,
-          "y": -0.6917144638660746,
-          "z": -0.20751433915982237,
-          "units": null
-        },
-        "up": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        }
-      },
-      "target": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 10.0,
-        "units": "mm"
-      },
       "distance": {
         "n": 200.0,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Perspective"
+      "look": {
+        "direction": {
+          "units": null,
+          "x": -0.6917144638660746,
+          "y": -0.6917144638660746,
+          "z": -0.20751433915982237
+        },
+        "type": "directed",
+        "up": {
+          "units": null,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      },
+      "projection": "Perspective",
+      "target": {
+        "units": "mm",
+        "x": 0.0,
+        "y": 0.0,
+        "z": 10.0
+      }
     }
   },
   "minimal": {
     "type": "CameraView",
     "value": {
+      "distance": null,
       "look": {
-        "type": "directed",
         "direction": {
+          "units": null,
           "x": 0.0,
           "y": 0.4472135954999579,
-          "z": -0.8944271909999159,
-          "units": null
+          "z": -0.8944271909999159
         },
+        "type": "directed",
         "up": {
+          "units": null,
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0,
-          "units": null
+          "z": 1.0
         }
       },
-      "target": null,
-      "distance": null,
-      "projection": "Orthographic"
+      "projection": "Orthographic",
+      "target": null
     }
   }
 }

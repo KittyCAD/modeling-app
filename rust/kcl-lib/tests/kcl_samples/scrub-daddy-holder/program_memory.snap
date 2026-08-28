@@ -72,8 +72,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 33,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -105,6 +105,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -267,17 +269,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 13,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -333,8 +335,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -446,17 +448,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 13,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -512,8 +514,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "baseSketch": {
@@ -526,33 +528,40 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 17,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.5
                         }
                       },
-                      {
-                        "n": -10.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 30.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -560,76 +569,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": -10.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 16,
+                    "start": [
+                      {
+                        "n": -30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.5,
-                          "units": "Mm"
+                      {
+                        "n": -10.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 15,
-                    "end_object_id": 16,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 15
                   }
                 },
+                "objectId": 17,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -646,33 +644,40 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.5
                         }
                       },
-                      {
-                        "n": -10.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 30.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -680,76 +685,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 10.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 19,
+                    "start": [
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.5,
-                          "units": "Mm"
+                      {
+                        "n": -10.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 18,
-                    "end_object_id": 19,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 18
                   }
                 },
+                "objectId": 20,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -766,33 +760,40 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.5
                         }
                       },
-                      {
-                        "n": 10.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -30.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -800,76 +801,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 10.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 23,
+                    "start": [
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.5,
-                          "units": "Mm"
+                      {
+                        "n": 10.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 22
                   }
                 },
+                "objectId": 24,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -886,33 +876,40 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.5
                         }
                       },
-                      {
-                        "n": 10.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -30.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -920,76 +917,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": -10.5,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": -30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.5,
-                          "units": "Mm"
+                      {
+                        "n": 10.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1106,17 +1092,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 13,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1192,6 +1178,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1354,17 +1342,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 13,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1420,8 +1408,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1429,57 +1417,25 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 5.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 5.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 5.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 5.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -1495,6 +1451,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1569,17 +1527,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 33,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 4.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1627,8 +1585,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1636,15 +1594,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 2.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1657,6 +1607,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1731,17 +1683,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 33,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 4.5,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1789,8 +1741,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1798,15 +1750,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 2.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1863,17 +1807,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1917,8 +1861,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "magnetSketch": {
@@ -1931,33 +1875,13 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 8,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 15.396313466227804,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.6526521522376236,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 17.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1965,76 +1889,92 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 0.0003064835769238815,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 7,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 12.73,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.99,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 11.15,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 11.15
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 12.73
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -1.99
                         }
                       }
                     },
-                    "start_object_id": 6,
-                    "center_object_id": 7,
+                    "start": [
+                      {
+                        "n": 15.396313466227804,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.6526521522376236,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 6
                   }
                 },
+                "objectId": 8,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2051,33 +1991,41 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.000000000000000000012760230031337801,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 11.15
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": -0.000000000000000000017250014904350297,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 17.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2085,77 +2033,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 0.00030648357692388147,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 11.15,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 0.000000000000000000012760230031337801,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.000000000000000000017250014904350297,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2206,17 +2142,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2287,6 +2223,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2341,17 +2279,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2395,8 +2333,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2409,6 +2347,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2463,17 +2403,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2517,8 +2457,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2566,17 +2506,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 33,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 4.5,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2624,8 +2564,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "pegSketch": {
@@ -2638,33 +2578,13 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 37,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 24.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 17.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2672,76 +2592,92 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 36,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 24.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 17.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 17.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 24.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 35,
-                    "center_object_id": 36,
+                    "start": [
+                      {
+                        "n": 24.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 35
                   }
                 },
+                "objectId": 37,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 33,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 4.5,
-                    "units": "mm"
+                    "z": 4.5
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2758,33 +2694,41 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 40,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 17.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 17.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2792,77 +2736,65 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 17.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 38,
-                    "end_object_id": 39,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Free",
-                    "construction": true
+                    "end_object_id": 39,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 38
                   }
                 },
+                "objectId": 40,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 33,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 4.5,
-                    "units": "mm"
+                    "z": 4.5
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2913,17 +2845,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 33,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 4.5,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

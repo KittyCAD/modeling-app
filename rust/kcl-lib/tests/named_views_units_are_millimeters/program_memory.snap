@@ -6,79 +6,76 @@ description: Variables in memory after executing named_views_units_are_millimete
   "direction": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "directed",
-        "direction": {
-          "x": 0.7071067811865475,
-          "y": 0.7071067811865475,
-          "z": 0.0,
-          "units": null
-        },
-        "up": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        }
-      },
-      "target": null,
       "distance": {
         "n": 1000.0,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Orthographic"
+      "look": {
+        "direction": {
+          "units": null,
+          "x": 0.7071067811865475,
+          "y": 0.7071067811865475,
+          "z": 0.0
+        },
+        "type": "directed",
+        "up": {
+          "units": null,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      },
+      "projection": "Orthographic",
+      "target": null
     }
   },
   "inches": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Front"
-      },
-      "target": {
-        "x": 25.4,
-        "y": 50.8,
-        "z": 0.0,
-        "units": "mm"
-      },
       "distance": {
         "n": 50.8,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Orthographic"
+      "look": {
+        "orientation": "Front",
+        "type": "oriented"
+      },
+      "projection": "Orthographic",
+      "target": {
+        "units": "mm",
+        "x": 25.4,
+        "y": 50.8,
+        "z": 0.0
+      }
     }
   },
   "mixed": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Top"
-      },
-      "target": {
-        "x": 25.4,
-        "y": 25.4,
-        "z": 25.4,
-        "units": "mm"
-      },
       "distance": {
         "n": 100.0,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Orthographic"
+      "look": {
+        "orientation": "Top",
+        "type": "oriented"
+      },
+      "projection": "Orthographic",
+      "target": {
+        "units": "mm",
+        "x": 25.4,
+        "y": 25.4,
+        "z": 25.4
+      }
     }
   }
 }

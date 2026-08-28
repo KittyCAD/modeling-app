@@ -104,6 +104,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -266,17 +268,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 21,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -332,8 +334,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -351,33 +353,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 25,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -12.0
                         }
                       },
-                      {
-                        "n": -12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -385,76 +394,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": -12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 24,
+                    "start": [
+                      {
+                        "n": -1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.0,
-                          "units": "None"
+                      {
+                        "n": -12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 23,
-                    "end_object_id": 24,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 23
                   }
                 },
+                "objectId": 25,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -471,33 +469,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 34,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -12.0
                         }
                       },
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -505,76 +510,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": -12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 33,
+                    "start": [
+                      {
+                        "n": -1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.0,
-                          "units": "None"
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 32,
-                    "end_object_id": 33,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 32
                   }
                 },
+                "objectId": 34,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -691,17 +685,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 21,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -771,33 +765,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       },
-                      {
-                        "n": -12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -805,76 +806,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                      {
+                        "n": -12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -891,33 +881,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 31,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       },
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 1.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -925,76 +922,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 30,
+                    "start": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 29,
-                    "end_object_id": 30,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 29
                   }
                 },
+                "objectId": 31,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"
@@ -1012,6 +998,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [],
       "sketch": {
@@ -1031,6 +1019,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1193,17 +1183,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1259,8 +1249,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1273,6 +1263,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1435,17 +1427,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1501,8 +1493,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1515,6 +1507,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1677,17 +1671,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1743,8 +1737,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1757,6 +1751,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1919,17 +1915,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1985,8 +1981,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1999,6 +1995,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2161,17 +2159,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2227,8 +2225,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2241,6 +2239,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2403,17 +2403,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 0,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2469,8 +2469,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2485,6 +2485,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2647,17 +2649,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2713,8 +2715,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -2732,33 +2734,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
                         }
                       },
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2766,76 +2775,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -2852,15 +2850,58 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2868,94 +2909,47 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -3072,17 +3066,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3152,15 +3146,58 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3168,94 +3205,47 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -3272,33 +3262,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
                         }
                       },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 10.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3306,76 +3303,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 10.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "None"
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"
@@ -3393,6 +3379,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3555,17 +3543,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 42,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3621,8 +3609,8 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3640,33 +3628,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 46,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       },
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 14.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3674,76 +3669,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 45,
+                    "start": [
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 44,
-                    "end_object_id": 45,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 44
                   }
                 },
+                "objectId": 46,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 42,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -3760,15 +3744,58 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 55,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 54,
                     "start": [
                       {
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3776,94 +3803,47 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 14.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 53,
-                    "end_object_id": 54,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 53
                   }
                 },
+                "objectId": 55,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 42,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -3980,17 +3960,17 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 42,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4060,15 +4040,58 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 49,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 48,
                     "start": [
                       {
                         "n": 14.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4076,94 +4099,47 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 47,
-                    "end_object_id": 48,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 47
                   }
                 },
+                "objectId": 49,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 42,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -4180,33 +4156,40 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 52,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 12.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
                         }
                       },
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "None",
+                          "value": 14.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4214,76 +4197,65 @@ description: Variables in memory after executing consumed_solid_join_surfaces_re
                         "n": 14.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
+                    "end_freedom": "Free",
+                    "end_object_id": 51,
+                    "start": [
+                      {
+                        "n": 14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 12.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 14.0,
-                          "units": "None"
+                      {
+                        "n": 14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 50,
-                    "end_object_id": 51,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 50
                   }
                 },
+                "objectId": 52,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 42,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"

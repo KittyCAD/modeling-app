@@ -8,6 +8,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -82,17 +84,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -140,7 +142,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -148,29 +151,13 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "length": {
-            "n": 0.0625,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "length": {
-            "n": 0.0625,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -200,6 +187,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -308,27 +297,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 1,
-          "value": "shaftEnd",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -348,7 +317,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -443,27 +413,7 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 1,
-        "value": "shaftEnd",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -483,7 +433,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "keywayWidth": {
@@ -500,6 +451,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -574,17 +527,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -632,7 +585,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -706,17 +660,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "XY",
         "objectId": 0,
+        "kind": "XY",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -764,7 +718,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "shaftSketch": {
@@ -772,8 +727,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "XY",
       "objectId": 0,
+      "kind": "XY",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -805,6 +760,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -879,17 +836,17 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XY",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -937,7 +894,8 @@ description: Variables in memory after executing rolling_ball_chamfer_interactin
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

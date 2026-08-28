@@ -147,17 +147,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -217,8 +217,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "baseSketch": {
@@ -231,110 +231,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 7.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 12.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 7.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 12.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 2.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 7.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 12.0,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 7.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 2.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
+                      {
+                        "n": 12.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hi"
@@ -351,110 +351,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 7.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 7.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 12.0
                         }
                       },
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 7.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 6.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 7.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 12.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 7.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 6.0,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 7.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 7.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 12.0,
-                          "units": "None"
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -547,17 +547,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -623,110 +623,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 7.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 6.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 7.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 6.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 2.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 7.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 6.0,
-                          "units": "None"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "yoyo"
@@ -744,6 +744,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -906,17 +908,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -976,8 +978,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -990,6 +992,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1152,17 +1156,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1222,8 +1226,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1311,17 +1315,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 11,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1373,8 +1377,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "cutSketch": {
@@ -1387,110 +1391,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 15,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -3.29,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.03
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.4
                         }
                       },
-                      {
-                        "n": 4.75,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -3.29
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.75
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 2.03,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 2.4,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": -3.29,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 4.75,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 14,
+                    "start": [
+                      {
+                        "n": -3.29,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 2.03,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 2.4,
-                          "units": "None"
+                      {
+                        "n": 4.75,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 13,
-                    "end_object_id": 14,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 13
                   }
                 },
+                "objectId": 15,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut1"
@@ -1507,110 +1511,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 18,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 2.03,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -3.49
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.31
                         }
                       },
-                      {
-                        "n": 2.44,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.03
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 2.44
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -3.49,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 0.31,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 2.03,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 2.44,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 17,
+                    "start": [
+                      {
+                        "n": 2.03,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": -3.49,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.31,
-                          "units": "None"
+                      {
+                        "n": 2.44,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 16,
-                    "end_object_id": 17,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 16
                   }
                 },
+                "objectId": 18,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut2"
@@ -1627,110 +1631,110 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 21,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -3.49,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -3.29
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.75
                         }
                       },
-                      {
-                        "n": 0.31,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": -3.49
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.31
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -3.29,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 4.75,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": -3.49,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.31,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 20,
+                    "start": [
+                      {
+                        "n": -3.49,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": -3.29,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 4.75,
-                          "units": "None"
+                      {
+                        "n": 0.31,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 19,
-                    "end_object_id": 20,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 19
                   }
                 },
+                "objectId": 21,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut3"
@@ -1840,17 +1844,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 11,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -1917,6 +1921,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2041,17 +2047,17 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 11,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2103,8 +2109,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

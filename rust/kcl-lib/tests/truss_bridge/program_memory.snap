@@ -84,33 +84,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 43.15
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 43.15,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -118,76 +125,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 66.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 43.15,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -204,33 +200,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 29,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 43.15,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 117.74
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 43.15
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 117.74,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -238,76 +241,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 66.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 43.15,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 28,
+                    "start": [
+                      {
+                        "n": 43.15,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 117.74,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 27,
-                    "end_object_id": 28,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 27
                   }
                 },
+                "objectId": 29,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -324,33 +316,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 33,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 117.74,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 175.28
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 117.74
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 175.28,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -358,76 +357,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 66.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 117.74,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 32,
+                    "start": [
+                      {
+                        "n": 117.74,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 175.28,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 31,
-                    "end_object_id": 32,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 31
                   }
                 },
+                "objectId": 33,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -444,33 +432,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 42,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 43.15,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 82.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 43.15
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 82.1,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -478,76 +473,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 43.15,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 41,
+                    "start": [
+                      {
+                        "n": 43.15,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 82.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 40,
-                    "end_object_id": 41,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 40
                   }
                 },
+                "objectId": 42,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -564,33 +548,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 54,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 117.74,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 82.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 117.74
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 82.1,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -598,76 +589,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 117.74,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 53,
+                    "start": [
+                      {
+                        "n": 117.74,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 82.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 52,
-                    "end_object_id": 53,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 52
                   }
                 },
+                "objectId": 54,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -684,33 +664,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 8,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 117.74,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 167.3
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 117.74
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 167.3,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -718,76 +705,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 117.74,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 7,
+                    "start": [
+                      {
+                        "n": 117.74,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 167.3,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 6,
-                    "end_object_id": 7,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 6
                   }
                 },
+                "objectId": 8,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -804,33 +780,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 47,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 167.3,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 175.28
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 167.3
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 175.28,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -838,76 +821,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 66.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 167.3,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 46,
+                    "start": [
+                      {
+                        "n": 167.3,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 175.28,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 45,
-                    "end_object_id": 46,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 45
                   }
                 },
+                "objectId": 47,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -924,33 +896,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 175.28,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 212.38
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 66.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 175.28
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 66.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 212.38,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -958,76 +937,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 175.28,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 66.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 11,
+                    "start": [
+                      {
+                        "n": 175.28,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 212.38,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 66.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 10,
-                    "end_object_id": 11,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 10
                   }
                 },
+                "objectId": 12,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1044,33 +1012,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 212.38,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 167.3
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 212.38
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 167.3,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1078,76 +1053,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 212.38,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 15,
+                    "start": [
+                      {
+                        "n": 212.38,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 167.3,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 14
                   }
                 },
+                "objectId": 16,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1164,33 +1128,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 82.1,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 167.3
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 82.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 167.3,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1198,76 +1169,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 82.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 19,
+                    "start": [
+                      {
+                        "n": 82.1,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 167.3,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 18,
-                    "end_object_id": 19,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 18
                   }
                 },
+                "objectId": 20,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -1284,33 +1244,40 @@ description: Variables in memory after executing truss_bridge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 82.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 82.1,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1318,76 +1285,65 @@ description: Variables in memory after executing truss_bridge.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 23,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 82.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 22
                   }
                 },
+                "objectId": 24,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -1774,17 +1730,17 @@ description: Variables in memory after executing truss_bridge.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

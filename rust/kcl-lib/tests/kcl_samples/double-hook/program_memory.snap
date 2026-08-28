@@ -99,6 +99,8 @@ description: Variables in memory after executing double-hook.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -153,17 +155,17 @@ description: Variables in memory after executing double-hook.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 74,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -207,8 +209,8 @@ description: Variables in memory after executing double-hook.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -226,33 +228,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 33,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -10.000000000011111,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.5
                         }
                       },
-                      {
-                        "n": -4.999999983499999,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -260,76 +269,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 29.000000022500004,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 32,
+                    "start": [
+                      {
+                        "n": -10.000000000011111,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 30.5,
-                          "units": "Mm"
+                      {
+                        "n": -4.999999983499999,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 31,
-                    "end_object_id": 32,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 31
                   }
                 },
+                "objectId": 33,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "connector"
@@ -346,51 +344,13 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -7.9999999909999975,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.00000000014444453818048814,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -4.9999999925,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -3.0000000005333334,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -398,90 +358,122 @@ description: Variables in memory after executing double-hook.kcl
                         "n": -4.999999989888886,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 10,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -3.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -6.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -3.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -6.5
                         }
                       }
                     },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
-                    "center_object_id": 10,
-                    "start_freedom": "Fixed",
+                    "end": [
+                      {
+                        "n": -0.00000000014444453818048814,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -4.9999999925,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -7.9999999909999975,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 11,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerBend"
@@ -498,33 +490,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 18,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -3.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -7.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -6.5
                         }
                       },
-                      {
-                        "n": -7.999999987255553,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -3.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -6.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -7.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -532,76 +531,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": -7.999999982755554,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -3.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -6.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 17,
+                    "start": [
+                      {
+                        "n": -3.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -7.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -6.5,
-                          "units": "Mm"
+                      {
+                        "n": -7.999999987255553,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 16,
-                    "end_object_id": 17,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 16
                   }
                 },
+                "objectId": 18,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerBridge"
@@ -618,33 +606,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000004095558385445443,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       },
-                      {
-                        "n": 0.0000000029999996824717065,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.00000000000000008191116774986446,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -652,76 +647,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": -4.999999994,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -0.00000000000000004095558385445443,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                      {
+                        "n": 0.0000000029999996824717065,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerTip"
@@ -1006,17 +990,17 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1110,33 +1094,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 40,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -10.000000000011111,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       },
-                      {
-                        "n": 29.000000027000002,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1144,76 +1135,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 39.00000003,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 30.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 39,
+                    "start": [
+                      {
+                        "n": -10.000000000011111,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                      {
+                        "n": 29.000000027000002,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 38,
-                    "end_object_id": 39,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 38
                   }
                 },
+                "objectId": 40,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperBottom"
@@ -1230,51 +1210,13 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 26,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -4.999999990999999,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -7.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -7.999999980966665,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -6.999999999277778,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1282,90 +1224,122 @@ description: Variables in memory after executing double-hook.kcl
                         "n": -4.999999980188888,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 25,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -7.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -7.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -7.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -6.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -6.5
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -7.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -10.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -3.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -3.5
                         }
                       }
                     },
-                    "start_object_id": 23,
-                    "end_object_id": 24,
-                    "center_object_id": 25,
-                    "start_freedom": "Fixed",
+                    "end": [
+                      {
+                        "n": -7.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -7.999999980966665,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 24,
+                    "start": [
+                      {
+                        "n": -10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -4.999999990999999,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 23
                   }
                 },
+                "objectId": 26,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperEntry"
@@ -1382,51 +1356,13 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 47,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -9.999999999866667,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 39.0000000315,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -13.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 42.000000009000004,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -12.999999999477778,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1434,90 +1370,122 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 39.000000010111116,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 46,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -10.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -13.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -13.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -13.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 43.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 43.5
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -13.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -10.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       }
                     },
-                    "start_object_id": 44,
-                    "end_object_id": 45,
-                    "center_object_id": 46,
-                    "start_freedom": "Fixed",
+                    "end": [
+                      {
+                        "n": -13.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 42.000000009000004,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 45,
+                    "start": [
+                      {
+                        "n": -9.999999999866667,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 39.0000000315,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 44
                   }
                 },
+                "objectId": 47,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperLowerBend"
@@ -1534,33 +1502,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 54,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -13.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -23.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 43.5
                         }
                       },
-                      {
-                        "n": 42.000000012744444,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -13.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 43.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -23.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1568,76 +1543,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 42.000000017244446,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -13.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 43.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 53,
+                    "start": [
+                      {
+                        "n": -13.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -23.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 43.5,
-                          "units": "Mm"
+                      {
+                        "n": 42.000000012744444,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 52,
-                    "end_object_id": 53,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 52
                   }
                 },
+                "objectId": 54,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperSide"
@@ -1654,33 +1618,40 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 69,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -25.999999999988887,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -26.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 36.5
                         }
                       },
-                      {
-                        "n": 39.0000000075,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -26.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -25.999999999988887,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1688,76 +1659,65 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 35.000000009000004,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -26.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 68,
+                    "start": [
+                      {
+                        "n": -25.999999999988887,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -26.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 36.5,
-                          "units": "Mm"
+                      {
+                        "n": 39.0000000075,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 67,
-                    "end_object_id": 68,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 67
                   }
                 },
+                "objectId": 69,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTop"
@@ -1774,51 +1734,13 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 62,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -23.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 42.00000001903334,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -26.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 39.0000000045,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -23.000000000722224,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1826,90 +1748,122 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 39.00000001981112,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 61,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -23.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -23.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 43.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -26.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -26.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 40.5
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -23.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -23.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 40.5,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 43.5
                         }
                       }
                     },
-                    "start_object_id": 59,
-                    "end_object_id": 60,
-                    "center_object_id": 61,
-                    "start_freedom": "Fixed",
+                    "end": [
+                      {
+                        "n": -26.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 39.0000000045,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 60,
+                    "start": [
+                      {
+                        "n": -23.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 42.00000001903334,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 59
                   }
                 },
+                "objectId": 62,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTopBend"
@@ -2032,17 +1986,17 @@ description: Variables in memory after executing double-hook.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 74,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2086,8 +2040,8 @@ description: Variables in memory after executing double-hook.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sectionSketch": {
@@ -2134,17 +2088,17 @@ description: Variables in memory after executing double-hook.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 74,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2202,33 +2156,13 @@ description: Variables in memory after executing double-hook.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 78,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2236,76 +2170,92 @@ description: Variables in memory after executing double-hook.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 77,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 76,
-                    "center_object_id": 77,
+                    "start": [
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 76
                   }
                 },
+                "objectId": 78,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 74,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "sectionCircle"

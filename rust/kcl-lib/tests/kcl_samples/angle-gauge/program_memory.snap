@@ -87,6 +87,8 @@ description: Variables in memory after executing angle-gauge.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -401,17 +403,17 @@ description: Variables in memory after executing angle-gauge.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -483,8 +485,8 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -511,33 +513,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 19,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.5,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": -0.0000000000000011595706243968424,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.00000000000000004421822384192308,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -545,76 +554,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": -0.0000000000000007732548780767954,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 18,
+                    "start": [
+                      {
+                        "n": 1.5,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": -0.0000000000000011595706243968424,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 17,
-                    "end_object_id": 18,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 17
                   }
                 },
+                "objectId": 19,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomOuterEdge"
@@ -631,33 +629,41 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 44,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.5,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.24
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.19
                         }
                       },
-                      {
-                        "n": 0.2999999999999981,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.19
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 2.240444899851345,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -665,77 +671,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.2999999999999986,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.19,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.24,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.19,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 42,
-                    "end_object_id": 43,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Free",
-                    "construction": true
+                    "end_object_id": 43,
+                    "start": [
+                      {
+                        "n": 1.5,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.2999999999999981,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 42
                   }
                 },
+                "objectId": 44,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutAngleReferenceEdge"
@@ -752,33 +746,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 35,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.4999999999999998,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.37
                         }
                       },
-                      {
-                        "n": 0.2999999999999977,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.19
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.5000000000000004,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -786,76 +787,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.4763269807081948,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.19,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 34,
+                    "start": [
+                      {
+                        "n": 1.4999999999999998,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.37,
-                          "units": "Inch"
+                      {
+                        "n": 0.2999999999999977,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 33,
-                    "end_object_id": 34,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 33
                   }
                 },
+                "objectId": 35,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutAngledEdge"
@@ -872,33 +862,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 38,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.5000000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.32
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.83
                         }
                       },
-                      {
-                        "n": 0.47632698070819457,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.37
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.5000000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -906,76 +903,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.8199999999999981,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.37,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 37,
+                    "start": [
+                      {
+                        "n": 0.5000000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.32,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.83,
-                          "units": "Inch"
+                      {
+                        "n": 0.47632698070819457,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 36,
-                    "end_object_id": 37,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 36
                   }
                 },
+                "objectId": 38,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutLeftVerticalEdge"
@@ -992,33 +978,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 41,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.5000000000000002,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.71
                         }
                       },
-                      {
-                        "n": 0.8199999999999981,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.14
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.32
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.5000000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1026,76 +1019,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.8199999999999981,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.14,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.32,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 40,
+                    "start": [
+                      {
+                        "n": 0.5000000000000002,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.71,
-                          "units": "Inch"
+                      {
+                        "n": 0.8199999999999981,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 39,
-                    "end_object_id": 40,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 39
                   }
                 },
+                "objectId": 41,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cutoutTopEdge"
@@ -1112,33 +1094,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000002238217830323571,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       },
-                      {
-                        "n": -0.00000000000000038680060133802227,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000000022746267226524906,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1146,76 +1135,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 1.2499999999999998,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -0.00000000000000002238217830323571,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                      {
+                        "n": -0.00000000000000038680060133802227,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftOuterEdge"
@@ -1232,33 +1210,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.5,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.2999999999999981,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.19
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.5,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1266,76 +1251,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": -0.0000000000000015456785757091857,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.19,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 15,
+                    "start": [
+                      {
+                        "n": 1.5,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                      {
+                        "n": 0.2999999999999981,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 14
                   }
                 },
+                "objectId": 16,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRightOuterEdge"
@@ -1582,17 +1556,17 @@ description: Variables in memory after executing angle-gauge.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1678,33 +1652,41 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.5,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.19
                         }
                       },
-                      {
-                        "n": 0.8199999999999981,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.5,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1712,77 +1694,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.2999999999999981,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.19,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": 1.5,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8199999999999981,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightCutoutConstructionEdge"
@@ -1799,33 +1769,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.000000000000000022928311894964658,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       },
-                      {
-                        "n": 1.2499999999999998,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.5000000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1833,76 +1810,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 1.2499999999999998,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": -0.000000000000000022928311894964658,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                      {
+                        "n": 1.2499999999999998,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topOuterEdge"
@@ -1919,33 +1885,40 @@ description: Variables in memory after executing angle-gauge.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.5000000000000002,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.71
                         }
                       },
-                      {
-                        "n": 1.2499999999999998,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.5000000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1953,76 +1926,65 @@ description: Variables in memory after executing angle-gauge.kcl
                         "n": 0.8199999999999981,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 1.5000000000000002,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.5,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.71,
-                          "units": "Inch"
+                      {
+                        "n": 1.2499999999999998,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRightOuterEdge"
@@ -2235,17 +2197,17 @@ description: Variables in memory after executing angle-gauge.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2317,8 +2279,8 @@ description: Variables in memory after executing angle-gauge.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "gaugeThickness": {

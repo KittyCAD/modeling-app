@@ -72,6 +72,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -562,17 +564,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -660,8 +662,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -679,51 +681,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 8,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.09716160488438455,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000000000006791001399308203,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.00000000000000000002858649171972233,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.08246483760575939,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.09716231059975264,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -731,90 +695,122 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.09847205264972696,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 7,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.12
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.01,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.13
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.12
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.13,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.01
                         }
                       }
                     },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
-                    "center_object_id": 7,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.00000000000000000002858649171972233,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.08246483760575939,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": -0.09716160488438455,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000000000006791001399308203,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 8,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -831,51 +827,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 18,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000015891519700755122,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.65284704690082,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.09714885177733827,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.75,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.0971557650320894,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -883,90 +841,122 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.6528442349679104,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 17,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.11
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.65,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.65
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.08
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.11,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.65,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.65
                         }
                       }
                     },
-                    "start_object_id": 15,
-                    "end_object_id": 16,
-                    "center_object_id": 17,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.09714885177733827,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.75,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 16,
+                    "start": [
+                      {
+                        "n": -0.00000000000000015891519700755122,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.65284704690082,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 15
                   }
                 },
+                "objectId": 18,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -983,51 +973,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 36,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.06715142805316289,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.6601976434242163,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.09714885177733827,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.6902,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.09715142805316275,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1035,90 +987,122 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.6602000000000001,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 35,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.06,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.09
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.65,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.66
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.09,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.09
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.69,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.69
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.09,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.06
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.66,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.65
                         }
                       }
                     },
-                    "start_object_id": 33,
-                    "end_object_id": 34,
-                    "center_object_id": 35,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.09714885177733827,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.6902,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 34,
+                    "start": [
+                      {
+                        "n": -0.06715142805316289,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.6601976434242163,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 33
                   }
                 },
+                "objectId": 36,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1135,51 +1119,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 46,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.09716160488438455,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.05980000000000001,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.06715142805316283,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.08981543412915576,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.09715142805316282,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1187,90 +1133,122 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.08979999999999998,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 45,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.12
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.06,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.06
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.12
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.08
                         }
                       }
                     },
-                    "start_object_id": 43,
-                    "end_object_id": 44,
-                    "center_object_id": 45,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.06715142805316283,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.08981543412915576,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 44,
+                    "start": [
+                      {
+                        "n": -0.09716160488438455,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.05980000000000001,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 43
                   }
                 },
+                "objectId": 46,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -1287,33 +1265,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.12
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.01
                         }
                       },
-                      {
-                        "n": 0.00000000000000000003964582253532365,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.43
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.01
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.09716160488438455,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1321,76 +1306,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.0000000000000000000481461853125303,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.43,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.01,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.01,
-                          "units": "Inch"
+                      {
+                        "n": 0.00000000000000000003964582253532365,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1407,33 +1381,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 73,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.000000000000000000026430548356882383,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.41
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000000000007053949077205359,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1441,77 +1423,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.000000000000000000013215274178441216,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.41,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 71,
-                    "end_object_id": 72,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 72,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000000026430548356882383,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 71
                   }
                 },
+                "objectId": 73,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1528,33 +1498,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 78,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000000001423146329137767,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       },
-                      {
-                        "n": 0.000000000000000000013215274178441216,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000000000021408977505550038,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1562,77 +1540,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.08246483760575939,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 76,
-                    "end_object_id": 77,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Free",
-                    "construction": true
+                    "end_object_id": 77,
+                    "start": [
+                      {
+                        "n": -0.00000000000000000001423146329137767,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000000013215274178441216,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 76
                   }
                 },
+                "objectId": 78,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -1649,33 +1615,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000000003944575081966386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.65
                         }
                       },
-                      {
-                        "n": 0.08246483760575939,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.00000000000000000005087389857701651,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1683,76 +1656,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.65284704690082,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": -0.00000000000000000003944575081966386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.65,
-                          "units": "Inch"
+                      {
+                        "n": 0.08246483760575939,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1769,33 +1731,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 23,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.09714885177733827,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       },
-                      {
-                        "n": 1.75,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.3333333333333333,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1803,76 +1772,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.75,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 22,
+                    "start": [
+                      {
+                        "n": -0.09714885177733827,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
+                      {
+                        "n": 1.75,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 21,
-                    "end_object_id": 22,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 21
                   }
                 },
+                "objectId": 23,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1889,33 +1847,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 27,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.69
                         }
                       },
-                      {
-                        "n": 1.75,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.3333333333333333,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1923,76 +1888,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.6902,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 26,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.69,
-                          "units": "Inch"
+                      {
+                        "n": 1.75,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 25,
-                    "end_object_id": 26,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 25
                   }
                 },
+                "objectId": 27,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2009,33 +1963,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 31,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.09
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.69
                         }
                       },
-                      {
-                        "n": 1.6902,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.69
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.09714885177733827,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2043,76 +2004,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.6902,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.69,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 30,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.09,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.69,
-                          "units": "Inch"
+                      {
+                        "n": 1.6902,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 29,
-                    "end_object_id": 30,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 29
                   }
                 },
+                "objectId": 31,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2129,33 +2079,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 41,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.06715142805316283,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.06
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.14
                         }
                       },
-                      {
-                        "n": 1.6601976434242163,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.06
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.65
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.06715142805316283,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2163,76 +2120,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.08981543412915576,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.06,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.65,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 40,
+                    "start": [
+                      {
+                        "n": -0.06715142805316283,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.06,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.14,
-                          "units": "Inch"
+                      {
+                        "n": 1.6601976434242163,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 39,
-                    "end_object_id": 40,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 39
                   }
                 },
+                "objectId": 41,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2249,33 +2195,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 51,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.09716160488438455,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.43
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
                         }
                       },
-                      {
-                        "n": 0.0598,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.12
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.3333333333333333,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2283,76 +2236,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.0598,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.12,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 50,
+                    "start": [
+                      {
+                        "n": -0.09716160488438455,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.43,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
+                      {
+                        "n": 0.0598,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 49,
-                    "end_object_id": 50,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 49
                   }
                 },
+                "objectId": 51,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -2369,33 +2311,40 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 55,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.43
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.01
                         }
                       },
-                      {
-                        "n": 0.0598,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.43
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.3333333333333333,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2403,76 +2352,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.000000000000000000048418601761401427,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.43,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 54,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.43,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.01,
-                          "units": "Inch"
+                      {
+                        "n": 0.0598,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 53,
-                    "end_object_id": 54,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 53
                   }
                 },
+                "objectId": 55,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -2489,33 +2427,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 86,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.3333333333333333,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       },
-                      {
-                        "n": 0.000000000000000000051184088263788044,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.3333333333333333,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2523,77 +2469,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.75,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 84,
-                    "end_object_id": 85,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 85,
+                    "start": [
+                      {
+                        "n": -0.3333333333333333,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000000051184088263788044,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 84
                   }
                 },
+                "objectId": 86,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -2960,17 +2894,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -3085,6 +3019,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3139,17 +3075,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 100,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3197,8 +3133,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3211,6 +3147,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3265,17 +3203,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 100,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3323,8 +3261,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3337,6 +3275,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3391,17 +3331,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 100,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3449,8 +3389,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3463,6 +3403,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3517,17 +3459,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "Custom",
               "objectId": 100,
+              "kind": "Custom",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3575,8 +3517,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3623,33 +3565,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 127,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 9.132422283405944,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.503938567729415,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 9.166666666666629,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3657,76 +3579,92 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.4166666666667056,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 126,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 8.23,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 3.52,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 9.17
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.42,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.42
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 8.23
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 3.52
                         }
                       }
                     },
-                    "start_object_id": 125,
-                    "center_object_id": 126,
+                    "start": [
+                      {
+                        "n": 9.132422283405944,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.503938567729415,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 125
                   }
                 },
+                "objectId": 127,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3743,33 +3681,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 131,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 9.14065797567357,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.24326330228616866,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 9.166666666666638,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3777,76 +3695,92 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.33333333333329723,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 130,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 8.48,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 9.17
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.33,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.33
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 8.48
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
                     },
-                    "start_object_id": 129,
-                    "center_object_id": 130,
+                    "start": [
+                      {
+                        "n": 9.14065797567357,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.24326330228616866,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 129
                   }
                 },
+                "objectId": 131,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -3863,33 +3797,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 104,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.0000000000000064235533580757255,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       },
-                      {
-                        "n": 0.0000000000000004823265550540558,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000006423861960137115,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3897,77 +3839,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.7500000000000102,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 102,
-                    "end_object_id": 103,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 103,
+                    "start": [
+                      {
+                        "n": -0.0000000000000064235533580757255,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000000000004823265550540558,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 102
                   }
                 },
+                "objectId": 104,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3984,33 +3914,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 108,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.00000000000000642401626116781,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 9.17
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.42
                         }
                       },
-                      {
-                        "n": 1.7500000000000198,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.75
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 9.166666666666632,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4018,77 +3956,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 1.416666666666696,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.75,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.42,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 106,
-                    "end_object_id": 107,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 107,
+                    "start": [
+                      {
+                        "n": -0.00000000000000642401626116781,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.7500000000000198,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 106
                   }
                 },
+                "objectId": 108,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4105,33 +4031,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 112,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 9.166666666666636,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 9.17
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.33
                         }
                       },
-                      {
-                        "n": 1.416666666666696,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 9.17
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.42
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 9.16666666666664,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4139,77 +4073,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": 0.33333333333330634,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.42,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.33,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 110,
-                    "end_object_id": 111,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 111,
+                    "start": [
+                      {
+                        "n": 9.166666666666636,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.416666666666696,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 110
                   }
                 },
+                "objectId": 112,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4226,33 +4148,41 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 116,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 9.166666666666647,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.3333333333333155,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 9.17
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.33
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000012846643812645777,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4260,77 +4190,65 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                         "n": -0.000000000000008665411346611322,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 9.17,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.33,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 114,
-                    "end_object_id": 115,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 115,
+                    "start": [
+                      {
+                        "n": 9.166666666666647,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3333333333333155,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 114
                   }
                 },
+                "objectId": 116,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4428,17 +4346,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 100,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4501,6 +4419,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4991,17 +4911,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5089,8 +5009,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -5136,17 +5056,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 100,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5194,8 +5114,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -5236,17 +5156,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 100,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5294,8 +5214,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region004": {
@@ -5618,17 +5538,17 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5716,8 +5636,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "thickness": {

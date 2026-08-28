@@ -45,33 +45,40 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 11.0
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 1.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -79,76 +86,65 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 4.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 1.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 2.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.0,
-                          "units": "Mm"
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "l1"
@@ -165,33 +161,40 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 14.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 12.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 13.0
                         }
                       },
-                      {
-                        "n": 15.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 11.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 12.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -199,76 +202,65 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 13.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 8,
+                    "start": [
+                      {
+                        "n": 14.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 12.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 13.0,
-                          "units": "Mm"
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 7,
-                    "end_object_id": 8,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 7
                   }
                 },
+                "objectId": 9,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "l2"
@@ -285,33 +277,40 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 14,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 40.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 23.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 24.0
                         }
                       },
-                      {
-                        "n": 41.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 21.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 23.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -319,76 +318,65 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 24.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 21.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 13,
+                    "start": [
+                      {
+                        "n": 40.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 23.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 24.0,
-                          "units": "Mm"
+                      {
+                        "n": 41.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 12,
-                    "end_object_id": 13,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 12
                   }
                 },
+                "objectId": 14,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "l3"
@@ -405,33 +393,40 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 17,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 32.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 33.0
                         }
                       },
-                      {
-                        "n": 31.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 30.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 31.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 40.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -439,76 +434,65 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 41.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 30.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 31.0,
-                          "units": "Mm"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 16,
+                    "start": [
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 32.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 33.0,
-                          "units": "Mm"
+                      {
+                        "n": 31.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 15,
-                    "end_object_id": 16,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 15
                   }
                 },
+                "objectId": 17,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "l4"
@@ -676,17 +660,17 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -756,15 +740,28 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
                 "kind": {
                   "point": {
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 3.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 4.0
+                        }
+                      }
+                    },
+                    "freedom": "Fixed",
                     "position": [
                       {
                         "n": 3.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -772,60 +769,45 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 4.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
-                    ],
-                    "ctor": {
-                      "position": {
-                        "x": {
-                          "type": "Number",
-                          "value": 3.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 4.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "freedom": "Fixed"
+                    ]
                   }
                 },
+                "objectId": 5,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p1"
@@ -842,15 +824,28 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "point": {
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 14.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "Mm",
+                          "value": 15.0
+                        }
+                      }
+                    },
+                    "freedom": "Fixed",
                     "position": [
                       {
                         "n": 14.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -858,60 +853,45 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         "n": 15.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
-                    ],
-                    "ctor": {
-                      "position": {
-                        "x": {
-                          "type": "Number",
-                          "value": 14.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 15.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "freedom": "Fixed"
+                    ]
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p2"

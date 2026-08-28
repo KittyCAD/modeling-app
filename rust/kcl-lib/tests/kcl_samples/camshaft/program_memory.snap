@@ -8,8 +8,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 0,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -41,8 +41,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "Custom",
       "objectId": 26,
+      "kind": "Custom",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -175,6 +175,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -229,17 +231,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 52,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -283,8 +285,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -309,6 +311,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -495,17 +499,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 26,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 22.86,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -561,8 +565,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -598,51 +602,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 31,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.588807465484,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.319696369374,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 0.588807465484,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.319696369374,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -650,90 +616,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 30,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.588807465484,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.319696369374,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.588807465484,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.588807465484
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.319696369374,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.319696369374
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.588807465484
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.319696369374
                         }
                       }
                     },
-                    "start_object_id": 28,
-                    "end_object_id": 29,
-                    "center_object_id": 30,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": 0.588807465484,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.319696369374,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 29,
+                    "start": [
+                      {
+                        "n": -0.588807465484,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.319696369374,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 28
                   }
                 },
+                "objectId": 31,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseArc"
@@ -750,51 +748,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 45,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.588807465484,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.319696369374,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.981768348187,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -802,90 +762,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": -0.533056720373,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 44,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.981768348187
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.533056720373
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.588807465484,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.588807465484
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.319696369374,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.319696369374
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.981768348187,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": -0.533056720373,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       }
                     },
-                    "start_object_id": 42,
-                    "end_object_id": 43,
-                    "center_object_id": 44,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.588807465484,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.319696369374,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 43,
+                    "start": [
+                      {
+                        "n": -0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 42
                   }
                 },
+                "objectId": 45,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftFlank"
@@ -1026,17 +1018,17 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 26,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 22.86,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -1106,51 +1098,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 40,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": 0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1158,90 +1112,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.69442447,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 39,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.69442447
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.69442447,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       }
                     },
-                    "start_object_id": 37,
-                    "end_object_id": 38,
-                    "center_object_id": 39,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 38,
+                    "start": [
+                      {
+                        "n": 0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 37
                   }
                 },
+                "objectId": 40,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "noseArc"
@@ -1258,51 +1244,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 35,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": 0.588807465484,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.319696369374,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.981768348187,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1310,90 +1258,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": -0.533056720373,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 34,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.588807465484,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.981768348187
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.319696369374,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.533056720373
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.981768348187,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.588807465484
                         },
                         "y": {
                           "type": "Var",
-                          "value": -0.533056720373,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.319696369374
                         }
                       }
                     },
-                    "start_object_id": 32,
-                    "end_object_id": 33,
-                    "center_object_id": 34,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": 0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 33,
+                    "start": [
+                      {
+                        "n": 0.588807465484,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.319696369374,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 32
                   }
                 },
+                "objectId": 35,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightFlank"
@@ -1411,6 +1391,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1597,17 +1579,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 22.86,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1663,8 +1645,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1709,51 +1691,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 5,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.58313831628,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.329923785269,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 0.58313831628,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.329923785269,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1761,90 +1705,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 4,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.58313831628,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.329923785269,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.58313831628,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.58313831628
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.329923785269,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.329923785269
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.58313831628
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.329923785269
                         }
                       }
                     },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
-                    "center_object_id": 4,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": 0.58313831628,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.329923785269,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -0.58313831628,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.329923785269,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 5,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseArc"
@@ -1861,51 +1837,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 19,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.58313831628,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.329923785269,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 1.063568154576,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1913,90 +1851,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": -0.601737909607,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 18,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.063568154576
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.601737909607
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.58313831628,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.58313831628
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.329923785269,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.329923785269
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 1.063568154576,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": -0.601737909607,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       }
                     },
-                    "start_object_id": 16,
-                    "end_object_id": 17,
-                    "center_object_id": 18,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.58313831628,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.329923785269,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 17,
+                    "start": [
+                      {
+                        "n": -0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 16
                   }
                 },
+                "objectId": 19,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftFlank"
@@ -2137,17 +2107,17 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 22.86,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2217,51 +2187,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 14,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": 0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2269,90 +2201,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.69819564,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 13,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.69819564
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.69819564,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       }
                     },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
-                    "center_object_id": 13,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": 0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 14,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "noseArc"
@@ -2369,51 +2333,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": 0.58313831628,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.329923785269,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 0.134503674324,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.862591154386,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -1.063568154576,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2421,90 +2347,122 @@ description: Variables in memory after executing camshaft.kcl
                         "n": -0.601737909607,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 8,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.58313831628,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.063568154576
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.329923785269,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.601737909607
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.134503674324,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.134503674324
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.862591154386,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.862591154386
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -1.063568154576,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.58313831628
                         },
                         "y": {
                           "type": "Var",
-                          "value": -0.601737909607,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.329923785269
                         }
                       }
                     },
-                    "start_object_id": 6,
-                    "end_object_id": 7,
-                    "center_object_id": 8,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": 0.134503674324,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.862591154386,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 7,
+                    "start": [
+                      {
+                        "n": 0.58313831628,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.329923785269,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 6
                   }
                 },
+                "objectId": 9,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 22.86,
-                    "units": "mm"
+                    "z": 22.86
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightFlank"
@@ -2613,17 +2571,17 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 52,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2681,33 +2639,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 56,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 0.485,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2715,76 +2653,92 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 55,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.485,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.485
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 54,
-                    "center_object_id": 55,
+                    "start": [
+                      {
+                        "n": 0.485,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 54
                   }
                 },
+                "objectId": 56,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 52,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shaft"
@@ -2811,6 +2765,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2948,17 +2904,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 57,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3002,7 +2958,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3015,6 +2972,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3152,17 +3111,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 57,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3206,7 +3165,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3219,6 +3179,8 @@ description: Variables in memory after executing camshaft.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -3273,17 +3235,17 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 58,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3327,8 +3289,8 @@ description: Variables in memory after executing camshaft.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -3346,33 +3308,13 @@ description: Variables in memory after executing camshaft.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 62,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 0.485,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3380,76 +3322,92 @@ description: Variables in memory after executing camshaft.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 61,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.485,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.485
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 60,
-                    "center_object_id": 61,
+                    "start": [
+                      {
+                        "n": 0.485,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 60
                   }
                 },
+                "objectId": 62,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bore"
@@ -3500,17 +3458,17 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 58,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -489,17 +489,17 @@ description: Variables in memory after executing i-beam.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -603,8 +603,8 @@ description: Variables in memory after executing i-beam.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "beamSection": {
@@ -617,15 +617,88 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 124,
                 "kind": {
                   "arc": {
+                    "center": [
+                      {
+                        "n": 0.5535,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.2500000000000013,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 123,
+                    "construction": false,
+                    "ctor": {
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.2500000000000013,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Fixed",
+                    "end_object_id": 122,
                     "start": [
                       {
                         "n": 0.5534453127696918,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -633,126 +706,47 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7069999999999999,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.2500000000000013,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center": [
-                      {
-                        "n": 0.5535,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.2500000000000013,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
-                        }
-                      },
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
-                        }
-                      }
-                    },
-                    "start_object_id": 121,
-                    "end_object_id": 122,
-                    "center_object_id": 123,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 121
                   }
                 },
+                "objectId": 124,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -769,51 +763,13 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 131,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": 0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -1.250000000032501,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": 0.5534453127660875,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.5535,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -821,90 +777,122 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.250000000000001,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 130,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.1
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       }
                     },
-                    "start_object_id": 128,
-                    "end_object_id": 129,
-                    "center_object_id": 130,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": 0.5534453127660875,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 129,
+                    "start": [
+                      {
+                        "n": 0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.250000000032501,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 128
                   }
                 },
+                "objectId": 131,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -921,51 +909,13 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 138,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.09650000000000002,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.2500000000156624,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.5534453127648586,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.7069999999999999,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.5535,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -973,90 +923,122 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.250000000000001,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 137,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.1
                         },
                         "y": {
                           "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       }
                     },
-                    "start_object_id": 135,
-                    "end_object_id": 136,
-                    "center_object_id": 137,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -0.5534453127648586,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.7069999999999999,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Fixed",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 136,
+                    "start": [
+                      {
+                        "n": -0.09650000000000002,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.2500000000156624,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 135
                   }
                 },
+                "objectId": 138,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1073,51 +1055,13 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 143,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -0.5534453127658016,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -1.7069999999999996,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -1.2500000000168399,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -0.5535,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1125,90 +1069,122 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.2500000000000007,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 142,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.1
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -0.55
                         },
                         "y": {
                           "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
                     },
-                    "start_object_id": 140,
-                    "end_object_id": 141,
-                    "center_object_id": 142,
-                    "start_freedom": "Fixed",
+                    "end": [
+                      {
+                        "n": -0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.2500000000168399,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "end_object_id": 141,
+                    "start": [
+                      {
+                        "n": -0.5534453127658016,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.7069999999999996,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 140
                   }
                 },
+                "objectId": 143,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -1225,33 +1201,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3314999999999997,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1259,77 +1243,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 2.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -1.3314999999999997,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1346,33 +1318,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 39,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": -1.7069999999999996,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0965,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1380,77 +1360,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 37,
-                    "end_object_id": 38,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 38,
+                    "start": [
+                      {
+                        "n": 0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.7069999999999996,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 37
                   }
                 },
+                "objectId": 39,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1467,33 +1435,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 43,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 1.7070000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3314999999999997,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1501,77 +1477,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 41,
-                    "end_object_id": 42,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 42,
+                    "start": [
+                      {
+                        "n": 0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.7070000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 41
                   }
                 },
+                "objectId": 43,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -1588,33 +1552,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 47,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3314999999999997,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       },
-                      {
-                        "n": 1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3314999999999997,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1622,77 +1594,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 2.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 45,
-                    "end_object_id": 46,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 46,
+                    "start": [
+                      {
+                        "n": -1.3314999999999997,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 45
                   }
                 },
+                "objectId": 47,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -1709,33 +1669,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 52,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.00000000000000000025080437182396244,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.86
                         }
                       },
-                      {
-                        "n": -2.710000000000002,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.0000000000000000002700519333230823,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1743,77 +1711,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 2.860000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.86,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 50,
-                    "end_object_id": 51,
-                    "start_freedom": "Free",
                     "end_freedom": "Free",
-                    "construction": true
+                    "end_object_id": 51,
+                    "start": [
+                      {
+                        "n": 0.00000000000000000025080437182396244,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.710000000000002,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 50
                   }
                 },
+                "objectId": 52,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -1830,33 +1786,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 57,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -2.689999999999985,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 3.15
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.000000000000000000034313752527051884,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.69
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 3.149999999999985,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1864,77 +1828,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -0.00000000000000000003430139062489292,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -2.69,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 3.15,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 55,
-                    "end_object_id": 56,
-                    "start_freedom": "Free",
                     "end_freedom": "Free",
-                    "construction": true
+                    "end_object_id": 56,
+                    "start": [
+                      {
+                        "n": -2.689999999999985,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000000000034313752527051884,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 55
                   }
                 },
+                "objectId": 57,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -1951,33 +1903,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 79,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3314999999999997,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1985,76 +1944,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 2.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 78,
+                    "start": [
+                      {
+                        "n": -1.3314999999999997,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 77,
-                    "end_object_id": 78,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 77
                   }
                 },
+                "objectId": 79,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -2071,33 +2019,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 82,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2105,76 +2060,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 81,
+                    "start": [
+                      {
+                        "n": 1.3315000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 80,
-                    "end_object_id": 81,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 80
                   }
                 },
+                "objectId": 82,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -2191,33 +2135,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 86,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 1.7070000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.5534453127696918,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2225,76 +2176,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000005,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 85,
+                    "start": [
+                      {
+                        "n": 1.3315000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                      {
+                        "n": 1.7070000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 84,
-                    "end_object_id": 85,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 84
                   }
                 },
+                "objectId": 86,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -2311,33 +2251,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 90,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.09649999999999999,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       },
-                      {
-                        "n": 1.2500000000000013,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.09650000000000002,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2345,76 +2292,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.250000000032501,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 89,
+                    "start": [
+                      {
+                        "n": 0.09649999999999999,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                      {
+                        "n": 1.2500000000000013,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 88,
-                    "end_object_id": 89,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 88
                   }
                 },
+                "objectId": 90,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -2431,33 +2367,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 93,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.5534453127660875,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -1.7070000000000005,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000012,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2465,76 +2408,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 92,
+                    "start": [
+                      {
+                        "n": 0.5534453127660875,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                      {
+                        "n": -1.7070000000000005,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 91,
-                    "end_object_id": 92,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 91
                   }
                 },
+                "objectId": 93,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -2551,33 +2483,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2585,77 +2525,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 1.3315000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2672,33 +2600,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 96,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000012,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       },
-                      {
-                        "n": -1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000012,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2706,76 +2641,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -2.0000000000000004,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 95,
+                    "start": [
+                      {
+                        "n": 1.3315000000000012,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
+                      {
+                        "n": -1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 94,
-                    "end_object_id": 95,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 94
                   }
                 },
+                "objectId": 96,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -2792,33 +2716,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 100,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000012,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       },
-                      {
-                        "n": -2.0000000000000004,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3315000000000008,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2826,76 +2757,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -2.0000000000000004,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 99,
+                    "start": [
+                      {
+                        "n": 1.3315000000000012,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
+                      {
+                        "n": -2.0000000000000004,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 98,
-                    "end_object_id": 99,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 98
                   }
                 },
+                "objectId": 100,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -2912,33 +2832,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 104,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3315000000000008,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -2.0000000000000004,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3315000000000008,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2946,76 +2873,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.7069999999999994,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 103,
+                    "start": [
+                      {
+                        "n": -1.3315000000000008,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                      {
+                        "n": -2.0000000000000004,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 102,
-                    "end_object_id": 103,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 102
                   }
                 },
+                "objectId": 104,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line22"
@@ -3032,33 +2948,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 108,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3315000000000008,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -1.7069999999999994,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.5534453127658016,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3066,76 +2989,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 107,
+                    "start": [
+                      {
+                        "n": -1.3315000000000008,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
+                      {
+                        "n": -1.7069999999999994,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 106,
-                    "end_object_id": 107,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 106
                   }
                 },
+                "objectId": 108,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line23"
@@ -3152,33 +3064,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 112,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3314999999999997,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3314999999999997,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3186,76 +3105,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.0,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 111,
+                    "start": [
+                      {
+                        "n": -1.3314999999999997,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 110,
-                    "end_object_id": 111,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 110
                   }
                 },
+                "objectId": 112,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line24"
@@ -3272,33 +3180,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 116,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3314999999999997,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.55
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.5534453127648586,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3306,76 +3221,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 115,
+                    "start": [
+                      {
+                        "n": -1.3314999999999997,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.55,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
+                      {
+                        "n": 1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 114,
-                    "end_object_id": 115,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 114
                   }
                 },
+                "objectId": 116,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line25"
@@ -3392,33 +3296,40 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 120,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.25
                         }
                       },
-                      {
-                        "n": 1.2500000000156624,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.25
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.0965,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3426,76 +3337,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.2500000000168399,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.25,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 119,
+                    "start": [
+                      {
+                        "n": -0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.25,
-                          "units": "Inch"
+                      {
+                        "n": 1.2500000000156624,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 118,
-                    "end_object_id": 119,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 118
                   }
                 },
+                "objectId": 120,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line26"
@@ -3512,33 +3412,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       },
-                      {
-                        "n": 1.7070000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.0965,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3546,77 +3454,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": 1.7070000000000003,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 9,
-                    "end_object_id": 10,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 10,
+                    "start": [
+                      {
+                        "n": 1.3315000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.7070000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 9
                   }
                 },
+                "objectId": 11,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3633,33 +3529,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 15,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": 1.7070000000000003,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.0965,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3667,77 +3571,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 13,
-                    "end_object_id": 14,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 14,
+                    "start": [
+                      {
+                        "n": -0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.7070000000000003,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 13
                   }
                 },
+                "objectId": 15,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3754,33 +3646,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 19,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.0965,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000012,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3788,77 +3688,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.707,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 17,
-                    "end_object_id": 18,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 18,
+                    "start": [
+                      {
+                        "n": -0.0965,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 17
                   }
                 },
+                "objectId": 19,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -3875,33 +3763,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 23,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000012,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       },
-                      {
-                        "n": -1.707,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 1.3315000000000012,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3909,77 +3805,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -2.0000000000000004,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 21,
-                    "end_object_id": 22,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 22,
+                    "start": [
+                      {
+                        "n": 1.3315000000000012,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.707,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 21
                   }
                 },
+                "objectId": 23,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -3996,33 +3880,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 27,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 1.3315000000000012,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       },
-                      {
-                        "n": -2.0000000000000004,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3315000000000008,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4030,77 +3922,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -2.0000000000000004,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 25,
-                    "end_object_id": 26,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 26,
+                    "start": [
+                      {
+                        "n": 1.3315000000000012,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.0000000000000004,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 25
                   }
                 },
+                "objectId": 27,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -4117,33 +3997,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 31,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3315000000000008,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -2.0000000000000004,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -2.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -1.3315000000000008,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4151,77 +4039,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.7069999999999994,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -2.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 29,
-                    "end_object_id": 30,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 30,
+                    "start": [
+                      {
+                        "n": -1.3315000000000008,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.0000000000000004,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 29
                   }
                 },
+                "objectId": 31,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -4238,33 +4114,41 @@ description: Variables in memory after executing i-beam.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 35,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -1.3315000000000008,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       },
-                      {
-                        "n": -1.7069999999999994,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.33
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.71
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0965,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4272,77 +4156,65 @@ description: Variables in memory after executing i-beam.kcl
                         "n": -1.7069999999999996,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.33,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -1.71,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 33,
-                    "end_object_id": 34,
-                    "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "construction": true
+                    "end_object_id": 34,
+                    "start": [
+                      {
+                        "n": -1.3315000000000008,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1.7069999999999994,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "start_object_id": 33
                   }
                 },
+                "objectId": 35,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -4907,17 +4779,17 @@ description: Variables in memory after executing i-beam.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -5054,6 +4926,8 @@ description: Variables in memory after executing i-beam.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -5696,17 +5570,17 @@ description: Variables in memory after executing i-beam.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5810,8 +5684,8 @@ description: Variables in memory after executing i-beam.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

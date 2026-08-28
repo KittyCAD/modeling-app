@@ -26,6 +26,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -146,17 +148,17 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "YZ",
           "objectId": 0,
+          "kind": "YZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -200,7 +202,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -213,6 +216,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -287,27 +292,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 1,
-          "value": "start",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -327,7 +312,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -340,6 +326,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -462,27 +450,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 2,
-          "value": "end",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -508,7 +476,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -521,6 +490,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -643,27 +614,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 3,
-          "value": "end",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -689,7 +640,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -702,6 +654,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -776,27 +730,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 4,
-          "value": "end",
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -816,7 +750,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -832,6 +767,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -874,27 +811,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 5,
-              "value": "end",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -914,7 +831,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -927,6 +845,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -969,27 +889,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 5,
-              "value": "end",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -1009,7 +909,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1022,6 +923,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1064,27 +967,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 5,
-              "value": "end",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -1104,7 +987,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1117,6 +1001,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1159,27 +1045,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 5,
-              "value": "end",
-              "xAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -1199,7 +1065,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1319,17 +1186,17 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "YZ",
         "objectId": 0,
+        "kind": "YZ",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1373,7 +1240,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile002": {
@@ -1409,27 +1277,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 1,
-        "value": "start",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1449,7 +1297,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile003": {
@@ -1510,27 +1359,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 1,
-        "value": "start",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1550,7 +1379,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile004": {
@@ -1638,27 +1468,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 2,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1684,7 +1494,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile005": {
@@ -1772,27 +1583,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 3,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1818,7 +1609,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile006": {
@@ -1854,27 +1646,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 4,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1894,7 +1666,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile007": {
@@ -1955,27 +1728,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 4,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1995,7 +1748,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile008": {
@@ -2031,27 +1785,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 5,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2071,7 +1805,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile009": {
@@ -2107,27 +1842,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 5,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2147,7 +1862,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile010": {
@@ -2183,27 +1899,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 5,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2223,7 +1919,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "profile011": {
@@ -2259,27 +1956,7 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 5,
-        "value": "end",
-        "xAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2299,7 +1976,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "rectangleSegmentA001": {
@@ -2349,8 +2027,8 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "kind": "YZ",
       "objectId": 0,
+      "kind": "YZ",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2381,135 +2059,35 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 1,
-      "value": "start",
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "sketch003": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 2,
-      "value": "end",
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "sketch004": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 3,
-      "value": "end",
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "sketch005": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 4,
-      "value": "end",
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "sketch006": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 5,
-      "value": "end",
-      "xAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "strokeLength": {

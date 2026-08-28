@@ -8,6 +8,8 @@ description: Variables in memory after executing pattern_into_union.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -238,17 +240,17 @@ description: Variables in memory after executing pattern_into_union.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "XZ",
           "objectId": 0,
+          "kind": "XZ",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -296,7 +298,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -375,6 +378,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -495,17 +500,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -549,7 +554,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -557,15 +563,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -578,6 +576,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -698,17 +698,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -752,7 +752,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -760,15 +761,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -781,6 +774,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -901,17 +896,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -955,7 +950,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -963,15 +959,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -984,6 +972,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1104,17 +1094,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1158,7 +1148,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1166,15 +1157,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1187,6 +1170,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1307,17 +1292,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1361,7 +1346,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1369,15 +1355,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1390,6 +1368,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1510,17 +1490,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1564,7 +1544,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1572,15 +1553,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1593,6 +1566,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1713,17 +1688,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1767,7 +1742,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1775,15 +1751,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1796,6 +1764,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1916,17 +1886,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1970,7 +1940,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1978,15 +1949,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -1999,6 +1962,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2119,17 +2084,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2173,7 +2138,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2181,15 +2147,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -2202,6 +2160,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2322,17 +2282,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2376,7 +2336,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2384,15 +2345,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -2405,6 +2358,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2525,17 +2480,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2579,7 +2534,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2587,15 +2543,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -2608,6 +2556,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2728,17 +2678,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2782,7 +2732,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2790,15 +2741,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -2811,6 +2754,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -2931,17 +2876,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2985,7 +2930,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -2993,15 +2939,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -3014,6 +2952,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3134,17 +3074,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3188,7 +3128,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3196,15 +3137,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -3217,6 +3150,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3337,17 +3272,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3391,7 +3326,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3399,15 +3335,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -3420,6 +3348,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3540,17 +3470,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3594,7 +3524,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3602,15 +3533,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -3623,6 +3546,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3743,17 +3668,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3797,7 +3722,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3805,15 +3731,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -3826,6 +3744,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3946,17 +3866,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4000,7 +3920,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4008,15 +3929,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -4029,6 +3942,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4149,17 +4064,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4203,7 +4118,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4211,15 +4127,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -4232,6 +4140,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4352,17 +4262,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4406,7 +4316,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4414,15 +4325,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -4435,6 +4338,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4555,17 +4460,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 1,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4609,7 +4514,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4617,15 +4523,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -4643,6 +4541,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4763,17 +4663,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4817,7 +4717,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -4825,15 +4726,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -4846,6 +4739,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -4966,17 +4861,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5020,7 +4915,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5028,15 +4924,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -5049,6 +4937,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5169,17 +5059,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5223,7 +5113,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5231,15 +5122,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -5252,6 +5135,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5372,17 +5257,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5426,7 +5311,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5434,15 +5320,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -5455,6 +5333,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5575,17 +5455,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5629,7 +5509,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5637,15 +5518,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -5658,6 +5531,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5778,17 +5653,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5832,7 +5707,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -5840,15 +5716,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -5861,6 +5729,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -5981,17 +5851,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6035,7 +5905,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6043,15 +5914,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -6064,6 +5927,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6184,17 +6049,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6238,7 +6103,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6246,15 +6112,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -6267,6 +6125,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6387,17 +6247,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6441,7 +6301,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6449,15 +6310,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -6470,6 +6323,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6590,17 +6445,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6644,7 +6499,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6652,15 +6508,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -6673,6 +6521,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6793,17 +6643,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6847,7 +6697,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -6855,15 +6706,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -6876,6 +6719,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -6996,17 +6841,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7050,7 +6895,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7058,15 +6904,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -7079,6 +6917,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7199,17 +7039,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7253,7 +7093,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7261,15 +7102,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -7282,6 +7115,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7402,17 +7237,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7456,7 +7291,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7464,15 +7300,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -7485,6 +7313,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7605,17 +7435,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7659,7 +7489,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7667,15 +7498,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -7688,6 +7511,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -7808,17 +7633,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7862,7 +7687,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -7870,15 +7696,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -7891,6 +7709,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8011,17 +7831,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8065,7 +7885,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8073,15 +7894,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -8094,6 +7907,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8214,17 +8029,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8268,7 +8083,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8276,15 +8092,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -8297,6 +8105,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8417,17 +8227,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8471,7 +8281,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8479,15 +8290,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -8500,6 +8303,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8620,17 +8425,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8674,7 +8479,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8682,15 +8488,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],
@@ -8703,6 +8501,8 @@ description: Variables in memory after executing pattern_into_union.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -8823,17 +8623,17 @@ description: Variables in memory after executing pattern_into_union.kcl
               }
             ],
             "on": {
+              "type": "plane",
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "kind": "XZ",
               "objectId": 2,
+              "kind": "XZ",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8877,7 +8677,8 @@ description: Variables in memory after executing pattern_into_union.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": "mm"
+            "units": "mm",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -8885,15 +8686,7 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
+              "edge_id": "[uuid]",
               "tag": null
             }
           ],

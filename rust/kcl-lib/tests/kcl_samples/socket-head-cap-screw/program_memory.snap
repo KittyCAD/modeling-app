@@ -39,60 +39,14 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 30,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly",
-        "edgeCutIds": [
-          "[uuid]"
-        ]
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_6_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 5,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly",
-        "edgeCutIds": [
-          "[uuid]"
-        ]
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "boltBody": {
@@ -100,6 +54,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -156,30 +112,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 30,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly",
-            "edgeCutIds": [
-              "[uuid]"
-            ]
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -205,8 +138,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": null,
       "endCapId": "[uuid]",
@@ -228,6 +161,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -302,17 +237,17 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -360,8 +295,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -369,15 +304,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": {
-            "n": 0.02,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
+          "edge_id": "[uuid]",
           "tag": null
         }
       ],
@@ -468,17 +395,17 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -526,8 +453,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "capStart001": {
@@ -545,33 +472,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 0.16,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -579,76 +486,92 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 3,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.16,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.16
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 2,
-                    "center_object_id": 3,
+                    "start": [
+                      {
+                        "n": 0.16,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -699,17 +622,17 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -768,6 +691,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1008,30 +933,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 5,
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly",
-            "edgeCutIds": [
-              "[uuid]"
-            ]
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -1077,8 +979,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -1240,30 +1142,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 5,
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly",
-          "edgeCutIds": [
-            "[uuid]"
-          ]
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1309,8 +1188,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "hexSketch": {
@@ -1323,33 +1202,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 9,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.08,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.05
                         }
                       },
-                      {
-                        "n": 0.05,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.05
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.08,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1357,73 +1243,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": -0.05,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.05,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 8,
+                    "start": [
+                      {
+                        "n": 0.08,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.05,
-                          "units": "Inch"
+                      {
+                        "n": 0.05,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 7,
-                    "end_object_id": 8,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 7
                   }
                 },
+                "objectId": 9,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1440,33 +1315,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.08,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.09
                         }
                       },
-                      {
-                        "n": -0.05,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.05
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1474,73 +1356,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": -0.09,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.05,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 11,
+                    "start": [
+                      {
+                        "n": 0.08,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.09,
-                          "units": "Inch"
+                      {
+                        "n": -0.05,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 10,
-                    "end_object_id": 11,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 10
                   }
                 },
+                "objectId": 12,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1557,33 +1428,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.05
                         }
                       },
-                      {
-                        "n": -0.09,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.09
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.08,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1591,73 +1469,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": -0.05,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.09,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 15,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.05,
-                          "units": "Inch"
+                      {
+                        "n": -0.09,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 14
                   }
                 },
+                "objectId": 16,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1674,33 +1541,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.08,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.05
                         }
                       },
-                      {
-                        "n": -0.05,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.05
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.08,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1708,73 +1582,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": 0.05,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -0.05,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 19,
+                    "start": [
+                      {
+                        "n": -0.08,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.05,
-                          "units": "Inch"
+                      {
+                        "n": -0.05,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 18,
-                    "end_object_id": 19,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 18
                   }
                 },
+                "objectId": 20,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1791,33 +1654,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.08,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.09
                         }
                       },
-                      {
-                        "n": 0.05,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.05
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1825,73 +1695,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": 0.09,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.05,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 23,
+                    "start": [
+                      {
+                        "n": -0.08,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.09,
-                          "units": "Inch"
+                      {
+                        "n": 0.05,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 22
                   }
                 },
+                "objectId": 24,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1908,33 +1767,40 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.08
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.05
                         }
                       },
-                      {
-                        "n": 0.09,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.09
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 0.08,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1942,73 +1808,62 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": 0.05,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.09,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.08,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.05,
-                          "units": "Inch"
+                      {
+                        "n": 0.09,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 5,
-                  "value": "start",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "start",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2175,30 +2030,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 5,
-                "value": "start",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly",
-                  "edgeCutIds": [
-                    "[uuid]"
-                  ]
-                },
-                "units": "in"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -2294,30 +2126,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 30,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly",
-          "edgeCutIds": [
-            "[uuid]"
-          ]
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2343,8 +2152,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "stemSketch": {
@@ -2357,33 +2166,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 34,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 0.1,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2391,73 +2180,89 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 33,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.1,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.1
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
                         }
                       }
                     },
-                    "start_object_id": 32,
-                    "center_object_id": 33,
+                    "start": [
+                      {
+                        "n": 0.1,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 32
                   }
                 },
+                "objectId": 34,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 30,
-                  "value": "end",
-                  "xAxis": {
-                    "x": 1.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "yAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
                   "parentSolid": {
-                    "solidId": "[uuid]",
                     "creatorSketchId": "[uuid]",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
                       "[uuid]"
-                    ]
+                    ],
+                    "solidId": "[uuid]"
                   },
-                  "units": "in"
+                  "type": "face",
+                  "units": "in",
+                  "value": "end",
+                  "xAxis": {
+                    "units": null,
+                    "x": 1.0,
+                    "y": 0.0,
+                    "z": 0.0
+                  },
+                  "yAxis": {
+                    "units": null,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2510,30 +2315,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 30,
-                "value": "end",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly",
-                  "edgeCutIds": [
-                    "[uuid]"
-                  ]
-                },
-                "units": "in"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [

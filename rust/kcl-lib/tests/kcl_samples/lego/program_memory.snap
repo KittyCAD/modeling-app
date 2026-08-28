@@ -7,27 +7,7 @@ description: Variables in memory after executing lego.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 17,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_1_on": {
@@ -66,54 +46,14 @@ description: Variables in memory after executing lego.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 34,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_48_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 47,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "base": {
@@ -121,6 +61,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -283,17 +225,17 @@ description: Variables in memory after executing lego.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -349,8 +291,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -463,6 +405,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -519,27 +463,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -565,8 +489,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -579,6 +503,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -635,27 +561,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -681,8 +587,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -695,6 +601,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -751,27 +659,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -797,8 +685,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -811,6 +699,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -867,27 +757,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -913,8 +783,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -927,6 +797,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -983,27 +855,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -1029,8 +881,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1043,6 +895,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -1099,27 +953,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 34,
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -1145,8 +979,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -1196,27 +1030,7 @@ description: Variables in memory after executing lego.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 34,
-        "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1242,8 +1056,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "pegSeed": {
@@ -1251,6 +1065,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1307,27 +1123,7 @@ description: Variables in memory after executing lego.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 34,
-          "value": "end",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -1353,8 +1149,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1408,27 +1204,7 @@ description: Variables in memory after executing lego.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 34,
-                "value": "end",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "in"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -1468,15 +1244,59 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 41,
                 "kind": {
                   "line": {
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -4.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -8.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Fixed",
+                    "end_object_id": 40,
                     "start": [
                       {
                         "n": -4.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1484,89 +1304,41 @@ description: Variables in memory after executing lego.kcl
                         "n": -8.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -4.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -8.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 39,
-                    "end_object_id": 40,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": true
+                    "start_object_id": 39
                   }
                 },
+                "objectId": 41,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 34,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pegCenterGuide"
@@ -1583,33 +1355,13 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 38,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": -1.6,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -8.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -4.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1617,70 +1369,86 @@ description: Variables in memory after executing lego.kcl
                         "n": -8.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 37,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -1.6,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -8.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": -4.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -4.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -8.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -8.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -1.6
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -8.0
                         }
                       }
                     },
-                    "start_object_id": 36,
-                    "center_object_id": 37,
+                    "start": [
+                      {
+                        "n": -1.6,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -8.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 36
                   }
                 },
+                "objectId": 38,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 34,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "end",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "pegCircle"
@@ -1697,27 +1465,7 @@ description: Variables in memory after executing lego.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 34,
-      "value": "end",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "pitch": {
@@ -1842,17 +1590,17 @@ description: Variables in memory after executing lego.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1908,8 +1656,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -2018,27 +1766,7 @@ description: Variables in memory after executing lego.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 17,
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -2076,8 +1804,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "shellExtrude": {
@@ -2085,6 +1813,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -2249,27 +1979,7 @@ description: Variables in memory after executing lego.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 17,
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -2307,8 +2017,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": null,
@@ -2326,33 +2036,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -7.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -11.9
                         }
                       },
-                      {
-                        "n": -11.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -11.9
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 7.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2360,76 +2077,65 @@ description: Variables in memory after executing lego.kcl
                         "n": -11.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -11.9,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -7.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -11.9,
-                          "units": "Inch"
+                      {
+                        "n": -11.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2446,33 +2152,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 7.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 11.9
                         }
                       },
-                      {
-                        "n": -11.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -11.9
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 7.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2480,76 +2193,65 @@ description: Variables in memory after executing lego.kcl
                         "n": 11.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -11.9,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 7.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.9,
-                          "units": "Inch"
+                      {
+                        "n": -11.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2566,33 +2268,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 11,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 7.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 11.9
                         }
                       },
-                      {
-                        "n": 11.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 11.9
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -7.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2600,76 +2309,65 @@ description: Variables in memory after executing lego.kcl
                         "n": 11.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.9,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 10,
+                    "start": [
+                      {
+                        "n": 7.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.9,
-                          "units": "Inch"
+                      {
+                        "n": 11.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 9,
-                    "end_object_id": 10,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 9
                   }
                 },
+                "objectId": 11,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2686,33 +2384,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 15,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -7.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -11.9
                         }
                       },
-                      {
-                        "n": 11.9,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -7.9
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 11.9
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -7.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2720,76 +2425,65 @@ description: Variables in memory after executing lego.kcl
                         "n": -11.9,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 11.9,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 14,
+                    "start": [
+                      {
+                        "n": -7.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -7.9,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -11.9,
-                          "units": "Inch"
+                      {
+                        "n": 11.9,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 13,
-                    "end_object_id": 14,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 13
                   }
                 },
+                "objectId": 15,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2906,17 +2600,17 @@ description: Variables in memory after executing lego.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2992,33 +2686,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 21,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -6.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -10.4
                         }
                       },
-                      {
-                        "n": -10.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -10.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 6.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3026,70 +2727,59 @@ description: Variables in memory after executing lego.kcl
                         "n": -10.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 20,
+                    "start": [
+                      {
+                        "n": -6.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.4,
-                          "units": "Inch"
+                      {
+                        "n": -10.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 19,
-                    "end_object_id": 20,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 19
                   }
                 },
+                "objectId": 21,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 17,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3106,33 +2796,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 6.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 10.4
                         }
                       },
-                      {
-                        "n": -10.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -10.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 6.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3140,70 +2837,59 @@ description: Variables in memory after executing lego.kcl
                         "n": 10.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 23,
+                    "start": [
+                      {
+                        "n": 6.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.4,
-                          "units": "Inch"
+                      {
+                        "n": -10.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 22
                   }
                 },
+                "objectId": 24,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 17,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3220,33 +2906,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 6.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 10.4
                         }
                       },
-                      {
-                        "n": 10.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 10.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -6.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3254,70 +2947,59 @@ description: Variables in memory after executing lego.kcl
                         "n": 10.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": 6.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.4,
-                          "units": "Inch"
+                      {
+                        "n": 10.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 17,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3334,33 +3016,40 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 32,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -6.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -10.4
                         }
                       },
-                      {
-                        "n": 10.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -6.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 10.4
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -6.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3368,70 +3057,59 @@ description: Variables in memory after executing lego.kcl
                         "n": -10.4,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 10.4,
-                          "units": "Inch"
+                    "end_freedom": "Free",
+                    "end_object_id": 31,
+                    "start": [
+                      {
+                        "n": -6.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -6.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -10.4,
-                          "units": "Inch"
+                      {
+                        "n": 10.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 30,
-                    "end_object_id": 31,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 30
                   }
                 },
+                "objectId": 32,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 17,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3550,27 +3228,7 @@ description: Variables in memory after executing lego.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 17,
-                "value": "start",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "in"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -3676,6 +3334,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3732,27 +3392,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 47,
-              "value": "start",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -3778,8 +3418,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3792,6 +3432,8 @@ description: Variables in memory after executing lego.kcl
         "value": {
           "type": "Solid",
           "id": "[uuid]",
+          "originalId": "[uuid]",
+          "topologyId": "[uuid]",
           "artifactId": "[uuid]",
           "value": [
             {
@@ -3848,27 +3490,7 @@ description: Variables in memory after executing lego.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "objectId": 47,
-              "value": "start",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
-                "creatorSketchIsClosed": "explicitly"
-              },
-              "units": "in"
+              "artifactId": "[uuid]"
             },
             "start": {
               "from": [
@@ -3894,8 +3516,8 @@ description: Variables in memory after executing lego.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
-            "units": "in"
+            "units": "in",
+            "isClosed": "explicitly"
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
@@ -3945,27 +3567,7 @@ description: Variables in memory after executing lego.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 47,
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "in"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -3991,8 +3593,8 @@ description: Variables in memory after executing lego.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "in"
+      "units": "in",
+      "isClosed": "explicitly"
     }
   },
   "tubeSeed": {
@@ -4000,6 +3602,8 @@ description: Variables in memory after executing lego.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -4056,27 +3660,7 @@ description: Variables in memory after executing lego.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 47,
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "in"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -4102,8 +3686,8 @@ description: Variables in memory after executing lego.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "in"
+        "units": "in",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -4157,27 +3741,7 @@ description: Variables in memory after executing lego.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 47,
-                "value": "start",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "in"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -4217,15 +3781,59 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 54,
                 "kind": {
                   "line": {
+                    "construction": true,
+                    "ctor": {
+                      "construction": true,
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -4.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Fixed",
+                    "end_object_id": 53,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4233,89 +3841,41 @@ description: Variables in memory after executing lego.kcl
                         "n": -4.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -4.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
-                        }
-                      },
-                      "construction": true
-                    },
-                    "start_object_id": 52,
-                    "end_object_id": 53,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": true
+                    "start_object_id": 52
                   }
                 },
+                "objectId": 54,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 47,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tubeCenterGuide"
@@ -4332,33 +3892,13 @@ description: Variables in memory after executing lego.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 51,
                 "kind": {
                   "circle": {
-                    "start": [
-                      {
-                        "n": 2.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -4.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4366,70 +3906,86 @@ description: Variables in memory after executing lego.kcl
                         "n": -4.0,
                         "ty": {
                           "in": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Fixed",
+                    "center_object_id": 50,
+                    "construction": false,
                     "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.4,
-                          "units": "Inch"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -4.0,
-                          "units": "Inch"
-                        }
-                      },
                       "center": {
                         "x": {
                           "type": "Var",
-                          "value": 0.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": 0.0
                         },
                         "y": {
                           "type": "Var",
-                          "value": -4.0,
-                          "units": "Inch"
+                          "units": "Inch",
+                          "value": -4.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": 2.4
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Inch",
+                          "value": -4.0
                         }
                       }
                     },
-                    "start_object_id": 49,
-                    "center_object_id": 50,
+                    "start": [
+                      {
+                        "n": 2.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -4.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "start_freedom": "Free",
-                    "center_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 49
                   }
                 },
+                "objectId": 51,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 47,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "in",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "in"
+                    "z": 0.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tubeCircle"
@@ -4446,27 +4002,7 @@ description: Variables in memory after executing lego.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 47,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "in"
+      "artifactId": "[uuid]"
     }
   },
   "wSegments": {

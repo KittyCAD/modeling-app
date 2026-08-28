@@ -39,54 +39,14 @@ description: Variables in memory after executing router-template-slate.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 58,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "mm"
+      "artifactId": "[uuid]"
     }
   },
   "__sketch_79_on": {
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]",
-      "objectId": 78,
-      "value": "start",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
-      "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
-        "creatorSketchIsClosed": "explicitly"
-      },
-      "units": "mm"
+      "artifactId": "[uuid]"
     }
   },
   "cornerRadius": {
@@ -112,6 +72,8 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -590,17 +552,17 @@ description: Variables in memory after executing router-template-slate.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -688,8 +650,8 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -702,6 +664,8 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -866,27 +830,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 58,
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -924,8 +868,8 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -938,6 +882,8 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -1102,27 +1048,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "objectId": 78,
-          "value": "start",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
-          "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
-            "creatorSketchIsClosed": "explicitly"
-          },
-          "units": "mm"
+          "artifactId": "[uuid]"
         },
         "start": {
           "from": [
@@ -1160,8 +1086,8 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -1504,17 +1430,17 @@ description: Variables in memory after executing router-template-slate.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1602,8 +1528,8 @@ description: Variables in memory after executing router-template-slate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region002": {
@@ -1712,27 +1638,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 58,
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1770,8 +1676,8 @@ description: Variables in memory after executing router-template-slate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "region003": {
@@ -1880,27 +1786,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "objectId": 78,
-        "value": "start",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
-        "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
-          "creatorSketchIsClosed": "explicitly"
-        },
-        "units": "mm"
+        "artifactId": "[uuid]"
       },
       "start": {
         "from": [
@@ -1938,8 +1824,8 @@ description: Variables in memory after executing router-template-slate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "routerDiameter": {
@@ -1961,51 +1847,13 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 45,
                 "kind": {
                   "arc": {
-                    "start": [
-                      {
-                        "n": -10.749999995962991,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 28.119583319132705,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end": [
-                      {
-                        "n": -18.8695833190764,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 19.999999999666805,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
                     "center": [
                       {
                         "n": -10.75083336184731,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2013,90 +1861,122 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 20.000833361903986,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 44,
+                    "construction": false,
                     "ctor": {
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "value": -10.75,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -10.75
                         },
                         "y": {
                           "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 20.0
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "value": -18.87,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -18.87
                         },
                         "y": {
                           "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 20.0
                         }
                       },
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "value": -10.75,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": -10.75
                         },
                         "y": {
                           "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
+                          "units": "Mm",
+                          "value": 28.12
                         }
                       }
                     },
-                    "start_object_id": 42,
-                    "end_object_id": 43,
-                    "center_object_id": 44,
-                    "start_freedom": "Free",
+                    "end": [
+                      {
+                        "n": -18.8695833190764,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 19.999999999666805,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "end_object_id": 43,
+                    "start": [
+                      {
+                        "n": -10.749999995962991,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 28.119583319132705,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Free",
+                    "start_object_id": 42
                   }
                 },
+                "objectId": 45,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc11"
@@ -2113,15 +1993,13 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 8,
                 "kind": {
                   "arc": {
-                    "start": [
+                    "center": [
                       {
-                        "n": 18.87,
+                        "n": 10.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2129,17 +2007,56 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 20.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center_freedom": "Free",
+                    "center_object_id": 7,
+                    "construction": false,
+                    "ctor": {
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.0
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.12
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.0
+                        }
+                      }
+                    },
                     "end": [
                       {
                         "n": 10.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2147,17 +2064,17 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 28.12,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "center": [
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
+                    "start": [
                       {
-                        "n": 10.75,
+                        "n": 18.87,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2165,90 +2082,47 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 20.0,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
-                        }
-                      },
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
-                    "center_object_id": 7,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "center_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 8,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2265,33 +2139,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.000000004038476562105978,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 10.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.12
                         }
                       },
-                      {
-                        "n": 28.119999999999845,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.12
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 10.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2299,76 +2180,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 28.12,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -0.000000004038476562105978,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 10.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
+                      {
+                        "n": 28.119999999999845,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2385,33 +2255,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 40,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -18.869375000000623,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.0
                         }
                       },
-                      {
-                        "n": -12.489999999665342,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -18.8695833190764,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2419,76 +2296,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 19.999999999666805,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 39,
+                    "start": [
+                      {
+                        "n": -18.869375000000623,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
+                      {
+                        "n": -12.489999999665342,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 38,
-                    "end_object_id": 39,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 38
                   }
                 },
+                "objectId": 40,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -2505,33 +2371,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 49,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -10.749999995962991,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.12
                         }
                       },
-                      {
-                        "n": 28.119583319132705,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -10.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 28.12
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.0000000040384765625098255,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2539,76 +2412,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": 28.119999999999845,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -10.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 48,
+                    "start": [
+                      {
+                        "n": -10.749999995962991,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 28.12,
-                          "units": "Mm"
+                      {
+                        "n": 28.119583319132705,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 47,
-                    "end_object_id": 48,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 47
                   }
                 },
+                "objectId": 49,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -2625,33 +2487,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 12,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 18.87,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": 20.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 18.87,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2659,76 +2528,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 20.0,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 11,
+                    "start": [
+                      {
+                        "n": 18.87,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": 20.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 10,
-                    "end_object_id": 11,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 10
                   }
                 },
+                "objectId": 12,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2745,33 +2603,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 16,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 18.87,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 30.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2779,76 +2644,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 15,
+                    "start": [
+                      {
+                        "n": 18.87,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 14,
-                    "end_object_id": 15,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 14
                   }
                 },
+                "objectId": 16,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2865,33 +2719,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 20,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 30.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 30.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2899,76 +2760,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -122.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 19,
+                    "start": [
+                      {
+                        "n": 30.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 18,
-                    "end_object_id": 19,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 18
                   }
                 },
+                "objectId": 20,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2985,33 +2835,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 24,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 30.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       },
-                      {
-                        "n": -122.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -0.000000000000002522100805667424,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3019,76 +2876,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -122.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 23,
+                    "start": [
+                      {
+                        "n": 30.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                      {
+                        "n": -122.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 22,
-                    "end_object_id": 23,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 22
                   }
                 },
+                "objectId": 24,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -3105,33 +2951,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 28,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -0.000000000000002522100805919634,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       },
-                      {
-                        "n": -122.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -30.750000000000004,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3139,76 +2992,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -122.48999999911221,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 27,
+                    "start": [
+                      {
+                        "n": -0.000000000000002522100805919634,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                      {
+                        "n": -122.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 26,
-                    "end_object_id": 27,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 26
                   }
                 },
+                "objectId": 28,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -3225,33 +3067,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 32,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -30.750000000000004,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -122.48999999911221,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -122.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -30.750625000000625,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3259,76 +3108,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49000000088778,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -122.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 31,
+                    "start": [
+                      {
+                        "n": -30.750000000000004,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -122.48999999911221,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 30,
-                    "end_object_id": 31,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 30
                   }
                 },
+                "objectId": 32,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -3345,33 +3183,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 36,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -30.750625000000625,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -18.87
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -12.49000000088778,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -30.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -18.869375000000623,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3379,76 +3224,65 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.489999999665342,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -30.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 35,
+                    "start": [
+                      {
+                        "n": -30.750625000000625,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -18.87,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49000000088778,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 34,
-                    "end_object_id": 35,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 34
                   }
                 },
+                "objectId": 36,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -3769,17 +3603,17 @@ description: Variables in memory after executing router-template-slate.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3887,33 +3721,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 62,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -20.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -27.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3921,70 +3762,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 61,
+                    "start": [
+                      {
+                        "n": -20.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 60,
-                    "end_object_id": 61,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 60
                   }
                 },
+                "objectId": 62,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 58,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4001,33 +3831,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 65,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -27.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -27.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4035,70 +3872,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -92.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 64,
+                    "start": [
+                      {
+                        "n": -27.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 63,
-                    "end_object_id": 64,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 63
                   }
                 },
+                "objectId": 65,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 58,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4115,33 +3941,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 69,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -27.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       },
-                      {
-                        "n": -92.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -20.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4149,70 +3982,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -92.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 68,
+                    "start": [
+                      {
+                        "n": -27.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                      {
+                        "n": -92.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 67,
-                    "end_object_id": 68,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 67
                   }
                 },
+                "objectId": 69,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 58,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4229,33 +4051,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 73,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -20.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -92.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -20.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4263,70 +4092,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 72,
+                    "start": [
+                      {
+                        "n": -20.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -92.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 71,
-                    "end_object_id": 72,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 71
                   }
                 },
+                "objectId": 73,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 58,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4445,27 +4263,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 58,
-                "value": "start",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "mm"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [
@@ -4523,33 +4321,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 82,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 20.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 27.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4557,70 +4362,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 81,
+                    "start": [
+                      {
+                        "n": 20.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 80,
-                    "end_object_id": 81,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 80
                   }
                 },
+                "objectId": 82,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 78,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4637,33 +4431,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 85,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 27.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       },
-                      {
-                        "n": -12.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 27.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4671,70 +4472,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -92.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 84,
+                    "start": [
+                      {
+                        "n": 27.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                      {
+                        "n": -12.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 83,
-                    "end_object_id": 84,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 83
                   }
                 },
+                "objectId": 85,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 78,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4751,33 +4541,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 89,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 27.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       },
-                      {
-                        "n": -92.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 27.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 20.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4785,70 +4582,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -92.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 27.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 88,
+                    "start": [
+                      {
+                        "n": 27.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                      {
+                        "n": -92.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 87,
-                    "end_object_id": 88,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 87
                   }
                 },
+                "objectId": 89,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 78,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4865,33 +4651,40 @@ description: Variables in memory after executing router-template-slate.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 93,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 20.75,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -12.49
                         }
                       },
-                      {
-                        "n": -92.49,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 20.75
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -92.49
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 20.75,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4899,70 +4692,59 @@ description: Variables in memory after executing router-template-slate.kcl
                         "n": -12.49,
                         "ty": {
                           "mm": null,
-                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -92.49,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 92,
+                    "start": [
+                      {
+                        "n": 20.75,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 20.75,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": -12.49,
-                          "units": "Mm"
+                      {
+                        "n": -92.49,
+                        "ty": {
+                          "mm": null,
+                          "type": "Length"
                         }
                       }
-                    },
-                    "start_object_id": 91,
-                    "end_object_id": 92,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 91
                   }
                 },
+                "objectId": 93,
+                "sketchId": "[uuid]",
                 "surface": {
-                  "type": "face",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
+                  "id": "[uuid]",
                   "objectId": 78,
+                  "parentSolid": {
+                    "creatorSketchId": "[uuid]",
+                    "creatorSketchIsClosed": "explicitly",
+                    "solidId": "[uuid]"
+                  },
+                  "type": "face",
+                  "units": "mm",
                   "value": "start",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
-                  },
-                  "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
-                    "creatorSketchIsClosed": "explicitly"
-                  },
-                  "units": "mm"
+                    "z": 1.0
+                  }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5081,27 +4863,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "objectId": 78,
-                "value": "start",
-                "xAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": null
-                },
-                "yAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": null
-                },
-                "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
-                  "creatorSketchIsClosed": "explicitly"
-                },
-                "units": "mm"
+                "artifactId": "[uuid]"
               },
               "start": {
                 "from": [

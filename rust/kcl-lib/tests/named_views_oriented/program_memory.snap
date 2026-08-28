@@ -6,37 +6,36 @@ description: Variables in memory after executing named_views_oriented.kcl
   "full": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Front"
-      },
-      "target": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
       "distance": {
         "n": 500.0,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Perspective"
+      "look": {
+        "orientation": "Front",
+        "type": "oriented"
+      },
+      "projection": "Perspective",
+      "target": {
+        "units": "mm",
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
     }
   },
   "minimal": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Isometric"
-      },
-      "target": null,
       "distance": null,
-      "projection": "Orthographic"
+      "look": {
+        "orientation": "Isometric",
+        "type": "oriented"
+      },
+      "projection": "Orthographic",
+      "target": null
     }
   }
 }

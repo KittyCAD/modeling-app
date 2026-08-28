@@ -6,25 +6,24 @@ description: Variables in memory after executing named_views_units_in_inch_defau
   "view": {
     "type": "CameraView",
     "value": {
-      "look": {
-        "type": "oriented",
-        "orientation": "Front"
-      },
-      "target": {
-        "x": 25.4,
-        "y": 0.0,
-        "z": 0.0,
-        "units": "mm"
-      },
       "distance": {
         "n": 12700.0,
         "ty": {
           "mm": null,
-          "type": "Known",
           "type": "Length"
         }
       },
-      "projection": "Orthographic"
+      "look": {
+        "orientation": "Front",
+        "type": "oriented"
+      },
+      "projection": "Orthographic",
+      "target": {
+        "units": "mm",
+        "x": 25.4,
+        "y": 0.0,
+        "z": 0.0
+      }
     }
   }
 }

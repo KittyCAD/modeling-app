@@ -48,7 +48,6 @@ description: Variables in memory after executing cube.kcl
         "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
-        "originalId": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
@@ -121,8 +120,8 @@ description: Variables in memory after executing cube.kcl
         ],
         "on": {
           "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
+          "id": "[uuid]",
           "objectId": 0,
           "kind": "XY",
           "origin": {
@@ -167,6 +166,7 @@ description: Variables in memory after executing cube.kcl
           }
         },
         "artifactId": "[uuid]",
+        "originalId": "[uuid]",
         "units": "mm",
         "isClosed": "explicitly"
       },

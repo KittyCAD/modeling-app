@@ -45,110 +45,110 @@ description: Variables in memory after executing kcl_v2.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 4.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 4.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "a"
@@ -165,110 +165,110 @@ description: Variables in memory after executing kcl_v2.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 4.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 3.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 4.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 4.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
+                    "end_freedom": "Fixed",
+                    "end_object_id": 6,
+                    "start": [
+                      {
+                        "n": 4.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 4.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 3.0,
-                          "units": "None"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
                         }
                       }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
+                    ],
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "b"
@@ -285,110 +285,110 @@ description: Variables in memory after executing kcl_v2.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 0.0
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 4.0
+                        },
+                        "y": {
+                          "type": "Number",
+                          "units": "None",
+                          "value": 3.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "angle": "degrees",
+                          "len": "mm",
+                          "type": "Default"
+                        }
+                      }
+                    ],
+                    "end_freedom": "Fixed",
+                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 4.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       },
                       {
                         "n": 3.0,
                         "ty": {
-                          "type": "Default",
+                          "angle": "degrees",
                           "len": "mm",
-                          "angle": "degrees"
+                          "type": "Default"
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "type": "Default",
-                          "len": "mm",
-                          "angle": "degrees"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "value": 4.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 3.0,
-                          "units": "None"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
-                        },
-                        "y": {
-                          "type": "Number",
-                          "value": 0.0,
-                          "units": "None"
-                        }
-                      }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "end_freedom": "Fixed",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c"
@@ -481,17 +481,17 @@ description: Variables in memory after executing kcl_v2.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -633,17 +633,17 @@ description: Variables in memory after executing kcl_v2.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -695,8 +695,8 @@ description: Variables in memory after executing kcl_v2.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   }
 }
