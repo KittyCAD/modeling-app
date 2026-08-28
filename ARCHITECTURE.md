@@ -227,6 +227,40 @@ in the table. The existing app keeps the display name as the value and converts
 at the file boundary, which needs two mapping functions and a comment about where
 the underscores went.
 
+### The stream follows the panel
+
+The engine allocates its render target when the socket opens, so the size has to
+be known before anyone clicks connect — which is why it is *reported* to the
+connection rather than passed in. But a stream that only ever matches the panel
+it was opened at is wrong within seconds of use: a splitter moves, a rail
+toggles, the window is maximised.
+
+So a resize while connected sends `reconfigure_stream`, and the connection keeps
+two sizes: what the app has asked for, and what the engine is actually rendering.
+Keeping both is what lets them be reconciled at any moment — including after a
+resize that happened *during* negotiation, when there was nothing yet to tell.
+That case was invisible until the two were separated.
+
+Three decisions worth keeping:
+
+- **Leading edge, then a settle.** One discrete change — a pane toggled — is
+  answered immediately, because waiting a quarter of a second looks broken. A
+  drag reports on every frame, and the engine reallocates its render target per
+  reconfigure, so it is answered once at the size it ends on.
+- **A collapsed pane is ignored.** Nothing can be seen, so resizing down to the
+  minimum costs a round trip now and another when it reopens. The last real size
+  is kept.
+- **The panel's shape is preserved.** Clamping each axis into [256, 2160] on its
+  own is the obvious thing and it is wrong: a wide short panel has its height
+  raised to the minimum and its width left alone, so the engine renders a
+  differently-shaped scene and the viewport letterboxes it. Both axes scale by
+  one ratio instead.
+
+The observer reads the element rather than the entry's `contentRect`, which is a
+snapshot from when the observation was queued, and reports on the next frame
+rather than synchronously — otherwise anything downstream that reads layout
+produces "ResizeObserver loop completed with undelivered notifications".
+
 ### Interaction is contributed
 
 The stream element is the only surface the model can be touched through: the

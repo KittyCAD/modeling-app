@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   clampDimension,
+  streamDimensionsFor,
   engineWebSocketUrl,
   errorFromMessage,
   isAuthError,
@@ -105,6 +106,42 @@ describe('engineWebSocketUrl', () => {
     })
     expect(url).toContain('replay=1&')
     expect(url.match(/\?/g)).toHaveLength(1)
+  })
+})
+
+describe('streamDimensionsFor', () => {
+  it('leaves an ordinary panel alone, rounded to the engine’s granularity', () => {
+    expect(streamDimensionsFor(1201, 799)).toEqual({ width: 1200, height: 800 })
+  })
+
+  it('scales a large panel down without changing its shape', () => {
+    // Clamping each axis on its own gives 2160x2160 for this, and the viewport
+    // then letterboxes a scene that is the wrong shape.
+    const size = streamDimensionsFor(4000, 3000)
+    expect(size.width).toBe(2160)
+    expect(size.height).toBe(1620)
+  })
+
+  it('scales a tiny panel up without changing its shape', () => {
+    const size = streamDimensionsFor(100, 80)
+    expect(size.height).toBe(256)
+    expect(size.width / size.height).toBeCloseTo(100 / 80, 2)
+  })
+
+  it('keeps an extreme panel inside both bounds', () => {
+    const size = streamDimensionsFor(3000, 200)
+    expect(size.width).toBeLessThanOrEqual(2160)
+    expect(size.height).toBeGreaterThanOrEqual(256)
+    expect(size.width % 4).toBe(0)
+    expect(size.height % 4).toBe(0)
+  })
+
+  it('answers with something valid for a panel that has not laid out', () => {
+    expect(streamDimensionsFor(0, 0)).toEqual({ width: 256, height: 256 })
+    expect(streamDimensionsFor(Number.NaN, 100)).toEqual({
+      width: 256,
+      height: 256,
+    })
   })
 })
 

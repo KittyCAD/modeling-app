@@ -116,6 +116,50 @@ export function clampDimension(value: number): number {
   return Math.min(Math.max(rounded, MIN_STREAM_DIMENSION), MAX_STREAM_DIMENSION)
 }
 
+/**
+ * A stream size for a panel of this size, with the shape preserved.
+ *
+ * Clamping each axis on its own is what a first pass does, and it is wrong: a
+ * tall narrow panel has its height cut to the maximum and its width left alone,
+ * so the engine renders a differently-shaped scene and the viewport shows it
+ * letterboxed. Scaling both axes by one ratio keeps the frame the shape of the
+ * panel, so the model fills it.
+ *
+ * The ratio is the smallest that gets both axes to the minimum, capped by the
+ * largest that keeps both under the maximum. Rounding to a multiple of four
+ * afterwards can still shift the aspect by a fraction of a percent, which is
+ * invisible and unavoidable — four is the engine's granularity.
+ */
+export function streamDimensionsFor(
+  width: number,
+  height: number
+): { width: number; height: number } {
+  if (
+    !Number.isFinite(width) ||
+    !Number.isFinite(height) ||
+    width <= 0 ||
+    height <= 0
+  ) {
+    return { width: MIN_STREAM_DIMENSION, height: MIN_STREAM_DIMENSION }
+  }
+
+  const toReachMinimum = Math.max(
+    MIN_STREAM_DIMENSION / width,
+    MIN_STREAM_DIMENSION / height,
+    1
+  )
+  const toStayUnderMaximum = Math.min(
+    MAX_STREAM_DIMENSION / width,
+    MAX_STREAM_DIMENSION / height
+  )
+  const ratio = Math.min(toReachMinimum, toStayUnderMaximum)
+
+  return {
+    width: clampDimension(width * ratio),
+    height: clampDimension(height * ratio),
+  }
+}
+
 /** Peer-connection configuration, given whatever ICE servers we were handed. */
 export function peerConfiguration(
   iceServers: RTCIceServer[]

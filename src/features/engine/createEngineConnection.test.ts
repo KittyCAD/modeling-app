@@ -175,6 +175,135 @@ describe('engine connection', () => {
     vi.useRealTimers()
   })
 
+  describe('resizing the stream', () => {
+    const reconfigures = () =>
+      socket()
+        .jsonSent()
+        .filter((message) => message.cmd?.type === 'reconfigure_stream')
+        .map((message) => ({
+          width: message.cmd.width,
+          height: message.cmd.height,
+          fps: message.cmd.fps,
+        }))
+
+    it('reconfigures a live stream instead of needing a reconnect', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+
+      connection.reportViewportSize({ width: 1200, height: 800 })
+
+      expect(reconfigures()).toEqual([{ width: 1200, height: 800, fps: 60 }])
+    })
+
+    it('does nothing until there is a connection to tell', () => {
+      const { connection } = connect()
+      connection.reportViewportSize({ width: 1200, height: 800 })
+
+      // The size still lands, and the next connection carries it in its URL.
+      expect(connection.viewportSize.value).toEqual({
+        width: 1200,
+        height: 800,
+      })
+      expect(reconfigures()).toEqual([])
+    })
+
+    it('resizes once the socket finishes negotiating', async () => {
+      const { connection } = connect()
+      // A pane opening during the handshake used to be lost: the URL had already
+      // been built and there was nothing yet to send a command over.
+      connection.reportViewportSize({ width: 1200, height: 800 })
+      await completeHandshake()
+
+      expect(reconfigures()).toEqual([{ width: 1200, height: 800, fps: 60 }])
+    })
+
+    it('says nothing when the size has not actually changed', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+
+      // A ResizeObserver fires on observe, and again for changes too small to
+      // survive rounding to a multiple of four.
+      connection.reportViewportSize({ width: 800, height: 600 })
+      connection.reportViewportSize({ width: 801, height: 601 })
+
+      expect(reconfigures()).toEqual([])
+    })
+
+    it('answers one discrete change immediately', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+
+      // Toggling a pane is not a burst, and waiting a quarter second to react
+      // to it looks broken.
+      connection.reportViewportSize({ width: 1000, height: 700 })
+      expect(reconfigures()).toHaveLength(1)
+    })
+
+    it('collapses a drag into the size it settles on', async () => {
+      vi.useFakeTimers()
+      const { connection } = connect()
+      await completeHandshake()
+
+      connection.reportViewportSize({ width: 1000, height: 700 })
+      for (let width = 1004; width <= 1100; width += 4) {
+        connection.reportViewportSize({ width, height: 700 })
+      }
+
+      // The engine reallocates its render target for each reconfigure, so
+      // following the pointer would flicker all the way through the drag.
+      expect(reconfigures()).toHaveLength(1)
+
+      vi.advanceTimersByTime(300)
+      expect(reconfigures()).toEqual([
+        { width: 1000, height: 700, fps: 60 },
+        { width: 1100, height: 700, fps: 60 },
+      ])
+    })
+
+    it('ignores a collapsed pane', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+
+      // Nothing can be seen, so resizing down to the minimum costs a round trip
+      // now and another when it reopens.
+      connection.reportViewportSize({ width: 0, height: 0 })
+
+      expect(reconfigures()).toEqual([])
+      expect(connection.viewportSize.value).toEqual({ width: 800, height: 600 })
+    })
+
+    it('keeps the panel’s shape', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+
+      // Clamping each axis on its own would cut the height to the maximum and
+      // leave the width alone, and the viewport would letterbox a scene that is
+      // the wrong shape.
+      connection.reportViewportSize({ width: 4000, height: 3000 })
+      const [resized] = reconfigures()
+
+      expect(resized.width).toBeLessThanOrEqual(2160)
+      expect(resized.height).toBeLessThanOrEqual(2160)
+      expect(resized.width / resized.height).toBeCloseTo(4 / 3, 2)
+    })
+
+    it('forgets the applied size when the connection drops', async () => {
+      const { connection } = connect()
+      await completeHandshake()
+      connection.reportViewportSize({ width: 1200, height: 800 })
+      connection.disconnect()
+
+      const second = connection.connect({ width: 1200, height: 800 })
+      second.catch(() => {})
+      await completeHandshake()
+
+      // The new socket already asked for this size in its URL, so there is
+      // nothing to reconfigure.
+      expect(reconfigures()).toEqual([])
+      expect(socket().url).toContain('video_res_width=1200')
+    })
+  })
+
   it('refuses to connect with no token, rather than opening a socket', async () => {
     const { connection, promise } = connect(null)
 

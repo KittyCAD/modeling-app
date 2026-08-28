@@ -48,17 +48,42 @@ function ViewportFrame({
   const connect = () => commands.run('engine.connect')
   const host = useRef<HTMLDivElement>(null)
 
+  /**
+   * Report the panel's size, whenever it changes.
+   *
+   * This is the only thing that tells the engine how big to render, so it has to
+   * survive everything that changes the panel: a splitter dragged, a rail
+   * toggled, the window resized or maximised, the app entering full screen.
+   * Observing the element covers all of them without knowing about any of them.
+   *
+   * Reads the element rather than the entry's `contentRect`, which is a snapshot
+   * from when the observation was queued and can be a frame behind by the time a
+   * coalesced batch is delivered.
+   */
   useEffect(() => {
     const element = host.current
     if (!element || typeof ResizeObserver === 'undefined') return
 
-    const observer = new ResizeObserver(([entry]) => {
-      const box = entry?.contentRect
-      if (box)
-        engine.reportViewportSize({ width: box.width, height: box.height })
+    let frame: number | null = null
+    const observer = new ResizeObserver(() => {
+      // Deferred to the next frame: reporting synchronously from inside the
+      // callback is what produces "ResizeObserver loop completed with
+      // undelivered notifications" as soon as anything downstream reads layout.
+      if (frame !== null) return
+      frame = requestAnimationFrame(() => {
+        frame = null
+        engine.reportViewportSize({
+          width: element.clientWidth,
+          height: element.clientHeight,
+        })
+      })
     })
     observer.observe(element)
-    return () => observer.disconnect()
+
+    return () => {
+      observer.disconnect()
+      if (frame !== null) cancelAnimationFrame(frame)
+    }
   }, [engine])
 
   return (

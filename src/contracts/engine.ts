@@ -66,13 +66,21 @@ export interface EngineConnection {
   /**
    * Tell the connection how big the viewport is.
    *
-   * The engine allocates its render target when the connection is made, so the
-   * size has to be known *before* connecting — which is why this is reported
-   * rather than passed at connect time by whoever happens to click the button.
-   * A resize after connecting needs a reconnect to take effect.
+   * Reported rather than passed at connect time, because the engine allocates
+   * its render target when the connection is made and the size therefore has to
+   * be known *before* whoever clicks connect gets involved.
+   *
+   * A resize while connected reconfigures the live stream, so toggling a pane or
+   * resizing the window does not need a reconnect. Bursts are coalesced and a
+   * collapsed pane is ignored; see the implementation for why.
    */
   reportViewportSize(size: { width: number; height: number }): void
-  /** The size the next connection will request. */
+  /**
+   * The size the stream is, or will be.
+   *
+   * Shaped like the panel rather than clamped per axis, so the frame the engine
+   * renders is the shape of the space it is shown in.
+   */
   readonly viewportSize: ReadonlySignal<{ width: number; height: number }>
 
   /** Fire and forget. Throws if there is nothing to send over. */

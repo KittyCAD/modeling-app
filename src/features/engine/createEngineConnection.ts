@@ -12,6 +12,7 @@ import {
   clampDimension,
   type EngineServerMessage,
   engineWebSocketUrl,
+  streamDimensionsFor,
   errorFromMessage,
   isAuthError,
   peerConfiguration,
@@ -40,6 +41,24 @@ const PROTOCOL_RESPONSE_TYPES = new Set([
   'metrics_request',
   'modeling_session_data',
 ])
+
+/**
+ * How long a burst of resizes is allowed to run before the stream is resized.
+ *
+ * Dragging a splitter reports a size on every frame. The engine reallocates its
+ * render target for each reconfigure, so following the pointer would mean dozens
+ * of reallocations and a stream that flickers all the way through the drag.
+ */
+const RESIZE_SETTLE_MS = 250
+
+/**
+ * ...but a single discrete change should not wait.
+ *
+ * Toggling a pane or maximising the window is one resize, not a burst, and
+ * waiting a quarter of a second to answer it looks broken. The first report
+ * after a quiet period goes immediately; the settle timer covers what follows.
+ */
+const RESIZE_LEADING_MS = 150
 
 interface PendingCommand {
   resolve: (bytes: Uint8Array) => void
@@ -90,6 +109,18 @@ export function createEngineConnection(
   const apiCallId = signal<string | null>(null)
   /** Bumped whenever the engine begins a fresh scene. */
   const sceneEpoch = signal(0)
+
+  /**
+   * The size the engine is actually rendering at.
+   *
+   * Tracked separately from `viewportSize`, which is what the app has asked for.
+   * Keeping both is what lets them be reconciled at any moment — including after
+   * a resize that happened while the socket was still negotiating, when there was
+   * nothing to tell.
+   */
+  let appliedSize: { width: number; height: number } | null = null
+  let resizeTimer: number | undefined
+  let lastResizeAt: number | null = null
   const mediaStream = signal<MediaStream | null>(null)
   /**
    * The size the next connection asks for.
@@ -152,9 +183,14 @@ export function createEngineConnection(
   function teardown() {
     window.clearInterval(pingTimer)
     window.clearTimeout(connectTimer)
+    window.clearTimeout(resizeTimer)
     pingTimer = undefined
     connectTimer = undefined
+    resizeTimer = undefined
     pingSentAt = null
+    // The next connection carries the size in its URL, so nothing is pending.
+    appliedSize = null
+    lastResizeAt = null
 
     unreliableChannel?.close()
     unreliableChannel = null
@@ -369,6 +405,9 @@ export function createEngineConnection(
         // A fresh connection is a fresh scene: whatever the app had told the
         // engine about how to draw it is gone, and has to be restated.
         sceneEpoch.value += 1
+        // The panel may have been resized while the socket was negotiating,
+        // when there was nothing to tell. No-ops when the size still matches.
+        scheduleReconfigure()
         error.value = null
         window.clearTimeout(connectTimer)
         startPinging()
@@ -433,16 +472,83 @@ export function createEngineConnection(
     return JSON.stringify(request.command)
   }
 
+  /**
+   * Tell the engine the stream has a new size.
+   *
+   * Silent unless there is something to tell: not connected, or the engine is
+   * already rendering at this size. `fps` is required by the command and,
+   * according to the existing app, does next to nothing.
+   */
+  function sendReconfigure(): void {
+    resizeTimer = undefined
+    if (status.peek() !== 'connected') return
+
+    const wanted = viewportSize.peek()
+    if (
+      appliedSize &&
+      appliedSize.width === wanted.width &&
+      appliedSize.height === wanted.height
+    ) {
+      return
+    }
+
+    const commandId = crypto.randomUUID()
+    try {
+      const open = requireOpenSocket()
+      open.send(
+        encodeCommand({
+          id: commandId,
+          sourceRange: [0, 0, 0],
+          command: {
+            type: 'modeling_cmd_req',
+            cmd_id: commandId,
+            cmd: { type: 'reconfigure_stream', ...wanted, fps: 60 },
+          },
+          idToSourceRange: {},
+        })
+      )
+      appliedSize = wanted
+      lastResizeAt = Date.now()
+    } catch (caught) {
+      // The socket closed between the status read and the send. The next
+      // connection carries the size in its URL, so nothing is lost.
+      console.warn('engine: could not resize the stream', caught)
+    }
+  }
+
+  /**
+   * Leading edge, then a settle.
+   *
+   * One discrete change — a pane toggled, a window maximised — is answered
+   * immediately. A drag, which reports on every frame, is answered once at the
+   * size it ends on.
+   */
+  function scheduleReconfigure(): void {
+    if (status.peek() !== 'connected') return
+
+    const quiet =
+      lastResizeAt === null || Date.now() - lastResizeAt >= RESIZE_LEADING_MS
+    if (quiet && resizeTimer === undefined) {
+      sendReconfigure()
+      return
+    }
+
+    if (resizeTimer !== undefined) window.clearTimeout(resizeTimer)
+    resizeTimer = window.setTimeout(sendReconfigure, RESIZE_SETTLE_MS)
+  }
+
   return {
     state,
     mediaStream: computed(() => mediaStream.value),
     viewportSize: computed(() => viewportSize.value),
 
     reportViewportSize(size) {
-      const next = {
-        width: clampDimension(size.width),
-        height: clampDimension(size.height),
-      }
+      // A collapsed pane measures zero. Reconfiguring the stream down to the
+      // minimum for something nobody can see costs a round trip and another one
+      // when it reopens, so the last real size is kept instead.
+      if (size.width <= 0 || size.height <= 0) return
+
+      const next = streamDimensionsFor(size.width, size.height)
       if (
         next.width === viewportSize.peek().width &&
         next.height === viewportSize.peek().height
@@ -450,6 +556,7 @@ export function createEngineConnection(
         return
       }
       viewportSize.value = next
+      scheduleReconfigure()
     },
 
     connect(dimensions) {
@@ -491,7 +598,25 @@ export function createEngineConnection(
           )
         }, CONNECT_TIMEOUT_MS)
 
-        const size = dimensions ?? viewportSize.peek()
+        /**
+         * One source of truth for the size.
+         *
+         * Dimensions passed here are adopted rather than used and forgotten.
+         * Using them for the URL while `viewportSize` still held something else
+         * left the connection contradicting itself: it opened at one size and
+         * then immediately resized the stream to the other.
+         */
+        if (dimensions) {
+          viewportSize.value = streamDimensionsFor(
+            dimensions.width,
+            dimensions.height
+          )
+        }
+        const size = viewportSize.peek()
+        // What the engine will render at, from the moment the socket opens. The
+        // panel can change size during negotiation, and this is what makes that
+        // detectable rather than silently wrong.
+        appliedSize = size
         socket = new WebSocket(
           engineWebSocketUrl({
             baseUrl: options.baseUrl,
