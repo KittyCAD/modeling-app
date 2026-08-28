@@ -4,12 +4,13 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed } from '@preact/signals'
+import { computed, signal } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { commandService } from '@src/contracts/commands'
 import {
   BASE_SCOPE,
   type KeybindingService,
+  type PersistedKeymap,
   keybindingScopesValueSpec,
   keybindingService,
   keybindingsValueSpec,
@@ -17,9 +18,22 @@ import {
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import { createKeymapDispatcher } from '@src/features/keybindings/createKeymapDispatcher'
 import {
+  createBrowserKeymapStore,
+  createDesktopKeymapStore,
+} from '@src/features/keybindings/keymapStores'
+import {
   displayKeystrokes,
   findBindingForCommand,
 } from '@src/features/keybindings/keymap'
+import {
+  emptyKeymap,
+  parseKeymap,
+  resolveBindings,
+  serialiseKeymap,
+  withRebind,
+  withUnbind,
+  withoutLine,
+} from '@src/features/keybindings/persistedKeymap'
 import './keybindings.css'
 
 /** What has been typed so far, while it is not yet an answer. */
@@ -58,8 +72,53 @@ function PendingChord() {
  *   dispatches, and only unmodified keys defer.
  */
 export default defineRegistryItemFactory((ctx) => {
-  const bindings = computed(() => ctx.valueSpecs.get(keybindingsValueSpec))
+  const contributed = computed(() => ctx.valueSpecs.get(keybindingsValueSpec))
   const scopes = computed(() => ctx.valueSpecs.get(keybindingScopesValueSpec))
+
+  // Chosen from the bridge rather than the runtime service, as in settings: this
+  // runs during graph construction, where resolving a service is not allowed.
+  const store =
+    typeof window !== 'undefined' && window.electron
+      ? createDesktopKeymapStore(window.electron)
+      : createBrowserKeymapStore()
+
+  const persisted = signal<PersistedKeymap>(emptyKeymap())
+
+  /**
+   * The keymap the app actually dispatches from.
+   *
+   * A `computed`, so the user's file and a feature appearing or disappearing are
+   * the same kind of event: something changed, and the tree is rebuilt from
+   * whatever the answer is now.
+   */
+  const bindings = computed(() =>
+    resolveBindings(contributed.value, persisted.value)
+  )
+
+  /**
+   * Read the stored keymap once, on the way up.
+   *
+   * Deliberately not awaited by anything. A keystroke pressed in the first
+   * moments uses the app's defaults, which is the right answer if we do not yet
+   * know of an override — and a keymap that has to load before the keyboard
+   * works would be a worse trade.
+   */
+  const loaded = store
+    .read()
+    .then((text) => {
+      if (text !== null) persisted.value = parseKeymap(text)
+    })
+    .catch((error) => {
+      console.warn('keybindings: could not read the keymap', error)
+    })
+
+  const save = async (next: PersistedKeymap) => {
+    // Waited for, so a save cannot land before the initial read and then be
+    // overwritten by it.
+    await loaded
+    persisted.value = next
+    await store.write(serialiseKeymap(next))
+  }
 
   const dispatcher = createKeymapDispatcher({
     bindings,
@@ -75,6 +134,9 @@ export default defineRegistryItemFactory((ctx) => {
 
   const service: KeybindingService = {
     bindings,
+    contributed,
+    persisted: computed(() => persisted.value),
+    location: store.location,
     scopes,
     activeScopes: dispatcher.activeScopes,
     pending: dispatcher.pending,
@@ -92,6 +154,12 @@ export default defineRegistryItemFactory((ctx) => {
       )
       return binding ? displayKeystrokes(binding.keystrokes) : undefined
     },
+
+    save,
+    rebind: (commandId, keystrokes, scopeIds) =>
+      save(withRebind(persisted.value, commandId, keystrokes, scopeIds)),
+    unbind: (commandId) => save(withUnbind(persisted.value, commandId)),
+    removePersisted: (index) => save(withoutLine(persisted.value, index)),
   }
 
   return {

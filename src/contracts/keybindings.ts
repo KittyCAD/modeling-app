@@ -54,6 +54,14 @@ export interface Keybinding {
   keystrokes: readonly string[]
   commandId: string
   /**
+   * Who this binding came from, filled in when the user's keymap is resolved.
+   *
+   * The settings dialog prints it for the same reason the settings dialog prints
+   * a setting's level: "why is this key doing that" should have an answer that
+   * does not require reading a file.
+   */
+  source?: 'app' | 'user'
+  /**
    * Where this binding applies. Absent means `base`: everywhere.
    *
    * Listing more than one is an "or" — the binding is live if any of them is
@@ -74,8 +82,41 @@ export type KeymapMatch =
   | { type: 'prefix' }
   | { type: 'full'; binding: Keybinding }
 
+/**
+ * A line in the user's keymap.
+ *
+ * `command` prefixed with `-` is an unbind, which is VS Code's convention and
+ * worth keeping: a keymap has to be able to say "not this" about a binding the
+ * app shipped, and inventing a `disabled = true` field means every reader has to
+ * remember it.
+ */
+export interface PersistedBinding {
+  command: string
+  /** Absent on an unbind, which is about the command rather than the keys. */
+  keystrokes?: readonly string[]
+  scopes?: readonly string[]
+}
+
+/**
+ * The user's keymap as stored.
+ *
+ * Its own document with its own version, deliberately outside the settings
+ * cascade: an override here is a patch against what the app shipped, not an
+ * answer to "for me or for this project".
+ */
+export interface PersistedKeymap {
+  version: 1
+  bindings: readonly PersistedBinding[]
+}
+
 export interface KeybindingService {
   readonly bindings: ReadonlySignal<readonly Keybinding[]>
+  /** What features contributed, before the user's keymap is applied. */
+  readonly contributed: ReadonlySignal<readonly Keybinding[]>
+  /** The user's keymap, as stored. Empty until it has been read. */
+  readonly persisted: ReadonlySignal<PersistedKeymap>
+  /** Where the keymap is kept, for the dialog to print. */
+  readonly location: ReadonlySignal<string>
   readonly scopes: ReadonlySignal<readonly KeybindingScope[]>
   /** Scopes currently applied, in the order they were applied. */
   readonly activeScopes: ReadonlySignal<readonly string[]>
@@ -106,6 +147,41 @@ export interface KeybindingService {
    * Reference counted, so overlapping callers each release their own hold.
    */
   suspendListening(): () => void
+
+  /** Replace the stored keymap wholesale. */
+  save(keymap: PersistedKeymap): Promise<void>
+  /**
+   * Give a command these keystrokes, replacing whatever it had.
+   *
+   * Per command rather than per binding, because that is the question someone
+   * asks: they want *this action* on *these keys*, and they do not care how many
+   * bindings the app happened to ship for it.
+   */
+  rebind(
+    commandId: string,
+    keystrokes: readonly string[],
+    scopes?: readonly string[]
+  ): Promise<void>
+  /** Take a command's keys away, leaving it reachable only from the palette. */
+  unbind(commandId: string): Promise<void>
+  /** Drop one line from the user's keymap, restoring what the app said. */
+  removePersisted(index: number): Promise<void>
+}
+
+/**
+ * Somewhere the keymap is kept.
+ *
+ * The same shape as the settings store, and for the same reason: the desktop
+ * writes a file the user can edit by hand, the web writes browser storage, and
+ * nothing above this line knows which.
+ */
+export interface KeymapStore {
+  readonly id: string
+  readonly location: ReadonlySignal<string>
+  read(): Promise<string | null>
+  write(text: string): Promise<void>
+  /** Called with the new text when something else changes it. */
+  watch?(listener: (text: string | null) => void): () => void
 }
 
 /**

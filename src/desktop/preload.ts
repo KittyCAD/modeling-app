@@ -76,6 +76,11 @@ const desktop = {
   /** Absolute path of `user.toml`, shown so someone can go and edit it. */
   userSettingsPath: (): Promise<string> =>
     ipcRenderer.invoke(channels.userSettingsPath),
+  keymapPath: (): Promise<string> => ipcRenderer.invoke(channels.keymapPath),
+  readKeymap: (): Promise<string | null> =>
+    ipcRenderer.invoke(channels.readKeymap),
+  writeKeymap: (contents: string): Promise<void> =>
+    ipcRenderer.invoke(channels.writeKeymap, contents),
 
   /** TOML text of the user's settings, or null if the file does not exist. */
   readUserSettings: (): Promise<string | null> =>

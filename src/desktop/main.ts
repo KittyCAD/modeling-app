@@ -134,6 +134,11 @@ function userSettingsPath(): string {
   return path.join(app.getPath('userData'), 'user.toml')
 }
 
+/** Where the user's keymap lives, next to their settings. */
+function keymapPath(): string {
+  return path.join(app.getPath('userData'), 'keybindings.toml')
+}
+
 /**
  * Confine a renderer-supplied path to one of the granted roots.
  *
@@ -536,6 +541,28 @@ function registerIpcHandlers() {
   })
 
   ipcMain.handle(channels.userSettingsPath, () => userSettingsPath())
+  ipcMain.handle(channels.keymapPath, () => keymapPath())
+
+  ipcMain.handle(channels.readKeymap, async () => {
+    try {
+      return await fs.readFile(keymapPath(), 'utf8')
+    } catch (error) {
+      // No keymap yet is the ordinary state: most people never write one.
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null
+      throw error
+    }
+  })
+
+  ipcMain.handle(channels.writeKeymap, async (_event, contents: string) => {
+    const target = keymapPath()
+    await fs.mkdir(path.dirname(target), { recursive: true })
+    // Write then rename, as with settings: a crash mid-write leaves the previous
+    // keymap intact rather than a truncated file that would parse as empty and
+    // silently restore every default.
+    const temporary = `${target}.tmp`
+    await fs.writeFile(temporary, contents, 'utf8')
+    await fs.rename(temporary, target)
+  })
 
   ipcMain.handle(channels.readUserSettings, async () => {
     try {

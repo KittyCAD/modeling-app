@@ -50,6 +50,17 @@ export const channels = {
    */
   userSettingsChanged: 'settings:changed',
 
+  /**
+   * The keymap file, beside the settings file and pinned the same way.
+   *
+   * Its own channels rather than a generalised "config file" set, because the
+   * settings channels are load-bearing and working; the two should be one pair
+   * of channels taking a file *kind* the next time either is touched.
+   */
+  keymapPath: 'keymap:path',
+  readKeymap: 'keymap:read',
+  writeKeymap: 'keymap:write',
+
   /** Begin watching a directory tree. Resolves with a subscription id. */
   watchDirectory: 'fs:watch',
   unwatchDirectory: 'fs:unwatch',
