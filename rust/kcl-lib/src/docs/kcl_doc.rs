@@ -152,9 +152,11 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 let qual = format!("{}::", result.qual_name);
                 let mut dd = match var.kind {
                     VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
-                    VariableKind::Const => {
-                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
-                    }
+                    VariableKind::Const => function_alias_from_ast(var, &result, &qual, preferred_prefix)
+                        .map(DocData::Fn)
+                        .unwrap_or_else(|| {
+                            DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
+                        }),
                 };
                 let key = format!("I:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
@@ -193,6 +195,34 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
 
     Ok(result)
+}
+
+/// Build documentation for a direct, same-module function alias.
+///
+/// KCL declares an alias such as `export fixed = coincident` as a constant, but
+/// users call it as a function. Reuse the target function's callable contract
+/// while keeping the alias's identity and documentation.
+fn function_alias_from_ast(
+    var: &crate::parsing::ast::types::VariableDeclaration,
+    module: &ModData,
+    qual_prefix: &str,
+    preferred_prefix: &str,
+) -> Option<FnData> {
+    let Expr::Name(target) = &var.declaration.init else {
+        return None;
+    };
+    let target_name = target.local_ident()?;
+    let target_key = format!("I:{qual_prefix}{target_name}");
+    let DocData::Fn(target) = module.children.get(&target_key)? else {
+        return None;
+    };
+
+    let name = var.declaration.id.name.clone();
+    let mut alias = target.clone();
+    alias.preferred_name = format!("{preferred_prefix}{name}");
+    alias.qual_name = format!("{qual_prefix}{name}");
+    alias.name = name;
+    Some(alias)
 }
 
 #[derive(Debug, Clone)]
@@ -1672,6 +1702,25 @@ mod test {
 
         let stdlib = walk_stdlib();
         assert!(matches!(stdlib.find_by_name("coincident"), Some(DocData::Fn(_))));
+    }
+
+    #[test]
+    fn direct_function_alias_inherits_callable_documentation() {
+        let stdlib = walk_stdlib();
+        let Some(DocData::Fn(fixed)) = stdlib.find_by_name("fixed") else {
+            panic!("fixed should be documented as a function alias");
+        };
+
+        assert_eq!(fixed.name, "fixed");
+        assert_eq!(fixed.preferred_name, "solver::fixed");
+        assert_eq!(fixed.qual_name, "std::solver::fixed");
+        assert_eq!(fixed.fn_signature(), "(@points: [Segment | Point2d; 2+])");
+        assert_eq!(
+            fixed.to_signature_help().signatures[0].label,
+            "solver::fixed(@points: [Segment | Point2d; 2+])"
+        );
+        assert_eq!(fixed.examples.len(), 1);
+        assert!(fixed.examples[0].0.contains("fixed([edge.start, ORIGIN])"));
     }
 
     #[test]

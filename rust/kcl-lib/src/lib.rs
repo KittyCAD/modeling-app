@@ -65,6 +65,7 @@ mod fmt;
 mod frontend;
 mod fs;
 pub(crate) mod id;
+mod import_format;
 pub mod lint;
 mod log;
 mod lsp;
@@ -248,8 +249,6 @@ pub mod front {
     };
 }
 
-#[cfg(feature = "cli")]
-use clap::ValueEnum;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -262,17 +261,10 @@ use crate::log::logln;
 lazy_static::lazy_static! {
 
     pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
-        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
-        #[cfg(feature = "cli")]
-        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+        import_format::IMPORT_FILE_EXTENSION_FORMATS
             .iter()
-            .map(|x| format!("{x}"))
-            .collect::<Vec<String>>();
-        #[cfg(not(feature = "cli"))]
-        let named_extensions = vec![]; // We don't really need this outside of the CLI.
-        // Add all the default import formats.
-        import_file_extensions.extend_from_slice(&named_extensions);
-        import_file_extensions
+            .map(|(extension, _)| (*extension).to_owned())
+            .collect()
     };
 
     pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
@@ -439,6 +431,13 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn proprietary_file_extensions_use_real_suffixes() {
+        for extension in ["sat", "sab", "catpart", "prt", "ipt", "x_t", "x_b", "sldprt"] {
+            assert!(IMPORT_FILE_EXTENSIONS.iter().any(|candidate| candidate == extension));
+        }
+    }
 
     #[test]
     fn convert_int() {
