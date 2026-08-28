@@ -10,12 +10,17 @@
   align-items: center;
   gap: var(--zds-space-1);
   max-inline-size: 100%;
+  /*
+   * Wraps rather than scrolls. `overflow-x: auto` computes `overflow-y` to
+   * `auto` as well, which turns the strip into a clipping context and cuts off
+   * every dropdown panel opening below it.
+   */
+  flex-wrap: wrap;
   padding: var(--zds-space-1);
   border: var(--zds-size-hairline) solid var(--zds-border-default);
   border-radius: var(--zds-radius-content-lg);
   background: var(--zds-surface-overlay);
   box-shadow: var(--zds-shadow-overlay);
-  overflow-x: auto;
 }
 
 /* A run of tools. The rule between runs is what a divider is here. */
