@@ -206,7 +206,14 @@ export function userFeaturesContextHas(
   featureFlagId: Feature,
   defaultValue: boolean
 ): boolean {
-  if (featureFlagId === OPFS_CLOUD_FEATURE_FLAG && isPlaywright()) {
+  // Force every web test into the multi-project experience, which is already
+  // the default on production. The feature flag will be removed soon.
+  if (
+    featureFlagId === OPFS_CLOUD_FEATURE_FLAG &&
+    typeof window !== 'undefined' &&
+    !window.electron &&
+    isPlaywright()
+  ) {
     return true
   }
 
