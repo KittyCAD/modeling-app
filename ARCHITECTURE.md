@@ -1193,6 +1193,17 @@ should recede behind the geometry:
 - **One motif reused.** `.zds-grid-field` is the construction grid, behind both
   an empty viewport and a project card with no preview.
 
+- **Two icon families.** The chassis set is stroked linework on a 16px grid.
+  The CAD set is filled glyphs ported from the existing app, because nothing
+  else names an extrude, a chamfer or sixteen geometric characteristics, and
+  redrawing that vocabulary as thin strokes would produce worse icons. `IconName`
+  is the union, so a caller never says which drew what, and a test fails the
+  build if a name appears in both.
+- **Tooltips answer twice.** An icon-only button gives its *name* at hover speed
+  and what it *does* after a longer dwell. Someone sweeping a toolbar is
+  scanning; someone who stopped is reading, and one tooltip for both is either
+  slow or in the way.
+
 Theme is one attribute on the root element. Nothing subscribes to it and nothing
 re-renders when it changes.
 
