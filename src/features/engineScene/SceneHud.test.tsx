@@ -72,4 +72,45 @@ describe('scene outline HUD', () => {
     expect(sections[0].dataset.open).toBeUndefined()
     expect(sections[1].dataset.open).toBeUndefined()
   })
+
+  it('collapses the whole outline to one small control', () => {
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        provides: [
+          provide(sceneHudSectionsValueSpec, {
+            id: 'features',
+            title: 'Features',
+            order: 0,
+            render: () => <div>Operation rows</div>,
+          }),
+        ],
+      }),
+    ])
+
+    host = document.createElement('div')
+    document.body.appendChild(host)
+    act(() =>
+      render(
+        <AppProvider value={{ registry, dispose: () => {} }}>
+          <SceneHud />
+        </AppProvider>,
+        host as HTMLDivElement
+      )
+    )
+
+    act(() => {
+      ;(
+        host?.querySelector(
+          'button[aria-label="Collapse scene outline"]'
+        ) as HTMLElement
+      ).click()
+    })
+
+    expect(host.querySelector('aside')?.dataset.collapsed).toBe('true')
+    expect(host.textContent).not.toContain('Operation rows')
+    expect(
+      host.querySelector('button[aria-label="Expand scene outline"]')
+    ).not.toBeNull()
+  })
 })

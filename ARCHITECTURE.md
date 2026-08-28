@@ -1167,7 +1167,9 @@ executing buffer, and the operation timeline is another representation of that
 same buffer, so separating them in the app layout would make one scene look like
 two unrelated documents. The translucent, bounded surface overlays the geometry
 like a heads-up display. Pointer events belong only to the HUD itself; the rest
-of the start zone remains transparent to orbit and selection.
+of the start zone remains transparent to orbit and selection. It hugs the top of
+the scene's start edge rather than floating at its midpoint, and the entire
+surface folds to one small control independently of its contributed sections.
 
 The KCL scene service publishes typed `OperationsByModule` beside its artifact
 graph and last executed program. That keeps executor-specific output out of the
@@ -1186,14 +1188,19 @@ transaction, which renders the edited result without executing anything later.
 There is no engine rollback state: the boundary is ordinary, undoable KCL, and
 enabling `experimentalFeatures = allow` is a persistent source change.
 
-Only direct top-level calls are offered for now. A stage inside a pipeline, a
-function, or a sketch block has no root statement boundary immediately before
-it; pretending otherwise would roll back farther than the row says. Supporting
-those means a source transformation that first extracts the stage, not a more
-permissive double-click handler. The runtime trace also ends at `exit()`, so the
-HUD currently shows the built prefix and the rollback marker; a future parsed
-source outline can show honest, unbuilt rows below it without retaining stale
-runtime operations.
+Only direct top-level calls are offered for editing now. A stage inside a
+pipeline, a function, or a sketch block has no root statement boundary
+immediately before it; pretending otherwise would roll back farther than the row
+says. Supporting those means a source transformation that first extracts the
+stage, not a more permissive double-click handler.
+
+The rollback boundary is a draggable bar between root rows. Its drag preview
+moves without executing, dropping writes or moves `exit()`, and dropping after
+the final row removes `exit()` to execute the whole program again. The runtime
+trace necessarily ends at `exit()`, so the parsed program supplies an honest,
+visually inactive suffix below the bar. Those rows navigate source but do not
+pretend to have runtime artifacts or editable argument values that were never
+executed.
 
 Sketch and function groups become nested disclosures, imported modules expand at
 most once, cycles terminate, and `hide` calls stay implementation detail rather

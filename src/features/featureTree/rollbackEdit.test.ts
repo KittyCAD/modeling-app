@@ -3,6 +3,7 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import {
   editableFeatureFor,
+  moveRollbackBoundary,
   rollbackBeforeFeature,
   rollbackExitRange,
 } from '@src/features/featureTree/rollbackEdit'
@@ -189,5 +190,53 @@ describe('source-backed feature rollback', () => {
     expect(
       editableFeatureFor(source, program, operation, operationFor('extrude'))
     ).toBeNull()
+  })
+
+  it('drags the boundary between root operations and off the end', () => {
+    const source =
+      '@settings(experimentalFeatures = allow)\n' +
+      'profile = startSketchOn(XY)\n' +
+      'exit()\n' +
+      'solid = extrude(profile, length = 10)\n' +
+      'later = fillet(solid, radius = 2)\n'
+    const beforeLater = source.indexOf('later =')
+    const moved = ChangeSet.of(
+      moveRollbackBoundary(source, beforeLater),
+      source.length
+    )
+      .apply(Text.of(source.split('\n')))
+      .toString()
+
+    expect(moved).toContain(
+      'solid = extrude(profile, length = 10)\nexit()\nlater = fillet'
+    )
+    expect(moved.match(/^exit\(\)$/gm)).toHaveLength(1)
+
+    const restored = ChangeSet.of(
+      moveRollbackBoundary(moved, null),
+      moved.length
+    )
+      .apply(Text.of(moved.split('\n')))
+      .toString()
+    expect(restored).not.toContain('exit()')
+    expect(restored).toContain('experimentalFeatures = allow')
+  })
+
+  it('turns the bottom bar into a boundary with one undoable edit', () => {
+    const source = 'profile = startSketchOn(XY)\nsolid = extrude(profile)\n'
+    const insertion = source.indexOf('solid =')
+    const next = ChangeSet.of(
+      moveRollbackBoundary(source, insertion),
+      source.length
+    )
+      .apply(Text.of(source.split('\n')))
+      .toString()
+
+    expect(next).toBe(
+      '@settings(experimentalFeatures = allow)\n' +
+        'profile = startSketchOn(XY)\n' +
+        'exit()\n' +
+        'solid = extrude(profile)\n'
+    )
   })
 })

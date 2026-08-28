@@ -1,4 +1,4 @@
-import { Icon } from '@kittycad/ui-kit'
+import { Button, Icon } from '@kittycad/ui-kit'
 import { useValueSpec } from '@src/app/context'
 import type { SceneHudSection } from '@src/contracts/sceneHud'
 import { sceneHudSectionsValueSpec } from '@src/contracts/sceneHud'
@@ -46,6 +46,7 @@ function HudSection({ section }: { section: SceneHudSection }) {
  */
 export function SceneHud() {
   const sections = useValueSpec(sceneHudSectionsValueSpec)
+  const [collapsed, setCollapsed] = useState(false)
   const visible = sections.value.filter(
     (section) => section.visible?.value ?? true
   )
@@ -55,10 +56,28 @@ export function SceneHud() {
   }
 
   return (
-    <aside class="zds-scene-hud" aria-label="Scene outline">
-      {visible.map((section) => (
-        <HudSection key={section.id} section={section} />
-      ))}
+    <aside
+      class="zds-scene-hud"
+      aria-label="Scene outline"
+      data-collapsed={collapsed ? 'true' : undefined}
+    >
+      <Button
+        class="zds-scene-hud__collapse"
+        variant="chassis"
+        size="small"
+        icon={collapsed ? 'chevronRight' : 'chevronLeft'}
+        iconOnly
+        label={collapsed ? 'Expand scene outline' : 'Collapse scene outline'}
+        onClick={() => setCollapsed((current) => !current)}
+        aria-expanded={!collapsed}
+      />
+      {!collapsed ? (
+        <div class="zds-scene-hud__contents">
+          {visible.map((section) => (
+            <HudSection key={section.id} section={section} />
+          ))}
+        </div>
+      ) : null}
     </aside>
   )
 }

@@ -42,7 +42,7 @@
   inset-inline-start: var(--zds-space-2);
   inset-block: var(--zds-space-2);
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
 }
 

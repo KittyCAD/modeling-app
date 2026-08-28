@@ -195,6 +195,36 @@ export function rollbackBeforeFeature(
   }
 }
 
+/**
+ * Move the written rollback boundary to a root statement, or remove it at the
+ * end of the timeline.
+ *
+ * `insertion` belongs to the current source. Returning edits rather than a new
+ * string lets the executing buffer keep this as one undoable transaction.
+ */
+export function moveRollbackBoundary(
+  source: string,
+  insertion: number | null
+): readonly TextEdit[] {
+  const existing = rollbackExitRange(source)
+  if (insertion === existing?.from) {
+    return []
+  }
+
+  const changes: TextEdit[] = []
+  if (insertion !== null) {
+    changes.push(...experimentalFeatureEdits(source))
+  }
+  if (existing) {
+    changes.push({ ...existing, insert: '' })
+  }
+  if (insertion !== null) {
+    changes.push({ from: insertion, to: insertion, insert: 'exit()\n' })
+  }
+
+  return changes.sort((a, b) => a.from - b.from || a.to - b.to)
+}
+
 function experimentalFeatureEdits(source: string): readonly TextEdit[] {
   const settings = /@settings\s*\(([\s\S]*?)\)/.exec(source)
   if (!settings || settings.index === undefined) {

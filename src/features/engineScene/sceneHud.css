@@ -1,4 +1,5 @@
 .zds-scene-hud {
+  position: relative;
   display: flex;
   flex-direction: column;
   inline-size: clamp(15rem, 22vw, 21rem);
@@ -10,6 +11,30 @@
   box-shadow: var(--zds-shadow-overlay);
   backdrop-filter: blur(0.5rem);
   color: var(--zds-text-primary);
+}
+
+.zds-scene-hud[data-collapsed="true"] {
+  inline-size: var(--zds-size-control-sm);
+  block-size: var(--zds-size-control-sm);
+  border-radius: var(--zds-radius-content);
+}
+
+.zds-scene-hud__contents {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-block-size: 0;
+}
+
+.zds-scene-hud__collapse {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  z-index: 1;
+}
+
+.zds-scene-hud[data-collapsed="true"] .zds-scene-hud__collapse {
+  position: static;
 }
 
 .zds-scene-hud__section {
@@ -36,6 +61,10 @@
   text-transform: uppercase;
   letter-spacing: var(--zds-tracking-label);
   user-select: none;
+}
+
+.zds-scene-hud__section:first-child .zds-scene-hud__heading {
+  padding-inline-end: var(--zds-size-control-sm);
 }
 
 .zds-scene-hud__toggle {
