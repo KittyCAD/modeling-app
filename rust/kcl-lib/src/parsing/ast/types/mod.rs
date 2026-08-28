@@ -6060,6 +6060,95 @@ if true {
         );
     }
 
+    #[test]
+    fn test_rename_outer_variable_skips_if_branch_shadow() {
+        // Renaming an outer variable must not touch uses that a branch-local
+        // shadowing declaration captures. This matches if-arm scoping under
+        // kclVersion 3.0-preview: the shadow declaration's own init still
+        // refers to the outer binding (use before the local is bound), so it
+        // is renamed; uses after the shadow within that branch are local and
+        // stay; the other branch and code after the if use the outer binding
+        // and are renamed.
+        let code = r#"x = 1
+y = if x > 0 {
+  x = x + 10
+  x + 1
+} else {
+  x
+}
+z = x
+"#;
+        let mut program = parse(code);
+        let pos = code.find("x = 1").unwrap() + 1;
+
+        assert!(program.rename_symbol("width", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"width = 1
+y = if width > 0 {
+  x = width + 10
+  x + 1
+} else {
+  width
+}
+z = width
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_if_branch_is_a_no_op() {
+        // Renaming a variable declared inside an if branch is intentionally
+        // not supported; the rename must be a no-op, like declarations inside
+        // sketch blocks.
+        //
+        // The same-named top-level `local1` pins that the attempt doesn't
+        // rename the outer binding instead.
+        let code = r#"y = if true {
+  local1 = 1
+  local1 + 1
+} else {
+  0
+}
+
+local1 = 99
+result = local1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("local1 = 1").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_reference_inside_if_branch_is_a_no_op() {
+        // Like test_rename_of_declaration_inside_if_branch_is_a_no_op, but
+        // with the cursor on a reference to the branch-local variable instead
+        // of its declaration.
+        let code = r#"y = if true {
+  local1 = 1
+  local1 + 1
+} else {
+  0
+}
+
+local1 = 99
+result = local1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("local1 + 1").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
     /// Helper to create a comment NonCodeNode for tests.
     fn comment_node(text: &str) -> Node<NonCodeNode> {
         Node::no_src(NonCodeNode {
