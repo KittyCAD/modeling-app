@@ -6,6 +6,8 @@ import type {
   FileBackedTextBuffer,
 } from '@src/contracts/buffers'
 import type { FileSystem } from '@src/contracts/fileSystem'
+import type { FileChange, FileWatcher } from '@src/contracts/fileWatcher'
+import type { FsOperationQueue } from '@src/contracts/fsOperations'
 import type { ProjectFile } from '@src/contracts/projects'
 import type {
   BufferReconcileReport,
@@ -13,6 +15,7 @@ import type {
   ProjectSnapshot,
 } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
+import { readExternalChange } from '@src/lib/fs/externalChange'
 import { joinPath, normalizePath, relativePath } from '@src/lib/paths'
 import { languageForPath, readProjectFileTree } from '@src/lib/projectFiles'
 import type {
@@ -24,6 +27,10 @@ export interface ProjectSessionDependencies {
   fileSystem: FileSystem
   capabilities: EditorCapabilityResolver
   themes: readonly Extension[]
+  /** Write provenance, so the session can ignore its own saves coming back. */
+  queue: FsOperationQueue
+  /** Absent on platforms with nothing external to watch. */
+  watcher?: FileWatcher
 }
 
 let operationCounter = 0
@@ -48,7 +55,7 @@ export function createProjectSession(
   library: ProjectLibrary | undefined,
   dependencies: ProjectSessionDependencies
 ): ProjectSession {
-  const { fileSystem, capabilities, themes } = dependencies
+  const { fileSystem, capabilities, themes, queue, watcher } = dependencies
 
   const project = signal(realization)
   const librarySignal = signal(library)
@@ -209,6 +216,43 @@ export function createProjectSession(
     return { bufferId: buffer.id, path: relative, outcome: outcome.kind }
   }
 
+  /**
+   * Fold changes made outside the app into the session.
+   *
+   * Two separate jobs, and only one of them is about content: a file with a
+   * buffer open on it is reconciled, and a file appearing or disappearing
+   * changes the tree. A plain write to a file nobody has open changes neither,
+   * so it is deliberately not a reason to re-walk the project.
+   */
+  const applyExternalChanges = async (changes: readonly FileChange[]) => {
+    let treeChanged = false
+
+    for (const change of changes) {
+      if (change.kind !== 'changed') treeChanged = true
+
+      const buffer = buffers
+        .peek()
+        .find((candidate) => candidate.path.peek() === change.path)
+      if (!buffer) continue
+
+      const external = await readExternalChange(fileSystem, queue, change)
+      if (!external) continue
+
+      // Straight to the buffer's own reconciliation, which decides between
+      // adopting silently and surfacing a conflict. That policy belongs to the
+      // buffer holding the unsaved work, not to whatever noticed the change.
+      buffer.reconcile(external.contents)
+    }
+
+    if (treeChanged) await refreshFiles()
+  }
+
+  const stopWatching = watcher?.watch(project.peek().path, (changes) => {
+    void applyExternalChanges(changes).catch((error) => {
+      console.error('projectSession: could not apply external changes', error)
+    })
+  })
+
   void refreshFiles()
 
   return {
@@ -245,5 +289,16 @@ export function createProjectSession(
     refreshFiles,
     captureSnapshot,
     reconcileExternalChange,
+
+    dispose() {
+      stopWatching?.()
+      // Disposing each buffer runs its capability teardown, which is where a
+      // pending autosave gets flushed. Closing a project must not lose the last
+      // keystroke any more than closing one file does.
+      for (const buffer of buffers.peek()) buffer.dispose()
+      buffers.value = []
+      activeBufferId.value = null
+      executingBufferId.value = null
+    },
   }
 }

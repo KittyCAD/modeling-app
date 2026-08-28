@@ -8,6 +8,8 @@ import { computed, signal } from '@preact/signals'
 import { appMenuSectionsValueSpec } from '@src/contracts/appMenu'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
+import { fileWatcherService } from '@src/contracts/fileWatcher'
+import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import type { AppLocation } from '@src/contracts/navigation'
 import {
@@ -59,6 +61,8 @@ export default defineRegistryItemFactory((ctx) => {
     sessions: () => ctx.services.get(projectSessionService),
     fileSystem: () => ctx.services.get(fileSystemService),
     runtime: () => ctx.services.get(runtimeService),
+    queue: () => ctx.services.get(fsOperationQueueService),
+    watcher: () => ctx.services.optional(fileWatcherService),
   })
 
   /** Which level the dialog is editing. UI state, so it stays out of the URL. */

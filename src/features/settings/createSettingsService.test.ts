@@ -11,6 +11,8 @@ import {
   type SettingsSection,
   type SettingsStore,
 } from '@src/contracts/settings'
+import type { FileChange, FileWatcher } from '@src/contracts/fileWatcher'
+import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
 import { createSettingsService } from '@src/features/settings/createSettingsService'
 import {
   createFakeFileSystem,
@@ -60,6 +62,8 @@ const sections: SettingsSection[] = [
 /** An in-memory store, so a test can inspect exactly what would hit the disk. */
 function createFakeStore(initial: string | null = null) {
   let text = initial
+  const listeners = new Set<(next: string | null) => void>()
+
   return {
     store: {
       id: 'fake',
@@ -68,8 +72,45 @@ function createFakeStore(initial: string | null = null) {
       write: async (next: string) => {
         text = next
       },
+      watch: (listener) => {
+        listeners.add(listener)
+        return () => listeners.delete(listener)
+      },
     } satisfies SettingsStore,
     text: () => text,
+    /** Stand in for somebody editing the file in another program. */
+    editExternally: (next: string | null) => {
+      text = next
+      for (const listener of listeners) listener(next)
+    },
+  }
+}
+
+/** A watcher a test can fire by hand. */
+function createFakeWatcher() {
+  const listeners = new Map<
+    string,
+    Set<(changes: readonly FileChange[]) => void>
+  >()
+
+  return {
+    watcher: {
+      id: 'fake',
+      watch: (path, listener) => {
+        const existing = listeners.get(path) ?? new Set()
+        existing.add(listener)
+        listeners.set(path, existing)
+        return () => existing.delete(listener)
+      },
+    } satisfies FileWatcher,
+    watchedRoots: () =>
+      [...listeners.keys()].filter((root) => {
+        const set = listeners.get(root)
+        return set !== undefined && set.size > 0
+      }),
+    emit: (root: string, changes: readonly FileChange[]) => {
+      for (const listener of listeners.get(root) ?? []) listener(changes)
+    },
   }
 }
 
@@ -115,8 +156,10 @@ const fakeRuntime = (target: 'desktop' | 'web'): RuntimeService => ({
 interface Harness {
   settings: ReturnType<typeof createSettingsService>
   storeText: () => string | null
+  editStoreExternally: (next: string | null) => void
   fileSystem: FakeFileSystem
   sessions: ReturnType<typeof createFakeSessions>
+  watcher: ReturnType<typeof createFakeWatcher>
 }
 
 function harness(
@@ -125,11 +168,17 @@ function harness(
     userToml?: string | null
     files?: Record<string, string>
     target?: 'desktop' | 'web'
+    /** No file watcher, as on the web. */
+    unwatched?: boolean
   } = {}
 ): Harness {
-  const { store, text } = createFakeStore(options.userToml ?? null)
+  const { store, text, editExternally } = createFakeStore(
+    options.userToml ?? null
+  )
   const fileSystem = createFakeFileSystem(options.files ?? {})
   const sessions = createFakeSessions()
+  const watcher = createFakeWatcher()
+  const queue = createFsOperationQueue()
 
   const settings = createSettingsService({
     definitions: computed(
@@ -140,9 +189,19 @@ function harness(
     sessions: () => sessions.service,
     fileSystem: () => fileSystem,
     runtime: () => fakeRuntime(options.target ?? 'desktop'),
+    queue: () => queue,
+    // Absent when a test asks for it, standing in for the web build.
+    watcher: () => (options.unwatched ? undefined : watcher.watcher),
   })
 
-  return { settings, storeText: text, fileSystem, sessions }
+  return {
+    settings,
+    storeText: text,
+    editStoreExternally: editExternally,
+    fileSystem,
+    sessions,
+    watcher,
+  }
 }
 
 /** Let the microtask-deferred effects and the write queues run. */
@@ -301,6 +360,130 @@ theme = "solarized"
 
     expect(subject.settings.read(theme)).toBe('system')
     expect(subject.settings.error.value).toContain('appearance.theme')
+  })
+
+  it('picks up an external edit to the user settings file', async () => {
+    await settle()
+    expect(subject.settings.read(highlightEdges)).toBe(true)
+
+    subject.editStoreExternally(
+      '[settings.modeling]\nhighlight_edges = false\n'
+    )
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+  })
+
+  it('lets an external edit override a setting changed this session', async () => {
+    await settle()
+    subject.settings.set(theme, 'user', 'dark')
+    await settle()
+
+    // Unlike the first read, which races a click, this file is newer than
+    // anything the app knows.
+    subject.editStoreExternally('[settings.app.appearance]\ntheme = "light"\n')
+    expect(subject.settings.read(theme)).toBe('light')
+  })
+
+  it('treats an emptied settings file as no overrides at all', async () => {
+    subject = harness({
+      userToml: '[settings.modeling]\nhighlight_edges = false\n',
+    })
+    await settle()
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+
+    subject.editStoreExternally(null)
+    expect(subject.settings.read(highlightEdges)).toBe(true)
+  })
+
+  it('watches the project folder while a project is open', async () => {
+    expect(subject.watcher.watchedRoots()).toEqual([])
+
+    subject.sessions.open('/projects/bracket')
+    await settle()
+    expect(subject.watcher.watchedRoots()).toEqual(['/projects/bracket'])
+
+    subject.sessions.close()
+    await settle()
+    expect(subject.watcher.watchedRoots()).toEqual([])
+  })
+
+  it('picks up an external edit to project.toml', async () => {
+    subject.sessions.open('/projects/bracket')
+    await settle()
+
+    await subject.fileSystem.writeTextFile(
+      '/projects/bracket/project.toml',
+      '[settings.modeling]\nhighlight_edges = false\n'
+    )
+    subject.watcher.emit('/projects/bracket', [
+      { path: '/projects/bracket/project.toml', kind: 'changed' },
+    ])
+    await settle()
+
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+  })
+
+  it('ignores its own write to project.toml coming back', async () => {
+    subject.sessions.open('/projects/bracket')
+    await settle()
+
+    subject.settings.set(highlightEdges, 'project', false)
+    await settle()
+
+    // Exactly what a real watcher reports after our own save. The value must
+    // stay where the app put it rather than being re-read as an edit.
+    subject.watcher.emit('/projects/bracket', [
+      { path: '/projects/bracket/project.toml', kind: 'changed' },
+    ])
+    await settle()
+
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+    expect(subject.settings.overrideAt(highlightEdges, 'project').value).toBe(
+      false
+    )
+  })
+
+  it('drops project overrides when project.toml is deleted', async () => {
+    subject = harness({
+      files: {
+        '/projects/bracket/project.toml':
+          '[settings.modeling]\nhighlight_edges = false\n',
+      },
+    })
+    subject.sessions.open('/projects/bracket')
+    await settle()
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+
+    await subject.fileSystem.remove('/projects/bracket/project.toml')
+    subject.watcher.emit('/projects/bracket', [
+      { path: '/projects/bracket/project.toml', kind: 'removed' },
+    ])
+    await settle()
+
+    expect(subject.settings.read(highlightEdges)).toBe(true)
+  })
+
+  it('ignores changes to other files in the project', async () => {
+    subject.sessions.open('/projects/bracket')
+    await settle()
+    subject.settings.set(highlightEdges, 'project', false)
+    await settle()
+
+    subject.watcher.emit('/projects/bracket', [
+      { path: '/projects/bracket/main.kcl', kind: 'changed' },
+    ])
+    await settle()
+
+    expect(subject.settings.read(highlightEdges)).toBe(false)
+  })
+
+  it('works with no watcher at all, as on the web', async () => {
+    subject = harness({ unwatched: true })
+    subject.sessions.open('/projects/bracket')
+    await settle()
+
+    subject.settings.set(highlightEdges, 'project', false)
+    await settle()
+    expect(subject.settings.read(highlightEdges)).toBe(false)
   })
 
   it('hides a setting that does not apply to this platform', () => {

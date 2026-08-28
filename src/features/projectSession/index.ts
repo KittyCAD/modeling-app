@@ -11,6 +11,8 @@ import {
 } from '@src/contracts/buffers'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
+import { fileWatcherService } from '@src/contracts/fileWatcher'
+import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import {
   type ProjectSession,
@@ -34,10 +36,18 @@ export default defineRegistryItemFactory((ctx) => {
 
   const libraries = () => ctx.services.get(projectLibrariesService)
   const fileSystem = () => ctx.services.get(fileSystemService)
+  const queue = () => ctx.services.get(fsOperationQueueService)
+  // Optional: the web build has nothing external to watch, and a session
+  // without a watcher is a session on a filesystem only this app can reach.
+  const watcher = () => ctx.services.optional(fileWatcherService)
   const capabilities = () => ctx.valueSpecs.get(editorCapabilitiesValueSpec)
   const themes = () => ctx.valueSpecs.get(editorThemesValueSpec)
 
   const close = () => {
+    // Disposing flushes pending autosaves and stops watching the folder. A
+    // session dropped without it keeps a watch alive against a project nothing
+    // is looking at.
+    current.peek()?.dispose()
     current.value = null
     opening.value = null
     error.value = null
@@ -71,7 +81,10 @@ export default defineRegistryItemFactory((ctx) => {
         // than per buffer so capability installation stays a registry concern.
         capabilities: capabilities(),
         themes: themes(),
+        queue: queue(),
+        watcher: watcher(),
       })
+      current.peek()?.dispose()
       current.value = session
       return session
     } catch (caught) {

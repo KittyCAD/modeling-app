@@ -32,6 +32,9 @@ export function createDesktopUserSettingsStore(
     location: computed(() => location.value),
     read: () => bridge.readUserSettings(),
     write: (text) => bridge.writeUserSettings(text),
+    // The main process knows what it last wrote, so it can filter its own echo
+    // before the renderer ever hears about it.
+    watch: (listener) => bridge.onUserSettingsChanged(listener),
   }
 }
 
@@ -67,6 +70,22 @@ export function createBrowserUserSettingsStore(): SettingsStore {
           `This browser refused to store your settings: ${String(caught)}`
         )
       }
+    },
+
+    /**
+     * Another tab of this app is the only editor that exists on the web.
+     *
+     * `storage` fires in every *other* tab and never in the one that wrote, so
+     * the provenance question answers itself: if this listener runs, someone
+     * else changed it.
+     */
+    watch: (listener) => {
+      const onStorage = (event: StorageEvent) => {
+        if (event.key !== null && event.key !== BROWSER_STORAGE_KEY) return
+        listener(event.newValue)
+      }
+      window.addEventListener('storage', onStorage)
+      return () => window.removeEventListener('storage', onStorage)
     },
   }
 }

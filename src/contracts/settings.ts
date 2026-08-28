@@ -184,6 +184,16 @@ export interface SettingsStore {
   /** Null when nothing has been stored yet. */
   read(): Promise<string | null>
   write(text: string): Promise<void>
+  /**
+   * Notice changes made outside this app. Returns a disposer.
+   *
+   * Optional, because not every platform can answer: a store that cannot watch
+   * simply leaves an external edit to be picked up on the next start. Where it
+   * is implemented, the listener is only called for edits this app did not make
+   * — telling a save apart from its own echo is the store's job, since the store
+   * is what performed the write.
+   */
+  watch?(listener: (text: string | null) => void): () => void
 }
 
 const bySectionOrder = (

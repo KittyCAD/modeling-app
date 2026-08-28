@@ -6,6 +6,8 @@ import {
   signal,
 } from '@preact/signals'
 import type { FileSystem } from '@src/contracts/fileSystem'
+import type { FileWatcher } from '@src/contracts/fileWatcher'
+import type { FsOperationQueue } from '@src/contracts/fsOperations'
 import type { ProjectSessionService } from '@src/contracts/projectSession'
 import type { RuntimeService } from '@src/contracts/runtime'
 import {
@@ -19,7 +21,9 @@ import {
   type SettingsStore,
   settingsLevels,
 } from '@src/contracts/settings'
-import { joinPath } from '@src/lib/paths'
+import { readExternalChange } from '@src/lib/fs/externalChange'
+import { hashString } from '@src/lib/hash'
+import { joinPath, normalizePath } from '@src/lib/paths'
 import {
   decodeSettingsToml,
   encodeSettingsToml,
@@ -37,6 +41,10 @@ export interface SettingsServiceDependencies {
   sessions: () => ProjectSessionService
   fileSystem: () => FileSystem
   runtime: () => RuntimeService
+  /** Write provenance, so an echo of our own save is not read back as an edit. */
+  queue: () => FsOperationQueue
+  /** Absent on platforms with nothing external to watch. */
+  watcher: () => FileWatcher | undefined
 }
 
 type Overrides = Record<string, unknown>
@@ -64,8 +72,16 @@ const titleCase = (id: string) =>
 export function createSettingsService(
   dependencies: SettingsServiceDependencies
 ): SettingsService & { dispose: () => void } {
-  const { definitions, sections, userStore, sessions, fileSystem, runtime } =
-    dependencies
+  const {
+    definitions,
+    sections,
+    userStore,
+    sessions,
+    fileSystem,
+    runtime,
+    queue,
+    watcher,
+  } = dependencies
 
   const overrides: Record<SettingsLevel, Signal<Overrides>> = {
     user: signal<Overrides>({}),
@@ -100,13 +116,29 @@ export function createSettingsService(
     (setting.levels ?? settingsLevels).includes(level)
 
   /**
-   * Apply what a file said, without clobbering what the person just did.
+   * Apply what a file said.
    *
-   * A setting they have already changed this session keeps their value: the
-   * file is stale by definition, because their change is what will be written
-   * to it.
+   * The two modes differ on who is more likely to be right:
+   *
+   * - `hydrate` is the first read, racing a click. A setting the person has
+   *   already changed this session keeps their value, because the file is stale
+   *   by definition — their change is what is about to be written to it.
+   * - `external` is somebody editing the file while the app is open. That file
+   *   is newer than anything the app knows, so it wins outright, including for
+   *   settings changed here earlier. A line they deleted becomes inherited
+   *   again, which is the whole point of editing the file by hand.
    */
-  const applyDecoded = (level: SettingsLevel, decoded: Overrides) => {
+  const applyDecoded = (
+    level: SettingsLevel,
+    decoded: Overrides,
+    mode: 'hydrate' | 'external'
+  ) => {
+    if (mode === 'external') {
+      touched[level].clear()
+      overrides[level].value = { ...decoded }
+      return
+    }
+
     const local = overrides[level].peek()
     const next: Overrides = { ...decoded }
     for (const id of touched[level]) {
@@ -125,6 +157,18 @@ export function createSettingsService(
 
   // ---------------------------------------------------------------- user level
 
+  const applyUserText = (text: string | null, mode: 'hydrate' | 'external') => {
+    const store = userStore()
+    if (!text) {
+      // Gone or empty means no overrides at all, not "keep whatever we had".
+      applyDecoded('user', {}, mode)
+      return
+    }
+    const decoded = decodeSettingsToml(text, definitions.value)
+    applyDecoded('user', decoded.overrides, mode)
+    reportRejected(store?.location.peek() ?? 'your settings', decoded.rejected)
+  }
+
   const loadUser = async () => {
     const store = userStore()
     if (!store) {
@@ -132,12 +176,7 @@ export function createSettingsService(
       return
     }
     try {
-      const text = await store.read()
-      if (text) {
-        const decoded = decodeSettingsToml(text, definitions.value)
-        applyDecoded('user', decoded.overrides)
-        reportRejected(store.location.peek(), decoded.rejected)
-      }
+      applyUserText(await store.read(), 'hydrate')
     } catch (caught) {
       error.value = `Could not read ${store.location.peek()}: ${String(caught)}`
     } finally {
@@ -146,6 +185,21 @@ export function createSettingsService(
   }
 
   const userHydration = loadUser()
+
+  /**
+   * Somebody editing `user.toml` in a text editor.
+   *
+   * The store only reports edits it did not perform itself, so anything arriving
+   * here is external and takes precedence — no provenance check needed on this
+   * side of the boundary.
+   */
+  const stopWatchingUser = userStore()?.watch?.((text) => {
+    try {
+      applyUserText(text, 'external')
+    } catch (caught) {
+      error.value = `Could not read your settings: ${String(caught)}`
+    }
+  })
 
   // ------------------------------------------------------------- project level
 
@@ -170,7 +224,7 @@ export function createSettingsService(
       }
       const text = await fileSystem().readTextFile(path)
       const decoded = decodeSettingsToml(text, definitions.value)
-      applyDecoded('project', decoded.overrides)
+      applyDecoded('project', decoded.overrides, 'hydrate')
       reportRejected(PROJECT_SETTINGS_FILE, decoded.rejected)
     } catch (caught) {
       // A project whose settings file is unreadable still opens; it just has no
@@ -180,13 +234,59 @@ export function createSettingsService(
     }
   }
 
+  /**
+   * Somebody editing `project.toml` while the project is open.
+   *
+   * The whole project folder is watched rather than the one file, because that
+   * is the shape the watcher offers and because a watch on a single file goes
+   * deaf the moment an editor saves by writing a temporary file and renaming it.
+   * Sharing costs nothing: the watcher keeps one operating-system watch per
+   * directory however many features ask for it.
+   */
+  let stopWatchingProjectFile = () => {}
+
+  const watchProjectFile = (
+    root: string | null,
+    settingsPath: string | null
+  ) => {
+    stopWatchingProjectFile()
+    stopWatchingProjectFile = () => {}
+    if (!root || !settingsPath) return
+
+    const active = watcher()?.watch(root, (changes) => {
+      const change = changes.find(
+        (candidate) => normalizePath(candidate.path) === settingsPath
+      )
+      if (!change) return
+
+      void (async () => {
+        if (change.kind === 'removed') {
+          applyDecoded('project', {}, 'external')
+          return
+        }
+        const external = await readExternalChange(fileSystem(), queue(), change)
+        if (!external) return
+
+        const decoded = decodeSettingsToml(external.contents, definitions.value)
+        applyDecoded('project', decoded.overrides, 'external')
+        reportRejected(PROJECT_SETTINGS_FILE, decoded.rejected)
+      })().catch((caught) => {
+        console.warn('settings: could not read the project settings', caught)
+      })
+    })
+
+    if (active) stopWatchingProjectFile = active
+  }
+
   let stopWatchingProject = () => {}
   // Deferred: an effect that reads a value spec while the registry graph is
   // still being flattened is a cycle, and this one reaches the session service.
   queueMicrotask(() => {
     stopWatchingProject = effect(() => {
       const path = projectSettingsPath.value
+      const root = projectPath()
       void loadProject(path)
+      watchProjectFile(root, path)
     })
   })
 
@@ -214,13 +314,22 @@ export function createSettingsService(
     const path = projectSettingsPath.peek()
     if (!path) return
     const fs = fileSystem()
-    const existing = (await fs.exists(path))
-      ? await fs.readTextFile(path)
-      : null
-    await fs.writeTextFile(
-      path,
-      encodeSettingsToml(existing, definitions.value, overrides.project.peek())
-    )
+
+    // Through the operation queue: `project.toml` is also written when a project
+    // is renamed, and recording the content is what stops the watcher reading
+    // our own write back as somebody else's edit.
+    await queue().enqueue(path, async () => {
+      const existing = (await fs.exists(path))
+        ? await fs.readTextFile(path)
+        : null
+      const next = encodeSettingsToml(
+        existing,
+        definitions.value,
+        overrides.project.peek()
+      )
+      queue().recordWrite(path, hashString(next))
+      await fs.writeTextFile(path, next)
+    })
   }
 
   const persist = (level: SettingsLevel) => {
@@ -403,6 +512,8 @@ export function createSettingsService(
 
     dispose: () => {
       stopWatchingProject()
+      stopWatchingProjectFile()
+      stopWatchingUser?.()
     },
   }
 }

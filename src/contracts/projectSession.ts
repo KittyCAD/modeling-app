@@ -90,6 +90,15 @@ export interface ProjectSession {
     path: string
     contents: string
   }): BufferReconcileReport | null
+
+  /**
+   * Tear the session down.
+   *
+   * Disposes every buffer, which flushes any pending autosave, and stops
+   * watching the project folder. Closing a project without this leaves a watch
+   * running against a folder nothing is looking at.
+   */
+  dispose(): void
 }
 
 export interface BufferReconcileReport {

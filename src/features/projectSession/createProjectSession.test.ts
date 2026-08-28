@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
+import type { FileChange, FileWatcher } from '@src/contracts/fileWatcher'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
 import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
 import { createProjectSession } from '@src/features/projectSession/createProjectSession'
+import { hashString } from '@src/lib/hash'
 import {
   type FakeFileSystem,
   createFakeFileSystem,
@@ -36,6 +38,30 @@ const realization: ProjectLibraryRealization = {
 /** Let the constructor's file listing settle. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
 
+/** A watcher a test can fire by hand, standing in for the operating system. */
+function createFakeWatcher() {
+  const listeners = new Map<
+    string,
+    Set<(changes: readonly FileChange[]) => void>
+  >()
+
+  return {
+    watcher: {
+      id: 'fake',
+      watch: (path, listener) => {
+        const existing = listeners.get(path) ?? new Set()
+        existing.add(listener)
+        listeners.set(path, existing)
+        return () => existing.delete(listener)
+      },
+    } satisfies FileWatcher,
+    watching: (root: string) => (listeners.get(root)?.size ?? 0) > 0,
+    emit: (root: string, changes: readonly FileChange[]) => {
+      for (const listener of listeners.get(root) ?? []) listener(changes)
+    },
+  }
+}
+
 describe('project session', () => {
   let fileSystem: FakeFileSystem
   let session: ReturnType<typeof createProjectSession>
@@ -52,6 +78,7 @@ describe('project session', () => {
       // not about what CodeMirror extensions do.
       capabilities: combineCapabilities([]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
   })
@@ -85,6 +112,7 @@ describe('project session', () => {
       fileSystem: failing,
       capabilities: combineCapabilities([]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
 
@@ -231,6 +259,7 @@ describe('buffer lifecycle', () => {
       fileSystem,
       capabilities: combineCapabilities([]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
   })
@@ -287,6 +316,7 @@ describe('project snapshots', () => {
       fileSystem,
       capabilities: combineCapabilities([]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
   })
@@ -326,6 +356,7 @@ describe('project snapshots', () => {
         }),
       ]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
 
@@ -384,6 +415,7 @@ describe('external change reconciliation', () => {
       fileSystem,
       capabilities: combineCapabilities([]),
       themes: [],
+      queue: createFsOperationQueue(),
     })
     await settle()
   })
@@ -430,5 +462,136 @@ describe('external change reconciliation', () => {
     expect(
       session.reconcileExternalChange({ path: 'other.kcl', contents: 'x' })
     ).toBeNull()
+  })
+})
+
+describe('watching for external changes', () => {
+  let fileSystem: FakeFileSystem
+  let queue: ReturnType<typeof createFsOperationQueue>
+  let watcher: ReturnType<typeof createFakeWatcher>
+  let session: ReturnType<typeof createProjectSession>
+
+  const changed = (path: string): FileChange[] => [{ path, kind: 'changed' }]
+
+  beforeEach(async () => {
+    fileSystem = createFakeFileSystem({
+      '/projects/bracket/main.kcl': 'thickness = 4',
+    })
+    queue = createFsOperationQueue()
+    watcher = createFakeWatcher()
+    session = createProjectSession(realization, library, {
+      fileSystem,
+      capabilities: combineCapabilities([]),
+      themes: [],
+      queue,
+      watcher: watcher.watcher,
+    })
+    await settle()
+  })
+
+  it('watches the project folder for as long as the session lives', () => {
+    expect(watcher.watching('/projects/bracket')).toBe(true)
+    session.dispose()
+    expect(watcher.watching('/projects/bracket')).toBe(false)
+  })
+
+  it('folds an external edit into an open buffer', async () => {
+    const buffer = await session.openFile('main.kcl')
+
+    await fileSystem.writeTextFile(
+      '/projects/bracket/main.kcl',
+      'thickness = 6'
+    )
+    watcher.emit('/projects/bracket', changed('/projects/bracket/main.kcl'))
+    await settle()
+
+    expect(buffer.text.value).toBe('thickness = 6')
+  })
+
+  it('surfaces a conflict rather than overwriting unsaved edits', async () => {
+    const buffer = await session.openFile('main.kcl')
+    buffer.dispatch({ changes: { from: 0, insert: 'mine ' } })
+
+    await fileSystem.writeTextFile('/projects/bracket/main.kcl', 'theirs')
+    watcher.emit('/projects/bracket', changed('/projects/bracket/main.kcl'))
+    await settle()
+
+    expect(buffer.text.value).toBe('mine thickness = 4')
+    expect(buffer.divergence.value).toBe('theirs')
+  })
+
+  it('ignores this app’s own save coming back', async () => {
+    const buffer = await session.openFile('main.kcl')
+
+    // Exactly what autosave does, followed by the user typing on before the
+    // watcher fires. Without the provenance check the buffer would be told its
+    // own older content is somebody else's edit, and the divergence bar would
+    // appear mid-sentence.
+    const saved = 'thickness = 4'
+    queue.recordWrite('/projects/bracket/main.kcl', hashString(saved))
+    await fileSystem.writeTextFile('/projects/bracket/main.kcl', saved)
+    buffer.dispatch({ changes: { from: 0, insert: 'still typing ' } })
+
+    watcher.emit('/projects/bracket', changed('/projects/bracket/main.kcl'))
+    await settle()
+
+    expect(buffer.divergence.value).toBeNull()
+    expect(buffer.text.value).toBe('still typing thickness = 4')
+  })
+
+  it('refreshes the file list when a file appears', async () => {
+    expect(session.files.value.map((file) => file.path)).toEqual(['main.kcl'])
+
+    await fileSystem.writeTextFile('/projects/bracket/lid.kcl', '// lid')
+    watcher.emit('/projects/bracket', [
+      { path: '/projects/bracket/lid.kcl', kind: 'created' },
+    ])
+    await settle()
+
+    expect(session.files.value.map((file) => file.path)).toContain('lid.kcl')
+  })
+
+  it('does not re-walk the project for a plain write', async () => {
+    let listings = 0
+    const counted = createFakeFileSystem({
+      '/projects/bracket/main.kcl': 'thickness = 4',
+    })
+    const readDirectory = counted.readDirectory.bind(counted)
+    counted.readDirectory = (path: string) => {
+      listings += 1
+      return readDirectory(path)
+    }
+
+    const counting = createProjectSession(realization, library, {
+      fileSystem: counted,
+      capabilities: combineCapabilities([]),
+      themes: [],
+      queue,
+      watcher: watcher.watcher,
+    })
+    await settle()
+
+    const afterOpen = listings
+    watcher.emit('/projects/bracket', changed('/projects/bracket/main.kcl'))
+    await settle()
+
+    // A write changes neither the tree nor anything on screen when no buffer
+    // holds the file, so re-reading the whole project would be work for nothing.
+    expect(listings).toBe(afterOpen)
+    counting.dispose()
+  })
+
+  it('runs without a watcher, as on the web', async () => {
+    const unwatched = createProjectSession(realization, library, {
+      fileSystem,
+      capabilities: combineCapabilities([]),
+      themes: [],
+      queue,
+    })
+    await settle()
+
+    const buffer = await unwatched.openFile('main.kcl')
+    expect(buffer.text.value).toBe('thickness = 4')
+    unwatched.dispose()
   })
 })
