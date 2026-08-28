@@ -5,11 +5,14 @@ import {
 } from '@kittycad/registry'
 import { cloudSyncService } from '@src/contracts/cloudSync'
 import { fileSystemService } from '@src/contracts/fileSystem'
-import { projectLibraryTypesValueSpec } from '@src/contracts/projectLibraries'
+import {
+  projectLibraryDefaultsValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/contracts/projectLibraries'
 import { CloudLibrarySettingsDetails } from '@src/features/cloudLibrary/CloudLibrarySettingsDetails'
 import { readDirectoryLibraryRealizations } from '@src/features/directoryLibrary/directoryScanner'
 import { createDirectoryLibraryOperations } from '@src/features/directoryLibrary/operations'
-import { basename, joinPath, toDirectoryName } from '@src/lib/paths'
+import { joinPath, toDirectoryName } from '@src/lib/paths'
 import {
   CLOUD_LIBRARY_TYPE,
   PERSONAL_CLOUD_LIBRARY_TITLE,
@@ -39,13 +42,24 @@ export default defineRegistryItemFactory((ctx) => {
           order: 10,
           description: 'Projects in this library sync with your Zoo account.',
           locationLabel: 'Local storage',
+          platforms: ['desktop', 'web'],
+          maximumInstances: { web: 1 },
           removable: false,
-          newLibrarySetting: ({ defaultRoot }) => ({
+          userCreatable: false,
+          newLibrarySetting: ({ defaultCloudRoot }) => ({
             title: PERSONAL_CLOUD_LIBRARY_TITLE,
-            path: joinPath(defaultRoot, 'cloud'),
-            source: 'personal',
+            path: defaultCloudRoot,
             type: CLOUD_LIBRARY_TYPE,
           }),
+          normalizeSetting: (setting, { defaultRoot, isWeb }) =>
+            isWeb
+              ? {
+                  ...setting,
+                  path: defaultRoot,
+                  source: undefined,
+                  type: CLOUD_LIBRARY_TYPE,
+                }
+              : setting,
           settingsDetails: CloudLibrarySettingsDetails,
           operations: {
             createProject: {
@@ -112,6 +126,17 @@ export default defineRegistryItemFactory((ctx) => {
             })
           },
         }),
+        provide(projectLibraryDefaultsValueSpec, (context) =>
+          context.isWeb
+            ? [
+                {
+                  title: PERSONAL_CLOUD_LIBRARY_TITLE,
+                  path: context.defaultRoot,
+                  type: CLOUD_LIBRARY_TYPE,
+                },
+              ]
+            : []
+        ),
       ],
     }),
   }

@@ -15,15 +15,16 @@ const ROOT = '/'
  * store" is not the same set as "every project", and so a second library can be
  * a sibling of this one.
  */
-const DEFAULT_ROOT = '/projects'
+export const DEFAULT_BROWSER_PROJECTS_ROOT =
+  '/documents/zoo-design-studio-projects'
 
 /**
  * The browser's origin-private filesystem.
  *
  * Real directories and real files, private to the origin and persistent across
- * reloads — which is what lets directory libraries be the *only* library type
- * and still work on the web. It replaces the localStorage stand-in that came
- * before it.
+ * reloads. The browser exposes this storage through its single Personal Cloud
+ * library; cloud replication changes where else the bytes go, not whether the
+ * local materialization remains durable.
  *
  * There is one root and no picker: the browser does not let a page reach
  * anywhere else without a user gesture per directory, and a library that
@@ -83,7 +84,10 @@ export function createOpfsFileSystem(): FileSystem {
   return {
     id: 'opfs',
     roots: computed(() => roots.value) as ReadonlySignal<readonly string[]>,
-    defaultRoot: computed(() => DEFAULT_ROOT),
+    defaultRoot: computed(() => DEFAULT_BROWSER_PROJECTS_ROOT),
+    // Long-time browser users already have their projects here. Cloud changes
+    // the library's semantics, not the OPFS path where its bytes live.
+    defaultCloudRoot: computed(() => DEFAULT_BROWSER_PROJECTS_ROOT),
 
     async stat(path): Promise<FileStat> {
       const normalized = normalizePath(path)

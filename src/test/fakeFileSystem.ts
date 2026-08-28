@@ -64,6 +64,7 @@ export function createFakeFileSystem(
     directories,
     roots: computed(() => roots.value),
     defaultRoot: computed(() => '/'),
+    defaultCloudRoot: computed(() => '/'),
 
     async stat(path) {
       const normalized = normalizePath(path)

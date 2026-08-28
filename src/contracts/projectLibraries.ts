@@ -1,11 +1,11 @@
 import {
-  appendValueSpec,
   defineContract,
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
 import type { IconName } from '@kittycad/ui-kit'
 import type { ReadonlySignal } from '@preact/signals'
+import type { RuntimeTarget } from '@src/contracts/runtime'
 import type {
   ProjectLibrary,
   ProjectLibraryRealization,
@@ -94,6 +94,15 @@ export interface ProjectLibrarySettingsDetailsProps {
   }) => Promise<string | null>
 }
 
+/** Platform facts supplied to library providers when they choose an address. */
+export interface ProjectLibraryContext {
+  defaultRoot: string
+  defaultCloudRoot: string
+  target: RuntimeTarget
+  isDesktop: boolean
+  isWeb: boolean
+}
+
 /**
  * A kind of place projects live.
  *
@@ -110,8 +119,19 @@ export interface ProjectLibraryTypeContribution {
   description: string
   /** What the `path` field means for this type, e.g. `Folder`. */
   locationLabel: string
+  /** Platforms on which this storage provider can be configured. */
+  platforms?: readonly RuntimeTarget[]
+  /** Per-platform cap. Omitted means the provider permits any number. */
+  maximumInstances?: Partial<Record<RuntimeTarget, number>>
   /** Template for a newly added library of this type. */
-  newLibrarySetting?: (input: { defaultRoot: string }) => ProjectLibrarySetting
+  newLibrarySetting?: (input: ProjectLibraryContext) => ProjectLibrarySetting
+  /** Whether Settings offers this template directly. Defaults to true. */
+  userCreatable?: boolean
+  /** Canonicalize persisted entries when a provider has platform policy. */
+  normalizeSetting?: (
+    setting: ProjectLibrarySetting,
+    context: ProjectLibraryContext
+  ) => ProjectLibrarySetting
   /** False for types the user cannot remove, like a mandatory cloud library. */
   removable?: boolean
   /** Type-specific fields rendered in the common library settings row. */
@@ -219,8 +239,8 @@ export const projectLibrariesContract = defineContract({
    * platform-dependent and not known until the filesystem resolves.
    */
   projectLibraryDefaultsValueSpec: defineValueSpec<
-    (input: { defaultRoot: string }) => readonly ProjectLibrarySetting[],
-    ((input: { defaultRoot: string }) => readonly ProjectLibrarySetting[])[]
+    (input: ProjectLibraryContext) => readonly ProjectLibrarySetting[],
+    ((input: ProjectLibraryContext) => readonly ProjectLibrarySetting[])[]
   >({
     name: 'projectLibraries.defaults',
     defaultValue: [],
@@ -239,12 +259,12 @@ export const {
 
 /** Resolve the defaults contributed by every feature into one merged list. */
 export function resolveLibraryDefaults(
-  factories: readonly ((input: {
-    defaultRoot: string
-  }) => readonly ProjectLibrarySetting[])[],
-  defaultRoot: string
+  factories: readonly ((
+    input: ProjectLibraryContext
+  ) => readonly ProjectLibrarySetting[])[],
+  context: ProjectLibraryContext
 ): ProjectLibrarySetting[] {
   return mergeProjectLibrarySettings(
-    ...factories.map((factory) => factory({ defaultRoot }))
+    ...factories.map((factory) => factory(context))
   )
 }

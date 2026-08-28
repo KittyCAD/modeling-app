@@ -13,13 +13,19 @@ import { normalizePath } from '@src/lib/paths'
 export function createElectronFileSystem(bridge: DesktopBridge): FileSystem {
   const roots = signal<readonly string[]>([])
   const defaultRoot = signal('')
+  const defaultCloudRoot = signal('')
 
   // Populated once at construction; grants change only through the picker,
   // which updates these itself.
-  void Promise.all([bridge.grantedRoots(), bridge.projectsDirectory()])
-    .then(([granted, projects]) => {
+  void Promise.all([
+    bridge.grantedRoots(),
+    bridge.projectsDirectory(),
+    bridge.cloudProjectsDirectory(),
+  ])
+    .then(([granted, projects, cloudProjects]) => {
       roots.value = granted.map(normalizePath)
       defaultRoot.value = normalizePath(projects)
+      defaultCloudRoot.value = normalizePath(cloudProjects)
     })
     .catch((error) => {
       console.error('fileSystem: could not read granted roots', error)
@@ -29,6 +35,7 @@ export function createElectronFileSystem(bridge: DesktopBridge): FileSystem {
     id: 'electron',
     roots: computed(() => roots.value),
     defaultRoot: computed(() => defaultRoot.value),
+    defaultCloudRoot: computed(() => defaultCloudRoot.value),
 
     stat: (path) => bridge.stat(path),
     exists: (path) => bridge.exists(path),

@@ -22,6 +22,10 @@ const desktop = {
   projectsDirectory: (): Promise<string> =>
     ipcRenderer.invoke(channels.projectsDirectory),
 
+  /** The app-managed local materialization directory for Personal Cloud. */
+  cloudProjectsDirectory: (): Promise<string> =>
+    ipcRenderer.invoke(channels.cloudProjectsDirectory),
+
   /** Every directory the user has granted access to. */
   grantedRoots: (): Promise<string[]> =>
     ipcRenderer.invoke(channels.grantedRoots),

@@ -73,12 +73,29 @@ function grantsFile(): string {
 }
 
 function defaultProjectsDirectory(): string {
-  return path.join(app.getPath('documents'), 'Zoo Design Studio')
+  return path.join(app.getPath('documents'), 'zoo-design-studio-projects')
+}
+
+/** Platform-conventional local materialization for the Personal Cloud library. */
+function defaultCloudProjectsDirectory(): string {
+  if (process.platform === 'darwin') {
+    return path.join(
+      path.dirname(app.getPath('appData')),
+      'CloudStorage',
+      'Zoo',
+      'personal'
+    )
+  }
+  return path.join(app.getPath('home'), 'Zoo', 'personal')
 }
 
 async function loadGrantedRoots(): Promise<void> {
   const fallback = defaultProjectsDirectory()
-  await fs.mkdir(fallback, { recursive: true })
+  const cloud = defaultCloudProjectsDirectory()
+  await Promise.all([
+    fs.mkdir(fallback, { recursive: true }),
+    fs.mkdir(cloud, { recursive: true }),
+  ])
 
   let stored: string[] = []
   try {
@@ -94,7 +111,7 @@ async function loadGrantedRoots(): Promise<void> {
     // start; a lost grant costs the user one dialog, not their data.
   }
 
-  grantedRoots = Array.from(new Set([fallback, ...stored]))
+  grantedRoots = Array.from(new Set([fallback, cloud, ...stored]))
 }
 
 async function saveGrantedRoots(): Promise<void> {
@@ -425,6 +442,11 @@ function registerIpcHandlers() {
   ipcMain.handle(channels.projectsDirectory, async () => {
     if (grantedRoots.length === 0) await loadGrantedRoots()
     return grantedRoots[0]
+  })
+
+  ipcMain.handle(channels.cloudProjectsDirectory, async () => {
+    if (grantedRoots.length === 0) await loadGrantedRoots()
+    return defaultCloudProjectsDirectory()
   })
 
   ipcMain.handle(channels.grantedRoots, async () => {

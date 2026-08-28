@@ -12,6 +12,7 @@ import {
   projectLibraryDefaultsValueSpec,
   projectLibraryTypesValueSpec,
 } from '@src/contracts/projectLibraries'
+import { runtimeService } from '@src/contracts/runtime'
 import { settingsSectionsValueSpec } from '@src/contracts/settings'
 import { createProjectLibrariesService } from '@src/features/projectLibraries/createProjectLibrariesService'
 import { ProjectLibrariesSettings } from '@src/features/projectLibraries/ProjectLibrariesSettings'
@@ -36,7 +37,8 @@ export default defineRegistryItemFactory((ctx) => {
     service ??= createProjectLibrariesService(
       ctx.services.get(fileSystemService),
       types,
-      defaults
+      defaults,
+      ctx.services.get(runtimeService).info.value.target
     )
     return service
   }

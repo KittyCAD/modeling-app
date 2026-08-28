@@ -3,6 +3,7 @@ import { useComputed, useSignal } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import { runtimeService } from '@src/contracts/runtime'
 import { libraryIcon } from '@src/features/home/libraryIcon'
 import { joinPath, uniqueName } from '@src/lib/paths'
 import type {
@@ -22,18 +23,27 @@ import './projectLibrariesSettings.css'
 export function ProjectLibrariesSettings() {
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
+  const runtime = useService(runtimeService)
   const selectedType = useSignal<ProjectLibraryType>('')
+  const libraryContext = {
+    defaultRoot: fileSystem.defaultRoot.value,
+    defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+    ...runtime.info.value,
+  }
 
   const creatableTypes = useComputed(() =>
     Array.from(libraries.types.value.values())
       .filter((type) => type.newLibrarySetting !== undefined)
-      .filter(
-        (type) =>
-          type.removable !== false ||
-          !libraries.libraries.value.some(
+      .filter((type) => type.userCreatable !== false)
+      .filter((type) => {
+        const maximum = type.maximumInstances?.[runtime.info.value.target]
+        return (
+          maximum === undefined ||
+          libraries.libraries.value.filter(
             (library) => library.type === type.type
-          )
-      )
+          ).length < maximum
+        )
+      })
       .toSorted(
         (a, b) =>
           (a.order ?? Number.MAX_SAFE_INTEGER) -
@@ -49,9 +59,7 @@ export function ProjectLibrariesSettings() {
   const addLibrary = async () => {
     if (!typeToAdd?.newLibrarySetting) return
 
-    let setting = typeToAdd.newLibrarySetting({
-      defaultRoot: fileSystem.defaultRoot.value,
-    })
+    let setting = typeToAdd.newLibrarySetting(libraryContext)
 
     // Choosing a folder is both configuration and permission granting on
     // desktop. Other types decide their address in their own template/details.
@@ -129,10 +137,15 @@ function LibrarySettingsRow({
 }) {
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
+  const runtime = useService(runtimeService)
   const type = libraries.type(library.type)
   const Details = type?.settingsDetails
   const typeOptions = Array.from(libraries.types.value.values())
-    .filter((candidate) => candidate.newLibrarySetting !== undefined)
+    .filter(
+      (candidate) =>
+        candidate.newLibrarySetting !== undefined &&
+        candidate.userCreatable !== false
+    )
     .toSorted(
       (a, b) =>
         (a.order ?? Number.MAX_SAFE_INTEGER) -
@@ -154,6 +167,8 @@ function LibrarySettingsRow({
     const contribution = libraries.type(nextType)
     const template = contribution?.newLibrarySetting?.({
       defaultRoot: fileSystem.defaultRoot.value,
+      defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+      ...runtime.info.value,
     })
     if (!template) return
     update({

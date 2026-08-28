@@ -36,6 +36,8 @@ export interface FileSystem {
   readonly roots: ReadonlySignal<readonly string[]>
   /** Where a library goes when the user has not chosen anywhere. */
   readonly defaultRoot: ReadonlySignal<string>
+  /** Where Personal Cloud keeps its local materialization on this platform. */
+  readonly defaultCloudRoot: ReadonlySignal<string>
 
   stat(path: string): Promise<FileStat>
   exists(path: string): Promise<boolean>

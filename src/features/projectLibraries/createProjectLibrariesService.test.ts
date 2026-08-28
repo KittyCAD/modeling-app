@@ -1,20 +1,22 @@
 import { computed, signal } from '@preact/signals'
-import { beforeEach, describe, expect, it } from 'vitest'
 import type { ProjectLibraryTypeContribution } from '@src/contracts/projectLibraries'
 import { readDirectoryLibraryRealizations } from '@src/features/directoryLibrary/directoryScanner'
 import { createDirectoryLibraryOperations } from '@src/features/directoryLibrary/operations'
 import { createProjectLibrariesService } from '@src/features/projectLibraries/createProjectLibrariesService'
 import {
+  CLOUD_LIBRARY_TYPE,
   DEFAULT_LIBRARY_ID,
   DIRECTORY_LIBRARY_TYPE,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import {
-  type FakeFileSystem,
   createFakeFileSystem,
+  type FakeFileSystem,
 } from '@src/test/fakeFileSystem'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 const DEFAULT_ROOT = '/projects'
+const BROWSER_ROOT = '/documents/zoo-design-studio-projects'
 
 function createHarness(
   files: Record<string, string> = {},
@@ -65,6 +67,57 @@ function createHarness(
     root,
     service: createProjectLibrariesService(fileSystem, types, defaultFactories),
   }
+}
+
+function createBrowserHarness(stored: readonly ProjectLibrarySetting[]) {
+  localStorage.setItem('zds.libraries', JSON.stringify(stored))
+  const fileSystem = createFakeFileSystem() as FakeFileSystem & {
+    defaultRoot: ReturnType<typeof computed<string>>
+    defaultCloudRoot: ReturnType<typeof computed<string>>
+  }
+  Object.defineProperties(fileSystem, {
+    defaultRoot: { value: computed(() => BROWSER_ROOT) },
+    defaultCloudRoot: { value: computed(() => BROWSER_ROOT) },
+  })
+  const directoryType: ProjectLibraryTypeContribution = {
+    type: DIRECTORY_LIBRARY_TYPE,
+    title: 'Folder',
+    icon: 'folder',
+    description: 'On this device.',
+    locationLabel: 'Folder',
+    platforms: ['desktop'],
+  }
+  const cloudType: ProjectLibraryTypeContribution = {
+    type: CLOUD_LIBRARY_TYPE,
+    title: 'Cloud',
+    icon: 'cloud',
+    description: 'Personal Cloud.',
+    locationLabel: 'Local storage',
+    platforms: ['desktop', 'web'],
+    maximumInstances: { web: 1 },
+    normalizeSetting: (setting, context) => ({
+      ...setting,
+      path: context.defaultRoot,
+      source: undefined,
+    }),
+  }
+  const types = computed(
+    () =>
+      new Map([
+        [DIRECTORY_LIBRARY_TYPE, directoryType],
+        [CLOUD_LIBRARY_TYPE, cloudType],
+      ])
+  )
+  const defaults = computed(() => [
+    () => [
+      {
+        title: 'Personal Cloud',
+        path: BROWSER_ROOT,
+        type: CLOUD_LIBRARY_TYPE,
+      },
+    ],
+  ])
+  return createProjectLibrariesService(fileSystem, types, defaults, 'web')
 }
 
 describe('project libraries service', () => {
@@ -197,6 +250,63 @@ describe('project libraries service', () => {
 
     const { service } = createHarness()
     expect(service.libraries.value.map((l) => l.title)).toContain('Work')
+  })
+
+  it('migrates the legacy browser directory to Personal Cloud in place', async () => {
+    const service = createBrowserHarness([
+      {
+        title: 'Local Projects',
+        path: BROWSER_ROOT,
+        type: DIRECTORY_LIBRARY_TYPE,
+      },
+    ])
+
+    expect([...service.types.value.keys()]).toEqual([CLOUD_LIBRARY_TYPE])
+    expect(service.settings.value).toEqual([
+      {
+        title: 'Personal Cloud',
+        path: BROWSER_ROOT,
+        type: CLOUD_LIBRARY_TYPE,
+      },
+    ])
+    await Promise.resolve()
+    expect(JSON.parse(localStorage.getItem('zds.libraries') ?? '[]')).toEqual(
+      service.settings.value
+    )
+    service.dispose()
+  })
+
+  it('enforces one Cloud library and rejects Folder libraries on web', () => {
+    const service = createBrowserHarness([
+      {
+        title: 'First Cloud',
+        path: '/old/cloud',
+        type: CLOUD_LIBRARY_TYPE,
+      },
+      {
+        title: 'Second Cloud',
+        path: '/other/cloud',
+        type: CLOUD_LIBRARY_TYPE,
+      },
+    ])
+
+    expect(service.libraries.value).toHaveLength(1)
+    expect(service.libraries.value[0].path).toBe(BROWSER_ROOT)
+    expect(
+      service.addLibrary({
+        title: 'Folder',
+        path: '/folder',
+        type: DIRECTORY_LIBRARY_TYPE,
+      })
+    ).toBeUndefined()
+    expect(
+      service.addLibrary({
+        title: 'Another Cloud',
+        path: '/cloud-2',
+        type: CLOUD_LIBRARY_TYPE,
+      })
+    ).toBeUndefined()
+    service.dispose()
   })
 
   it('records an error when a library cannot be read', async () => {

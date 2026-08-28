@@ -41,6 +41,7 @@ export default defineRegistryItemFactory((ctx) => {
           order: 0,
           description: 'Projects in this library are stored on this device.',
           locationLabel: 'Folder',
+          platforms: ['desktop'],
           settingsDetails: DirectoryLibrarySettingsDetails,
           newLibrarySetting: ({ defaultRoot }) => ({
             title: NEW_LIBRARY_TITLE,
@@ -59,13 +60,19 @@ export default defineRegistryItemFactory((ctx) => {
 
         // The library everyone starts with. Contributed rather than hardcoded
         // in the service, so a build could ship a different starting set.
-        provide(projectLibraryDefaultsValueSpec, ({ defaultRoot }) => [
-          {
-            title: DEFAULT_LIBRARY_TITLE,
-            path: defaultRoot,
-            type: DIRECTORY_LIBRARY_TYPE,
-          },
-        ]),
+        provide(
+          projectLibraryDefaultsValueSpec,
+          ({ defaultRoot, isDesktop }) =>
+            isDesktop
+              ? [
+                  {
+                    title: DEFAULT_LIBRARY_TITLE,
+                    path: defaultRoot,
+                    type: DIRECTORY_LIBRARY_TYPE,
+                  },
+                ]
+              : []
+        ),
       ],
     }),
   }

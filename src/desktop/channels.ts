@@ -8,6 +8,8 @@
 export const channels = {
   /** Absolute path of the default directory projects live in. */
   projectsDirectory: 'fs:projectsDirectory',
+  /** Absolute path where the Personal Cloud library is materialized. */
+  cloudProjectsDirectory: 'fs:cloudProjectsDirectory',
   /**
    * Ask the user to pick a directory. Choosing one grants access to it, so this
    * is the only way a path outside the default projects directory becomes

@@ -1,22 +1,24 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import { computed, effect, type ReadonlySignal, signal } from '@preact/signals'
 import type { FileSystem } from '@src/contracts/fileSystem'
 import type {
   LibraryLoadState,
   ProjectLibrariesService,
+  ProjectLibraryContext,
   ProjectLibraryTypeContribution,
 } from '@src/contracts/projectLibraries'
 import { resolveLibraryDefaults } from '@src/contracts/projectLibraries'
+import type { RuntimeTarget } from '@src/contracts/runtime'
 import { isPathInside, normalizePath } from '@src/lib/paths'
 import {
+  combineRealizations,
+  librariesFromSettings,
+  mergeProjectLibrarySettings,
+  moveProjectLibrarySetting,
   type ProjectLibrary,
   type ProjectLibraryRealization,
   type ProjectLibraryRealizationContribution,
   type ProjectLibrarySetting,
   type ProjectLibraryType,
-  combineRealizations,
-  librariesFromSettings,
-  mergeProjectLibrarySettings,
-  moveProjectLibrarySetting,
   parseProjectLibrarySettings,
   realizationsForLibrary,
 } from '@src/lib/projectLibraries'
@@ -53,10 +55,11 @@ export function createProjectLibrariesService(
   fileSystem: FileSystem,
   typesSignal: ReadonlySignal<TypeMap>,
   defaultsSignal: ReadonlySignal<
-    readonly ((input: {
-      defaultRoot: string
-    }) => readonly ProjectLibrarySetting[])[]
-  >
+    readonly ((
+      input: ProjectLibraryContext
+    ) => readonly ProjectLibrarySetting[])[]
+  >,
+  target: RuntimeTarget = fileSystem.id === 'opfs' ? 'web' : 'desktop'
 ): ProjectLibrariesService & { dispose: () => void } {
   const stored = signal<readonly ProjectLibrarySetting[]>(readStoredSettings())
   const seeded = signal(stored.value.length > 0)
@@ -69,6 +72,8 @@ export function createProjectLibrariesService(
   >(new Map())
 
   let scanController: AbortController | null = null
+  let stopNormalization: (() => void) | undefined
+  let disposed = false
 
   const persist = (settings: readonly ProjectLibrarySetting[]) => {
     try {
@@ -78,20 +83,58 @@ export function createProjectLibrariesService(
     }
   }
 
+  const context = computed<ProjectLibraryContext>(() => ({
+    defaultRoot: fileSystem.defaultRoot.value,
+    defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+    target,
+    isDesktop: target === 'desktop',
+    isWeb: target === 'web',
+  }))
+
+  /** Only providers valid for this runtime are visible or addressable. */
+  const types = computed<TypeMap>(
+    () =>
+      new Map(
+        Array.from(typesSignal.value.entries()).filter(([, contribution]) =>
+          (contribution.platforms ?? ['desktop', 'web']).includes(target)
+        )
+      )
+  )
+
+  const normalizeSettings = (
+    input: readonly ProjectLibrarySetting[]
+  ): ProjectLibrarySetting[] => {
+    const counts = new Map<ProjectLibraryType, number>()
+    const normalized: ProjectLibrarySetting[] = []
+
+    for (const setting of input) {
+      const contribution = types.value.get(setting.type)
+      if (!contribution) continue
+
+      const count = counts.get(setting.type) ?? 0
+      const maximum = contribution.maximumInstances?.[target]
+      if (maximum !== undefined && count >= maximum) continue
+
+      normalized.push(
+        contribution.normalizeSetting?.(setting, context.value) ?? setting
+      )
+      counts.set(setting.type, count + 1)
+    }
+
+    return mergeProjectLibrarySettings(normalized)
+  }
+
   /**
-   * Settings, seeded from contributed defaults on first use.
-   *
-   * Seeding is deferred until the filesystem reports a default root, because on
-   * desktop that arrives asynchronously and a library seeded at the wrong root
-   * would persist the mistake.
+   * Settings, seeded from contributed defaults on first use and normalized by
+   * provider policy. This is where an old browser Folder entry becomes the
+   * canonical Personal Cloud entry without moving its OPFS bytes.
    */
   const settings = computed<readonly ProjectLibrarySetting[]>(() => {
-    if (seeded.value) return stored.value
+    if (!context.value.defaultRoot || !context.value.defaultCloudRoot) return []
 
-    const defaultRoot = fileSystem.defaultRoot.value
-    if (!defaultRoot) return []
-
-    return resolveLibraryDefaults(defaultsSignal.value, defaultRoot)
+    const defaults = resolveLibraryDefaults(defaultsSignal.value, context.value)
+    const normalized = normalizeSettings(seeded.value ? stored.value : defaults)
+    return normalized.length > 0 ? normalized : normalizeSettings(defaults)
   })
 
   const libraries = computed<readonly ProjectLibrary[]>(() =>
@@ -112,8 +155,7 @@ export function createProjectLibrariesService(
   const library = (libraryId: string) =>
     libraries.value.find((candidate) => candidate.id === libraryId)
 
-  const type = (libraryType: ProjectLibraryType) =>
-    typesSignal.value.get(libraryType)
+  const type = (libraryType: ProjectLibraryType) => types.value.get(libraryType)
 
   const realization = (id: string) =>
     realizations.value.find((candidate) => candidate.id === id)
@@ -127,6 +169,36 @@ export function createProjectLibrariesService(
 
   /** Take the currently effective settings, seeded or not, as a base to edit. */
   const currentSettings = () => [...settings.value]
+
+  const canUseType = (
+    libraryType: ProjectLibraryType,
+    excludingLibraryId?: string
+  ) => {
+    const contribution = type(libraryType)
+    if (!contribution) return false
+    const maximum = contribution.maximumInstances?.[target]
+    if (maximum === undefined) return true
+    return (
+      libraries.value.filter(
+        (library) =>
+          library.id !== excludingLibraryId && library.type === libraryType
+      ).length < maximum
+    )
+  }
+
+  // Persist provider migrations once the registry and asynchronous filesystem
+  // roots are ready. Keeping this outside the computed preserves purity.
+  queueMicrotask(() => {
+    if (disposed) return
+    stopNormalization = effect(() => {
+      if (!seeded.value || types.value.size === 0) return
+      const normalized = settings.value
+      if (normalized.length === 0) return
+      if (JSON.stringify(normalized) === JSON.stringify(stored.value)) return
+      stored.value = normalized
+      persist(normalized)
+    })
+  })
 
   /**
    * Roots of other libraries nested inside this one.
@@ -244,7 +316,7 @@ export function createProjectLibrariesService(
   return {
     settings,
     libraries,
-    types: typesSignal,
+    types,
     realizations,
     state: computed(() => state.value),
     error: computed(() => error.value),
@@ -258,13 +330,20 @@ export function createProjectLibrariesService(
     refresh,
 
     addLibrary(setting) {
-      const next = mergeProjectLibrarySettings(currentSettings(), [setting])
+      if (!canUseType(setting.type)) return undefined
+      const contribution = type(setting.type)
+      const settingToAdd =
+        contribution?.normalizeSetting?.(setting, context.peek()) ?? setting
+      const next = mergeProjectLibrarySettings(currentSettings(), [
+        settingToAdd,
+      ])
       commit(next)
       const added = librariesFromSettings(next, {
         defaultRoot: fileSystem.defaultRoot.peek(),
       }).find(
         (candidate) =>
-          candidate.type === setting.type && candidate.path === setting.path
+          candidate.type === settingToAdd.type &&
+          candidate.path === settingToAdd.path
       )
       if (added) void refresh(added.id)
       return added
@@ -274,8 +353,13 @@ export function createProjectLibrariesService(
       const target = library(libraryId)
       if (!target) return
 
+      const candidate = { ...currentSettings()[target.order], ...patch }
+      if (!canUseType(candidate.type, libraryId)) return
+      const normalized =
+        type(candidate.type)?.normalizeSetting?.(candidate, context.peek()) ??
+        candidate
       const next = currentSettings().map((setting, index) =>
-        index === target.order ? { ...setting, ...patch } : setting
+        index === target.order ? normalized : setting
       )
       commit(next)
       // The id is derived from path and source, so a patch touching either
@@ -387,7 +471,9 @@ export function createProjectLibrariesService(
     },
 
     dispose() {
+      disposed = true
       scanController?.abort()
+      stopNormalization?.()
     },
   }
 }

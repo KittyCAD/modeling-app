@@ -1,8 +1,9 @@
-import { useComputed, useSignal } from '@preact/signals'
 import { Button, Icon, TextField } from '@kittycad/ui-kit'
+import { useComputed, useSignal } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import { runtimeService } from '@src/contracts/runtime'
 import { libraryIcon } from '@src/features/home/libraryIcon'
 import { basename, joinPath, toDirectoryName } from '@src/lib/paths'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
@@ -88,13 +89,25 @@ export function LibraryList({ onSelect }: LibraryListProps) {
 export function AddLibraryControl() {
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
+  const runtime = useService(runtimeService)
   const naming = useSignal(false)
   const draftName = useSignal('')
 
   const type = useComputed(() =>
-    Array.from(libraries.types.value.values()).find(
-      (candidate) => candidate.newLibrarySetting !== undefined
-    )
+    Array.from(libraries.types.value.values()).find((candidate) => {
+      if (
+        candidate.newLibrarySetting === undefined ||
+        candidate.userCreatable === false
+      )
+        return false
+      const maximum = candidate.maximumInstances?.[runtime.info.value.target]
+      return (
+        maximum === undefined ||
+        libraries.libraries.value.filter(
+          (library) => library.type === candidate.type
+        ).length < maximum
+      )
+    })
   )
 
   if (!type.value) return null
@@ -104,6 +117,8 @@ export function AddLibraryControl() {
   const addAtPath = (path: string, title: string) => {
     const base = type.value?.newLibrarySetting?.({
       defaultRoot: fileSystem.defaultRoot.value,
+      defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+      ...runtime.info.value,
     })
     if (!base) return
     libraries.addLibrary({ ...base, path, title })
