@@ -72,6 +72,36 @@ export interface ProjectSession {
   refreshFiles(): Promise<void>
 
   /**
+   * Create an empty file at a project-relative path.
+   *
+   * Rejects if anything is already there. Deliberately not "make the name
+   * unique and carry on": the caller either typed this name, in which case
+   * being told is the only useful answer, or generated it, in which case it
+   * knows the siblings and can generate a free one.
+   *
+   * Parent directories are created as needed, so a path with a folder in it
+   * that does not exist yet is a valid thing to ask for.
+   */
+  createFile(path: string, contents?: string): Promise<void>
+  /** Create a directory at a project-relative path. Rejects if it exists. */
+  createDirectory(path: string): Promise<void>
+  /**
+   * Rename or move an entry, and carry any open buffers with it.
+   *
+   * Works on directories too, in which case every buffer underneath follows —
+   * a buffer's identity survives the move, so an unsaved edit and its undo
+   * history are still there afterwards.
+   */
+  renameEntry(from: string, to: string): Promise<void>
+  /**
+   * Delete an entry, recursively, and close any buffers it held.
+   *
+   * Goes to the OS trash where the platform has one, which is the only reason
+   * this is allowed to be a single click with one confirmation.
+   */
+  deleteEntry(path: string): Promise<void>
+
+  /**
    * Capture the project as it stands, including unsaved edits.
    *
    * Synchronous and O(1) per buffer: CodeMirror documents are persistent, so the

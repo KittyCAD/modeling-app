@@ -8,6 +8,7 @@ import {
   normalizePath,
   relativePath,
   toDirectoryName,
+  uniqueFileName,
   uniqueName,
 } from '@src/lib/paths'
 
@@ -104,5 +105,31 @@ describe('naming', () => {
     expect(uniqueName('bracket', [])).toBe('bracket')
     expect(uniqueName('bracket', ['bracket'])).toBe('bracket-2')
     expect(uniqueName('bracket', ['bracket', 'bracket-2'])).toBe('bracket-3')
+  })
+})
+
+describe('uniqueFileName', () => {
+  it('leaves a free name alone', () => {
+    expect(uniqueFileName('part.kcl', ['other.kcl'])).toBe('part.kcl')
+  })
+
+  it('puts the suffix before the extension', () => {
+    // `part.kcl-2` would not be a KCL file, and everything downstream decides
+    // what a file is by its extension.
+    expect(uniqueFileName('part.kcl', ['part.kcl'])).toBe('part-2.kcl')
+  })
+
+  it('keeps counting past the ones already taken', () => {
+    expect(uniqueFileName('part.kcl', ['part.kcl', 'part-2.kcl'])).toBe(
+      'part-3.kcl'
+    )
+  })
+
+  it('handles a name with no extension', () => {
+    expect(uniqueFileName('sketches', ['sketches'])).toBe('sketches-2')
+  })
+
+  it('treats a dotfile as having no extension to protect', () => {
+    expect(uniqueFileName('.gitignore', ['.gitignore'])).toBe('.gitignore-2')
   })
 })

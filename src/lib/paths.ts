@@ -101,6 +101,30 @@ export function toDirectoryName(title: string, fallback = 'untitled'): string {
   return cleaned.length > 0 ? cleaned.slice(0, 64) : fallback
 }
 
+/**
+ * `part.kcl`, `part-2.kcl`, `part-3.kcl`… until one is not taken.
+ *
+ * Separate from `uniqueName` because a suffix belongs before the extension:
+ * `part.kcl-2` is not a KCL file, and the app decides what to do with a file by
+ * looking at its extension.
+ */
+export function uniqueFileName(
+  requested: string,
+  taken: Iterable<string>
+): string {
+  const existing = new Set(taken)
+  if (!existing.has(requested)) return requested
+
+  const extension = extname(requested)
+  const stem = extension
+    ? requested.slice(0, requested.length - extension.length)
+    : requested
+
+  let suffix = 2
+  while (existing.has(`${stem}-${suffix}${extension}`)) suffix += 1
+  return `${stem}-${suffix}${extension}`
+}
+
 /** `name`, `name-2`, `name-3`… until one is not taken. */
 export function uniqueName(requested: string, taken: Iterable<string>): string {
   const existing = new Set(taken)

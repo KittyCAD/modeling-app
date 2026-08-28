@@ -175,6 +175,31 @@ a hidden dependency of every subsystem.
 Opening a project opens no buffer: "no active buffer" is a state the UI must
 handle anyway, so it is where you land.
 
+### Creating, renaming, deleting
+
+The session owns these, not the tree that draws them. Its rule — single-file
+edits belong to the buffer, anything spanning files or touching the filesystem
+belongs here — is what makes a rename keep the document it renames: the buffer's
+identity survives, so an unsaved edit, its undo history and the mounted view are
+all still there afterwards. A directory rename carries every buffer underneath.
+
+Two orderings are load-bearing, and both are invisible until they bite:
+
+- **A delete closes buffers first, then waits for their writes.** Disposing a
+  buffer *flushes* a pending autosave, deliberately, so closing after the removal
+  would write the file back moments after deleting it. Closing first is not
+  enough on its own either: a save is queued against the file while a folder
+  removal is queued against the folder, and nothing orders the two — so
+  `settlePaths` enqueues a no-op on each path as a barrier. The queue's
+  submission order does the rest.
+- **A name already taken is refused, not made unique.** The caller either typed
+  the name, in which case being told is the only useful answer, or generated it,
+  in which case it knows the siblings and can pick a free one. `uniqueFileName`
+  puts the suffix before the extension, because `part.kcl-2` is not a KCL file.
+
+Removal goes to the OS trash where the platform has one, which is what makes a
+single inline confirmation enough.
+
 ## The engine connection
 
 The scene is rendered on the engine and streamed back, so this owns a websocket

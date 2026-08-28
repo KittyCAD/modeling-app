@@ -16,7 +16,7 @@ import type {
 } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { readExternalChange } from '@src/lib/fs/externalChange'
-import { joinPath, normalizePath, relativePath } from '@src/lib/paths'
+import { dirname, joinPath, normalizePath, relativePath } from '@src/lib/paths'
 import { languageForPath, readProjectFileTree } from '@src/lib/projectFiles'
 import type {
   ProjectLibrary,
@@ -186,6 +186,131 @@ export function createProjectSession(
     target.dispose()
   }
 
+  /**
+   * Buffers whose file lives at or under a project-relative path.
+   *
+   * "At or under" because a directory operation is one action to the user and a
+   * fan-out to us: renaming a folder has to carry every buffer inside it, and
+   * deleting one has to close them.
+   */
+  const buffersUnder = (path: string) => {
+    const relative = normalizePath(path)
+    const prefix = `${relative}/`
+
+    return buffers.peek().flatMap((buffer) => {
+      const current = relativePathFor(buffer)
+      if (current === null) return []
+      if (current !== relative && !current.startsWith(prefix)) return []
+      return [{ buffer, relative: current }]
+    })
+  }
+
+  /**
+   * Wait for writes already queued against these paths.
+   *
+   * `enqueue` runs operations on one path in submission order, so a no-op is a
+   * barrier: it resolves only once everything ahead of it has finished. Needed
+   * because a save already in flight for `folder/part.kcl` is keyed on that
+   * file, while removing or renaming `folder` is keyed on the folder — nothing
+   * orders the two, so without this the write can land after the folder has
+   * gone and recreate what it was writing to.
+   */
+  const settlePaths = async (paths: readonly string[]) => {
+    await Promise.all(
+      paths.map((path) =>
+        queue.enqueue(absolutePath(path), async () => undefined)
+      )
+    )
+  }
+
+  const refuseIfTaken = async (relative: string) => {
+    if (await fileSystem.exists(absolutePath(relative))) {
+      throw new Error(`"${relative}" already exists.`)
+    }
+  }
+
+  const createFile: ProjectSession['createFile'] = async (path, contents) => {
+    const relative = normalizePath(path)
+    await queue.enqueue(absolutePath(relative), async () => {
+      await refuseIfTaken(relative)
+      const parent = dirname(relative)
+      // A path naming a directory that is not there yet is a reasonable thing
+      // to ask for, and making it is cheaper than making the caller ask twice.
+      if (parent && parent !== '.') {
+        await fileSystem.makeDirectory(absolutePath(parent))
+      }
+      await fileSystem.writeTextFile(absolutePath(relative), contents ?? '')
+    })
+    await refreshFiles()
+  }
+
+  const createDirectory: ProjectSession['createDirectory'] = async (path) => {
+    const relative = normalizePath(path)
+    await queue.enqueue(absolutePath(relative), async () => {
+      await refuseIfTaken(relative)
+      await fileSystem.makeDirectory(absolutePath(relative))
+    })
+    await refreshFiles()
+  }
+
+  const renameEntry: ProjectSession['renameEntry'] = async (from, to) => {
+    const source = normalizePath(from)
+    const target = normalizePath(to)
+    if (source === target) return
+
+    const moving = buffersUnder(source)
+    await settlePaths(moving.map((entry) => entry.relative))
+
+    await queue.enqueue(absolutePath(source), async () => {
+      await refuseIfTaken(target)
+      const parent = dirname(target)
+      if (parent && parent !== '.') {
+        await fileSystem.makeDirectory(absolutePath(parent))
+      }
+      await fileSystem.rename(absolutePath(source), absolutePath(target))
+    })
+
+    /*
+     * The buffers move after the file does, and only if it did.
+     *
+     * Each keeps its identity, so an unsaved edit, its undo history and the
+     * view mounted on it all survive being renamed — which is the whole reason
+     * the session owns this rather than the explorer calling the filesystem and
+     * hoping.
+     */
+    for (const { buffer, relative } of moving) {
+      const next =
+        relative === source
+          ? target
+          : `${target}${relative.slice(source.length)}`
+      buffer.setPath(absolutePath(next))
+    }
+
+    await refreshFiles()
+  }
+
+  const deleteEntry: ProjectSession['deleteEntry'] = async (path) => {
+    const relative = normalizePath(path)
+    const doomed = buffersUnder(relative)
+
+    /*
+     * Buffers close first, and then their writes are waited for.
+     *
+     * Closing a buffer flushes a pending autosave — deliberately, so shutting a
+     * pane never loses a keystroke — which means closing *after* the removal
+     * would write the file back moments after deleting it. This way the save
+     * lands, then the file goes: nothing unsaved is lost and nothing comes back.
+     */
+    for (const { buffer } of doomed) closeBuffer(buffer.id)
+    await settlePaths(doomed.map((entry) => entry.relative))
+
+    await queue.enqueue(absolutePath(relative), async () => {
+      await fileSystem.remove(absolutePath(relative))
+    })
+
+    await refreshFiles()
+  }
+
   const captureSnapshot = (): ProjectSnapshot => {
     operationCounter += 1
     return {
@@ -287,6 +412,10 @@ export function createProjectSession(
     },
 
     refreshFiles,
+    createFile,
+    createDirectory,
+    renameEntry,
+    deleteEntry,
     captureSnapshot,
     reconcileExternalChange,
 

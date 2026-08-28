@@ -595,3 +595,215 @@ describe('watching for external changes', () => {
     unwatched.dispose()
   })
 })
+
+describe('project files', () => {
+  let fileSystem: FakeFileSystem
+  let queue: ReturnType<typeof createFsOperationQueue>
+  let session: ReturnType<typeof createProjectSession>
+
+  const paths = () =>
+    session.files.value.flatMap(function flatten(file): string[] {
+      return [file.path, ...(file.children ?? []).flatMap(flatten)]
+    })
+
+  beforeEach(async () => {
+    fileSystem = createFakeFileSystem({
+      '/projects/bracket/main.kcl': 'thickness = 4',
+      '/projects/bracket/parts/lid.kcl': '// lid',
+    })
+    queue = createFsOperationQueue()
+    session = createProjectSession(realization, library, {
+      fileSystem,
+      capabilities: combineCapabilities([]),
+      themes: [],
+      queue,
+    })
+    await settle()
+  })
+
+  describe('creating', () => {
+    it('adds an empty file to the tree', async () => {
+      await session.createFile('base.kcl')
+
+      expect(fileSystem.files.get('/projects/bracket/base.kcl')).toBe('')
+      expect(paths()).toContain('base.kcl')
+    })
+
+    it('takes contents when the caller has some', async () => {
+      await session.createFile('seed.kcl', 'width = 2')
+      expect(fileSystem.files.get('/projects/bracket/seed.kcl')).toBe(
+        'width = 2'
+      )
+    })
+
+    it('makes the directories a path implies', async () => {
+      await session.createFile('brackets/left/part.kcl')
+      expect(
+        fileSystem.files.get('/projects/bracket/brackets/left/part.kcl')
+      ).toBe('')
+    })
+
+    it('adds a directory', async () => {
+      await session.createDirectory('sketches')
+      expect(paths()).toContain('sketches')
+    })
+
+    /**
+     * Refused rather than made unique. The caller either typed this name, in
+     * which case it needs to hear the answer, or generated it, in which case it
+     * knows the siblings.
+     */
+    it('refuses a name already taken', async () => {
+      await expect(session.createFile('main.kcl')).rejects.toThrow(
+        'already exists'
+      )
+      await expect(session.createDirectory('parts')).rejects.toThrow(
+        'already exists'
+      )
+      expect(fileSystem.files.get('/projects/bracket/main.kcl')).toBe(
+        'thickness = 4'
+      )
+    })
+  })
+
+  describe('renaming', () => {
+    it('moves the file', async () => {
+      await session.renameEntry('main.kcl', 'body.kcl')
+
+      expect(fileSystem.files.has('/projects/bracket/main.kcl')).toBe(false)
+      expect(fileSystem.files.get('/projects/bracket/body.kcl')).toBe(
+        'thickness = 4'
+      )
+      expect(paths()).toContain('body.kcl')
+    })
+
+    it('carries an open buffer without disturbing it', async () => {
+      const buffer = await session.openFile('main.kcl')
+      buffer.dispatch({ changes: { from: 0, insert: '// wip\n' } })
+
+      await session.renameEntry('main.kcl', 'body.kcl')
+
+      // Same document: the identity, the unsaved edit and the undo history all
+      // survive, which is the point of the session owning this.
+      expect(session.buffer(buffer.id)).toBe(buffer)
+      expect(buffer.text.value).toContain('// wip')
+      expect(buffer.dirty.value).toBe(true)
+      expect(session.relativePathFor(buffer)).toBe('body.kcl')
+      expect(session.bufferForPath('body.kcl')).toBe(buffer)
+    })
+
+    it('carries every buffer under a renamed directory', async () => {
+      const buffer = await session.openFile('parts/lid.kcl')
+
+      await session.renameEntry('parts', 'components')
+
+      expect(session.relativePathFor(buffer)).toBe('components/lid.kcl')
+      expect(fileSystem.files.has('/projects/bracket/components/lid.kcl')).toBe(
+        true
+      )
+    })
+
+    it('refuses to write over something', async () => {
+      await expect(
+        session.renameEntry('main.kcl', 'parts/lid.kcl')
+      ).rejects.toThrow('already exists')
+      expect(fileSystem.files.has('/projects/bracket/main.kcl')).toBe(true)
+    })
+
+    it('does nothing when the name has not changed', async () => {
+      await session.renameEntry('main.kcl', 'main.kcl')
+      expect(fileSystem.files.get('/projects/bracket/main.kcl')).toBe(
+        'thickness = 4'
+      )
+    })
+
+    it('leaves the buffer alone when the move fails', async () => {
+      const buffer = await session.openFile('main.kcl')
+
+      await expect(
+        session.renameEntry('main.kcl', 'parts/lid.kcl')
+      ).rejects.toThrow()
+
+      expect(session.relativePathFor(buffer)).toBe('main.kcl')
+    })
+  })
+
+  describe('deleting', () => {
+    it('removes the file and drops it from the tree', async () => {
+      await session.deleteEntry('main.kcl')
+
+      expect(fileSystem.files.has('/projects/bracket/main.kcl')).toBe(false)
+      expect(paths()).not.toContain('main.kcl')
+    })
+
+    it('closes the buffer that held it', async () => {
+      const buffer = await session.openFile('main.kcl')
+
+      await session.deleteEntry('main.kcl')
+
+      expect(session.buffer(buffer.id)).toBeUndefined()
+      expect(session.activeBuffer.value).toBeNull()
+    })
+
+    it('closes every buffer under a deleted directory', async () => {
+      const buffer = await session.openFile('parts/lid.kcl')
+
+      await session.deleteEntry('parts')
+
+      expect(session.buffer(buffer.id)).toBeUndefined()
+      expect(fileSystem.files.has('/projects/bracket/parts/lid.kcl')).toBe(
+        false
+      )
+    })
+
+    /**
+     * The resurrection case. Closing a buffer flushes its pending autosave, so
+     * the write and the removal have to be ordered — and they are queued against
+     * different paths when a whole folder goes, which is what the barrier in
+     * `deleteEntry` is for.
+     */
+    it('does not let a pending save bring a deleted file back', async () => {
+      const shared = createFsOperationQueue()
+      const persisted = createFakeFileSystem({
+        '/projects/bracket/parts/lid.kcl': '// lid',
+      })
+
+      // A write that takes a moment, which is the only way the ordering is
+      // observable: with an instant filesystem the flush happens to land first
+      // whether anything ordered it or not.
+      const slow = {
+        ...persisted,
+        writeTextFile: async (path: string, contents: string) => {
+          await new Promise((resolve) => setTimeout(resolve, 5))
+          await persisted.writeTextFile(path, contents)
+        },
+      }
+
+      const withPersistence = createProjectSession(realization, library, {
+        fileSystem: slow,
+        capabilities: combineCapabilities([
+          createPersistenceCapability({
+            fileSystem: () => slow,
+            // The same queue the session uses, as in the app: that shared
+            // ordering is what makes the save land before the delete.
+            queue: () => shared,
+          }),
+        ]),
+        themes: [],
+        queue: shared,
+      })
+      await settle()
+
+      const buffer = await withPersistence.openFile('parts/lid.kcl')
+      buffer.dispatch({ changes: { from: 0, insert: '// unsaved\n' } })
+
+      await withPersistence.deleteEntry('parts')
+      // Long enough for a write that was not waited for to land and undo the
+      // delete.
+      await new Promise((resolve) => setTimeout(resolve, 20))
+
+      expect(persisted.files.has('/projects/bracket/parts/lid.kcl')).toBe(false)
+      withPersistence.dispose()
+    })
+  })
+})
