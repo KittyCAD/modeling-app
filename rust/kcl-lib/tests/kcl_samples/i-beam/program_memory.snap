@@ -89,10 +89,10 @@ description: Variables in memory after executing i-beam.kcl
             2.0
           ],
           "tag": {
-            "commentStart": 3072,
-            "end": 3078,
+            "commentStart": 3087,
+            "end": 3093,
             "moduleId": 0,
-            "start": 3072,
+            "start": 3087,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -113,10 +113,10 @@ description: Variables in memory after executing i-beam.kcl
             2.0
           ],
           "tag": {
-            "commentStart": 3149,
-            "end": 3155,
+            "commentStart": 3164,
+            "end": 3170,
             "moduleId": 0,
-            "start": 3149,
+            "start": 3164,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -137,10 +137,10 @@ description: Variables in memory after executing i-beam.kcl
             1.7070000000000003
           ],
           "tag": {
-            "commentStart": 3269,
-            "end": 3275,
+            "commentStart": 3284,
+            "end": 3290,
             "moduleId": 0,
-            "start": 3269,
+            "start": 3284,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -161,10 +161,10 @@ description: Variables in memory after executing i-beam.kcl
             1.2500000000000013
           ],
           "tag": {
-            "commentStart": 3392,
-            "end": 3398,
+            "commentStart": 3407,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3392,
+            "start": 3407,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -185,10 +185,10 @@ description: Variables in memory after executing i-beam.kcl
             -1.7070000000000005
           ],
           "tag": {
-            "commentStart": 3473,
-            "end": 3479,
+            "commentStart": 3488,
+            "end": 3494,
             "moduleId": 0,
-            "start": 3473,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -209,10 +209,10 @@ description: Variables in memory after executing i-beam.kcl
             -1.707
           ],
           "tag": {
-            "commentStart": 3557,
-            "end": 3563,
+            "commentStart": 3572,
+            "end": 3578,
             "moduleId": 0,
-            "start": 3557,
+            "start": 3572,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -233,10 +233,10 @@ description: Variables in memory after executing i-beam.kcl
             -2.0000000000000004
           ],
           "tag": {
-            "commentStart": 3679,
-            "end": 3685,
+            "commentStart": 3694,
+            "end": 3700,
             "moduleId": 0,
-            "start": 3679,
+            "start": 3694,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -257,10 +257,10 @@ description: Variables in memory after executing i-beam.kcl
             -2.0000000000000004
           ],
           "tag": {
-            "commentStart": 3799,
-            "end": 3805,
+            "commentStart": 3814,
+            "end": 3820,
             "moduleId": 0,
-            "start": 3799,
+            "start": 3814,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -281,10 +281,10 @@ description: Variables in memory after executing i-beam.kcl
             -1.7069999999999994
           ],
           "tag": {
-            "commentStart": 3923,
-            "end": 3929,
+            "commentStart": 3938,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3923,
+            "start": 3938,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -305,10 +305,10 @@ description: Variables in memory after executing i-beam.kcl
             2.0
           ],
           "tag": {
-            "commentStart": 4050,
-            "end": 4056,
+            "commentStart": 4065,
+            "end": 4071,
             "moduleId": 0,
-            "start": 4050,
+            "start": 4065,
             "type": "TagDeclarator",
             "value": "line24"
           },
@@ -329,10 +329,10 @@ description: Variables in memory after executing i-beam.kcl
             1.707
           ],
           "tag": {
-            "commentStart": 4174,
-            "end": 4180,
+            "commentStart": 4189,
+            "end": 4195,
             "moduleId": 0,
-            "start": 4174,
+            "start": 4189,
             "type": "TagDeclarator",
             "value": "line25"
           },
@@ -353,10 +353,10 @@ description: Variables in memory after executing i-beam.kcl
             1.2500000000156624
           ],
           "tag": {
-            "commentStart": 4299,
-            "end": 4305,
+            "commentStart": 4314,
+            "end": 4320,
             "moduleId": 0,
-            "start": 4299,
+            "start": 4314,
             "type": "TagDeclarator",
             "value": "line26"
           },
@@ -383,10 +383,10 @@ description: Variables in memory after executing i-beam.kcl
           ],
           "radius": 0.45700000327209167,
           "tag": {
-            "commentStart": 4382,
-            "end": 4386,
+            "commentStart": 4397,
+            "end": 4401,
             "moduleId": 0,
-            "start": 4382,
+            "start": 4397,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -413,10 +413,10 @@ description: Variables in memory after executing i-beam.kcl
           ],
           "radius": 0.45699999999999996,
           "tag": {
-            "commentStart": 4599,
-            "end": 4603,
+            "commentStart": 4614,
+            "end": 4618,
             "moduleId": 0,
-            "start": 4599,
+            "start": 4614,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -443,10 +443,10 @@ description: Variables in memory after executing i-beam.kcl
           ],
           "radius": 0.45699999999999996,
           "tag": {
-            "commentStart": 4819,
-            "end": 4823,
+            "commentStart": 4834,
+            "end": 4838,
             "moduleId": 0,
-            "start": 4819,
+            "start": 4834,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -473,10 +473,10 @@ description: Variables in memory after executing i-beam.kcl
           ],
           "radius": 0.4570000032720926,
           "tag": {
-            "commentStart": 4961,
-            "end": 4965,
+            "commentStart": 4976,
+            "end": 4980,
             "moduleId": 0,
-            "start": 4961,
+            "start": 4976,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -4371,10 +4371,10 @@ description: Variables in memory after executing i-beam.kcl
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 3072,
-                    "end": 3078,
+                    "commentStart": 3087,
+                    "end": 3093,
                     "moduleId": 0,
-                    "start": 3072,
+                    "start": 3087,
                     "type": "TagDeclarator",
                     "value": "line15"
                   },
@@ -4395,10 +4395,10 @@ description: Variables in memory after executing i-beam.kcl
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 3149,
-                    "end": 3155,
+                    "commentStart": 3164,
+                    "end": 3170,
                     "moduleId": 0,
-                    "start": 3149,
+                    "start": 3164,
                     "type": "TagDeclarator",
                     "value": "line16"
                   },
@@ -4419,10 +4419,10 @@ description: Variables in memory after executing i-beam.kcl
                     1.7070000000000003
                   ],
                   "tag": {
-                    "commentStart": 3269,
-                    "end": 3275,
+                    "commentStart": 3284,
+                    "end": 3290,
                     "moduleId": 0,
-                    "start": 3269,
+                    "start": 3284,
                     "type": "TagDeclarator",
                     "value": "line17"
                   },
@@ -4460,10 +4460,10 @@ description: Variables in memory after executing i-beam.kcl
                     1.2500000000000013
                   ],
                   "tag": {
-                    "commentStart": 3392,
-                    "end": 3398,
+                    "commentStart": 3407,
+                    "end": 3413,
                     "moduleId": 0,
-                    "start": 3392,
+                    "start": 3407,
                     "type": "TagDeclarator",
                     "value": "line18"
                   },
@@ -4501,10 +4501,10 @@ description: Variables in memory after executing i-beam.kcl
                     -1.7070000000000005
                   ],
                   "tag": {
-                    "commentStart": 3473,
-                    "end": 3479,
+                    "commentStart": 3488,
+                    "end": 3494,
                     "moduleId": 0,
-                    "start": 3473,
+                    "start": 3488,
                     "type": "TagDeclarator",
                     "value": "line19"
                   },
@@ -4525,10 +4525,10 @@ description: Variables in memory after executing i-beam.kcl
                     -1.707
                   ],
                   "tag": {
-                    "commentStart": 3557,
-                    "end": 3563,
+                    "commentStart": 3572,
+                    "end": 3578,
                     "moduleId": 0,
-                    "start": 3557,
+                    "start": 3572,
                     "type": "TagDeclarator",
                     "value": "line20"
                   },
@@ -4549,10 +4549,10 @@ description: Variables in memory after executing i-beam.kcl
                     -2.0000000000000004
                   ],
                   "tag": {
-                    "commentStart": 3679,
-                    "end": 3685,
+                    "commentStart": 3694,
+                    "end": 3700,
                     "moduleId": 0,
-                    "start": 3679,
+                    "start": 3694,
                     "type": "TagDeclarator",
                     "value": "line21"
                   },
@@ -4573,10 +4573,10 @@ description: Variables in memory after executing i-beam.kcl
                     -2.0000000000000004
                   ],
                   "tag": {
-                    "commentStart": 3799,
-                    "end": 3805,
+                    "commentStart": 3814,
+                    "end": 3820,
                     "moduleId": 0,
-                    "start": 3799,
+                    "start": 3814,
                     "type": "TagDeclarator",
                     "value": "line22"
                   },
@@ -4597,10 +4597,10 @@ description: Variables in memory after executing i-beam.kcl
                     -1.7069999999999994
                   ],
                   "tag": {
-                    "commentStart": 3923,
-                    "end": 3929,
+                    "commentStart": 3938,
+                    "end": 3944,
                     "moduleId": 0,
-                    "start": 3923,
+                    "start": 3938,
                     "type": "TagDeclarator",
                     "value": "line23"
                   },
@@ -4638,10 +4638,10 @@ description: Variables in memory after executing i-beam.kcl
                     2.0
                   ],
                   "tag": {
-                    "commentStart": 4050,
-                    "end": 4056,
+                    "commentStart": 4065,
+                    "end": 4071,
                     "moduleId": 0,
-                    "start": 4050,
+                    "start": 4065,
                     "type": "TagDeclarator",
                     "value": "line24"
                   },
@@ -4662,10 +4662,10 @@ description: Variables in memory after executing i-beam.kcl
                     1.707
                   ],
                   "tag": {
-                    "commentStart": 4174,
-                    "end": 4180,
+                    "commentStart": 4189,
+                    "end": 4195,
                     "moduleId": 0,
-                    "start": 4174,
+                    "start": 4189,
                     "type": "TagDeclarator",
                     "value": "line25"
                   },
@@ -4703,10 +4703,10 @@ description: Variables in memory after executing i-beam.kcl
                     1.2500000000156624
                   ],
                   "tag": {
-                    "commentStart": 4299,
-                    "end": 4305,
+                    "commentStart": 4314,
+                    "end": 4320,
                     "moduleId": 0,
-                    "start": 4299,
+                    "start": 4314,
                     "type": "TagDeclarator",
                     "value": "line26"
                   },
@@ -4750,10 +4750,10 @@ description: Variables in memory after executing i-beam.kcl
                   ],
                   "radius": 0.45700000327209167,
                   "tag": {
-                    "commentStart": 4382,
-                    "end": 4386,
+                    "commentStart": 4397,
+                    "end": 4401,
                     "moduleId": 0,
-                    "start": 4382,
+                    "start": 4397,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -4797,10 +4797,10 @@ description: Variables in memory after executing i-beam.kcl
                   ],
                   "radius": 0.45699999999999996,
                   "tag": {
-                    "commentStart": 4599,
-                    "end": 4603,
+                    "commentStart": 4614,
+                    "end": 4618,
                     "moduleId": 0,
-                    "start": 4599,
+                    "start": 4614,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -4844,10 +4844,10 @@ description: Variables in memory after executing i-beam.kcl
                   ],
                   "radius": 0.45699999999999996,
                   "tag": {
-                    "commentStart": 4819,
-                    "end": 4823,
+                    "commentStart": 4834,
+                    "end": 4838,
                     "moduleId": 0,
-                    "start": 4819,
+                    "start": 4834,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -4891,10 +4891,10 @@ description: Variables in memory after executing i-beam.kcl
                   ],
                   "radius": 0.4570000032720926,
                   "tag": {
-                    "commentStart": 4961,
-                    "end": 4965,
+                    "commentStart": 4976,
+                    "end": 4980,
                     "moduleId": 0,
-                    "start": 4961,
+                    "start": 4976,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -5061,10 +5061,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3072,
-            "end": 3078,
+            "commentStart": 3087,
+            "end": 3093,
             "moduleId": 0,
-            "start": 3072,
+            "start": 3087,
             "type": "TagDeclarator",
             "value": "line15"
           },
@@ -5075,10 +5075,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3149,
-            "end": 3155,
+            "commentStart": 3164,
+            "end": 3170,
             "moduleId": 0,
-            "start": 3149,
+            "start": 3164,
             "type": "TagDeclarator",
             "value": "line16"
           },
@@ -5089,10 +5089,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3269,
-            "end": 3275,
+            "commentStart": 3284,
+            "end": 3290,
             "moduleId": 0,
-            "start": 3269,
+            "start": 3284,
             "type": "TagDeclarator",
             "value": "line17"
           },
@@ -5103,10 +5103,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3392,
-            "end": 3398,
+            "commentStart": 3407,
+            "end": 3413,
             "moduleId": 0,
-            "start": 3392,
+            "start": 3407,
             "type": "TagDeclarator",
             "value": "line18"
           },
@@ -5117,10 +5117,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3473,
-            "end": 3479,
+            "commentStart": 3488,
+            "end": 3494,
             "moduleId": 0,
-            "start": 3473,
+            "start": 3488,
             "type": "TagDeclarator",
             "value": "line19"
           },
@@ -5131,10 +5131,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3557,
-            "end": 3563,
+            "commentStart": 3572,
+            "end": 3578,
             "moduleId": 0,
-            "start": 3557,
+            "start": 3572,
             "type": "TagDeclarator",
             "value": "line20"
           },
@@ -5145,10 +5145,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3679,
-            "end": 3685,
+            "commentStart": 3694,
+            "end": 3700,
             "moduleId": 0,
-            "start": 3679,
+            "start": 3694,
             "type": "TagDeclarator",
             "value": "line21"
           },
@@ -5159,10 +5159,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3799,
-            "end": 3805,
+            "commentStart": 3814,
+            "end": 3820,
             "moduleId": 0,
-            "start": 3799,
+            "start": 3814,
             "type": "TagDeclarator",
             "value": "line22"
           },
@@ -5173,10 +5173,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3923,
-            "end": 3929,
+            "commentStart": 3938,
+            "end": 3944,
             "moduleId": 0,
-            "start": 3923,
+            "start": 3938,
             "type": "TagDeclarator",
             "value": "line23"
           },
@@ -5187,10 +5187,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4050,
-            "end": 4056,
+            "commentStart": 4065,
+            "end": 4071,
             "moduleId": 0,
-            "start": 4050,
+            "start": 4065,
             "type": "TagDeclarator",
             "value": "line24"
           },
@@ -5201,10 +5201,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4174,
-            "end": 4180,
+            "commentStart": 4189,
+            "end": 4195,
             "moduleId": 0,
-            "start": 4174,
+            "start": 4189,
             "type": "TagDeclarator",
             "value": "line25"
           },
@@ -5215,10 +5215,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4299,
-            "end": 4305,
+            "commentStart": 4314,
+            "end": 4320,
             "moduleId": 0,
-            "start": 4299,
+            "start": 4314,
             "type": "TagDeclarator",
             "value": "line26"
           },
@@ -5229,10 +5229,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4382,
-            "end": 4386,
+            "commentStart": 4397,
+            "end": 4401,
             "moduleId": 0,
-            "start": 4382,
+            "start": 4397,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -5243,10 +5243,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4599,
-            "end": 4603,
+            "commentStart": 4614,
+            "end": 4618,
             "moduleId": 0,
-            "start": 4599,
+            "start": 4614,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -5257,10 +5257,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4819,
-            "end": 4823,
+            "commentStart": 4834,
+            "end": 4838,
             "moduleId": 0,
-            "start": 4819,
+            "start": 4834,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -5271,10 +5271,10 @@ description: Variables in memory after executing i-beam.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4961,
-            "end": 4965,
+            "commentStart": 4976,
+            "end": 4980,
             "moduleId": 0,
-            "start": 4961,
+            "start": 4976,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -5296,10 +5296,10 @@ description: Variables in memory after executing i-beam.kcl
               2.0
             ],
             "tag": {
-              "commentStart": 3072,
-              "end": 3078,
+              "commentStart": 3087,
+              "end": 3093,
               "moduleId": 0,
-              "start": 3072,
+              "start": 3087,
               "type": "TagDeclarator",
               "value": "line15"
             },
@@ -5320,10 +5320,10 @@ description: Variables in memory after executing i-beam.kcl
               2.0
             ],
             "tag": {
-              "commentStart": 3149,
-              "end": 3155,
+              "commentStart": 3164,
+              "end": 3170,
               "moduleId": 0,
-              "start": 3149,
+              "start": 3164,
               "type": "TagDeclarator",
               "value": "line16"
             },
@@ -5344,10 +5344,10 @@ description: Variables in memory after executing i-beam.kcl
               1.7070000000000003
             ],
             "tag": {
-              "commentStart": 3269,
-              "end": 3275,
+              "commentStart": 3284,
+              "end": 3290,
               "moduleId": 0,
-              "start": 3269,
+              "start": 3284,
               "type": "TagDeclarator",
               "value": "line17"
             },
@@ -5368,10 +5368,10 @@ description: Variables in memory after executing i-beam.kcl
               1.2500000000000013
             ],
             "tag": {
-              "commentStart": 3392,
-              "end": 3398,
+              "commentStart": 3407,
+              "end": 3413,
               "moduleId": 0,
-              "start": 3392,
+              "start": 3407,
               "type": "TagDeclarator",
               "value": "line18"
             },
@@ -5392,10 +5392,10 @@ description: Variables in memory after executing i-beam.kcl
               -1.7070000000000005
             ],
             "tag": {
-              "commentStart": 3473,
-              "end": 3479,
+              "commentStart": 3488,
+              "end": 3494,
               "moduleId": 0,
-              "start": 3473,
+              "start": 3488,
               "type": "TagDeclarator",
               "value": "line19"
             },
@@ -5416,10 +5416,10 @@ description: Variables in memory after executing i-beam.kcl
               -1.707
             ],
             "tag": {
-              "commentStart": 3557,
-              "end": 3563,
+              "commentStart": 3572,
+              "end": 3578,
               "moduleId": 0,
-              "start": 3557,
+              "start": 3572,
               "type": "TagDeclarator",
               "value": "line20"
             },
@@ -5440,10 +5440,10 @@ description: Variables in memory after executing i-beam.kcl
               -2.0000000000000004
             ],
             "tag": {
-              "commentStart": 3679,
-              "end": 3685,
+              "commentStart": 3694,
+              "end": 3700,
               "moduleId": 0,
-              "start": 3679,
+              "start": 3694,
               "type": "TagDeclarator",
               "value": "line21"
             },
@@ -5464,10 +5464,10 @@ description: Variables in memory after executing i-beam.kcl
               -2.0000000000000004
             ],
             "tag": {
-              "commentStart": 3799,
-              "end": 3805,
+              "commentStart": 3814,
+              "end": 3820,
               "moduleId": 0,
-              "start": 3799,
+              "start": 3814,
               "type": "TagDeclarator",
               "value": "line22"
             },
@@ -5488,10 +5488,10 @@ description: Variables in memory after executing i-beam.kcl
               -1.7069999999999994
             ],
             "tag": {
-              "commentStart": 3923,
-              "end": 3929,
+              "commentStart": 3938,
+              "end": 3944,
               "moduleId": 0,
-              "start": 3923,
+              "start": 3938,
               "type": "TagDeclarator",
               "value": "line23"
             },
@@ -5512,10 +5512,10 @@ description: Variables in memory after executing i-beam.kcl
               2.0
             ],
             "tag": {
-              "commentStart": 4050,
-              "end": 4056,
+              "commentStart": 4065,
+              "end": 4071,
               "moduleId": 0,
-              "start": 4050,
+              "start": 4065,
               "type": "TagDeclarator",
               "value": "line24"
             },
@@ -5536,10 +5536,10 @@ description: Variables in memory after executing i-beam.kcl
               1.707
             ],
             "tag": {
-              "commentStart": 4174,
-              "end": 4180,
+              "commentStart": 4189,
+              "end": 4195,
               "moduleId": 0,
-              "start": 4174,
+              "start": 4189,
               "type": "TagDeclarator",
               "value": "line25"
             },
@@ -5560,10 +5560,10 @@ description: Variables in memory after executing i-beam.kcl
               1.2500000000156624
             ],
             "tag": {
-              "commentStart": 4299,
-              "end": 4305,
+              "commentStart": 4314,
+              "end": 4320,
               "moduleId": 0,
-              "start": 4299,
+              "start": 4314,
               "type": "TagDeclarator",
               "value": "line26"
             },
@@ -5590,10 +5590,10 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "radius": 0.45700000327209167,
             "tag": {
-              "commentStart": 4382,
-              "end": 4386,
+              "commentStart": 4397,
+              "end": 4401,
               "moduleId": 0,
-              "start": 4382,
+              "start": 4397,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -5620,10 +5620,10 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "radius": 0.45699999999999996,
             "tag": {
-              "commentStart": 4599,
-              "end": 4603,
+              "commentStart": 4614,
+              "end": 4618,
               "moduleId": 0,
-              "start": 4599,
+              "start": 4614,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -5650,10 +5650,10 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "radius": 0.45699999999999996,
             "tag": {
-              "commentStart": 4819,
-              "end": 4823,
+              "commentStart": 4834,
+              "end": 4838,
               "moduleId": 0,
-              "start": 4819,
+              "start": 4834,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -5680,10 +5680,10 @@ description: Variables in memory after executing i-beam.kcl
             ],
             "radius": 0.4570000032720926,
             "tag": {
-              "commentStart": 4961,
-              "end": 4965,
+              "commentStart": 4976,
+              "end": 4980,
               "moduleId": 0,
-              "start": 4961,
+              "start": 4976,
               "type": "TagDeclarator",
               "value": "arc4"
             },

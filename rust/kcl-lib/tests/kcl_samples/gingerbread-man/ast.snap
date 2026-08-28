@@ -34121,7 +34121,7 @@ description: Result of parsing gingerbread-man.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Art & Design",
             "style": "line"
           }
         },
