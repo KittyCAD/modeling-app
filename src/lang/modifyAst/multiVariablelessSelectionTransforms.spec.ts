@@ -1,3 +1,4 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   addAppearance,
   addMirror3D,
@@ -5,7 +6,7 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
-import type { Node, Program } from '@src/lang/wasm'
+import type { Program } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
