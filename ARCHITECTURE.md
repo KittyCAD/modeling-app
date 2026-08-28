@@ -991,6 +991,82 @@ Two things this forces, both easy to get wrong:
   starting `size` is what seeds `extentFor`. The rail used to pass a constant
   fallback, which silently ignored every preset's stated width.
 
+## Modal tools over the scene
+
+The scene has four contributed **zones** — `top`, `bottom`, `start`, `end` — and
+the viewport renders them without knowing what is in any of them. They belong to
+the *scene*, not to the streamed engine: a local renderer would host the same
+toolbar, so nothing placed there may know that today's frames arrive as video.
+Only the items take pointer events; a zone spanning an edge would swallow camera
+drags along that edge, which gets diagnosed as "the camera is broken".
+
+A **mode** — Model, Sketch, Annotate — names a way of working and the keymap
+scope that is live inside it, and holds no behaviour at all, so it cannot become
+a second place where work happens. `ToolbarItem`s name a command each, so a
+button is one more way to reach what the palette and the keymap already reach.
+
+Three decisions carry most of the weight:
+
+- **The active mode is derived, not stored.** What is stored is the last mode
+  asked for; whether it is active depends on whether it still exists and can
+  still be entered. A mode that goes away therefore cannot strand the scene
+  somewhere with no tools and no way out. Being *refused* a mode is not being
+  queued for it, so a keystroke that did nothing cannot take effect minutes
+  later.
+- **Availability is contributed.** A gate names a mode and a signal; every gate
+  for a mode must agree, and a gate can only ever take a mode away. This is why
+  the toolbar feature never learns what a sketch is — it ships the mode as
+  vocabulary, and the features that understand KCL say when it applies. It also
+  means no mode is available with no KCL buffer open, which is what keeps a bare
+  `e` from meaning anything on the projects screen: no mode, no scope, no
+  single-letter keys.
+- **Dividers are sections, not separators.** The existing app writes a literal
+  `'break'` between two items, which works only while one file holds the whole
+  list in order. Naming the run instead means a rule is drawn wherever the name
+  changes, and an item contributed later lands *inside* a run rather than between
+  two.
+
+Group buttons keep their last-used command on the face, and a group that has
+shrunk to one command becomes a plain button, because a caret asking a question
+with one answer is a worse button. Both live in `resolveToolbar`, so the
+component holds no policy and the awkward cases are unit tests.
+
+### Sketching is a place
+
+`sketchMode` derives "am I in a sketch" from the file: the executor publishes the
+program it last parsed, and a selection or cursor either falls inside a
+`sketch { … }` block or does not. There is no enter event to miss and no leave to
+forget, which is where most of "sketch mode is stuck" comes from.
+
+The mode then follows the selection, because selecting something inside a sketch
+*is* the request to edit it — and a future Start Sketch tool is complete in one
+step for the same reason: it writes a block and selects it. Two rules keep that
+from being insufferable. Entering is an *event*: moving into a different sketch
+enters, sitting in one does not, so switching to Model with the cursor in a sketch
+sticks. And it never fires while something else is taking keystrokes — a toolbar
+that rearranges itself under an open palette has moved the button somebody was
+about to click. The code editor is deliberately not "something else": a cursor
+moved into a sketch block is exactly the signal being followed.
+
+Offsets are compared against the last *executed* program, so a sketch written a
+moment ago becomes a place to be one run later. That is why writing one is
+followed by a run rather than by a mode change.
+
+### Tools are derived, and their absences are deliberate
+
+`MODELING_TOOLS` is one list of specs, and the operations, their commands, their
+toolbar buttons, their groups and their keys all come from it — so a tool cannot
+be in the palette and missing from the toolbar. One `plan` writes every call: the
+special argument unlabelled, everything answered as `name = value`, appended.
+Tests fail the build on the ways that list can contradict itself: a function that
+does not exist, an argument prompted that its function does not have, a group
+nobody declared, a key bound twice in one mode.
+
+The boolean operations and `loft` are missing on purpose. They take two or more
+solids or sketches, and the argument layer holds one answer per argument, so
+their buttons would reliably write code that does not run. They arrive with
+multi-selection.
+
 ## Keybindings
 
 A binding resolves to a command id and nothing else. It carries no behaviour of

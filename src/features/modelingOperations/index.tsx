@@ -7,7 +7,10 @@ import {
 import { computed } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
-import { toolbarItemsValueSpec } from '@src/contracts/sceneModes'
+import {
+  sceneModeGatesValueSpec,
+  toolbarItemsValueSpec,
+} from '@src/contracts/sceneModes'
 import {
   argumentResolversValueSpec,
   modelingOperationsValueSpec,
@@ -28,7 +31,11 @@ import {
   toolbarItemsFor,
 } from '@src/features/modelingOperations/operations/catalog'
 import { operationIdFor } from '@src/features/modelingOperations/operations/derive'
-import { scopeForMode } from '@src/features/sceneToolbar/modes'
+import {
+  ANNOTATING_MODE,
+  MODELING_MODE,
+  scopeForMode,
+} from '@src/features/sceneToolbar/modes'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
@@ -155,6 +162,25 @@ export default defineRegistryItemFactory((ctx) => {
             }),
           ]
         }),
+
+        /**
+         * Both modes need somewhere to write.
+         *
+         * Contributed as gates rather than assumed, and this is what keeps a bare
+         * `e` from meaning anything on the projects screen: with no KCL buffer no
+         * mode is available, so no mode's keymap scope is applied and the tools'
+         * single-letter keys simply are not live. The alternative was every
+         * keystroke reaching a disabled command and being refused, which is the
+         * same outcome reported as a warning.
+         */
+        ...[MODELING_MODE, ANNOTATING_MODE].map((mode) =>
+          provide(sceneModeGatesValueSpec, {
+            id: `modeling.canWrite.${mode}`,
+            mode,
+            available: computed(() => runner.available.value.length > 0),
+            reason: 'Open a KCL file to model.',
+          })
+        ),
 
         provide(overlaysValueSpec, {
           id: 'modeling.operationPrompt',
