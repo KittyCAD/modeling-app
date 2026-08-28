@@ -142,9 +142,8 @@ export default defineRegistryItemFactory((ctx) => {
           run: () => settings.close(),
         }),
         provide(keybindingsValueSpec, {
-          combo: 'Mod+,',
+          keystrokes: ['Mod+,'],
           commandId: 'settings.open',
-          allowInTextInput: true,
         }),
 
         provide(appMenuSectionsValueSpec, {

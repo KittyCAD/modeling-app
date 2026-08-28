@@ -10,12 +10,20 @@ import {
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { executionCoordinatorService } from '@src/contracts/execution'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
+import {
+  keybindingScopesValueSpec,
+  keybindingService,
+} from '@src/contracts/keybindings'
 import { projectSessionService } from '@src/contracts/projectSession'
 import {
   baselineCapability,
   readOnlyCapability,
 } from '@src/features/editorCapabilities/baseline'
 import { createExecutionAdapterCapability } from '@src/features/editorCapabilities/executionAdapter'
+import {
+  CODE_EDITOR_SCOPE,
+  createKeymapScopeCapability,
+} from '@src/features/editorCapabilities/keymapScope'
 import { languageCapability } from '@src/features/editorCapabilities/language'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
 import { zooEditorTheme } from '@src/features/editorCapabilities/theme'
@@ -44,10 +52,30 @@ export default defineRegistryItemFactory((ctx) => {
         ?.captureSnapshot() ?? null,
   })
 
+  const keymapScope = createKeymapScopeCapability({
+    keys: () => ctx.services.get(keybindingService),
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'editorCapabilities',
       provides: [
+        /**
+         * The scope a focused buffer holds.
+         *
+         * Above `base` so a binding declared here beats the app-wide one for the
+         * same keys, and `textEntry` because what is focused is taking
+         * characters — an unmodified key belongs to the document, not to the
+         * keymap.
+         */
+        provide(keybindingScopesValueSpec, {
+          id: CODE_EDITOR_SCOPE,
+          displayName: 'Code editor focused',
+          priority: 1000,
+          textEntry: true,
+        }),
+
+        provide(editorCapabilitiesValueSpec, keymapScope),
         provide(editorCapabilitiesValueSpec, readOnlyCapability),
         provide(editorCapabilitiesValueSpec, baselineCapability),
         provide(editorCapabilitiesValueSpec, languageCapability),

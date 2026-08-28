@@ -611,6 +611,61 @@ Two things this forces, both easy to get wrong:
   starting `size` is what seeds `extentFor`. The rail used to pass a constant
   fallback, which silently ignored every preset's stated width.
 
+## Keybindings
+
+A binding resolves to a command id and nothing else. It carries no behaviour of
+its own, so the keyboard cannot reach anything that is not already a command with
+a title, an `enabled` signal, and a row in the palette.
+
+`keystrokes` is a **sequence of chords**: `['Mod+K']` is one chord, `['v', '1']`
+is two. Matching walks a prefix tree and answers `none`, `prefix`, or `full` —
+`prefix` being the state that makes sequences possible at all. A held sequence
+appears in the status bar, because a keyboard that has quietly eaten a keystroke
+while it waits for another is indistinguishable from one that is broken.
+
+Chords are normalised before anything compares them, **modifiers included**, so
+`Shift+Mod+1` and `Mod+Shift+1` are the same binding. Getting that wrong costs an
+afternoon: the binding simply never fires.
+
+### Scopes
+
+A scope is a contributed situation with a `priority`. Whoever knows the situation
+is true applies it — the code editor holds `codeEditor.focused` for as long as a
+buffer has focus, through a CodeMirror capability rather than a DOM listener in a
+view, so it is true for every buffer wherever it is mounted. The strongest active
+scope wins a contested sequence, which lets the editor claim a key the app also
+uses without either of them knowing about the other.
+
+`base` is contributed like any other scope, and is always active and always
+weakest.
+
+### Bare keys belong to whoever is typing
+
+`textEntry` on a scope says "while this is active, an unmodified key is a
+character". A chord carrying Mod, Ctrl or Alt always dispatches, as does the
+second keystroke of a sequence already in progress; only bare keys defer, and
+only to a form control or to a content-editable under a `textEntry` scope.
+
+This replaced a blanket "ignore everything while focus is in a text field", which
+silently killed every binding that had not opted out — `⌘1` included — the moment
+the code editor had focus, because CodeMirror's content *is* a content-editable.
+
+### What is deliberately not here yet
+
+Ported from `main`'s keymap because the shape is expensive to retrofit; left out
+because nothing consumes it:
+
+- **User overrides.** A keymap file with its own schema version and an unbind
+  syntax, outside the settings cascade — a binding override is a patch against a
+  defaults document, not a user-versus-project question.
+- **The editable table.** Needs the above, plus somewhere to live: the settings
+  dialog renders setting rows and drops a section with none.
+- **Binding `arguments`.** `Command.run` takes none. When a command needs
+  arguments that is a change to the command contract first.
+- **Mutually-exclusive scope groups.** `main` uses them so sketch and modelling
+  modes cannot stack. There are no modes here yet, and it is one pure function to
+  add when there are.
+
 ## Design system
 
 Three token layers, in strict order. Components may only read 2 and 3.

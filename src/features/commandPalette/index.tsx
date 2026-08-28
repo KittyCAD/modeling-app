@@ -37,11 +37,11 @@ export default defineRegistryItemFactory(() => {
             open.value = true
           },
         }),
+        // Reachable from a search box or the editor, which is the point — and
+        // now automatic: a chord carrying Mod is never typing.
         provide(keybindingsValueSpec, {
-          combo: 'Mod+K',
+          keystrokes: ['Mod+K'],
           commandId: 'palette.open',
-          // Reachable from a search box or the editor, which is the point.
-          allowInTextInput: true,
         }),
       ],
     }),

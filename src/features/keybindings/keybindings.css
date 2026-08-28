@@ -1,0 +1,14 @@
+/* The pending-chord indicator. */
+
+/*
+ * Accent-coloured, because it is the one status field that is not a readout: it
+ * means the app is waiting on you, and it disappears as soon as it is answered.
+ */
+.zds-pending-chord .zds-status-field__value {
+  color: var(--zds-accent);
+  font-family: var(--zds-font-mono);
+}
+
+.zds-pending-chord__caret {
+  color: var(--zds-text-tertiary);
+}

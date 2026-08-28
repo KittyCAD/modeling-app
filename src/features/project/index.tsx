@@ -167,7 +167,7 @@ export default defineRegistryItemFactory((ctx) => {
           id: EXPLORER_AREA_ID,
           title: 'Files',
           icon: 'folder',
-          shortcut: '⌘⇧1',
+          shortcut: '⇧⌘1',
           // Drawn by the code panel, not by the rail. Still an area, so its
           // width, its open state and its toggle stay with the layout service.
           hostedBy: CODE_AREA_ID,
@@ -274,7 +274,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Toggle files',
           category: 'View',
           icon: 'folder',
-          shortcut: '⌘⇧1',
+          shortcut: '⇧⌘1',
           enabled: hasProject,
           run: () => {
             const layout = ctx.services.get(layoutService)
@@ -288,15 +288,15 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         provide(keybindingsValueSpec, {
-          combo: 'Mod+1',
+          keystrokes: ['Mod+1'],
           commandId: `layout.toggle.${CODE_AREA_ID}`,
         }),
         provide(keybindingsValueSpec, {
-          combo: 'Mod+Shift+1',
+          keystrokes: ['Mod+Shift+1'],
           commandId: `layout.toggle.${EXPLORER_AREA_ID}`,
         }),
         provide(keybindingsValueSpec, {
-          combo: 'Mod+2',
+          keystrokes: ['Mod+2'],
           commandId: `layout.toggle.${INFO_AREA_ID}`,
         }),
       ],
