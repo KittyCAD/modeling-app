@@ -195,9 +195,54 @@ State is a status signal plus a *stage* signal rather than a state machine: ever
 transition is driven by an inbound message, and the stage is what makes a stall
 diagnosable — websocket, authenticating, negotiating, or streaming.
 
-Auth is a development stand-in (`src/features/auth/`): it reads a token from the
-environment and is the only place in the app that does, so a real sign-in flow
-replaces one file.
+Auth is real — see below.
+
+## Authentication, and what "protected" means here
+
+There is no route guard, no `<Auth>` wrapper, and no protected-route concept. The
+sign-in screen is a `screensValueSpec` contribution that declares itself active
+and wins by order. "Is the app gated?" is therefore **one predicate in one file**.
+
+And it is not gated. Two states are kept apart:
+
+- `status` — a fact: is there a verified token.
+- `signInRequested` — an intent: has something asked the user to sign in.
+
+Local libraries, buffers, editing, and KCL diagnostics all work with no account,
+so the screen appears only when something genuinely needs one, carrying the
+reason. `engine.connect` is the current example; every connect affordance routes
+through that one command so none can skip it.
+
+A token is verified by fetching the account — the only way to know a token is
+good is to use it, and the answer is the identity the menu needs, so it is one
+request. A token that fails verification is discarded rather than kept: keeping
+it makes every later request fail confusingly.
+
+Three flows, contributed, because which are possible depends on the platform:
+
+| Flow | Where | Notes |
+| --- | --- | --- |
+| Device flow | desktop | Token exchange runs in the **main process**; the renderer only sees the code and the final token. Endpoints are on the **API** host, not the site. |
+| Web redirect | browser | A full navigation, since that is what makes the site's cookie readable here. |
+| Paste a token | everywhere | The fallback. Ordered last: it asks the most of the user. |
+
+## The app menu
+
+Deliberately not "the user menu". It is useful signed out — theme, commands,
+libraries — and identity is one section in it.
+
+The **trigger** is a value spec where the first *non-null* contribution wins, so
+a feature can replace it and can decline by yielding null. That is what makes
+"the app menu becomes a user menu when signed in" a composition fact rather than
+a conditional inside a component. Plain first-wins would let a declining
+contributor shadow a willing one.
+
+Menu items prefer a `commandId` over a handler, so one declaration is reachable
+from the menu, the palette, and a keybinding, and inherits the command's
+`enabled` state and shortcut.
+
+The theme control lives here, not in the status bar: the status bar reports state
+the app observes, the menu holds preferences someone sets.
 
 ## Execution
 
@@ -306,8 +351,11 @@ re-renders when it changes.
 - CodeMirror buffers, the dispatch boundary, and editor capabilities (#6836)
 - The modelling engine connection and the 3D scene
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
-- Settings, auth, and cloud sync — settings will be signals plus a
-  registry-composed schema, not a state machine
+- Settings and cloud sync — settings will be signals plus a registry-composed
+  schema, not a state machine
+- Token storage on desktop uses browser storage; the existing app uses a
+  per-environment config file, which survives a cleared profile and supports
+  environment switching
 - The engine connection: websocket transport, auth, and the stream. The
   coordinator and adapter are built; see the execution section
 - Cloud and network library types. The type contribution is the seam; nothing in
