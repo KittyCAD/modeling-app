@@ -312,6 +312,7 @@ function getCloudSyncLibraryConflictIssues(
   conflictMetadataList: readonly CloudSyncConflictMetadata[] | undefined
 ) {
   const libraryProjectPaths = getCloudSyncLibraryProjectPathSet(projects)
+  const projectsByPath = getCloudSyncLibraryProjectByPath(projects)
   const conflictIssuesByPath = new Map<string, CloudSyncLibraryProjectIssue>()
 
   for (const project of projects) {
@@ -331,10 +332,13 @@ function getCloudSyncLibraryConflictIssues(
     if (!projectPath || !libraryProjectPaths.has(projectPath)) {
       continue
     }
+    const project = projectsByPath.get(projectPath)
 
     conflictIssuesByPath.set(projectPath, {
       projectPath: metadata.localProjectPath,
-      projectName: metadata.projectName,
+      projectName: project
+        ? getHomeProjectDisplayName(project)
+        : metadata.projectName,
     })
   }
 
