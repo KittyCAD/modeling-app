@@ -28,7 +28,7 @@ export const builtInModes: readonly SceneMode[] = [
   {
     id: MODELING_MODE,
     title: 'Model',
-    icon: 'cube',
+    icon: 'model',
     order: 10,
     keymapScope: MODELING_SCOPE,
     empty: 'No modelling tools are installed.',

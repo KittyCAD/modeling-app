@@ -199,6 +199,33 @@ describe('the shipped catalog', () => {
     expect(new Set(ids).size).toBe(ids.length)
   })
 
+  /*
+   * The toolbar draws icon-only buttons, so a tool without a glyph is a button
+   * nobody can read, and one without a description is a tooltip that never
+   * answers the second question.
+   */
+  it('gives every tool an icon and a description', () => {
+    const bare = MODELING_TOOLS.filter(
+      (entry) => !entry.icon || !entry.description
+    )
+
+    expect(bare.map((entry) => entry.stdlib)).toEqual([])
+  })
+
+  it('gives every group an icon', () => {
+    const bare = TOOL_GROUPS.filter((group) => !group.icon)
+
+    expect(bare.map((group) => group.id)).toEqual([])
+  })
+
+  it('describes a tool in one sentence, not a paragraph', () => {
+    const long = MODELING_TOOLS.filter(
+      (entry) => (entry.description ?? '').length > 110
+    )
+
+    expect(long.map((entry) => entry.stdlib)).toEqual([])
+  })
+
   it('keeps the operation id rule in one place', () => {
     expect(operationIdFor('gdt::flatness')).toBe('modeling.gdt.flatness')
   })

@@ -12,6 +12,14 @@ export interface Command {
   title: string
   /** Groups the command in the palette. */
   category?: string
+  /**
+   * One sentence on what it does, for whoever stopped to ask.
+   *
+   * On the command rather than on a button, because it answers the same question
+   * wherever it is asked — a toolbar tooltip, a palette row, a menu. A title says
+   * which action this is; this says what it will do to your model.
+   */
+  description?: string
   icon?: IconName
   /** Display form, e.g. `⌘K`. Binding itself lives with the keymap. */
   shortcut?: string

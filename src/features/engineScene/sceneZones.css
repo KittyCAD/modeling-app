@@ -18,9 +18,15 @@
   min-inline-size: 0;
 }
 
+/*
+ * Flush with the top edge, so an item can attach to it.
+ *
+ * The other three keep their margin: they hold things that hover — a gizmo, a
+ * readout — while the top strip is where the toolbar hangs from the panel.
+ */
 .zds-scene-zone[data-zone="top"] {
-  inset-block-start: var(--zds-space-2);
-  inset-inline: var(--zds-space-2);
+  inset-block-start: 0;
+  inset-inline: 0;
   justify-content: center;
   align-items: flex-start;
 }

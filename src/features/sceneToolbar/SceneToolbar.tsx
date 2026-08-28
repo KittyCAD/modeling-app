@@ -76,7 +76,18 @@ function ModeSwitcher() {
   )
 }
 
-/** One command, as a button that knows nothing about the command it runs. */
+/**
+ * One command, as a button that knows nothing about the command it runs.
+ *
+ * Icon-only, because a toolbar of thirty labels is a paragraph. The name is still
+ * the button's accessible name and arrives as a tooltip at hover speed, with what
+ * it does following for whoever stops to read — the two questions get asked at
+ * different speeds, so they are answered at different speeds.
+ *
+ * A command with no icon keeps its label. An unlabelled, unglyphed button is
+ * invisible, and a contribution missing an icon should look wrong rather than
+ * disappear.
+ */
 function CommandButton({
   command,
   onRun,
@@ -93,8 +104,10 @@ function CommandButton({
       size="small"
       label={command.title}
       icon={command.icon}
+      iconOnly={command.icon !== undefined}
       disabled={!(command.enabled?.value ?? true)}
       shortcut={keys.displayFor(command.id)}
+      description={command.description}
       onClick={() => {
         onRun?.()
         commands.run(command.id)
@@ -146,12 +159,13 @@ function GroupButton({ group }: { group: ResolvedGroup }) {
           <Button
             variant="ghost"
             size="small"
-            icon="chevronDown"
+            icon="caretDown"
             iconOnly
             label={`More ${group.title.toLowerCase()} tools`}
             pressed={open}
             elementRef={ref}
             onClick={toggle}
+            class="zds-scene-toolbar__caret"
           />
         )}
       />
