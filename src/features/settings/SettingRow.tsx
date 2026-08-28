@@ -63,6 +63,11 @@ export function SettingRow({ setting, level, disabled }: SettingRowProps) {
 
   const update = (value: unknown) => settings.set(setting, level, value)
 
+  // Derived from the shown value in the render body, not memoised: a
+  // `useComputed` would capture the first value it saw and never notice the
+  // setting changing.
+  const detail = setting.detail?.(shown) ?? []
+
   const control = () => {
     switch (setting.control.kind) {
       case 'boolean':
@@ -123,6 +128,18 @@ export function SettingRow({ setting, level, disabled }: SettingRowProps) {
         {setting.description ? (
           <p class="zds-setting__description">{setting.description}</p>
         ) : null}
+        {/* What the value means, when the name alone does not say. */}
+        {detail.length > 0 ? (
+          <dl class="zds-setting__detail">
+            {detail.map((row) => (
+              <div class="zds-setting__detail-row" key={row.label}>
+                <dt class="zds-label">{row.label}</dt>
+                <dd class="zds-value">{row.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+
         <p class="zds-label zds-setting__provenance">
           {isSetHere
             ? `Set here — otherwise ${describeValue(setting, inheritedValue)}`

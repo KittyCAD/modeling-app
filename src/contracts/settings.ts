@@ -87,6 +87,18 @@ export interface SettingDefinition<T> {
   parse: (raw: unknown) => T | undefined
   /** How the value is written back. Defaults to the value itself. */
   serialize?: (value: T) => SettingsValue
+
+  /**
+   * Extra rows shown under this setting, derived from its current value.
+   *
+   * Data rather than a component, like `control`, so the dialog stays the only
+   * thing that renders and a setting stays something an agent could enumerate.
+   *
+   * This is what makes a preference like "camera controls" answerable: the
+   * choice is a name — OnShape, Solidworks — and the name means nothing without
+   * the gestures it stands for.
+   */
+  detail?: (value: T) => readonly { label: string; value: string }[]
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: the registry holds a

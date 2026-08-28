@@ -15,7 +15,16 @@ interface FeatureModule {
  * touches.
  */
 const featureModules: Record<string, FeatureModule> = import.meta.glob(
-  ['../features/*/index.ts', '../features/*/index.tsx'],
+  [
+    '../features/*/index.ts',
+    '../features/*/index.tsx',
+    // One level of nesting, for a sub-feature that belongs to another feature
+    // and should be deleted along with it — the engine scene's camera, for
+    // instance. The registry does not care where an item lives; this is so the
+    // directory tree says what owns what.
+    '../features/*/*/index.ts',
+    '../features/*/*/index.tsx',
+  ],
   { eager: true }
 )
 

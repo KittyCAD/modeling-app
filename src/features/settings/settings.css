@@ -202,6 +202,32 @@
   max-inline-size: 48ch;
 }
 
+/* What the chosen value actually means: the gestures behind "OnShape", the
+   fact that a setting waits for the next connection. */
+.zds-setting__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-025);
+  margin-block-start: var(--zds-space-2);
+  padding-inline-start: var(--zds-space-2);
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-setting__detail-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--zds-space-2);
+  align-items: baseline;
+}
+
+.zds-setting__detail-row dt {
+  color: var(--zds-text-disabled);
+}
+
+.zds-setting__detail-row dd {
+  color: var(--zds-text-secondary);
+}
+
 /* Where the value came from, in the metadata voice. This is the cascade made
    visible: without it, an inherited value and a set one look identical. */
 .zds-setting__provenance {
