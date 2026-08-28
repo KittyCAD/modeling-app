@@ -82,8 +82,8 @@ description: Artifact commands camshaft.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.811713233512,
-          "y": 8.3800641458326,
+          "x": -14.811713232857727,
+          "y": 8.380064145103274,
           "z": 0.0
         }
       }
@@ -104,17 +104,17 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
-            "y": -0.0000000000000014099832412739487
+            "x": 0.0000000000000028199664825478975,
+            "y": 0.0000000016849891926185022
           },
-          "radius": 17.018000000001866,
+          "radius": 17.017999998243557,
           "start": {
             "unit": "degrees",
-            "value": 150.5000000000353
+            "value": 150.50000000602523
           },
           "end": {
             "unit": "degrees",
-            "value": 389.49999999996476
+            "value": 389.49999999397477
           },
           "relative": false
         }
@@ -129,17 +129,17 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -27.014631126230412,
-            "y": -15.284142904017786
+            "x": -27.014631130400097,
+            "y": -15.284142900929046
           },
-          "radius": 48.056610136358394,
+          "radius": 48.05661013753796,
           "start": {
             "unit": "degrees",
-            "value": 29.500000000000597
+            "value": 29.49999999397473
           },
           "end": {
             "unit": "degrees",
-            "value": 50.71095846753482
+            "value": 50.710958490460825
           },
           "relative": false
         }
@@ -154,17 +154,17 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000007113365452227071,
-            "y": 17.734169255999166
+            "x": 0.0000000000000028199664825478975,
+            "y": 17.734169186345383
           },
-          "radius": 5.395161112883084,
+          "radius": 5.395161167721719,
           "start": {
             "unit": "degrees",
-            "value": 50.710957762791246
+            "value": 50.710958490460825
           },
           "end": {
             "unit": "degrees",
-            "value": 129.28904223720875
+            "value": 129.28904150953915
           },
           "relative": false
         }
@@ -179,17 +179,17 @@ description: Artifact commands camshaft.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 27.014631126229684,
-            "y": -15.284142904018632
+            "x": 27.014631130400094,
+            "y": -15.284142900929053
           },
-          "radius": 48.05661013635949,
+          "radius": 48.05661013753796,
           "start": {
             "unit": "degrees",
-            "value": 129.28904153246518
+            "value": 129.28904150953915
           },
           "end": {
             "unit": "degrees",
-            "value": 150.4999999999994
+            "value": 150.50000000602523
           },
           "relative": false
         }

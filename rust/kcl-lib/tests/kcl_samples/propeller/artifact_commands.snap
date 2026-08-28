@@ -934,8 +934,8 @@ description: Artifact commands propeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 77.44290091625818,
-          "y": 64.98230959611378,
+          "x": 77.44290091680494,
+          "y": 64.98230959676539,
           "z": 0.0
         }
       }
@@ -956,17 +956,17 @@ description: Artifact commands propeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 105.52500600835371,
-            "y": 98.44925922713695
+            "x": 105.52500601162777,
+            "y": 98.44925922802278
           },
-          "radius": 43.68800000010231,
+          "radius": 43.68800000203482,
           "start": {
             "unit": "degrees",
-            "value": -130.00000000007574
+            "value": -130.00000000261826
           },
           "end": {
             "unit": "degrees",
-            "value": -80.00000000007577
+            "value": -80.00000000983916
           },
           "relative": false
         }
@@ -981,32 +981,19 @@ description: Artifact commands propeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 945.4456040757526,
-            "y": -4664.983740399552
+            "x": 945.4444830041905,
+            "y": -4664.9708050803065
           },
-          "radius": 4793.228430225917,
+          "radius": 4793.215496749438,
           "start": {
             "unit": "degrees",
-            "value": 99.99998633797806
+            "value": 99.999999990754
           },
           "end": {
             "unit": "degrees",
-            "value": 89.90652861823496
+            "value": 89.90651496525788
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1092.200000000001,
-          "y": 0.2540000000000976,
-          "z": 0.0
         }
       }
     },
@@ -1019,32 +1006,19 @@ description: Artifact commands propeller.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 953.0309160084724,
-            "y": -11.419286553738292
+            "x": 953.037336557282,
+            "y": -11.412316625924438
           },
-          "radius": 139.6577944763801,
+          "radius": 139.65081396153136,
           "start": {
             "unit": "degrees",
-            "value": 4.794657569442171
+            "value": 89.90651496549992
           },
           "end": {
             "unit": "degrees",
-            "value": 89.90388555071387
+            "value": 4.792028142791531
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 1092.200000000001,
-          "y": 0.2540000000000976,
-          "z": 0.0
         }
       }
     },
@@ -1091,8 +1065,8 @@ description: Artifact commands propeller.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 77.44290091625817,
-            "y": 64.98230959611377,
+            "x": 77.44290091680494,
+            "y": 64.98230959676539,
             "z": 0.0
           },
           "relative": false
