@@ -262,7 +262,7 @@ export function PublishDialog({
                 }`}
               />
               <p className="mt-2 text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
-                The current Projects API also uses this as the project title.
+                This will also be used as the project title.
               </p>
               {hasTriedSubmit && !titleIsValid && (
                 <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
@@ -412,15 +412,15 @@ export function PublishDialog({
           </section>
 
           <section className="border-t border-chalkboard-20/70 pt-4 dark:border-chalkboard-80/70">
+            {willMoveProjectToCloud && (
+              <p className="mb-3 w-full rounded border border-destroy-40 bg-destroy-10/50 px-3 py-2 text-xs leading-5 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
+                Publishing will also move this project from its current folder
+                to your Personal Cloud library so it stays synced with your Zoo
+                account.
+              </p>
+            )}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
-                {willMoveProjectToCloud && (
-                  <p className="mb-2 text-xs leading-5 text-chalkboard-70 dark:text-chalkboard-30">
-                    Publishing will also move this project from its current
-                    folder to your Personal Cloud library so it stays synced
-                    with your Zoo account.
-                  </p>
-                )}
                 <p className="text-xs leading-5 text-chalkboard-60 dark:text-chalkboard-40">
                   {lastSubmittedText ? (
                     lastSubmittedText

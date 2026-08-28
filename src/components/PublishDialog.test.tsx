@@ -61,16 +61,19 @@ describe('PublishDialog', () => {
       </Popover>
     )
 
+    const cloudMoveWarning = screen.getByText(
+      /Publishing will also move this project from its current folder to your Personal Cloud library/
+    )
+    expect(cloudMoveWarning).toBeInTheDocument()
+    expect(cloudMoveWarning).toHaveClass(
+      'w-full',
+      'border-destroy-40',
+      'text-destroy-80'
+    )
     expect(
-      screen.getByText(
-        /Publishing will also move this project from its current folder to your Personal Cloud library/
-      )
+      screen.getByText(/This will also be used as the project title/)
     ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        /The current Projects API also uses this as the project title/
-      )
-    ).toBeInTheDocument()
+    expect(screen.queryByText(/Projects API/)).not.toBeInTheDocument()
   })
 
   it('registers the description editor with the Markdown keymap while focused', async () => {
