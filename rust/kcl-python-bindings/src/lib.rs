@@ -1391,4 +1391,58 @@ result = subtract(cube, tools = [cylinder])
             "report should include a line:column marker for the source span: {report}"
         );
     }
+
+    /// A short top-level file that calls a function defined in a longer
+    /// imported module. Evaluating the function body multiplies numbers with
+    /// unknown units, so execution emits an `unknown-numeric-units` warning
+    /// whose source range points into the imported module, past the end of
+    /// the top-level source. The report must render that range against the
+    /// imported module's source, not the top-level file.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_exec_outcome_report_renders_imported_module_warning_against_imported_source() {
+        let project_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/files/imported_warning");
+        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true)
+            .await
+            .expect("mock execute_impl should succeed for a project that only warns");
+
+        let issues = outcome.issues().expect("issues should convert");
+        let warning = issues
+            .iter()
+            .find(|issue| issue.is_warning() && issue.message().contains("unknown or incompatible units"))
+            .unwrap_or_else(|| panic!("expected an unknown-numeric-units warning, got: {issues:?}"));
+
+        let report = outcome.report(warning);
+
+        assert!(
+            !report.contains("Failed to read contents") && !report.contains("OutOfBounds"),
+            "imported range should not be read against the top-level source: {report}"
+        );
+        assert!(
+            report.contains("derived.kcl"),
+            "report should name the imported file: {report}"
+        );
+        assert!(
+            report.contains("PI * 2"),
+            "report should include the offending line from the imported source snippet: {report}"
+        );
+
+        // The sketch constraint report renders the same issues through the
+        // shared helper; it must also resolve the imported module's source.
+        let constraint_report = outcome.sketch_constraint_report();
+        assert!(
+            !constraint_report.warnings.is_empty(),
+            "constraint report should carry the rendered execution warning"
+        );
+        for rendered in &constraint_report.warnings {
+            assert!(
+                !rendered.contains("Failed to read contents") && !rendered.contains("OutOfBounds"),
+                "constraint report warning should render against the imported source: {rendered}"
+            );
+        }
+        assert!(
+            constraint_report.warnings.iter().any(|w| w.contains("PI * 2")),
+            "a constraint report warning should include the imported source snippet: {:?}",
+            constraint_report.warnings
+        );
+    }
 }
