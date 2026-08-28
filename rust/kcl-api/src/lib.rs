@@ -17,7 +17,11 @@ pub mod ast;
 mod cad_op;
 mod front;
 mod kcl_version;
+pub mod geometry;
+pub mod kcl_value_view;
+pub mod metadata;
 mod numeric_type;
+pub mod point;
 mod units;
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Default)]

@@ -821,33 +821,6 @@ pub enum BodyType {
     Block,
 }
 
-/// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq, Copy)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct Metadata {
-    /// The source range.
-    pub source_range: SourceRange,
-}
-
-impl From<Metadata> for Vec<SourceRange> {
-    fn from(meta: Metadata) -> Self {
-        vec![meta.source_range]
-    }
-}
-
-impl From<&Metadata> for SourceRange {
-    fn from(meta: &Metadata) -> Self {
-        meta.source_range
-    }
-}
-
-impl From<SourceRange> for Metadata {
-    fn from(source_range: SourceRange) -> Self {
-        Self { source_range }
-    }
-}
-
 impl<T> From<NodeRef<'_, T>> for Metadata {
     fn from(node: NodeRef<'_, T>) -> Self {
         Self {

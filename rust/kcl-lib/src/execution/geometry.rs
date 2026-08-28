@@ -494,41 +494,6 @@ pub struct Helix {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct Plane {
-    /// The id of the plane.
-    pub id: uuid::Uuid,
-    /// The artifact ID.
-    pub artifact_id: ArtifactId,
-    /// The scene object ID. If this is None, then the plane has not been
-    /// sent to the engine yet. It must be sent before it is used.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub object_id: Option<ObjectId>,
-    /// The kind of plane or custom.
-    pub kind: PlaneKind,
-    /// The information for the plane.
-    #[serde(flatten)]
-    pub info: PlaneInfo,
-    #[serde(skip)]
-    pub meta: Vec<Metadata>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct PlaneInfo {
-    /// Origin of the plane.
-    pub origin: Point3d,
-    /// What should the plane's X axis be?
-    pub x_axis: Point3d,
-    /// What should the plane's Y axis be?
-    pub y_axis: Point3d,
-    /// What should the plane's Z axis be?
-    pub z_axis: Point3d,
-}
-
 impl PlaneInfo {
     pub(crate) fn into_plane_data(self) -> PlaneData {
         if self.origin.is_zero() {
@@ -750,34 +715,6 @@ impl TryFrom<PlaneData> for PlaneInfo {
     }
 }
 
-impl From<&PlaneData> for PlaneKind {
-    fn from(value: &PlaneData) -> Self {
-        match value {
-            PlaneData::XY => PlaneKind::XY,
-            PlaneData::NegXY => PlaneKind::XY,
-            PlaneData::XZ => PlaneKind::XZ,
-            PlaneData::NegXZ => PlaneKind::XZ,
-            PlaneData::YZ => PlaneKind::YZ,
-            PlaneData::NegYZ => PlaneKind::YZ,
-            PlaneData::Plane(_) => PlaneKind::Custom,
-        }
-    }
-}
-
-impl From<&PlaneInfo> for PlaneKind {
-    fn from(value: &PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value.clone());
-        PlaneKind::from(&data)
-    }
-}
-
-impl From<PlaneInfo> for PlaneKind {
-    fn from(value: PlaneInfo) -> Self {
-        let data = PlaneData::Plane(value);
-        PlaneKind::from(&data)
-    }
-}
-
 impl Plane {
     #[cfg(test)]
     pub(crate) fn from_plane_data_skipping_engine(
@@ -890,25 +827,6 @@ pub struct BoundedEdge {
     /// A percentage bound of the edge, used to restrict what portion of the edge will be used.
     /// Range (0, 1)
     pub upper_bound: f32,
-}
-
-/// Kind of plane.
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
-#[ts(export)]
-#[display(style = "camelCase")]
-pub enum PlaneKind {
-    #[serde(rename = "XY", alias = "xy")]
-    #[display("XY")]
-    XY,
-    #[serde(rename = "XZ", alias = "xz")]
-    #[display("XZ")]
-    XZ,
-    #[serde(rename = "YZ", alias = "yz")]
-    #[display("YZ")]
-    YZ,
-    /// A custom plane.
-    #[display("Custom")]
-    Custom,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

@@ -908,33 +908,7 @@ pub enum SketchData {
     Solid(Box<Solid>),
 }
 
-/// Orientation data that can be used to construct a plane, not a plane in itself.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-#[allow(clippy::large_enum_variant)]
-pub enum PlaneData {
-    /// The XY plane.
-    #[serde(rename = "XY", alias = "xy")]
-    XY,
-    /// The opposite side of the XY plane.
-    #[serde(rename = "-XY", alias = "-xy")]
-    NegXY,
-    /// The XZ plane.
-    #[serde(rename = "XZ", alias = "xz")]
-    XZ,
-    /// The opposite side of the XZ plane.
-    #[serde(rename = "-XZ", alias = "-xz")]
-    NegXZ,
-    /// The YZ plane.
-    #[serde(rename = "YZ", alias = "yz")]
-    YZ,
-    /// The opposite side of the YZ plane.
-    #[serde(rename = "-YZ", alias = "-yz")]
-    NegYZ,
-    /// A defined plane.
-    Plane(PlaneInfo),
-}
+pub use kcl_api::geometry::PlaneData;
 
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

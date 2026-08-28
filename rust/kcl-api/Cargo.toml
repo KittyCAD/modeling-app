@@ -8,8 +8,11 @@ repository = "https://github.com/KittyCAD/modeling-app"
 
 [features]
 pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
+arbitrary = ["dep:arbitrary", "uuid/arbitrary"]
 
 [dependencies]
+arbitrary = { version = "1", features = ["derive"], optional = true }
+euler = "0.4.1"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 kittycad-unit-conversion-derive = "0.1.0"
 kcl-error = { version = "=0.2.182", path = "../kcl-error" }
