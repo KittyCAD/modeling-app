@@ -316,6 +316,14 @@ arguments. Right-clicking a file first selects that row, which makes the existin
 argument-free rename and delete commands act on what was actually clicked rather
 than on a stale tree selection.
 
+The scene's secondary button is also camera input, so its native `contextmenu`
+event never opens the surface directly. A recogniser waits for the matching
+pointer release and refuses the menu once the pointer travels more than four
+pixels. Browsers deliver `contextmenu` on different sides of `pointerup`; an
+early event is held until release and a late one consults the release that just
+happened. A right drag therefore stays a camera gesture, while an unmoved right
+click ends that gesture before the menu appears.
+
 ### Which settings reach the engine, and how
 
 Not one mechanism but three, and the difference is visible to the user:

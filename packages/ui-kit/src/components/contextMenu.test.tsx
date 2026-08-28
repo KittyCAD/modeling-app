@@ -1,7 +1,12 @@
-import { render } from 'preact'
+import { createRef, render } from 'preact'
 import { act } from 'preact/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ContextMenu, fitContextMenuPosition } from './contextMenu'
+import {
+  ContextMenu,
+  type ContextMenuController,
+  type ContextMenuOpenRequest,
+  fitContextMenuPosition,
+} from './contextMenu'
 
 let host: HTMLDivElement | null = null
 
@@ -61,7 +66,7 @@ describe('ContextMenu', () => {
   })
 
   it('resolves contextual sections at the moment it opens', () => {
-    const sections = vi.fn((_event: MouseEvent) => [
+    const sections = vi.fn((_request: ContextMenuOpenRequest) => [
       { id: 'file', items: [{ id: 'delete', label: 'Delete' }] },
     ])
     const element = mount(
@@ -75,6 +80,27 @@ describe('ContextMenu', () => {
     secondaryClick(element.querySelector('button') as Element, 12, 24)
     expect(sections).toHaveBeenCalledOnce()
     expect(sections.mock.calls[0]?.[0].clientX).toBe(12)
+  })
+
+  it('can be opened after a target-specific gesture recognizer accepts', () => {
+    const controller = createRef<ContextMenuController>()
+    const element = mount(
+      <ContextMenu
+        controllerRef={controller}
+        label="Scene actions"
+        sections={[
+          { id: 'view', items: [{ id: 'fit', label: 'Zoom to fit' }] },
+        ]}
+        target={(props) => <button {...props}>Scene</button>}
+      />
+    )
+    const target = element.querySelector('button') as HTMLButtonElement
+
+    act(() => {
+      controller.current?.open({ clientX: 80, clientY: 90, target })
+    })
+
+    expect(element.querySelector('[role="menu"]')).not.toBeNull()
   })
 
   it('skips disabled entries during keyboard navigation', () => {

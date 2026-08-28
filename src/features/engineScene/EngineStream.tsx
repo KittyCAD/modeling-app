@@ -1,4 +1,4 @@
-import { ContextMenu } from '@kittycad/ui-kit'
+import { ContextMenu, type ContextMenuController } from '@kittycad/ui-kit'
 import { useSignalEffect } from '@preact/signals'
 import { useService, useValueSpec } from '@src/app/context'
 import { commandService } from '@src/contracts/commands'
@@ -8,6 +8,7 @@ import {
   sceneInteractionsValueSpec,
 } from '@src/contracts/scene'
 import { resolveContextMenu } from '@src/lib/contextMenu'
+import { createContextMenuClickRecogniser } from '@src/lib/contextMenuClickRecogniser'
 import { useEffect, useRef } from 'preact/hooks'
 import './engineScene.css'
 
@@ -30,6 +31,7 @@ import './engineScene.css'
  */
 export function EngineStream({ engine }: { engine: EngineConnection }) {
   const video = useRef<HTMLVideoElement>(null)
+  const contextMenu = useRef<ContextMenuController>(null)
   const interactions = useValueSpec(sceneInteractionsValueSpec)
   const contextMenuItems = useValueSpec(sceneContextMenuItemsValueSpec)
   const commands = useService(commandService)
@@ -59,8 +61,18 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
         (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.id.localeCompare(b.id)
       )
       .map((interaction) => interaction.attach(element))
+    const disposeContextMenu = createContextMenuClickRecogniser(element, {
+      onClick: ({ clientX, clientY }) => {
+        contextMenu.current?.open({
+          clientX,
+          clientY,
+          target: element,
+        })
+      },
+    })
 
     return () => {
+      disposeContextMenu()
       for (const dispose of disposers) dispose?.()
     }
   }, [installed])
@@ -86,8 +98,9 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
 
   return (
     <ContextMenu
+      controllerRef={contextMenu}
       label="Scene actions"
-      sections={(event) => {
+      sections={(request) => {
         const element = video.current
         if (!element) return []
         const rect = element.getBoundingClientRect()
@@ -95,8 +108,8 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
           contextMenuItems.value,
           {
             at: {
-              x: event.clientX - rect.left,
-              y: event.clientY - rect.top,
+              x: request.clientX - rect.left,
+              y: request.clientY - rect.top,
               viewport: { width: rect.width, height: rect.height },
             },
           },
@@ -112,7 +125,6 @@ export function EngineStream({ engine }: { engine: EngineConnection }) {
           autoPlay
           tabIndex={-1}
           onPointerDown={takeFocus}
-          onContextMenu={contextMenu.onContextMenu}
           aria-haspopup={contextMenu['aria-haspopup']}
           // The engine's own frames are the content; nothing here is decorative,
           // but there is no alternative text for a live 3D scene either.

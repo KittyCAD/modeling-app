@@ -1,6 +1,11 @@
 import { useSignal } from '@preact/signals'
-import type { ComponentChildren, JSX } from 'preact'
-import { useEffect, useLayoutEffect, useRef } from 'preact/hooks'
+import type { ComponentChildren, JSX, Ref } from 'preact'
+import {
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+} from 'preact/hooks'
 import {
   type MenuItem,
   MenuPanel,
@@ -10,10 +15,22 @@ import {
 import { type BaseProps, cx } from './shared'
 import './contextMenu.css'
 
+export interface ContextMenuOpenRequest {
+  clientX: number
+  clientY: number
+  /** Focus returns here when the menu closes. */
+  target: HTMLElement
+}
+
 export interface ContextMenuTargetProps {
   /** Attach to the element whose secondary click opens the menu. */
   onContextMenu: (event: MouseEvent) => void
   'aria-haspopup': 'menu'
+}
+
+export interface ContextMenuController {
+  /** Open after a target-specific gesture recognizer accepts the request. */
+  open: (request: ContextMenuOpenRequest) => void
 }
 
 export interface ContextMenuProps extends BaseProps {
@@ -25,8 +42,10 @@ export interface ContextMenuProps extends BaseProps {
    * Resolve at open time when the entries depend on what was clicked.
    * A static array is enough for targets whose context never changes.
    */
-  sections: MenuSection[] | ((event: MouseEvent) => MenuSection[])
+  sections: MenuSection[] | ((request: ContextMenuOpenRequest) => MenuSection[])
   label: string
+  /** Manual opening for targets where a secondary-button drag means something. */
+  controllerRef?: Ref<ContextMenuController>
 }
 
 interface Position {
@@ -66,6 +85,7 @@ export function ContextMenu({
   target,
   sections,
   label,
+  controllerRef = null,
   class: className,
   id,
   'data-testid': dataTestId,
@@ -84,14 +104,9 @@ export function ContextMenu({
     targetElement.current?.focus({ preventScroll: true })
   }
 
-  const open = (event: MouseEvent) => {
-    event.preventDefault()
-    // Nested targets own their own menu. Without this, a row inside a panel can
-    // open both its menu and the panel's menu from one secondary click.
-    event.stopPropagation()
-
+  const openContextMenu = (request: ContextMenuOpenRequest) => {
     const nextSections =
-      typeof sections === 'function' ? sections(event) : sections
+      typeof sections === 'function' ? sections(request) : sections
     const hasContent = nextSections.some(
       (section) =>
         (section.items?.length ?? 0) > 0 || section.content !== undefined
@@ -100,12 +115,26 @@ export function ContextMenu({
       return
     }
 
-    targetElement.current = event.currentTarget as HTMLElement
+    targetElement.current = request.target
     openSections.value = nextSections
-    requested.value = { x: event.clientX, y: event.clientY }
+    requested.value = { x: request.clientX, y: request.clientY }
     fitted.value = null
     highlighted.value = -1
   }
+
+  const onContextMenu = (event: MouseEvent) => {
+    event.preventDefault()
+    // Nested targets own their own menu. Without this, a row inside a panel can
+    // open both its menu and the panel's menu from one secondary click.
+    event.stopPropagation()
+    openContextMenu({
+      clientX: event.clientX,
+      clientY: event.clientY,
+      target: event.currentTarget as HTMLElement,
+    })
+  }
+
+  useImperativeHandle(controllerRef, () => ({ open: openContextMenu }))
 
   useLayoutEffect(() => {
     if (!requested.value || fitted.value || !panel.current) {
@@ -172,7 +201,7 @@ export function ContextMenu({
   })
 
   const targetProps: ContextMenuTargetProps = {
-    onContextMenu: open,
+    onContextMenu,
     'aria-haspopup': 'menu',
   }
   const position = fitted.value ?? requested.value

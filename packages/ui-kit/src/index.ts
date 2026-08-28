@@ -18,6 +18,8 @@ export {
 } from './components/button'
 export {
   ContextMenu,
+  type ContextMenuController,
+  type ContextMenuOpenRequest,
   type ContextMenuProps,
   type ContextMenuTargetProps,
   fitContextMenuPosition,
