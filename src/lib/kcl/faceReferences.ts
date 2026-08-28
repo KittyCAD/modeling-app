@@ -4,8 +4,8 @@ import type { ArtifactMap } from '@src/lib/kcl/artifacts'
 import {
   bindingContaining,
   referencePartsAt,
+  regionNameAt,
   regionSegmentSources,
-  sweptRegionName,
 } from '@src/lib/kclStdlib/program'
 
 /**
@@ -210,28 +210,23 @@ function capReference(
 }
 
 /**
- * A wall is named by the segment that was swept to make it.
+ * A wall is named by the sketch segment that was swept to make it.
  *
- * Which only works when the graph still says *which* segment that was. It does
- * when a sketch was swept directly: the wall's segment is one of the sketch
- * block's own, and its code range points at `l1 = line(…)` inside the block, so
- * `s.l1` names it.
+ * The graph keeps that link even when the sweep went through a region, which is
+ * the part I got wrong the first time: a region builds its own segments, each
+ * carrying the range of the `region(…)` call, and each recording the sketch
+ * segment it came from in `originalSegId`. So the chain is
  *
- * It does not when a **region** was swept, and that is not a bug here. A region
- * builds its own segments, every one of them carrying the range of the `region(…)`
- * call rather than of any line, and the graph records no edge back to the sketch
- * segment each came from. So four walls of a swept region are four artifacts
- * whose code all points at the same call, and nothing in the file distinguishes
- * them.
+ *   wall → segment (in the region) → originalSegId → segment (in the sketch)
  *
- * Guessing was considered and rejected. The walls arrive in the sweep's surface
- * order and the region's `segments` argument is also a list, so the *i*th wall
- * could be matched to the *i*th entry — except a region is bounded by every
- * segment that closes it, not only the ones named in the argument, so the two
- * lists are different lengths as soon as a boundary is implied. A reference that
- * is right until the sketch gains a line is worse than none.
+ * and the region's own name comes from the declaration the region segment's code
+ * sits in. That produces `region001.tags.l1`: a region re-exposes the segments it
+ * consumed as tags, and this is how the existing app addresses a swept region's
+ * wall too.
  *
- * This is the gap the Face API closes, and it is why the whole file exists.
+ * `sourceSegmentId` is followed first, for a segment that is a clone of another.
+ * Both links are single hops in the graph rather than anything inferred, so
+ * nothing here guesses.
  */
 function wallReference(
   wall: Extract<Artifact, { type: 'wall' }>,
@@ -241,26 +236,18 @@ function wallReference(
   const solid = solidReference(wall.sweepId, context)
   if (!solid) return unavailable(NO_SOLID)
 
-  /*
-   * The graph's segment first, then the engine's curve if that one has no name.
-   * They are usually the same artifact; where they are not, the engine's is the
-   * one that might still be a line in the file.
-   */
-  const parts =
-    segmentParts(wall.segId, context) ??
-    (engine.originCurve ? segmentParts(engine.originCurve, context) : null)
+  const face =
+    regionTagFor(wall.segId, context) ??
+    segmentNameFor(wall.segId, context) ??
+    (engine.originCurve ? segmentNameFor(engine.originCurve, context) : null)
 
-  /*
-   * A segment has a name only inside a sketch block. Anywhere else — and a
-   * region's segments point at the region call — there is nothing to write, so
-   * `outer` must not be used as a stand-in: it names the region, and
-   * `region001.tags.region001` is not a face.
-   */
-  const sweep = context.artifacts.get(wall.sweepId)
-  const region =
-    sweep && sweep.type === 'sweep'
-      ? sweptRegionName(context.program, sweep.codeRef.range[0])
-      : null
+  if (face) {
+    return {
+      kind: 'reference',
+      source: `faceOf(${solid}, face = ${face.source})`,
+      via: face.via,
+    }
+  }
 
   /*
    * Nothing in the file names this face, so fall back to the engine's index.
@@ -268,59 +255,97 @@ function wallReference(
    * Written as `faceId(solid, index = n)`, which is what kcl-lib writes for the
    * same case, and the index has been checked against the engine — it is the one
    * whose uuid is the face that was clicked. Brittle across changes to the model
-   * and not brittle *now*, which is the trade being made: a reference that has to
-   * be revisited when the sketch changes beats being unable to sketch on the face
-   * at all.
+   * and not brittle *now*: a reference that has to be revisited when the sketch
+   * changes beats being unable to sketch on the face at all.
    */
-  if (!parts) {
-    if (typeof engine.faceIndex === 'number') {
-      return {
-        kind: 'reference',
-        source: `faceOf(${solid}, face = faceId(${solid}, index = ${engine.faceIndex}))`,
-        via: 'wall.faceIndex',
-      }
+  if (typeof engine.faceIndex === 'number') {
+    return {
+      kind: 'reference',
+      source: `faceOf(${solid}, face = faceId(${solid}, index = ${engine.faceIndex}))`,
+      via: 'wall.faceIndex',
     }
-
-    return unavailable(
-      `That face came from sweeping a region, and neither the artifact graph nor the engine could name it. ${suggestion(solid, region, context)}`
-    )
   }
 
-  /*
-   * Through the region when the sweep consumed a named one: a region re-exposes
-   * the segments it consumed as tags. Otherwise the segment reference itself,
-   * which `faceOf` accepts a `Segment` for.
-   */
-  return region
-    ? {
-        kind: 'reference',
-        source: `faceOf(${solid}, face = ${region}.tags.${parts.inner})`,
-        via: 'wall.regionTag',
-      }
-    : {
-        kind: 'reference',
-        source: `faceOf(${solid}, face = ${parts.outer}.${parts.inner})`,
-        via: 'wall.segment',
-      }
+  return unavailable(
+    `Nothing in this file names that face, and the engine could not identify it either. ${suggestion(solid, regionNameFor(wall.segId, context), context)}`
+  )
+}
+
+/**
+ * `region001.tags.l1` — a segment of a region, through the region.
+ *
+ * Null unless the segment *is* one a region built: `originalSegId` is what says
+ * so, and without it there is no region in the story.
+ */
+function regionTagFor(
+  segmentId: string,
+  context: KclReferenceContext
+): { source: string; via: FaceReferenceVia } | null {
+  const segment = sourceSegment(segmentId, context)
+  if (!segment || segment.type !== 'segment') return null
+  if (!segment.originalSegId || segment.originalSegId === segment.id)
+    return null
+
+  const region = regionNameAt(context.program, segment.codeRef.range[0])
+  if (!region) return null
+
+  const original = segmentNameFor(segment.originalSegId, context)
+  if (!original) return null
+
+  return {
+    source: `${region}.tags.${original.inner}`,
+    via: 'wall.regionTag',
+  }
+}
+
+/** The region a segment belongs to, for saying what could not be named. */
+function regionNameFor(
+  segmentId: string,
+  context: KclReferenceContext
+): string | null {
+  const segment = sourceSegment(segmentId, context)
+  if (!segment || segment.type !== 'segment') return null
+  return regionNameAt(context.program, segment.codeRef.range[0])
+}
+
+/**
+ * Through a clone to the segment it was cloned from.
+ *
+ * One hop, as the graph records it: "for clones of clones, this continues to
+ * point to the originating segment".
+ */
+function sourceSegment(segmentId: string, context: KclReferenceContext) {
+  const segment = context.artifacts.get(segmentId)
+  if (!segment || segment.type !== 'segment') return segment
+
+  if (!segment.sourceSegmentId) return segment
+  const source = context.artifacts.get(segment.sourceSegmentId)
+  return source?.type === 'segment' ? source : segment
 }
 
 /**
  * A curve's name, but only when it has one.
  *
- * A segment is named only inside a sketch block. Anywhere else — and a region's
- * segments point at the `region(…)` call — there is nothing to write, and the
- * enclosing name must not stand in for it: it names the region, and
- * `region001.tags.region001` is not a face.
+ * A segment is named only inside a sketch block: `s.l1`. Anywhere else — and a
+ * region's own segments point at the `region(…)` call — there is nothing to
+ * write, and the enclosing name must not stand in for it, because it names the
+ * region and `region001.tags.region001` is not a face.
  */
-function segmentParts(
+function segmentNameFor(
   curveId: string,
   context: KclReferenceContext
-): { outer: string; inner: string } | null {
+): { source: string; inner: string; via: FaceReferenceVia } | null {
   const segment = context.artifacts.get(curveId)
   if (!segment || !('codeRef' in segment)) return null
 
   const parts = referencePartsAt(context.program, segment.codeRef.range[0])
-  return parts?.inner ? { outer: parts.outer, inner: parts.inner } : null
+  if (!parts?.inner) return null
+
+  return {
+    source: `${parts.outer}.${parts.inner}`,
+    inner: parts.inner,
+    via: 'wall.segment',
+  }
 }
 
 /**

@@ -7,7 +7,7 @@ import {
   referenceAt,
   referencePartsAt,
   sketchBlockAt,
-  sweptRegionName,
+  regionNameAt,
 } from '@src/lib/kclStdlib/program'
 
 const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
@@ -275,7 +275,7 @@ describe('finding the sketch an offset is in', () => {
   })
 })
 
-describe('the region a sweep consumed', () => {
+describe('the region a binding is', () => {
   const named = (value: string) => ({
     ...node,
     type: 'Name',
@@ -284,7 +284,7 @@ describe('the region a sweep consumed', () => {
     name: { ...node, type: 'Identifier', name: value },
   })
 
-  const callWith = (callee: string, unlabeled: unknown) => ({
+  const callWith = (callee: string, unlabeled: unknown = null) => ({
     ...node,
     type: 'CallExpressionKw',
     unlabeled,
@@ -299,49 +299,33 @@ describe('the region a sweep consumed', () => {
     return declaration
   }
 
-  const sweepProgram = (input: unknown, regionInit?: string) =>
-    program(
-      ...(regionInit
-        ? [at(0, 50, declare('region001', callWith(regionInit, null), 0))]
-        : []),
-      at(100, 150, declare('extrude001', callWith('extrude', input), 100))
-    )
+  /*
+   * Asked of the segment's own offset rather than worked out from how the sweep
+   * was written, because a region's segments carry the range of the `region(…)`
+   * call — which is the one thing that is true however the sweep reads.
+   */
+  it('names the region an offset sits in', () => {
+    const body = program(at(0, 50, declare('region001', callWith('region'), 0)))
 
-  it('names a region bound to its own variable', () => {
-    expect(
-      sweptRegionName(sweepProgram(named('region001'), 'region'), 120)
-    ).toBe('region001')
+    expect(regionNameAt(body, 20)).toBe('region001')
   })
 
-  it('says nothing when the swept input is a sketch rather than a region', () => {
-    expect(
-      sweptRegionName(sweepProgram(named('region001'), 'sketch'), 120)
-    ).toBeNull()
-  })
+  it('says nothing for a binding that is not a region', () => {
+    const body = program(at(0, 50, declare('s', callWith('sketch'), 0)))
 
-  it('says nothing for an inline region, which has no name to write', () => {
-    expect(
-      sweptRegionName(sweepProgram(callWith('region', null)), 120)
-    ).toBeNull()
-  })
-
-  it('says nothing when the call is not a sweep', () => {
-    const body = program(
-      at(0, 50, declare('region001', callWith('region', null), 0)),
-      at(
-        100,
-        150,
-        declare('x', callWith('appearance', named('region001')), 100)
-      )
-    )
-
-    expect(sweptRegionName(body, 120)).toBeNull()
+    expect(regionNameAt(body, 20)).toBeNull()
   })
 
   it('says nothing outside every binding', () => {
-    expect(
-      sweptRegionName(sweepProgram(named('region001'), 'region'), 999)
-    ).toBeNull()
+    const body = program(at(0, 50, declare('region001', callWith('region'), 0)))
+
+    expect(regionNameAt(body, 99)).toBeNull()
+  })
+
+  it('says nothing for a binding that is not a call at all', () => {
+    const body = program(at(0, 50, declare('x', named('y'), 0)))
+
+    expect(regionNameAt(body, 20)).toBeNull()
   })
 })
 

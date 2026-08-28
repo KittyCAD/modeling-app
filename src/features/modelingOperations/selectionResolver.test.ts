@@ -349,7 +349,7 @@ describe('a face that cannot be referred to', () => {
     const answer = answerFor('Plane | Face | TaggedFace')
 
     expect(answer?.source).toBe('')
-    expect(answer?.unavailable).toMatch(/region/)
+    expect(answer?.unavailable).toMatch(/Nothing in this file names that face/)
   })
 
   it('does not offer the region as a face', () => {

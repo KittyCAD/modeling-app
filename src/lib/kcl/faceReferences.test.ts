@@ -183,11 +183,23 @@ const sweptRegion = {
   artifacts: artifactsFrom({
     map: {
       // The region's own segment: its code is the region call, not a line.
+      /*
+       * The region's own segment: its code is the region call rather than a
+       * line, and `originalSegId` is the sketch segment it was derived from —
+       * the link that makes the face nameable.
+       */
       regionSeg: {
         type: 'segment',
         id: 'regionSeg',
         pathId: 'regionPath',
+        originalSegId: 'sketchSeg',
         codeRef: codeRef(REGION_CALL, 367),
+      },
+      sketchSeg: {
+        type: 'segment',
+        id: 'sketchSeg',
+        pathId: 'sketchPath',
+        codeRef: codeRef(70, 90),
       },
       sweep: {
         type: 'sweep',
@@ -225,6 +237,46 @@ const sweptRegion = {
     declare('region001', regionCall(), [309, 368]),
     declare('extrude001', call('extrude', name('region001')), [369, 413])
   ),
+}
+
+/**
+ * The same graph with the link missing.
+ *
+ * What a wall looks like when nothing says which sketch segment its region
+ * segment came from — an older engine build, or a shape the graph does not
+ * describe. It is the case the engine index exists for.
+ */
+const unlinkedRegion = {
+  artifacts: artifactsFrom({
+    map: {
+      regionSeg: {
+        type: 'segment',
+        id: 'regionSeg',
+        pathId: 'regionPath',
+        codeRef: codeRef(REGION_CALL, 367),
+      },
+      sweep: {
+        type: 'sweep',
+        id: 'sweep',
+        subType: 'extrusion',
+        pathId: 'regionPath',
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: codeRef(382, 413),
+      },
+      wall: {
+        type: 'wall',
+        id: 'wall',
+        segId: 'regionSeg',
+        sweepId: 'sweep',
+        edgeCutEdgeIds: [],
+        pathIds: [],
+        faceCodeRef: codeRef(0, 0),
+        cmdId: 'c1',
+      },
+    },
+  }),
+  program: sweptRegion.program,
 }
 
 const context = (options: { region?: boolean } = {}) => ({
@@ -277,11 +329,17 @@ describe('naming a side face', () => {
    * A region consumes the segments it is built from and re-exposes them as tags,
    * so a swept region's wall is addressed through the region.
    */
-  it('goes through the region tags when the sweep consumed a region', () => {
+  /*
+   * Naming the segment directly is right whenever the wall's segment *is* the
+   * sketch's. A region in the file changes nothing on its own: what sends a
+   * reference through the region is the segment recording that a region derived
+   * it, which is `originalSegId` and is tested with the swept-region graph below.
+   */
+  it('names the segment directly even when the file has a region', () => {
     expect(faceReference('wall', context({ region: true }))).toEqual({
       kind: 'reference',
-      source: 'faceOf(extrude001, face = region001.tags.line1)',
-      via: 'wall.regionTag',
+      source: 'faceOf(extrude001, face = triangle.line1)',
+      via: 'wall.segment',
     })
   })
 
@@ -334,18 +392,24 @@ extrude001 = extrude(region001, length = 10)
 `
 
   /*
-   * It used to answer `faceOf(extrude001, face = region001.tags.region001)` —
-   * using the region's name where a segment's belongs — and the caller then wrote
-   * nothing at all, so the dialog said the argument was missing while showing the
-   * face that had been picked.
+   * The chain the graph records: wall → the region's segment → `originalSegId` →
+   * the sketch segment, whose name is `l1`. The region's own name comes from the
+   * declaration its segment's code sits in.
+   *
+   * This used to answer `region001.tags.region001` — the region's name where a
+   * segment's belongs — and then write nothing at all, so the dialog reported the
+   * argument as missing while showing the face that had been picked.
    */
-  it('says it cannot be named, rather than naming the region twice', () => {
+  it('names it through the region that consumed the segment', () => {
+    expect(sourceOf(faceReference('wall', sweptRegion))).toBe(
+      'faceOf(extrude001, face = region001.tags.l1)'
+    )
+  })
+
+  it('reports the route it took', () => {
     const lookup = faceReference('wall', sweptRegion)
 
-    expect(lookup?.kind).toBe('unavailable')
-    expect(reasonOf(lookup)).toMatch(
-      /neither the artifact graph nor the engine/
-    )
+    expect(lookup?.kind === 'reference' && lookup.via).toBe('wall.regionTag')
   })
 
   /*
@@ -355,7 +419,7 @@ extrude001 = extrude(region001, length = 10)
    */
   it('suggests a reference quoted from the file', () => {
     const withSource = {
-      ...sweptRegion,
+      ...unlinkedRegion,
       source: SOURCE,
     }
 
@@ -365,7 +429,7 @@ extrude001 = extrude(region001, length = 10)
   })
 
   it('suggests the shape of the call when it cannot quote one', () => {
-    expect(reasonOf(faceReference('wall', sweptRegion))).toContain(
+    expect(reasonOf(faceReference('wall', unlinkedRegion))).toContain(
       'faceOf(extrude001, face = <segment>)'
     )
   })
@@ -426,11 +490,13 @@ describe('a face named from the engine curve', () => {
   }
 
   it('uses the engine curve when the graph segment has no name', () => {
+    // The curve the engine named is a line in the sketch, so it is named
+    // directly: nothing records that a region derived it.
     expect(
       sourceOf(
         faceReference('wall', withSketchSegment, { originCurve: 'sketchSeg' })
       )
-    ).toBe('faceOf(extrude001, face = region001.tags.l1)')
+    ).toBe('faceOf(extrude001, face = s.l1)')
   })
 
   it('still cannot name it when the engine offers nothing', () => {
@@ -457,13 +523,13 @@ describe('a face named from the engine curve', () => {
  */
 describe('a face named by its engine index', () => {
   it('writes the index when nothing in the file can name the face', () => {
-    expect(sourceOf(faceReference('wall', sweptRegion, { faceIndex: 3 }))).toBe(
-      'faceOf(extrude001, face = faceId(extrude001, index = 3))'
-    )
+    expect(
+      sourceOf(faceReference('wall', unlinkedRegion, { faceIndex: 3 }))
+    ).toBe('faceOf(extrude001, face = faceId(extrude001, index = 3))')
   })
 
   it('reports the route, so a brittle reference is identifiable', () => {
-    const lookup = faceReference('wall', sweptRegion, { faceIndex: 0 })
+    const lookup = faceReference('wall', unlinkedRegion, { faceIndex: 0 })
 
     expect(lookup?.kind === 'reference' && lookup.via).toBe('wall.faceIndex')
   })
@@ -471,7 +537,7 @@ describe('a face named by its engine index', () => {
   /* Index zero is an index. */
   it('does not mistake the first face for no face', () => {
     expect(
-      sourceOf(faceReference('wall', sweptRegion, { faceIndex: 0 }))
+      sourceOf(faceReference('wall', unlinkedRegion, { faceIndex: 0 }))
     ).toContain('index = 0')
   })
 
@@ -483,6 +549,6 @@ describe('a face named by its engine index', () => {
   })
 
   it('still says why when there is no index either', () => {
-    expect(faceReference('wall', sweptRegion, {})?.kind).toBe('unavailable')
+    expect(faceReference('wall', unlinkedRegion, {})?.kind).toBe('unavailable')
   })
 })

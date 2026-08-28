@@ -568,9 +568,23 @@ faceOf(extrude001, face = region001.tags.line1)     // through the region
 faceOf(extrude001, face = triangle.line1)           // the segment, swept directly
 ```
 
-A fourth route exists for the face no name reaches — a side face of a swept
-*region*, where every segment the region built carries the range of the `region(…)`
-call and none is a line anybody can point at:
+A swept **region** takes the third route rather than defeating it, which is worth
+spelling out because the graph looks at first as though it loses the link. Every
+segment a region builds carries the range of the `region(…)` call, so none of them
+is a line anybody can point at — but each one records the sketch segment it came
+from in `originalSegId`, and a clone records its origin in `sourceSegmentId`. The
+chain is
+
+```
+wall → segment (in the region) → originalSegId → segment (in the sketch)
+```
+
+and the region's own name comes from the declaration the region segment's code
+sits in. Both are single hops the graph already holds; nothing is inferred. The
+existing app walks the same two links for the same expression.
+
+A fourth route exists for the face those do not reach — an imported face, or one
+whose graph never recorded an origin:
 
 ```
 faceOf(extrude001, face = faceId(extrude001, index = 3))
@@ -583,7 +597,9 @@ to write is that the index is **verified**: `faceId` sends
 click time and keeps the index whose uuid is the face under the pointer. An
 assumed ordering would fail silently on somebody else's model; a confirmed one is
 right when written and wrong only once the model has moved on. A name always wins
-over an index, and each answer records which route produced it.
+over an index, and each answer records which route produced it — `wall.faceIndex`
+in a diagnostic marks a reference that will need revisiting, `wall.regionTag` one
+that will not.
 
 **Which kind of reference a click produces is the argument's decision, not the
 click's.** A wall clicked for `region(segments = …)` is the segment that drew it;
