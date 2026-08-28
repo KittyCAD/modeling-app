@@ -1,5 +1,6 @@
 import type { ArgumentResolver } from '@src/contracts/modelingOperations'
 import { bindingsProducing } from '@src/lib/kclStdlib/program'
+import type { KclType } from '@src/lib/kclStdlib/types'
 import { namedTypesIn } from '@src/lib/kclStdlib/types'
 
 /**
@@ -101,8 +102,81 @@ export const booleanResolver: ArgumentResolver = {
   prompt: () => ({ kind: 'boolean' }),
 }
 
+/**
+ * What a value of this type looks like written down.
+ *
+ * A placeholder, not validation. Some KCL types have a canonical short form that
+ * is worth showing — a plane is `XY`, an axis is `Z` — and for everything else the
+ * type's own name is more use than an empty box.
+ */
+const EXAMPLES: Readonly<Record<string, string>> = {
+  Plane: 'XY',
+  Axis3d: 'Z',
+  Axis2d: 'X',
+  Point3d: '[0, 0, 0]',
+  Point2d: '[0, 0]',
+  TagDecl: '$edge1',
+  string: '"text"',
+  bool: 'true',
+}
+
+function exampleFor(type: KclType): string {
+  switch (type.kind) {
+    case 'number':
+      return '10'
+    case 'named':
+      return EXAMPLES[type.name] ?? type.name
+    case 'array':
+      return `[${exampleFor(type.element)}]`
+    case 'union':
+      // The first member, which is the one KCL's own docs lead with.
+      return type.members.length > 0 ? exampleFor(type.members[0]) : ''
+  }
+}
+
+/**
+ * Anything, typed as KCL source.
+ *
+ * The escape hatch, and a load-bearing one. An argument whose type nothing else
+ * claims — an axis, a plane, a list of datum letters, a string — would otherwise
+ * dead-end at "nothing knows how to supply this", and the operation would be a
+ * button that cannot be finished. Typing the value is always a valid way to
+ * answer a KCL argument, because KCL is what is being written.
+ *
+ * Offered last, so it never displaces a resolver that knows something: pick an
+ * existing value, or click the model, and *then* type it if neither fits. It also
+ * covers the case the others structurally cannot — an argument that wants two of
+ * something, where `[a, b]` is the only answer the argument layer can express
+ * until multi-selection exists.
+ *
+ * Nothing is validated here. Checking KCL's grammar in a form field means a
+ * second opinion about the language; the parse that follows is the arbiter, and
+ * it reports through the same diagnostics as everything else.
+ */
+export const sourceResolver: ArgumentResolver = {
+  id: 'modeling.resolver.source',
+  label: 'Type it',
+  order: 100,
+
+  /*
+   * Everything except what already has a plain-text prompt of its own. A number
+   * and a flag are answered by typing too, and offering "Expression" and "Type
+   * it" side by side would be two names for one field.
+   */
+  handles: (input) =>
+    input.type.kind !== 'number' &&
+    !(input.type.kind === 'named' && input.type.name === 'bool'),
+
+  prompt: ({ input }) => ({
+    kind: 'expression',
+    unit: null,
+    placeholder: exampleFor(input.type),
+  }),
+}
+
 export const builtInResolvers = [
   bindingResolver,
   expressionResolver,
   booleanResolver,
+  sourceResolver,
 ]

@@ -13,7 +13,11 @@ import type { ProjectSession } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
 import { operationFor } from '@src/features/modelingOperations/operations/catalog'
-import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
+import {
+  bindingResolver,
+  builtInResolvers,
+  expressionResolver,
+} from '@src/features/modelingOperations/resolvers'
 import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
 import { namedTypesIn } from '@src/lib/kclStdlib/types'
 
@@ -245,8 +249,26 @@ describe('running a modelling operation', () => {
     expect(buffer.text.value).toContain('extrude002 = extrude(')
   })
 
-  it('says so when the file has nothing to extrude', async () => {
+  /*
+   * An empty list of candidates is a reason to offer another way, not a wall.
+   * The explanation is still one method-switch away, on the method that has
+   * nothing to offer.
+   */
+  it('falls through to typing when the file has nothing to extrude', async () => {
     const { runner } = setup({ bindings: [] })
+
+    await runner.start('modeling.extrude')
+
+    expect(runner.pending.value?.error).toBeNull()
+    expect(runner.pending.value?.method).toBe('modeling.resolver.source')
+    expect(runner.pending.value?.prompt.kind).toBe('expression')
+  })
+
+  it('still says so when typing is not offered either', async () => {
+    const { runner } = setup({
+      bindings: [],
+      resolvers: [bindingResolver],
+    })
 
     await runner.start('modeling.extrude')
 
@@ -278,16 +300,40 @@ describe('running a modelling operation', () => {
     const operation: ModelingOperation = {
       ...extrudeOperation,
       id: 'modeling.exotic',
-      // `method` is a string, and nothing handles strings yet.
       annotations: { prompt: ['method'] },
     }
 
-    const { runner } = setup({ operations: [operation] })
+    // Without the catch-all, `method` is a string nothing claims — which is the
+    // case this is about: an optional argument no resolver can ask for is left
+    // out rather than blocking the operation.
+    const { runner } = setup({
+      operations: [operation],
+      resolvers: [bindingResolver, expressionResolver],
+    })
 
     await runner.start('modeling.exotic')
     await runner.answer('profile001')
 
     expect(runner.pending.value).toBeNull()
+  })
+
+  it('asks for an argument the catch-all can take, and skips it if empty', async () => {
+    const operation: ModelingOperation = {
+      ...extrudeOperation,
+      id: 'modeling.exotic',
+      annotations: { prompt: ['method'] },
+    }
+
+    const { runner, buffer } = setup({ operations: [operation] })
+
+    await runner.start('modeling.exotic')
+    await runner.answer('profile001')
+    expect(runner.pending.value?.method).toBe('modeling.resolver.source')
+
+    await runner.answer('')
+
+    expect(runner.pending.value).toBeNull()
+    expect(buffer.text.value).toContain('extrude(profile001)')
   })
 
   it('appends a newline when the file does not end with one', async () => {
@@ -311,6 +357,7 @@ describe('running a modelling operation', () => {
     const state = runner.pending.value
     expect(state?.methods.map((method) => method.label)).toEqual([
       'Existing value',
+      'Type it',
     ])
     expect(state?.method).toBe('modeling.resolver.binding')
   })
@@ -355,6 +402,9 @@ describe('several ways to answer one argument', () => {
     expect(state?.methods.map((method) => method.id)).toEqual([
       'modeling.resolver.binding',
       'test.resolver.region',
+      // The catch-all sorts last, so it never displaces a method that knows
+      // something about the argument.
+      'modeling.resolver.source',
     ])
     expect(state?.method).toBe('modeling.resolver.binding')
   })
