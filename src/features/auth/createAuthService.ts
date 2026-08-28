@@ -1,6 +1,7 @@
 import { computed, signal } from '@preact/signals'
 import type { AuthService, AuthStatus, AuthUser } from '@src/contracts/auth'
 import {
+  type StoredToken,
   clearStoredToken,
   readEnvironmentToken,
   readStoredToken,
@@ -10,6 +11,20 @@ import {
 export interface AuthDependencies {
   /** Injected so tests do not need the network. */
   fetchUser: (token: string) => Promise<AuthUser>
+  /**
+   * Where a development token comes from, if anywhere.
+   *
+   * Injected for the same reason `fetchUser` is: it is ambient state that
+   * decides what the service does on its first tick. Reading
+   * `import.meta.env` in here made the tests depend on the shell they ran in —
+   * this repo's `.envrc` exports a dev token through direnv, and Vite exposes
+   * prefixed variables from the environment as well as from its own files, so
+   * the whole suite passed in CI and failed on a machine set up for
+   * development. That is the wrong way round.
+   *
+   * Defaults to the real reader, so nothing at the composition root changes.
+   */
+  environmentToken?: () => StoredToken | null
 }
 
 /**
@@ -27,6 +42,8 @@ export interface AuthDependencies {
 export function createAuthService(
   dependencies: AuthDependencies
 ): AuthService & { dispose: () => void } {
+  const environmentToken = dependencies.environmentToken ?? readEnvironmentToken
+
   const status = signal<AuthStatus>('checking')
   const token = signal<string | null>(null)
   const source = signal<string | null>(null)
@@ -88,7 +105,7 @@ export function createAuthService(
    * back the moment someone signs out.
    */
   async function restore() {
-    const existing = readStoredToken() ?? readEnvironmentToken()
+    const existing = readStoredToken() ?? environmentToken()
     if (!existing) {
       status.value = 'signedOut'
       return

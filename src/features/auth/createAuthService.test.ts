@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthUser } from '@src/contracts/auth'
 import { createAuthService } from '@src/features/auth/createAuthService'
+import type { StoredToken } from '@src/features/auth/tokenStore'
 
 const user: AuthUser = {
   id: 'user-1',
@@ -11,8 +12,23 @@ const user: AuthUser = {
 /** Settle the constructor's restore pass. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-function create(fetchUser = vi.fn(async () => user)) {
-  return { auth: createAuthService({ fetchUser }), fetchUser }
+/**
+ * No development token, unless a test says otherwise.
+ *
+ * The service used to read `import.meta.env` for one, which meant these tests
+ * asserted "nothing is stored" against whatever the machine had exported. This
+ * repo's `.envrc` exports a dev token through direnv, so the suite passed in CI
+ * and failed on a development machine. Injecting the reader is what makes
+ * "nothing stored" mean it.
+ */
+function create(
+  fetchUser = vi.fn(async () => user),
+  environmentToken: () => StoredToken | null = () => null
+) {
+  return {
+    auth: createAuthService({ fetchUser, environmentToken }),
+    fetchUser,
+  }
 }
 
 describe('auth service', () => {
@@ -198,5 +214,60 @@ describe('auth service', () => {
       expect(auth.status.value).toBe('signedOut')
       expect(auth.error.value).toBeNull()
     })
+  })
+})
+
+/*
+ * The development token had no test of its own — the only thing exercising it
+ * was the suite accidentally picking up the machine's, which asserted the
+ * opposite of what it does.
+ */
+describe('a development token from the environment', () => {
+  const fromEnvironment = (): StoredToken => ({
+    token: 'dev-token',
+    source: 'VITE_KC_DEV_TOKEN',
+  })
+
+  it('signs in with it when nothing is stored', async () => {
+    const { auth, fetchUser } = create(undefined, fromEnvironment)
+    await settle()
+
+    expect(auth.status.value).toBe('signedIn')
+    expect(auth.token.value).toBe('dev-token')
+    expect(fetchUser).toHaveBeenCalledWith('dev-token')
+  })
+
+  it('names where it came from, so a surprise session is explicable', async () => {
+    const { auth } = create(undefined, fromEnvironment)
+    await settle()
+
+    expect(auth.source.value).toBe('VITE_KC_DEV_TOKEN')
+  })
+
+  /* A real sign-in outranks a convenience. */
+  it('does not override a stored token', async () => {
+    const first = create()
+    await settle()
+    await first.auth.signIn('good-token')
+
+    const second = create(undefined, fromEnvironment)
+    await settle()
+
+    expect(second.auth.token.value).toBe('good-token')
+  })
+
+  /*
+   * Signing out of an environment token has to stick, or the button does
+   * nothing: the variable is still set, and the next read would restore it.
+   */
+  it('stays signed out after signing out', async () => {
+    const { auth } = create(undefined, fromEnvironment)
+    await settle()
+    expect(auth.status.value).toBe('signedIn')
+
+    auth.signOut()
+
+    expect(auth.status.value).toBe('signedOut')
+    expect(auth.token.value).toBeNull()
   })
 })
