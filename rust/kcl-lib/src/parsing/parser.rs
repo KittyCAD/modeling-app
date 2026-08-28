@@ -45,6 +45,7 @@ use crate::execution::annotations::EXPERIMENTAL;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
+use crate::import_format::import_format_from_path;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::PIPE_SUBSTITUTION_OPERATOR;
 use crate::parsing::ast::types::Annotation;
@@ -2523,8 +2524,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
-        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
+        if import_format_from_path(&path_string).is_none() {
             ParseContext::warn(CompilationIssue::err(
                 path_range,
                 format!(
@@ -6255,6 +6255,13 @@ e
             "Import path is not a valid identifier and must be aliased using `as someName`. For example: `import \"my-part.kcl\" as myPart`",
             [7, 20],
         );
+    }
+
+    #[test]
+    fn creo_import_paths() {
+        for path in ["part.prt", "part.prt.1", "parts/part.PRT.23"] {
+            assert_no_err(&format!(r#"import "{path}" as part"#));
+        }
     }
 
     #[test]

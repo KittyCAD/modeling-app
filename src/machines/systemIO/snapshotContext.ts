@@ -1,5 +1,5 @@
 import fsZds from '@src/lib/fs-zds'
-import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
+import { isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
@@ -65,11 +65,7 @@ export function listAllImportFilesWithinProject(
       }
 
       const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
-      const extension = getEXTNoPeriod(relativeFilePath)
-      if (
-        extension &&
-        isExtensionAnImportExtension(extension, importExtensions)
-      ) {
+      if (isExtensionAnImportExtension(relativeFilePath, importExtensions)) {
         relativeFilePaths.push(relativeFilePath)
       }
     }
