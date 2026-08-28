@@ -86,14 +86,24 @@ export default defineRegistryItemFactory((ctx) => {
         queue: queue(),
         watcher: watcher(),
       })
+      /*
+       * Land in a file rather than in an empty editor. This is the only place
+       * that can decide it: the realization knows its own default, and only here
+       * is it known that a project was *just* opened rather than already being
+       * open.
+       *
+       * Before the session is published, not after. The URL is derived from what
+       * is open, so publishing first would announce a project with no file and
+       * then a project with one — two history entries, the first of which nobody
+       * asked to visit and Back would return to. Nothing observes the session in
+       * its fileless state this way.
+       */
+      await openDefaultFile(session, realization, fileSystem())
+
+      // Disposed immediately before publishing, so `current` never points at a
+      // session that has been torn down.
       current.peek()?.dispose()
       current.value = session
-
-      // Land in a file rather than in an empty editor. This is the only place
-      // that can decide it: the realization knows its own default, and only
-      // here is it known that a project was *just* opened rather than already
-      // being open.
-      await openDefaultFile(session, realization, fileSystem())
 
       return session
     } catch (caught) {
