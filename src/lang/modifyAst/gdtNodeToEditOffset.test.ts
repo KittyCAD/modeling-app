@@ -72,14 +72,13 @@ describe('GDT datum edit path offsets', () => {
   const namedCommandValue = (
     variableName: string,
     value: Node<Expr>
-  ): KclCommandValue =>
-    ({
-      ...commandValue(value),
-      variableName,
-      variableDeclarationAst: createVariableDeclaration(variableName, value),
-      variableIdentifierAst: createLocalName(variableName),
-      insertIndex: 0,
-    })
+  ): KclCommandValue => ({
+    ...commandValue(value),
+    variableName,
+    variableDeclarationAst: createVariableDeclaration(variableName, value),
+    variableIdentifierAst: createLocalName(variableName),
+    insertIndex: 0,
+  })
 
   const astWithSourceBeforeGdt = (callee: string): Node<Program> => ({
     start: 0,
