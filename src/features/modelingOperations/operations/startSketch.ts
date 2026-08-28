@@ -61,6 +61,7 @@ export const startSketchSpec: OperationSpec = {
   shape: SKETCH_BLOCK,
   title: 'Start sketch',
   past: 'Started a sketch on',
+  description: 'Open an empty sketch on a plane or a face, and draw in it.',
   icon: 'sketch',
   stem: 'sketch',
 

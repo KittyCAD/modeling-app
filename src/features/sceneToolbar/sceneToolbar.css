@@ -1,9 +1,11 @@
 /*
- * A panel floating over the scene.
+ * Attached to the top of the scene, not floating over it.
  *
- * Overlay material rather than chassis material: it sits *above* the frame like
- * a menu does, not inside it. Opaque, because a translucent control over a
- * moving model is a control you cannot read.
+ * Square top corners and no top border, so it reads as hanging from the panel's
+ * own edge rather than as a card someone dropped on the viewport — the existing
+ * app's toolbar does the same, and the difference is the difference between a
+ * fixture and an overlay. Opaque, because a translucent control over a moving
+ * model is a control you cannot read.
  */
 .zds-scene-toolbar {
   display: flex;
@@ -18,8 +20,12 @@
   flex-wrap: wrap;
   padding: var(--zds-space-1);
   border: var(--zds-size-hairline) solid var(--zds-border-default);
-  border-radius: var(--zds-radius-content-lg);
-  background: var(--zds-surface-overlay);
+  border-block-start: none;
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  border-end-start-radius: var(--zds-radius-content);
+  border-end-end-radius: var(--zds-radius-content);
+  background: var(--zds-surface-chassis);
   box-shadow: var(--zds-shadow-overlay);
 }
 
@@ -56,4 +62,12 @@
   color: var(--zds-text-tertiary);
   font-size: var(--zds-font-size-mini);
   white-space: nowrap;
+}
+
+/* The caret belongs to the face beside it, so it stays as narrow as it can. */
+.zds-scene-toolbar__caret {
+  --zds-button-padding: 0;
+
+  inline-size: var(--zds-size-control-sm);
+  min-inline-size: 0;
 }

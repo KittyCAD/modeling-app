@@ -120,6 +120,7 @@ export default defineRegistryItemFactory((ctx) => {
             id: operationIdFor(tool.stdlib),
             title: tool.title,
             category: tool.category ?? 'Model',
+            description: tool.description,
             icon: tool.icon,
             enabled: computed(() =>
               runner.available.value.some(

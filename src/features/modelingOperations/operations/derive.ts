@@ -21,6 +21,8 @@ export interface OperationSpec extends OperationAnnotations {
   stdlib: string
   /** Imperative and specific: "Extrude". */
   title: string
+  /** One sentence on what it does, for the tooltip and the palette. */
+  description?: string
   /**
    * How the edit describes itself afterwards: "Extruded".
    *
