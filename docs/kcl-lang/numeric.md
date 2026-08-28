@@ -39,15 +39,17 @@ When calling a function with an argument with numeric type, the declared numeric
 
 ## Mixing units with arithmetic
 
-When doing arithmetic or comparisons, units will be adjusted as necessary if possible. However, often arithmetic expressions exceed the ability of KCL to accurately choose units which can result in warnings in your code or sometimes errors. In these cases, you will need to give KCL more information. Sometimes this can be done by making units explicit using suffixes. If not, then you will need to use *type ascription*, which asserts that an expression has the supplied type. For example, `(x * y): mm` tells KCL that the units of `x * y` is mm. Note that type ascription does not do any adjustment of the numbers, e.g., `2mm: in` has the value `2in` (note that this would be a very non-idiomatic way to use numeric type ascription, you could simply write `2in`. Usually type ascription is only necessary for supplying type information about the result of computation).
+When doing arithmetic or comparisons, units are adjusted as necessary. Multiplication adds physical-dimension exponents and division subtracts them. For example, `2cm * 3mm` produces an area equal to `0.6cm^2`, and dividing that result by `2mm` produces the length `3cm`. Equal dimensions divided by one another produce a unitless number. Integer powers apply their exponent to the input dimension, and roots work when every resulting dimension exponent is an integer, so `sqrt(3mm * 3mm + 4mm * 4mm)` produces `5mm`.
 
-KCL has no support for area, volume, or other higher dimension units. When internal unit tracking requires multiple dimensions, KCL essentially gives up. This is usually where the extra type information described above is needed. If doing computation with higher dimensioned units, you must ensure that all adjustments occur before any computation. E.g., if you want to compute an area with unknown units, you must convert all numbers to the same unit before starting.
+Area, volume, inverse-length, and other compound units are currently inferred values; KCL does not yet have literal suffixes or source-level type names for them. They can participate in further arithmetic and cancel back to a source-visible type such as `number(Length)` or `number(Count)`. Passing a compound value directly where an incompatible type is required remains an error. For example, `2mm * 3mm` is an area and cannot be passed to a function requiring a length.
+
+Arithmetic over generic, explicitly erased, or otherwise unknown units can still exceed what KCL can prove. In those cases, make the input units concrete before doing the computation. Type ascription asserts a result type but does not adjust its numeric value; it cannot safely turn a known area into a length. For example, `2mm: in` has the value `2in` (this is non-idiomatic; simply write `2in`).
 
 
 ## Explicit conversions
 
 You might sometimes need to convert from one unit to another for some calculation. You can do this implicitly when calling a function (see above), but if you can't or don't want to, then you can use the explicit conversion functions in the [`std::units`](/docs/kcl-std/modules/std-units) module.
 
-KCL cannot know about changes to units caused by arithmetic. For example, you may intend for `10in * 25.4` to be the value `254mm` (i.e., `10in` in mm), however, the result of that computation in KCL is `254in`. It is always better to rely on automatic conversion or to use the explicit conversion functions, where possible.
+Multiplying by a unitless scale does not change a value's units. For example, `10in * 25.4` is `254in`, not `254mm`. To convert a value, rely on automatic argument conversion or use the explicit conversion functions.
 
 Converting between degrees and radians using π ([`PI`](/docs/kcl-std/consts/std-math-PI) in KCL) is especially prone to this error and so the `PI` constant always requires specifying units of any computation it is used with. E.g., `radius = (circumference / (2 * PI)): mm`.

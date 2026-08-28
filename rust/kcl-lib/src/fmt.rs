@@ -137,6 +137,18 @@ mod tests {
         );
         assert_eq!(
             human_display_number(
+                6.0,
+                NumericType::Known(UnitType::Dimensional {
+                    length_unit: UnitLength::Millimeters,
+                    length_exponent: 2,
+                    angle_unit: UnitAngle::Degrees,
+                    angle_exponent: 0,
+                })
+            ),
+            "6: number(mm^2)"
+        );
+        assert_eq!(
+            human_display_number(
                 1.0,
                 NumericType::Default {
                     len: UnitLength::Millimeters,
@@ -286,6 +298,16 @@ mod tests {
         assert_eq!(
             format_number_value(1.0, NumericType::Known(UnitType::Angle(UnitAngle::Radians))),
             Ok("1rad".to_owned())
+        );
+        let area = NumericType::Known(UnitType::Dimensional {
+            length_unit: UnitLength::Millimeters,
+            length_exponent: 2,
+            angle_unit: UnitAngle::Degrees,
+            angle_exponent: 0,
+        });
+        assert_eq!(
+            format_number_value(6.0, area),
+            Err(FormatNumericTypeError::Invalid(area))
         );
         assert_eq!(
             format_number_value(1.0, NumericType::Unknown),
