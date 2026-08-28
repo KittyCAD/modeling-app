@@ -1675,6 +1675,11 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        // Record the entry point's kclVersion before anything executes;
+        // imported modules pre-execute on clones of this state below and must
+        // inherit it.
+        exec_state.set_entry_point_kcl_version(program);
+
         // Reuse our cached universe if we have one.
 
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
@@ -1948,6 +1953,11 @@ impl ExecutorContext {
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+
+        // Record the entry point's kclVersion. Mock execution reaches here
+        // without going through run_concurrent; on the engine path this
+        // re-assigns the same value, which is harmless.
+        exec_state.set_entry_point_kcl_version(program);
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -4897,6 +4907,45 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn entry_point_kcl_version_recorded_only_for_v3() {
+        let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            result.exec_state.global.entry_point_kcl_version,
+            Some(KclVersion::V3Preview)
+        );
+        assert!(result.exec_state.entry_point_is_v3());
+
+        for code in [
+            "x = 1\n",
+            "@settings(kclVersion = 1.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\nx = 1\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
+            assert!(!result.exec_state.entry_point_is_v3(), "code={code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_version_lookup_prefers_entry_point_over_module_local() {
+        let mut exec_state = parse_execute("x = 1\n").await.unwrap().exec_state;
+
+        // Legacy fallback: the module-local settings.
+        exec_state.global.entry_point_kcl_version = None;
+        exec_state.mod_local.settings.kcl_version = KclVersion::V2;
+        assert_eq!(exec_state.kcl_version(), KclVersion::V2);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+
+        // An entry-point 3.0-preview declaration overrides the module-local
+        // settings for the unified lookup, but not for the legacy one.
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        assert_eq!(exec_state.kcl_version(), KclVersion::V3Preview);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
